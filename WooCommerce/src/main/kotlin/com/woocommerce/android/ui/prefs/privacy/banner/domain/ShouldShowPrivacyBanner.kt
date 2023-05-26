@@ -11,7 +11,7 @@ class ShouldShowPrivacyBanner @Inject constructor(
 ) {
     operator fun invoke(): Boolean {
         return accountRepository.isUserLoggedIn() &&
-            !appPrefs.hasSavedPrivacyBannerSettings() &&
+            !appPrefs.savedPrivacyBannerSettings &&
             isUsersCountryGdprCompliant()
     }
 }

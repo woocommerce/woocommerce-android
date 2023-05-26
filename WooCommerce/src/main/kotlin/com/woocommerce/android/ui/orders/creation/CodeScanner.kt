@@ -88,4 +88,11 @@ sealed class CodeScanningErrorType {
     object UnImplemented : CodeScanningErrorType()
     object Unknown : CodeScanningErrorType()
     data class Other(val throwable: Throwable?) : CodeScanningErrorType()
+
+    override fun toString(): String = when (this) {
+        is Other -> this.throwable?.message ?: "Other"
+        else -> this.javaClass.run {
+            name.removePrefix("${`package`?.name ?: ""}.")
+        }
+    }
 }

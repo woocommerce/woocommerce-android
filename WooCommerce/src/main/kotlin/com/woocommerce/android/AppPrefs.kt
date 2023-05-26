@@ -977,12 +977,15 @@ object AppPrefs {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
 
-    fun hasSavedPrivacyBannerSettings(): Boolean {
-        return getBoolean(
-            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
+    var savedPrivacySettings: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
             default = false
         )
-    }
+        set(value) = setBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            value = value
+        )
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
         setString(

@@ -5,7 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -24,6 +29,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -134,7 +140,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to 1
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
             ),
         )
     }
@@ -154,7 +161,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to 4
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
             ),
         )
     }
@@ -353,7 +361,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
         }
 
-        sut.startScan()
+        sut.onScanClicked()
 
         assertTrue(isUpdatingOrderDraft!!)
     }
@@ -380,7 +388,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertFalse(isUpdatingOrderDraft!!)
         }
@@ -404,11 +412,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         isVariable = true,
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -416,7 +425,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 newOrder = newOrderData
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
@@ -440,11 +449,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         productType = "variable-subscription",
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -452,9 +462,205 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 newOrder = newOrderData
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then trigger proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(
+                OnAddingProductViaScanningFailed::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then trigger event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then do not track any product search via sku success event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variation product, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variation",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.onScanClicked()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.onScanClicked()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
         }
     }
 
@@ -472,7 +678,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.startScan()
+        sut.onScanClicked()
 
         assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
     }
@@ -491,7 +697,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.startScan()
+        sut.onScanClicked()
 
         assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
             R.string.order_creation_barcode_scanning_scanning_failed
@@ -512,7 +718,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.startScan()
+        sut.onScanClicked()
         (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
         verify(codeScanner).startScan()
@@ -534,7 +740,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(null)
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
@@ -556,7 +762,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(emptyList())
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
@@ -578,7 +784,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(null)
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
@@ -602,13 +808,501 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(null)
 
-            sut.startScan()
+            sut.onScanClicked()
             (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
             verify(codeScanner).startScan()
         }
     }
 
+    @Test
+    fun `given that same variable subscription product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(1L, 10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.onScanClicked()
+            sut.onScanClicked()
+            sut.onScanClicked()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.variationId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with variationId 10L with quantity as 3")
+        }
+    }
+
+    @Test
+    fun `given that same product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.onScanClicked()
+            sut.onScanClicked()
+            sut.onScanClicked()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.productId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with productId 10L with quantity as 3")
+        }
+    }
+
+    @Test
+    fun `when scan clicked, then track proper event`() {
+        createSut()
+
+        sut.onScanClicked()
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    @Test
+    fun `when scan success, then track proper event`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
+            any()
+        )
+    }
+
+    @Test
+    fun `when scan success, then track event with proper source`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation"
+            )
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track proper event`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track event with proper source`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation",
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track event with proper failure reason`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation",
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given product search via sku succeeds, then track proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku succeeds, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track event with proper reason`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails when trying to add parent variable product, then track event with proper reason`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to
+                        "Instead of specific variations, user tried to add parent variable product."
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku succeeds but contains no product, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given variable product from order creation screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-variable product from order creation screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
+            )
+        }
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

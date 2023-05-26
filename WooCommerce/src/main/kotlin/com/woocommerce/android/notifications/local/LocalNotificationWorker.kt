@@ -12,6 +12,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DATA
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DESC
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TITLE
@@ -35,13 +36,14 @@ class LocalNotificationWorker @AssistedInject constructor(
         val id = inputData.getInt(LOCAL_NOTIFICATION_ID, -1)
         val title = inputData.getString(LOCAL_NOTIFICATION_TITLE)
         val description = inputData.getString(LOCAL_NOTIFICATION_DESC)
+        val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
 
         if (type != null && id != -1 && title != null && description != null) {
-            val notification = buildNotification(id, type, title, description)
+            val notification = buildNotification(id, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
                 appContext.getString(R.string.notification_channel_general_id),
                 notification,
-                getIntent(appContext, notification),
+                getIntent(notification),
             )
 
             AnalyticsTracker.track(
@@ -54,14 +56,20 @@ class LocalNotificationWorker @AssistedInject constructor(
         return Result.success()
     }
 
-    private fun getIntent(context: Context, notification: Notification): Intent {
-        return Intent(context, MainActivity::class.java).apply {
+    private fun getIntent(notification: Notification): Intent {
+        return Intent(appContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(MainActivity.FIELD_LOCAL_NOTIFICATION, notification)
         }
     }
 
-    private fun buildNotification(id: Int, type: String, title: String, description: String) = Notification(
+    private fun buildNotification(
+        id: Int,
+        type: String,
+        title: String,
+        description: String,
+        data: String?
+    ) = Notification(
         noteId = id,
         tag = type,
         uniqueId = 0,
@@ -71,6 +79,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         noteTitle = title,
         noteMessage = description,
         noteType = LOCAL_REMINDER,
-        channelType = OTHER
+        channelType = OTHER,
+        data = data
     )
 }

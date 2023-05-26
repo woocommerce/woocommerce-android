@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
@@ -34,12 +38,22 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun PrivacyBannerScreen(viewModel: PrivacyBannerViewModel) {
-    val analyticsEnabled: Boolean by viewModel.analyticsEnabled.observeAsState(false)
-    PrivacyBannerScreen(analyticsEnabled)
+    val state: PrivacyBannerViewModel.State by viewModel.analyticsState.observeAsState(
+        PrivacyBannerViewModel.State(analyticsSwitchEnabled = false, loading = false)
+    )
+    PrivacyBannerScreen(
+        state,
+        viewModel::onSwitchChanged,
+        viewModel::onSavePressed
+    )
 }
 
 @Composable
-fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
+fun PrivacyBannerScreen(
+    state: PrivacyBannerViewModel.State,
+    onSwitchChanged: (Boolean) -> Unit,
+    onSavePressed: () -> Unit,
+) {
     Box(Modifier.background(MaterialTheme.colors.surface)) {
         Column(
             Modifier.padding(vertical = 16.dp)
@@ -60,7 +74,7 @@ fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .fillMaxWidth()
-                    .clickable { },
+                    .clickable { onSwitchChanged(!state.analyticsSwitchEnabled) },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -73,8 +87,8 @@ fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = MaterialTheme.colors.primary
                     ),
-                    checked = analyticsEnabled,
-                    onCheckedChange = {},
+                    checked = state.analyticsSwitchEnabled,
+                    onCheckedChange = { onSwitchChanged(it) },
                 )
             }
 
@@ -87,11 +101,12 @@ fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
             Row(
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = MaterialTheme.colors.surface,
                         contentColor = contentColorFor(MaterialTheme.colors.surface)
@@ -111,8 +126,8 @@ fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                 Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = { /*TODO*/ },
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    onClick = { onSavePressed() },
                     shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
                     colors = ButtonDefaults.buttonColors(
                         contentColor = Color.White,
@@ -125,7 +140,16 @@ fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
                         focusedElevation = 0.dp
                     ),
                 ) {
-                    Text(stringResource(R.string.privacy_banner_save))
+                    if (state.loading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier
+                                .size(24.dp),
+                            strokeWidth = 3.dp
+                        )
+                    } else {
+                        Text(stringResource(R.string.privacy_banner_save))
+                    }
                 }
             }
         }
@@ -149,6 +173,12 @@ private fun textAppearanceWooBody2() = TextStyle(
 @Composable
 private fun Default() {
     WooThemeWithBackground {
-        PrivacyBannerScreen(analyticsEnabled = true)
+        PrivacyBannerScreen(
+            state = PrivacyBannerViewModel.State(
+                analyticsSwitchEnabled = false,
+                loading = true
+            ),
+            {}, {}
+        )
     }
 }

@@ -64,7 +64,7 @@ class SitePickerViewModel @Inject constructor(
     private val unifiedLoginTracker: UnifiedLoginTracker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val experimentTracker: ExperimentTracker,
+    private val experimentTracker: ExperimentTracker
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -84,9 +84,6 @@ class SitePickerViewModel @Inject constructor(
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
-
-    val openedFromLogin: Boolean
-        get() = !navArgs.openedFromLogin
 
     init {
         when (navArgs.openedFromLogin) {

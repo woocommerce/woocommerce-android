@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
 
     private val viewModel: PrivacyBannerViewModel by viewModels()
+    private val mainViewModel: MainActivityViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,6 +26,27 @@ class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     PrivacyBannerScreen(viewModel)
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dialog?.apply {
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is PrivacyBannerViewModel.ShowError -> {
+                    mainViewModel.onPrivacyPreferenceUpdateFailed(event.requestedChange)
+                    dismiss()
+                }
+
+                is PrivacyBannerViewModel.Dismiss -> {
+                    dismiss()
                 }
             }
         }

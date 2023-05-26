@@ -503,6 +503,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
@@ -550,6 +551,7 @@
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
 
     <!--
         Domains
@@ -1308,6 +1310,7 @@
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
     <string name="card_reader_payment_reader_receipt_sent">A receipt has been sent to &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
     <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>
@@ -1939,6 +1942,7 @@
     <string name="privacy_banner_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
     <string name="privacy_banner_settings">Settings</string>
     <string name="privacy_banner_save">Save</string>
+    <string name="privacy_banner_error_save">There was an error saving your privacy choices.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
@@ -2229,6 +2233,7 @@
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
+    <string name="product_type_variation">Variation product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3286,4 +3291,16 @@
     <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
+
+    <!--
+    Local Notifications
+    -->
+    <string name="local_notification_store_creation_complete_title">🎉 Your store is ready!</string>
+    <string name="local_notification_store_creation_complete_description">Hi %1$s! Welcome to your 14-day free trial of Woo Express – everything you need to start and grow a successful online business, all in one place. Ready to explore?</string>
+    <string name="local_notification_without_free_trial_title">🛍️ Your store is waiting!</string>
+    <string name="local_notification_without_free_trial_description">Hi %1$s, %2$s is ready for you! Start your 14-day free trial of Woo Express right in just one click to start your online business.  </string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Time’s running out on your free trial!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
 </resources>
