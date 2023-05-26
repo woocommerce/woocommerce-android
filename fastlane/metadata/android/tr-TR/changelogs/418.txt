@@ -1,0 +1,2 @@
+13.7:
+Burada birçok heyecan verici güncelleme var! Hareket halindeyken sipariş oluşturabilir ve sipariş için indirim ekleyebilirsiniz! Ayrıca müşterilerinizin taratıp ödeme yapabileceği bir QR kodu oluşturarak hızlıca ödeme alabilirsiniz. Siz istediniz, biz de yaptık!

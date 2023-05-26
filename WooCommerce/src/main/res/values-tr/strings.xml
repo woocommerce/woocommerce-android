@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-17 15:54:03+0000
+Translation-Revision-Date: 2023-05-24 18:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Şu anda Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğeyi net bir şekilde açıklamanız gerekiyor. Örneğin, kıyafet gönderiyorsanız, açıklamanın kabul edilebilir olması için bunun ne tür bir kıyafet olduğunu (ör. erkek gömleği, kadın yeleği, erkek ceketi) belirtmeniz gerekiyor. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Desteğe Başvurun</string>
+    <string name="settings_close_account_active_stores_error_description">Aktif mağazaları olduğundan bu kullanıcı hesabı kapatılamıyor.</string>
+    <string name="settings_close_account_generic_error_description">Hesabınızı kapatmaya çalışırken bir hata oluştu.</string>
+    <string name="settings_close_account_error_dialog_title">Hesap kapatılamadı</string>
+    <string name="settings_close_account_dialog_loading_title">Hesap kapatılıyor…</string>
+    <string name="settings_close_account_dialog_confirm_button">Hesabı Kalıcı Olarak Kapat</string>
+    <string name="settings_close_account_dialog_description">Onaylamak için lütfen hesabı kapatmadan önce kullanıcı adınızı tekrar girin</string>
+    <string name="settings_close_account_dialog_title">Hesabı Kapatmayı Onayla</string>
+    <string name="settings_close_account">Hesabı Kapat</string>
+    <string name="scan_to_pay_title">QR taratın ve talimatları izleyin</string>
+    <string name="card_reader_type_selection_scan_to_pay">Ödemek İçin Tara</string>
+    <string name="order_creation_remove_coupon">Kuponu siparişten çıkar</string>
+    <string name="order_creation_coupon_codes">Kupon (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Kupon ekle</string>
     <string name="product_stock_status_insufficient_stock">Yetersiz stok</string>
     <string name="shipping_label_customs_item_description_too_short">Her öğe için net ve belirli bir açıklama sağlamanız gerekir.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Tarayıcı aracılığıyla ürün ekle</string>
     <string name="shipping_notice_dismiss">Kapat</string>
     <string name="shipping_notice_learn_more">Daha Fazla Bilgi Edinin</string>
-    <string name="shipping_notice_banner_content">Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğenin net ve özel bir açıklamasını sağlamalısınız. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
+    <string name="shipping_notice_banner_warning_content">Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğenin net ve özel bir açıklamasını sağlamalısınız. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Güncel kalın ve mağaza güvenliğini artırın. Jetpack\'i şimdi keşfedin.</string>
     <string name="jetpack_benefits_bottom_banner_title">Sipariş bildirimleri ve daha fazlasını alın</string>
     <string name="store_onboarding_setting_description">Mağaza kurulumu listesini göster veya gizle</string>
