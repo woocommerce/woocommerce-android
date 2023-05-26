@@ -184,7 +184,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
+            findNavController().navigateSafely(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToPrivacySettingsFragment(
+                    RequestedAnalyticsValue.NONE
+                )
+            )
         }
 
         binding.optionSendFeedback.setOnClickListener {

@@ -41,11 +41,21 @@ class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PrivacyBannerViewModel.ShowError -> {
-                    mainViewModel.onPrivacyPreferenceUpdateFailed(event.requestedChange)
+                    mainViewModel.onPrivacyPreferenceUpdateFailed(event.requestedAnalyticsValue)
                     dismiss()
                 }
 
                 is PrivacyBannerViewModel.Dismiss -> {
+                    dismiss()
+                }
+
+                is PrivacyBannerViewModel.ShowSettings -> {
+                    mainViewModel.onPrivacySettingsTapped()
+                    dismiss()
+                }
+
+                is PrivacyBannerViewModel.ShowErrorOnSettings -> {
+                    mainViewModel.onSettingsPrivacyPreferenceUpdateFailed(event.requestedAnalyticsValue)
                     dismiss()
                 }
             }
