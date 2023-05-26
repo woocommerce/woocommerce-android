@@ -33,27 +33,27 @@ class GoogleBarcodeFormatMapper @Inject constructor() {
         @Parcelize
         object FormatCodaBar : BarcodeFormat("codabar")
         @Parcelize
-        object FormatCode128 : BarcodeFormat("code 128")
+        object FormatCode128 : BarcodeFormat("code_128")
         @Parcelize
-        object FormatCode39 : BarcodeFormat("code 39")
+        object FormatCode39 : BarcodeFormat("code_39")
         @Parcelize
-        object FormatCode93 : BarcodeFormat("code 93")
+        object FormatCode93 : BarcodeFormat("code_93")
         @Parcelize
-        object FormatDataMatrix : BarcodeFormat("data matrix")
+        object FormatDataMatrix : BarcodeFormat("data_matrix")
         @Parcelize
-        object FormatEAN13 : BarcodeFormat("ean 13")
+        object FormatEAN13 : BarcodeFormat("ean_13")
         @Parcelize
-        object FormatEAN8 : BarcodeFormat("ean 8")
+        object FormatEAN8 : BarcodeFormat("ean_8")
         @Parcelize
         object FormatITF : BarcodeFormat("itf")
         @Parcelize
-        object FormatPDF417 : BarcodeFormat("pdf 417")
+        object FormatPDF417 : BarcodeFormat("pdf_417")
         @Parcelize
-        object FormatQRCode : BarcodeFormat("qr code")
+        object FormatQRCode : BarcodeFormat("qr_code")
         @Parcelize
-        object FormatUPCA : BarcodeFormat("upc a")
+        object FormatUPCA : BarcodeFormat("upc_a")
         @Parcelize
-        object FormatUPCE : BarcodeFormat("upc e")
+        object FormatUPCE : BarcodeFormat("upc_e")
         @Parcelize
         object FormatUnknown : BarcodeFormat("unknown")
     }
