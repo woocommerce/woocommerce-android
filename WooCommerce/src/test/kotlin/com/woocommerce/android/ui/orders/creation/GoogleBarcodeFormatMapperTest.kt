@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.google.mlkit.vision.barcode.common.Barcode as GoogleBarcode
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import com.google.mlkit.vision.barcode.common.Barcode as GoogleBarcode
 
 @ExperimentalCoroutinesApi
 class GoogleBarcodeFormatMapperTest : BaseUnitTest() {

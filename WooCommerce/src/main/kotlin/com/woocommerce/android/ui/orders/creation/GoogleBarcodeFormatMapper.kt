@@ -6,6 +6,7 @@ import javax.inject.Inject
 import com.google.mlkit.vision.barcode.common.Barcode as GoogleBarcode
 
 class GoogleBarcodeFormatMapper @Inject constructor() {
+    @Suppress("ComplexMethod")
     fun mapBarcodeFormat(format: Int): BarcodeFormat {
         return when (format) {
             GoogleBarcode.FORMAT_AZTEC -> BarcodeFormat.FormatAztec
