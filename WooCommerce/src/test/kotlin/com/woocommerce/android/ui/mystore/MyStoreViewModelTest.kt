@@ -10,7 +10,6 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
@@ -53,7 +52,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
-    private val onboardingRepository: StoreOnboardingRepository = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
 
@@ -472,7 +470,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
             myStoreTransactionLauncher,
-            onboardingRepository,
             localNotificationScheduler,
             shouldShowPrivacyBanner,
         )
