@@ -93,7 +93,7 @@ data class OrderData(
     val feeAmount = "\$$feeRaw"
     val taxesAmount = "\$$taxesRaw"
     val shippingAmount = "\$$shippingRaw"
-    val status = orderStatusMap[statusRaw]
+    val status = orderStatusMap.getOrDefault(statusRaw, statusRaw)
     val total = "\$$totalRaw"
 }
 

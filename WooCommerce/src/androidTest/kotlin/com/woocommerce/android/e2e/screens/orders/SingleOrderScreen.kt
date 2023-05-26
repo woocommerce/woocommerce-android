@@ -42,7 +42,7 @@ class SingleOrderScreen : Screen {
         ).check(ViewAssertions.matches(isDisplayed()))
     }
 
-    private fun assertOrderStatus(orderStatus: String?): SingleOrderScreen {
+    private fun assertOrderStatus(orderStatus: String): SingleOrderScreen {
         assertIdAndTextDisplayed(ORDER_STATUS_TAG, orderStatus)
         return this
     }
