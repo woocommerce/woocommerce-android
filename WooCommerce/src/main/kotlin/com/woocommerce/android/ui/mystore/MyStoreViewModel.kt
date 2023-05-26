@@ -63,6 +63,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -146,6 +147,7 @@ class MyStoreViewModel @Inject constructor(
             selectedSite.observe()
                 .filterNotNull()
                 .distinctUntilChanged { old, new -> new.id == old.id }
+                .filter { it.timezone != TimeZone.getDefault().rawOffset.toString() }
                 .onEach { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
         }
 
