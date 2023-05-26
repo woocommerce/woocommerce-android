@@ -42,6 +42,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
@@ -295,6 +296,7 @@ class OrderListViewModel @Inject constructor(
     private fun trackScanClickedEvent() {
         analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
+
     private fun startScan() {
         launch {
             codeScanner.startScan().collect { status ->
@@ -322,7 +324,12 @@ class OrderListViewModel @Inject constructor(
                                 KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
                             )
                         )
-                        triggerEvent(OrderListEvent.OnBarcodeScanned(status.code))
+                        triggerEvent(
+                            OrderListEvent.OnBarcodeScanned(
+                                status.code,
+                                status.format
+                            )
+                        )
                     }
                 }
             }
@@ -758,6 +765,7 @@ class OrderListViewModel @Inject constructor(
             val url: String,
             @StringRes val titleRes: Int,
         ) : OrderListEvent()
+
         data class ShowRetryErrorSnack(
             val message: String,
             val retry: View.OnClickListener
@@ -769,7 +777,10 @@ class OrderListViewModel @Inject constructor(
 
         data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
 
-        data class OnBarcodeScanned(val code: String) : OrderListEvent()
+        data class OnBarcodeScanned(
+            val code: String,
+            val barcodeFormat: BarcodeFormat
+        ) : OrderListEvent()
 
         data class OnAddingProductViaScanningFailed(
             val message: Int,

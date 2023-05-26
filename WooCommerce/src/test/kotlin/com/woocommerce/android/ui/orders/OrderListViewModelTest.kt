@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
@@ -970,7 +971,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when code scanner succeeds, then trigger proper event`() {
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
 
@@ -1046,14 +1047,16 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when code scanner succeeds, then trigger event with proper sku`() {
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
 
         viewModel = createViewModel()
         viewModel.onScanClicked()
 
-        assertThat(viewModel.event.value).isEqualTo(OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345"))
+        assertThat(viewModel.event.value).isEqualTo(
+            OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
+        )
     }
 
     @Test
@@ -1069,7 +1072,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when scan success, then track proper analytics event`() {
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
         viewModel = createViewModel()
@@ -1086,7 +1089,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when scan success, then track analytics event with proper source`() {
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
         viewModel = createViewModel()

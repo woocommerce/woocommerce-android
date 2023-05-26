@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -354,7 +355,7 @@ class OrderListFragment :
                     showIPPFeedbackDismissConfirmationDialog()
                 }
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
-                    openOrderCreationFragment(event.code)
+                    openOrderCreationFragment(event.code, event.barcodeFormat)
                 }
                 is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
                     uiMessageResolver.getRetrySnack(
@@ -465,13 +466,14 @@ class OrderListFragment :
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun openOrderCreationFragment(code: String? = null) {
+    private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
                 OrderCreateEditViewModel.Mode.Creation,
-                code
+                code,
+                barcodeFormat,
             )
         )
     }
