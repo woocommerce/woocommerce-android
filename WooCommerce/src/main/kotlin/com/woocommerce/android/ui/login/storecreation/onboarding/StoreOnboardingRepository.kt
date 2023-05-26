@@ -70,7 +70,9 @@ class StoreOnboardingRepository @Inject constructor(
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
-        task.type == LAUNCH_YOUR_STORE && selectedSite.get().publishedStatus == PUBLIC.value() && !selectedSite.get().isFreeTrial
+        task.type == LAUNCH_YOUR_STORE &&
+            selectedSite.get().publishedStatus == PUBLIC.value() &&
+            !selectedSite.get().isFreeTrial
 
     suspend fun launchStore(): LaunchStoreResult {
         WooLog.d(WooLog.T.ONBOARDING, "Launching store")
