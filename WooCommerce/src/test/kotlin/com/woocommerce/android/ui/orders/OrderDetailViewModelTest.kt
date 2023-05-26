@@ -1850,4 +1850,15 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
     }
+
+    @Test
+    fun `when the order is null then don't fetch gift cards summaries`() = testBlocking {
+        doReturn(null).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+        verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
 }
