@@ -15,15 +15,13 @@ import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStar
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.UPGRADES_SCREEN
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.sitepicker.SitePickerRepository
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +32,7 @@ class PlanUpgradeStartViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
     private val sitePlanRepository: SitePlanRepository,
-    private val sitePickerRepository: SitePickerRepository
+    private val wooCommerceStore: WooCommerceStore
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs: PlanUpgradeStartFragmentArgs by savedStateHandle.navArgs()
@@ -73,16 +71,9 @@ class PlanUpgradeStartViewModel @Inject constructor(
         if (url.contains(URL_TO_TRIGGER_EXIT, ignoreCase = true)) {
             tracks.track(AnalyticsEvent.PLAN_UPGRADE_SUCCESS, tracksProperties)
             launch {
-                sitePickerRepository.fetchWooCommerceSite(selectedSite.get())
-                    .fold(
-                        onFailure = {
-                            WooLog.d(
-                                T.WOO_TRIAL,
-                                "Failed to refresh site data after upgrading from trial to eCommerce plan"
-                            )
-                        },
-                        onSuccess = { selectedSite.set(it) }
-                    )
+                wooCommerceStore.fetchWooCommerceSite(selectedSite.get()).model?.let {
+                    selectedSite.set(it)
+                }
                 triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
             }
         }
