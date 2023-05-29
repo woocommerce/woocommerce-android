@@ -30,14 +30,15 @@ class OrderListScreen : Screen {
     }
 
     fun selectOrderById(orderId: Int): SingleOrderScreen {
-        Espresso.onView(
+        val orderToOpen = Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.orderNum),
                 ViewMatchers.withText("#$orderId")
             )
         )
-            .perform(ViewActions.click())
 
+        waitForElementToBeDisplayed(orderToOpen)
+        orderToOpen.perform(ViewActions.click())
         return SingleOrderScreen()
     }
 
