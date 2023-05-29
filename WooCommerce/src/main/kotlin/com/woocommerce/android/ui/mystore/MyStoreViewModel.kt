@@ -68,7 +68,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
@@ -351,7 +350,7 @@ class MyStoreViewModel @Inject constructor(
                 .filterNotNull()
                 .distinctUntilChanged { old, new -> new.id == old.id }
                 .filter { it.timezone != TimeZone.getDefault().rawOffset.toString() }
-                .onEach { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
+                .collect { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
         }
     }
 
