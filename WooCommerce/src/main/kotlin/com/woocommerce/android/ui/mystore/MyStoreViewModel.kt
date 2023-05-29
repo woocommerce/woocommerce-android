@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
@@ -349,7 +350,7 @@ class MyStoreViewModel @Inject constructor(
             selectedSite.observe()
                 .filterNotNull()
                 .distinctUntilChanged { old, new -> new.id == old.id }
-                .filter { it.timezone != TimeZone.getDefault().rawOffset.toString() }
+                .filter { it.timezone != TimeZone.getDefault().offsetInHours.toString() }
                 .collect { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
         }
     }
