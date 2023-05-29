@@ -16,17 +16,16 @@ class JitmStoreWrapper @Inject constructor(
     private val context: Context,
     private val gson: Gson,
     private val realStore: JitmStore,
+    private val wrapperData: JitmStoreWrapperData
 ) {
-    private val jsonFileName = BuildConfig.JITM_TESTING_JSON_FILE_NAME
-    private val isTestingModeEnabled = PackageUtils.isDebugBuild() && jsonFileName.isNotBlank()
-
     @Suppress("TooGenericExceptionCaught")
     suspend fun fetchJitmMessage(
         site: SiteModel,
         messagePath: String,
         query: String,
     ): WooResult<Array<JITMApiResponse>> {
-        return if (isTestingModeEnabled) {
+        return if (wrapperData.isTestingModeEnabled) {
+            val jsonFileName = wrapperData.jsonFileName
             delay(RESPONSE_DELAY)
             try {
                 WooLog.d(WooLog.T.JITM, "Using JITM JSON file: $jsonFileName")
@@ -45,8 +44,8 @@ class JitmStoreWrapper @Inject constructor(
         jitmId: String,
         featureClass: String,
     ): WooResult<Boolean> {
-        return if (isTestingModeEnabled) {
-            WooLog.d(WooLog.T.JITM, "Dissmissing JITM message in test mode")
+        return if (wrapperData.isTestingModeEnabled) {
+            WooLog.d(WooLog.T.JITM, "Dismissing JITM message in test mode")
             WooResult(true)
         } else {
             realStore.dismissJitmMessage(site, jitmId, featureClass)
@@ -61,4 +60,9 @@ class JitmStoreWrapper @Inject constructor(
     private companion object {
         private const val RESPONSE_DELAY = 1000L
     }
+}
+
+class JitmStoreWrapperData @Inject constructor() {
+    val jsonFileName = BuildConfig.JITM_TESTING_JSON_FILE_NAME
+    val isTestingModeEnabled = PackageUtils.isDebugBuild() && jsonFileName.isNotBlank()
 }
