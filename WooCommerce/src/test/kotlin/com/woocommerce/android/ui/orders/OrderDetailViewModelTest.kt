@@ -1853,12 +1853,19 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the order is null then don't fetch gift cards summaries`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
         doReturn(null).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(null).whenever(orderDetailRepository).fetchOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
         viewModel.start()
+
         verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
     }
 }
