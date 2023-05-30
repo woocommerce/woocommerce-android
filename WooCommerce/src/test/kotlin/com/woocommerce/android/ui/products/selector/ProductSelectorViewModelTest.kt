@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.NoVariableProductsWithNoVariations
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.OnlyPublishedProducts
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
@@ -122,7 +122,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             assertThat(state.products).isNotEmpty
             assertThat(
                 state.products.filter {
-                    (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
+                    it is ProductListItem &&
+                        (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
                         it.numVariations == 0
                 }
             ).isEmpty()
@@ -143,7 +144,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             assertThat(state.products).isNotEmpty
             assertThat(
                 state.products.filter {
-                    (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
+                    it is ProductListItem &&
+                        (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
                         it.numVariations == 0
                 }
             ).isEmpty()
@@ -250,7 +252,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val sut = createViewModel(navArgs)
 
         sut.onProductClick(
-            item = ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0),
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
         )
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED)
@@ -265,7 +267,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
-        val listItem = ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0)
+        val listItem = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE)
         sut.onProductClick(listItem, ProductSourceForTracking.ALPHABETICAL) // select
         sut.onProductClick(listItem, ProductSourceForTracking.ALPHABETICAL) // unselect
 
@@ -305,11 +307,11 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
             val sut = createViewModel(navArgs)
             sut.onProductClick(
-                item = ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0),
+                item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
                 productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
             )
             sut.onProductClick(
-                item = ProductListItem(2, "", ProductType.SIMPLE, numVariations = 0),
+                item = ProductListItem(productId = 2, numVariations = 0, title = "", type = ProductType.SIMPLE),
                 productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
             )
             sut.onDoneButtonClick()
@@ -358,7 +360,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         val sut = createViewModel(navArgs)
         sut.onProductClick(
-            item = ProductListItem(1, "", ProductType.VARIABLE, numVariations = 2),
+            item = ProductListItem(productId = 1, numVariations = 2, title = "", type = ProductType.VARIABLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
         )
 
@@ -386,7 +388,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         val sut = createViewModel(navArgs)
         sut.onProductClick(
-            item = ProductListItem(23, "", ProductType.VARIABLE_SUBSCRIPTION, numVariations = 2),
+            item = ProductListItem(
+                productId = 23,
+                title = "",
+                type = ProductType.VARIABLE_SUBSCRIPTION,
+                numVariations = 2
+            ),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
         )
 
@@ -1242,7 +1249,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private fun generateProductListItem(
         id: Long,
     ) = ProductListItem(
-        id = id,
+        productId = id,
         title = "",
         type = ProductType.SIMPLE,
         imageUrl = null,

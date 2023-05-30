@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorScreen
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
 import com.woocommerce.android.ui.products.selector.SelectionState
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
@@ -72,10 +73,10 @@ class ProductSelectorScreenTest {
         ).assertDoesNotExist()
     }
 
-    private fun generateProductList(): List<ProductSelectorViewModel.ProductListItem> {
+    private fun generateProductList(): List<ProductSelectorViewModel.ListItem> {
         return listOf(
-            ProductSelectorViewModel.ProductListItem(
-                id = 1,
+            ProductListItem(
+                productId = 1,
                 title = "Product 1",
                 type = ProductType.SIMPLE,
                 imageUrl = null,
@@ -85,8 +86,8 @@ class ProductSelectorScreenTest {
                 selectionState = SelectionState.SELECTED
             ),
 
-            ProductSelectorViewModel.ProductListItem(
-                id = 2,
+            ProductListItem(
+                productId = 2,
                 title = "Product 2",
                 type = ProductType.VARIABLE,
                 imageUrl = null,
@@ -96,8 +97,8 @@ class ProductSelectorScreenTest {
                 selectionState = SelectionState.PARTIALLY_SELECTED
             ),
 
-            ProductSelectorViewModel.ProductListItem(
-                id = 3,
+            ProductListItem(
+                productId = 3,
                 title = "Product 3",
                 type = ProductType.GROUPED,
                 imageUrl = "",
@@ -106,8 +107,8 @@ class ProductSelectorScreenTest {
                 sku = null
             ),
 
-            ProductSelectorViewModel.ProductListItem(
-                id = 4,
+            ProductListItem(
+                productId = 4,
                 title = "Product 4",
                 type = ProductType.GROUPED,
                 imageUrl = null,

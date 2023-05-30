@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListHandler @Inject constructor(private val repository: ProductSelectorRepository) {
@@ -21,6 +22,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private var canLoadMore = true
 
     private val searchQuery = MutableStateFlow("")
+    private val searchType = MutableStateFlow(SearchType.SKU)
     private val searchResults = MutableStateFlow(emptyList<Product>())
 
     private val productFilters = MutableStateFlow(mapOf<ProductFilterOption, String>())
@@ -37,18 +39,27 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     suspend fun loadFromCacheAndFetch(
         searchQuery: String = "",
         forceRefresh: Boolean = false,
-        filters: Map<ProductFilterOption, String> = emptyMap()
+        filters: Map<ProductFilterOption, String> = emptyMap(),
+        searchType: SearchType,
     ): Result<Unit> = mutex.withLock {
         offset = 0
         canLoadMore = true
         searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
+        this.searchType.value = searchType
         this.productFilters.value = filters
 
         return if (searchQuery.isNotEmpty()) {
-            searchInCache()
-            remoteSearch()
+            when (searchType) {
+                SearchType.DEFAULT -> {
+                    searchInCache()
+                    remoteSearch()
+                }
+                SearchType.SKU -> {
+                    remoteSearch()
+                }
+            }
         } else {
             if (forceRefresh) {
                 fetchProducts()
@@ -88,10 +99,16 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private suspend fun remoteSearch(): Result<Unit> {
+        val searchOptions = if (searchType.value == SearchType.SKU) {
+            SkuSearchOptions.PartialMatch
+        } else {
+            SkuSearchOptions.Disabled
+        }
         return repository.searchProducts(
             offset = offset,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
+            skuSearchOption = searchOptions
         ).onSuccess { result ->
             canLoadMore = result.canLoadMore
             offset += PAGE_SIZE
@@ -101,4 +118,8 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     private fun updateSearchResult(list: List<Product>, loadedProducts: List<Product>) =
         (list + loadedProducts).distinctBy { it.remoteId }
+
+    enum class SearchType {
+        DEFAULT, SKU
+    }
 }
