@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 09:54:04+0000
+Translation-Revision-Date: 2023-05-23 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Sekarang, pengiriman ke negara yang memberlakukan aturan bea cukai Uni Eropa (UE) mewajibkan Anda menguraikan setiap item. Contohnya, jika Anda mengirim pakaian, Anda harus menerangkan jenis pakaiannya (seperti, baju pria, rompi wanita, jaket pria) dalam deskripsinya untuk dapat diterima.  Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Hubungi Dukungan</string>
+    <string name="settings_close_account_active_stores_error_description">Akun ini tidak dapat ditutup jika memiliki toko aktif.</string>
+    <string name="settings_close_account_generic_error_description">Terjadi error saat mencoba menutup akun.</string>
+    <string name="settings_close_account_error_dialog_title">Tidak dapat menutup akun</string>
+    <string name="settings_close_account_dialog_loading_title">Menutup akun…</string>
+    <string name="settings_close_account_dialog_confirm_button">Tutup Akun Permanen</string>
+    <string name="settings_close_account_dialog_description">Untuk mengonfirmasi, silakan masukkan lagi nama pengguna Anda sebelum menutup.</string>
+    <string name="settings_close_account_dialog_title">Konfirmasi Penutupan Akun</string>
+    <string name="settings_close_account">Tutup Akun</string>
+    <string name="scan_to_pay_title">Pindai kode QR dan ikuti petunjuk</string>
+    <string name="card_reader_type_selection_scan_to_pay">Pindai untuk Membayar</string>
+    <string name="order_creation_remove_coupon">Hapus kupon dari pesanan</string>
+    <string name="order_creation_coupon_codes">Kupon (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Tambah kupon</string>
     <string name="product_stock_status_insufficient_stock">Stok tidak cukup</string>
     <string name="shipping_label_customs_item_description_too_short">Anda harus memberikan deskripsi yang spesifik dan jelas untuk tiap item.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Tambahkan produk-produk melalui pemindai</string>
     <string name="shipping_notice_dismiss">Tutup</string>
     <string name="shipping_notice_learn_more">Pelajari Selengkapnya</string>
-    <string name="shipping_notice_banner_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
+    <string name="shipping_notice_banner_warning_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Terus dapatkan pembaruan dan tingkatkan keamanan toko. Jelajahi Jetpack sekarang.</string>
     <string name="jetpack_benefits_bottom_banner_title">Dapatkan pemberitahuan pesanan dan aneka fitur lainnya</string>
     <string name="store_onboarding_setting_description">Tampilkan atau sembunyikan daftar penyiapan toko</string>

@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 14:54:03+0000
+Translation-Revision-Date: 2023-05-23 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송 시 모든 아이템을 명확하게 설명해야 합니다. 예를 들어, 의류를 발송하는 경우 설명이 수락될 수 있으려면 의류 유형을 표시해야 합니다(예: 남성용 셔츠, 여아용 조끼, 남아용 재킷). 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
+    <string name="settings_close_account_dialog_contact_support_button">지원 문의</string>
+    <string name="settings_close_account_active_stores_error_description">활성 스토어가 있는 동안에는 이 계정을 종료할 수 없습니다.</string>
+    <string name="settings_close_account_generic_error_description">계정 종료를 시도하는 동안 오류가 발생했습니다.</string>
+    <string name="settings_close_account_error_dialog_title">계정을 종료할 수 없음</string>
+    <string name="settings_close_account_dialog_loading_title">계정 종료 중…</string>
+    <string name="settings_close_account_dialog_confirm_button">영구적으로 계정 종료</string>
+    <string name="settings_close_account_dialog_description">확인하려면 종료하기 전에 사용자명을 다시 입력하세요.</string>
+    <string name="settings_close_account_dialog_title">계정 종료 확인</string>
+    <string name="settings_close_account">계정 종료</string>
+    <string name="scan_to_pay_title">QR 스캔 및 지침 따르기</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+    <string name="order_creation_remove_coupon">주문에서 쿠폰 제거</string>
+    <string name="order_creation_coupon_codes">쿠폰(%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">쿠폰 추가</string>
     <string name="product_stock_status_insufficient_stock">부족한 재고</string>
     <string name="shipping_label_customs_item_description_too_short">아이템마다 명확하고 구체적인 설명을 제공해야 합니다.</string>
     <string name="order_creation_add_product_via_barcode_scanning">스캐너를 통해 상품 추가</string>
     <string name="shipping_notice_dismiss">해제</string>
     <string name="shipping_notice_learn_more">더 알아보기</string>
-    <string name="shipping_notice_banner_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
+    <string name="shipping_notice_banner_warning_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">최신 상태로 유지하여 스토어 보안을 강화하세요. 지금 젯팩을 살펴보세요.</string>
     <string name="jetpack_benefits_bottom_banner_title">주문 알림 등 받기</string>
     <string name="store_onboarding_setting_description">스토어 설정 목록 표시 또는 숨기기</string>

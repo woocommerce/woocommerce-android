@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 11:54:03+0000
+Translation-Revision-Date: 2023-05-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">La spedizione in Paesi che seguono le regole doganali dell\'Unione europea (UE) ora richiede la descrizione chiara di ogni elemento. Ad esempio, se stai inviando capi di vestiario, devi indicare il tipo di abbigliamento (come camicie da uomo, gilet da ragazza, giacca da ragazzo) affinché la descrizione sia accettabile. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Contatta il supporto</string>
+    <string name="settings_close_account_active_stores_error_description">Questo account non può essere chiuso poiché ha acquisti attivi.</string>
+    <string name="settings_close_account_generic_error_description">Si è verificato un errore durante il tentativo di chiusura dell\'account.</string>
+    <string name="settings_close_account_error_dialog_title">Impossibile chiudere l\'account</string>
+    <string name="settings_close_account_dialog_loading_title">Chiusura dell\'account in corso…</string>
+    <string name="settings_close_account_dialog_confirm_button">Account chiuso in modo definitivo</string>
+    <string name="settings_close_account_dialog_description">Per confermare, inserisci nuovamente il nome utente prima di chiudere</string>
+    <string name="settings_close_account_dialog_title">Conferma account chiuso</string>
+    <string name="settings_close_account">Chiudi account</string>
+    <string name="scan_to_pay_title">Scansiona il QR e segui le istruzioni</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scansiona per pagare</string>
+    <string name="order_creation_remove_coupon">Rimuovi il codice promozionale dall\'ordine</string>
+    <string name="order_creation_coupon_codes">Codice promozionale (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Aggiungi codice promozionale</string>
     <string name="product_stock_status_insufficient_stock">Scorte non sufficienti</string>
     <string name="shipping_label_customs_item_description_too_short">Devi fornire una descrizione chiara e specifica per ogni elemento.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Aggiungi i prodotti tramite scanner</string>
     <string name="shipping_notice_dismiss">Ignora</string>
     <string name="shipping_notice_learn_more">Scopri di più</string>
-    <string name="shipping_notice_banner_content">Quando spedisci in Paesi che seguono le norme doganali dell\'Unione Europea (UE), devi fornire una descrizione chiara e specifica per ogni articolo. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
+    <string name="shipping_notice_banner_warning_content">Quando spedisci in Paesi che seguono le norme doganali dell\'Unione europea (UE), devi fornire una descrizione chiara e specifica per ogni elemento. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Resta aggiornato e aumenta la sicurezza del negozio. Esplora Jetpack ora.</string>
     <string name="jetpack_benefits_bottom_banner_title">Ricevi notifiche sugli ordini e altro ancora</string>
     <string name="store_onboarding_setting_description">Mostra o nascondi l\'elenco delle impostazioni del negozio</string>

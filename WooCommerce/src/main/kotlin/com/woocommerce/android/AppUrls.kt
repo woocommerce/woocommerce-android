@@ -15,6 +15,8 @@ object AppUrls {
 
     const val WOOCOMMERCE_UPGRADE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
+    const val WOOCOMMERCE_WEB_OPTIONS = "https://woocommerce.com/tracking-and-opt-outs/"
+    const val WOOCOMMERCE_USAGE_TRACKER = "https://woocommerce.com/usage-tracking/"
 
     const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/posts/reviews-woocommerce-best-practices/"
     const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"

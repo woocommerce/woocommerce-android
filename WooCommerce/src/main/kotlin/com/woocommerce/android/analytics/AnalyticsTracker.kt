@@ -199,6 +199,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FAILURE = "failure"
         const val KEY_IS_FREE_TRIAL = "is_free_trial"
         const val KEY_SCANNING_SOURCE = "source"
+        const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
         const val KEY_PRODUCT_ADDED_VIA = "added_via"
         const val KEY_SCANNING_FAILURE_REASON = "reason"
 
@@ -257,6 +258,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS = "milliseconds_since_order_add_new"
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
+
+        const val KEY_COUPONS_COUNT = "coupons_count"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),

@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_F
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -17,6 +18,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -76,12 +78,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     protected abstract val mode: OrderCreateEditViewModel.Mode
     protected abstract val sku: String
+    protected abstract val barcodeFormat: BarcodeFormat
 
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku).toSavedStateHandle()) {
+        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
@@ -353,7 +356,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
         var isUpdatingOrderDraft: Boolean? = null
@@ -372,7 +375,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -400,7 +403,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -437,7 +440,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -474,7 +477,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -506,7 +509,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -538,7 +541,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -573,7 +576,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -610,7 +613,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -639,7 +642,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -730,7 +733,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -752,7 +755,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -774,7 +777,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -798,7 +801,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -821,7 +824,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -864,7 +867,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -913,7 +916,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
 
@@ -930,7 +933,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
             }
         }
 
@@ -1022,7 +1025,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1055,7 +1058,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1090,7 +1093,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1115,7 +1118,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1131,6 +1134,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
@@ -1143,7 +1147,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1159,6 +1163,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
@@ -1171,7 +1176,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1195,6 +1200,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
                     KEY_SCANNING_FAILURE_REASON to
                         "Instead of specific variations, user tried to add parent variable product."
                 )
@@ -1208,7 +1214,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1224,6 +1230,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
@@ -1236,7 +1243,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(
@@ -1274,7 +1281,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
                 }
             }
             whenever(

@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 11:54:03+0000
+Translation-Revision-Date: 2023-05-23 15:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je elk artikel duidelijk beschrijven. Bijvoorbeeld, als je kleding verzendt moet je in de beschrijving duidelijk aangeven wat voor soort kleding het is (bijv. herenshirt, damesvest, kinderjas). Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Neem contact op met ondersteuning</string>
+    <string name="settings_close_account_active_stores_error_description">Dit account kan niet worden gesloten terwijl het actieve winkels heeft.</string>
+    <string name="settings_close_account_generic_error_description">Er is een fout opgetreden bij het sluiten van je account.</string>
+    <string name="settings_close_account_error_dialog_title">Het account kon niet gesloten worden</string>
+    <string name="settings_close_account_dialog_loading_title">Account aan het sluiten…</string>
+    <string name="settings_close_account_dialog_confirm_button">Sluit account permanent</string>
+    <string name="settings_close_account_dialog_description">Om te bevestigen, geef je voor het sluiten je gebruikersnaam opnieuw in</string>
+    <string name="settings_close_account_dialog_title">Bevestig sluiten account</string>
+    <string name="settings_close_account">Account sluiten</string>
+    <string name="scan_to_pay_title">Scan de QR-code en volg de instructies</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan om te betalen</string>
+    <string name="order_creation_remove_coupon">Coupon verwijderen uit bestelling</string>
+    <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Coupon toevoegen</string>
     <string name="product_stock_status_insufficient_stock">Onvoldoende voorraad</string>
     <string name="shipping_label_customs_item_description_too_short">Je moet voor elk item een duidelijke, specifieke beschrijving aanleveren.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Producten toevoegen via scanner</string>
     <string name="shipping_notice_dismiss">Afwijzen</string>
     <string name="shipping_notice_learn_more">Meer informatie</string>
-    <string name="shipping_notice_banner_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je een duidelijke, specifieke beschrijving van elk artikel opgeven. Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
+    <string name="shipping_notice_banner_warning_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je een duidelijke, specifieke beschrijving van elk artikel opgeven. Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Blijf op de hoogte en schroef winkelbeveiliging op. Ontdek Jetpack nu.</string>
     <string name="jetpack_benefits_bottom_banner_title">Ontvang meldingen van bestellingen en meer</string>
     <string name="store_onboarding_setting_description">Lijst voor configuratie van winkel weergeven of verbergen</string>

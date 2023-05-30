@@ -39,6 +39,19 @@ class PrivacySettingsRepository @Inject constructor(
         }
     }
 
+    suspend fun updateAccountSettings(): Result<Unit> {
+        val event: AccountStore.OnAccountChanged =
+            dispatcher.dispatchAndAwait(AccountActionBuilder.newFetchSettingsAction())
+
+        return when {
+            event.isError -> Result.failure(OnChangedException(event.error))
+            else -> {
+                analyticsTrackerWrapper.sendUsageStats = !accountStore.account.tracksOptOut
+                Result.success(Unit)
+            }
+        }
+    }
+
     fun isUserWPCOM(): Boolean {
         return accountStore.hasAccessToken()
     }

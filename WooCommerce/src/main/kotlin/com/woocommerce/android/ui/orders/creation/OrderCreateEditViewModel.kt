@@ -32,6 +32,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPONS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
@@ -45,6 +46,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
@@ -63,6 +65,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
@@ -189,8 +192,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 monitorOrderChanges()
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
-                if (args.sku.isNotNullOrEmpty()) {
-                    fetchProductBySKU(args.sku!!, ScanningSource.ORDER_LIST)
+                if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
+                    fetchProductBySKU(args.sku!!, args.barcodeFormat!!, ScanningSource.ORDER_LIST)
                 }
             }
             is Mode.Edit -> {
@@ -369,14 +372,18 @@ class OrderCreateEditViewModel @Inject constructor(
                             mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
                         )
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(status.code)
+                        fetchProductBySKU(status.code, status.format)
                     }
                 }
             }
         }
     }
 
-    private fun fetchProductBySKU(sku: String, source: ScanningSource = ScanningSource.ORDER_CREATION) {
+    private fun fetchProductBySKU(
+        sku: String,
+        barcodeFormat: BarcodeFormat,
+        source: ScanningSource = ScanningSource.ORDER_CREATION
+    ) {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
@@ -391,10 +398,11 @@ class OrderCreateEditViewModel @Inject constructor(
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
-                    addScannedProduct(product, selectedItems, source)
+                    addScannedProduct(product, selectedItems, source, barcodeFormat)
                 } ?: run {
                     trackProductSearchViaSKUFailureEvent(
                         source,
+                        barcodeFormat,
                         "Empty data response (no product found for the SKU)",
                     )
                     sendAddingProductsViaScanningFailedEvent(
@@ -404,6 +412,7 @@ class OrderCreateEditViewModel @Inject constructor(
             } ?: run {
                 trackProductSearchViaSKUFailureEvent(
                     source,
+                    barcodeFormat,
                     "Product search via SKU API call failed"
                 )
                 sendAddingProductsViaScanningFailedEvent(
@@ -416,7 +425,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
-        source: ScanningSource
+        source: ScanningSource,
+        barcodeFormat: BarcodeFormat
     ) {
         if (product.isVariable()) {
             if (product.parentId == 0L) {
@@ -425,6 +435,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
+                    barcodeFormat,
                     "Instead of specific variations, user tried to add parent variable product."
                 )
                 return
@@ -466,12 +477,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackProductSearchViaSKUFailureEvent(
         source: ScanningSource,
+        barcodeFormat: BarcodeFormat,
         message: String,
     ) {
         tracker.track(
             PRODUCT_SEARCH_VIA_SKU_FAILURE,
             mapOf(
                 KEY_SCANNING_SOURCE to source.source,
+                KEY_SCANNING_BARCODE_FORMAT to barcodeFormat.formatName,
                 KEY_SCANNING_FAILURE_REASON to message,
             )
         )
@@ -618,11 +631,12 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun trackOrderCreationSuccess() {
         tracker.track(
             ORDER_CREATION_SUCCESS,
-            mutableMapOf<String, String>().also { mutableMap ->
+            mutableMapOf<String, Any>().also { mutableMap ->
                 OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
                     mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] =
                         timeElapsed.toString()
                 }
+                mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
             }
         )
     }

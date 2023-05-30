@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-15 19:54:20+0000
+Translation-Revision-Date: 2023-05-23 13:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Отправляя товары в страны, которые следуют таможенным правилам Европейского союза (ЕС), вы теперь должны точно и понятно описать каждую позицию. Так, при отправке одежды необходимо указать её тип (например, мужские рубашки, жилет для девочки, куртка для мальчика), чтобы описание было приемлемым. В ином случае может произойти задержка или приостановка доставки на таможне.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Обратитесь в службу поддержки</string>
+    <string name="settings_close_account_active_stores_error_description">Эту учётную запись нельзя закрыть, пока в ней есть активные магазины.</string>
+    <string name="settings_close_account_generic_error_description">При попытке закрыть учётную запись произошла ошибка.</string>
+    <string name="settings_close_account_error_dialog_title">Не удалось закрыть учётную запись</string>
+    <string name="settings_close_account_dialog_loading_title">Закрытие учётной записи…</string>
+    <string name="settings_close_account_dialog_confirm_button">Навсегда закрыть учётную запись</string>
+    <string name="settings_close_account_dialog_description">Введите ваше имя пользователя для подтверждения закрытия</string>
+    <string name="settings_close_account_dialog_title">Подтвердите закрытие учётной записи</string>
+    <string name="settings_close_account">Закрыть учётную запись</string>
+    <string name="scan_to_pay_title">Сканируйте QR-код и следуйте инструкциям</string>
+    <string name="card_reader_type_selection_scan_to_pay">Сканируйте для оплаты</string>
+    <string name="order_creation_remove_coupon">Удалить купон из заказа</string>
+    <string name="order_creation_coupon_codes">Купон (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">–%1$s</string>
+    <string name="order_creation_add_coupon">Добавить купон</string>
     <string name="product_stock_status_insufficient_stock">Недостаточный запас</string>
     <string name="shipping_label_customs_item_description_too_short">Вы должны дать ясное, конкретное описание для каждого товара.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Добавить товары с помощью сканера</string>
     <string name="shipping_notice_dismiss">Закрыть</string>
     <string name="shipping_notice_learn_more">Подробнее</string>
-    <string name="shipping_notice_banner_content">Отправляя товары в страны, которые следуют таможенным правилам Европейского Союза (ЕС), вы должны точно и понятно описать каждую позицию. В ином случае может произойти задержка или приостановка доставки на таможне.</string>
+    <string name="shipping_notice_banner_warning_content">Отправляя товары в страны, которые следуют таможенным правилам Европейского Союза (ЕС), вы должны точно и понятно описать каждую позицию. В ином случае может произойти задержка или приостановка доставки на таможне.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Следите за обновлениями и повышайте безопасность магазина. Откройте возможности Jetpack.</string>
     <string name="jetpack_benefits_bottom_banner_title">Уведомления о заказах и многое другое</string>
     <string name="store_onboarding_setting_description">Показать или скрыть список действий по настройке магазина</string>

@@ -32,7 +32,8 @@ object WooLog {
         JITM,
         PLUGINS,
         IAP,
-        ONBOARDING
+        ONBOARDING,
+        WOO_TRIAL
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
