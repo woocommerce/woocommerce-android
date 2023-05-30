@@ -29,14 +29,13 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
-import org.wordpress.android.fluxc.store.JitmStore
 
 @ExperimentalCoroutinesApi
 class JitmViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = mock {
         on { get<String>(JITM_MESSAGE_PATH_KEY) }.thenReturn("woomobile:my_store:admin_notices")
     }
-    private val jitmStore: JitmStore = mock()
+    private val jitmStore: JitmStoreWrapper = mock()
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
     private val queryParamsEncoder: QueryParamsEncoder = mock {

@@ -1,0 +1,33 @@
+[
+  {
+    "content": {
+      "message": "In-person card payments",
+      "icon": "",
+      "iconPath": null,
+      "list": [],
+      "description": "Sell anywhere and take card or digital wallet payments using a mobile card reader.",
+      "classes": "",
+      "title": "",
+      "disclaimer": []
+    },
+    "CTA": {
+      "message": "Buy a card reader",
+      "hook": "",
+      "newWindow": true,
+      "primary": true,
+      "link": "https:\/\/woocommerce.com\/products\/hardware\/US"
+    },
+    "template": "default",
+    "ttl": 300,
+    "id": "woomobile_ipp_barcode_users",
+    "feature_class": "woomobile_ipp",
+    "expires": 3628800,
+    "max_dismissal": 2,
+    "activate_module": null,
+    "is_dismissible": true,
+    "is_user_created_by_partner": null,
+    "message_expiration": null,
+    "url": "https:\/\/jetpack.com\/redirect\/?source=jitm-woomobile_ipp_barcode_users&#038;site=paymentstest.mystagingwebsite.com&#038;u=4",
+    "jitm_stats_url": "https:\/\/pixel.wp.com\/b.gif?v=wpcom2&rand=d6e30334b77899a164af60f96d759457&x_jetpack-jitm=woomobile_ipp_barcode_users"
+  }
+]

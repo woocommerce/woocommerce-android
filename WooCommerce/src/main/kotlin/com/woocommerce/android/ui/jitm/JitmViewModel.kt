@@ -15,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
-import org.wordpress.android.fluxc.store.JitmStore
 import javax.inject.Inject
 
 private typealias Assets = Map<String, String>?
@@ -23,7 +22,7 @@ private typealias Assets = Map<String, String>?
 @HiltViewModel
 class JitmViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val jitmStore: JitmStore,
+    private val jitmStore: JitmStoreWrapper,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
     private val queryParamsEncoder: QueryParamsEncoder,

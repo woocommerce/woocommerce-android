@@ -411,6 +411,10 @@ android.buildTypes.all { buildType ->
             "IAP_TESTING_SANDBOX_URL",
             "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
 
+    buildConfigField "String",
+            "JITM_TESTING_JSON_FILE_NAME",
+            "\"${project.properties.getOrDefault('jitm_testing_json_file_name', '')}\""
+
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {
         tasks.copyGoogleServicesExampleFile.copy()
