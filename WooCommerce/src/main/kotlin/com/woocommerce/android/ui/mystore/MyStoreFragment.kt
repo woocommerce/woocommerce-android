@@ -496,7 +496,8 @@ class MyStoreFragment :
         // Show banners only if onboarding list is not displayed
         if (!binding.storeOnboardingView.isVisible && savedInstanceState == null) {
             childFragmentManager.beginTransaction()
-                .replace(R.id.jitmFragment,
+                .replace(
+                    R.id.jitmFragment,
                     JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
                     JITM_FRAGMENT_TAG
                 )

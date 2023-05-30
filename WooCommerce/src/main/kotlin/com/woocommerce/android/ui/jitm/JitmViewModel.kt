@@ -12,7 +12,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import javax.inject.Inject
 
@@ -24,7 +23,6 @@ class JitmViewModel @Inject constructor(
     private val jitmStore: JitmStoreWrapper,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
-    private val queryParamsEncoder: QueryParamsEncoder,
     private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val _jitmState: MutableLiveData<JitmState> = MutableLiveData()
@@ -43,28 +41,13 @@ class JitmViewModel @Inject constructor(
 
     private fun fetchJitms(jitmMessagePath: String) {
         launch {
-            val response = jitmStore.fetchJitmMessage(
-                selectedSite.get(),
-                jitmMessagePath,
-                queryParamsEncoder.getEncodedQueryParams(),
-            )
-            populateResultToUI(response, jitmMessagePath)
+            val response = jitmStore.fetchJitmMessage(jitmMessagePath)
+            populateResultToUI(response)
         }
     }
 
-    private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>, jitmMessagePath: String) {
-        if (response.isError) {
-            jitmTracker.trackJitmFetchFailure(utmSource, response.error.type, response.error.message)
-            WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $jitmMessagePath")
-            return
-        }
-
-        jitmTracker.trackJitmFetchSuccess(
-            utmSource,
-            response.model?.getOrNull(0)?.id,
-            response.model?.size
-        )
-        response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
+    private fun populateResultToUI(response: JITMApiResponse?) {
+        response?.let { model: JITMApiResponse ->
             jitmTracker.trackJitmDisplayed(
                 utmSource,
                 model.id,
@@ -122,7 +105,7 @@ class JitmViewModel @Inject constructor(
         _jitmState.value = JitmState.Hidden
         jitmTracker.trackJitmDismissTapped(utmSource, model.id, model.featureClass)
         launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), model.id, model.featureClass).also { response ->
+            jitmStore.dismissJitmMessage(messagePath, model.id, model.featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
                         jitmTracker.trackJitmDismissSuccess(

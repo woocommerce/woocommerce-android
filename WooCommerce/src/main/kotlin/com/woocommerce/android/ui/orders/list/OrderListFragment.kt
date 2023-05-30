@@ -447,7 +447,8 @@ class OrderListFragment :
     private fun initJitm(jitmEnabled: Boolean) {
         if (jitmEnabled) {
             childFragmentManager.beginTransaction()
-                .replace(R.id.jitmOrdersFragment,
+                .replace(
+                    R.id.jitmOrdersFragment,
                     JitmFragment.newInstance(JitmMessagePathsProvider.ORDER_LIST),
                     JITM_FRAGMENT_TAG
                 )
