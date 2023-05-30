@@ -7,7 +7,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
 import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -591,7 +590,28 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmFetchSuccess(
-                MyStoreViewModel.UTM_SOURCE, "12345", 1
+                UTM_SOURCE, "12345", 1
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success and message path, when viewmodel init, then jitm fetch success is tracked with correct properties`() {
+        testBlocking {
+            whenever(savedState.get<String>(JITM_MESSAGE_PATH_KEY)).thenReturn("a:b:c:d")
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse(id = "12345"))
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(jitmTracker).trackJitmFetchSuccess(
+                "b", "12345", 1
             )
         }
     }
@@ -615,7 +635,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmFetchSuccess(
-                MyStoreViewModel.UTM_SOURCE, "12345", 3
+                UTM_SOURCE, "12345", 3
             )
         }
     }
@@ -659,7 +679,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmDisplayed(
-                MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE, "12345", "woomobile_ipp"
             )
         }
     }
@@ -699,7 +719,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmFetchSuccess(
-                MyStoreViewModel.UTM_SOURCE, null, 0
+                UTM_SOURCE, null, 0
             )
         }
     }
@@ -745,7 +765,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             verify(jitmTracker).trackJitmFetchFailure(
-                MyStoreViewModel.UTM_SOURCE, WooErrorType.GENERIC_ERROR, "Generic error"
+                UTM_SOURCE, WooErrorType.GENERIC_ERROR, "Generic error"
             )
         }
     }
@@ -811,7 +831,7 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
-                MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE, "12345", "woomobile_ipp"
             )
         }
     }
@@ -857,7 +877,7 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
-                MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE, "12345", "woomobile_ipp"
             )
         }
     }
@@ -909,7 +929,7 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
-                MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
+                UTM_SOURCE, "12345", "woomobile_ipp"
             )
         }
     }
@@ -995,7 +1015,7 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp", WooErrorType.GENERIC_ERROR, "Generic error"
+                UTM_SOURCE, "12345", "woomobile_ipp", WooErrorType.GENERIC_ERROR, "Generic error"
             )
         }
     }
@@ -1023,7 +1043,7 @@ class JitmViewModelTest : BaseUnitTest() {
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp", null, null
+                UTM_SOURCE, "12345", "woomobile_ipp", null, null
             )
         }
     }
@@ -1090,5 +1110,6 @@ class JitmViewModelTest : BaseUnitTest() {
 
     private companion object {
         val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
+        const val UTM_SOURCE = "my_store"
     }
 }

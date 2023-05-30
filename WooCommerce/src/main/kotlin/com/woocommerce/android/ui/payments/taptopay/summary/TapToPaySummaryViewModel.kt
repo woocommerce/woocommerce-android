@@ -101,8 +101,13 @@ class TapToPaySummaryViewModel @Inject constructor(
             true,
         ).apply {
             if (!isError) {
+                analyticsTrackerWrapper.track(AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_SUCCESS)
                 showSuccessfulRefundNotification(order.id)
             } else {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_FAILED,
+                    mapOf(AnalyticsTracker.KEY_ERROR_DESC to this.error.message)
+                )
                 triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_refund_failed))
                 triggerEvent(NavigateToOrderDetails(order.id))
             }
