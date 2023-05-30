@@ -347,10 +347,12 @@ class MyStoreViewModel @Inject constructor(
 
     private fun observeStoreTimezoneChanges() {
         viewModelScope.launch {
+            val localTimeZoneOffset = TimeZone.getDefault().offsetInHours.toString()
+
             selectedSite.observe()
                 .filterNotNull()
                 .distinctUntilChanged { old, new -> new.id == old.id }
-                .filter { it.timezone != TimeZone.getDefault().offsetInHours.toString() }
+                .filter { it.timezone != localTimeZoneOffset }
                 .collect { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
         }
     }
