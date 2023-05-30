@@ -353,7 +353,15 @@ class MyStoreViewModel @Inject constructor(
                 .filterNotNull()
                 .distinctUntilChanged { old, new -> new.id == old.id }
                 .filter { it.timezone != localTimeZoneOffset }
-                .collect { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
+                .collect {
+                    analyticsTrackerWrapper.track(
+                        stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_STORE_TIMEZONE to it.timezone,
+                            AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
+                        )
+                    )
+                }
         }
     }
 
