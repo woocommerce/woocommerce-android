@@ -27,8 +27,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -42,15 +45,17 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
+import com.woocommerce.android.ui.compose.component.WCSelectableChip
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
@@ -69,7 +74,8 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
             onProductClick = viewModel::onProductClick,
             onLoadMore = viewModel::onLoadMore,
             onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick
+            onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
+            onSearchTypeChanged = viewModel::onSearchTypeChanged
         )
     }
 }
@@ -80,9 +86,10 @@ fun ProductSelectorScreen(
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onFilterButtonClick: () -> Unit,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
+    onSearchTypeChanged: (SearchType) -> Unit,
     onClearFiltersButtonClick: () -> Unit
 ) {
     Column(
@@ -91,17 +98,7 @@ fun ProductSelectorScreen(
             .background(MaterialTheme.colors.surface)
     ) {
         if (state.filterState.filterOptions.isEmpty()) {
-            WCSearchField(
-                value = state.searchQuery,
-                onValueChange = onSearchQueryChanged,
-                hint = stringResource(id = string.product_selector_search_hint),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = dimen.major_100),
-                        vertical = dimensionResource(id = dimen.minor_100)
-                    )
-            )
+            SearchLayout(state, onSearchQueryChanged, onSearchTypeChanged)
         }
 
         when {
@@ -115,6 +112,54 @@ fun ProductSelectorScreen(
             )
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
+        }
+    }
+}
+
+@Composable
+fun SearchLayout(
+    state: ViewState,
+    onSearchQueryChanged: (String) -> Unit,
+    onSearchTypeChanged: (SearchType) -> Unit
+) {
+    val isFocused = remember { mutableStateOf(false) }
+    Column {
+        WCSearchField(
+            value = state.searchQuery,
+            onValueChange = onSearchQueryChanged,
+            hint = stringResource(id = string.product_selector_search_hint),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = dimen.major_100),
+                    vertical = dimensionResource(id = dimen.minor_100)
+                )
+                .onFocusChanged { isFocused.value = it.isFocused },
+        )
+        if (isFocused.value) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = dimen.minor_100)),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                WCSelectableChip(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = dimen.minor_100))
+                        .weight(1f),
+                    onClick = { onSearchTypeChanged(SearchType.DEFAULT) },
+                    text = stringResource(id = string.product_search_all),
+                    isSelected = state.searchType == SearchType.DEFAULT
+                )
+                WCSelectableChip(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = dimen.minor_100))
+                        .weight(1f),
+                    onClick = { onSearchTypeChanged(SearchType.SKU) },
+                    text = stringResource(id = string.product_search_sku),
+                    isSelected = state.searchType == SearchType.SKU
+                )
+            }
         }
     }
 }
@@ -173,7 +218,7 @@ private fun EmptyProductList(
 @Composable
 private fun PopularProductsList(
     state: ViewState,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
 ) {
     displayProductsSection(
         type = ProductType.POPULAR,
@@ -185,7 +230,7 @@ private fun PopularProductsList(
 @Composable
 private fun RecentlySoldProductsList(
     state: ViewState,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
 ) {
     displayProductsSection(
         type = ProductType.RECENT,
@@ -198,7 +243,7 @@ private fun RecentlySoldProductsList(
 private fun displayProductsSection(
     type: ProductType,
     state: ViewState,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
 ) {
     val (productsList, heading, productSectionForTracking) = when (type) {
         ProductType.POPULAR -> Triple(
@@ -236,10 +281,10 @@ private fun displayProductsSection(
                 imageUrl = product.imageUrl,
                 infoLine1 = product.stockAndPrice,
                 infoLine2 = product.sku?.let {
-                    stringResource(string.product_selector_sku_value, product.sku)
+                    stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
-                isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
+                isArrowVisible = product.hasVariations(),
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description)
             ) {
@@ -267,7 +312,7 @@ private fun ProductList(
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onFilterButtonClick: () -> Unit,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -341,10 +386,10 @@ private fun ProductList(
                     imageUrl = product.imageUrl,
                     infoLine1 = product.stockAndPrice,
                     infoLine2 = product.sku?.let {
-                        stringResource(string.product_selector_sku_value, product.sku)
+                        stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
+                    isArrowVisible = product.hasVariations(),
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
@@ -392,6 +437,9 @@ private fun ProductList(
     }
 }
 
+private fun ListItem.hasVariations() =
+    this is ListItem.ProductListItem && type == VARIABLE && numVariations > 0
+
 @Composable
 @Suppress("MagicNumber")
 private fun ProductListSkeleton() {
@@ -438,8 +486,8 @@ private fun ProductListSkeleton() {
 @Suppress("MagicNumber")
 fun PopularProductsListPreview() {
     val products = listOf(
-        ProductListItem(
-            id = 1,
+        ListItem.ProductListItem(
+            productId = 1,
             title = "Product 1",
             type = SIMPLE,
             imageUrl = null,
@@ -449,8 +497,8 @@ fun PopularProductsListPreview() {
             selectionState = SELECTED
         ),
 
-        ProductListItem(
-            id = 2,
+        ListItem.ProductListItem(
+            productId = 2,
             title = "Product 2",
             type = VARIABLE,
             imageUrl = null,
@@ -460,8 +508,8 @@ fun PopularProductsListPreview() {
             selectionState = PARTIALLY_SELECTED
         ),
 
-        ProductListItem(
-            id = 3,
+        ListItem.ProductListItem(
+            productId = 3,
             title = "Product 3",
             type = GROUPED,
             imageUrl = "",
@@ -470,8 +518,8 @@ fun PopularProductsListPreview() {
             sku = null
         ),
 
-        ProductListItem(
-            id = 4,
+        ListItem.ProductListItem(
+            productId = 4,
             title = "Product 4",
             type = GROUPED,
             imageUrl = null,
@@ -505,8 +553,8 @@ fun PopularProductsListPreview() {
 @Suppress("MagicNumber")
 fun RecentProductsListPreview() {
     val products = listOf(
-        ProductListItem(
-            id = 1,
+        ListItem.ProductListItem(
+            productId = 1,
             title = "Product 1",
             type = SIMPLE,
             imageUrl = null,
@@ -516,8 +564,8 @@ fun RecentProductsListPreview() {
             selectionState = SELECTED
         ),
 
-        ProductListItem(
-            id = 2,
+        ListItem.ProductListItem(
+            productId = 2,
             title = "Product 2",
             type = VARIABLE,
             imageUrl = null,
@@ -527,8 +575,8 @@ fun RecentProductsListPreview() {
             selectionState = PARTIALLY_SELECTED
         ),
 
-        ProductListItem(
-            id = 3,
+        ListItem.ProductListItem(
+            productId = 3,
             title = "Product 3",
             type = GROUPED,
             imageUrl = "",
@@ -537,8 +585,8 @@ fun RecentProductsListPreview() {
             sku = null
         ),
 
-        ProductListItem(
-            id = 4,
+        ListItem.ProductListItem(
+            productId = 4,
             title = "Product 4",
             type = GROUPED,
             imageUrl = null,
@@ -571,8 +619,8 @@ fun RecentProductsListPreview() {
 @Suppress("MagicNumber")
 fun ProductListPreview() {
     val products = listOf(
-        ProductListItem(
-            id = 1,
+        ListItem.ProductListItem(
+            productId = 1,
             title = "Product 1",
             type = SIMPLE,
             imageUrl = null,
@@ -582,8 +630,8 @@ fun ProductListPreview() {
             selectionState = SELECTED
         ),
 
-        ProductListItem(
-            id = 2,
+        ListItem.ProductListItem(
+            productId = 2,
             title = "Product 2",
             type = VARIABLE,
             imageUrl = null,
@@ -593,8 +641,8 @@ fun ProductListPreview() {
             selectionState = PARTIALLY_SELECTED
         ),
 
-        ProductListItem(
-            id = 3,
+        ListItem.ProductListItem(
+            productId = 3,
             title = "Product 3",
             type = GROUPED,
             imageUrl = "",
@@ -603,8 +651,8 @@ fun ProductListPreview() {
             sku = null
         ),
 
-        ProductListItem(
-            id = 4,
+        ListItem.ProductListItem(
+            productId = 4,
             title = "Product 4",
             type = GROUPED,
             imageUrl = null,
@@ -653,4 +701,18 @@ fun ProductListEmptyPreview() {
 @Composable
 fun ProductListSkeletonPreview() {
     ProductListSkeleton()
+}
+@Preview
+@Composable
+fun SearchLayoutPreview() {
+    val state = ViewState(
+        products = emptyList(),
+        selectedItemsCount = 3,
+        loadingState = IDLE,
+        filterState = FilterState(),
+        searchQuery = "",
+        popularProducts = emptyList(),
+        recentProducts = emptyList(),
+    )
+    SearchLayout(state = state, onSearchQueryChanged = {}, onSearchTypeChanged = {})
 }
