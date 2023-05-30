@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.jitm
 
-import android.content.Context
-import com.google.gson.Gson
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -13,8 +11,6 @@ import org.wordpress.android.fluxc.store.JitmStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class JitmStoreWrapperTest : BaseUnitTest() {
-    private val context = mock<Context>()
-    private val gson = mock<Gson>()
     private val realStore = mock<JitmStore>()
 
     @Test
@@ -24,15 +20,18 @@ class JitmStoreWrapperTest : BaseUnitTest() {
             val site = mock<SiteModel>()
             val messagePath = "messagePath"
             val query = "query"
+            val jsonFile = "jsonFileName"
             val wrapperData = mock<JitmStoreWrapperData> {
                 on { isTestingModeEnabled }.thenReturn(true)
-                on { jsonFileName }.thenReturn("jsonFileName")
+                on { jsonFileName }.thenReturn(jsonFile)
+            }
+            val jsonReader: JitmStoreWrapperJsonReader = mock {
+                on { parseJsonFile(jsonFile) }.thenReturn(emptyArray())
             }
             val wrapper = JitmStoreWrapper(
-                context = context,
-                gson = gson,
                 realStore = realStore,
                 wrapperData = wrapperData,
+                jsonReader = jsonReader,
             )
 
             // WHEN
@@ -53,10 +52,9 @@ class JitmStoreWrapperTest : BaseUnitTest() {
                 on { isTestingModeEnabled }.thenReturn(false)
             }
             val wrapper = JitmStoreWrapper(
-                context = context,
-                gson = gson,
                 realStore = realStore,
                 wrapperData = wrapperData,
+                jsonReader = mock(),
             )
 
             // WHEN
@@ -75,13 +73,11 @@ class JitmStoreWrapperTest : BaseUnitTest() {
             val featureClass = "featureClass"
             val wrapperData = mock<JitmStoreWrapperData> {
                 on { isTestingModeEnabled }.thenReturn(true)
-                on { jsonFileName }.thenReturn("jsonFileName")
             }
             val wrapper = JitmStoreWrapper(
-                context = context,
-                gson = gson,
                 realStore = realStore,
                 wrapperData = wrapperData,
+                jsonReader = mock(),
             )
 
             // WHEN
@@ -102,10 +98,9 @@ class JitmStoreWrapperTest : BaseUnitTest() {
                 on { isTestingModeEnabled }.thenReturn(false)
             }
             val wrapper = JitmStoreWrapper(
-                context = context,
-                gson = gson,
                 realStore = realStore,
                 wrapperData = wrapperData,
+                jsonReader = mock()
             )
 
             // WHEN

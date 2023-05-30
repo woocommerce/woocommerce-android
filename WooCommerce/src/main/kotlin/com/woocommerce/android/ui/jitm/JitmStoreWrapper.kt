@@ -13,10 +13,9 @@ import org.wordpress.android.fluxc.store.JitmStore
 import javax.inject.Inject
 
 class JitmStoreWrapper @Inject constructor(
-    private val context: Context,
-    private val gson: Gson,
     private val realStore: JitmStore,
-    private val wrapperData: JitmStoreWrapperData
+    private val wrapperData: JitmStoreWrapperData,
+    private val jsonReader: JitmStoreWrapperJsonReader,
 ) {
     @Suppress("TooGenericExceptionCaught")
     suspend fun fetchJitmMessage(
@@ -29,7 +28,7 @@ class JitmStoreWrapper @Inject constructor(
             delay(RESPONSE_DELAY)
             try {
                 WooLog.d(WooLog.T.JITM, "Using JITM JSON file: $jsonFileName")
-                WooResult(parseJsonFile(jsonFileName))
+                WooResult(jsonReader.parseJsonFile(jsonFileName))
             } catch (e: Exception) {
                 WooLog.e(WooLog.T.JITM, e)
                 error("Failed to parse JITM JSON file: $jsonFileName")
@@ -52,13 +51,18 @@ class JitmStoreWrapper @Inject constructor(
         }
     }
 
-    private fun parseJsonFile(fileName: String): Array<JITMApiResponse>? {
-        val json = context.assets.open(fileName).bufferedReader().use { it.readText() }
-        return gson.fromJson(json, Array<JITMApiResponse>::class.java)
-    }
-
     private companion object {
         private const val RESPONSE_DELAY = 1000L
+    }
+}
+
+class JitmStoreWrapperJsonReader @Inject constructor(
+    private val context: Context,
+    private val gson: Gson,
+) {
+    fun parseJsonFile(fileName: String): Array<JITMApiResponse>? {
+        val json = context.assets.open(fileName).bufferedReader().use { it.readText() }
+        return gson.fromJson(json, Array<JITMApiResponse>::class.java)
     }
 }
 
