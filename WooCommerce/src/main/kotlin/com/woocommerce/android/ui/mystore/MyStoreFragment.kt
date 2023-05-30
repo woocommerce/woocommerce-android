@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
+import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -89,7 +90,6 @@ class MyStoreFragment :
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
 
-        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
@@ -496,7 +496,10 @@ class MyStoreFragment :
         // Show banners only if onboarding list is not displayed
         if (!binding.storeOnboardingView.isVisible && savedInstanceState == null) {
             childFragmentManager.beginTransaction()
-                .replace(R.id.jitmFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+                .replace(R.id.jitmFragment,
+                    JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
+                    JITM_FRAGMENT_TAG
+                )
                 .commit()
         }
     }
