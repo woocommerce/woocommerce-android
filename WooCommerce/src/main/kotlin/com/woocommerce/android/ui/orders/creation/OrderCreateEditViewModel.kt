@@ -207,8 +207,8 @@ class OrderCreateEditViewModel @Inject constructor(
                             multipleLinesContext = determineMultipleLinesContext(order)
                         )
                         monitorOrderChanges()
+                        updateCouponButtonVisibility(order)
                     }
-                    updateCouponButtonVisibility()
                 }
             }
         }
@@ -336,9 +336,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun updateCouponButtonVisibility() {
-        val orderHasItems = orderDraft.value?.hasProducts() ?: false
-        viewState = viewState.copy(isCouponButtonEnabled = orderHasItems)
+    private fun updateCouponButtonVisibility(order: Order) {
+        viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -708,7 +707,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }
-                            updateCouponButtonVisibility()
+                            updateCouponButtonVisibility(_orderDraft.value)
                         }
                     }
                 }
