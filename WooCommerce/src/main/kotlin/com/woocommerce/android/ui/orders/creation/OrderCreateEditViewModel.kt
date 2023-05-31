@@ -107,6 +107,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import kotlinx.coroutines.flow.updateAndGet
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -698,7 +699,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 isEditable = isOrderEditable(updateStatus),
                                 multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
-                            _orderDraft.update { currentDraft ->
+                            _orderDraft.updateAndGet { currentDraft ->
                                 if (mode is Mode.Creation) {
                                     // Once the order is synced, revert the auto-draft status and keep
                                     // the user's selected one
@@ -706,8 +707,9 @@ class OrderCreateEditViewModel @Inject constructor(
                                 } else {
                                     updateStatus.order
                                 }
+                            }.also {
+                                updateCouponButtonVisibility(it)
                             }
-                            updateCouponButtonVisibility(_orderDraft.value)
                         }
                     }
                 }
