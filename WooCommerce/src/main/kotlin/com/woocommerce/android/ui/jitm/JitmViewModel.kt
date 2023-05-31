@@ -20,7 +20,7 @@ private typealias Assets = Map<String, String>?
 @HiltViewModel
 class JitmViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val jitmStore: JitmStoreWrapper,
+    private val jitmStoreCache: JitmStoreInMemoryCache,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
     private val selectedSite: SelectedSite,
@@ -41,8 +41,8 @@ class JitmViewModel @Inject constructor(
 
     private fun fetchJitms(jitmMessagePath: String) {
         launch {
-            val response = jitmStore.fetchJitmMessage(jitmMessagePath)
-            populateResultToUI(response)
+            jitmStoreCache.getMessages(jitmMessagePath)
+                .collect { messages -> populateResultToUI(messages.firstOrNull()) }
         }
     }
 
@@ -105,7 +105,7 @@ class JitmViewModel @Inject constructor(
         _jitmState.value = JitmState.Hidden
         jitmTracker.trackJitmDismissTapped(utmSource, model.id, model.featureClass)
         launch {
-            jitmStore.dismissJitmMessage(messagePath, model.id, model.featureClass).also { response ->
+            jitmStoreCache.dismissJitmMessage(messagePath, model.id, model.featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
                         jitmTracker.trackJitmDismissSuccess(

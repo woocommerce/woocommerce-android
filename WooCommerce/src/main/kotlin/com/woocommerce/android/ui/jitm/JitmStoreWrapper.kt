@@ -6,34 +6,40 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.delay
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
+import org.wordpress.android.fluxc.store.JitmStore
 import javax.inject.Inject
 
 class JitmStoreWrapper @Inject constructor(
-    private val jitmStoreCache: JitmStoreInMemoryCache,
+    private val realStore: JitmStore,
     private val wrapperData: JitmStoreWrapperData,
     private val jsonReader: JitmStoreWrapperJsonReader,
 ) {
     @Suppress("TooGenericExceptionCaught")
-    suspend fun fetchJitmMessage(messagePath: String): JITMApiResponse? {
+    suspend fun fetchJitmMessage(
+        site: SiteModel,
+        messagePath: String,
+        query: String,
+    ): WooResult<Array<JITMApiResponse>> {
         return if (wrapperData.isTestingModeEnabled) {
             val jsonFileName = wrapperData.jsonFileName
             delay(RESPONSE_DELAY)
             try {
                 WooLog.d(WooLog.T.JITM, "Using JITM JSON file: $jsonFileName")
-                WooResult(jsonReader.parseJsonFile(jsonFileName)).model!!.first()
+                WooResult(jsonReader.parseJsonFile(jsonFileName))
             } catch (e: Exception) {
                 WooLog.e(WooLog.T.JITM, e)
                 error("Failed to parse JITM JSON file: $jsonFileName")
             }
         } else {
-            jitmStoreCache.getMessage(messagePath)
+            realStore.fetchJitmMessage(site, messagePath, query)
         }
     }
 
     suspend fun dismissJitmMessage(
-        messagePath: String,
+        site: SiteModel,
         jitmId: String,
         featureClass: String,
     ): WooResult<Boolean> {
@@ -41,7 +47,7 @@ class JitmStoreWrapper @Inject constructor(
             WooLog.d(WooLog.T.JITM, "Dismissing JITM message in test mode")
             WooResult(true)
         } else {
-            jitmStoreCache.dismissJitmMessage(messagePath, jitmId, featureClass)
+            realStore.dismissJitmMessage(site, jitmId, featureClass)
         }
     }
 

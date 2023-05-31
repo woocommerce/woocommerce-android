@@ -4,11 +4,13 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.supervisorScope
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
-import org.wordpress.android.fluxc.store.JitmStore
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,11 +19,11 @@ class JitmStoreInMemoryCache
 @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pathsProvider: JitmMessagePathsProvider,
-    private val jitmStore: JitmStore,
+    private val jitmStore: JitmStoreWrapper,
     private val queryParamsEncoder: QueryParamsEncoder,
     private val jitmTracker: JitmTracker,
 ) {
-    private val cache = ConcurrentHashMap<String, Array<JITMApiResponse>>()
+    private val cache = ConcurrentHashMap<String, MutableStateFlow<CopyOnWriteArrayList<JITMApiResponse>>>()
 
     suspend fun init() {
         if (!selectedSite.exists()) return
@@ -41,13 +43,9 @@ class JitmStoreInMemoryCache
         }
     }
 
-    fun getMessage(messagePath: String): JITMApiResponse? {
-        val cachedResponse = cache[messagePath]
-        val message = cachedResponse?.firstOrNull()
-        if (message == null) {
-            WooLog.e(WooLog.T.JITM, "Failed to get JITM message for path: $messagePath from cache")
-        }
-        return message
+    fun getMessages(messagePath: String): Flow<List<JITMApiResponse>> {
+        cache.putIfAbsent(messagePath, MutableStateFlow(CopyOnWriteArrayList()))
+        return cache[messagePath]!!
     }
 
     suspend fun dismissJitmMessage(messagePath: String, jitmId: String, featureClass: String): WooResult<Boolean> {
@@ -60,22 +58,21 @@ class JitmStoreInMemoryCache
     private fun handleResponse(path: String, response: WooResult<Array<JITMApiResponse>>) {
         val utmSource = path.split(":")[1]
         if (!response.isError) {
-            jitmTracker.trackJitmFetchSuccess(
-                utmSource,
-                response.model?.getOrNull(0)?.id,
-                response.model?.size
-            )
+            jitmTracker.trackJitmFetchSuccess(utmSource, response.model?.getOrNull(0)?.id, response.model?.size)
             WooLog.d(WooLog.T.JITM, "Successfully fetched ${response.model?.size} JITM messages for path: $path")
-            response.model?.let { cache[path] = it }
+            cache.putIfAbsent(path, MutableStateFlow(CopyOnWriteArrayList()))
+            response.model?.let {
+                cache[path]!!.value = CopyOnWriteArrayList(it.toList())
+            }
         } else {
-            jitmTracker.trackJitmFetchFailure(utmSource, response.error.type, response.error.message)
             WooLog.e(WooLog.T.JITM, "Failed to fetch JITM message for path: $path, error: ${response.error}")
+            jitmTracker.trackJitmFetchFailure(utmSource, response.error.type, response.error.message)
         }
     }
 
     private fun evictFirstMessage(messagePath: String) {
-        val jitmApiResponses = cache[messagePath]
-        if (jitmApiResponses.isNullOrEmpty()) return
-        cache[messagePath] = jitmApiResponses.copyOfRange(1, jitmApiResponses.size)
+        cache[messagePath]?.value?.let {
+            if (it.isNotEmpty()) it.removeAt(0)
+        }
     }
 }

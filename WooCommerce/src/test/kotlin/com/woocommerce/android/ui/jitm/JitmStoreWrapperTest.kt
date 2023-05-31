@@ -29,7 +29,7 @@ class JitmStoreWrapperTest : BaseUnitTest() {
                 on { parseJsonFile(jsonFile) }.thenReturn(emptyArray())
             }
             val wrapper = JitmStoreWrapper(
-                jitmStoreCache = realStore,
+                realStore = realStore,
                 wrapperData = wrapperData,
                 jsonReader = jsonReader,
             )
@@ -52,7 +52,7 @@ class JitmStoreWrapperTest : BaseUnitTest() {
                 on { isTestingModeEnabled }.thenReturn(false)
             }
             val wrapper = JitmStoreWrapper(
-                jitmStoreCache = realStore,
+                realStore = realStore,
                 wrapperData = wrapperData,
                 jsonReader = mock(),
             )
@@ -75,7 +75,7 @@ class JitmStoreWrapperTest : BaseUnitTest() {
                 on { isTestingModeEnabled }.thenReturn(true)
             }
             val wrapper = JitmStoreWrapper(
-                jitmStoreCache = realStore,
+                realStore = realStore,
                 wrapperData = wrapperData,
                 jsonReader = mock(),
             )
@@ -98,7 +98,7 @@ class JitmStoreWrapperTest : BaseUnitTest() {
                 on { isTestingModeEnabled }.thenReturn(false)
             }
             val wrapper = JitmStoreWrapper(
-                jitmStoreCache = realStore,
+                realStore = realStore,
                 wrapperData = wrapperData,
                 jsonReader = mock()
             )
