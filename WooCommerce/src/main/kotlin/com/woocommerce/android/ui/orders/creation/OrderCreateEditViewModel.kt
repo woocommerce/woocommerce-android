@@ -98,6 +98,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -107,7 +108,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import kotlinx.coroutines.flow.updateAndGet
 
 @HiltViewModel
 @Suppress("LargeClass")
