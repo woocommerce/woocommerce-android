@@ -41,8 +41,8 @@ class JitmViewModel @Inject constructor(
 
     private fun fetchJitms(jitmMessagePath: String) {
         launch {
-            jitmStoreCache.getMessages(jitmMessagePath)
-                .collect { messages -> populateResultToUI(messages.firstOrNull()) }
+            val messages = jitmStoreCache.getMessagesForPath(jitmMessagePath)
+            populateResultToUI(messages.firstOrNull())
         }
     }
 
