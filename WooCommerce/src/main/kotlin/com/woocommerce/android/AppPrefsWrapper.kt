@@ -170,21 +170,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
-    fun getPreLoginNotificationWorkRequestId() = AppPrefs.getLocalNotificationWorkRequestId()
-
-    fun setPreLoginNotificationWorkRequestId(workRequestId: String) =
-        AppPrefs.setLocalNotificationWorkRequestId(workRequestId)
-
-    fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
-
-    fun setPreLoginNotificationDisplayedType(notificationType: String) =
-        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
-
-    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
-
-    fun setPreLoginNotificationDisplayed(displayed: Boolean) =
-        AppPrefs.setPreLoginNotificationDisplayed(displayed)
-
     fun setLoginEmail(email: String) =
         AppPrefs.setLoginEmail(email)
 
@@ -348,4 +333,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
+
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
+
+    fun setCrashReportingEnabled(enabled: Boolean) {
+        AppPrefs.setCrashReportingEnabled(enabled)
+    }
 }

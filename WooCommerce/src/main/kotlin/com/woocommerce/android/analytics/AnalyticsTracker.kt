@@ -198,6 +198,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TAP = "tap"
         const val KEY_FAILURE = "failure"
         const val KEY_IS_FREE_TRIAL = "is_free_trial"
+        const val KEY_SCANNING_SOURCE = "source"
+        const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
+        const val KEY_PRODUCT_ADDED_VIA = "added_via"
+        const val KEY_SCANNING_FAILURE_REASON = "reason"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -254,6 +258,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS = "milliseconds_since_order_add_new"
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
+
+        const val KEY_COUPONS_COUNT = "coupons_count"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
@@ -364,7 +370,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
         const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
-        private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+        const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Product details
+        const val VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM = "product_form"
+        const val VALUE_SHARE_BUTTON_SOURCE_MORE_MENU = "more_menu"
 
         // -- Product Variations
         const val KEY_VARIATIONS_COUNT = "variations_count"
@@ -500,6 +510,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Free Trial
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
+        const val VALUE_NOTIFICATION = "notification"
 
         // -- Store Onboarding
         const val ONBOARDING_TASK_KEY = "task"

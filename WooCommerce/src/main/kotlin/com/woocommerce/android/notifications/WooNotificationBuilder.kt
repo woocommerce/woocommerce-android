@@ -67,6 +67,38 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
         }
     }
 
+    fun buildAndDisplayLocalNotification(
+        channelId: String,
+        notification: Notification,
+        notificationTappedIntent: Intent,
+        actions: List<Pair<String, Intent>> = emptyList()
+    ) {
+        val channelType = notification.channelType
+        getNotificationBuilder(channelId, notification).apply {
+            val notificationContentIntent =
+                buildPendingIntentForGivenIntent(notification.noteId, notificationTappedIntent)
+            setContentIntent(notificationContentIntent)
+            actions.forEach { action ->
+                addAction(
+                    R.drawable.ic_woo_w_notification,
+                    action.first,
+                    buildPendingIntentForGivenIntent(notification.noteId, action.second)
+                )
+            }
+            setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
+            // Call processing service when notification is dismissed
+            val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForLocalNotificationDismiss(
+                context, notification.noteId, notification.tag!!
+            )
+            setDeleteIntent(pendingDeleteIntent)
+            NotificationManagerCompat.from(context).notify(
+                notification.tag,
+                notification.noteId,
+                build()
+            )
+        }
+    }
+
     fun buildAndDisplayWooNotification(
         pushId: Int,
         defaults: Int,
@@ -137,7 +169,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     ) {
         try {
             // Call processing service when notification is dismissed
-            val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(
+            val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForPushNotificationDismiss(
                 context, pushId
             )
             builder.setDeleteIntent(pendingDeleteIntent)
@@ -197,6 +229,15 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
 
     private fun getChaChingUri(): Uri {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + R.raw.cha_ching)
+    }
+
+    private fun buildPendingIntentForGivenIntent(notificationLocalId: Int, intent: Intent): PendingIntent {
+        val flags = if (SystemVersionUtils.isAtLeastS()) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+        return PendingIntent.getActivity(context, notificationLocalId, intent, flags)
     }
 
     private fun getLargeIconBitmap(

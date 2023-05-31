@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 09:54:03+0000
+Translation-Revision-Date: 2023-05-23 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">如需運送至遵循歐盟 (EU) 海關規定的國家/地區，現在必須清楚描述每件商品。 舉例來說，若要寄送衣服，你必須指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊。 否則貨件可能會在海關階段延誤或中斷。</string>
+    <string name="settings_close_account_dialog_contact_support_button">聯絡支援團隊</string>
+    <string name="settings_close_account_active_stores_error_description">當此帳號具有啟用中的商店時，則無法關閉。</string>
+    <string name="settings_close_account_generic_error_description">嘗試關閉帳號時發生錯誤。</string>
+    <string name="settings_close_account_error_dialog_title">無法關閉帳號</string>
+    <string name="settings_close_account_dialog_loading_title">正在關閉帳號…</string>
+    <string name="settings_close_account_dialog_confirm_button">永久關閉帳號</string>
+    <string name="settings_close_account_dialog_description">為進行確認，請在關閉前重新輸入你的使用者名稱</string>
+    <string name="settings_close_account_dialog_title">確認關閉帳號</string>
+    <string name="settings_close_account">關閉帳號</string>
+    <string name="scan_to_pay_title">掃瞄 QR 碼並按照指示操作</string>
+    <string name="card_reader_type_selection_scan_to_pay">掃瞄付款</string>
+    <string name="order_creation_remove_coupon">從訂單移除優惠券</string>
+    <string name="order_creation_coupon_codes">優惠券 (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">新增優惠券</string>
+    <string name="product_stock_status_insufficient_stock">庫存不足</string>
+    <string name="shipping_label_customs_item_description_too_short">你必須針對每件商品提供清楚明確的說明。</string>
+    <string name="order_creation_add_product_via_barcode_scanning">透過掃瞄器新增商品</string>
     <string name="shipping_notice_dismiss">關閉</string>
     <string name="shipping_notice_learn_more">深入瞭解</string>
-    <string name="shipping_notice_banner_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
+    <string name="shipping_notice_banner_warning_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">保持最新狀態並提升商店安全性。 立即深入瞭解 Jetpack。</string>
     <string name="jetpack_benefits_bottom_banner_title">收到訂單通知等其他資訊</string>
     <string name="store_onboarding_setting_description">顯示或隱藏商店設定清單</string>
@@ -626,7 +645,6 @@ Language: zh_TW
     <string name="login_prologue_label_orders_subtitle">你可以快速輕鬆管理這些訂單</string>
     <string name="login_prologue_label_analytics_subtitle">我們知道這對你的業務相當重要</string>
     <string name="login_prologue_new_to_woo">第一次使用 WooCommerce</string>
-    <string name="notification_channel_pre_login_title">登入疑難排解提醒</string>
     <string name="tests_notification_new_order_message">你的 WooCommerce 商店有一筆 $50 的新訂單</string>
     <string name="tests_notification_new_order_title">你有新訂單！🎉</string>
     <string name="lines_all_details">詳細資訊</string>

@@ -184,7 +184,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
+            findNavController().navigateSafely(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToPrivacySettingsFragment(
+                    RequestedAnalyticsValue.NONE
+                )
+            )
         }
 
         binding.optionSendFeedback.setOnClickListener {
@@ -204,7 +208,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
-            // FIXME AMANDA tracks event
             showThemeChooser()
         }
 
@@ -214,6 +217,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
                 showDomainDashboard()
             }
+        }
+
+        binding.containerOptionCloseAccount.isVisible = presenter.isCloseAccountOptionVisible
+        binding.btnOptionCloseAccount.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_closeAccountDialogFragment)
         }
 
         presenter.setupAnnouncementOption()

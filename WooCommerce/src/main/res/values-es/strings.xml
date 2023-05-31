@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-08 16:54:04+0000
+Translation-Revision-Date: 2023-05-23 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Ahora, para hacer envíos a países en los que se aplica la normativa aduanera de la Unión Europea (UE), debes describir cada artículo con claridad. Por ejemplo, si envías ropa, para que se acepte la descripción, debes indicar el tipo de ropa del que se trata (camisas de hombre, chalecos para chicas, chaquetas para chicos, etc.). De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Contactar con el soporte técnico</string>
+    <string name="settings_close_account_active_stores_error_description">No es posible cerrar esta cuenta porque tiene tiendas activas.</string>
+    <string name="settings_close_account_generic_error_description">Se ha producido un error al intentar cerrar tu cuenta.</string>
+    <string name="settings_close_account_error_dialog_title">No se ha podido cerrar la cuenta</string>
+    <string name="settings_close_account_dialog_loading_title">Cerrando cuenta…</string>
+    <string name="settings_close_account_dialog_confirm_button">Cerrar cuenta permanentemente</string>
+    <string name="settings_close_account_dialog_description">Para confirmar, vuelve a introducir tu nombre de usuario antes de cerrarla</string>
+    <string name="settings_close_account_dialog_title">Confirmar el cierre de la cuenta</string>
+    <string name="settings_close_account">Cerrar cuenta</string>
+    <string name="scan_to_pay_title">Escanea el código QR y sigue las instrucciones</string>
+    <string name="card_reader_type_selection_scan_to_pay">Escanear para pagar</string>
+    <string name="order_creation_remove_coupon">Quitar cupón del pedido</string>
+    <string name="order_creation_coupon_codes">Cupón (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Añadir cupón</string>
+    <string name="product_stock_status_insufficient_stock">Existencias insuficientes</string>
+    <string name="shipping_label_customs_item_description_too_short">Debes proporcionar una descripción clara y específica de cada artículo.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Añade productos con el escáner</string>
     <string name="shipping_notice_dismiss">Descartar</string>
     <string name="shipping_notice_learn_more">Más información</string>
-    <string name="shipping_notice_banner_content">Para hacer envíos a países sujetos a las normas aduaneras de la Unión Europea (UE), debes proporcionar una descripción clara y específica de cada artículo. De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>
+    <string name="shipping_notice_banner_warning_content">Para hacer envíos a países sujetos a las normas aduaneras de la Unión Europea (UE), debes proporcionar una descripción clara y específica de cada artículo. De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Mantente al día y aumenta la seguridad de tu tienda. Explora Jetpack ahora.</string>
     <string name="jetpack_benefits_bottom_banner_title">Recibe notificaciones de pedidos y mucho más</string>
     <string name="store_onboarding_setting_description">Muestra u oculta la lista de configuración de la tienda.</string>
@@ -626,7 +645,6 @@ Language: es
     <string name="login_prologue_label_orders_subtitle">Puedes gestionarlos de forma rápida y sencilla</string>
     <string name="login_prologue_label_analytics_subtitle">Sabemos que es fundamental para tu negocio</string>
     <string name="login_prologue_new_to_woo">Nuevo en WooCommerce</string>
-    <string name="notification_channel_pre_login_title">Recordatorios de solución de problemas para iniciar sesión</string>
     <string name="tests_notification_new_order_message">Nuevo pedido de 50 $ en tu tienda de WooCommerce</string>
     <string name="tests_notification_new_order_title">Tienes un pedido nuevo 🎉</string>
     <string name="lines_all_details">los detalles</string>

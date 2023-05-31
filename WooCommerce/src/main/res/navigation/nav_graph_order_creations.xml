@@ -95,6 +95,14 @@
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <argument
+            android:name="sku"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="barcodeFormat"
+            app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+            app:nullable="true"/>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"

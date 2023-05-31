@@ -1,0 +1,2 @@
+13.7:
+Deze versie brengt veel spannende updates met zich mee! Je kunt overal bestellingen aanmaken en kortingen aan de bestellingen toevoegen! Je kunt ook gemakkelijk een betaling accepteren voor de bestelling door een QR-code te genereren. Je klanten kunnen deze scannen en op die manier betalen. Jullie vroegen ernaar en nu is de mogelijkheid er!

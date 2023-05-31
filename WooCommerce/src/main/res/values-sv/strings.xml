@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 13:54:20+0000
+Translation-Revision-Date: 2023-05-23 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Kontakta support</string>
+    <string name="settings_close_account_active_stores_error_description">Detta konto kan inte avslutas eftersom det har aktiva butiker.</string>
+    <string name="settings_close_account_generic_error_description">Ett fel inträffade vid försöket att avsluta ditt konto.</string>
+    <string name="settings_close_account_error_dialog_title">Det gick inte att avsluta kontot</string>
+    <string name="settings_close_account_dialog_loading_title">Avslutar kontot …</string>
+    <string name="settings_close_account_dialog_confirm_button">Avsluta kontot permanent</string>
+    <string name="settings_close_account_dialog_description">Bekräfta genom att skriva in ditt användarnamn innan kontot avslutas</string>
+    <string name="settings_close_account_dialog_title">Bekräfta kontoavslut</string>
+    <string name="settings_close_account">Avsluta kontot</string>
+    <string name="scan_to_pay_title">Skanna QR-koden och följ instruktionerna</string>
+    <string name="card_reader_type_selection_scan_to_pay">Skanna för att betala</string>
+    <string name="order_creation_remove_coupon">Ta bort rabattkod från beställning</string>
+    <string name="order_creation_coupon_codes">Rabattkod (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Lägg till rabattkod</string>
+    <string name="product_stock_status_insufficient_stock">Otillräckligt lager</string>
+    <string name="shipping_label_customs_item_description_too_short">Du måste ge en tydlig och specifik beskrivning av varje artikel.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Lägg till produkter via skanner</string>
     <string name="shipping_notice_dismiss">Avfärda</string>
     <string name="shipping_notice_learn_more">Lär dig mer</string>
-    <string name="shipping_notice_banner_content">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig, specifik beskrivning för varje vara. Annars kan leveranser försenas eller avbrytas i tullen.</string>
+    <string name="shipping_notice_banner_warning_content">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig, specifik beskrivning för varje vara. Annars kan leveranser försenas eller avbrytas i tullen.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Håll dig uppdaterad och öka butikssäkerheten. Utforska Jetpack nu.</string>
     <string name="jetpack_benefits_bottom_banner_title">Få beställningsaviseringar och mer</string>
     <string name="store_onboarding_setting_description">Visa eller dölj listan för butikskonfiguration</string>
@@ -626,7 +645,6 @@ Language: sv_SE
     <string name="login_prologue_label_orders_subtitle">Du kan hantera dem snabbt och enkelt</string>
     <string name="login_prologue_label_analytics_subtitle">Vi vet att det är viktigt för ditt företag</string>
     <string name="login_prologue_new_to_woo">Är WooCommerce nytt för dig?</string>
-    <string name="notification_channel_pre_login_title">Påminnelser om felsökning vid inloggning</string>
     <string name="tests_notification_new_order_message">Ny beställning för 50 USD i din WooCommerce-butik</string>
     <string name="tests_notification_new_order_title">Du har en ny beställning! 🎉</string>
     <string name="lines_all_details">detaljerna</string>

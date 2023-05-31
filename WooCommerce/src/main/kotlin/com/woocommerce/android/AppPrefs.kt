@@ -109,6 +109,7 @@ object AppPrefs {
         JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
+        HAS_SAVED_PRIVACY_SETTINGS,
     }
 
     /**
@@ -975,6 +976,16 @@ object AppPrefs {
     fun setCardReaderSuccessfulPaymentTime() {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
+
+    var savedPrivacySettings: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            value = value
+        )
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
         setString(

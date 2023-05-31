@@ -820,9 +820,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            val externalReaderFailedPaymentState = viewModel.viewStateData.value as BuiltInReaderFailedPaymentState
-            assertThat(externalReaderFailedPaymentState.primaryActionLabel).isEqualTo(R.string.support_contact)
-            assertThat(externalReaderFailedPaymentState.secondaryActionLabel).isEqualTo(R.string.cancel)
+            val state = viewModel.viewStateData.value as BuiltInReaderFailedPaymentState
+            assertThat(state.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(state.secondaryActionLabel).isEqualTo(R.string.cancel)
         }
 
     @Test
@@ -842,6 +842,22 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(events[0]).isInstanceOf(Exit::class.java)
             assertThat(events[1]).isInstanceOf(ContactSupport::class.java)
+        }
+
+    @Test
+    fun `when contact support clicked, then contact support event tracked`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig))
+                .thenReturn(PaymentFlowError.Declined.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).trackPaymentFailedContactSupportTapped()
         }
 
     @Test
@@ -4068,6 +4084,56 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             verify(cardReaderTrackingInfoKeeper, never()).setCardReaderBatteryLevel(anyFloat())
         }
 
+    @Test
+    fun `given ttp in progress and reader connected, when vm starts, then AppKilledWhileInBackground state emitted`() =
+        testBlocking {
+            val cardReader: CardReader = mock()
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            initViewModel(BUILT_IN, ("ttp_payment_in_progress" to true))
+
+            viewModel.start()
+
+            verify(tracker).trackPaymentFailed("VM killed when TTP activity in foreground")
+            val state = viewModel.viewStateData.value as BuiltInReaderFailedPaymentState
+            assertThat(state.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(state.secondaryActionLabel).isEqualTo(R.string.cancel)
+            assertThat(state.paymentStateLabel).isEqualTo(
+                UiStringRes(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground)
+            )
+            assertThat(state.hintLabel).isNull()
+        }
+
+    @Test
+    fun `given ttp not in progress and reader connected, when vm starts, then AppKilledWhileInBackground state not emitted`() =
+        testBlocking {
+            val cardReader: CardReader = mock()
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            initViewModel(BUILT_IN, ("ttp_payment_in_progress" to false))
+
+            viewModel.start()
+
+            verify(tracker, never()).trackPaymentFailed("VM killed when TTP activity in foreground")
+            assertThat(viewModel.viewStateData.value).isNotInstanceOf(BuiltInReaderFailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesnt start`() =
+        testBlocking {
+            val cardReader: CardReader = mock()
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            initViewModel(BUILT_IN, ("ttp_payment_in_progress" to true))
+
+            viewModel.start()
+
+            verify(cardReaderManager, never()).collectPayment(any())
+        }
+
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
             whenever(orderRepository.fetchOrderById(any())).doSuspendableAnswer {
@@ -4104,12 +4170,17 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         )
     }
 
-    private fun initViewModel(readerType: CardReaderType) {
+    private fun initViewModel(
+        readerType: CardReaderType,
+        savedStateValue: Pair<String, Any>? = null
+    ) {
         viewModel = CardReaderPaymentViewModel(
             CardReaderPaymentDialogFragmentArgs(
                 CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
                 readerType,
-            ).initSavedStateHandle(),
+            ).initSavedStateHandle().also {
+                if (savedStateValue != null) it[savedStateValue.first] = savedStateValue.second
+            },
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
             selectedSite = selectedSite,

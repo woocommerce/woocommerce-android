@@ -122,7 +122,8 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                     it.variationId ?: 0,
                     it.getAttributeList().map { attribute ->
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
-                    }
+                    },
+                    it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull()
                 )
             }
 

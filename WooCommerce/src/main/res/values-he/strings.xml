@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 15:54:03+0000
+Translation-Revision-Date: 2023-05-23 15:54:29+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">במשלוחים למדינות שעונות על כללי המכס של האיחוד האירופי חובה לספק כעת תיאור ברור וספציפי לגבי כל פריט. לדוגמה, אם המשלוח כולל בגדים, יש לציין את סוגי הבגדים במשלוח (למשל, חולצות גברים, אפודות של נשים, ג\'קטים של ילדים) כדי שהתיאור יענה על הדרישות. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
+    <string name="settings_close_account_dialog_contact_support_button">לפנות לתמיכה</string>
+    <string name="settings_close_account_active_stores_error_description">לא ניתן לסגור את החשבון כל עוד יש לו חנויות פעילות.</string>
+    <string name="settings_close_account_generic_error_description">אירעה שגיאה במהלך הניסיון לסגור את החשבון שלך.</string>
+    <string name="settings_close_account_error_dialog_title">לא ניתן היה לסגור את החשבון</string>
+    <string name="settings_close_account_dialog_loading_title">סוגר את החשבון…</string>
+    <string name="settings_close_account_dialog_confirm_button">לסגור את החשבון לצמיתות</string>
+    <string name="settings_close_account_dialog_description">לאישור, עליך להזין שוב את שם המשתמש שלך לפני הסגירה</string>
+    <string name="settings_close_account_dialog_title">לאשר את סגירת החשבון</string>
+    <string name="settings_close_account">לסגור את החשבון</string>
+    <string name="scan_to_pay_title">יש לסרוק את קוד ה-QR ולבצע את ההוראות</string>
+    <string name="card_reader_type_selection_scan_to_pay">לסרוק לתשלום</string>
+    <string name="order_creation_remove_coupon">להסיר את הקופון מההזמנה</string>
+    <string name="order_creation_coupon_codes">קופון (⁦%1$s⁩)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">להוסיף קופון</string>
+    <string name="product_stock_status_insufficient_stock">מלאי לא מספיק</string>
+    <string name="shipping_label_customs_item_description_too_short">עליך לספק תיאור ברור וספציפי לגבי כל פריט.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">להוסיף מוצרים דרך סורק</string>
     <string name="shipping_notice_dismiss">ביטול</string>
     <string name="shipping_notice_learn_more">למידע נוסף</string>
-    <string name="shipping_notice_banner_content">במשלוח למדינות שעונות על כללי המכס של האיחוד האירופי, עליך לספק תיאור ברור וספציפי לגבי כל פריט. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
+    <string name="shipping_notice_banner_warning_content">במשלוח למדינות שעונות על כללי המכס של האיחוד האירופי, עליך לספק תיאור ברור וספציפי לגבי כל פריט. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">לקבל עדכונים ולשפר את אבטחת החנות. לעיין ב-Jetpack כעת.</string>
     <string name="jetpack_benefits_bottom_banner_title">לקבל הודעות לגבי הזמנות ועוד</string>
     <string name="store_onboarding_setting_description">להציג או להסתיר את רשימת ההגדרות לחנות</string>
@@ -626,7 +645,6 @@ Language: he_IL
     <string name="login_prologue_label_orders_subtitle">אפשר לנסות את התשלומים בצורה מהירה ונוחה</string>
     <string name="login_prologue_label_analytics_subtitle">אנחנו יודעים שהאפשרות הזאת חיונית לעסק שלך</string>
     <string name="login_prologue_new_to_woo">פעם ראשונה ב-WooCommerce</string>
-    <string name="notification_channel_pre_login_title">תזכורות לגבי פתרון בעיות במהלך ההתחברות</string>
     <string name="tests_notification_new_order_message">הזמנה חדשה בסכום של 50 $ בחנות שלך ב-WooCommerce</string>
     <string name="tests_notification_new_order_title">יש לך הזמנה חדשה! 🎉</string>
     <string name="lines_all_details">הפרטים</string>

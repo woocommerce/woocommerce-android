@@ -12,8 +12,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -29,7 +32,9 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -73,10 +78,11 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
+    notificationScheduler: LocalNotificationScheduler,
+    shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        const val UTM_SOURCE = "my_store"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
@@ -92,6 +98,9 @@ class MyStoreViewModel @Inject constructor(
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
+
+    private var _appbarState = MutableLiveData<AppbarState>()
+    val appbarState: LiveData<AppbarState> = _appbarState
 
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -125,6 +134,22 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+
+        if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
+            shouldShowPrivacyBanner().let {
+                if (it) {
+                    triggerEvent(MyStoreEvent.ShowPrivacyBanner)
+                }
+            }
+        }
+
+        // A notification is only displayed when the store has never been opened before
+        notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
+        updateShareStoreButtonVisibility()
+    }
+
+    private fun updateShareStoreButtonVisibility() {
+        _appbarState.value = AppbarState(showShareStoreButton = selectedSite.get().isSitePublic)
     }
 
     override fun onCleared() {
@@ -173,6 +198,13 @@ class MyStoreViewModel @Inject constructor(
             else -> SelectionType.TODAY
         }
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
+    }
+
+    fun onShareStoreClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+        triggerEvent(
+            MyStoreEvent.ShareStore(storeUrl = selectedSite.get().url)
+        )
     }
 
     private suspend fun loadStoreStats(granularity: StatsGranularity) {
@@ -397,11 +429,19 @@ class MyStoreViewModel @Inject constructor(
         object AtLeastOne : OrderState()
     }
 
+    data class AppbarState(
+        val showShareStoreButton: Boolean = false,
+    )
+
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
+
+        object ShowPrivacyBanner : MyStoreEvent()
+
+        data class ShareStore(val storeUrl: String) : MyStoreEvent()
     }
 }

@@ -61,9 +61,11 @@ class OrderCreateEditFormFragment :
     MenuProvider {
     private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -192,32 +194,19 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        productsSection.setAddButtons(
-            if (isAddProductViaBarcodeScanningEnabled()) {
-                listOf(
-                    AddButton(
-                        text = getString(R.string.order_creation_add_products),
-                        onClickListener = {
-                            viewModel.onAddProductClicked()
-                        }
-                    ),
-                    AddButton(
-                        text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                        onClickListener = {
-                            viewModel.startScan()
-                        }
-                    )
-                )
-            } else {
-                listOf(
-                    AddButton(
-                        text = getString(R.string.order_creation_add_products),
-                        onClickListener = {
-                            viewModel.onAddProductClicked()
-                        }
-                    )
-                )
-            }
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = {
+                    viewModel.onScanClicked()
+                }
+            )
         )
     }
 
@@ -468,6 +457,13 @@ class OrderCreateEditFormFragment :
                     ).let { findNavController().navigateSafely(it) }
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             is ShowDialog -> event.showDialog()
+            is OnAddingProductViaScanningFailed -> {
+                uiMessageResolver.getRetrySnack(
+                    stringResId = event.message,
+                    isIndefinite = false,
+                    actionListener = event.retry
+                ).show()
+            }
             is Exit -> findNavController().navigateUp()
         }
     }

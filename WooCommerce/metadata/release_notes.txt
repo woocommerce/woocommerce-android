@@ -1,1 +1,1 @@
-Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Try it out and share your feedback!
+Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening!

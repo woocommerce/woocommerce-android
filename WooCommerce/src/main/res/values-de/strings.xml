@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-08 14:54:24+0000
+Translation-Revision-Date: 2023-05-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union (EU) unterliegen, musst du jeden Artikel ab sofort klar und deutlich beschreiben. Beispiel: Wenn du Bekleidung versendest, musst du die Art der Bekleidung angeben (z. B. Shirts für Männer, Weste für Mädchen, Jacke für Jungen), damit die Beschreibung akzeptiert wird. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Support kontaktieren</string>
+    <string name="settings_close_account_active_stores_error_description">Dieses Konto kann nicht geschlossen werden, solange es aktive Shops hat.</string>
+    <string name="settings_close_account_generic_error_description">Beim Versuch, dein Konto zu schließen, ist ein Fehler aufgetreten.</string>
+    <string name="settings_close_account_error_dialog_title">Konto konnte nicht geschlossen werden</string>
+    <string name="settings_close_account_dialog_loading_title">Konto wird geschlossen …</string>
+    <string name="settings_close_account_dialog_confirm_button">Konto dauerhaft schließen</string>
+    <string name="settings_close_account_dialog_description">Bitte gib den Benutzernamen vor dem Schließen erneut an, um den Vorgang zu bestätigen</string>
+    <string name="settings_close_account_dialog_title">Bestätige das Schließen des Kontos</string>
+    <string name="settings_close_account">Konto schließen</string>
+    <string name="scan_to_pay_title">Scanne den QR-Code und befolge die Anweisungen</string>
+    <string name="card_reader_type_selection_scan_to_pay">Zum Bezahlen scannen</string>
+    <string name="order_creation_remove_coupon">Gutschein aus Bestellung entfernen</string>
+    <string name="order_creation_coupon_codes">Gutschein (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Gutschein hinzufügen</string>
+    <string name="product_stock_status_insufficient_stock">Unzureichender Bestand</string>
+    <string name="shipping_label_customs_item_description_too_short">Gib bitte eine klare, spezifische Beschreibung aller Artikel an.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Produkte per Scanner hinzufügen</string>
     <string name="shipping_notice_dismiss">Schließen</string>
     <string name="shipping_notice_learn_more">Weitere Informationen</string>
-    <string name="shipping_notice_banner_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union unterliegen, musst du eine klare, spezifische Beschreibung aller Artikel angeben. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
+    <string name="shipping_notice_banner_warning_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union unterliegen, musst du eine klare, spezifische Beschreibung aller Artikel angeben. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Bleibe auf dem neuesten Stand und erhöhe die Sicherheit deines Shops. Sieh dir Jetpack jetzt an.</string>
     <string name="jetpack_benefits_bottom_banner_title">Erhalte Bestellbenachrichtigungen und vieles mehr</string>
     <string name="store_onboarding_setting_description">Checkliste für die Store-Einrichtung ein- oder ausblenden</string>
@@ -626,7 +645,6 @@ Language: de
     <string name="login_prologue_label_orders_subtitle">Du kannst sie leicht und einfach verwalten</string>
     <string name="login_prologue_label_analytics_subtitle">Wir wissen, dass dies wichtig für dein Geschäft ist</string>
     <string name="login_prologue_new_to_woo">Neu bei WooCommerce</string>
-    <string name="notification_channel_pre_login_title">Erinnerungen – Problembehandlung bei der Anmeldung</string>
     <string name="tests_notification_new_order_message">Neue Bestellung in Höhe von 50 US-Dollar in deinem WooCommerce-Shop</string>
     <string name="tests_notification_new_order_title">Du hast eine neue Bestellung! 🎉</string>
     <string name="lines_all_details">Details</string>

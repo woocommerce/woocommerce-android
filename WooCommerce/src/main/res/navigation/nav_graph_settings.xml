@@ -41,11 +41,25 @@
                 android:defaultValue="SETTINGS"
                 app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
         </action>
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_closeAccountDialogFragment"
+            app:destination="@id/closeAccountDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.PrivacySettingsFragment"
-        android:label="PrivacySettingsFragment" />
+        android:label="PrivacySettingsFragment">
+        <argument
+            android:name="requestedAnalyticsValue"
+            app:argType="com.woocommerce.android.ui.prefs.RequestedAnalyticsValue" />
+        <action
+            android:id="@+id/action_privacySettingsFragment_to_privacySettingsPolicesFragment"
+            app:destination="@id/privacySettingsPolicesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/privacySettingsPolicesFragment"
+        android:name="com.woocommerce.android.ui.prefs.PrivacySettingsPolicesFragment"
+        android:label="PrivacySettingsPolicesFragment" />
 
     <activity
         android:id="@+id/aboutActivity"
@@ -141,4 +155,8 @@
         android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
         android:label="DeveloperOptionsFragment" />
     <include app:graph="@navigation/nav_graph_domain_change" />
+    <dialog
+        android:id="@+id/closeAccountDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.CloseAccountDialogFragment"
+        android:label="CloseAccountDialogFragment" />
 </navigation>

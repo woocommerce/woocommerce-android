@@ -10,8 +10,6 @@
     <string name="notification_channel_review_title">Product review alerts</string>
     <string name="notification_channel_review_id" content_override="true" translatable="false">wooandroid_notification_channel_review_id</string>
     <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
-    <string name="notification_channel_pre_login_title">Login troubleshooting reminders</string>
-    <string name="notification_channel_pre_login_id" content_override="true" translatable="false">wooandroid_notification_channel_pre_login_id</string>
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" content_override="true" translatable="false">@string/notification_channel_general_id</string>
     <!--
@@ -101,6 +99,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="scan_barcode">Scan Barcode</string>
     <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>
@@ -504,6 +503,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
@@ -549,6 +549,9 @@
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
 
     <!--
         Domains
@@ -1307,6 +1310,7 @@
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
     <string name="card_reader_payment_reader_receipt_sent">A receipt has been sent to &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
     <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>
@@ -1907,6 +1911,15 @@
     <string name="beta_features_add_ons">View Add-ons</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
+    <string name="settings_close_account">Close Account</string>
+    <string name="settings_close_account_dialog_title">Confirm Close Account</string>
+    <string name="settings_close_account_dialog_description">To confirm, please re-enter your username before closing</string>
+    <string name="settings_close_account_dialog_confirm_button">Permanently Close Account</string>
+    <string name="settings_close_account_dialog_loading_title">Closing account…</string>
+    <string name="settings_close_account_error_dialog_title">Couldn\'t close account</string>
+    <string name="settings_close_account_generic_error_description">An error occurred while attempting to close your account.</string>
+    <string name="settings_close_account_active_stores_error_description">This account cannot be closed while it has active stores.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Contact Support</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
@@ -1923,7 +1936,35 @@
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_privacy_policy_ca">Privacy Notice for California Users</string>
+    <string name="settings_privacy_statement">We value your privacy. Your personal data is used to optimize our mobile apps, improve security, conduct analytics, and enhance your user experience.</string>
+    <string name="settings_tracking_header">Tracking</string>
+    <string name="settings_tracking_analytics">Analytics</string>
+    <string name="settings_tracking_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="settings_tracking_analytics_error_fetch">There was an error fetching your privacy settings</string>
+    <string name="settings_tracking_analytics_error_update">There was an error updating your privacy settings</string>
+    <string name="settings_more_privacy_options_header">More privacy options</string>
+    <string name="settings_web_options">Web Options</string>
+    <string name="settings_web_options_description">More privacy options available for woocommerce.com users. Check here to learn more.</string>
+    <string name="settings_usage_tracking">Usage Tracking</string>
+    <string name="settings_usage_tracking_description">Learn more about the data we collect about your store and your options to control this data sharing.</string>
+    <string name="settings_privacy_header">Privacy</string>
+    <string name="settings_privacy_cookies_polices">Privacy and Cookies Polices</string>
+    <string name="settings_privacy_cookies_polices_description">Learn more about our privacy and cookies policies.</string>
+    <string name="settings_reports_header">Reports</string>
+    <string name="settings_reports_report_crashes">Report Crashes</string>
+    <string name="settings_reports_report_crashes_description">To help us improve the app’s performance and fix the occasional bug, enable automatic crash report.</string>
+    <string name="privacy_banner_description">Your privacy is critically important to us and always has been. We use, store, and process your personal data to optimize our app (and your experience) in various ways. Some uses of your data we absolutely need in order to make things work, and others you can customize from your Settings.</string>
+    <string name="privacy_banner_title">Manage privacy</string>
+    <string name="privacy_banner_analytics">Analytics</string>
+    <string name="privacy_banner_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="privacy_banner_settings">Settings</string>
+    <string name="privacy_banner_save">Save</string>
+    <string name="privacy_banner_error_save">There was an error saving your privacy choices.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
+    <string name="settings_policies_privacy_policy">Privacy Policy</string>
+    <string name="settings_policies_privacy_policy_description">Your information helps us to improve our products, marketing, and personalize your experience on WooCommerce.</string>
+    <string name="settings_policies_cookie_policy">Cookie Policy</string>
+    <string name="settings_policies_cookie_policy_description">Our cookie policy explains how we and others use cookies and how you can manage them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
@@ -2213,6 +2254,7 @@
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
+    <string name="product_type_variation">Variation product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3270,4 +3312,16 @@
     <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
+
+    <!--
+    Local Notifications
+    -->
+    <string name="local_notification_store_creation_complete_title">🎉 Your store is ready!</string>
+    <string name="local_notification_store_creation_complete_description">Hi %1$s! Welcome to your 14-day free trial of Woo Express – everything you need to start and grow a successful online business, all in one place. Ready to explore?</string>
+    <string name="local_notification_without_free_trial_title">🛍️ Your store is waiting!</string>
+    <string name="local_notification_without_free_trial_description">Hi %1$s, %2$s is ready for you! Start your 14-day free trial of Woo Express right in just one click to start your online business.  </string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Time’s running out on your free trial!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
 </resources>

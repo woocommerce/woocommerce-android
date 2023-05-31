@@ -64,7 +64,7 @@ class SitePickerViewModel @Inject constructor(
     private val unifiedLoginTracker: UnifiedLoginTracker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val experimentTracker: ExperimentTracker,
+    private val experimentTracker: ExperimentTracker
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -84,9 +84,6 @@ class SitePickerViewModel @Inject constructor(
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
-
-    val shouldShowToolbar: Boolean
-        get() = !navArgs.openedFromLogin
 
     init {
         when (navArgs.openedFromLogin) {
@@ -178,7 +175,8 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isHelpBtnVisible = true,
             isSecondaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.continue_button)
+            primaryBtnText = resourceProvider.getString(string.continue_button),
+            toolbarTitle = ""
         )
     }
 
@@ -306,7 +304,8 @@ class SitePickerViewModel @Inject constructor(
             noStoresLabelText = resourceProvider.getString(string.login_no_stores_header),
             noStoresSubText = resourceProvider.getString(string.login_no_stores_subtitle),
             isNoStoresBtnVisible = false,
-            currentSitePickerState = SitePickerState.NoStoreState
+            currentSitePickerState = SitePickerState.NoStoreState,
+            showCloseAccountMenuItem = true
         )
     }
 
@@ -679,6 +678,7 @@ class SitePickerViewModel @Inject constructor(
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
         val isNoStoresBtnVisible: Boolean = false,
+        val showCloseAccountMenuItem: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
 

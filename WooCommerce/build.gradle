@@ -76,9 +76,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "13.6-rc-2"
+            versionName "13.8-rc-1"
         }
-        versionCode 415
+        versionCode 419
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -410,6 +410,10 @@ android.buildTypes.all { buildType ->
     buildConfigField "String",
             "IAP_TESTING_SANDBOX_URL",
             "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
+
+    buildConfigField "String",
+            "JITM_TESTING_JSON_FILE_NAME",
+            "\"${project.properties.getOrDefault('jitm_testing_json_file_name', '')}\""
 
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {
