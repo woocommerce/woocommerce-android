@@ -22,7 +22,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private var canLoadMore = true
 
     private val searchQuery = MutableStateFlow("")
-    private val searchType = MutableStateFlow(SearchType.SKU)
+    private val searchType = MutableStateFlow(SearchType.DEFAULT)
     private val searchResults = MutableStateFlow(emptyList<Product>())
 
     private val productFilters = MutableStateFlow(mapOf<ProductFilterOption, String>())
