@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
@@ -23,6 +25,7 @@ class JitmStoreInMemoryCache
     private val jitmStore: JitmStoreWrapper,
     private val queryParamsEncoder: QueryParamsEncoder,
     private val jitmTracker: JitmTracker,
+    private var appCoroutineScope: CoroutineScope
 ) {
     private val cache = ConcurrentHashMap<String, CopyOnWriteArrayList<JITMApiResponse>>()
 
@@ -30,10 +33,12 @@ class JitmStoreInMemoryCache
     private var cacheInitContinuation: Continuation<Unit>? = null
 
     @Volatile
-    private var isFetchingDone = false
+    private var initialisationStatus = InitStatus.NOT_STARTED
 
     suspend fun init() {
-        if (!selectedSite.exists() || isFetchingDone) return
+        if (!selectedSite.exists() || initialisationStatus != InitStatus.NOT_STARTED) return
+
+        initialisationStatus = InitStatus.STARTED
 
         supervisorScope {
             pathsProvider.paths.map { path ->
@@ -50,11 +55,23 @@ class JitmStoreInMemoryCache
         }
 
         cacheInitContinuation?.resume(Unit)
-        isFetchingDone = true
+        initialisationStatus = InitStatus.DONE
     }
 
     suspend fun getMessagesForPath(messagePath: String): List<JITMApiResponse> {
-        if (!isFetchingDone) suspendCoroutine { cacheInitContinuation = it }
+        WooLog.d(WooLog.T.JITM, "Getting JITM messages for path: $messagePath")
+        if (!selectedSite.exists()) return emptyList()
+
+        when (initialisationStatus) {
+            InitStatus.NOT_STARTED -> {
+                appCoroutineScope.launch { init() }
+                suspendCoroutine { cacheInitContinuation = it }
+            }
+            InitStatus.STARTED -> suspendCoroutine { cacheInitContinuation = it }
+            InitStatus.DONE -> {
+                // cache initialization is done, use it
+            }
+        }
         cache.putIfAbsent(messagePath, CopyOnWriteArrayList())
         return cache[messagePath]!!
     }
@@ -82,5 +99,9 @@ class JitmStoreInMemoryCache
 
     private fun evictFirstMessage(messagePath: String) {
         cache[messagePath]?.let { if (it.isNotEmpty()) it.removeAt(0) }
+    }
+
+    private enum class InitStatus {
+        NOT_STARTED, STARTED, DONE,
     }
 }
