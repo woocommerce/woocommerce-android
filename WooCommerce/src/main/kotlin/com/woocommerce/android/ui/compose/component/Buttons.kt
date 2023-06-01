@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -311,6 +313,7 @@ private fun ButtonsPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             WCColoredButton(onClick = {}) {
                 Text("Button")
@@ -371,12 +374,12 @@ private fun ButtonsPreview() {
 
             WCSelectableChip(
                 onClick = {},
-                text = "Selectable Button: selected",
+                text = "Selectable Chip: selected",
                 isSelected = true
             )
             WCSelectableChip(
                 onClick = {},
-                text = "Selectable Button",
+                text = "Selectable Chip: not selected",
                 isSelected = false
             )
         }
