@@ -49,9 +49,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
@@ -141,7 +139,7 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
-        observeStoreTimezoneChanges()
+        trackLocalTimezoneDifferenceFromStore()
 
         if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
             shouldShowPrivacyBanner().let {
@@ -330,23 +328,20 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    private fun observeStoreTimezoneChanges() {
+    private fun trackLocalTimezoneDifferenceFromStore() {
         viewModelScope.launch {
+            val siteTimeZoneOffset = selectedSite.getIfExists()?.timezone ?: return@launch
             val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
 
-            selectedSite.observe()
-                .filterNotNull()
-                .distinctUntilChanged { old, new -> new.id == old.id }
-                .filter { it.timezone != localTimeZoneOffset }
-                .collect {
-                    analyticsTrackerWrapper.track(
-                        stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-                        properties = mapOf(
-                            AnalyticsTracker.KEY_STORE_TIMEZONE to it.timezone,
-                            AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
-                        )
+            if (siteTimeZoneOffset != localTimeZoneOffset) {
+                analyticsTrackerWrapper.track(
+                    stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                    properties = mapOf(
+                        AnalyticsTracker.KEY_STORE_TIMEZONE to siteTimeZoneOffset,
+                        AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
                     )
-                }
+                )
+            }
         }
     }
 
