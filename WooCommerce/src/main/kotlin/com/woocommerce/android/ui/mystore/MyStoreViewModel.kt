@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -83,6 +84,7 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
+    private val timezoneProvider: TimezoneProvider,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -331,7 +333,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun observeStoreTimezoneChanges() {
         viewModelScope.launch {
-            val localTimeZoneOffset = TimeZone.getDefault().offsetInHours.toString()
+            val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
 
             selectedSite.observe()
                 .filterNotNull()
