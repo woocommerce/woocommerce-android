@@ -22,7 +22,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -425,7 +424,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the selected site changed, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
+    fun `given the viewModel started, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
         // Given
         val testSite = SiteModel().apply {
             timezone = "-3"
@@ -435,7 +434,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             on { rawOffset } doReturn 0
         }
 
-        whenever(selectedSite.observe()) doReturn flowOf(testSite)
+        whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
 
         // When
@@ -452,7 +451,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the selected site changed, when device and store timezones are the same, then do nothing`() = testBlocking {
+    fun `given the viewModel started, when device and store timezones are the same, then do nothing`() = testBlocking {
         // Given
         val testSite = SiteModel().apply {
             timezone = "0"
@@ -462,7 +461,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             on { rawOffset } doReturn 0
         }
 
-        whenever(selectedSite.observe()) doReturn flowOf(testSite)
+        whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
 
         // When
