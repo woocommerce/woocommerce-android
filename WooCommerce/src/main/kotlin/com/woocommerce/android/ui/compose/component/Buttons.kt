@@ -196,8 +196,13 @@ fun WCSelectableChip(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    selectedButtonColors: ButtonColors = ButtonDefaults.buttonColors(),
-    defaultButtonColors: ButtonColors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+    selectedButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        backgroundColor = colorResource(id = R.color.color_primary),
+        contentColor = colorResource(id = R.color.woo_white)
+    ),
+    defaultButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        backgroundColor = Color.Transparent,
+    ),
     isSelected: Boolean,
 ) {
     OutlinedButton(
