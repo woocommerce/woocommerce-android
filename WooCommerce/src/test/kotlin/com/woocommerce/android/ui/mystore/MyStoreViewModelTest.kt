@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.times
 
 @ExperimentalCoroutinesApi
 class MyStoreViewModelTest : BaseUnitTest() {
@@ -432,7 +433,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
         val deviceTimezone = mock<TimeZone> {
-            on { offsetInHours } doReturn 0
+            on { rawOffset } doReturn 0
         }
 
         whenever(selectedSite.observe()) doReturn flowOf(testSite)
@@ -453,7 +454,29 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given the selected site changed, when device and store timezones are the same, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "0"
+        }
 
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.observe()) doReturn flowOf(testSite)
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, times(0)).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
     }
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
