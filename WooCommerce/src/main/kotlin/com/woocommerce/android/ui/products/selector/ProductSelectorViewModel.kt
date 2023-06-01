@@ -515,11 +515,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onExternalBackPressInterceptRequest(): Boolean {
         return if (searchState.value.isActive) {
-            searchState.value = searchState.value.copy(
-                isActive = false,
-                searchQuery = "",
-                searchType = SearchType.DEFAULT
-            )
+            searchState.value = SearchState.EMPTY
             false
         } else {
             true
