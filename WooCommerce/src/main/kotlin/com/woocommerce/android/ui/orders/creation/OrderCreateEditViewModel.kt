@@ -404,7 +404,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 products.firstOrNull()?.let { product ->
                     addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
                 } ?: run {
-                    if (isBarcodeFormatUPC(barcodeOptions) && barcodeOptions.shouldHandleCheckDigitOnFailure) {
+                    if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
                         val skuWithoutCheckDigit = checkDigitRemover.getSKUWithoutCheckDigit(
                             barcodeOptions.sku
@@ -438,6 +438,9 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
+
+    private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
+        isBarcodeFormatUPC(barcodeOptions) && barcodeOptions.shouldHandleCheckDigitOnFailure
 
     private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
