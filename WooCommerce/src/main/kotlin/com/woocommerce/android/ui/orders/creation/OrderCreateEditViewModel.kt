@@ -194,6 +194,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
                 if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
+                    viewState = viewState.copy(isUpdatingOrderDraft = true)
                     fetchProductBySKU(
                         BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
                         ScanningSource.ORDER_LIST
