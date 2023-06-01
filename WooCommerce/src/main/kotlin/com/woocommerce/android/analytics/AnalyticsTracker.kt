@@ -312,6 +312,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
 
+        const val KEY_STORE_TIMEZONE = "store_timezone"
+        const val KEY_LOCAL_TIMEZONE = "local_timezone"
+
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
 
