@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -43,8 +46,22 @@ fun FirstProductCelebrationScreen(
                 .padding(top = dimensionResource(id = R.dimen.major_350))
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = stringResource(id = R.string.first_product_celebration_title),
+                style = MaterialTheme.typography.h4,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+
+            Text(
+                text = stringResource(id = R.string.first_product_celebration_body_message),
+                style = MaterialTheme.typography.subtitle1,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+
             WCColoredButton(onClick = onShareClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.share))
+                Text(text = stringResource(R.string.share_product))
             }
         }
     }

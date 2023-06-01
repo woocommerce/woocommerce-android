@@ -3301,4 +3301,13 @@
     <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
+
+    <!--
+    First product published congratulatory feature
+    -->
+    <string name="first_product_celebration_title">First product created 🎉</string>
+    <string name="first_product_celebration_body_message">Congratulations! You\'re one step closer to get the new store ready.</string>
+    <string name="share_product">Share product</string>
+
+
 </resources>
