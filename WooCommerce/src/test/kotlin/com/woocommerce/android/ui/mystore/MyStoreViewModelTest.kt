@@ -31,7 +31,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -468,7 +467,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
 
         // Then
-        verify(analyticsTrackerWrapper, times(0)).track(
+        verify(analyticsTrackerWrapper, never()).track(
             stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
             properties = mapOf(
                 AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
@@ -494,7 +493,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
 
         // Then
-        verify(analyticsTrackerWrapper, times(0)).track(
+        verify(analyticsTrackerWrapper, never()).track(
             stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
             properties = mapOf(
                 AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
