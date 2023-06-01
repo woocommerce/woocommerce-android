@@ -1417,6 +1417,49 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
