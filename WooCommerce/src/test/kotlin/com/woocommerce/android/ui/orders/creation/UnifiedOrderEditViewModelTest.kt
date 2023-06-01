@@ -1344,6 +1344,39 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.onScanClicked()
+
+            assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

@@ -404,6 +404,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
                 } ?: run {
                     if (isBarcodeFormatUPC(barcodeOptions) || barcodeOptions.shouldHandleCheckDigitOnFailure) {
+                        viewState = viewState.copy(isUpdatingOrderDraft = true)
                         val skuWithoutCheckDigit = checkDigitRemover.getSKUWithoutCheckDigit(
                             barcodeOptions.sku
                         )
