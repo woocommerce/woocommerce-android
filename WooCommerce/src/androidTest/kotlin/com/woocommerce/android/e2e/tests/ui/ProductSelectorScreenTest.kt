@@ -30,7 +30,7 @@ class ProductSelectorScreenTest {
                     recentProducts = emptyList(),
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
-                    searchQuery = ""
+                    searchState = ProductSelectorViewModel.SearchState.EMPTY
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
@@ -57,7 +57,7 @@ class ProductSelectorScreenTest {
                     recentProducts = emptyList(),
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
-                    searchQuery = ""
+                    searchState = ProductSelectorViewModel.SearchState.EMPTY
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
