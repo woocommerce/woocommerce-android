@@ -40,6 +40,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -1375,6 +1376,45 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.onScanClicked()
 
             assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing toe fetch product information second time`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemover, times(1)).getSKUWithoutCheckDigit(skuWithCheckDigitRemoved)
+            verify(productListRepository, times(1)).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
         }
     }
     //endregion
