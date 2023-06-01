@@ -6,6 +6,8 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.offsetInHours
+import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -15,8 +17,10 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.util.TimeZone
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
@@ -37,6 +41,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.flowOf
+import org.mockito.kotlin.doReturn
 
 @ExperimentalCoroutinesApi
 class MyStoreViewModelTest : BaseUnitTest() {
@@ -54,6 +60,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
+    private val timezoneProvider: TimezoneProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -419,7 +426,29 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given the selected site changed, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+        }
 
+        val deviceTimezone = mock<TimeZone> {
+            on { offsetInHours } doReturn 0
+        }
+
+        whenever(selectedSite.observe()) doReturn flowOf(testSite)
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
     }
 
     @Test
@@ -480,6 +509,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
             myStoreTransactionLauncher,
+            timezoneProvider,
             localNotificationScheduler,
             shouldShowPrivacyBanner,
         )
