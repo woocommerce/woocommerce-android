@@ -22,10 +22,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-
-        if (project.hasProperty("stripe_repo_url")) {
-            maven { url project.property("stripe_repo_url") }
-        }
     }
 
     tasks.withType(KotlinCompile).all {
@@ -121,7 +117,7 @@ ext {
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
-    stripeTerminalVersion = '2.19.0'
+    stripeTerminalVersion = '2.20.1'
 
     // Apache
     commonsText = '1.10.0'
