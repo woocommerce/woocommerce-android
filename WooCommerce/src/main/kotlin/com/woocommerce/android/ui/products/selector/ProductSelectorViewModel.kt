@@ -292,49 +292,70 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        if (item is ProductListItem) {
-            if (item.isVariable() && item.numVariations > 0) {
-                triggerEvent(
-                    NavigateToVariationSelector(
-                        item.id,
-                        item.selectedVariationIds,
-                        productSelectorFlow,
-                        productSource
+        when (item) {
+            is ProductListItem -> {
+                if (item.hasVariations()) {
+                    triggerEvent(
+                        NavigateToVariationSelector(
+                            item.id,
+                            item.selectedVariationIds,
+                            productSelectorFlow,
+                            productSource
+                        )
                     )
-                )
-            } else if (!item.isVariable()) {
-                selectedItems.update { items ->
-                    val selectedProductItems = items.filter {
-                        it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
-                    }
-                    if (selectedProductItems.map { it.id }.contains(item.id)) {
-                        tracker.trackItemUnselected(productSelectorFlow)
-                        selectedItemsSource.remove(item.id)
-                        val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
-                        selectedItems.value - productItemToUnselect
-                    } else {
-                        selectedItemsSource[item.id] = productSource
-                        tracker.trackItemSelected(productSelectorFlow)
-                        selectedItems.value + SelectedItem.Product(item.id)
-                    }
+                } else if (!item.isVariable()) {
+                    handleNonVariableProductItemTap(item, productSource)
                 }
             }
-        } else if (item is ListItem.VariationListItem) { // variation can be displayed in search results
-            if (selectedItems.value.map { it.id }.contains(item.id)) {
-                tracker.trackItemUnselected(productSelectorFlow)
-                selectedItemsSource.remove(item.id)
-                selectedItems.update { items ->
-                    items.filter { it.id != item.id }
-                }
-            } else {
-                tracker.trackItemSelected(productSelectorFlow)
-                selectedItemsSource[item.id] = productSource
-                selectedItems.update { items ->
-                    items + SelectedItem.ProductVariation(item.parentId, item.id)
-                }
+
+            is ListItem.VariationListItem -> {
+                handleVariationItemTap(item, productSource)
             }
         }
     }
+
+    private fun handleVariationItemTap(
+        item: ListItem.VariationListItem,
+        productSource: ProductSourceForTracking
+    ) {
+        if (selectedItems.value.containsItemWith(item.id)) {
+            tracker.trackItemUnselected(productSelectorFlow)
+            selectedItemsSource.remove(item.id)
+            selectedItems.update { items ->
+                items.filter { it.id != item.id }
+            }
+        } else {
+            tracker.trackItemSelected(productSelectorFlow)
+            selectedItemsSource[item.id] = productSource
+            selectedItems.update { items ->
+                items + SelectedItem.ProductVariation(item.parentId, item.id)
+            }
+        }
+    }
+
+    private fun handleNonVariableProductItemTap(
+        item: ListItem,
+        productSource: ProductSourceForTracking
+    ) {
+        selectedItems.update { items ->
+            val selectedProductItems = items.filter {
+                it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
+            }
+            if (selectedProductItems.containsItemWith(item.id)) {
+                tracker.trackItemUnselected(productSelectorFlow)
+                selectedItemsSource.remove(item.id)
+                val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
+                selectedItems.value - productItemToUnselect
+            } else {
+                selectedItemsSource[item.id] = productSource
+                tracker.trackItemSelected(productSelectorFlow)
+                selectedItems.value + SelectedItem.Product(item.id)
+            }
+        }
+    }
+
+    private fun ProductListItem.hasVariations() =
+        isVariable() && numVariations > 0
 
     private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
         ProductSourceForTracking {
@@ -629,6 +650,10 @@ class ProductSelectorViewModel @Inject constructor(
 private fun Product.isVariable() = productType == VARIABLE || productType == VARIABLE_SUBSCRIPTION
 
 private fun ProductSelectorViewModel.ListItem.isVariable() = (type == VARIABLE || type == VARIABLE_SUBSCRIPTION)
+
+private fun Collection<ProductSelectorViewModel.SelectedItem>.containsItemWith(id: Long): Boolean {
+    return any { it.id == id }
+}
 
 val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
     get() {

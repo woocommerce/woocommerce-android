@@ -468,126 +468,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         assertThat(state!!.searchState.isActive).isFalse
     }
 
-    // region Sort by popularity and recently sold products
-
-    @Test
-    fun `given published products restriction, when view model created, should not show draft products in the popular section`() {
-        testBlocking {
-            val navArgs = ProductSelectorFragmentArgs(
-                selectedItems = emptyArray(),
-                restrictions = arrayOf(OnlyPublishedProducts),
-                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
-            val ordersList = generateTestOrders()
-            val totalOrders = ordersList + popularOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
-            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
-                listOf(
-                    DRAFT_PRODUCT,
-                    DRAFT_PRODUCT,
-                    VALID_PRODUCT
-                )
-            )
-
-            val sut = createViewModel(navArgs)
-
-            var viewState: ProductSelectorViewModel.ViewState? = null
-            sut.viewState.observeForever { state ->
-                viewState = state
-            }
-            assertThat(viewState?.popularProducts).isNotEmpty
-            assertThat(viewState?.popularProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
-        }
-    }
-
-    @Test
-    fun `given published products restriction, when view model created, should not show draft products in the last sold section`() {
-        testBlocking {
-            val navArgs = ProductSelectorFragmentArgs(
-                selectedItems = emptyArray(),
-                restrictions = arrayOf(OnlyPublishedProducts),
-                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
-            ).initSavedStateHandle()
-            val ordersList = generateTestOrders()
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
-            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
-                listOf(
-                    DRAFT_PRODUCT,
-                    DRAFT_PRODUCT,
-                    VALID_PRODUCT
-                )
-            )
-
-            val sut = createViewModel(navArgs)
-
-            var viewState: ProductSelectorViewModel.ViewState? = null
-            sut.viewState.observeForever { state ->
-                viewState = state
-            }
-            assertThat(viewState?.recentProducts).isNotEmpty
-            assertThat(viewState?.recentProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
-        }
-    }
-
-    @Test
-    fun `given popular products, when view model created, then verify popular products are sorted in descending order`() {
-        testBlocking {
-            val navArgs = ProductSelectorFragmentArgs(
-                selectedItems = emptyArray(),
-                restrictions = arrayOf(OnlyPublishedProducts),
-                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
-            val ordersList = generateTestOrders()
-            val totalOrders = ordersList + popularOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
-            val argumentCaptor = argumentCaptor<List<Long>>()
-
-            createViewModel(navArgs)
-
-            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
-            assertThat(argumentCaptor.firstValue).isEqualTo(
-                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
-            )
-        }
-    }
-
-    @Test
-    fun `given popular products, when view model created, then only filter popular products from the orders that are already paid`() {
-        testBlocking {
-            val navArgs = ProductSelectorFragmentArgs(
-                selectedItems = emptyArray(),
-                restrictions = arrayOf(OnlyPublishedProducts),
-                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ).initSavedStateHandle()
-            val popularOrdersList = generatePopularOrders()
-            val popularOrdersThatAreNotPaidYet = mutableListOf<OrderEntity>()
-            repeat(10) {
-                popularOrdersThatAreNotPaidYet.add(
-                    OrderTestUtils.generateOrder(
-                        lineItems = generateLineItems(
-                            name = "ACME Bike",
-                            productId = "1111"
-                        ),
-                        datePaid = ""
-                    ),
-                )
-            }
-            val ordersList = generateTestOrders()
-            val totalOrders = ordersList + popularOrdersList + popularOrdersThatAreNotPaidYet
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
-            val argumentCaptor = argumentCaptor<List<Long>>()
-
-            createViewModel(navArgs)
-
-            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
-            assertThat(argumentCaptor.firstValue).isEqualTo(
-                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
-            )
-        }
-    }
-
     @Test
     fun `given search results containing variation, then it should be rendered correctly`() =
         testBlocking {
@@ -715,6 +595,126 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 assertThat(selectionState).isEqualTo(SelectionState.UNSELECTED)
             }
         }
+
+    // region Sort by popularity and recently sold products
+
+    @Test
+    fun `given published products restriction, when view model created, should not show draft products in the popular section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = ordersList + popularOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
+                listOf(
+                    DRAFT_PRODUCT,
+                    DRAFT_PRODUCT,
+                    VALID_PRODUCT
+                )
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            assertThat(viewState?.popularProducts).isNotEmpty
+            assertThat(viewState?.popularProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given published products restriction, when view model created, should not show draft products in the last sold section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
+                listOf(
+                    DRAFT_PRODUCT,
+                    DRAFT_PRODUCT,
+                    VALID_PRODUCT
+                )
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            assertThat(viewState?.recentProducts).isNotEmpty
+            assertThat(viewState?.recentProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given popular products, when view model created, then verify popular products are sorted in descending order`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = ordersList + popularOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            createViewModel(navArgs)
+
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.firstValue).isEqualTo(
+                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+            )
+        }
+    }
+
+    @Test
+    fun `given popular products, when view model created, then only filter popular products from the orders that are already paid`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val popularOrdersThatAreNotPaidYet = mutableListOf<OrderEntity>()
+            repeat(10) {
+                popularOrdersThatAreNotPaidYet.add(
+                    OrderTestUtils.generateOrder(
+                        lineItems = generateLineItems(
+                            name = "ACME Bike",
+                            productId = "1111"
+                        ),
+                        datePaid = ""
+                    ),
+                )
+            }
+            val ordersList = generateTestOrders()
+            val totalOrders = ordersList + popularOrdersList + popularOrdersThatAreNotPaidYet
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            createViewModel(navArgs)
+
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.firstValue).isEqualTo(
+                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+            )
+        }
+    }
 
     @Test
     fun `given popular products, when searched for products, then hide the popular products section`() {
