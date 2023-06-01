@@ -129,6 +129,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         tracker = mock()
         codeScanner = mock()
+        checkDigitRemover = mock()
         productListRepository = mock()
     }
 
@@ -1308,6 +1309,38 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                 )
+            )
+        }
+    }
+
+    @Test
+    fun `given UPC SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
             )
         }
     }
