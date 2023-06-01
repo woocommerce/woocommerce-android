@@ -25,17 +25,22 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -123,6 +128,7 @@ fun SearchLayout(
     onSearchTypeChanged: (SearchType) -> Unit
 ) {
     val isFocused = remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
     Column {
         WCSearchField(
             value = state.searchQuery,
@@ -134,7 +140,8 @@ fun SearchLayout(
                     horizontal = dimensionResource(id = dimen.major_100),
                     vertical = dimensionResource(id = dimen.minor_100)
                 )
-                .onFocusChanged { isFocused.value = it.isFocused },
+                .onFocusChanged { isFocused.value = it.isFocused }
+                .focusRequester(focusRequester),
         )
         if (isFocused.value) {
             Row(
@@ -160,6 +167,11 @@ fun SearchLayout(
                     isSelected = state.searchType == SearchType.SKU
                 )
             }
+        }
+    }
+    LaunchedEffect(state.searchQuery) {
+        if (state.searchQuery.isNotEmpty()) {
+            focusRequester.requestFocus()
         }
     }
 }
