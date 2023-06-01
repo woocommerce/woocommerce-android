@@ -66,6 +66,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var codeScanner: CodeScanner
+    private lateinit var checkDigitRemover: UPCCheckDigitRemover
     lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
@@ -1328,7 +1329,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             autoSyncPriceModifier = autoSyncPriceModifier,
             tracker = tracker,
             codeScanner = codeScanner,
-            productRepository = productListRepository
+            productRepository = productListRepository,
+            checkDigitRemover = checkDigitRemover
         )
     }
 
