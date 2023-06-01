@@ -1500,6 +1500,34 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             assertThat(sut.event.value).isNull()
         }
     }
+
+    @Test
+    fun `given product search fails for non UPC barcode format, then do not do any checksum operation`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatQRCode))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemover, never()).getSKUWithoutCheckDigit(any())
+            verify(productListRepository, never()).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
