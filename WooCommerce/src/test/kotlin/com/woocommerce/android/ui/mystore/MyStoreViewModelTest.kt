@@ -417,6 +417,16 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given the selected site changed, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
+
+    }
+
+    @Test
+    fun `given the selected site changed, when device and store timezones are the same, then do nothing`() = testBlocking {
+
+    }
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
