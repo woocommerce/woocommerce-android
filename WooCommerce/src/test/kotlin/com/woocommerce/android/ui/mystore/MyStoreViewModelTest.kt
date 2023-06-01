@@ -489,7 +489,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
         whenever(selectedSite.getIfExists()) doReturn null
-        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
 
         // When
         whenViewModelIsCreated()
