@@ -345,16 +345,18 @@ private fun ProductList(
                 enabled = state.selectedItemsCount > 0,
                 modifier = Modifier.align(Alignment.CenterStart)
             )
-            WCTextButton(
-                onClick = onFilterButtonClick,
-                text = StringUtils.getQuantityString(
-                    quantity = state.filterState.filterOptions.size,
-                    default = string.product_selector_filter_button_title_default,
-                    zero = string.product_selector_filter_button_title_zero
-                ),
-                allCaps = false,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
+            if (state.searchQuery.isEmpty()) {
+                WCTextButton(
+                    onClick = onFilterButtonClick,
+                    text = StringUtils.getQuantityString(
+                        quantity = state.filterState.filterOptions.size,
+                        default = string.product_selector_filter_button_title_default,
+                        zero = string.product_selector_filter_button_title_zero
+                    ),
+                    allCaps = false,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
         }
         LazyColumn(
             state = listState,
