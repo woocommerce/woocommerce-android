@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ProductFilterResult
 import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.ProductNavigationTarget
@@ -25,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductSelectorFragment : BaseFragment() {
+class ProductSelectorFragment : BaseFragment(), BackPressListener {
     companion object {
         const val PRODUCT_SELECTOR_RESULT = "product-selector-result"
     }
@@ -93,4 +94,8 @@ class ProductSelectorFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = getString(R.string.coupon_conditions_products_select_products_title)
+
+    override fun onRequestAllowBackPress(): Boolean {
+        return viewModel.onExternalBackPressInterceptRequest()
+    }
 }

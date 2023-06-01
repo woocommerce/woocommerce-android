@@ -42,7 +42,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
@@ -83,8 +82,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
     private val productSelectorFlow = navArgs.productSelectorFlow
 
-    private val searchQuery = savedState.getStateFlow(this, "")
-    private val searchType = savedState.getStateFlow(this, SearchType.DEFAULT)
+    private val searchState = savedState.getStateFlow(this, SearchState())
+
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedItems = savedState.getStateFlow(
         viewModelScope,
@@ -118,9 +117,8 @@ class ProductSelectorViewModel @Inject constructor(
             .map { it.value },
         flow5 = selectedItems,
         flow6 = filterState,
-        flow7 = searchQuery,
-        flow8 = searchType
-    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchQuery, searchType ->
+        flow7 = searchState,
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
@@ -128,8 +126,7 @@ class ProductSelectorViewModel @Inject constructor(
             recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
-            searchQuery = searchQuery,
-            searchType = searchType,
+            searchState = searchState
         )
     }.asLiveData()
 
@@ -139,7 +136,7 @@ class ProductSelectorViewModel @Inject constructor(
         viewModelScope.launch {
             loadPopularProducts()
             loadRecentProducts()
-            fetchProducts(forceRefresh = true, searchType = searchType.value)
+            fetchProducts(forceRefresh = true, searchType = searchState.value.searchType)
         }
     }
 
@@ -161,7 +158,7 @@ class ProductSelectorViewModel @Inject constructor(
         productsList: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ListItem> {
-        if (searchQuery.value.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
+        if (searchState.value.searchQuery.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
         return productsList.map { it.toUiModel(selectedIds) }
@@ -342,7 +339,7 @@ class ProductSelectorViewModel @Inject constructor(
     private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
         ProductSourceForTracking {
         return when {
-            searchQuery.value.isNotNullOrEmpty() -> {
+            searchState.value.searchQuery.isNotNullOrEmpty() -> {
                 ProductSourceForTracking.SEARCH
             }
             else -> {
@@ -364,7 +361,7 @@ class ProductSelectorViewModel @Inject constructor(
     private fun isFilterActive() = filterState.value.filterOptions.isNotEmpty()
 
     fun onSearchQueryChanged(query: String) {
-        searchQuery.value = query
+        searchState.value = searchState.value.copy(searchQuery = query, isActive = true)
     }
 
     fun onClearFiltersButtonClick() {
@@ -385,6 +382,11 @@ class ProductSelectorViewModel @Inject constructor(
             productCategory?.let { this[ProductFilterOption.CATEGORY] = it }
         }
         filterState.value = FilterState(filterOptions, productCategoryName)
+        if (filterOptions.isNotEmpty()) {
+            searchState.update {
+                SearchState.EMPTY
+            }
+        }
     }
 
     fun onLoadMore() {
@@ -426,24 +428,21 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun monitorSearchQuery() {
         viewModelScope.launch {
-            searchQuery
+            searchState
                 .withIndex()
                 .filterNot {
                     // Skip initial value to avoid double fetching products
-                    it.index == 0 && it.value.isEmpty()
+                    it.index == 0 && it.value.searchQuery.isEmpty()
                 }
                 .map { it.value }
-                .combine(searchType) { query, type ->
-                    Pair(query, type)
-                }
                 .onEach {
                     loadingState.value = LOADING
                 }
-                .debounce { (query, _) ->
-                    if (query.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                .debounce { searchState ->
+                    if (searchState.searchQuery.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
-                .collectLatest { (query, type) ->
-                    fetchProducts(query = query, searchType = type)
+                .collectLatest { searchState ->
+                    fetchProducts(query = searchState.searchQuery, searchType = searchState.searchType)
                 }
         }
     }
@@ -488,8 +487,21 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onSearchTypeChanged(searchType: SearchType) {
-        this.searchType.update {
-            searchType
+        this.searchState.update {
+            it.copy(searchType = searchType)
+        }
+    }
+
+    fun onExternalBackPressInterceptRequest(): Boolean {
+        return if (searchState.value.isActive) {
+            searchState.value = searchState.value.copy(
+                isActive = false,
+                searchQuery = "",
+                searchType = SearchType.DEFAULT
+            )
+            false
+        } else {
+            true
         }
     }
 
@@ -500,9 +512,19 @@ class ProductSelectorViewModel @Inject constructor(
         val recentProducts: List<ListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
-        val searchQuery: String,
-        val searchType: SearchType = SearchType.DEFAULT,
+        val searchState: SearchState = SearchState()
     )
+
+    @Parcelize
+    data class SearchState(
+        val isActive: Boolean = false,
+        val searchQuery: String = "",
+        val searchType: SearchType = SearchType.DEFAULT,
+    ) : Parcelable {
+        companion object {
+            val EMPTY = SearchState()
+        }
+    }
 
     sealed class ListItem(
         val id: Long,

@@ -35,12 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -129,9 +128,10 @@ fun SearchLayout(
 ) {
     val isFocused = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     Column {
         WCSearchField(
-            value = state.searchQuery,
+            value = state.searchState.searchQuery,
             onValueChange = onSearchQueryChanged,
             hint = stringResource(id = string.product_selector_search_hint),
             modifier = Modifier
@@ -156,7 +156,7 @@ fun SearchLayout(
                         .weight(1f),
                     onClick = { onSearchTypeChanged(SearchType.DEFAULT) },
                     text = stringResource(id = string.product_search_all),
-                    isSelected = state.searchType == SearchType.DEFAULT
+                    isSelected = state.searchState.searchType == SearchType.DEFAULT
                 )
                 WCSelectableChip(
                     modifier = Modifier
@@ -164,14 +164,16 @@ fun SearchLayout(
                         .weight(1f),
                     onClick = { onSearchTypeChanged(SearchType.SKU) },
                     text = stringResource(id = string.product_search_sku),
-                    isSelected = state.searchType == SearchType.SKU
+                    isSelected = state.searchState.searchType == SearchType.SKU
                 )
             }
         }
     }
-    LaunchedEffect(state.searchQuery) {
-        if (state.searchQuery.isNotEmpty()) {
+    LaunchedEffect(state.searchState.isActive) {
+        if (state.searchState.isActive) {
             focusRequester.requestFocus()
+        } else {
+            focusManager.clearFocus()
         }
     }
 }
@@ -192,8 +194,8 @@ private fun EmptyProductList(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val message = if (state.searchQuery.isNotEmpty()) {
-            stringResource(id = string.empty_message_with_search, state.searchQuery)
+        val message = if (state.searchState.searchQuery.isNotEmpty()) {
+            stringResource(id = string.empty_message_with_search, state.searchState.searchQuery)
         } else if (state.filterState.filterOptions.isNotEmpty()) {
             stringResource(id = string.empty_message_with_filters)
         } else {
@@ -345,7 +347,7 @@ private fun ProductList(
                 enabled = state.selectedItemsCount > 0,
                 modifier = Modifier.align(Alignment.CenterStart)
             )
-            if (state.searchQuery.isEmpty()) {
+            if (state.searchState.searchQuery.isEmpty()) {
                 WCTextButton(
                     onClick = onFilterButtonClick,
                     text = StringUtils.getQuantityString(
@@ -549,7 +551,7 @@ fun PopularProductsListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = emptyList(),
         ),
@@ -616,7 +618,7 @@ fun RecentProductsListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = products,
         ),
@@ -682,7 +684,7 @@ fun ProductListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = products,
         ),
@@ -703,7 +705,7 @@ fun ProductListEmptyPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
         ),
@@ -724,7 +726,7 @@ fun SearchLayoutPreview() {
         selectedItemsCount = 3,
         loadingState = IDLE,
         filterState = FilterState(),
-        searchQuery = "",
+        searchState = ProductSelectorViewModel.SearchState(),
         popularProducts = emptyList(),
         recentProducts = emptyList(),
     )

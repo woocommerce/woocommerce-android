@@ -409,6 +409,65 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when search query entered, should set search state as active`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val sut = createViewModel(navArgs)
+        sut.onSearchQueryChanged("test")
+
+        var state: ProductSelectorViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            state = it
+        }
+
+        assertThat(state!!.searchState.isActive).isTrue
+    }
+
+    @Test
+    fun `given active search, when back pressed, should intercept and clear search field`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val sut = createViewModel(navArgs)
+        sut.onSearchQueryChanged("test")
+
+        var state: ProductSelectorViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            state = it
+        }
+
+        val backPressInterceptionResult = sut.onExternalBackPressInterceptRequest()
+
+        assertThat(backPressInterceptionResult).isFalse
+        assertThat(state!!.searchState.isActive).isFalse
+    }
+
+    @Test
+    fun `given active search, when filter applied, should set search as inactive`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val sut = createViewModel(navArgs)
+        sut.onSearchQueryChanged("test")
+
+        var state: ProductSelectorViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            state = it
+        }
+
+        sut.onFiltersChanged("test", null, null, null, null)
+
+        assertThat(state!!.searchState.isActive).isFalse
+    }
+
     // region Sort by popularity and recently sold products
 
     @Test
