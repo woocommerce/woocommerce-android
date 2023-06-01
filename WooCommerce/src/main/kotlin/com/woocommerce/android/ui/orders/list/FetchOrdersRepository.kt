@@ -17,9 +17,9 @@ import javax.inject.Singleton
 @Singleton
 class FetchOrdersRepository @Inject constructor(private val dispatcher: Dispatcher) {
     /**
-    * The [RemoteId] of the OrderEntity in the process of being fetched from
-    * the remote API.
-    */
+     * The [RemoteId] of the OrderEntity in the process of being fetched from
+     * the remote API.
+     */
     private val ongoingRequests = Collections.synchronizedSet(mutableSetOf<Long>())
 
     init {

@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
+import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -73,7 +74,6 @@ import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
-import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -97,7 +97,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
-    private val orderFetcher: WCOrderFetcher = mock()
+    private val orderFetcher: FetchOrdersRepository = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
         mock()
@@ -459,7 +459,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * which contains a search query and based on this UI is refreshed or not.
      *
      * ATM we'll just trigger [PagedListWrapper.fetchFirstPage]. It's not an issue as later
-     * in the flow we use [WCOrderFetcher] which filters out requests that duplicate requests
+     * in the flow we use [FetchOrdersRepository] which filters out requests that duplicate requests
      * of fetching order.
      */
     @Test
