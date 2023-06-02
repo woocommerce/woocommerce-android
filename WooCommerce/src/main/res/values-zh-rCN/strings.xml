@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-23 11:54:04+0000
+Translation-Revision-Date: 2023-05-31 11:54:22+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s，我们已经暂停了您的商店，但您可以选择一个最适合您的套餐继续。</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我们的套餐继续发展您的业务！</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">您的 Woo Express 免费试用期将于明天（%1$s）结束。 是时候自行把握未来了，请选择一款套餐并准备好发展。</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 您的免费试用期即将结束！</string>
+    <string name="local_notification_without_free_trial_description">%1$s，您好。我们为您准备好了 %2$s！ 只需点击一下，即可开始您的 Woo Express 14 天免费试用，开启您的在线业务。  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ 您的商店正在向您招手！</string>
+    <string name="local_notification_store_creation_complete_description">%1$s，您好！ 欢迎体验 Woo Express 14 天免费试用，一站式获取启动和成功发展在线业务所需的一切。 准备好探索了吗？</string>
+    <string name="local_notification_store_creation_complete_title">🎉 您的商店已准备就绪！</string>
+    <string name="product_type_variation">变体产品</string>
+    <string name="settings_policies_cookie_policy_description">我们的 cookies 政策解释了我们和其他人如何使用 cookies 以及您如何管理它们。</string>
+    <string name="settings_policies_cookie_policy">Cookie 政策</string>
+    <string name="settings_policies_privacy_policy_description">您的信息有助于我们改进我们的产品、营销，并在 WooCommerce 上为您提供个性化的体验。</string>
+    <string name="settings_policies_privacy_policy">隐私政策</string>
+    <string name="privacy_banner_error_save">保存您的隐私选项时出现错误。</string>
+    <string name="privacy_banner_save">保存</string>
+    <string name="privacy_banner_settings">设置</string>
+    <string name="privacy_banner_analytics_description">允许我们收集与用户跟我们的移动应用程序互动情况相关的信息，从而优化性能。</string>
+    <string name="privacy_banner_analytics">分析</string>
+    <string name="privacy_banner_title">管理隐私</string>
+    <string name="privacy_banner_description">我们自始至终都非常重视您的隐私。 我们使用、存储和处理您的个人数据，以多种方式优化我们的应用程序（以及您的体验）。 我们必须使用您的部分数据，来确保系统正常运行，而至于其他数据，您可以在“设置”中进行定制。</string>
+    <string name="settings_reports_report_crashes_description">为了帮助我们提升应用程序的性能并修复偶发性错误，请启用自动发送崩溃报告功能。</string>
+    <string name="settings_reports_report_crashes">报告崩溃问题</string>
+    <string name="settings_reports_header">报告</string>
+    <string name="settings_privacy_cookies_polices_description">了解更多有关我们的隐私和 cookies 政策的信息。</string>
+    <string name="settings_privacy_cookies_polices">隐私和 cookies 政策</string>
+    <string name="settings_privacy_header">隐私</string>
+    <string name="settings_usage_tracking_description">详细了解我们收集的有关您商店的数据，以及您用于控制此数据共享的选项。</string>
+    <string name="settings_usage_tracking">使用情況跟踪</string>
+    <string name="settings_web_options_description">WooCommerce.com 用户可用的更多隐私选项。 点击此处了解更多详情。</string>
+    <string name="settings_web_options">Web 选项</string>
+    <string name="settings_more_privacy_options_header">更多隐私选项</string>
+    <string name="settings_tracking_analytics_error_update">更新隐私设置时出错</string>
+    <string name="settings_tracking_analytics_error_fetch">获取隐私设置时出错</string>
+    <string name="settings_tracking_analytics_description">允许我们收集与用户跟我们的移动应用程序互动情况相关的信息，从而优化性能。</string>
+    <string name="settings_tracking_analytics">分析</string>
+    <string name="settings_tracking_header">跟踪</string>
+    <string name="settings_privacy_statement">我们非常重视您的隐私。 我们会使用您的个人数据优化我们的移动应用程序、提升安全性、进行分析，以及增强您的用户体验。</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">当 Woo 应用程序在后台运行时，系统会将其终止。 您可以尝试再次使用它。</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">您不能直接添加变体产品。 请选择一个特定的变体</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">扫描失败。 请稍后再试</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">未找到任何产品。 无法创建新订单</string>
+    <string name="order_list_barcode_scanning_scanning_failed">扫描失败。 请稍后再试</string>
+    <string name="scan_barcode">扫描条形码</string>
     <string name="shipping_notice_banner_instructions_content">现在，当运输到遵守欧盟 (EU) 海关规定的国家/地区时，您需要清楚地描述每一件商品。 例如，假设您发送衣服，您的描述中需要指出是哪种类型的衣服（例如，男士衬衫、女孩背心、男孩夹克）才可被接受。 否则货物可能会在海关滞留或被扣留。</string>
     <string name="settings_close_account_dialog_contact_support_button">联系支持人员</string>
     <string name="settings_close_account_active_stores_error_description">此账户存在有效的商店时无法关闭。</string>
