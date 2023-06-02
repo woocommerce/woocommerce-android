@@ -40,6 +40,6 @@ class SpecifyPerformanceMonitoringConfigTest {
 
         val result = sut.invoke()
 
-        assertThat(result).isEqualTo(PerformanceMonitoringConfig.Enabled(0.01))
+        assertThat(result).isEqualTo(PerformanceMonitoringConfig.Enabled(0.02))
     }
 }

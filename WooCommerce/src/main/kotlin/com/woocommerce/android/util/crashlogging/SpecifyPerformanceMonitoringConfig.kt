@@ -11,7 +11,7 @@ class SpecifyPerformanceMonitoringConfig @Inject constructor(
 ) {
 
     private companion object {
-        const val PERFORMANCE_MONITORING_SAMPLE_RATE = 0.01
+        const val PERFORMANCE_MONITORING_SAMPLE_RATE = 0.02
         const val PROFILING_SAMPLE_RATE = 0.01
     }
 
