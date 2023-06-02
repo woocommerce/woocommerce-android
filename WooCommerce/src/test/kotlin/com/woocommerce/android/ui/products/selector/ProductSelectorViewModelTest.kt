@@ -7,6 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_S
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_FILTER_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SEARCH_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_ALL
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
@@ -370,7 +372,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_SEARCH_TRIGGERED,
-            mapOf("search_filter" to "all")
+            mapOf(KEY_SEARCH_TYPE to VALUE_SEARCH_TYPE_ALL)
         )
     }
 
@@ -394,7 +396,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_SEARCH_TRIGGERED,
-            mapOf("search_filter" to "sku")
+            mapOf(KEY_SEARCH_TYPE to VALUE_SEARCH_TYPE_ALL)
         )
     }
 
