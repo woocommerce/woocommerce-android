@@ -999,14 +999,14 @@ object AppPrefs {
             key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
         )
 
-    fun setTimezoneTrackEventTriggeredFor(siteId: Int, localTimezone: String, storeTimezone: String) {
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
         setBoolean(
             key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
             value = true
         )
     }
 
-    fun isTimezoneTrackEventTriggeredFor(siteId: Int, localTimezone: String, storeTimezone: String) =
+    fun isTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         getBoolean(
             key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
             default = false
