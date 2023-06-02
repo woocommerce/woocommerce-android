@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants.SEARCH_TYPING_DELAY_MS
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
@@ -25,6 +26,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -345,6 +347,54 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
             mapOf("source" to "product_selector")
+        )
+    }
+
+    @Test
+    fun `when search query is entered in default mode, should track analytics event`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+        val sut = createViewModel(navArgs)
+
+        sut.onSearchQueryChanged("test")
+
+        advanceTimeBy(SEARCH_TYPING_DELAY_MS + 1)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_SEARCH_TRIGGERED,
+            mapOf("search_filter" to "all")
+        )
+    }
+
+    @Test
+    fun `when search query is entered in SKU mode, should track analytics event`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+        val sut = createViewModel(navArgs)
+
+        sut.onSearchTypeChanged(ProductListHandler.SearchType.SKU)
+
+        advanceTimeBy(SEARCH_TYPING_DELAY_MS + 1)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_SEARCH_TRIGGERED,
+            mapOf("search_filter" to "sku")
         )
     }
 
