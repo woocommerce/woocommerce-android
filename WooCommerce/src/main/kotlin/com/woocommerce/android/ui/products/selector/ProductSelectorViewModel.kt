@@ -464,6 +464,7 @@ class ProductSelectorViewModel @Inject constructor(
                 }
                 .collectLatest { searchState ->
                     fetchProducts(query = searchState.searchQuery, searchType = searchState.searchType)
+                    tracker.trackSearchTriggered(searchState.searchType)
                 }
         }
     }
