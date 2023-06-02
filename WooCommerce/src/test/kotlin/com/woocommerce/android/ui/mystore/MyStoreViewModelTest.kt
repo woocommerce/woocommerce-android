@@ -487,7 +487,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         // Given
         val testSite = SiteModel().apply {
             timezone = "-3"
-            id = 7777777
+            siteId = 7777777
         }
 
         val deviceTimezone = mock<TimeZone> {
@@ -522,7 +522,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         // Given
         val testSite = SiteModel().apply {
             timezone = "-3"
-            id = 7777777
+            siteId = 7777777
         }
 
         val deviceTimezone = mock<TimeZone> {
@@ -531,7 +531,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
         whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())) doReturn true
         whenever(
             appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
                 siteId = 7777777,
@@ -565,9 +564,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
         whenever(selectedSite.getIfExists()) doReturn null
-        whenever(
-            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
-        ) doReturn true
 
         // When
         whenViewModelIsCreated()
