@@ -999,6 +999,19 @@ object AppPrefs {
             key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
         )
 
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
+        setBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            value = true
+        )
+    }
+
+    fun isTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        getBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            default = false
+        )
+
     /**
      * Remove all user and site-related preferences.
      */

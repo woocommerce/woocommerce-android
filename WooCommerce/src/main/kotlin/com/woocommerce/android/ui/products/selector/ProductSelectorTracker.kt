@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_ALL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_SKU
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 import javax.inject.Inject
@@ -68,6 +70,18 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
             ProductSelectorFlow.CouponEdition -> {}
             ProductSelectorFlow.Undefined -> {}
         }
+    }
+
+    fun trackSearchTriggered(searchType: ProductListHandler.SearchType) {
+        tracker.track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_SEARCH_TRIGGERED,
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH_TYPE to when (searchType) {
+                    ProductListHandler.SearchType.DEFAULT -> VALUE_SEARCH_TYPE_ALL
+                    ProductListHandler.SearchType.SKU -> VALUE_SEARCH_TYPE_SKU
+                }
+            )
+        )
     }
 
     enum class ProductSelectorSource {
