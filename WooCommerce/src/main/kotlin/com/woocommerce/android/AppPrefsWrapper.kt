@@ -341,4 +341,11 @@ class AppPrefsWrapper @Inject constructor() {
     fun setCrashReportingEnabled(enabled: Boolean) {
         AppPrefs.setCrashReportingEnabled(enabled)
     }
+
+    fun setTimezoneTrackEventTriggeredFor(siteId: Int, localTimezone: String, storeTimezone: String) {
+        AppPrefs.setTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
+    }
+
+    fun isTimezoneTrackEventTriggeredFor(siteId: Int, localTimezone: String, storeTimezone: String) =
+        AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
 }
