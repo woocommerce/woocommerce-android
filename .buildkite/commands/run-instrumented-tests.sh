@@ -17,4 +17,6 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
   echo "Instrumented Tests failed!"
 fi
 
-annotate_test_failures "build/instrumented-tests/*.xml" --slack "jos-testing-notif"
+results_file=$(find "build/instrumented-tests" -type f -name "*.xml" -print -quit)
+
+annotate_test_failures "$results_file" --slack "jos-testing-notif"
