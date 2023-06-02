@@ -477,6 +477,78 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given the viewModel started, when timezone track was NOT triggered before, then trigger expected analytics event`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+            id = 7777777
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(appPrefsWrapper.isTimezoneTrackEventTriggeredFor(any(), any(), any())) doReturn true
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventTriggeredFor(
+                siteId = 7777777,
+                localTimezone = "0",
+                storeTimezone = "-3"
+            )
+        ) doReturn false
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when timezone track was triggered before, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+            id = 7777777
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(appPrefsWrapper.isTimezoneTrackEventTriggeredFor(any(), any(), any())) doReturn false
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventTriggeredFor(
+                siteId = 7777777,
+                localTimezone = "0",
+                storeTimezone = "-3"
+            )
+        ) doReturn true
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
     fun `given the viewModel started, when the store is null, then do nothing`() = testBlocking {
         // Given
         val testSite = SiteModel().apply {
