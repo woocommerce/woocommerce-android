@@ -518,6 +518,39 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given the viewModel started, when timezone track is triggered, then set appPrefs flag`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+            siteId = 7777777
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+                siteId = 7777777,
+                localTimezone = "0",
+                storeTimezone = "-3"
+            )
+        ) doReturn true
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(appPrefsWrapper).setTimezoneTrackEventTriggeredFor(
+            siteId = 7777777,
+            localTimezone = "0",
+            storeTimezone = "-3"
+        )
+    }
+
+    @Test
     fun `given the viewModel started, when timezone track was triggered before, then do nothing`() = testBlocking {
         // Given
         val testSite = SiteModel().apply {
