@@ -219,6 +219,8 @@
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
+
+        <meta-data android:name="io.sentry.traces.activity.enable" android:value="false" />
     </application>
 
 </manifest>
