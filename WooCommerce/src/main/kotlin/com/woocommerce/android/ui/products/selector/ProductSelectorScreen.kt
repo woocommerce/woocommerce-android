@@ -455,7 +455,7 @@ private fun ProductList(
 }
 
 private fun ListItem.hasVariations() =
-    this is ListItem.ProductListItem && (type == VARIABLE|| type == VARIABLE_SUBSCRIPTION) && numVariations > 0
+    this is ListItem.ProductListItem && (type == VARIABLE || type == VARIABLE_SUBSCRIPTION) && numVariations > 0
 
 @Composable
 @Suppress("MagicNumber")
