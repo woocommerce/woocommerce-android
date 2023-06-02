@@ -20,6 +20,10 @@ fi
 
 results_file=$(find "build/instrumented-tests" -type f -name "*.xml" -print -quit)
 
-annotate_test_failures "$results_file" --slack "jos-testing-notif"
+if [[ $BUILDKITE_BRANCH == add-annotate-test-failures ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
+    annotate_test_failures "$results_file" --slack "jos-testing-notif"
+else
+    annotate_test_failures "$results_file"
+fi
 
 exit $TESTS_EXIT_STATUS
