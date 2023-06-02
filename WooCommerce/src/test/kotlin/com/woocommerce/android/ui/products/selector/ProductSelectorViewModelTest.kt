@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SEARCH_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_ALL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SEARCH_TYPE_SKU
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
@@ -391,12 +392,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val sut = createViewModel(navArgs)
 
         sut.onSearchTypeChanged(ProductListHandler.SearchType.SKU)
+        sut.onSearchQueryChanged("test")
 
         advanceTimeBy(SEARCH_TYPING_DELAY_MS + 1)
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_SEARCH_TRIGGERED,
-            mapOf(KEY_SEARCH_TYPE to VALUE_SEARCH_TYPE_ALL)
+            mapOf(KEY_SEARCH_TYPE to VALUE_SEARCH_TYPE_SKU)
         )
     }
 
