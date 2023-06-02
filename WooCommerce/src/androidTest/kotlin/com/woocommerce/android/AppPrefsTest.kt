@@ -483,13 +483,14 @@ class AppPrefsTest {
             false
         )
 
+        // intentional fail for testing
         assertThat(
             AppPrefs.isCashOnDeliveryDisabledStateSkipped(
                 localSiteId = 0,
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L,
             )
-        ).isFalse
+        ).isTrue
     }
 
     @Test

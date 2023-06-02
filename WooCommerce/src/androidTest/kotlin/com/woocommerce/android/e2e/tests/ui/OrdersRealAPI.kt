@@ -119,7 +119,8 @@ class OrdersRealAPI : TestBase() {
             // Make sure all orders are listed
             .assertOrderCard(order40)
             .assertOrderCard(order41)
-            .assertOrdersCount(2)
+            // intentional failure for testing
+            .assertOrdersCount(5)
             // Search by Customer Name (AKA Order Name)
             .openSearchPane()
             .enterSearchTerm(order40.customerName)
