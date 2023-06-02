@@ -406,12 +406,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 } ?: run {
                     if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        val skuWithoutCheckDigit = checkDigitRemover.getSKUWithoutCheckDigit(
-                            barcodeOptions.sku
-                        )
                         fetchProductBySKU(
                             barcodeOptions.copy(
-                                sku = skuWithoutCheckDigit,
+                                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
                                 shouldHandleCheckDigitOnFailure = false
                             )
                         )

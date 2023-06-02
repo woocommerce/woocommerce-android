@@ -758,7 +758,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode))
                 }
             }
             whenever(
@@ -1217,7 +1217,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode))
                 }
             }
             whenever(
@@ -1233,7 +1233,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
-                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
@@ -1380,7 +1380,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing toe fetch product information second time`() {
+    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
         testBlocking {
             val sku = "12345678901"
             val skuWithCheckDigitRemoved = "1234567890"
@@ -1410,7 +1410,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.onScanClicked()
 
-            verify(checkDigitRemover, times(1)).getSKUWithoutCheckDigit(skuWithCheckDigitRemoved)
+            verify(checkDigitRemover, times(1)).getSKUWithoutCheckDigit(any())
             verify(productListRepository, times(1)).searchProductList(
                 skuWithCheckDigitRemoved,
                 WCProductStore.SkuSearchOptions.ExactSearch
