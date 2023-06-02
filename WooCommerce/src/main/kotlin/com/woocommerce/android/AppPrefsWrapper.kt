@@ -346,6 +346,6 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
     }
 
-    fun isTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
-        AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
+    fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 }

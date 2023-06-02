@@ -490,14 +490,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
         whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(appPrefsWrapper.isTimezoneTrackEventTriggeredFor(any(), any(), any())) doReturn true
+        whenever(appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())) doReturn false
         whenever(
-            appPrefsWrapper.isTimezoneTrackEventTriggeredFor(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
                 siteId = 7777777,
                 localTimezone = "0",
                 storeTimezone = "-3"
             )
-        ) doReturn false
+        ) doReturn true
 
         // When
         whenViewModelIsCreated()
@@ -526,14 +526,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
         whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(appPrefsWrapper.isTimezoneTrackEventTriggeredFor(any(), any(), any())) doReturn false
+        whenever(appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())) doReturn true
         whenever(
-            appPrefsWrapper.isTimezoneTrackEventTriggeredFor(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
                 siteId = 7777777,
                 localTimezone = "0",
                 storeTimezone = "-3"
             )
-        ) doReturn true
+        ) doReturn false
 
         // When
         whenViewModelIsCreated()
