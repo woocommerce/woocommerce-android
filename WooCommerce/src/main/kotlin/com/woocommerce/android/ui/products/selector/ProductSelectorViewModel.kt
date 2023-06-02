@@ -464,7 +464,9 @@ class ProductSelectorViewModel @Inject constructor(
                 }
                 .collectLatest { searchState ->
                     fetchProducts(query = searchState.searchQuery, searchType = searchState.searchType)
-                    tracker.trackSearchTriggered(searchState.searchType)
+                    if (searchState.isActive && searchState.searchQuery.isNotNullOrEmpty()) {
+                        tracker.trackSearchTriggered(searchState.searchType)
+                    }
                 }
         }
     }
