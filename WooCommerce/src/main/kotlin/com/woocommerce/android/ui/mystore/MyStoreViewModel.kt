@@ -328,19 +328,28 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun trackLocalTimezoneDifferenceFromStore() {
-        viewModelScope.launch {
-            val siteTimeZoneOffset = selectedSite.getIfExists()?.timezone ?: return@launch
-            val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
+        val selectedSite = selectedSite.getIfExists() ?: return
+        val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
 
-            if (siteTimeZoneOffset != localTimeZoneOffset) {
-                analyticsTrackerWrapper.track(
-                    stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-                    properties = mapOf(
-                        AnalyticsTracker.KEY_STORE_TIMEZONE to siteTimeZoneOffset,
-                        AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
-                    )
+        val shouldTriggerTimezoneTrack = appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+            siteId = selectedSite.siteId,
+            localTimezone = localTimeZoneOffset,
+            storeTimezone = selectedSite.timezone
+        ) && selectedSite.timezone != localTimeZoneOffset
+
+        if (shouldTriggerTimezoneTrack) {
+            analyticsTrackerWrapper.track(
+                stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STORE_TIMEZONE to selectedSite.timezone,
+                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
                 )
-            }
+            )
+            appPrefsWrapper.setTimezoneTrackEventTriggeredFor(
+                siteId = selectedSite.siteId,
+                localTimezone = localTimeZoneOffset,
+                storeTimezone = selectedSite.timezone
+            )
         }
     }
 
