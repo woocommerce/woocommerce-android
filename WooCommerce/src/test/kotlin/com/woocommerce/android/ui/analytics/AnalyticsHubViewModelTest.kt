@@ -53,6 +53,7 @@ import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Calendar
@@ -443,10 +444,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher).onRevenueFetched()
-        verify(transactionLauncher).onOrdersFetched()
-        verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher).onSessionFetched()
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onSessionFetched()
     }
 
     @Test
@@ -459,9 +460,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
 
         verify(transactionLauncher, never()).onRevenueFetched()
-        verify(transactionLauncher).onOrdersFetched()
-        verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher).onSessionFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onSessionFetched()
     }
 
     @Test
@@ -473,10 +474,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onRevenueFetched()
         verify(transactionLauncher, never()).onOrdersFetched()
-        verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher).onSessionFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onSessionFetched()
     }
 
     @Test
@@ -488,10 +489,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher).onRevenueFetched()
-        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
         verify(transactionLauncher, never()).onProductsFetched()
-        verify(transactionLauncher).onSessionFetched()
+        verify(transactionLauncher, times(1)).onSessionFetched()
     }
 
     @Test
@@ -503,9 +504,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher).onRevenueFetched()
-        verify(transactionLauncher).onOrdersFetched()
-        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
         verify(transactionLauncher, never()).onSessionFetched()
     }
 
@@ -724,11 +725,29 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private fun configureSuccessfulStatsResponse() {
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(getRevenueStats())) }
-            onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(getOrdersStats())) }
-            onBlocking { productsState } doReturn flow { emit(ProductsState.Available(getProductsStats())) }
-            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(testSessionStat)) }
-            onBlocking { invoke(any(), any(), any()) } doReturn flow { emit(AnalyticsHubUpdateState.Finished) }
+            onBlocking { revenueState } doReturn flow {
+                emit(RevenueState.Available(RevenueStat.EMPTY))
+                emit(RevenueState.Loading)
+                emit(RevenueState.Available(getRevenueStats()))
+            }
+            onBlocking { ordersState } doReturn flow {
+                emit(OrdersState.Available(OrdersStat.EMPTY))
+                emit(OrdersState.Loading)
+                emit(OrdersState.Available(getOrdersStats()))
+            }
+            onBlocking { productsState } doReturn flow {
+                emit(ProductsState.Available(ProductsStat.EMPTY))
+                emit(ProductsState.Loading)
+                emit(ProductsState.Available(getProductsStats()))
+            }
+            onBlocking { sessionState } doReturn flow {
+                emit(SessionState.Available(SessionStat.EMPTY))
+                emit(SessionState.Loading)
+                emit(SessionState.Available(testSessionStat))
+            }
+            onBlocking { invoke(any(), any(), any()) } doReturn flow {
+                emit(AnalyticsHubUpdateState.Finished)
+            }
         }
     }
 
