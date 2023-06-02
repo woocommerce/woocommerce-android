@@ -208,13 +208,15 @@ class OrderDetailViewModel @Inject constructor(
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
                 fetchSLCreationEligibilityAsync(),
-                fetchGiftCardsAsync()
             )
             isFetchingData = false
 
             if (hasOrder()) {
                 displayOrderDetails()
-                fetchOrderSubscriptionsAsync().await()
+                awaitAll(
+                    fetchOrderSubscriptionsAsync(),
+                    fetchGiftCardsAsync()
+                )
             }
 
             viewState = viewState.copy(
