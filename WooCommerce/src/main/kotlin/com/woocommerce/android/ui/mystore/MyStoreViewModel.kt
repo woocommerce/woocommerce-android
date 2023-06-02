@@ -345,6 +345,11 @@ class MyStoreViewModel @Inject constructor(
                     AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
                 )
             )
+            appPrefsWrapper.setTimezoneTrackEventTriggeredFor(
+                siteId = selectedSite.siteId,
+                localTimezone = localTimeZoneOffset,
+                storeTimezone = selectedSite.timezone
+            )
         }
     }
 
