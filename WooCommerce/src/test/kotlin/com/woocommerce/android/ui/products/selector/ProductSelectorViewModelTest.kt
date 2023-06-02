@@ -12,8 +12,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.NoVariableProductsWithNoVariations
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.OnlyPublishedProducts
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
@@ -22,6 +23,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -42,20 +44,20 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 @ExperimentalCoroutinesApi
 internal class ProductSelectorViewModelTest : BaseUnitTest() {
     companion object {
-        private val VALID_PRODUCT = ProductTestUtils.generateProduct(productId = 1L)
-        private val DRAFT_PRODUCT = ProductTestUtils.generateProduct(productId = 2L, customStatus = "draft")
-        private val VARIABLE_PRODUCT_WITH_NO_VARIATIONS = ProductTestUtils.generateProduct(
+        private val VALID_PRODUCT = generateProduct(productId = 1L)
+        private val DRAFT_PRODUCT = generateProduct(productId = 2L, customStatus = "draft")
+        private val VARIABLE_PRODUCT_WITH_NO_VARIATIONS = generateProduct(
             productId = 3L,
             isVariable = true,
             variationIds = "[]",
         )
-        private val VARIABLE_SUBSCRIPTION_PRODUCT = ProductTestUtils.generateProduct(
+        private val VARIABLE_SUBSCRIPTION_PRODUCT = generateProduct(
             productId = 4L,
             isVariable = true,
             productType = "variable-subscription",
             variationIds = "[1,2]",
         )
-        private val VARIABLE_PRODUCT = ProductTestUtils.generateProduct(
+        private val VARIABLE_PRODUCT = generateProduct(
             productId = 5L,
             isVariable = true,
             variationIds = "[1,2]",
@@ -122,7 +124,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             assertThat(state.products).isNotEmpty
             assertThat(
                 state.products.filter {
-                    (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
+                    it is ProductListItem &&
+                        (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
                         it.numVariations == 0
                 }
             ).isEmpty()
@@ -143,7 +146,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             assertThat(state.products).isNotEmpty
             assertThat(
                 state.products.filter {
-                    (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
+                    it is ProductListItem &&
+                        (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) &&
                         it.numVariations == 0
                 }
             ).isEmpty()
@@ -250,7 +254,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val sut = createViewModel(navArgs)
 
         sut.onProductClick(
-            item = ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0),
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
         )
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED)
@@ -265,7 +269,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
-        val listItem = ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0)
+        val listItem = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE)
         sut.onProductClick(listItem, ProductSourceForTracking.ALPHABETICAL) // select
         sut.onProductClick(listItem, ProductSourceForTracking.ALPHABETICAL) // unselect
 
@@ -305,11 +309,11 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
             val sut = createViewModel(navArgs)
             sut.onProductClick(
-                item = ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0),
+                item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
                 productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
             )
             sut.onProductClick(
-                item = ProductListItem(2, "", ProductType.SIMPLE, numVariations = 0),
+                item = ProductListItem(productId = 2, numVariations = 0, title = "", type = ProductType.SIMPLE),
                 productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
             )
             sut.onDoneButtonClick()
@@ -358,7 +362,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         val sut = createViewModel(navArgs)
         sut.onProductClick(
-            item = ProductListItem(1, "", ProductType.VARIABLE, numVariations = 2),
+            item = ProductListItem(productId = 1, numVariations = 2, title = "", type = ProductType.VARIABLE),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
         )
 
@@ -386,7 +390,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         val sut = createViewModel(navArgs)
         sut.onProductClick(
-            item = ProductListItem(23, "", ProductType.VARIABLE_SUBSCRIPTION, numVariations = 2),
+            item = ProductListItem(
+                productId = 23,
+                title = "",
+                type = ProductType.VARIABLE_SUBSCRIPTION,
+                numVariations = 2
+            ),
             productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
         )
 
@@ -399,6 +408,193 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `when search query entered, should set search state as active`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val sut = createViewModel(navArgs)
+        sut.onSearchQueryChanged("test")
+
+        var state: ProductSelectorViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            state = it
+        }
+
+        assertThat(state!!.searchState.isActive).isTrue
+    }
+
+    @Test
+    fun `given active search, when back pressed, should intercept and clear search field`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val sut = createViewModel(navArgs)
+        sut.onSearchQueryChanged("test")
+
+        var state: ProductSelectorViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            state = it
+        }
+
+        val backPressInterceptionResult = sut.onExternalBackPressInterceptRequest()
+
+        assertThat(backPressInterceptionResult).isFalse
+        assertThat(state!!.searchState.isActive).isFalse
+    }
+
+    @Test
+    fun `given active search, when filter applied, should set search as inactive`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val sut = createViewModel(navArgs)
+        sut.onSearchQueryChanged("test")
+
+        var state: ProductSelectorViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            state = it
+        }
+
+        sut.onFiltersChanged("test", null, null, null, null)
+
+        assertThat(state!!.searchState.isActive).isFalse
+    }
+
+    @Test
+    fun `given search results containing variation, then it should be rendered correctly`() =
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+
+            whenever(listHandler.productsFlow).thenReturn(
+                flow {
+                    emit(
+                        listOf(
+                            generateProduct(
+                                productId = 1,
+                                parentID = 2,
+                                productType = "variation"
+                            )
+                        )
+                    )
+                }
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            with(viewState?.products) {
+                assertThat(this).size().isEqualTo(1)
+                val item = this?.first()
+                assertThat(item).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
+                assertThat(item!!.id).isEqualTo(1)
+                assertThat((item as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)
+            }
+        }
+
+    @Test
+    fun `given search results containing variation, when variation is tapped, it should get selected`() =
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+
+            whenever(listHandler.productsFlow).thenReturn(
+                flow {
+                    emit(
+                        listOf(
+                            generateProduct(
+                                productId = 1,
+                                parentID = 2,
+                                productType = "variation"
+                            )
+                        )
+                    )
+                }
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            sut.onProductClick(viewState!!.products.first(), ProductSourceForTracking.SEARCH)
+
+            with(viewState?.products) {
+                assertThat(this).size().isEqualTo(1)
+                val item = this?.first()
+                assertThat(item).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
+                assertThat(item!!.id).isEqualTo(1)
+                assertThat((item as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)
+                assertThat(item.selectionState).isEqualTo(SelectionState.SELECTED)
+            }
+        }
+
+    @Test
+    fun `given search results containing selected variation, when variation is tapped, it should get unselected`() =
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+
+            whenever(listHandler.productsFlow).thenReturn(
+                flow {
+                    emit(
+                        listOf(
+                            generateProduct(
+                                productId = 1,
+                                parentID = 2,
+                                productType = "variation"
+                            )
+                        )
+                    )
+                }
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            val variationItem = viewState!!.products.first()
+            sut.onProductClick(variationItem, ProductSourceForTracking.SEARCH)
+            with(viewState!!.products.first()) {
+                assertThat(this).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
+                assertThat(id).isEqualTo(1)
+                assertThat((this as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)
+                assertThat(selectionState).isEqualTo(SelectionState.SELECTED)
+            }
+
+            sut.onProductClick(variationItem, ProductSourceForTracking.SEARCH)
+            with(viewState!!.products.first()) {
+                assertThat(this).isInstanceOf(ProductSelectorViewModel.ListItem.VariationListItem::class.java)
+                assertThat(id).isEqualTo(1)
+                assertThat((this as ProductSelectorViewModel.ListItem.VariationListItem).parentId).isEqualTo(2)
+                assertThat(selectionState).isEqualTo(SelectionState.UNSELECTED)
+            }
+        }
 
     // region Sort by popularity and recently sold products
 
@@ -1242,7 +1438,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private fun generateProductListItem(
         id: Long,
     ) = ProductListItem(
-        id = id,
+        productId = id,
         title = "",
         type = ProductType.SIMPLE,
         imageUrl = null,
