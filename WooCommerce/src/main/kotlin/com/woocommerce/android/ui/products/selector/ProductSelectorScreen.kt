@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem
@@ -454,7 +455,7 @@ private fun ProductList(
 }
 
 private fun ListItem.hasVariations() =
-    this is ListItem.ProductListItem && type == VARIABLE && numVariations > 0
+    this is ListItem.ProductListItem && (type == VARIABLE|| type == VARIABLE_SUBSCRIPTION) && numVariations > 0
 
 @Composable
 @Suppress("MagicNumber")
