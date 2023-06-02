@@ -7,6 +7,7 @@ echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
 echo "--- 🧪 Testing"
+set +e
 bundle exec fastlane build_and_instrumented_test
 TESTS_EXIT_STATUS=$?
 set -e
@@ -20,3 +21,5 @@ fi
 results_file=$(find "build/instrumented-tests" -type f -name "*.xml" -print -quit)
 
 annotate_test_failures "$results_file" --slack "jos-testing-notif"
+
+exit $TESTS_EXIT_STATUS
