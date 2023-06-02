@@ -12,6 +12,7 @@ class SpecifyPerformanceMonitoringConfig @Inject constructor(
 
     private companion object {
         const val PERFORMANCE_MONITORING_SAMPLE_RATE = 0.01
+        const val PROFILING_SAMPLE_RATE = 0.01
     }
 
     operator fun invoke(): PerformanceMonitoringConfig {
@@ -20,7 +21,10 @@ class SpecifyPerformanceMonitoringConfig @Inject constructor(
         return if (!userEnabled || buildConfig.debug) {
             PerformanceMonitoringConfig.Disabled
         } else {
-            PerformanceMonitoringConfig.Enabled(PERFORMANCE_MONITORING_SAMPLE_RATE)
+            PerformanceMonitoringConfig.Enabled(
+                sampleRate = PERFORMANCE_MONITORING_SAMPLE_RATE,
+                profilesSampleRate = PROFILING_SAMPLE_RATE
+            )
         }
     }
 }
