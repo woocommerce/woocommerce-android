@@ -1,3 +1,1 @@
-- [*] [Internal] Changes buttons font color in both dark and light mode to light on the login flow [https://github.com/woocommerce/woocommerce-android/pull/9166]
-- [**] Added possibility to search by SKU in the product selector screen [https://github.com/woocommerce/woocommerce-android/pull/9164]
-
+We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!
