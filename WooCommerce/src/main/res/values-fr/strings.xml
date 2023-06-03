@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-23 11:54:03+0000
+Translation-Revision-Date: 2023-05-31 16:54:22+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, nous avons suspendu votre boutique, mais vous pouvez la conserver en choisissant le plan qui vous convient le mieux.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Poursuivez vos activités avec notre abonnement !</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Votre période d’essai gratuit de Woo Express se termine demain (%1$s). Le moment est venu de prendre votre avenir en main. Choisissez un plan et préparez-vous à prospérer.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Votre essai gratuit sera bientôt terminé !</string>
+    <string name="local_notification_without_free_trial_description">Bonjour %1$s, %2$s n’attend plus que vous ! Commencez votre essai gratuit de 14 jours du service Woo Express en un simple clic et lancez votre activité en ligne.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ Votre boutique vous attend !</string>
+    <string name="local_notification_store_creation_complete_description">Bonjour %1$s ! Bienvenue dans votre essai gratuit de 14 jours du service Woo Express : tout ce dont vous avez besoin pour lancer et développer une activité en ligne prospère, en un seul endroit. Envie de découvrir ?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 Votre boutique est prête !</string>
+    <string name="product_type_variation">Variante de produit</string>
+    <string name="settings_policies_cookie_policy_description">Notre politique relative aux cookies explique comment nous, ainsi que d’autres entités, utilisons les cookies et comment vous pouvez les gérer.</string>
+    <string name="settings_policies_cookie_policy">Politique relative aux cookies</string>
+    <string name="settings_policies_privacy_policy_description">Vos informations nous permettent d’améliorer nos produits et notre approche marketing, ainsi que de personnaliser notre expérience dans WooCommerce.</string>
+    <string name="settings_policies_privacy_policy">Politique de confidentialité</string>
+    <string name="privacy_banner_error_save">Une erreur est survenue lors de l’enregistrement de vos choix en matière de confidentialité.</string>
+    <string name="privacy_banner_save">Enregistrer</string>
+    <string name="privacy_banner_settings">Réglages</string>
+    <string name="privacy_banner_analytics_description">Donnez-nous la possibilité d’optimiser les performances en collectant des informations sur la façon dont les utilisateurs interagissent avec nos applications mobiles.</string>
+    <string name="privacy_banner_analytics">Statistiques</string>
+    <string name="privacy_banner_title">Gérer la confidentialité</string>
+    <string name="privacy_banner_description">Nous accordons depuis toujours une énorme importance au respect de votre privée. Nous utilisons, stockons et traitons vos données personnelles pour optimiser notre application (et votre expérience) de diverses manières. Certains usages de vos données sont indispensables au bon fonctionnement de l’application, tandis que d’autres peuvent être personnalisés dans vos Réglages.</string>
+    <string name="settings_reports_report_crashes_description">Aidez-nous à améliorer les performances de l’application et à résoudre les bogues occasionnels en activant le rapport d’incident automatique.</string>
+    <string name="settings_reports_report_crashes">Signaler les incidents</string>
+    <string name="settings_reports_header">Rapports</string>
+    <string name="settings_privacy_cookies_polices_description">En savoir plus sur nos politiques en matière de vie privée et de cookies.</string>
+    <string name="settings_privacy_cookies_polices">Politiques en matière de vie privée et de cookies.</string>
+    <string name="settings_privacy_header">Confidentialité</string>
+    <string name="settings_usage_tracking_description">Apprenez-en davantage sur les données que nous recueillons à propos de votre boutique et sur les options dont vous disposez pour contrôler le partage de ces informations.</string>
+    <string name="settings_usage_tracking">Suivi d’utilisation</string>
+    <string name="settings_web_options_description">Plus d’options de confidentialité disponibles pour les utilisateurs de woocommerce.com. Cliquez ici pour en savoir plus.</string>
+    <string name="settings_web_options">Options Web</string>
+    <string name="settings_more_privacy_options_header">Plus d’options de confidentialité</string>
+    <string name="settings_tracking_analytics_error_update">Une erreur est survenue lors de la mise à jour de vos réglages de confidentialité</string>
+    <string name="settings_tracking_analytics_error_fetch">Une erreur est survenue lors de l’extraction de vos réglages de confidentialité</string>
+    <string name="settings_tracking_analytics_description">Donnez-nous la possibilité d’optimiser les performances en collectant des informations sur la façon dont les utilisateurs interagissent avec nos applications mobiles.</string>
+    <string name="settings_tracking_analytics">Statistiques</string>
+    <string name="settings_tracking_header">Suivi</string>
+    <string name="settings_privacy_statement">Nous accordons de l’importance à la confidentialité. Vos données personnelles sont utilisées pour optimiser nos applications mobiles, améliorer la sécurité, réaliser des analyses et enrichir votre expérience utilisateur.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Vous ne pouvez pas ajouter directement des produits variables. Sélectionnez une variante spécifique</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Échec du scan. Réessayez plus tard</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produit introuvable. Impossible de créer une nouvelle commande</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Échec du scan. Réessayez plus tard</string>
+    <string name="scan_barcode">Scanner le code-barres</string>
     <string name="shipping_notice_banner_instructions_content">L’expédition vers des pays qui suivent la réglementation douanière de l’Union européenne (UE) nécessite désormais que vous décriviez clairement chaque article. Par exemple, si vous envoyez des vêtements, vous devez indiquer le type de vêtement (p. ex., chemise pour homme, débardeur pour fille, veste pour garçon) pour que la description soit acceptable. Dans le cas contraire, les envois peuvent être retardés ou interrompus à la douane.</string>
     <string name="settings_close_account_dialog_contact_support_button">Contacter l’assistance</string>
     <string name="settings_close_account_active_stores_error_description">Ce compte ne peut pas être clôturé tant qu’il comporte des boutiques actives.</string>
