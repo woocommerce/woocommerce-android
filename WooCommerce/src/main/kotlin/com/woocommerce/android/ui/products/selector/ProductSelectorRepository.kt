@@ -36,13 +36,15 @@ class ProductSelectorRepository @Inject constructor(
     suspend fun searchProducts(
         searchQuery: String,
         offset: Int,
-        pageSize: Int
+        pageSize: Int,
+        skuSearchOption: WCProductStore.SkuSearchOptions,
     ): Result<SearchResult> {
         return productStore.searchProducts(
             selectedSite.get(),
             searchString = searchQuery,
             offset = offset,
-            pageSize = pageSize
+            pageSize = pageSize,
+            skuSearchOptions = skuSearchOption,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(

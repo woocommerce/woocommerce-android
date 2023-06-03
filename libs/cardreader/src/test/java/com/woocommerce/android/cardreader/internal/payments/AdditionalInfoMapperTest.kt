@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CARD_REMOVED_TOO_EARLY
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
@@ -87,5 +88,12 @@ class AdditionalInfoMapperTest : CardReaderBaseUnitTest() {
         val additionalInfoType = additionalInfoMapper.map(ReaderDisplayMessage.CHECK_MOBILE_DEVICE)
 
         assertThat(additionalInfoType).isEqualTo(CHECK_MOBILE_DEVICE)
+    }
+
+    @Test
+    fun `ginve CARD_REMOVED_TOO_EARLY display message, then it is correctly mapped into AdditionalInfo type`() {
+        val additionalInfoType = additionalInfoMapper.map(ReaderDisplayMessage.CARD_REMOVED_TOO_EARLY)
+
+        assertThat(additionalInfoType).isEqualTo(CARD_REMOVED_TOO_EARLY)
     }
 }

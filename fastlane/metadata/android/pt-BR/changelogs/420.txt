@@ -1,0 +1,2 @@
+13.8:
+Boa notícia. Agora é possível escanear o código de barras de um produto ao criar um pedido no aplicativo. Você não precisa mais rolar manualmente para buscar um produto. Também corrigimos alguns problemas de travamento na lista de pedidos e nas telas de detalhes do produto. Continue compartilhando seu feedback conosco. Estamos atentos.

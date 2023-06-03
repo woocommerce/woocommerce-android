@@ -166,6 +166,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_SEARCH = "search"
         const val KEY_SEARCH_FILTER = "filter"
+        const val KEY_SEARCH_TYPE = "search_filter"
+        const val VALUE_SEARCH_TYPE_ALL = "all"
+        const val VALUE_SEARCH_TYPE_SKU = "sku"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
@@ -311,6 +314,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
+
+        const val KEY_STORE_TIMEZONE = "store_timezone"
+        const val KEY_LOCAL_TIMEZONE = "local_timezone"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

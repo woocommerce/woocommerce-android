@@ -39,12 +39,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
 
-    if (project.hasProperty("stripe_repo_url")) {
-        implementation "com.stripe:stripeterminal-localmobile:$stripeTerminalVersion"
-        implementation "com.stripe:stripeterminal-core:$stripeTerminalVersion"
-    } else {
-        implementation "com.stripe:stripeterminal:$stripeTerminalVersion"
-    }
+    implementation "com.stripe:stripeterminal-localmobile:$stripeTerminalVersion"
+    implementation "com.stripe:stripeterminal-core:$stripeTerminalVersion"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

@@ -22,6 +22,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Inter
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.ProcessingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CARD_REMOVED_TOO_EARLY
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.CHECK_MOBILE_DEVICE
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_CARD
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.INSERT_OR_SWIPE_CARD
@@ -661,6 +662,7 @@ class CardReaderPaymentViewModel
             TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
             TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
             CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
+            CARD_REMOVED_TOO_EARLY -> R.string.card_reader_payment_card_removed_too_early
         }
 
     private fun onSaveForLaterClicked() {

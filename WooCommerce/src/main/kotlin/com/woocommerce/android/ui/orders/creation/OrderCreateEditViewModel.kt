@@ -98,6 +98,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -207,6 +208,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             multipleLinesContext = determineMultipleLinesContext(order)
                         )
                         monitorOrderChanges()
+                        updateCouponButtonVisibility(order)
                     }
                 }
             }
@@ -335,9 +337,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun updateCouponButtonVisibility() {
-        val orderHasItems = orderDraft.value?.hasProducts() ?: false
-        viewState = viewState.copy(isCouponButtonEnabled = orderHasItems)
+    private fun updateCouponButtonVisibility(order: Order) {
+        viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -698,7 +699,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 isEditable = isOrderEditable(updateStatus),
                                 multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
-                            _orderDraft.update { currentDraft ->
+                            _orderDraft.updateAndGet { currentDraft ->
                                 if (mode is Mode.Creation) {
                                     // Once the order is synced, revert the auto-draft status and keep
                                     // the user's selected one
@@ -706,8 +707,9 @@ class OrderCreateEditViewModel @Inject constructor(
                                 } else {
                                     updateStatus.order
                                 }
+                            }.also {
+                                updateCouponButtonVisibility(it)
                             }
-                            updateCouponButtonVisibility()
                         }
                     }
                 }
