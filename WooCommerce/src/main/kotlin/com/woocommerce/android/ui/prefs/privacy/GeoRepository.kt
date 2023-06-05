@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.prefs.privacy
 
-import com.woocommerce.android.WooException
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.geo.WpComGeoRestClient
 import javax.inject.Inject
 
 class GeoRepository @Inject constructor(
@@ -12,13 +12,7 @@ class GeoRepository @Inject constructor(
     suspend fun fetchCountryCode(): Result<String> {
 
         return withContext(dispatchers.io) {
-            val response = wpComGeoRestClient.fetchCountryCode()
-
-            if (response.isError) {
-                Result.failure(WooException(response.error))
-            } else {
-                Result.success(response.result.orEmpty())
-            }
+            wpComGeoRestClient.fetchCountryCode().map { it.orEmpty() }
         }
     }
 }
