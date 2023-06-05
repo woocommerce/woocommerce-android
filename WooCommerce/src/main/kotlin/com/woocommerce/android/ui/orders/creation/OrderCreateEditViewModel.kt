@@ -400,40 +400,69 @@ class OrderCreateEditViewModel @Inject constructor(
                 searchQuery = barcodeOptions.sku,
                 skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
             )?.let { products ->
-                viewState = viewState.copy(isUpdatingOrderDraft = false)
-                products.firstOrNull()?.let { product ->
-                    addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
-                } ?: run {
-                    if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
-                        viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(
-                            barcodeOptions.copy(
-                                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
-                                shouldHandleCheckDigitOnFailure = false
-                            )
-                        )
-                    } else {
-                        trackProductSearchViaSKUFailureEvent(
-                            source,
-                            barcodeOptions.barcodeFormat,
-                            "Empty data response (no product found for the SKU)",
-                        )
-                        sendAddingProductsViaScanningFailedEvent(
-                            R.string.order_creation_barcode_scanning_unable_to_add_product
-                        )
-                    }
-                }
+                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
             } ?: run {
-                trackProductSearchViaSKUFailureEvent(
+                handleFetchProductBySKUFailure(
                     source,
-                    barcodeOptions.barcodeFormat,
+                    barcodeOptions,
                     "Product search via SKU API call failed"
-                )
-                sendAddingProductsViaScanningFailedEvent(
-                    R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
             }
         }
+    }
+
+    private fun handleFetchProductBySKUSuccess(
+        products: List<com.woocommerce.android.model.Product>,
+        selectedItems: List<SelectedItem>,
+        source: ScanningSource,
+        barcodeOptions: BarcodeOptions
+    ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = false)
+        products.firstOrNull()?.let { product ->
+            addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
+        } ?: run {
+            handleFetchProductBySKUEmpty(barcodeOptions, source)
+        }
+    }
+
+    private fun handleFetchProductBySKUEmpty(
+        barcodeOptions: BarcodeOptions,
+        source: ScanningSource
+    ) {
+        if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
+            fetchProductBySKURemovingCheckDigit(barcodeOptions)
+        } else {
+            handleFetchProductBySKUFailure(
+                source,
+                barcodeOptions,
+                "Empty data response (no product found for the SKU)"
+            )
+        }
+    }
+
+    private fun handleFetchProductBySKUFailure(
+        source: ScanningSource,
+        barcodeOptions: BarcodeOptions,
+        message: String,
+    ) {
+        trackProductSearchViaSKUFailureEvent(
+            source,
+            barcodeOptions.barcodeFormat,
+            message,
+        )
+        sendAddingProductsViaScanningFailedEvent(
+            string.order_creation_barcode_scanning_unable_to_add_product
+        )
+    }
+
+    private fun fetchProductBySKURemovingCheckDigit(barcodeOptions: BarcodeOptions) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+        fetchProductBySKU(
+            barcodeOptions.copy(
+                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
+                shouldHandleCheckDigitOnFailure = false
+            )
+        )
     }
 
     private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
