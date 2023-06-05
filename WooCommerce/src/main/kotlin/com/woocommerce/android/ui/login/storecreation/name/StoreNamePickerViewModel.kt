@@ -28,6 +28,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
@@ -117,18 +118,20 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     private fun scheduleDeferredNotification() {
-        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D)) {
-            val name = if (accountStore.account.firstName.isNotNullOrEmpty())
-                accountStore.account.firstName
-            else
-                accountStore.account.userName
+        launch {
+            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D)) {
+                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                    accountStore.account.firstName
+                else
+                    accountStore.account.userName
 
-            localNotificationScheduler.scheduleNotification(
-                StoreCreationIncompleteNotification(
-                    name,
-                    _viewState.value.storeName
+                localNotificationScheduler.scheduleNotification(
+                    StoreCreationIncompleteNotification(
+                        name,
+                        _viewState.value.storeName
+                    )
                 )
-            )
+            }
         }
     }
 
