@@ -122,6 +122,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val codeScanner: CodeScanner,
     private val productRepository: ProductListRepository,
+    private val checkDigitRemover: UPCCheckDigitRemover,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -194,7 +195,11 @@ class OrderCreateEditViewModel @Inject constructor(
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
                 if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
-                    fetchProductBySKU(args.sku!!, args.barcodeFormat!!, ScanningSource.ORDER_LIST)
+                    viewState = viewState.copy(isUpdatingOrderDraft = true)
+                    fetchProductBySKU(
+                        BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
+                        ScanningSource.ORDER_LIST
+                    )
                 }
             }
             is Mode.Edit -> {
@@ -373,7 +378,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
                         )
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(status.code, status.format)
+                        fetchProductBySKU(BarcodeOptions(status.code, status.format))
                     }
                 }
             }
@@ -381,9 +386,8 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun fetchProductBySKU(
-        sku: String,
-        barcodeFormat: BarcodeFormat,
-        source: ScanningSource = ScanningSource.ORDER_CREATION
+        barcodeOptions: BarcodeOptions,
+        source: ScanningSource = ScanningSource.ORDER_CREATION,
     ) {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
@@ -394,34 +398,80 @@ class OrderCreateEditViewModel @Inject constructor(
         }.orEmpty()
         viewModelScope.launch {
             productRepository.searchProductList(
-                searchQuery = sku,
+                searchQuery = barcodeOptions.sku,
                 skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
             )?.let { products ->
-                viewState = viewState.copy(isUpdatingOrderDraft = false)
-                products.firstOrNull()?.let { product ->
-                    addScannedProduct(product, selectedItems, source, barcodeFormat)
-                } ?: run {
-                    trackProductSearchViaSKUFailureEvent(
-                        source,
-                        barcodeFormat,
-                        "Empty data response (no product found for the SKU)",
-                    )
-                    sendAddingProductsViaScanningFailedEvent(
-                        R.string.order_creation_barcode_scanning_unable_to_add_product
-                    )
-                }
+                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
             } ?: run {
-                trackProductSearchViaSKUFailureEvent(
+                handleFetchProductBySKUFailure(
                     source,
-                    barcodeFormat,
+                    barcodeOptions,
                     "Product search via SKU API call failed"
-                )
-                sendAddingProductsViaScanningFailedEvent(
-                    R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
             }
         }
     }
+
+    private fun handleFetchProductBySKUSuccess(
+        products: List<com.woocommerce.android.model.Product>,
+        selectedItems: List<SelectedItem>,
+        source: ScanningSource,
+        barcodeOptions: BarcodeOptions
+    ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = false)
+        products.firstOrNull()?.let { product ->
+            addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
+        } ?: run {
+            handleFetchProductBySKUEmpty(barcodeOptions, source)
+        }
+    }
+
+    private fun handleFetchProductBySKUEmpty(
+        barcodeOptions: BarcodeOptions,
+        source: ScanningSource
+    ) {
+        if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
+            fetchProductBySKURemovingCheckDigit(barcodeOptions)
+        } else {
+            handleFetchProductBySKUFailure(
+                source,
+                barcodeOptions,
+                "Empty data response (no product found for the SKU)"
+            )
+        }
+    }
+
+    private fun handleFetchProductBySKUFailure(
+        source: ScanningSource,
+        barcodeOptions: BarcodeOptions,
+        message: String,
+    ) {
+        trackProductSearchViaSKUFailureEvent(
+            source,
+            barcodeOptions.barcodeFormat,
+            message,
+        )
+        sendAddingProductsViaScanningFailedEvent(
+            string.order_creation_barcode_scanning_unable_to_add_product
+        )
+    }
+
+    private fun fetchProductBySKURemovingCheckDigit(barcodeOptions: BarcodeOptions) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+        fetchProductBySKU(
+            barcodeOptions.copy(
+                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
+                shouldHandleCheckDigitOnFailure = false
+            )
+        )
+    }
+
+    private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
+        isBarcodeFormatUPC(barcodeOptions) && barcodeOptions.shouldHandleCheckDigitOnFailure
+
+    private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
+        barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
+            barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
 
     private fun addScannedProduct(
         product: ModelProduct,
@@ -917,6 +967,12 @@ enum class ProductAddedVia(val addedVia: String) {
     MANUALLY("manually"),
     SCANNING("scanning")
 }
+
+data class BarcodeOptions(
+    val sku: String,
+    val barcodeFormat: BarcodeFormat,
+    val shouldHandleCheckDigitOnFailure: Boolean = true
+)
 
 private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||

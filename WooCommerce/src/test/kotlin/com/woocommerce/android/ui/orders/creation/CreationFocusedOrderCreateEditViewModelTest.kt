@@ -1149,6 +1149,33 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given sku, when view model init, then display progress indicator`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+
+            createSut(navArgs)
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
@@ -1256,7 +1283,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatQRCode,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1281,7 +1308,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
-                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
