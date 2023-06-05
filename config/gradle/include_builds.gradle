@@ -43,4 +43,13 @@ if (localBuilds.exists()) {
             }
         }
     }
+
+    if (ext.has("localWooCommerceSharedPath")) {
+        includeBuild(ext.localWooCommerceSharedPath) {
+            dependencySubstitution {
+                println "Substituting WooCommerce-Shared with the local build"
+                substitute module("$gradle.ext.wooCommerceSharedBinaryPath") with project(':library')
+            }
+        }
+    }
 }

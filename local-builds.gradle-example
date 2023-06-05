@@ -17,4 +17,5 @@ ext {
     //localFluxCPath = "../WordPress-FluxC-Android"
     //localLoginFlowPath = "../WordPress-Login-Flow-Android"
     //localMediaPickerPath = "../WordPress-MediaPicker-Android"
+    //localWooCommerceSharedPath = "../WooCommerce-Shared/libraries/android"
 }
