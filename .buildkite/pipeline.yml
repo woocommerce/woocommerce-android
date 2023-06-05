@@ -2,7 +2,7 @@
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &common_plugins
-    - automattic/a8c-ci-toolkit#2.13.0
+    - automattic/a8c-ci-toolkit#2.17.0
 
 steps:
   - label: "Gradle Wrapper Validation"
@@ -49,13 +49,7 @@ steps:
     plugins: *common_plugins
 
   - label: "Instrumented tests"
-    command: |
-      echo "--- :rubygems: Setting up Gems"
-      install_gems
-      echo "--- :closed_lock_with_key: Installing Secrets"
-      bundle exec fastlane run configure_apply
-      echo "--- 🧪 Testing"
-      bundle exec fastlane build_and_instrumented_test
+    command: .buildkite/commands/run-instrumented-tests.sh
     plugins: *common_plugins
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
