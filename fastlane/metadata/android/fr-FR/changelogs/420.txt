@@ -1,0 +1,2 @@
+13.8 :
+Grande nouvelle ! Vous pouvez désormais scanner le code-barres d’un produit lorsque vous créez une commande depuis l’application ! Fini les défilements infinis à la recherche d’un produit ! Nous avons également résolu plusieurs incidents dans les écrans de la liste de commandes et des détails sur les produits. Continuez à nous envoyer vos commentaires. Votre avis nous intéresse !

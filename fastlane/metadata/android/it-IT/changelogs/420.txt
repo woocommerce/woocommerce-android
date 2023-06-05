@@ -1,0 +1,2 @@
+13.8:
+Notizie straordinarie: ora puoi scansionare il codice a barre di un prodotto quando crei un ordine dall'app. Non è più necessario scorrere manualmente per ricercare un prodotto. Abbiamo anche risolto alcuni problemi di arresto anomalo nell'elenco degli ordini e nelle schermate dei dettagli del prodotto. Continua a inviarci feedback: siamo lieti di ascoltarli.
