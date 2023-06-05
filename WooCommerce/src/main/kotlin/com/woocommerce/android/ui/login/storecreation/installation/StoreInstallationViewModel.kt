@@ -148,24 +148,26 @@ class StoreInstallationViewModel @Inject constructor(
     }
 
     private fun scheduleDeferredNotifications() {
-        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES)) {
-            val in14days = LocalDateTime.now()
-                .plusDays(TRIAL_LENGTH_IN_DAYS)
-                .format(DateTimeFormatter.ofPattern("EEEE, MMMM d"))
-            localNotificationScheduler.scheduleNotification(
-                FreeTrialExpiringNotification(in14days, selectedSite.get().siteId)
-            )
-        }
+        launch {
+            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES)) {
+                val in14days = LocalDateTime.now()
+                    .plusDays(TRIAL_LENGTH_IN_DAYS)
+                    .format(DateTimeFormatter.ofPattern("EEEE, MMMM d"))
+                localNotificationScheduler.scheduleNotification(
+                    FreeTrialExpiringNotification(in14days, selectedSite.get().siteId)
+                )
+            }
 
-        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES)) {
-            val name = if (accountStore.account.firstName.isNotNullOrEmpty())
-                accountStore.account.firstName
-            else
-                accountStore.account.userName
+            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES)) {
+                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                    accountStore.account.firstName
+                else
+                    accountStore.account.userName
 
-            localNotificationScheduler.scheduleNotification(
-                FreeTrialExpiredNotification(name, selectedSite.get().siteId)
-            )
+                localNotificationScheduler.scheduleNotification(
+                    FreeTrialExpiredNotification(name, selectedSite.get().siteId)
+                )
+            }
         }
     }
 
