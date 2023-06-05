@@ -151,6 +151,9 @@
             android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
             android:screenOrientation="unspecified"
             tools:replace="android:screenOrientation"/>
+        <activity
+            android:name="com.woocommerce.shared.library.ReactActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
 
         <!-- Stats today app widget -->
