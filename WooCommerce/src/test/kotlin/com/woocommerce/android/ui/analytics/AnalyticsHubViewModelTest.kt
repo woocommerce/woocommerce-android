@@ -53,7 +53,6 @@ import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Calendar
@@ -444,10 +443,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onSessionFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -460,9 +459,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
 
         verify(transactionLauncher, never()).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onSessionFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -474,10 +473,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher).onRevenueFetched()
         verify(transactionLauncher, never()).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onSessionFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -489,10 +488,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
         verify(transactionLauncher, never()).onProductsFetched()
-        verify(transactionLauncher, times(1)).onSessionFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -504,9 +503,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
         verify(transactionLauncher, never()).onSessionFetched()
     }
 
