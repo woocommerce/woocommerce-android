@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.0
 -----
-
+[*] Improved search UI in product selector [https://github.com/woocommerce/woocommerce-android/pull/9193]
 
 13.9
 -----
