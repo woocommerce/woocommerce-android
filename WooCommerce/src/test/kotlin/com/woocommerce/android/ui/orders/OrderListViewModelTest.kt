@@ -1177,6 +1177,16 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress::class.java
+        )
+    }
+
     //endregion
 
     private companion object {
