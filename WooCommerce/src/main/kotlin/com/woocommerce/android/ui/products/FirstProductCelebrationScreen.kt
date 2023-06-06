@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,10 +59,14 @@ fun FirstProductCelebrationScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
+            val configuration = LocalConfiguration.current
+            val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+            val imageSize = if (isLandscape) 100.dp else 250.dp
+
             Image(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .height(250.dp)
+                    .height(imageSize)
                     .padding(
                         top = dimensionResource(id = R.dimen.major_150),
                         bottom = dimensionResource(id = R.dimen.major_100)
@@ -76,12 +83,26 @@ fun FirstProductCelebrationScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
 
-            WCColoredButton(onClick = onShareClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.share_product))
-            }
+            if (isLandscape) {
+                Row {
+                    WCOutlinedButton(onClick = onDismissClick) {
+                        Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
+                    }
 
-            WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    WCColoredButton(onClick = onShareClick) {
+                        Text(text = stringResource(R.string.share_product))
+                    }
+                }
+            } else {
+                WCColoredButton(onClick = onShareClick, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(R.string.share_product))
+                }
+
+                WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
+                }
             }
         }
     }
