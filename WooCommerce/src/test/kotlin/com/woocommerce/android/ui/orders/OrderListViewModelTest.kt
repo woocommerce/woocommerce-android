@@ -1195,6 +1195,25 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isNull()
     }
 
+    @Test
+    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.onScanClicked()
+
+        assertFalse(savedStateHandle["scanning_in_progress"]!!)
+    }
+
     //endregion
 
     private companion object {
