@@ -1233,6 +1233,20 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+            )
+        )
+    }
+
     //endregion
 
     private companion object {
