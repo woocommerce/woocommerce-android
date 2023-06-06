@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,14 +42,11 @@ fun FirstProductCelebrationScreen(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_150))
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .weight(1f)
-                .padding(top = dimensionResource(id = R.dimen.major_350))
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
@@ -65,7 +61,7 @@ fun FirstProductCelebrationScreen(
                     .align(Alignment.CenterHorizontally)
                     .height(250.dp)
                     .padding(
-                        top = dimensionResource(id = R.dimen.major_350),
+                        top = dimensionResource(id = R.dimen.major_150),
                         bottom = dimensionResource(id = R.dimen.major_100)
                     ),
                 contentScale = ContentScale.FillHeight,
