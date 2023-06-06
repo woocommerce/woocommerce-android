@@ -1222,6 +1222,17 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertFalse(savedStateHandle["scanning_in_progress"]!!)
     }
 
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        verify(analyticsTracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
     //endregion
 
     private companion object {
