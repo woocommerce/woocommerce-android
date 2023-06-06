@@ -59,6 +59,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -82,10 +83,13 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     internal lateinit var selectedSite: SelectedSite
+
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
@@ -363,6 +367,12 @@ class OrderListFragment :
                         isIndefinite = false,
                         actionListener = event.retry
                     ).show()
+                }
+                OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
+                    ToastUtils.showToast(
+                        context,
+                        "App process was killed while scanning in progress, please try again"
+                    )
                 }
                 else -> event.isHandled = false
             }
