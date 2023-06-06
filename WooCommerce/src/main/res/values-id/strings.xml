@@ -1,17 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 09:54:04+0000
+Translation-Revision-Date: 2023-05-31 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, kami menjeda operasi toko Anda. Anda dapat melanjutkannya dengan memilih paket yang paling sesuai untuk Anda.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Terus jalankan bisnis Anda dengan paket kami!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Periode percobaan Woo Express gratis Anda berakhir besok (%1$s). Sekarang saatnya menggapai impian Anda – pilih paket dan bersiaplah untuk bertumbuh.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Periode percobaan gratis Anda hampir habis!</string>
+    <string name="local_notification_without_free_trial_description">Halo %1$s, %2$s siap menyambut Anda! Mulai percobaan gratis 14 hari Woo Express hanya dengan satu kali klik untuk memulai bisnis online Anda.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ Toko Anda sudah menunggu!</string>
+    <string name="local_notification_store_creation_complete_description">Halo %1$s! Selamat datang di periode percobaan gratis 14 hari Woo Express – tempat yang memiliki segalanya yang Anda butuhkan untuk memulai dan menumbuhkan bisnis online yang sukses. Siap menjelajahi?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 Toko Anda sudah siap!</string>
+    <string name="product_type_variation">Produk variasi</string>
+    <string name="settings_policies_cookie_policy_description">Kebijakan cookie kami menjelaskan bagaimana kami dan pihak lain menggunakan cookie serta bagaimana Anda dapat mengelolanya.</string>
+    <string name="settings_policies_cookie_policy">Kebijakan Cookie</string>
+    <string name="settings_policies_privacy_policy_description">Informasi Anda membantu kami meningkatkan dan memasarkan produk kami serta mempersonalisasi pengalaman Anda di WooCommerce.</string>
+    <string name="settings_policies_privacy_policy">Kebijakan Privasi</string>
+    <string name="privacy_banner_error_save">Terjadi error saat menyimpan pilihan privasi Anda.</string>
+    <string name="privacy_banner_save">Simpan</string>
+    <string name="privacy_banner_settings">Pengaturan</string>
+    <string name="privacy_banner_analytics_description">Izinkan kami untuk mengoptimalkan performa dengan mengumpulkan informasi tentang cara pengguna berinteraksi dengan aplikasi seluler kami.</string>
+    <string name="privacy_banner_analytics">Analitik</string>
+    <string name="privacy_banner_title">Kelola privasi</string>
+    <string name="privacy_banner_description">Privasi Anda selalu kami utamakan. Kami menggunakan, menyimpan, dan memproses data pribadi Anda untuk mengoptimalkan aplikasi kami (dan pengalaman Anda) dengan beragam cara. Sebagian penggunaan data Anda sangat kami butuhkan agar aplikasi berjalan optimal, dan sisanya dapat Anda sesuaikan dari Pengaturan.</string>
+    <string name="settings_reports_report_crashes_description">Untuk membantu kami meningkatkan performa aplikasi dan memperbaiki bug, aktifkan laporan otomatis untuk masalah crash.</string>
+    <string name="settings_reports_report_crashes">Laporkan Masalah Crash</string>
+    <string name="settings_reports_header">Laporan</string>
+    <string name="settings_privacy_cookies_polices_description">Pelajari selengkapnya tentang kebijakan privasi dan cookie kami.</string>
+    <string name="settings_privacy_cookies_polices">Kebijakan Privasi dan Cookie</string>
+    <string name="settings_privacy_header">Privasi</string>
+    <string name="settings_usage_tracking_description">Pelajari selengkapnya tentang data yang kami kumpulkan seputar toko Anda dan pilihan Anda dalam mengelola pembagian data.</string>
+    <string name="settings_usage_tracking">Pelacakan Penggunaan</string>
+    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woocommerce.com. Lihat di sini untuk mempelajari selengkapnya.</string>
+    <string name="settings_web_options">Pilihan Web</string>
+    <string name="settings_more_privacy_options_header">Pilihan privasi lainnya</string>
+    <string name="settings_tracking_analytics_error_update">Terjadi error saat memperbarui pengaturan privasi Anda</string>
+    <string name="settings_tracking_analytics_error_fetch">Terjadi error saat mengambil pengaturan privasi Anda</string>
+    <string name="settings_tracking_analytics_description">Izinkan kami untuk mengoptimalkan performa dengan mengumpulkan informasi tentang cara pengguna berinteraksi dengan aplikasi seluler kami.</string>
+    <string name="settings_tracking_analytics">Analitik</string>
+    <string name="settings_tracking_header">Pelacakan</string>
+    <string name="settings_privacy_statement">Kami menghargai privasi Anda. Data pribadi Anda digunakan untuk mengoptimalkan aplikasi seluler kami, meningkatkan keamanan, menjalankan proses analitik, dan menyempurnakan pengalaman Anda.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Anda tidak dapat menambahkan produk bervariasi secara langsung. Pilih sebuah variasi secara spesifik.</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produk tidak ditemukan. Tidak dapat menambahkan ke pesanan baru</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
+    <string name="scan_barcode">Pindai Barcode</string>
+    <string name="shipping_notice_banner_instructions_content">Sekarang, pengiriman ke negara yang memberlakukan aturan bea cukai Uni Eropa (UE) mewajibkan Anda menguraikan setiap item. Contohnya, jika Anda mengirim pakaian, Anda harus menerangkan jenis pakaiannya (seperti, baju pria, rompi wanita, jaket pria) dalam deskripsinya untuk dapat diterima.  Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Hubungi Dukungan</string>
+    <string name="settings_close_account_active_stores_error_description">Akun ini tidak dapat ditutup jika memiliki toko aktif.</string>
+    <string name="settings_close_account_generic_error_description">Terjadi error saat mencoba menutup akun.</string>
+    <string name="settings_close_account_error_dialog_title">Tidak dapat menutup akun</string>
+    <string name="settings_close_account_dialog_loading_title">Menutup akun…</string>
+    <string name="settings_close_account_dialog_confirm_button">Tutup Akun Permanen</string>
+    <string name="settings_close_account_dialog_description">Untuk mengonfirmasi, silakan masukkan lagi nama pengguna Anda sebelum menutup.</string>
+    <string name="settings_close_account_dialog_title">Konfirmasi Penutupan Akun</string>
+    <string name="settings_close_account">Tutup Akun</string>
+    <string name="scan_to_pay_title">Pindai kode QR dan ikuti petunjuk</string>
+    <string name="card_reader_type_selection_scan_to_pay">Pindai untuk Membayar</string>
+    <string name="order_creation_remove_coupon">Hapus kupon dari pesanan</string>
+    <string name="order_creation_coupon_codes">Kupon (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Tambah kupon</string>
     <string name="product_stock_status_insufficient_stock">Stok tidak cukup</string>
     <string name="shipping_label_customs_item_description_too_short">Anda harus memberikan deskripsi yang spesifik dan jelas untuk tiap item.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Tambahkan produk-produk melalui pemindai</string>
     <string name="shipping_notice_dismiss">Tutup</string>
     <string name="shipping_notice_learn_more">Pelajari Selengkapnya</string>
-    <string name="shipping_notice_banner_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
+    <string name="shipping_notice_banner_warning_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Terus dapatkan pembaruan dan tingkatkan keamanan toko. Jelajahi Jetpack sekarang.</string>
     <string name="jetpack_benefits_bottom_banner_title">Dapatkan pemberitahuan pesanan dan aneka fitur lainnya</string>
     <string name="store_onboarding_setting_description">Tampilkan atau sembunyikan daftar penyiapan toko</string>

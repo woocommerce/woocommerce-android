@@ -33,15 +33,29 @@ class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dialog?.apply {
+            setCanceledOnTouchOutside(false)
+            setCancelable(false)
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PrivacyBannerViewModel.ShowError -> {
-                    mainViewModel.onPrivacyPreferenceUpdateFailed(event.requestedChange)
+                    mainViewModel.onPrivacyPreferenceUpdateFailed(event.requestedAnalyticsValue)
                     dismiss()
                 }
 
                 is PrivacyBannerViewModel.Dismiss -> {
+                    dismiss()
+                }
+
+                is PrivacyBannerViewModel.ShowSettings -> {
+                    mainViewModel.onPrivacySettingsTapped()
+                    dismiss()
+                }
+
+                is PrivacyBannerViewModel.ShowErrorOnSettings -> {
+                    mainViewModel.onSettingsPrivacyPreferenceUpdateFailed(event.requestedAnalyticsValue)
                     dismiss()
                 }
             }

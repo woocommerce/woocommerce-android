@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import android.app.Activity
 import androidx.fragment.app.FragmentActivity
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -15,3 +16,9 @@ fun FragmentActivity.startHelpActivity(origin: HelpOrigin) =
             null
         )
     )
+
+var Activity.currentScreenBrightness: Float
+    get() = window.attributes.screenBrightness
+    set(value) {
+        window.attributes = window.attributes.apply { screenBrightness = value }
+    }

@@ -1,1 +1,1 @@
-Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!
+We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!

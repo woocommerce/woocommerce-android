@@ -23,6 +23,7 @@ object WooLog {
         MEDIA,
         CARD_READER,
         COUPONS,
+        JITM,
         SITE_PICKER
     }
 

@@ -21,6 +21,8 @@ import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -28,6 +30,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
+import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -253,8 +256,14 @@ class MainActivityViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
 
-        if (notification.tag == LocalNotificationType.STORE_CREATION_INCOMPLETE.value) {
-            triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+        when (notification.tag) {
+            LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
+                triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+            }
+            LocalNotificationType.FREE_TRIAL_EXPIRED.value,
+            LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
+                triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+            }
         }
     }
 
@@ -275,6 +284,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun onPrivacySettingsTapped() {
+        triggerEvent(ShowPrivacySettings)
+    }
+
+    fun onSettingsPrivacyPreferenceUpdateFailed(requestedAnalyticsPreference: RequestedAnalyticsValue) {
+        triggerEvent(ShowPrivacySettingsWithError(requestedAnalyticsPreference))
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
@@ -286,12 +303,15 @@ class MainActivityViewModel @Inject constructor(
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
+    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
+    object ShowPrivacySettings : Event()
+    data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()

@@ -70,7 +70,7 @@
     <!-- Buttons -->
     <style name="Widget.LoginFlow.Button.Primary" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
-        <item name="android:textColor">@color/color_on_primary_high</item>
+        <item name="android:textColor">@color/woo_white</item>
         <item name="android:height">@dimen/button_height_major_100</item>
         <item name="android:textAllCaps">false</item>
         <item name="rippleColor">@color/color_primary_variant</item>

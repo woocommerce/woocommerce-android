@@ -1,7 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-13.8
+14.0
 -----
 
+
+13.9
+-----
+- [*] [Internal] Changes buttons font color in both dark and light mode to light on the login flow [https://github.com/woocommerce/woocommerce-android/pull/9166]
+- [**] Added possibility to search by SKU in the product selector screen [https://github.com/woocommerce/woocommerce-android/pull/9164]
+
+13.8
+-----
+- [*] Scan To Pay: Set maximum screen brightness to make QR easier to scan. [https://github.com/woocommerce/woocommerce-android/pull/9098]
+- [*] [Internal] Fixed a crash related to a product image viewing [https://github.com/woocommerce/woocommerce-android/pull/9111]
+- [*] [Internal] Fixes crashes in order details list when activity gets destroyed and recreated [https://github.com/woocommerce/woocommerce-android/pull/9113]
+- [***] In-Person Payments: A merchant can now scan to add product during order creation. [https://github.com/woocommerce/woocommerce-android/pull/9125]
+- [*] Allow EU merchants to have better control of their privacy choices. A privacy choices banner will be shown the next time they open the app.
+[https://github.com/woocommerce/woocommerce-android/pull/9001]
 
 13.7
 -----

@@ -335,4 +335,17 @@ class AppPrefsWrapper @Inject constructor() {
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
+
+    fun setCrashReportingEnabled(enabled: Boolean) {
+        AppPrefs.setCrashReportingEnabled(enabled)
+    }
+
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
+        AppPrefs.setTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
+    }
+
+    fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 }

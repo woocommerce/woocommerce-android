@@ -76,7 +76,7 @@ class ProductsRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
-    private val productSalad = ProductData(
+    val productSalad = ProductData(
         name = "Chicken Teriyaki Salad",
         stockStatusRaw = "instock",
         priceDiscountedRaw = "7",
@@ -92,17 +92,24 @@ class ProductsRealAPI : TestBase() {
     )
 
     private val productCappuccinoAlmondMedium = ProductData(
-        name = "Cappuccino",
-        stockStatusRaw = "instock",
+        name = productCappuccino.name,
+        stockStatusRaw = productCappuccino.stockStatusRaw,
         priceDiscountedRaw = "3",
-        sku = "CF-CPC-ALM-M"
+        sku = productCappuccino.sku + "-ALM-M"
     )
 
     private val productCappuccinoAlmondLarge = ProductData(
-        name = "Cappuccino",
-        stockStatusRaw = "instock",
+        name = productCappuccino.name,
+        stockStatusRaw = productCappuccino.stockStatusRaw,
         priceDiscountedRaw = "4",
-        sku = "CF-CPC-ALM-L"
+        sku = productCappuccino.sku + "-ALM-L"
+    )
+
+    val productCappuccinoCocoMedium = ProductData(
+        name = productCappuccino.name,
+        stockStatusRaw = productCappuccino.stockStatusRaw,
+        priceDiscountedRaw = "3",
+        sku = productCappuccino.sku + "-COCO-M"
     )
 
     @Test

@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
@@ -44,7 +46,8 @@ fun PrivacyBannerScreen(viewModel: PrivacyBannerViewModel) {
     PrivacyBannerScreen(
         state,
         viewModel::onSwitchChanged,
-        viewModel::onSavePressed
+        viewModel::onSavePressed,
+        viewModel::onSettingsPressed,
     )
 }
 
@@ -53,10 +56,11 @@ fun PrivacyBannerScreen(
     state: PrivacyBannerViewModel.State,
     onSwitchChanged: (Boolean) -> Unit,
     onSavePressed: () -> Unit,
+    onSettingsPressed: () -> Unit,
 ) {
     Box(Modifier.background(MaterialTheme.colors.surface)) {
         Column(
-            Modifier.padding(vertical = 16.dp)
+            Modifier.padding(vertical = 16.dp).verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = stringResource(R.string.privacy_banner_title),
@@ -120,7 +124,7 @@ fun PrivacyBannerScreen(
                         hoveredElevation = 0.dp,
                         focusedElevation = 0.dp
                     ),
-                    onClick = { /*TODO*/ }
+                    onClick = onSettingsPressed
                 ) {
                     Text(stringResource(R.string.privacy_banner_settings))
                 }
@@ -178,7 +182,7 @@ private fun Default() {
                 analyticsSwitchEnabled = false,
                 loading = true
             ),
-            {}, {}
+            {}, {}, {}
         )
     }
 }

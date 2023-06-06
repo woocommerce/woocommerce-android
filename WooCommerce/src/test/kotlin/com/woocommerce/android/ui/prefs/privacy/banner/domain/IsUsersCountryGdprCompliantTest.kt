@@ -65,6 +65,20 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given user has not WPCOM account, when network carrier country code in EU and network carrier returns country code lowercase, then show the banner`() {
+        // given
+        accountStore.stub {
+            on { hasAccessToken() } doReturn false
+        }
+        telephonyManagerProvider.stub {
+            on { getCountryCode() } doReturn "de"
+        }
+
+        // then
+        assertThat(sut()).isTrue
+    }
+
+    @Test
     fun `given user has not WPCOM account, when network carrier country code outside EU, then do not show the banner`() {
         // given
         accountStore.stub {
@@ -110,5 +124,20 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
 
         // then
         assertThat(sut()).isFalse
+    }
+
+    @Test
+    fun `given user has WPCOM account but it returns empty ip code, when requesting if user is gdpr compliant, fall back to phone carrier check`() {
+        // given
+        accountStore.stub {
+            on { hasAccessToken() } doReturn true
+            on { account } doReturn AccountModel().apply { userIpCountryCode = null }
+        }
+        telephonyManagerProvider.stub {
+            on { getCountryCode() } doReturn "pl"
+        }
+
+        // then
+        assertThat(sut()).isTrue
     }
 }

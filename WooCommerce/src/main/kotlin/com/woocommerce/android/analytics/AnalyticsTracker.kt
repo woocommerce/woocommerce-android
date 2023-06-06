@@ -166,6 +166,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_SEARCH = "search"
         const val KEY_SEARCH_FILTER = "filter"
+        const val KEY_SEARCH_TYPE = "search_filter"
+        const val VALUE_SEARCH_TYPE_ALL = "all"
+        const val VALUE_SEARCH_TYPE_SKU = "sku"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
@@ -198,6 +201,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TAP = "tap"
         const val KEY_FAILURE = "failure"
         const val KEY_IS_FREE_TRIAL = "is_free_trial"
+        const val KEY_SCANNING_SOURCE = "source"
+        const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
+        const val KEY_PRODUCT_ADDED_VIA = "added_via"
+        const val KEY_SCANNING_FAILURE_REASON = "reason"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -255,6 +262,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS = "milliseconds_since_order_add_new"
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
 
+        const val KEY_COUPONS_COUNT = "coupons_count"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
@@ -305,6 +314,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
+
+        const val KEY_STORE_TIMEZONE = "store_timezone"
+        const val KEY_LOCAL_TIMEZONE = "local_timezone"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -504,6 +516,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Free Trial
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
+        const val VALUE_NOTIFICATION = "notification"
 
         // -- Store Onboarding
         const val ONBOARDING_TASK_KEY = "task"

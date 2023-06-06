@@ -979,11 +979,11 @@ object AppPrefs {
 
     var savedPrivacySettings: Boolean
         get() = getBoolean(
-            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
             default = false
         )
         set(value) = setBoolean(
-            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
             value = value
         )
 
@@ -997,6 +997,19 @@ object AppPrefs {
     fun getStorePhoneNumber(siteId: Int): String =
         getString(
             key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+        )
+
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
+        setBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            value = true
+        )
+    }
+
+    fun isTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        getBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            default = false
         )
 
     /**

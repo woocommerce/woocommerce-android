@@ -59,9 +59,9 @@ class LaunchStoreFragment : BaseFragment() {
         setupObservers()
     }
 
-    override fun onDestroyView() {
+    override fun onDestroy() {
         lifecycle.removeObserver(viewModel)
-        super.onDestroyView()
+        super.onDestroy()
     }
 
     private fun setupObservers() {

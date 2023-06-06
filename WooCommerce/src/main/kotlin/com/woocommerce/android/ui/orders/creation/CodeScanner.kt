@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,8 @@ interface CodeScanner {
 
 class GoogleCodeScanner @Inject constructor(
     private val scanner: GmsBarcodeScanner,
-    private val errorMapper: GoogleCodeScannerErrorMapper
+    private val errorMapper: GoogleCodeScannerErrorMapper,
+    private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
 ) : CodeScanner {
     override fun startScan(): Flow<CodeScannerStatus> {
         return callbackFlow {
@@ -38,7 +40,12 @@ class GoogleCodeScanner @Inject constructor(
 
     private fun ProducerScope<CodeScannerStatus>.handleScanSuccess(code: Barcode) {
         code.rawValue?.let {
-            trySend(CodeScannerStatus.Success(it))
+            trySend(
+                CodeScannerStatus.Success(
+                    it,
+                    barcodeFormatMapper.mapBarcodeFormat(code.format)
+                )
+            )
         } ?: run {
             trySend(
                 CodeScannerStatus.Failure(
@@ -51,7 +58,7 @@ class GoogleCodeScanner @Inject constructor(
 }
 
 sealed class CodeScannerStatus {
-    data class Success(val code: String) : CodeScannerStatus()
+    data class Success(val code: String, val format: BarcodeFormat) : CodeScannerStatus()
     data class Failure(
         val error: String?,
         val type: CodeScanningErrorType
@@ -88,4 +95,11 @@ sealed class CodeScanningErrorType {
     object UnImplemented : CodeScanningErrorType()
     object Unknown : CodeScanningErrorType()
     data class Other(val throwable: Throwable?) : CodeScanningErrorType()
+
+    override fun toString(): String = when (this) {
+        is Other -> this.throwable?.message ?: "Other"
+        else -> this.javaClass.run {
+            name.removePrefix("${`package`?.name ?: ""}.")
+        }
+    }
 }
