@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +52,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCSelectableChip
@@ -70,23 +76,34 @@ import com.woocommerce.android.util.StringUtils
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     val viewState by viewModel.viewState.observeAsState()
-    viewState?.let {
-        ProductSelectorScreen(
-            state = it,
-            onDoneButtonClick = viewModel::onDoneButtonClick,
-            onClearButtonClick = viewModel::onClearButtonClick,
-            onFilterButtonClick = viewModel::onFilterButtonClick,
-            onProductClick = viewModel::onProductClick,
-            onLoadMore = viewModel::onLoadMore,
-            onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
-            onSearchTypeChanged = viewModel::onSearchTypeChanged
-        )
+    BackHandler(onBack = viewModel::onNavigateBack)
+    viewState?.let { state ->
+        Scaffold(topBar = {
+            Toolbar(
+                onNavigationButtonClick = viewModel::onNavigateBack,
+                navigationIcon = if (state.searchState.isActive) Icons.Filled.ArrowBack else Icons.Filled.Close,
+                title = stringResource(id = string.coupon_conditions_products_select_products_title)
+            )
+        }) { padding ->
+            ProductSelectorScreen(
+                modifier = Modifier.padding(padding),
+                state = state,
+                onDoneButtonClick = viewModel::onDoneButtonClick,
+                onClearButtonClick = viewModel::onClearButtonClick,
+                onFilterButtonClick = viewModel::onFilterButtonClick,
+                onProductClick = viewModel::onProductClick,
+                onLoadMore = viewModel::onLoadMore,
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
+                onSearchTypeChanged = viewModel::onSearchTypeChanged
+            )
+        }
     }
 }
 
 @Composable
 fun ProductSelectorScreen(
+    modifier: Modifier = Modifier,
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
@@ -98,7 +115,7 @@ fun ProductSelectorScreen(
     onClearFiltersButtonClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
@@ -709,9 +726,8 @@ fun ProductListEmptyPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
-        ),
-        {}
-    )
+        )
+    ) {}
 }
 
 @Preview

@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -482,12 +483,17 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given active search, when back pressed, should intercept and clear search field`() {
+    fun `given active search, when back pressed, should clear search field`() = testBlocking {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = emptyArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
         ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
         val sut = createViewModel(navArgs)
         sut.onSearchQueryChanged("test")
 
@@ -496,10 +502,31 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             state = it
         }
 
-        val backPressInterceptionResult = sut.onExternalBackPressInterceptRequest()
+        sut.onNavigateBack()
 
-        assertThat(backPressInterceptionResult).isFalse
-        assertThat(state!!.searchState.isActive).isFalse
+        assertThat(state!!.searchState).isEqualTo(ProductSelectorViewModel.SearchState.EMPTY)
+    }
+
+    @Test
+    fun `given inactive search, when back pressed, should exit screen`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+        val sut = createViewModel(navArgs)
+
+        var event: MultiLiveEvent.Event? = null
+        sut.event.observeForever {
+            event = it
+        }
+
+        assertThat(event!!).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
     @Test
