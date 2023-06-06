@@ -1214,6 +1214,14 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertFalse(savedStateHandle["scanning_in_progress"]!!)
     }
 
+    @Test
+    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        assertFalse(savedStateHandle["scanning_in_progress"]!!)
+    }
+
     //endregion
 
     private companion object {
