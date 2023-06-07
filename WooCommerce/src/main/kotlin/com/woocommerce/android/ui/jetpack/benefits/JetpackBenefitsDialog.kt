@@ -23,7 +23,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class JetpackBenefitsDialog : DialogFragment() {
     companion object {
-        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.5f
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
