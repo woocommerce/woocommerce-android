@@ -141,9 +141,11 @@ class MyStoreViewModel @Inject constructor(
         trackLocalTimezoneDifferenceFromStore()
 
         if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
-            shouldShowPrivacyBanner().let {
-                if (it) {
-                    triggerEvent(MyStoreEvent.ShowPrivacyBanner)
+            launch {
+                shouldShowPrivacyBanner().let {
+                    if (it) {
+                        triggerEvent(MyStoreEvent.ShowPrivacyBanner)
+                    }
                 }
             }
         }
