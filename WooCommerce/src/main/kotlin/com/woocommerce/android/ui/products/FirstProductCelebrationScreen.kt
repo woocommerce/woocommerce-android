@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun FirstProductCelebrationScreen(viewModel: FirstProductCelebrationViewModel) {
     FirstProductCelebrationScreen(
+        showShareButton = viewModel.showShareButton,
         onShareClick = viewModel::onShareButtonClicked,
         onDismissClick = viewModel::onDismissButtonClicked
     )
@@ -39,6 +40,7 @@ fun FirstProductCelebrationScreen(viewModel: FirstProductCelebrationViewModel) {
 
 @Composable
 fun FirstProductCelebrationScreen(
+    showShareButton: Boolean = true,
     onShareClick: () -> Unit = {},
     onDismissClick: () -> Unit = {}
 ) {
@@ -86,22 +88,26 @@ fun FirstProductCelebrationScreen(
             if (isLandscape) {
                 Row {
                     WCOutlinedButton(onClick = onDismissClick) {
-                        Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
+                        Text(text = stringResource(id = R.string.dismiss))
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                    if (showShareButton) {
+                        Spacer(modifier = Modifier.weight(1f))
 
-                    WCColoredButton(onClick = onShareClick) {
-                        Text(text = stringResource(R.string.share_product))
+                        WCColoredButton(onClick = onShareClick) {
+                            Text(text = stringResource(R.string.share_product))
+                        }
                     }
                 }
             } else {
-                WCColoredButton(onClick = onShareClick, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(R.string.share_product))
+                if (showShareButton) {
+                    WCColoredButton(onClick = onShareClick, modifier = Modifier.fillMaxWidth()) {
+                        Text(text = stringResource(R.string.share_product))
+                    }
                 }
 
                 WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
+                    Text(text = stringResource(id = R.string.dismiss))
                 }
             }
         }
