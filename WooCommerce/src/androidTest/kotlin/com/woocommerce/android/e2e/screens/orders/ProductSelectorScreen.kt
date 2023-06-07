@@ -17,7 +17,7 @@ class ProductSelectorScreen : Screen(R.id.product_selector_compose_view) {
         composeTestRule: ComposeContentTestRule
     ): ProductSelectorScreen {
         val screenTitle = getTranslatedString(R.string.coupon_conditions_products_select_products_title)
-        Espresso.onView(ViewMatchers.withText(screenTitle)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        composeTestRule.onNodeWithText(screenTitle).assertIsDisplayed()
 
         val searchHintText = getTranslatedString(R.string.product_selector_search_hint)
         composeTestRule.onNodeWithText(searchHintText).assertIsDisplayed()
