@@ -526,6 +526,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             event = it
         }
 
+        sut.onNavigateBack()
+
         assertThat(event!!).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
