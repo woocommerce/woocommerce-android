@@ -1328,6 +1328,25 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         assertThat(sut.event.value).isNull()
     }
+
+    @Test
+    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+
+        createSut()
+        sut.onScanClicked()
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
