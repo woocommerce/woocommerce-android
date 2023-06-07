@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.ScanningSource
+import com.woocommerce.android.ui.orders.creation.VMKilledWhenScanningInProgress
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.IPPSurveyFeedbackBannerState
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
@@ -542,7 +544,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then when the order status change fails, the retry message is shown
         val resultEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(resultEvent is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack)
+        assertTrue(resultEvent is OrderListEvent.ShowRetryErrorSnack)
     }
 
     @Test
@@ -688,7 +690,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel.onDismissIPPFeedbackBannerClicked()
 
             // then
-            assertEquals(OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
+            assertEquals(OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
         }
 
     @Test
@@ -706,7 +708,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertEquals(
-            OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
+            OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
             viewModel.event.value
         )
     }
@@ -978,7 +980,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
         viewModel.onScanClicked()
 
-        assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OnBarcodeScanned::class.java)
     }
 
     @Test
@@ -1055,7 +1057,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onScanClicked()
 
         assertThat(viewModel.event.value).isEqualTo(
-            OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
+            OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
         )
     }
 
@@ -1183,7 +1185,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
 
         assertThat(viewModel.event.value).isInstanceOf(
-            OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress::class.java
+            OrderListEvent.VMKilledWhenScanningInProgress::class.java
         )
     }
 
@@ -1247,6 +1249,16 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event with proper message`() {
+        savedStateHandle["scanning_in_progress"] = true
+
+        viewModel = createViewModel()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            OrderListEvent.VMKilledWhenScanningInProgress(R.string.order_list_barcode_scanning_process_death)
+        )
+    }
     //endregion
 
     private companion object {
