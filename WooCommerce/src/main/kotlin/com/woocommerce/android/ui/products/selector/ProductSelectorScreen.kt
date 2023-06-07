@@ -23,9 +23,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -52,7 +55,6 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
-import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCSelectableChip
@@ -79,10 +81,20 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
         Scaffold(topBar = {
-            Toolbar(
-                onNavigationButtonClick = viewModel::onNavigateBack,
-                navigationIcon = if (state.searchState.isActive) Icons.Filled.ArrowBack else Icons.Filled.Close,
-                title = stringResource(id = string.coupon_conditions_products_select_products_title)
+            TopAppBar(
+                title = { Text(stringResource(id = string.coupon_conditions_products_select_products_title)) },
+                navigationIcon = {
+                    IconButton(viewModel::onNavigateBack) {
+                        Icon(
+                            imageVector = if (state.searchState.isActive) {
+                                Icons.Filled.ArrowBack
+                            } else {
+                                Icons.Filled.Close
+                            },
+                            contentDescription = stringResource(id = string.back)
+                        )
+                    }
+                }
             )
         }) { padding ->
             ProductSelectorScreen(
