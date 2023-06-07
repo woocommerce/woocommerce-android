@@ -368,10 +368,10 @@ class OrderListFragment :
                         actionListener = event.retry
                     ).show()
                 }
-                OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
+                is OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
                     ToastUtils.showToast(
                         context,
-                        "App was terminated while scanning in progress, please try again"
+                        event.message
                     )
                 }
                 else -> event.isHandled = false

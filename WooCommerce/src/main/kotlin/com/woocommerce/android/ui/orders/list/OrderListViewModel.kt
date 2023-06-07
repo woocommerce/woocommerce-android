@@ -205,7 +205,11 @@ class OrderListViewModel @Inject constructor(
                     KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
                 )
             )
-            triggerEvent(OrderListEvent.VMKilledWhenScanningInProgress)
+            triggerEvent(
+                OrderListEvent.VMKilledWhenScanningInProgress(
+                    R.string.order_list_barcode_scanning_process_death
+                )
+            )
         }
 
         launch {
@@ -812,7 +816,7 @@ class OrderListViewModel @Inject constructor(
             val retry: View.OnClickListener,
         ) : Event()
 
-        object VMKilledWhenScanningInProgress : Event()
+        data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
     }
 
     @Parcelize
