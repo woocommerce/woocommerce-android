@@ -1368,6 +1368,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             any()
         )
     }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+            )
+        )
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
