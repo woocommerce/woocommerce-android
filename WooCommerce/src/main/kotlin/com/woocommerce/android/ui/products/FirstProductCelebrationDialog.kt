@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FirstProductCelebrationDialog : DialogFragment() {
@@ -21,6 +22,8 @@ class FirstProductCelebrationDialog : DialogFragment() {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
+
+    @Inject lateinit var navigator: ProductNavigator
 
     private val viewModel: FirstProductCelebrationViewModel by viewModels()
 
@@ -48,6 +51,7 @@ class FirstProductCelebrationDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is ProductNavigationTarget -> navigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
             }
         }
