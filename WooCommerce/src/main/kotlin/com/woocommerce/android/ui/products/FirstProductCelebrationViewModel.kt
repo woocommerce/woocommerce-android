@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FirstProductCelebrationViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
-   private val selectedSite: SelectedSite,
+    private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: FirstProductCelebrationDialogArgs by savedStateHandle.navArgs()
