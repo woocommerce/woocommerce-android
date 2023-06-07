@@ -1356,6 +1356,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         assertFalse(savedState["scanning_in_progress"]!!)
     }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
