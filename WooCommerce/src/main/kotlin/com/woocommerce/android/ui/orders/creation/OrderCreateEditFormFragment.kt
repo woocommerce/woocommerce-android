@@ -465,10 +465,10 @@ class OrderCreateEditFormFragment :
                     actionListener = event.retry
                 ).show()
             }
-            VMKilledWhenScanningInProgress -> {
+            is VMKilledWhenScanningInProgress -> {
                 ToastUtils.showToast(
                     context,
-                    "App was terminated while scanning in progress, please try again"
+                    event.message
                 )
             }
             is Exit -> findNavController().navigateUp()

@@ -232,7 +232,11 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
                 )
             )
-            triggerEvent(VMKilledWhenScanningInProgress)
+            triggerEvent(
+                VMKilledWhenScanningInProgress(
+                    R.string.order_creation_barcode_scanning_process_death
+                )
+            )
         }
     }
 
@@ -925,7 +929,9 @@ data class OnAddingProductViaScanningFailed(
     val retry: View.OnClickListener,
 ) : Event()
 
-object VMKilledWhenScanningInProgress : Event()
+data class VMKilledWhenScanningInProgress(
+    @StringRes val message: Int
+) : Event()
 
 data class ProductUIModel(
     val item: Order.Item,
