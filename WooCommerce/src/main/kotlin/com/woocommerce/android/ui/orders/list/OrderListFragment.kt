@@ -371,7 +371,7 @@ class OrderListFragment :
                 OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
                     ToastUtils.showToast(
                         context,
-                        "App process was killed while scanning in progress, please try again"
+                        "App was terminated while scanning in progress, please try again"
                     )
                 }
                 else -> event.isHandled = false
