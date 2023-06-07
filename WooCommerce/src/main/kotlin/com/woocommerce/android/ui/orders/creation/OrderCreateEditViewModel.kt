@@ -93,6 +93,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -129,6 +130,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        private const val KEY_SCANNING_IN_PROGRESS = "scanning_in_progress"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -179,6 +181,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
 
+    private var scanningJob: Job? = null
+
+    private var isScanningInProgress: Boolean
+        get() = savedState.get<Boolean>(KEY_SCANNING_IN_PROGRESS) == true
+        set(value) {
+            savedState[KEY_SCANNING_IN_PROGRESS] = value
+        }
+
     init {
         when (mode) {
             Mode.Creation -> {
@@ -213,7 +223,20 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+        if (vmKilledWhenScanningInProgress()) {
+            isScanningInProgress = false
+            tracker.track(
+                BARCODE_SCANNING_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+                )
+            )
+            triggerEvent(VMKilledWhenScanningInProgress)
+        }
     }
+
+    private fun vmKilledWhenScanningInProgress() = scanningJob == null && isScanningInProgress
 
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
@@ -352,8 +375,10 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
     private fun startScan() {
-        viewModelScope.launch {
+        scanningJob = viewModelScope.launch {
+            isScanningInProgress = true
             codeScanner.startScan().collect { status ->
+                isScanningInProgress = false
                 when (status) {
                     is CodeScannerStatus.Failure -> {
                         tracker.track(
@@ -899,6 +924,8 @@ data class OnAddingProductViaScanningFailed(
     val message: Int,
     val retry: View.OnClickListener,
 ) : Event()
+
+object VMKilledWhenScanningInProgress : Event()
 
 data class ProductUIModel(
     val item: Order.Item,
