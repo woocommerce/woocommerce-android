@@ -1347,6 +1347,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         assertFalse(savedState["scanning_in_progress"]!!)
     }
+
+    @Test
+    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
