@@ -1310,6 +1310,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
+        savedState["scanning_in_progress"] = true
+        createSut(savedState)
+        assertThat(sut.event.value).isInstanceOf(VMKilledWhenScanningInProgress::class.java)
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
