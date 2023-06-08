@@ -501,6 +501,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ADD_PRODUCT_FAILED,
     PRODUCT_IMAGE_UPLOAD_FAILED,
     PRODUCT_DETAIL_PRODUCT_DELETED,
+    FIRST_CREATED_PRODUCT_SHOWN,
+    FIRST_CREATED_PRODUCT_SHARE_TAPPED,
 
     // -- Product Categories
     PRODUCT_CATEGORIES_LOADED,

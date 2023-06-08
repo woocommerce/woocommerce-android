@@ -1,28 +1,20 @@
 package com.woocommerce.android.ui.prefs.privacy.banner.domain
 
-import com.woocommerce.android.util.TelephonyManagerProvider
-import com.woocommerce.android.util.locale.LocaleProvider
-import org.wordpress.android.fluxc.store.AccountStore
+import com.woocommerce.android.ui.prefs.privacy.GeoRepository
 import javax.inject.Inject
 
-class IsUsersCountryGdprCompliant @Inject constructor(
-    private val accountStore: AccountStore,
-    private val telephonyManagerProvider: TelephonyManagerProvider,
-    private val localeProvider: LocaleProvider,
-) {
+class IsUsersCountryGdprCompliant @Inject constructor(private val geoRepository: GeoRepository) {
 
-    operator fun invoke(): Boolean {
-        val countryCode: String = if (accountStore.hasAccessToken()) {
-            accountStore.account.userIpCountryCode ?: countryCodeFromPhoneCarrierOrLocale()
-        } else {
-            countryCodeFromPhoneCarrierOrLocale()
-        }
-
-        return countryCode.uppercase() in PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES
+    suspend operator fun invoke(): Boolean {
+        return geoRepository.fetchCountryCode().fold(
+            onSuccess = { countryCode ->
+                countryCode.uppercase() in PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES
+            },
+            onFailure = {
+                false
+            }
+        )
     }
-
-    private fun countryCodeFromPhoneCarrierOrLocale() = telephonyManagerProvider.getCountryCode()
-        .ifEmpty { localeProvider.provideLocale()?.country.orEmpty() }
 
     companion object {
         private val PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES = listOf(
@@ -54,9 +46,9 @@ class IsUsersCountryGdprCompliant @Inject constructor(
             "SE", // Sweden
             "SI", // Slovenia
             "SK", // Slovakia
-            "GB", // United Kingdom
             // Single Market Countries that GDPR applies to
             "CH", // Switzerland
+            "GB", // United Kingdom
             "IS", // Iceland
             "LI", // Liechtenstein
             "NO", // Norway
