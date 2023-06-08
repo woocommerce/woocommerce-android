@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.model.Product
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -18,7 +20,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private val mutex = Mutex()
-    private var offset = 0
+    private var offset = MutableStateFlow(0)
     private var canLoadMore = true
 
     private val searchQuery = MutableStateFlow("")
@@ -28,9 +30,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private val productFilters = MutableStateFlow(mapOf<ProductFilterOption, String>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val productsFlow = combine(searchQuery, productFilters) { query, filters ->
+    val productsFlow: Flow<List<Product>> = combine(searchQuery, productFilters, offset) { query, filters, offset ->
         if (query.isEmpty()) {
-            repository.observeProducts(filters)
+            repository.observeProducts(filters).map {
+                it.take(if (offset == 0) PAGE_SIZE else offset)
+            }
         } else {
             searchResults
         }
@@ -38,11 +42,10 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     suspend fun loadFromCacheAndFetch(
         searchQuery: String = "",
-        forceRefresh: Boolean = false,
         filters: Map<ProductFilterOption, String> = emptyMap(),
         searchType: SearchType,
     ): Result<Unit> = mutex.withLock {
-        offset = 0
+        offset.value = 0
         canLoadMore = true
         searchResults.value = emptyList()
 
@@ -61,11 +64,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
                 }
             }
         } else {
-            if (forceRefresh) {
-                fetchProducts()
-            } else {
-                Result.success(Unit)
-            }
+            fetchProducts()
         }
     }
 
@@ -82,15 +81,15 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private suspend fun fetchProducts(): Result<Unit> {
-        return repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
+        return repository.fetchProducts(offset.value, PAGE_SIZE, productFilters.value).onSuccess {
             canLoadMore = it
-            offset += PAGE_SIZE
+            offset.value += PAGE_SIZE
         }.map { }
     }
 
     private fun searchInCache() {
         repository.searchProductsInCache(
-            offset = offset,
+            offset = offset.value,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
         ).let { loadedProducts ->
@@ -105,13 +104,13 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             SkuSearchOptions.Disabled
         }
         return repository.searchProducts(
-            offset = offset,
+            offset = offset.value,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
             skuSearchOption = searchOptions
         ).onSuccess { result ->
             canLoadMore = result.canLoadMore
-            offset += PAGE_SIZE
+            offset.value += PAGE_SIZE
             searchResults.update { list -> updateSearchResult(list, result.products) }
         }.map { }
     }
