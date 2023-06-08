@@ -50,7 +50,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -94,7 +96,9 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                             contentDescription = stringResource(id = string.back)
                         )
                     }
-                }
+                },
+                backgroundColor = colorResource(id = color.color_toolbar),
+                elevation = 0.dp,
             )
         }) { padding ->
             ProductSelectorScreen(
@@ -337,7 +341,7 @@ private fun displayProductsSection(
             if (index < productsList.size - 1) {
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
+                    color = colorResource(id = color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
@@ -443,7 +447,7 @@ private fun ProductList(
                 }
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
+                    color = colorResource(id = color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
@@ -464,7 +468,7 @@ private fun ProductList(
         }
 
         Divider(
-            color = colorResource(id = R.color.divider_color),
+            color = colorResource(id = color.divider_color),
             thickness = dimensionResource(id = dimen.minor_10)
         )
 
@@ -518,7 +522,7 @@ private fun ProductListSkeleton() {
                 Divider(
                     modifier = Modifier
                         .offset(x = dimensionResource(id = dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
+                    color = colorResource(id = color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
