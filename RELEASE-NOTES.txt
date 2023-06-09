@@ -1,7 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+14.0
+-----
+- [*] [Internal] Handle process death in Order creation and Order listing screen while scanning is in progress [https://github.com/woocommerce/woocommerce-android/pull/9197]
+- [*] Improved search UI in product selector [https://github.com/woocommerce/woocommerce-android/pull/9193]
+- [*] Add Products: A new view is display to celebrate when the first product is created in a store. [https://github.com/woocommerce/woocommerce-android/pull/9123]
+
 13.9
 -----
-
+- [*] [Internal] Changes buttons font color in both dark and light mode to light on the login flow [https://github.com/woocommerce/woocommerce-android/pull/9166]
+- [**] Added possibility to search by SKU in the product selector screen [https://github.com/woocommerce/woocommerce-android/pull/9164]
 
 13.8
 -----

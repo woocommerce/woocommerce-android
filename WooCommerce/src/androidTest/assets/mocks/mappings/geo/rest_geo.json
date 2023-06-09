@@ -1,0 +1,22 @@
+{
+  "request": {
+    "urlPathPattern": "/geo/",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "latitude": "40.712252",
+      "longitude": "-74.005408",
+      "country_short": "US",
+      "country_long": "United States of America",
+      "region": "New York",
+      "city": "New York City"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive",
+      "Cache-Control": "no-cache, must-revalidate, max-age=0"
+    }
+  }
+}

@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -184,6 +187,46 @@ fun WCOutlinedButton(
 }
 
 @Composable
+fun WCSelectableChip(
+    onClick: () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    enabled: Boolean = true,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    selectedButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        backgroundColor = colorResource(id = R.color.color_primary),
+        contentColor = colorResource(id = R.color.woo_white)
+    ),
+    defaultButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        backgroundColor = Color.Transparent,
+    ),
+    isSelected: Boolean,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        colors = if (isSelected) selectedButtonColors else defaultButtonColors,
+        shape = RoundedCornerShape(50),
+    ) {
+        if (leadingIcon != null) {
+            leadingIcon()
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+        }
+        Text(text = text)
+        if (trailingIcon != null) {
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+            trailingIcon()
+        }
+    }
+}
+
+@Composable
 fun WCTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -275,6 +318,7 @@ private fun ButtonsPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             WCColoredButton(onClick = {}) {
                 Text("Button")
@@ -331,6 +375,17 @@ private fun ButtonsPreview() {
                 onClick = {},
                 text = "Text Button",
                 icon = Icons.Default.Add
+            )
+
+            WCSelectableChip(
+                onClick = {},
+                text = "Selectable Chip: selected",
+                isSelected = true
+            )
+            WCSelectableChip(
+                onClick = {},
+                text = "Selectable Chip: not selected",
+                isSelected = false
             )
         }
     }

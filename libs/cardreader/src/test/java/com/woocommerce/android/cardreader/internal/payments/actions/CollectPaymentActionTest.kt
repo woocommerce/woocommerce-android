@@ -3,7 +3,6 @@ package com.woocommerce.android.cardreader.internal.payments.actions
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
-import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
@@ -18,7 +17,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -94,14 +92,11 @@ internal class CollectPaymentActionTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given flow not terminated external reader, when job canceled, then collect payment gets canceled`() =
+    fun `when job canceled, then collect payment gets canceled`() =
         testBlocking {
             val cancelable = mock<Cancelable>()
             whenever(cancelable.isCompleted).thenReturn(false)
             whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer { cancelable }
-
-            val cardReader = mock<CardReader> { on { type }.thenReturn("STRIPE_M2") }
-            whenever(terminal.getConnectedReader()).thenReturn(cardReader)
             val job = launch {
                 action.collectPayment(mock()).collect { }
             }
@@ -110,23 +105,5 @@ internal class CollectPaymentActionTest : CardReaderBaseUnitTest() {
             joinAll(job)
 
             verify(cancelable).cancel(any())
-        }
-
-    @Test
-    fun `given flow not terminated built in reader, when job canceled, then collect payment not canceled`() =
-        testBlocking {
-            val cancelable = mock<Cancelable>()
-            whenever(cancelable.isCompleted).thenReturn(false)
-            whenever(terminal.collectPaymentMethod(any(), any())).thenAnswer { cancelable }
-            val cardReader = mock<CardReader> { on { type }.thenReturn("COTS_DEVICE") }
-            whenever(terminal.getConnectedReader()).thenReturn(cardReader)
-            val job = launch {
-                action.collectPayment(mock()).collect { }
-            }
-
-            job.cancel()
-            joinAll(job)
-
-            verify(cancelable, never()).cancel(any())
         }
 }

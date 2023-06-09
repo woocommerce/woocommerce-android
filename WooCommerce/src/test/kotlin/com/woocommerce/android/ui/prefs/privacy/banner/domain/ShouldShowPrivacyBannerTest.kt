@@ -19,7 +19,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
     private val sut = ShouldShowPrivacyBanner(appPrefs, isUserGdprCompliant, accountRepository)
 
     @Test
-    fun `given user is not logged in, then do not show banner`() {
+    fun `given user is not logged in, then do not show banner`(): Unit = testBlocking {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
 
@@ -28,7 +28,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user has saved privacy banner settings, then do not show banner`() {
+    fun `given user has saved privacy banner settings, then do not show banner`(): Unit = testBlocking {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(appPrefs.savedPrivacyBannerSettings).thenReturn(true)
@@ -38,7 +38,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user country is not GDPR compliant, then do not show banner`() {
+    fun `given user country is not GDPR compliant, then do not show banner`(): Unit = testBlocking {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(appPrefs.savedPrivacyBannerSettings).thenReturn(false)
@@ -49,7 +49,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is logged in, country is GDPR compliant, and has not saved privacy banner settings, then show banner`() {
+    fun `given user is logged in, country is GDPR compliant, and has not saved privacy banner settings, then show banner`(): Unit = testBlocking {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(isUserGdprCompliant()).thenReturn(true)

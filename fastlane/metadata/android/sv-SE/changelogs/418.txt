@@ -1,2 +1,0 @@
-13.7:
-Den här versionen innehåller många uppdateringar. Du kan skapa beställningar i farten och lägga till rabatter för beställningen. Du kan också snabbt ta emot en betalning för beställningen genom att generera en QR-kod som dina kunder skanna för att betala. Ni har önskat det, nu är det här.

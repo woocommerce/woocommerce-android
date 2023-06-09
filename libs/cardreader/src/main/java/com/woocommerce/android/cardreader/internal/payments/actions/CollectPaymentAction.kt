@@ -1,12 +1,10 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
 import com.stripe.stripeterminal.external.callable.Callback
-import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
-import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
@@ -41,20 +39,9 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
                 }
             )
             awaitClose {
-                cancelIfExternalReaderUsed(cancelable)
+                if (!cancelable.isCompleted) cancelable.cancel(noop)
             }
         }
-    }
-
-    /** In the current version of the Local Mobile SDK manual cancellation throws an exception:
-     *  > com.stripe.stripeterminal.external.models.TerminalException:
-     *  > Cancellation of a Tap to Pay transaction can only happen from the activity
-     *
-     * That's why we cancel only if external reader is used
-     **/
-    private fun cancelIfExternalReaderUsed(cancelable: Cancelable) {
-        val externalReaderUsed = ReaderType.isExternalReaderType(terminal.getConnectedReader()?.type)
-        if (!cancelable.isCompleted && externalReaderUsed) cancelable.cancel(noop)
     }
 }
 

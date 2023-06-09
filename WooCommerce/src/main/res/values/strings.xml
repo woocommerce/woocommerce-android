@@ -467,6 +467,7 @@
     <string name="orderlist_mark_completed">Mark\ncompleted</string>
     <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
     <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
+    <string name="order_list_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <!--
          Simple Payments
     -->
@@ -552,6 +553,7 @@
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
+    <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <!--
         Domains
@@ -1297,6 +1299,7 @@
     <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
     <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Check your mobile device</string>
+    <string name="card_reader_payment_card_removed_too_early">The card was removed too early</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -3324,4 +3327,13 @@
     <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
+
+    <!--
+    First product published congratulatory feature
+    -->
+    <string name="first_product_celebration_title">First product created 🎉</string>
+    <string name="first_product_celebration_body_message">Congratulations! You\'re one step closer to get the new store ready.</string>
+    <string name="share_product">Share product</string>
+
+
 </resources>

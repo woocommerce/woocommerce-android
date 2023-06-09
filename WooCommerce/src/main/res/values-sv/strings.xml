@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-23 11:54:04+0000
+Translation-Revision-Date: 2023-05-30 18:00:43+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, vi har pausat din butik, men du kan fortsätta genom att välja ett paket som passar dig bäst.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
+    <string name="local_notification_without_free_trial_title">🛍️ Din butik väntar!</string>
+    <string name="local_notification_store_creation_complete_title">🎉 Din butik är redo!</string>
+    <string name="settings_policies_privacy_policy_description">Din information hjälper oss att förbättra våra produkter, marknadsföring och personifiera din upplevelse på WooCommerce.</string>
+    <string name="settings_policies_privacy_policy">Integritetspolicy</string>
+    <string name="privacy_banner_save">Spara</string>
+    <string name="privacy_banner_settings">Inställningar</string>
+    <string name="privacy_banner_analytics_description">Tillåt oss att optimera prestandan genom att samla in information om hur användare interagerar med våra mobilappar.</string>
+    <string name="privacy_banner_analytics">Analys</string>
+    <string name="privacy_banner_title">Hantera integritet</string>
+    <string name="settings_reports_report_crashes">Rapportera krascher</string>
+    <string name="settings_reports_header">Rapporter</string>
+    <string name="settings_privacy_header">Integritet</string>
+    <string name="settings_web_options">Webbalternativ</string>
+    <string name="settings_more_privacy_options_header">Fler integritetsalternativ</string>
+    <string name="settings_tracking_analytics_error_update">Det uppstod ett fel vid uppdateringen av dina integritetsinställningar</string>
+    <string name="settings_tracking_analytics_error_fetch">Det uppstod ett fel vid hämtningen av dina integritetsinställningar</string>
+    <string name="settings_tracking_analytics_description">Tillåt oss att optimera prestandan genom att samla in information om hur användare interagerar med våra mobilappar.</string>
+    <string name="settings_tracking_analytics">Analys</string>
+    <string name="settings_tracking_header">Spårning</string>
+    <string name="settings_privacy_statement">Vi värdesätter din integritet. Dina personuppgifter används för att optimera våra mobilappar, förbättra säkerheten, genomföra analyser och förbättra din användarupplevelse.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan försöka använda den igen.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkt hittades inte. Kan inte lägga till i ny beställning</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="scan_barcode">Skanna streckkod</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
     <string name="settings_close_account_dialog_contact_support_button">Kontakta support</string>
     <string name="settings_close_account_active_stores_error_description">Detta konto kan inte avslutas eftersom det har aktiva butiker.</string>

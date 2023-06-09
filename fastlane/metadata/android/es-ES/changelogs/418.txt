@@ -1,2 +1,0 @@
-13.7:
-¡Esta versión está llena de novedades interesantes! Puedes crear pedidos sobre la marcha y añadir descuentos. También puedes aceptar pagos de pedidos rápidamente generando un código QR: los clientes lo escanearán y pagarán a través de él. Lo habías pedido y aquí lo tienes.

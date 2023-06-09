@@ -1,0 +1,2 @@
+13.8:
+Kabar gembira! Sekarang Anda dapat memindai barcode produk sewaktu membuat pesanan dari aplikasi. Tidak perlu lagi repot-repot menggulir layar untuk mencari produk. Kami juga telah memperbaiki beberapa masalah crash di layar daftar pesanan dan detail produk. Mohon terus berikan feedback – kami siap mendengarkan!

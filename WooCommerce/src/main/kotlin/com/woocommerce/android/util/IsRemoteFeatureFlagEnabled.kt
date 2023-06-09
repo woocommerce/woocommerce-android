@@ -10,7 +10,7 @@ import javax.inject.Inject
 class IsRemoteFeatureFlagEnabled @Inject constructor(
     private val wpComRemoteFeatureFlagRepository: WPComRemoteFeatureFlagRepository
 ) {
-    operator fun invoke(featureFlag: RemoteFeatureFlag): Boolean {
+    suspend operator fun invoke(featureFlag: RemoteFeatureFlag): Boolean {
         return when (featureFlag) {
             LOCAL_NOTIFICATION_STORE_CREATION_READY,
             LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D,

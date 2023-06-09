@@ -40,6 +40,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -66,6 +67,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var codeScanner: CodeScanner
+    private lateinit var checkDigitRemover: UPCCheckDigitRemover
     lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
@@ -128,6 +130,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         tracker = mock()
         codeScanner = mock()
+        checkDigitRemover = mock()
         productListRepository = mock()
     }
 
@@ -755,7 +758,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode))
                 }
             }
             whenever(
@@ -1214,7 +1217,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode))
                 }
             }
             whenever(
@@ -1230,7 +1233,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
-                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
@@ -1310,6 +1313,305 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given UPC SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.onScanClicked()
+
+            assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemover, times(1)).getSKUWithoutCheckDigit(any())
+            verify(productListRepository, times(1)).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not trigger failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+            ).thenReturn(
+                skuWithCheckDigitRemoved
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given product search fails for non UPC barcode format, then do not do any checksum operation`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatQRCode))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemover, never()).getSKUWithoutCheckDigit(any())
+            verify(productListRepository, never()).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isInstanceOf(VMKilledWhenScanningInProgress::class.java)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event with proper message`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isEqualTo(
+            VMKilledWhenScanningInProgress(R.string.order_creation_barcode_scanning_process_death)
+        )
+    }
+
+    @Test
+    fun `given scanning not in progress and vm got killed, when vm restarts, then do not trigger vm killed event`() {
+        savedState["scanning_in_progress"] = false
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isNull()
+    }
+
+    @Test
+    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+
+        createSut()
+        sut.onScanClicked()
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+            )
+        )
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
@@ -1328,7 +1630,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             autoSyncPriceModifier = autoSyncPriceModifier,
             tracker = tracker,
             codeScanner = codeScanner,
-            productRepository = productListRepository
+            productRepository = productListRepository,
+            checkDigitRemover = checkDigitRemover
         )
     }
 

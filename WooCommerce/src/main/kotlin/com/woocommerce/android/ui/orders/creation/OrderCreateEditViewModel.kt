@@ -93,11 +93,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -121,6 +123,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val codeScanner: CodeScanner,
     private val productRepository: ProductListRepository,
+    private val checkDigitRemover: UPCCheckDigitRemover,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -128,6 +131,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        private const val KEY_SCANNING_IN_PROGRESS = "scanning_in_progress"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -178,6 +182,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
 
+    private var scanningJob: Job? = null
+
+    private var isScanningInProgress: Boolean
+        get() = savedState.get<Boolean>(KEY_SCANNING_IN_PROGRESS) == true
+        set(value) {
+            savedState[KEY_SCANNING_IN_PROGRESS] = value
+        }
+
     init {
         when (mode) {
             Mode.Creation -> {
@@ -193,7 +205,11 @@ class OrderCreateEditViewModel @Inject constructor(
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
                 if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
-                    fetchProductBySKU(args.sku!!, args.barcodeFormat!!, ScanningSource.ORDER_LIST)
+                    viewState = viewState.copy(isUpdatingOrderDraft = true)
+                    fetchProductBySKU(
+                        BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
+                        ScanningSource.ORDER_LIST
+                    )
                 }
             }
             is Mode.Edit -> {
@@ -207,11 +223,29 @@ class OrderCreateEditViewModel @Inject constructor(
                             multipleLinesContext = determineMultipleLinesContext(order)
                         )
                         monitorOrderChanges()
+                        updateCouponButtonVisibility(order)
                     }
                 }
             }
         }
+        if (vmKilledWhenScanningInProgress()) {
+            isScanningInProgress = false
+            tracker.track(
+                BARCODE_SCANNING_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+                )
+            )
+            triggerEvent(
+                VMKilledWhenScanningInProgress(
+                    R.string.order_creation_barcode_scanning_process_death
+                )
+            )
+        }
     }
+
+    private fun vmKilledWhenScanningInProgress() = scanningJob == null && isScanningInProgress
 
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
@@ -335,9 +369,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun updateCouponButtonVisibility() {
-        val orderHasItems = orderDraft.value?.hasProducts() ?: false
-        viewState = viewState.copy(isCouponButtonEnabled = orderHasItems)
+    private fun updateCouponButtonVisibility(order: Order) {
+        viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
     }
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
@@ -351,8 +384,10 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
     private fun startScan() {
-        viewModelScope.launch {
+        scanningJob = viewModelScope.launch {
+            isScanningInProgress = true
             codeScanner.startScan().collect { status ->
+                isScanningInProgress = false
                 when (status) {
                     is CodeScannerStatus.Failure -> {
                         tracker.track(
@@ -372,7 +407,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
                         )
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(status.code, status.format)
+                        fetchProductBySKU(BarcodeOptions(status.code, status.format))
                     }
                 }
             }
@@ -380,9 +415,8 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun fetchProductBySKU(
-        sku: String,
-        barcodeFormat: BarcodeFormat,
-        source: ScanningSource = ScanningSource.ORDER_CREATION
+        barcodeOptions: BarcodeOptions,
+        source: ScanningSource = ScanningSource.ORDER_CREATION,
     ) {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
@@ -393,34 +427,80 @@ class OrderCreateEditViewModel @Inject constructor(
         }.orEmpty()
         viewModelScope.launch {
             productRepository.searchProductList(
-                searchQuery = sku,
+                searchQuery = barcodeOptions.sku,
                 skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
             )?.let { products ->
-                viewState = viewState.copy(isUpdatingOrderDraft = false)
-                products.firstOrNull()?.let { product ->
-                    addScannedProduct(product, selectedItems, source, barcodeFormat)
-                } ?: run {
-                    trackProductSearchViaSKUFailureEvent(
-                        source,
-                        barcodeFormat,
-                        "Empty data response (no product found for the SKU)",
-                    )
-                    sendAddingProductsViaScanningFailedEvent(
-                        R.string.order_creation_barcode_scanning_unable_to_add_product
-                    )
-                }
+                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
             } ?: run {
-                trackProductSearchViaSKUFailureEvent(
+                handleFetchProductBySKUFailure(
                     source,
-                    barcodeFormat,
+                    barcodeOptions,
                     "Product search via SKU API call failed"
-                )
-                sendAddingProductsViaScanningFailedEvent(
-                    R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
             }
         }
     }
+
+    private fun handleFetchProductBySKUSuccess(
+        products: List<com.woocommerce.android.model.Product>,
+        selectedItems: List<SelectedItem>,
+        source: ScanningSource,
+        barcodeOptions: BarcodeOptions
+    ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = false)
+        products.firstOrNull()?.let { product ->
+            addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
+        } ?: run {
+            handleFetchProductBySKUEmpty(barcodeOptions, source)
+        }
+    }
+
+    private fun handleFetchProductBySKUEmpty(
+        barcodeOptions: BarcodeOptions,
+        source: ScanningSource
+    ) {
+        if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
+            fetchProductBySKURemovingCheckDigit(barcodeOptions)
+        } else {
+            handleFetchProductBySKUFailure(
+                source,
+                barcodeOptions,
+                "Empty data response (no product found for the SKU)"
+            )
+        }
+    }
+
+    private fun handleFetchProductBySKUFailure(
+        source: ScanningSource,
+        barcodeOptions: BarcodeOptions,
+        message: String,
+    ) {
+        trackProductSearchViaSKUFailureEvent(
+            source,
+            barcodeOptions.barcodeFormat,
+            message,
+        )
+        sendAddingProductsViaScanningFailedEvent(
+            string.order_creation_barcode_scanning_unable_to_add_product
+        )
+    }
+
+    private fun fetchProductBySKURemovingCheckDigit(barcodeOptions: BarcodeOptions) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+        fetchProductBySKU(
+            barcodeOptions.copy(
+                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
+                shouldHandleCheckDigitOnFailure = false
+            )
+        )
+    }
+
+    private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
+        isBarcodeFormatUPC(barcodeOptions) && barcodeOptions.shouldHandleCheckDigitOnFailure
+
+    private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
+        barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
+            barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
 
     private fun addScannedProduct(
         product: ModelProduct,
@@ -698,7 +778,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 isEditable = isOrderEditable(updateStatus),
                                 multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
-                            _orderDraft.update { currentDraft ->
+                            _orderDraft.updateAndGet { currentDraft ->
                                 if (mode is Mode.Creation) {
                                     // Once the order is synced, revert the auto-draft status and keep
                                     // the user's selected one
@@ -706,8 +786,9 @@ class OrderCreateEditViewModel @Inject constructor(
                                 } else {
                                     updateStatus.order
                                 }
+                            }.also {
+                                updateCouponButtonVisibility(it)
                             }
-                            updateCouponButtonVisibility()
                         }
                     }
                 }
@@ -898,6 +979,10 @@ data class OnAddingProductViaScanningFailed(
     val retry: View.OnClickListener,
 ) : Event()
 
+data class VMKilledWhenScanningInProgress(
+    @StringRes val message: Int
+) : Event()
+
 data class ProductUIModel(
     val item: Order.Item,
     val imageUrl: String,
@@ -915,6 +1000,12 @@ enum class ProductAddedVia(val addedVia: String) {
     MANUALLY("manually"),
     SCANNING("scanning")
 }
+
+data class BarcodeOptions(
+    val sku: String,
+    val barcodeFormat: BarcodeFormat,
+    val shouldHandleCheckDigitOnFailure: Boolean = true
+)
 
 private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||

@@ -202,7 +202,7 @@ fun WCSearchField(
         value = value,
         onValueChange = onValueChange,
         textStyle = TextStyle(
-            color = colorResource(id = R.color.color_on_surface_medium),
+            color = colorResource(id = R.color.color_on_surface),
             textDirection = ContentOrLtr
         ),
         modifier = modifier
@@ -246,7 +246,7 @@ fun WCSearchField(
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = stringResource(id = R.string.clear),
-                            tint = colorResource(id = R.color.color_on_surface_medium)
+                            tint = colorResource(id = R.color.color_on_surface_high)
                         )
                     }
                 }
