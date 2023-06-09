@@ -51,6 +51,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -463,6 +464,12 @@ class OrderCreateEditFormFragment :
                     isIndefinite = false,
                     actionListener = event.retry
                 ).show()
+            }
+            is VMKilledWhenScanningInProgress -> {
+                ToastUtils.showToast(
+                    context,
+                    event.message
+                )
             }
             is Exit -> findNavController().navigateUp()
         }

@@ -94,6 +94,8 @@ sealed class CodeScanningErrorType {
     object UnAvailable : CodeScanningErrorType()
     object UnImplemented : CodeScanningErrorType()
     object Unknown : CodeScanningErrorType()
+
+    object VMKilledWhileScanning : CodeScanningErrorType()
     data class Other(val throwable: Throwable?) : CodeScanningErrorType()
 
     override fun toString(): String = when (this) {
