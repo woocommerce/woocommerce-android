@@ -1,2 +1,0 @@
-13.8:
-Spännande nyheter! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Fortsätt att skicka feedback till oss – vi lyssnar!

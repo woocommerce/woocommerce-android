@@ -1,2 +1,0 @@
-13.8:
-Heyecan verici haberlerimiz var! Artık uygulamadan sipariş oluştururken ürünün barkodunu okutabilirsiniz! Bir ürün ararken artık manuel olarak kaydırmanıza gerek olmaz! Ayrıca sipariş listesindeki ve ürün detayı ekranlarındaki birkaç kilitlenme sorununu da giderdik. Lütfen bize geri bildirim göndermeye devam edin, sizi dinliyoruz.

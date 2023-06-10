@@ -1,0 +1,2 @@
+13.9:
+Ürün seçici ekranında ürünleri SKU'ya göre aramayabilmenizi sağlayan ve böylece aradığınız ürünleri bulmanızı daha da kolaylaştıran yeni bir özelliği kullanıma sunduk. Lütfen deneyin ve geri bildiriminizi paylaşın!
