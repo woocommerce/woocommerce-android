@@ -82,6 +82,12 @@ class ProductNavigator @Inject constructor() {
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
             }
 
+            is ProductNavigationTarget.ShareProductWithAI -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductSharingFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToVariationListFragment(

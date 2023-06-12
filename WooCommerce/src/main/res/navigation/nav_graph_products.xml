@@ -112,6 +112,9 @@
                 android:name="productName"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSharingFragment"
+            app:destination="@id/productSharingFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -715,4 +718,8 @@
             android:name="productName"
             app:argType="string" />
     </dialog>
+    <dialog
+        android:id="@+id/productSharingFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSharingFragment"
+        android:label="ProductSharingFragment" />
 </navigation>

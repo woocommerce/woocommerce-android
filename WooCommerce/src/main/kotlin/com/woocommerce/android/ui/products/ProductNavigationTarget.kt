@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
  */
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
+    object ShareProductWithAI : ProductNavigationTarget()
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
