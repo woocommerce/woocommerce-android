@@ -12,6 +12,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class ProductListHandler @Inject constructor(private val repository: ProductSelectorRepository) {
@@ -21,7 +22,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     private val mutex = Mutex()
     private val offset = MutableStateFlow(0)
-    private var canLoadMore = true
+    private val canLoadMore = AtomicBoolean(true)
 
     private val searchQuery = MutableStateFlow("")
     private val searchType = MutableStateFlow(SearchType.DEFAULT)
@@ -46,7 +47,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         searchType: SearchType,
     ): Result<Unit> = mutex.withLock {
         offset.value = 0
-        canLoadMore = true
+        canLoadMore.set(true)
         searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
@@ -71,7 +72,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     // The implementation of loadMore has limited functionality. Essentially, more items from local cache are loaded
     // only after the remote request to fetch the previous page finishes successfully.
     suspend fun loadMore() = mutex.withLock {
-        if (!canLoadMore) return@withLock Result.success(Unit)
+        if (!canLoadMore.get()) return@withLock Result.success(Unit)
         if (searchQuery.value.isEmpty()) {
             fetchProducts()
         } else {
@@ -82,7 +83,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     private suspend fun fetchProducts(): Result<Unit> {
         return repository.fetchProducts(offset.value, PAGE_SIZE, productFilters.value).onSuccess {
-            canLoadMore = it
+            canLoadMore.set(it)
             offset.value += PAGE_SIZE
         }.map { }
     }
@@ -109,7 +110,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             searchQuery = searchQuery.value,
             skuSearchOption = searchOptions
         ).onSuccess { result ->
-            canLoadMore = result.canLoadMore
+            canLoadMore.set(result.canLoadMore)
             offset.value += PAGE_SIZE
             searchResults.update { list -> updateSearchResult(list, result.products) }
         }.map { }
