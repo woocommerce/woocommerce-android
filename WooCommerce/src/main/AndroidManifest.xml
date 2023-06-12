@@ -153,8 +153,7 @@
             tools:replace="android:screenOrientation"/>
         <activity
             android:name="com.woocommerce.shared.library.ReactActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
+            android:theme="@style/Theme.Woo.DayNight" />
 
         <!-- Stats today app widget -->
         <meta-data

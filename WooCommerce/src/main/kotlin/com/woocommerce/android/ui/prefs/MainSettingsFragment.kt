@@ -37,6 +37,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.OpenReactNative
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -60,6 +61,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     @Inject lateinit var presenter: MainSettingsContract.Presenter
+    @Inject lateinit var openReactNative: OpenReactNative
 
     private var _binding: FragmentSettingsMainBinding? = null
     private val binding get() = _binding!!
@@ -230,7 +232,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupOnboardingListVisibilitySetting()
 
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
-            binding.optionDomain.isVisible || binding.optionStoreOnboardingListVisibility.isVisible
+            binding.optionDomain.isVisible || binding.optionStoreOnboardingListVisibility.isVisible || binding.shippingClasses.isVisible
+
+        binding.shippingClasses.setOnClickListener {
+            openReactNative()
+        }
     }
 
     private fun showDomainDashboard() {

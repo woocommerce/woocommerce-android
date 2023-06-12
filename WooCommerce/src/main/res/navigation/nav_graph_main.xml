@@ -457,7 +457,7 @@
         app:popExitAnim="@anim/activity_fade_out" />
     <activity
         android:id="@+id/appSettingsActivity"
-        android:name="com.woocommerce.shared.library.ReactActivity"
+        android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
         android:label="AppSettingsActivity" />
     <fragment
         android:id="@+id/inboxFragment"
