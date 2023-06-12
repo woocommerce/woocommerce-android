@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.0
+This release includes several bug fixes and improvements to help you get your business started and ensure a smooth experience. Stay tuned for more enhancements in the future.
+
 ## 13.9
 We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.SETTINGS
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
@@ -22,7 +23,8 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
-    private val shouldShowOnboarding: ShouldShowOnboarding
+    private val shouldShowOnboarding: ShouldShowOnboarding,
+    private val accountRepository: AccountRepository,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -99,5 +101,6 @@ class MainSettingsPresenter @Inject constructor(
         get() = selectedSite.get().isWPComAtomic
 
     override val isCloseAccountOptionVisible: Boolean
-        get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
+        get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
+            accountRepository.getUserAccount()?.userName != null
 }

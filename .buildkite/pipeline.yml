@@ -47,6 +47,8 @@ steps:
       ./gradlew jacocoTestReport
       .buildkite/commands/upload-code-coverage.sh
     plugins: *common_plugins
+    artifact_paths:
+      - "**/build/test-results/*/*.xml"
 
   - label: "Instrumented tests"
     command: |

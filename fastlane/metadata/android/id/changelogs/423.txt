@@ -1,0 +1,2 @@
+13.9:
+Kami memperkenalkan sebuah fitur baru untuk mencari produk berdasarkan SKU di layar pemilihan produk, sehingga Anda lebih mudah menemukan item yang dicari. Cobalah dan berikan feedback Anda!

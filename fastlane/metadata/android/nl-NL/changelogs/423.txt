@@ -1,0 +1,2 @@
+13.9:
+We hebben een nieuwe functie ontwikkeld waarmee je in het scherm voor productselectie door middel van SKU naar producten kan zoeken. Hierdoor is het nog makkelijker om de items te vinden die je zoekt. Probeer het uit en laat weten wat je ervan denkt!
