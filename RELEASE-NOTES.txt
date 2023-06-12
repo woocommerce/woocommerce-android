@@ -2,7 +2,7 @@
 14.1
 -----
 - [*][Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
-
+- [*] [Internal] Added caching mechanism for JITMs [https://github.com/woocommerce/woocommerce-android/pull/9158]
 
 14.0
 -----
