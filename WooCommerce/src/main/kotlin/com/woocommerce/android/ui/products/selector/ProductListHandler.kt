@@ -20,7 +20,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private val mutex = Mutex()
-    private var offset = MutableStateFlow(0)
+    private val offset = MutableStateFlow(0)
     private var canLoadMore = true
 
     private val searchQuery = MutableStateFlow("")
