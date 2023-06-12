@@ -78,7 +78,8 @@ class ProductSelectorRepository @Inject constructor(
             site = selectedSite.get(),
             offset = offset,
             pageSize = pageSize,
-            filterOptions = filterOptions
+            filterOptions = filterOptions,
+            forceRefresh = false,
         )
             .let { result ->
                 if (result.isError) {
