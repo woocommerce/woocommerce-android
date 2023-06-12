@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
+import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -110,6 +111,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
+    private val orderProductMapper = OrderProductMapper()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -171,7 +173,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 shippingLabelOnboardingRepository,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
-                giftCardRepository
+                giftCardRepository,
+                orderProductMapper
             )
         )
     }
@@ -1846,5 +1849,23 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+    }
+
+    @Test
+    fun `when the order is null then don't fetch gift cards summaries`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(null).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(null).whenever(orderDetailRepository).fetchOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
     }
 }

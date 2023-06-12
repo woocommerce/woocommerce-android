@@ -1127,4 +1127,15 @@ class CardReaderTrackerTest : BaseUnitTest() {
             )
             assertThat(captor.firstValue["reason"]).isEqualTo("TapToPayDisabled")
         }
+
+    @Test
+    fun `when payment failed and contact support button tapped, then CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackPaymentFailedContactSupportTapped()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED),
+                any()
+            )
+        }
 }

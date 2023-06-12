@@ -977,12 +977,15 @@ object AppPrefs {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
 
-    fun hasSavedPrivacyBannerSettings(): Boolean {
-        return getBoolean(
-            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
+    var savedPrivacySettings: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
             default = false
         )
-    }
+        set(value) = setBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            value = value
+        )
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
         setString(
@@ -994,6 +997,19 @@ object AppPrefs {
     fun getStorePhoneNumber(siteId: Int): String =
         getString(
             key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+        )
+
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
+        setBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            value = true
+        )
+    }
+
+    fun isTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        getBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            default = false
         )
 
     /**

@@ -1,114 +1,68 @@
 package com.woocommerce.android.ui.prefs.privacy.banner.domain
 
-import com.woocommerce.android.util.TelephonyManagerProvider
-import com.woocommerce.android.util.locale.LocaleProvider
+import com.woocommerce.android.ui.prefs.privacy.GeoRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.store.AccountStore
-import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
 
-    private val accountStore: AccountStore = mock()
-    private val telephonyManagerProvider: TelephonyManagerProvider = mock()
-    private val localeProvider: LocaleProvider = mock()
+    private val geoRepository: GeoRepository = mock()
 
     private val sut: IsUsersCountryGdprCompliant = IsUsersCountryGdprCompliant(
-        accountStore = accountStore,
-        telephonyManagerProvider = telephonyManagerProvider,
-        localeProvider = localeProvider,
+        geoRepository = geoRepository,
     )
 
     @Test
-    fun `given user has WPCOM account, when ip country code in EU, then show the banner`() {
-        // given
-        accountStore.stub {
-            on { hasAccessToken() } doReturn true
-            on { account } doReturn AccountModel().apply { userIpCountryCode = "DE" }
+    fun `given user has EU ip, when asked for GDPR compliance, then show the banner`(): Unit =
+        runBlocking {
+            // given
+            geoRepository.stub {
+                onBlocking { fetchCountryCode() }.thenReturn(Result.success("DE"))
+            }
+
+            // then
+            assertThat(sut()).isTrue
         }
-
-        // then
-        assertThat(sut()).isTrue
-    }
-
-    @Test
-    fun `given user has WPCOM account, when ip country code outside EU, then do not show the banner`() {
-        // given
-        accountStore.stub {
-            on { hasAccessToken() } doReturn true
-            on { account } doReturn AccountModel().apply { userIpCountryCode = "US" }
-        }
-
-        // then
-        assertThat(sut()).isFalse
-    }
 
     @Test
-    fun `given user has not WPCOM account, when network carrier country code in EU, then show the banner`() {
-        // given
-        accountStore.stub {
-            on { hasAccessToken() } doReturn false
-        }
-        telephonyManagerProvider.stub {
-            on { getCountryCode() } doReturn "DE"
-        }
+    fun `given user has non-EU ip, when asked for GDPR compliance, then do not show the banner`(): Unit =
+        runBlocking {
+            // given
+            geoRepository.stub {
+                onBlocking { fetchCountryCode() }.thenReturn(Result.success("US"))
+            }
 
-        // then
-        assertThat(sut()).isTrue
-    }
+            // then
+            assertThat(sut()).isFalse
+        }
 
     @Test
-    fun `given user has not WPCOM account, when network carrier country code outside EU, then do not show the banner`() {
-        // given
-        accountStore.stub {
-            on { hasAccessToken() } doReturn false
-        }
-        telephonyManagerProvider.stub {
-            on { getCountryCode() } doReturn "US"
-        }
+    fun `given geo API returns error, when asked for GDPR compliance, then do not show the banner`(): Unit =
+        runBlocking {
+            // given
+            geoRepository.stub {
+                onBlocking { fetchCountryCode() }.thenReturn(Result.failure(Exception()))
+            }
 
-        // then
-        assertThat(sut()).isFalse
-    }
+            // then
+            assertThat(sut()).isFalse
+        }
 
     @Test
-    fun `given user has not WPCOM account and no network carrier data, when locale country code in EU, then show the banner`() {
-        // given
-        accountStore.stub {
-            on { hasAccessToken() } doReturn false
-        }
-        telephonyManagerProvider.stub {
-            on { getCountryCode() } doReturn ""
-        }
-        localeProvider.stub {
-            on { provideLocale() } doReturn Locale.GERMANY
-        }
+    fun `given geo API returns empty value, when asked for GDPR compliance, then do not show the banner`(): Unit =
+        runBlocking {
+            // given
+            geoRepository.stub {
+                onBlocking { fetchCountryCode() }.thenReturn(Result.success(""))
+            }
 
-        // then
-        assertThat(sut()).isTrue
-    }
-
-    @Test
-    fun `given user has not WPCOM account and no network carrier data, when locale country code outside EU, then do not show the banner`() {
-        // given
-        accountStore.stub {
-            on { hasAccessToken() } doReturn false
+            // then
+            assertThat(sut()).isFalse
         }
-        telephonyManagerProvider.stub {
-            on { getCountryCode() } doReturn ""
-        }
-        localeProvider.stub {
-            on { provideLocale() } doReturn Locale.US
-        }
-
-        // then
-        assertThat(sut()).isFalse
-    }
 }

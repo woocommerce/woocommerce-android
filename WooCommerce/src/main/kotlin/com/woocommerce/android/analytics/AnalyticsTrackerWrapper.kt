@@ -1,11 +1,35 @@
 package com.woocommerce.android.analytics
 
+import android.content.SharedPreferences
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PREFKEY_SEND_USAGE_STATS
 import dagger.Reusable
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 @Reusable
-class AnalyticsTrackerWrapper @Inject constructor() {
-    val sendUsageStats: Boolean by AnalyticsTracker.Companion::sendUsageStats
+open class AnalyticsTrackerWrapper @Inject constructor() {
+    open var sendUsageStats: Boolean by AnalyticsTracker.Companion::sendUsageStats
+
+    open fun observeSendUsageStats(): Flow<Boolean> {
+        return callbackFlow {
+            val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == PREFKEY_SEND_USAGE_STATS) {
+                    trySend(sendUsageStats)
+                }
+            }
+            AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
+
+            awaitClose {
+                AppPrefs.getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
+            }
+        }.onStart {
+            emit(sendUsageStats)
+        }
+    }
 
     fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, Any>()) {
         AnalyticsTracker.track(stat, properties)

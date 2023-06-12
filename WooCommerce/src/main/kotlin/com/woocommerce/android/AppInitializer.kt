@@ -11,7 +11,9 @@ import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
@@ -27,6 +29,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -99,6 +102,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var wooLog: WooLogWrapper
     @Inject lateinit var registerDevice: RegisterDevice
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
+    @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
+    @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
     @Inject lateinit var explat: ExPlat
 
@@ -110,6 +115,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
+    @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
 
     private var connectionReceiverRegistered = false
 
@@ -181,6 +187,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+        appCoroutineScope.launch {
+            featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
+        }
 
         monitorApplicationPasswordsStatus()
     }
@@ -227,7 +236,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 }
             }
 
-            // Update the user info
             if (selectedSite.exists()) {
                 appCoroutineScope.launch {
                     userEligibilityFetcher.fetchUserInfo().onSuccess {
@@ -245,6 +253,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         cardReaderOnboardingChecker.invalidateCache()
                         cardReaderOnboardingChecker.getOnboardingState()
                     }
+
+                    jitmStoreInMemoryCache.init()
                 }
             }
         }
@@ -344,11 +354,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onAccountChanged(event: OnAccountChanged) {
         val isLoggedOut = event.causeOfChange == AccountAction.SIGN_OUT && event.error == null
         if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
-            // make sure local usage tracking matches the account setting
-            val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
-            if (hasUserOptedOut != accountStore.account.tracksOptOut) {
-                AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
-            }
+            analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
         }
 
         val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT

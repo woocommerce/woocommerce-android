@@ -1,17 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-14 10:15:48+0000
+Translation-Revision-Date: 2023-06-06 19:02:47+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">Kortet togs bort för tidigt</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, vi har pausat din butik, men du kan fortsätta genom att välja ett paket som passar dig bäst.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Din kostnadsfria Woo Express-provperiod löper ut imorgon (%1$s). Det är dags att ta kontroll över din framtid – välj ett paket och gör dig redo att börja växa.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Tiden med din kostnadsfria provperiod håller på att löpa ut.</string>
+    <string name="local_notification_without_free_trial_description">Hej %1$s, %2$s är redo för dig. Inled din kostnadsfria Woo Express-provperiod på 14 dagar med bara ett klick för att starta din onlineverksamhet.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ Din butik väntar!</string>
+    <string name="local_notification_store_creation_complete_description">Hej %1$s. Välkommen till din kostnadsfria Woo Express-provperiod på 14 dagar – allt du behöver för att starta en framgångsrik onlineverksamhet, på en och samma plats. Är du redo att utforska?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 Din butik är redo!</string>
+    <string name="product_type_variation">Variationsprodukt</string>
+    <string name="settings_policies_cookie_policy_description">Vår cookiepolicy förklarar hur vi och andra använder cookies och hur du kan hantera dem.</string>
+    <string name="settings_policies_cookie_policy">Cookiepolicy</string>
+    <string name="settings_policies_privacy_policy_description">Din information hjälper oss att förbättra våra produkter, marknadsföring och personifiera din upplevelse på WooCommerce.</string>
+    <string name="settings_policies_privacy_policy">Integritetspolicy</string>
+    <string name="privacy_banner_error_save">Det uppstod ett fel när dina integritetsval skulle sparas.</string>
+    <string name="privacy_banner_save">Spara</string>
+    <string name="privacy_banner_settings">Inställningar</string>
+    <string name="privacy_banner_analytics_description">Tillåt oss att optimera prestandan genom att samla in information om hur användare interagerar med våra mobilappar.</string>
+    <string name="privacy_banner_analytics">Analys</string>
+    <string name="privacy_banner_title">Hantera integritet</string>
+    <string name="privacy_banner_description">Din integritet är och har alltid varit avgörande för oss. Vi använder, lagrar och behandlar dina personuppgifter för att optimera vår app (och din upplevelse) på en rad olika sätt. Vissa användningsområden för dina data är absolut nödvändiga för att få saker att fungera, andra kan du anpassa i dina inställningar.</string>
+    <string name="settings_reports_report_crashes_description">För att hjälpa oss att förbättra appens prestanda och åtgärda eventuella fel, aktivera automatiska kraschrapporter.</string>
+    <string name="settings_reports_report_crashes">Rapportera krascher</string>
+    <string name="settings_reports_header">Rapporter</string>
+    <string name="settings_privacy_cookies_polices_description">Läs mer om vår integritetspolicy och vår cookiepolicy.</string>
+    <string name="settings_privacy_cookies_polices">Integritets- och cookiepolicyer</string>
+    <string name="settings_privacy_header">Integritet</string>
+    <string name="settings_usage_tracking_description">Läs mer om vilka data vi samlar in om din butik och dina möjligheter att styra vilka data som delas.</string>
+    <string name="settings_usage_tracking">Användningsspårning</string>
+    <string name="settings_web_options_description">Fler integritetsinställningar finns tillgängliga för WooCommerce.com-användare. Mer information finns här.</string>
+    <string name="settings_web_options">Webbalternativ</string>
+    <string name="settings_more_privacy_options_header">Fler integritetsalternativ</string>
+    <string name="settings_tracking_analytics_error_update">Det uppstod ett fel vid uppdateringen av dina integritetsinställningar</string>
+    <string name="settings_tracking_analytics_error_fetch">Det uppstod ett fel vid hämtningen av dina integritetsinställningar</string>
+    <string name="settings_tracking_analytics_description">Tillåt oss att optimera prestandan genom att samla in information om hur användare interagerar med våra mobilappar.</string>
+    <string name="settings_tracking_analytics">Analys</string>
+    <string name="settings_tracking_header">Spårning</string>
+    <string name="settings_privacy_statement">Vi värdesätter din integritet. Dina personuppgifter används för att optimera våra mobilappar, förbättra säkerheten, genomföra analyser och förbättra din användarupplevelse.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan försöka använda den igen.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkt hittades inte. Kan inte lägga till i ny beställning</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="scan_barcode">Skanna streckkod</string>
+    <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Kontakta support</string>
+    <string name="settings_close_account_active_stores_error_description">Detta konto kan inte avslutas eftersom det har aktiva butiker.</string>
+    <string name="settings_close_account_generic_error_description">Ett fel inträffade vid försöket att avsluta ditt konto.</string>
+    <string name="settings_close_account_error_dialog_title">Det gick inte att avsluta kontot</string>
+    <string name="settings_close_account_dialog_loading_title">Avslutar kontot …</string>
+    <string name="settings_close_account_dialog_confirm_button">Avsluta kontot permanent</string>
+    <string name="settings_close_account_dialog_description">Bekräfta genom att skriva in ditt användarnamn innan kontot avslutas</string>
+    <string name="settings_close_account_dialog_title">Bekräfta kontoavslut</string>
+    <string name="settings_close_account">Avsluta kontot</string>
+    <string name="scan_to_pay_title">Skanna QR-koden och följ instruktionerna</string>
+    <string name="card_reader_type_selection_scan_to_pay">Skanna för att betala</string>
+    <string name="order_creation_remove_coupon">Ta bort rabattkod från beställning</string>
+    <string name="order_creation_coupon_codes">Rabattkod (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Lägg till rabattkod</string>
     <string name="product_stock_status_insufficient_stock">Otillräckligt lager</string>
     <string name="shipping_label_customs_item_description_too_short">Du måste ge en tydlig och specifik beskrivning av varje artikel.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Lägg till produkter via skanner</string>
     <string name="shipping_notice_dismiss">Avfärda</string>
     <string name="shipping_notice_learn_more">Lär dig mer</string>
-    <string name="shipping_notice_banner_content">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig, specifik beskrivning för varje vara. Annars kan leveranser försenas eller avbrytas i tullen.</string>
+    <string name="shipping_notice_banner_warning_content">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig, specifik beskrivning för varje vara. Annars kan leveranser försenas eller avbrytas i tullen.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Håll dig uppdaterad och öka butikssäkerheten. Utforska Jetpack nu.</string>
     <string name="jetpack_benefits_bottom_banner_title">Få beställningsaviseringar och mer</string>
     <string name="store_onboarding_setting_description">Visa eller dölj listan för butikskonfiguration</string>

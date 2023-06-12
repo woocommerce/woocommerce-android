@@ -12,6 +12,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.Parcelable
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
@@ -35,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -77,6 +79,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForA
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenStoreCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -84,6 +87,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewStorePlanUpgrade
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
@@ -96,8 +100,10 @@ import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
@@ -596,6 +602,17 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
+    private fun showPrivacySettingsScreen(requestedAnalyticsValue: Parcelable) {
+        val intent = Intent(this, AppSettingsActivity::class.java).apply {
+            putExtra(AppSettingsActivity.EXTRA_SHOW_PRIVACY_SETTINGS, true)
+            putExtra(
+                AppSettingsActivity.EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR,
+                requestedAnalyticsValue
+            )
+        }
+        startActivityForResult(intent, RequestCodes.SETTINGS)
+    }
+
     override fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType) {
         val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
         navController.navigateSafely(action)
@@ -695,15 +712,7 @@ class MainActivity :
     // endregion
 
     // region Fragment Processing
-    @Suppress("ForbiddenComment")
     private fun initFragment(savedInstanceState: Bundle?) {
-        // TODO: Remove
-        if (BuildConfig.DEBUG) {
-            binding.offlineBar.setOnClickListener {
-                viewModel.showLocalNotification()
-            }
-        }
-
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
         val localNotification = intent.getParcelableExtra<Notification>(FIELD_LOCAL_NOTIFICATION)
@@ -726,6 +735,7 @@ class MainActivity :
             viewModel.handleIncomingNotification(localPushId, notification)
         } else if (localNotification != null) {
             viewModel.onLocalNotificationTapped(localNotification)
+            intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
         }
     }
     // endregion
@@ -745,10 +755,26 @@ class MainActivity :
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
+                is ShortcutOpenStoreCreation -> shortcutOpenStoreCreation(event.storeName)
+                is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
+                is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
+                    uiMessageResolver.getIndefiniteActionSnack(
+                        R.string.privacy_banner_error_save,
+                        actionText = getString(R.string.retry)
+                    ) {
+                        viewModel.onRequestPrivacyUpdate(event.analyticsEnabled)
+                    }.show()
+                }
+                MainActivityViewModel.ShowPrivacySettings -> {
+                    showPrivacySettingsScreen(RequestedAnalyticsValue.NONE)
+                }
+                is MainActivityViewModel.ShowPrivacySettingsWithError -> {
+                    showPrivacySettingsScreen(event.requestedAnalyticsValue)
+                }
             }
         }
 
@@ -756,6 +782,22 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun shortcutOpenStoreCreation(storeName: String?) {
+        navController.apply {
+            navigate(
+                NavGraphMainDirections.actionGlobalLoginToSitePickerFragment(
+                    openedFromLogin = AppPrefs.getStoreCreationSource() != AnalyticsTracker.VALUE_SWITCHING_STORE
+                )
+            )
+            navigate(
+                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow(storeName),
+                navOptions {
+                    popUpTo(R.id.sitePickerFragment) { inclusive = true }
+                }
+            )
+        }
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
@@ -941,7 +983,8 @@ class MainActivity :
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
             OrderCreateEditViewModel.Mode.Creation,
-            null
+            null,
+            null,
         )
         navController.navigateSafely(action)
     }

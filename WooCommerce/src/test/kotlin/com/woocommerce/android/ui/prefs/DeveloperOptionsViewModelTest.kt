@@ -133,6 +133,7 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
             savedStateHandle,
             developerOptionsRepository,
             cardReaderManager,
+            mock()
         )
     }
 }

@@ -1,17 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 14:54:03+0000
+Translation-Revision-Date: 2023-06-07 09:54:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">카드가 너무 일찍 제거되었습니다.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s 님, 회원님의 스토어가 일시 중지되었지만, 가장 알맞은 요금제를 선택하여 계속하실 수 있습니다.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 요금제를 이용하여 비즈니스를 계속 운영하세요!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express 무료 평가판이 내일(%1$s) 종료됩니다. 지금이 회원님 자신의 미래를 소유할 때입니다. 요금제를 선택하고 성장할 준비를 하세요.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 무료 평가판 기간이 끝나가고 있습니다.</string>
+    <string name="local_notification_without_free_trial_description">%1$s 님, 안녕하세요. %2$s이(가) 회원님을 위해 준비되어 있습니다! 단 한 번 클릭으로 Woo Express 14일 무료 평가판을 바로 시작하여 온라인 비즈니스를 시작하세요.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ 회원님의 스토어가 기다리고 있습니다!</string>
+    <string name="local_notification_store_creation_complete_description">%1$s 님, 안녕하세요! Woo Express 14일 무료 평가판에 오신 것을 환영합니다. 성공적인 온라인 비즈니스의 시작과 성장에 필요한 모든 것이 한곳에 다 있습니다. 둘러볼 준비가 되셨나요?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 회원님의 스토어가 준비되어 있습니다!</string>
+    <string name="product_type_variation">변형 상품</string>
+    <string name="settings_policies_cookie_policy_description">당사와 타사에서 쿠키를 사용하는 방식과 회원님이 관리할 수 있는 방법이 쿠키 정책에 설명되어 있습니다.</string>
+    <string name="settings_policies_cookie_policy">쿠키 정책</string>
+    <string name="settings_policies_privacy_policy_description">회원님의 정보는 상품, 마케팅을 개선하고 우커머스의 환경을 개인 설정하는 데 도움이 됩니다.</string>
+    <string name="settings_policies_privacy_policy">개인정보 취급방침</string>
+    <string name="privacy_banner_error_save">개인정보 선택 사항을 저장하는 중 오류가 발생했습니다.</string>
+    <string name="privacy_banner_save">저장</string>
+    <string name="privacy_banner_settings">설정</string>
+    <string name="privacy_banner_analytics_description">사용자가 당사 모바일 앱과 상호 작용하는 방식에 대한 정보를 수집하여 성능을 최적화하도록 허용해 주세요.</string>
+    <string name="privacy_banner_analytics">분석</string>
+    <string name="privacy_banner_title">개인정보 관리</string>
+    <string name="privacy_banner_description">회원님의 개인정보는 언제나 그렇듯이 당사에 매우 중요합니다. 회원님의 개인 데이터를 사용하고, 저장하고, 처리하여 다양한 방법으로 앱과 회원님의 환경을 최적화합니다. 일을 제대로 진행하려면 회원님의 데이터 중 일부를 반드시 사용해야 하고, 나머지는 회원님이 설정에서 사용자 정의할 수 있습니다.</string>
+    <string name="settings_reports_report_crashes_description">앱 성능을 개선하고 가끔 발생하는 버그를 수정하는 데 도움이 되도록 자동 충돌 보고서를 활성화하세요.</string>
+    <string name="settings_reports_report_crashes">충돌 보고</string>
+    <string name="settings_reports_header">보고서</string>
+    <string name="settings_privacy_cookies_polices_description">개인정보 취급방침 및 쿠키 정책에 대해 자세히 알아보세요.</string>
+    <string name="settings_privacy_cookies_polices">개인정보 취급방침 및 쿠키 정책</string>
+    <string name="settings_privacy_header">개인정보</string>
+    <string name="settings_usage_tracking_description">이 데이터 공유를 제어하기 위해 당사에서 수집하는 회원님의 스토어와 옵션에 대한 데이터에 대해 자세히 알아보세요.</string>
+    <string name="settings_usage_tracking">사용량 추적</string>
+    <string name="settings_web_options_description">woocommerce.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
+    <string name="settings_web_options">웹 옵션</string>
+    <string name="settings_more_privacy_options_header">추가 개인정보 옵션</string>
+    <string name="settings_tracking_analytics_error_update">프라이버시 설정 업데이트 중 오류가 발생했습니다.</string>
+    <string name="settings_tracking_analytics_error_fetch">프라이버시 설정 가져오기 중 오류가 발생했습니다.</string>
+    <string name="settings_tracking_analytics_description">사용자가 당사 모바일 앱과 상호 작용하는 방식에 대한 정보를 수집하여 성능을 최적화하도록 허용해 주세요.</string>
+    <string name="settings_tracking_analytics">분석</string>
+    <string name="settings_tracking_header">추적</string>
+    <string name="settings_privacy_statement">당사에서는 개인정보를 소중히 여깁니다. 개인 데이터는 모바일 앱을 최적화하고, 보안을 개선하고, 분석을 수행하고, 회원님의 사용자 환경을 향상하는 데 사용됩니다.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">배경에서 실행되는 시스템에서 Woo 앱을 종료했습니다. 다시 사용해 보실 수 있습니다.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">가변 상품을 직접 추가할 수 없습니다. 특정 변형을 선택하세요.</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">상품을 찾을 수 없습니다. 새 주문을 추가할 수 없음</string>
+    <string name="order_list_barcode_scanning_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
+    <string name="scan_barcode">바코드 스캔</string>
+    <string name="shipping_notice_banner_instructions_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송 시 모든 아이템을 명확하게 설명해야 합니다. 예를 들어, 의류를 발송하는 경우 설명이 수락될 수 있으려면 의류 유형을 표시해야 합니다(예: 남성용 셔츠, 여아용 조끼, 남아용 재킷). 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
+    <string name="settings_close_account_dialog_contact_support_button">지원 문의</string>
+    <string name="settings_close_account_active_stores_error_description">활성 스토어가 있는 동안에는 이 계정을 종료할 수 없습니다.</string>
+    <string name="settings_close_account_generic_error_description">계정 종료를 시도하는 동안 오류가 발생했습니다.</string>
+    <string name="settings_close_account_error_dialog_title">계정을 종료할 수 없음</string>
+    <string name="settings_close_account_dialog_loading_title">계정 종료 중…</string>
+    <string name="settings_close_account_dialog_confirm_button">영구적으로 계정 종료</string>
+    <string name="settings_close_account_dialog_description">확인하려면 종료하기 전에 사용자명을 다시 입력하세요.</string>
+    <string name="settings_close_account_dialog_title">계정 종료 확인</string>
+    <string name="settings_close_account">계정 종료</string>
+    <string name="scan_to_pay_title">QR 스캔 및 지침 따르기</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+    <string name="order_creation_remove_coupon">주문에서 쿠폰 제거</string>
+    <string name="order_creation_coupon_codes">쿠폰(%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">쿠폰 추가</string>
     <string name="product_stock_status_insufficient_stock">부족한 재고</string>
     <string name="shipping_label_customs_item_description_too_short">아이템마다 명확하고 구체적인 설명을 제공해야 합니다.</string>
     <string name="order_creation_add_product_via_barcode_scanning">스캐너를 통해 상품 추가</string>
     <string name="shipping_notice_dismiss">해제</string>
     <string name="shipping_notice_learn_more">더 알아보기</string>
-    <string name="shipping_notice_banner_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
+    <string name="shipping_notice_banner_warning_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">최신 상태로 유지하여 스토어 보안을 강화하세요. 지금 젯팩을 살펴보세요.</string>
     <string name="jetpack_benefits_bottom_banner_title">주문 알림 등 받기</string>
     <string name="store_onboarding_setting_description">스토어 설정 목록 표시 또는 숨기기</string>

@@ -1,136 +1,144 @@
 package com.woocommerce.android.ui.prefs
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
-import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.util.AnalyticsUtils
-import com.woocommerce.android.util.dispatchAndAwait
+import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.AccountErrorType
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.AccountStore.PushAccountSettingsPayload
 import javax.inject.Inject
 
 @HiltViewModel
 class PrivacySettingsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore,
+    private val appPrefs: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider,
+    private val repository: PrivacySettingsRepository,
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
+
+    private val args: PrivacySettingsFragmentArgs by savedState.navArgs()
+
+    private val analyticsEnabled: LiveData<Boolean> = analyticsTrackerWrapper
+        .observeSendUsageStats()
+        .asLiveData()
+
+    private val _state = MutableLiveData(defaultState())
+
+    val state: LiveData<State> = _state.combineWith(analyticsEnabled) { state, analyticsEnabled ->
+        state?.copy(sendUsageStats = analyticsEnabled == true) ?: defaultState()
     }
 
-    fun getSendUsageStats() = !accountStore.account.tracksOptOut
+    private fun defaultState() = State(
+        sendUsageStats = analyticsTrackerWrapper.sendUsageStats,
+        crashReportingEnabled = getCrashReportingEnabled(),
+        progressBarVisible = false,
+    )
 
-    private fun setSendUsageStats(sendUsageStats: Boolean) {
-        // note that we don't init/disable Crashlytics here because that requires the app to be restarted
-        AnalyticsTracker.sendUsageStats = sendUsageStats
+    init {
+        initialize()
+    }
 
-        launch {
-            // sync with wpcom if a token is available
-            if (accountStore.hasAccessToken()) {
-                AnalyticsTracker.track(
-                    SETTING_CHANGE,
-                    mapOf(
-                        AnalyticsTracker.KEY_NAME to SETTING_TRACKS_OPT_OUT,
-                        AnalyticsTracker.KEY_FROM to !sendUsageStats,
-                        AnalyticsTracker.KEY_TO to sendUsageStats
+    fun initialize() {
+        if (repository.isUserWPCOM()) {
+            launch {
+                _state.value = _state.value?.copy(progressBarVisible = true)
+                val event = repository.updateAccountSettings()
+                _state.value = _state.value?.copy(progressBarVisible = false)
+
+                event.onFailure {
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionSnackbar(
+                            resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
+                        ) {
+                            initialize()
+                        }
                     )
-                )
-
-                val payload = PushAccountSettingsPayload().apply {
-                    params = mapOf(SETTING_TRACKS_OPT_OUT to !sendUsageStats)
                 }
 
-                val action = AccountActionBuilder.newPushSettingsAction(payload)
-                val event: OnAccountChanged = dispatcher.dispatchAndAwait(action)
+                if (args.requestedAnalyticsValue != RequestedAnalyticsValue.NONE) {
+                    val checked =
+                        args.requestedAnalyticsValue == RequestedAnalyticsValue.ENABLED
 
-                handleOnAccountChanged(event)
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionSnackbar(
+                            resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
+                        ) { onSendStatsSettingChanged(checked) }
+                    )
+                }
             }
         }
     }
 
-    fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
+    private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
+
+    fun onPoliciesClicked() {
+        triggerEvent(PrivacySettingsEvent.OpenPolicies)
+    }
 
     private fun setCrashReportingEnabled(enabled: Boolean) {
-        AppPrefs.setCrashReportingEnabled(enabled)
+        appPrefs.setCrashReportingEnabled(enabled)
     }
 
-    private fun handleOnAccountChanged(event: OnAccountChanged) {
-        if (event.isError) {
-            when (event.error.type) {
-                AccountErrorType.SETTINGS_POST_ERROR -> {
-                    AnalyticsTracker.track(
-                        SETTING_CHANGE_FAILED,
-                        this::class.java.simpleName,
-                        event.error.type.toString(),
-                        event.error.message
-                    )
-                }
-
-                else -> {}
-            }
-        } else {
-            when (event.causeOfChange) {
-                AccountAction.PUSH_SETTINGS -> {
-                    AnalyticsTracker.track(SETTING_CHANGE_SUCCESS)
-                }
-
-                else -> Unit // Do nothing
-            }
-        }
+    fun onWebOptionsClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowWebOptions)
     }
 
-    fun onLearnMoreShareInfoClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
-    }
-
-    fun onPrivacyPolicyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
-    }
-
-    fun onLearnMoreThirdPartyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    fun onUsageTrackerClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowUsageTracker)
     }
 
     fun onCrashReportingSettingChanged(checked: Boolean) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
-            mapOf(
-                AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(checked)
-            )
-        )
+        _state.value = _state.value?.copy(crashReportingEnabled = checked)
         setCrashReportingEnabled(checked)
     }
 
     fun onSendStatsSettingChanged(checked: Boolean) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
-            mapOf(
-                AnalyticsTracker.KEY_STATE to
-                    AnalyticsUtils.getToggleStateLabel(checked)
-            )
-        )
-        setSendUsageStats(checked)
+        analyticsTrackerWrapper.sendUsageStats = checked
+        launch {
+            if (repository.isUserWPCOM()) {
+
+                _state.value = _state.value?.copy(progressBarVisible = true)
+
+                val event = repository.updateTracksSetting(checked)
+
+                _state.value = _state.value?.copy(progressBarVisible = false)
+
+                event.fold(
+                    onSuccess = {
+                        appPrefs.savedPrivacyBannerSettings = true
+                        analyticsTrackerWrapper.sendUsageStats = checked
+                    },
+                    onFailure = {
+                        analyticsTrackerWrapper.sendUsageStats = !checked
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowActionSnackbar(
+                                resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
+                            ) { onSendStatsSettingChanged(checked) }
+                        )
+                    }
+                )
+            }
+        }
     }
 
+    data class State(
+        val sendUsageStats: Boolean,
+        val crashReportingEnabled: Boolean,
+        val progressBarVisible: Boolean,
+    )
+
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
-        object ShowCookiePolicy : PrivacySettingsEvent()
-        object ShowPrivacyPolicy : PrivacySettingsEvent()
+        object OpenPolicies : PrivacySettingsEvent()
+        object ShowWebOptions : PrivacySettingsEvent()
+        object ShowUsageTracker : PrivacySettingsEvent()
     }
 }

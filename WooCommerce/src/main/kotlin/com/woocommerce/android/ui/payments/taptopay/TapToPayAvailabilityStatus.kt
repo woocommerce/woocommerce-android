@@ -24,8 +24,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
             !appPrefs.isTapToPayEnabled -> Result.NotAvailable.TapToPayDisabled
             !systemVersionUtilsWrapper.isAtLeastP() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
-            !deviceFeatures.isNFCAvailable() && !appPrefs.isSimulatedReaderEnabled ->
-                Result.NotAvailable.NfcNotAvailable
+            !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry(wooStore.getStoreCountryCode(selectedSite.get())) ->
                 Result.NotAvailable.CountryNotSupported
 

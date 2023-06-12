@@ -1,17 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 11:54:03+0000
+Translation-Revision-Date: 2023-06-07 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">De kaart is te vroeg verwijderd</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we hebben je winkel even stilgezet, maar je kan doorgaan door het abonnement te kiezen dat het beste bij je past.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Houd je bedrijf draaiende met ons abonnement!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Je gratis proefabonnement op Woo Express loopt morgen af (%1$s). Dit is hét moment om in je toekomst te investeren: kies een abonnement en bereid je voor om door te groeien.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Je gratis proefperiode is bijna ten einde!</string>
+    <string name="local_notification_without_free_trial_description">Hoi %1$s, %2$s staat voor je klaar! Begin je 14-daagse proefabonnement van Woo Express op de juiste manier en start jouw online bedrijf met één klik.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ Je winkel wacht op je!</string>
+    <string name="local_notification_store_creation_complete_description">Hallo %1$s! Welkom bij je 14-daagse proefabonnement van Woo Express. Op deze centrale plek vind je alles wat je nodig hebt om een succesvolle online onderneming te starten en uit te laten groeien. Klaar om op ontdekkingsreis te gaan?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 Je winkel is klaar!</string>
+    <string name="product_type_variation">Variabel product</string>
+    <string name="settings_policies_cookie_policy_description">In ons cookiebeleid vind je hoe wij en anderen cookies gebruiken en hoe jij ze kan beheren.</string>
+    <string name="settings_policies_cookie_policy">Cookiebeleid</string>
+    <string name="settings_policies_privacy_policy_description">Met jouw informatie kunnen wij onze producten en marketing verbeteren en jouw ervaring op WooCommerce personaliseren.</string>
+    <string name="settings_policies_privacy_policy">Privacybeleid</string>
+    <string name="privacy_banner_error_save">Er is een fout opgetreden bij het opslaan van je privacykeuzes.</string>
+    <string name="privacy_banner_save">Opslaan</string>
+    <string name="privacy_banner_settings">Instellingen</string>
+    <string name="privacy_banner_analytics_description">Sta ons toe prestaties te optimaliseren door informatie te verzamelen over hoe gebruikers zich gedragen op onze mobiele apps.</string>
+    <string name="privacy_banner_analytics">Analytische gegevens</string>
+    <string name="privacy_banner_title">Privacy beheren</string>
+    <string name="privacy_banner_description">Wij vinden je privacy erg belangrijk en dat is altijd al zo geweest. Wij gebruiken, verwerken en slaan je persoonlijke gegevens op om onze app (en jouw ervaring) op allerlei manieren te optimaliseren. Bepaalde manieren waarop we je gegevens gebruiken zijn essentieel om alles goed te laten werken, andere manieren kan je zelf aanpassen bij instellingen.</string>
+    <string name="settings_reports_report_crashes_description">Om ons te helpen de prestaties van de app te verbeteren en incidentele bugs te repareren, kun je automatische crashrapporten inschakelen.</string>
+    <string name="settings_reports_report_crashes">Crashes melden</string>
+    <string name="settings_reports_header">Rapporten</string>
+    <string name="settings_privacy_cookies_polices_description">Lees meer over ons privacybeleid en ons cookiebeleid.</string>
+    <string name="settings_privacy_cookies_polices">Privacybeleid en cookiebeleid</string>
+    <string name="settings_privacy_header">Privacy</string>
+    <string name="settings_usage_tracking_description">Lees meer over de gegevens die we verzamelen over je winkel en jouw opties voor het beheren van deze gegevensuitwisseling.</string>
+    <string name="settings_usage_tracking">Gebruiksgegevens bijhouden</string>
+    <string name="settings_web_options_description">Meer privacyopties beschikbaar voor gebruikers van woocommerce.com. Kijk hier voor meer informatie.</string>
+    <string name="settings_web_options">Webopties</string>
+    <string name="settings_more_privacy_options_header">Meer privacyopties</string>
+    <string name="settings_tracking_analytics_error_update">Er is een fout opgetreden bij het bijwerken van je privacy-instellingen</string>
+    <string name="settings_tracking_analytics_error_fetch">Er is een fout opgetreden bij het ophalen van je privacy-instellingen</string>
+    <string name="settings_tracking_analytics_description">Sta ons toe prestaties te optimaliseren door informatie te verzamelen over hoe gebruikers zich gedragen op onze mobiele apps.</string>
+    <string name="settings_tracking_analytics">Analytische gegevens</string>
+    <string name="settings_tracking_header">Volgen</string>
+    <string name="settings_privacy_statement">Jouw privacy is belangrijk voor ons. Jouw persoonlijke gegevens worden gebruikt om onze mobiele apps te optimaliseren, de beveiliging te verbeteren, analyseactiviteiten uit te voeren en je gebruikerservaring te verbeteren.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Het systeem heeft de Woo-app afgesloten terwijl deze in de achtergrond bezig was. Je kan proberen deze opnieuw te gebruiken.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Je kan een variabel product niet rechtstreeks toevoegen. Selecteer een bepaalde variatie.</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Scan mislukt. Probeer het later opnieuw</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Product niet gevonden. Kon nieuwe bestelling niet toevoegen</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Scan mislukt Probeer het later opnieuw</string>
+    <string name="scan_barcode">Streepjescode scannen</string>
+    <string name="shipping_notice_banner_instructions_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je elk artikel duidelijk beschrijven. Bijvoorbeeld, als je kleding verzendt moet je in de beschrijving duidelijk aangeven wat voor soort kleding het is (bijv. herenshirt, damesvest, kinderjas). Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Neem contact op met ondersteuning</string>
+    <string name="settings_close_account_active_stores_error_description">Dit account kan niet worden gesloten terwijl het actieve winkels heeft.</string>
+    <string name="settings_close_account_generic_error_description">Er is een fout opgetreden bij het sluiten van je account.</string>
+    <string name="settings_close_account_error_dialog_title">Het account kon niet gesloten worden</string>
+    <string name="settings_close_account_dialog_loading_title">Account aan het sluiten…</string>
+    <string name="settings_close_account_dialog_confirm_button">Sluit account permanent</string>
+    <string name="settings_close_account_dialog_description">Om te bevestigen, geef je voor het sluiten je gebruikersnaam opnieuw in</string>
+    <string name="settings_close_account_dialog_title">Bevestig sluiten account</string>
+    <string name="settings_close_account">Account sluiten</string>
+    <string name="scan_to_pay_title">Scan de QR-code en volg de instructies</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan om te betalen</string>
+    <string name="order_creation_remove_coupon">Coupon verwijderen uit bestelling</string>
+    <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Coupon toevoegen</string>
     <string name="product_stock_status_insufficient_stock">Onvoldoende voorraad</string>
     <string name="shipping_label_customs_item_description_too_short">Je moet voor elk item een duidelijke, specifieke beschrijving aanleveren.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Producten toevoegen via scanner</string>
     <string name="shipping_notice_dismiss">Afwijzen</string>
     <string name="shipping_notice_learn_more">Meer informatie</string>
-    <string name="shipping_notice_banner_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je een duidelijke, specifieke beschrijving van elk artikel opgeven. Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
+    <string name="shipping_notice_banner_warning_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je een duidelijke, specifieke beschrijving van elk artikel opgeven. Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Blijf op de hoogte en schroef winkelbeveiliging op. Ontdek Jetpack nu.</string>
     <string name="jetpack_benefits_bottom_banner_title">Ontvang meldingen van bestellingen en meer</string>
     <string name="store_onboarding_setting_description">Lijst voor configuratie van winkel weergeven of verbergen</string>

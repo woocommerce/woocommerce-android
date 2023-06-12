@@ -17,6 +17,9 @@ sentry {
     tracingInstrumentation {
         enabled = true
         features = [io.sentry.android.gradle.extensions.InstrumentationFeature.DATABASE]
+        logcat {
+            enabled = false
+        }
     }
     autoInstallation {
         enabled = false
@@ -77,9 +80,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "13.7-rc-1"
+            versionName "14.0-rc-1"
         }
-        versionCode 417
+        versionCode 424
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -231,7 +234,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:trunk-9c862fc2d53bc8e914216eb192b727427c71e71e'
+    implementation 'com.automattic:Automattic-Tracks-Android:3.1.0'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -417,6 +420,10 @@ android.buildTypes.all { buildType ->
     buildConfigField "String",
             "IAP_TESTING_SANDBOX_URL",
             "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
+
+    buildConfigField "String",
+            "JITM_TESTING_JSON_FILE_NAME",
+            "\"${project.properties.getOrDefault('jitm_testing_json_file_name', '')}\""
 
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {

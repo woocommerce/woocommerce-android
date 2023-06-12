@@ -46,10 +46,11 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
+import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.creation.IsAddProductViaBarcodeScanningEnabled
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -59,6 +60,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -76,20 +78,20 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
-        private const val JITM_MESSAGE_PATH = "woomobile:order_list:admin_notices"
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
     }
 
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     internal lateinit var selectedSite: SelectedSite
+
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
-    @Inject
-    lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
@@ -147,9 +149,6 @@ class OrderListFragment :
 
         orderListMenu = menu
         searchMenuItem = menu.findItem(R.id.menu_search)
-        // TODO Remove the barcode setting visibility logic after the feature is in production.
-        val barcodeOption = menu.findItem(R.id.menu_barcode)
-        barcodeOption.isVisible = isAddProductViaBarcodeScanningEnabled()
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getSearchQueryHint()
     }
@@ -263,7 +262,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_barcode -> {
-                viewModel.startScan()
+                viewModel.onScanClicked()
                 true
             }
             else -> false
@@ -360,7 +359,20 @@ class OrderListFragment :
                     showIPPFeedbackDismissConfirmationDialog()
                 }
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
-                    openOrderCreationFragment(event.code)
+                    openOrderCreationFragment(event.code, event.barcodeFormat)
+                }
+                is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
+                    uiMessageResolver.getRetrySnack(
+                        stringResId = event.message,
+                        isIndefinite = false,
+                        actionListener = event.retry
+                    ).show()
+                }
+                is OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
+                    ToastUtils.showToast(
+                        context,
+                        event.message
+                    )
                 }
                 else -> event.isHandled = false
             }
@@ -445,7 +457,11 @@ class OrderListFragment :
     private fun initJitm(jitmEnabled: Boolean) {
         if (jitmEnabled) {
             childFragmentManager.beginTransaction()
-                .replace(R.id.jitmOrdersFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+                .replace(
+                    R.id.jitmOrdersFragment,
+                    JitmFragment.newInstance(JitmMessagePathsProvider.ORDER_LIST),
+                    JITM_FRAGMENT_TAG
+                )
                 .commit()
         } else {
             childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
@@ -464,13 +480,14 @@ class OrderListFragment :
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun openOrderCreationFragment(code: String? = null) {
+    private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
                 OrderCreateEditViewModel.Mode.Creation,
-                code
+                code,
+                barcodeFormat,
             )
         )
     }
