@@ -45,6 +45,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -57,6 +58,7 @@ import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
@@ -130,7 +132,8 @@ class ProductDetailViewModel @Inject constructor(
     private val getProductQuantityRules: GetProductQuantityRules,
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
-    private val productListRepository: ProductListRepository
+    private val productListRepository: ProductListRepository,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -269,7 +272,8 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = isProductPublished && !isProductUnderCreation,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
-                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
+                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
+                showPromoteWithBlaze = isBlazeEnabled() && getProductVisibility() == PUBLIC
             )
         }.asLiveData()
 
@@ -484,9 +488,11 @@ class ProductDetailViewModel @Inject constructor(
                 variationCandidates.isEmpty() -> {
                     triggerEvent(ShowGenerateVariationsError.NoCandidates)
                 }
+
                 variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT -> {
                     triggerEvent(VariationListViewModel.ShowGenerateVariationConfirmation(variationCandidates))
                 }
+
                 else -> {
                     tracker.track(
                         stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
@@ -518,6 +524,7 @@ class ProductDetailViewModel @Inject constructor(
                             ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ProductExitEvent.ExitAttributesAdded)
                     }
+
                     else -> {
                         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
                         triggerEvent(ShowGenerateVariationsError.NetworkError)
@@ -651,9 +658,11 @@ class ProductDetailViewModel @Inject constructor(
                         is UploadFailure -> triggerEvent(
                             ShowSnackbar(R.string.product_downloadable_files_upload_failed)
                         )
+
                         is UploadProgress -> {
                             // TODO
                         }
+
                         is UploadSuccess -> showAddProductDownload(it.media.url)
                     }
                 }
@@ -682,30 +691,37 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
+
             is ProductExitEvent.ExitExternalLink -> {
                 eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
+
             is ProductExitEvent.ExitProductCategories -> {
                 eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
+
             is ProductExitEvent.ExitProductTags -> {
                 eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
+
             is ProductExitEvent.ExitProductAttributeList -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             is ProductExitEvent.ExitProductAddAttribute -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             is ProductExitEvent.ExitAttributesAdded -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             is ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
             is ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
             is ProductExitEvent.ExitProductAddons -> Unit // Do nothing
@@ -1234,12 +1250,14 @@ class ProductDetailViewModel @Inject constructor(
         viewState = viewState.copy(draftPassword = password)
 
         when (visibility) {
-            ProductVisibility.PUBLIC -> {
+            PUBLIC -> {
                 updateProductDraft(productStatus = ProductStatus.PUBLISH)
             }
+
             ProductVisibility.PRIVATE -> {
                 updateProductDraft(productStatus = ProductStatus.PRIVATE)
             }
+
             ProductVisibility.PASSWORD_PROTECTED -> {
                 updateProductDraft(productStatus = ProductStatus.PUBLISH)
             }
@@ -1259,11 +1277,13 @@ class ProductDetailViewModel @Inject constructor(
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
             }
+
             status == ProductStatus.PRIVATE -> {
                 ProductVisibility.PRIVATE
             }
+
             else -> {
-                ProductVisibility.PUBLIC
+                PUBLIC
             }
         }
     }
@@ -2378,6 +2398,7 @@ class ProductDetailViewModel @Inject constructor(
         val viewProductOption: Boolean,
         val shareOption: Boolean,
         val showShareOptionAsActionWithText: Boolean,
-        val trashOption: Boolean
+        val trashOption: Boolean,
+        val showPromoteWithBlaze: Boolean
     )
 }

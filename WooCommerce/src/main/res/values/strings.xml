@@ -1781,6 +1781,7 @@
     <string name="product_category_selector_loading_failed">Loading product categories failed</string>
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <string name="product_list_multiselect">Select multiple</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promote with Blaze</string>
     <!--
         Product Add more details Bottom sheet
     -->

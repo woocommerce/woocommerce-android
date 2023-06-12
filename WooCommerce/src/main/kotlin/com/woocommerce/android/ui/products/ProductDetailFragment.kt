@@ -233,6 +233,7 @@ class ProductDetailFragment :
                 RequestCodes.AZTEC_EDITOR_PRODUCT_DESCRIPTION -> {
                     viewModel.updateProductDraft(description = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
+
                 RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
@@ -294,6 +295,7 @@ class ProductDetailFragment :
                 is LaunchUrlInChromeTab -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+
                 is RefreshMenu -> activity?.invalidateOptionsMenu()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(
@@ -304,6 +306,7 @@ class ProductDetailFragment :
                         }
                     )
                 }
+
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
@@ -313,6 +316,7 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
+
                 else -> event.isHandled = false
             }
         }
@@ -452,10 +456,12 @@ class ProductDetailFragment :
                 viewModel.onSettingsButtonClicked()
                 true
             }
+
             R.id.menu_duplicate -> {
                 viewModel.onDuplicateProduct()
                 true
             }
+
             R.id.menu_trash_product -> {
                 viewModel.onTrashButtonClicked()
                 true
@@ -568,6 +574,7 @@ class ProductDetailFragment :
             )
         }
         findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
+        findItem(R.id.promote_with_blaze)?.isVisible = state.showPromoteWithBlaze
     }
 
     override fun getFragmentTitle(): String = productName
