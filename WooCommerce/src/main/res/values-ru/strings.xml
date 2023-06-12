@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-31 09:54:03+0000
+Translation-Revision-Date: 2023-06-06 14:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">Карта извлечена слишком быстро</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, мы приостановили работу вашего магазина, но вы можете её возобновить, подобрав оптимальный тарифный план.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Развивайте бизнес с нашим планом!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Пробный период использования Woo Express завершается завтра (%1$s). Пришло время стать хозяином своего будущего — выберите тарифный план и приготовьтесь к росту.</string>

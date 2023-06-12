@@ -1528,6 +1528,90 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isInstanceOf(VMKilledWhenScanningInProgress::class.java)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event with proper message`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isEqualTo(
+            VMKilledWhenScanningInProgress(R.string.order_creation_barcode_scanning_process_death)
+        )
+    }
+
+    @Test
+    fun `given scanning not in progress and vm got killed, when vm restarts, then do not trigger vm killed event`() {
+        savedState["scanning_in_progress"] = false
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isNull()
+    }
+
+    @Test
+    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+
+        createSut()
+        sut.onScanClicked()
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+            )
+        )
+    }
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

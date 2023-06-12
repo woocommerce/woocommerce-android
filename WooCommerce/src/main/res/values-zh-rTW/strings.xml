@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-31 16:54:29+0000
+Translation-Revision-Date: 2023-06-06 09:54:26+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">太早移除這張卡片了</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s，你的商店已暫停運作，不過你可選擇最符合需求的方案，以繼續營運。</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我們的方案維持業務運作！</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">你的 Woo Express 免費試用將於明天 (%1$s) 結束。 掌握未來就趁現在：快挑選一個方案，準備迎接業務成長。</string>
