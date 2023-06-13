@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-class ProductSharingFragment : BottomSheetDialogFragment() {
+class ProductSharingDialog : BottomSheetDialogFragment() {
 
     private val viewModel: ProductSharingViewModel by viewModels()
 

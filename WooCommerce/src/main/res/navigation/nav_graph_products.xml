@@ -720,7 +720,7 @@
     </dialog>
     <dialog
         android:id="@+id/productSharingFragment"
-        android:name="com.woocommerce.android.ui.products.ProductSharingFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSharingDialog"
         android:label="ProductSharingFragment">
         <argument
             android:name="permalink"
