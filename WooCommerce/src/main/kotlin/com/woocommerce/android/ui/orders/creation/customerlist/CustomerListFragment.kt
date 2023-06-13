@@ -66,6 +66,7 @@ class CustomerListFragment :
                     )
                     findNavController().navigateUp()
                 }
+                is CustomerListViewModel.ShowErrorToast -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

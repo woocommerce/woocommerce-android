@@ -81,10 +81,7 @@ private fun CustomerList(
         state = listState,
         modifier = Modifier.background(color = MaterialTheme.colors.surface)
     ) {
-        itemsIndexed(
-            items = customers,
-            key = { _, customer -> customer.remoteId }
-        ) { _, customer ->
+        itemsIndexed(items = customers) { _, customer ->
             CustomerListViewItem(customer, onCustomerClick)
             Divider(
                 modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
