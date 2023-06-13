@@ -13,12 +13,16 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
   echo "Unit Tests failed!"
 fi
 
-results_file=$(find /build/test-results -mindepth 2 -maxdepth 2 -type f -name "*.xml" -print -quit)
+# Pattern to match the paths
+path_pattern="*/build/test-results/*/*.xml"
+
+# Find the XML files matching the pattern
+results_files=($(find . -path "$path_pattern" -type f -name "*.xml"))
 
 if [[ $BUILDKITE_BRANCH == add-annotate-test-failures ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
-    annotate_test_failures "$results_file" --slack "jos-testing-notif"
+    annotate_test_failures "$results_files" --slack "jos-testing-notif"
 else
-    annotate_test_failures "$results_file"
+    annotate_test_failures "$results_files"
 fi
 
 echo "--- ⚒️ Generating and uploading code coverage"
