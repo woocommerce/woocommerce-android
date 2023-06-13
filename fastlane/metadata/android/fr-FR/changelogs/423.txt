@@ -1,0 +1,2 @@
+13.9 :
+Pour simplifier davantage la recherche des articles qui vous intéressent, nous avons introduit une nouvelle fonctionnalité de recherche des produits par UGS dans l'écran du sélecteur de produits. Faites le test et dites-nous ce que vous en pensez !

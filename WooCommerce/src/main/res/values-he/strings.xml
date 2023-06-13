@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-23 15:54:29+0000
+Translation-Revision-Date: 2023-06-07 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">הכרטיס הוסר מהר מדי</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩, השהינו את החנות שלך, אבל באפשרותך להמשיך על ידי בחירת התוכנית שמתאימה לך.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 ניתן להמשיך לתפעל את העסק עם התוכנית שלנו!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">תקופת הניסיון שלך עם Woo Express מסתיימת מחר (⁦%1$s⁩). זה הזמן המושלם לקבל שליטה על העתיד שלך – כדאי לבחור תוכנית ולהתחיל לצמוח כבר עכשיו.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ תקופת הניסיון בחינם שקיבלת תכף מסתיימת!</string>
+    <string name="local_notification_without_free_trial_description">שלום ⁦%1$s⁩,‏ תקופת הניסיון של ⁦%2$s⁩ מוכנה עבורך! כדאי להתחיל תקופת הניסיון של 14 ימים ב-Woo Express – נדרשת רק הקשה אחת כדי לפתוח עסק מקוון ברגל ימין.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ החנות שלך ממתינה!</string>
+    <string name="local_notification_store_creation_complete_description">שלום ⁦%1$s⁩! שמחים שהצטרפת לתקופת הניסיון של 14 ימים ב-Woo Express – השירות מעניק לך כל מה שנדרש כדי לפתוח ולפתח חנות מקוונת מוצלחת, והכול ממקום מרוכז אחד. רוצה לצאת לסיור?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 החנות שלך מוכנה!</string>
+    <string name="product_type_variation">מוצר עם סוגים</string>
+    <string name="settings_policies_cookie_policy_description">המדיניות שלנו לקובצי Cookie מסבירה איך אנחנו וגורמים נוספים משתמשים בקובצי Cookie ואיך באפשרותך לנהל אותם.</string>
+    <string name="settings_policies_cookie_policy">מדיניות קובצי Cookie</string>
+    <string name="settings_policies_privacy_policy_description">הפרטים שלך עוזרים לנו לשפר את המוצרים והשיווק שלנו ולהתאים את החוויה ב-WooCommerce אישית עבורך.</string>
+    <string name="settings_policies_privacy_policy">מדיניות פרטיות</string>
+    <string name="privacy_banner_error_save">אירעה שגיאה בשמירה של בחירות הפרטיות שלך.</string>
+    <string name="privacy_banner_save">לשמור</string>
+    <string name="privacy_banner_settings">הגדרות</string>
+    <string name="privacy_banner_analytics_description">אנחנו זקוקים לאישורך כדי לבצע אופטימיזציה של ביצועים על ידי איסוף מידע לגבי האופן שבו משתמשים יוצרים אינטראקציה עם האפליקציות שלנו למכשירים ניידים.</string>
+    <string name="privacy_banner_analytics">ניתוח סטטיסטי</string>
+    <string name="privacy_banner_title">ניהול פרטיות</string>
+    <string name="privacy_banner_description">הפרטיות שלך חשובה לנו מאוד, וכך היה תמיד. אנחנו משתמשים בנתונים האישיים שלך, מאחסנים ומעבדים אותם כדי לשפר את האפליקציה שלנו (ואת החוויה שלך) בדרכים שונות. יש שימושים בנתונים שאנחנו מחויבים לעשות כדי לאפשר פעילות תקינה של השירות, ויש שימושים שבאפשרותך לשנות מהמקטע \'הגדרות\' אצלך.</string>
+    <string name="settings_reports_report_crashes_description">כדי לעזור לנו לשפר את ביצועי האפליקציה ולתקן באגים מזדמנים, מומלץ להפעיל דוח קריסה אוטומטי.</string>
+    <string name="settings_reports_report_crashes">דיווח על קריסות</string>
+    <string name="settings_reports_header">דוחות</string>
+    <string name="settings_privacy_cookies_polices_description">למידע נוסף על תנאי המדיניות שלנו לגבי פרטיות וקובצי Cookies.</string>
+    <string name="settings_privacy_cookies_polices">תנאי המדיניות לגבי פרטיות וקובצי Cookies</string>
+    <string name="settings_privacy_header">פרטיות</string>
+    <string name="settings_usage_tracking_description">למידע נוסף על הנתונים שאנחנו אוספים לגביך ומאחסנים ועל האפשרויות שיש לך לשלוט בשיתוף הנתונים האלו.</string>
+    <string name="settings_usage_tracking">מעקב אחר השימוש</string>
+    <string name="settings_web_options_description">למשתמשי WooCommerce.com יש אפשרויות פרטיות נוספות. למידע נוסף, ניתן ללחוץ כאן.</string>
+    <string name="settings_web_options">אפשרויות באינטרנט</string>
+    <string name="settings_more_privacy_options_header">אפשרויות פרטיות נוספות</string>
+    <string name="settings_tracking_analytics_error_update">אירעה שגיאה בעדכון הגדרות הפרטיות שלך</string>
+    <string name="settings_tracking_analytics_error_fetch">אירעה שגיאה בהבאת הגדרות הפרטיות שלך</string>
+    <string name="settings_tracking_analytics_description">אנחנו זקוקים לאישורך כדי לבצע אופטימיזציה של ביצועים על ידי איסוף מידע לגבי האופן שבו משתמשים יוצרים אינטראקציה עם האפליקציות שלנו למכשירים ניידים.</string>
+    <string name="settings_tracking_analytics">ניתוח סטטיסטי</string>
+    <string name="settings_tracking_header">מבצע מעקב</string>
+    <string name="settings_privacy_statement">אנחנו מכבדים את פרטיותך. אנחנו משתמשים בנתונים האישיים שלך כדי למטב את האפליקציות שלנו למכשירים ניידים, לשפר את האבטחה, לאסוף נתונים אנליטיים וכדי להבטיח שחוויית השימוש שלך תהיה טובה יותר.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">לא ניתן להוסיף ישירות מוצר עם סוגים. יש לבחור סוג ספציפי</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">המוצר לא נמצא. לא ניתן להוסיף להזמנה חדשה</string>
+    <string name="order_list_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
+    <string name="scan_barcode">לסרוק את הברקוד</string>
     <string name="shipping_notice_banner_instructions_content">במשלוחים למדינות שעונות על כללי המכס של האיחוד האירופי חובה לספק כעת תיאור ברור וספציפי לגבי כל פריט. לדוגמה, אם המשלוח כולל בגדים, יש לציין את סוגי הבגדים במשלוח (למשל, חולצות גברים, אפודות של נשים, ג\'קטים של ילדים) כדי שהתיאור יענה על הדרישות. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
     <string name="settings_close_account_dialog_contact_support_button">לפנות לתמיכה</string>
     <string name="settings_close_account_active_stores_error_description">לא ניתן לסגור את החשבון כל עוד יש לו חנויות פעילות.</string>

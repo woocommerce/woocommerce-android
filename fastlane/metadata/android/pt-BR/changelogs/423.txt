@@ -1,0 +1,2 @@
+13.9:
+Incluímos uma nova funcionalidade, que permite pesquisar produtos por SKU na tela de seleção de produto. Isso torna ainda mais fácil encontrar os itens que você procura. Experimente e compartilhe seu feedback.

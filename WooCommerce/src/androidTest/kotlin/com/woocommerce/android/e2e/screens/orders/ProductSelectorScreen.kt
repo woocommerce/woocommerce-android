@@ -6,9 +6,6 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
@@ -17,7 +14,7 @@ class ProductSelectorScreen : Screen(R.id.product_selector_compose_view) {
         composeTestRule: ComposeContentTestRule
     ): ProductSelectorScreen {
         val screenTitle = getTranslatedString(R.string.coupon_conditions_products_select_products_title)
-        Espresso.onView(ViewMatchers.withText(screenTitle)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        composeTestRule.onNodeWithText(screenTitle).assertIsDisplayed()
 
         val searchHintText = getTranslatedString(R.string.product_selector_search_hint)
         composeTestRule.onNodeWithText(searchHintText).assertIsDisplayed()

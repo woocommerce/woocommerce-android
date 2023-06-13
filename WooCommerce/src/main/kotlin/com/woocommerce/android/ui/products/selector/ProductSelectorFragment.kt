@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -20,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -34,11 +36,7 @@ class ProductSelectorFragment : BaseFragment() {
 
     private val viewModel: ProductSelectorViewModel by viewModels()
 
-    override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
-            hasShadow = false
-        )
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -72,6 +70,7 @@ class ProductSelectorFragment : BaseFragment() {
                     )
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
+                is Exit -> findNavController().navigateUp()
             }
         }
     }
@@ -91,6 +90,4 @@ class ProductSelectorFragment : BaseFragment() {
             )
         }
     }
-
-    override fun getFragmentTitle() = getString(R.string.coupon_conditions_products_select_products_title)
 }

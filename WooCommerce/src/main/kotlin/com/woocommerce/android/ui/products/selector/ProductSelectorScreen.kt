@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,35 +23,54 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
+import com.woocommerce.android.ui.compose.component.WCSelectableChip
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
+import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
@@ -60,48 +80,63 @@ import com.woocommerce.android.util.StringUtils
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     val viewState by viewModel.viewState.observeAsState()
-    viewState?.let {
-        ProductSelectorScreen(
-            state = it,
-            onDoneButtonClick = viewModel::onDoneButtonClick,
-            onClearButtonClick = viewModel::onClearButtonClick,
-            onFilterButtonClick = viewModel::onFilterButtonClick,
-            onProductClick = viewModel::onProductClick,
-            onLoadMore = viewModel::onLoadMore,
-            onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick
-        )
+    BackHandler(onBack = viewModel::onNavigateBack)
+    viewState?.let { state ->
+        Scaffold(topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = string.coupon_conditions_products_select_products_title)) },
+                navigationIcon = {
+                    IconButton(viewModel::onNavigateBack) {
+                        Icon(
+                            imageVector = if (state.searchState.isActive) {
+                                Icons.Filled.ArrowBack
+                            } else {
+                                Icons.Filled.Close
+                            },
+                            contentDescription = stringResource(id = string.back)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = color.color_toolbar),
+                elevation = 0.dp,
+            )
+        }) { padding ->
+            ProductSelectorScreen(
+                modifier = Modifier.padding(padding),
+                state = state,
+                onDoneButtonClick = viewModel::onDoneButtonClick,
+                onClearButtonClick = viewModel::onClearButtonClick,
+                onFilterButtonClick = viewModel::onFilterButtonClick,
+                onProductClick = viewModel::onProductClick,
+                onLoadMore = viewModel::onLoadMore,
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick,
+                onSearchTypeChanged = viewModel::onSearchTypeChanged
+            )
+        }
     }
 }
 
 @Composable
 fun ProductSelectorScreen(
+    modifier: Modifier = Modifier,
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onFilterButtonClick: () -> Unit,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
+    onSearchTypeChanged: (SearchType) -> Unit,
     onClearFiltersButtonClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
         if (state.filterState.filterOptions.isEmpty()) {
-            WCSearchField(
-                value = state.searchQuery,
-                onValueChange = onSearchQueryChanged,
-                hint = stringResource(id = string.product_selector_search_hint),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = dimen.major_100),
-                        vertical = dimensionResource(id = dimen.minor_100)
-                    )
-            )
+            SearchLayout(state, onSearchQueryChanged, onSearchTypeChanged)
         }
 
         when {
@@ -115,6 +150,64 @@ fun ProductSelectorScreen(
             )
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
+        }
+    }
+}
+
+@Composable
+fun SearchLayout(
+    state: ViewState,
+    onSearchQueryChanged: (String) -> Unit,
+    onSearchTypeChanged: (SearchType) -> Unit
+) {
+    val isFocused = remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    Column {
+        WCSearchField(
+            value = state.searchState.searchQuery,
+            onValueChange = onSearchQueryChanged,
+            hint = stringResource(id = string.product_selector_search_hint),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = dimen.major_100),
+                    vertical = dimensionResource(id = dimen.minor_100)
+                )
+                .onFocusChanged { isFocused.value = it.isFocused }
+                .focusRequester(focusRequester),
+        )
+        if (isFocused.value) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = dimen.minor_100)),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                WCSelectableChip(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = dimen.minor_100))
+                        .weight(1f),
+                    onClick = { onSearchTypeChanged(SearchType.DEFAULT) },
+                    text = stringResource(id = string.product_search_all),
+                    isSelected = state.searchState.searchType == SearchType.DEFAULT
+                )
+                WCSelectableChip(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = dimen.minor_100))
+                        .weight(1f),
+                    onClick = { onSearchTypeChanged(SearchType.SKU) },
+                    text = stringResource(id = string.product_search_sku),
+                    isSelected = state.searchState.searchType == SearchType.SKU
+                )
+            }
+        }
+    }
+    LaunchedEffect(state.searchState.isActive) {
+        if (state.searchState.isActive) {
+            focusRequester.requestFocus()
+        } else {
+            focusManager.clearFocus()
         }
     }
 }
@@ -135,8 +228,8 @@ private fun EmptyProductList(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val message = if (state.searchQuery.isNotEmpty()) {
-            stringResource(id = string.empty_message_with_search, state.searchQuery)
+        val message = if (state.searchState.searchQuery.isNotEmpty()) {
+            stringResource(id = string.empty_message_with_search, state.searchState.searchQuery)
         } else if (state.filterState.filterOptions.isNotEmpty()) {
             stringResource(id = string.empty_message_with_filters)
         } else {
@@ -173,7 +266,7 @@ private fun EmptyProductList(
 @Composable
 private fun PopularProductsList(
     state: ViewState,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
 ) {
     displayProductsSection(
         type = ProductType.POPULAR,
@@ -185,7 +278,7 @@ private fun PopularProductsList(
 @Composable
 private fun RecentlySoldProductsList(
     state: ViewState,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
 ) {
     displayProductsSection(
         type = ProductType.RECENT,
@@ -198,7 +291,7 @@ private fun RecentlySoldProductsList(
 private fun displayProductsSection(
     type: ProductType,
     state: ViewState,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
 ) {
     val (productsList, heading, productSectionForTracking) = when (type) {
         ProductType.POPULAR -> Triple(
@@ -236,10 +329,10 @@ private fun displayProductsSection(
                 imageUrl = product.imageUrl,
                 infoLine1 = product.stockAndPrice,
                 infoLine2 = product.sku?.let {
-                    stringResource(string.product_selector_sku_value, product.sku)
+                    stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
-                isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
+                isArrowVisible = product.hasVariations(),
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description)
             ) {
@@ -248,7 +341,7 @@ private fun displayProductsSection(
             if (index < productsList.size - 1) {
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
+                    color = colorResource(id = color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
@@ -267,7 +360,7 @@ private fun ProductList(
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onFilterButtonClick: () -> Unit,
-    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
+    onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -288,16 +381,18 @@ private fun ProductList(
                 enabled = state.selectedItemsCount > 0,
                 modifier = Modifier.align(Alignment.CenterStart)
             )
-            WCTextButton(
-                onClick = onFilterButtonClick,
-                text = StringUtils.getQuantityString(
-                    quantity = state.filterState.filterOptions.size,
-                    default = string.product_selector_filter_button_title_default,
-                    zero = string.product_selector_filter_button_title_zero
-                ),
-                allCaps = false,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
+            if (state.searchState.searchQuery.isEmpty()) {
+                WCTextButton(
+                    onClick = onFilterButtonClick,
+                    text = StringUtils.getQuantityString(
+                        quantity = state.filterState.filterOptions.size,
+                        default = string.product_selector_filter_button_title_default,
+                        zero = string.product_selector_filter_button_title_zero
+                    ),
+                    allCaps = false,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
+            }
         }
         LazyColumn(
             state = listState,
@@ -341,10 +436,10 @@ private fun ProductList(
                     imageUrl = product.imageUrl,
                     infoLine1 = product.stockAndPrice,
                     infoLine2 = product.sku?.let {
-                        stringResource(string.product_selector_sku_value, product.sku)
+                        stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
+                    isArrowVisible = product.hasVariations(),
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
@@ -352,7 +447,7 @@ private fun ProductList(
                 }
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
+                    color = colorResource(id = color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
@@ -373,7 +468,7 @@ private fun ProductList(
         }
 
         Divider(
-            color = colorResource(id = R.color.divider_color),
+            color = colorResource(id = color.divider_color),
             thickness = dimensionResource(id = dimen.minor_10)
         )
 
@@ -391,6 +486,9 @@ private fun ProductList(
         )
     }
 }
+
+private fun ListItem.hasVariations() =
+    this is ListItem.ProductListItem && (type == VARIABLE || type == VARIABLE_SUBSCRIPTION) && numVariations > 0
 
 @Composable
 @Suppress("MagicNumber")
@@ -424,7 +522,7 @@ private fun ProductListSkeleton() {
                 Divider(
                     modifier = Modifier
                         .offset(x = dimensionResource(id = dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
+                    color = colorResource(id = color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
@@ -438,8 +536,8 @@ private fun ProductListSkeleton() {
 @Suppress("MagicNumber")
 fun PopularProductsListPreview() {
     val products = listOf(
-        ProductListItem(
-            id = 1,
+        ListItem.ProductListItem(
+            productId = 1,
             title = "Product 1",
             type = SIMPLE,
             imageUrl = null,
@@ -449,8 +547,8 @@ fun PopularProductsListPreview() {
             selectionState = SELECTED
         ),
 
-        ProductListItem(
-            id = 2,
+        ListItem.ProductListItem(
+            productId = 2,
             title = "Product 2",
             type = VARIABLE,
             imageUrl = null,
@@ -460,8 +558,8 @@ fun PopularProductsListPreview() {
             selectionState = PARTIALLY_SELECTED
         ),
 
-        ProductListItem(
-            id = 3,
+        ListItem.ProductListItem(
+            productId = 3,
             title = "Product 3",
             type = GROUPED,
             imageUrl = "",
@@ -470,8 +568,8 @@ fun PopularProductsListPreview() {
             sku = null
         ),
 
-        ProductListItem(
-            id = 4,
+        ListItem.ProductListItem(
+            productId = 4,
             title = "Product 4",
             type = GROUPED,
             imageUrl = null,
@@ -487,7 +585,7 @@ fun PopularProductsListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = emptyList(),
         ),
@@ -505,8 +603,8 @@ fun PopularProductsListPreview() {
 @Suppress("MagicNumber")
 fun RecentProductsListPreview() {
     val products = listOf(
-        ProductListItem(
-            id = 1,
+        ListItem.ProductListItem(
+            productId = 1,
             title = "Product 1",
             type = SIMPLE,
             imageUrl = null,
@@ -516,8 +614,8 @@ fun RecentProductsListPreview() {
             selectionState = SELECTED
         ),
 
-        ProductListItem(
-            id = 2,
+        ListItem.ProductListItem(
+            productId = 2,
             title = "Product 2",
             type = VARIABLE,
             imageUrl = null,
@@ -527,8 +625,8 @@ fun RecentProductsListPreview() {
             selectionState = PARTIALLY_SELECTED
         ),
 
-        ProductListItem(
-            id = 3,
+        ListItem.ProductListItem(
+            productId = 3,
             title = "Product 3",
             type = GROUPED,
             imageUrl = "",
@@ -537,8 +635,8 @@ fun RecentProductsListPreview() {
             sku = null
         ),
 
-        ProductListItem(
-            id = 4,
+        ListItem.ProductListItem(
+            productId = 4,
             title = "Product 4",
             type = GROUPED,
             imageUrl = null,
@@ -554,7 +652,7 @@ fun RecentProductsListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = products,
         ),
@@ -571,8 +669,8 @@ fun RecentProductsListPreview() {
 @Suppress("MagicNumber")
 fun ProductListPreview() {
     val products = listOf(
-        ProductListItem(
-            id = 1,
+        ListItem.ProductListItem(
+            productId = 1,
             title = "Product 1",
             type = SIMPLE,
             imageUrl = null,
@@ -582,8 +680,8 @@ fun ProductListPreview() {
             selectionState = SELECTED
         ),
 
-        ProductListItem(
-            id = 2,
+        ListItem.ProductListItem(
+            productId = 2,
             title = "Product 2",
             type = VARIABLE,
             imageUrl = null,
@@ -593,8 +691,8 @@ fun ProductListPreview() {
             selectionState = PARTIALLY_SELECTED
         ),
 
-        ProductListItem(
-            id = 3,
+        ListItem.ProductListItem(
+            productId = 3,
             title = "Product 3",
             type = GROUPED,
             imageUrl = "",
@@ -603,8 +701,8 @@ fun ProductListPreview() {
             sku = null
         ),
 
-        ProductListItem(
-            id = 4,
+        ListItem.ProductListItem(
+            productId = 4,
             title = "Product 4",
             type = GROUPED,
             imageUrl = null,
@@ -620,7 +718,7 @@ fun ProductListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = products,
         ),
@@ -641,16 +739,29 @@ fun ProductListEmptyPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = "",
+            searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
-        ),
-        {}
-    )
+        )
+    ) {}
 }
 
 @Preview
 @Composable
 fun ProductListSkeletonPreview() {
     ProductListSkeleton()
+}
+@Preview
+@Composable
+fun SearchLayoutPreview() {
+    val state = ViewState(
+        products = emptyList(),
+        selectedItemsCount = 3,
+        loadingState = IDLE,
+        filterState = FilterState(),
+        searchState = ProductSelectorViewModel.SearchState(),
+        popularProducts = emptyList(),
+        recentProducts = emptyList(),
+    )
+    SearchLayout(state = state, onSearchQueryChanged = {}, onSearchTypeChanged = {})
 }

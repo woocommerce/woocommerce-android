@@ -29,6 +29,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -114,6 +115,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
+    @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
 
     private var connectionReceiverRegistered = false
 
@@ -234,7 +236,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 }
             }
 
-            // Update the user info
             if (selectedSite.exists()) {
                 appCoroutineScope.launch {
                     userEligibilityFetcher.fetchUserInfo().onSuccess {
@@ -252,6 +253,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         cardReaderOnboardingChecker.invalidateCache()
                         cardReaderOnboardingChecker.getOnboardingState()
                     }
+
+                    jitmStoreInMemoryCache.init()
                 }
             }
         }

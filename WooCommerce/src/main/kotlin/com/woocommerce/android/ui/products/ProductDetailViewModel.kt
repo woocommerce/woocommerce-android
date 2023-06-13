@@ -129,7 +129,8 @@ class ProductDetailViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val getProductQuantityRules: GetProductQuantityRules,
     private val getBundledProductsCount: GetBundledProductsCount,
-    private val getComponentProducts: GetComponentProducts
+    private val getComponentProducts: GetComponentProducts,
+    private val productListRepository: ProductListRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -850,6 +851,14 @@ class ProductDetailViewModel @Inject constructor(
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
+                    if (isPublishingFirstProduct()) {
+                        triggerEvent(
+                            ProductNavigationTarget.ViewFirstProductCelebration(
+                                productName = product.name,
+                                permalink = product.permalink
+                            )
+                        )
+                    }
                     if (navArgs.source == STORE_ONBOARDING) {
                         tracker.track(
                             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
@@ -873,6 +882,14 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * We assume a merchant is publishing a product for the first time if:
+     * 1. they arrive to this product details screen from the onboarding list on My Store, or
+     * 2. they arrive from other sources while the store's product list is empty.
+     */
+    private fun isPublishingFirstProduct(): Boolean =
+        navArgs.source == STORE_ONBOARDING || productListRepository.getProductList().isEmpty()
 
     /**
      * during a product creation flow flagged by [isAddFlowEntryPoint],

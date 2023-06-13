@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
+import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -59,6 +60,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -76,16 +78,18 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
-        private const val JITM_MESSAGE_PATH = "woomobile:order_list:admin_notices"
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
     }
 
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     internal lateinit var selectedSite: SelectedSite
+
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
@@ -364,6 +368,12 @@ class OrderListFragment :
                         actionListener = event.retry
                     ).show()
                 }
+                is OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
+                    ToastUtils.showToast(
+                        context,
+                        event.message
+                    )
+                }
                 else -> event.isHandled = false
             }
         }
@@ -447,7 +457,11 @@ class OrderListFragment :
     private fun initJitm(jitmEnabled: Boolean) {
         if (jitmEnabled) {
             childFragmentManager.beginTransaction()
-                .replace(R.id.jitmOrdersFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+                .replace(
+                    R.id.jitmOrdersFragment,
+                    JitmFragment.newInstance(JitmMessagePathsProvider.ORDER_LIST),
+                    JITM_FRAGMENT_TAG
+                )
                 .commit()
         } else {
             childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {

@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-24 09:54:04+0000
+Translation-Revision-Date: 2023-06-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">カードが早急に削除されました</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s さん、ストアは休止されていますが、最適なプランをお選びいただくと再開できます。</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 プランを利用してビジネスを順調に進めましょう !</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express の無料お試し期間は明日 (%1$s) までです。 今こそ、未来を自分で創るときです。プランを選び、大きく成長する第一歩を踏み出しましょう。</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 無料お試し期間はまもなく終了です !</string>
+    <string name="local_notification_without_free_trial_description">こんにちは、%1$s さん。%2$s の準備ができました。 Woo Express の14日間の無料お試しを開始して、ワンクリックでオンラインビジネスを立ち上げましょう。  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ ストアを利用できます。</string>
+    <string name="local_notification_store_creation_complete_description">%1$s さん、こんにちは ! Woo Express の14日間のお試し期間にようこそ。Woo Express は、成功するオンラインビジネスを立ち上げ、大きく育てるために必要なものがすべて1か所にそろっています。 Woo Express を使う準備はできましたか ?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 ストアの準備ができました。</string>
+    <string name="product_type_variation">バリエーション商品</string>
+    <string name="settings_policies_cookie_policy_description">当社の Cookie ポリシーには、当社および他者による Cookie の使用方法と、お客様による Cookie の管理方法について記載されています。</string>
+    <string name="settings_policies_cookie_policy">Cookie ポリシー</string>
+    <string name="settings_policies_privacy_policy_description">お客様の情報は、当社の製品、マーケティングの改善ならびに WooCommerce での体験のカスタマイズに役立てられます。</string>
+    <string name="settings_policies_privacy_policy">プライバシーポリシー</string>
+    <string name="privacy_banner_error_save">プライバシーに関する選択を保存しているときにエラーが発生しました。</string>
+    <string name="privacy_banner_save">保存</string>
+    <string name="privacy_banner_settings">設定</string>
+    <string name="privacy_banner_analytics_description">パフォーマンス最適化のために、当社モバイルアプリの利用状況に関する情報の収集を許可します。</string>
+    <string name="privacy_banner_analytics">アナリティクス</string>
+    <string name="privacy_banner_title">プライバシーを管理</string>
+    <string name="privacy_banner_description">当社はユーザーのプライバシーを常に重要視しています。 アプリ (そしてアプリの操作性) を最適化するために、個人データをさまざまな形で使用、保存、処理しています。 個人データの使用用途の一部は、アプリが機能するために必須のものです。それ以外の用途については設定でカスタマイズできます。</string>
+    <string name="settings_reports_report_crashes_description">自動クラッシュレポートを有効化して、アプリのパフォーマンス向上とたまに発生するバグの修正にご協力ください。</string>
+    <string name="settings_reports_report_crashes">クラッシュをレポート</string>
+    <string name="settings_reports_header">レポート</string>
+    <string name="settings_privacy_cookies_polices_description">当社のプライバシーと Cookie に関するポリシーについて詳しくはこちらをご覧ください。</string>
+    <string name="settings_privacy_cookies_polices">プライバシーと Cookie に関するポリシー</string>
+    <string name="settings_privacy_header">プライバシー</string>
+    <string name="settings_usage_tracking_description">ストアに関して当社が収集しているデータと、このデータ共有をコントロールするオプションについて、詳細をご確認ください。</string>
+    <string name="settings_usage_tracking">使用状況の追跡</string>
+    <string name="settings_web_options_description">WooCommerce.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
+    <string name="settings_web_options">ウェブオプション</string>
+    <string name="settings_more_privacy_options_header">その他のプライバシーオプション</string>
+    <string name="settings_tracking_analytics_error_update">プライバシー設定の更新でエラーが発生しました</string>
+    <string name="settings_tracking_analytics_error_fetch">プライバシー設定の取得でエラーが発生しました</string>
+    <string name="settings_tracking_analytics_description">パフォーマンス最適化のために、当社モバイルアプリの利用状況に関する情報の収集を許可します。</string>
+    <string name="settings_tracking_analytics">アナリティクス</string>
+    <string name="settings_tracking_header">追跡</string>
+    <string name="settings_privacy_statement">当社はプライバシーを重視します。 個人データは当社モバイルアプリの最適化、セキュリティの改善、分析の実施、ユーザーエクスペリエンスの向上のために使用されます。</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">バックグラウンドで実行中の Woo アプリがシステムにより終了しました。 再度使用してみることができます。</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">直接バリエーション商品を追加できません。 特定のバリエーションを選択してください</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください。</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">商品が見つかりません。 新しい注文を追加できません</string>
+    <string name="order_list_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください</string>
+    <string name="scan_barcode">バーコードのスキャン</string>
     <string name="shipping_notice_banner_instructions_content">欧州連合 (EU) の関税法規則に従う国への発送は、すべての品目について明確な説明が求められるようになりました。 たとえば衣類を送る場合、どのようなタイプの衣類であるか (例: 男性用シャツ、女児用ベスト、男児用上着など) を明記しなければ認められません。 これを怠ると、配送が税関で遅延または中断されることがあります。</string>
     <string name="settings_close_account_dialog_contact_support_button">サポートに連絡</string>
     <string name="settings_close_account_active_stores_error_description">有効になっているストアがあるため、このアカウントを閉鎖できません。</string>
