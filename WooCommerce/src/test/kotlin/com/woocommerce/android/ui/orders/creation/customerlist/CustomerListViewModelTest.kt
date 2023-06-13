@@ -187,10 +187,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
     private fun createCustomer(customerId: Long): WCCustomerModel {
         val customer: WCCustomerModel = mock {
             on { remoteCustomerId }.thenReturn(customerId)
-            on { firstName }.thenReturn("firstName")
-            on { lastName }.thenReturn("lastName")
-            on { email }.thenReturn("email")
-            on { avatarUrl }.thenReturn("avatarUrl")
             on { shippingCompany }.thenReturn("shippingCompany")
             on { shippingAddress1 }.thenReturn("shippingAddress1")
             on { shippingAddress2 }.thenReturn("shippingAddress2")
