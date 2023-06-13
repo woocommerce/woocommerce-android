@@ -39,13 +39,7 @@ steps:
     plugins: *common_plugins
 
   - label: "Unit tests"
-    command: |
-      echo "--- 🧪 Testing"
-      cp gradle.properties-example gradle.properties
-      ./gradlew testJalapenoDebug lib:cardreader:testDebug lib:iap:testDebug
-      echo "--- ⚒️ Generating and uploading code coverage"
-      ./gradlew jacocoTestReport
-      .buildkite/commands/upload-code-coverage.sh
+    command: .buildkite/commands/run-unit-tests.sh
     plugins: *common_plugins
     artifact_paths:
       - "**/build/test-results/*/*.xml"
