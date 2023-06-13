@@ -42,6 +42,7 @@ import javax.inject.Inject
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
+    unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
     private val planRepository: SitePlanRepository,
@@ -50,7 +51,6 @@ class MoreMenuViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
