@@ -721,5 +721,17 @@
     <dialog
         android:id="@+id/productSharingFragment"
         android:name="com.woocommerce.android.ui.products.ProductSharingFragment"
-        android:label="ProductSharingFragment" />
+        android:label="ProductSharingFragment">
+        <argument
+            android:name="permalink"
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            app:argType="string" />
+        <argument
+            android:name="productDescription"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 </navigation>

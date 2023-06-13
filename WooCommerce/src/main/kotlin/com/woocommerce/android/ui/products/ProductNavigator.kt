@@ -84,7 +84,11 @@ class ProductNavigator @Inject constructor() {
 
             is ProductNavigationTarget.ShareProductWithAI -> {
                 val action = ProductDetailFragmentDirections
-                    .actionProductDetailFragmentToProductSharingFragment()
+                    .actionProductDetailFragmentToProductSharingFragment(
+                        target.permalink,
+                        target.title,
+                        target.description
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
 

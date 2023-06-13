@@ -25,6 +25,7 @@ import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
@@ -386,7 +387,13 @@ class ProductDetailViewModel @Inject constructor(
 
             viewState.productDraft?.let {
                 if (FeatureFlag.SHARING_PRODUCT_AI.isEnabled()) {
-                    triggerEvent(ProductNavigationTarget.ShareProductWithAI)
+                    triggerEvent(
+                        ProductNavigationTarget.ShareProductWithAI(
+                            it.permalink,
+                            it.name,
+                            it.description.orNullIfEmpty()
+                        )
+                    )
                 } else {
                     triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
                 }
