@@ -273,7 +273,9 @@ class ProductDetailViewModel @Inject constructor(
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
-                showPromoteWithBlaze = isBlazeEnabled() && getProductVisibility() == PUBLIC
+                showPromoteWithBlaze = isBlazeEnabled() &&
+                    getProductVisibility() == PUBLIC &&
+                    productDraft.status != ProductStatus.DRAFT
             )
         }.asLiveData()
 
