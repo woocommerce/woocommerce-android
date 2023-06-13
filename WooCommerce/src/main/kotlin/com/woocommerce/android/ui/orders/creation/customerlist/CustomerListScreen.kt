@@ -27,8 +27,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -37,8 +35,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewModel.CustomerListItem
@@ -115,36 +111,20 @@ private fun CustomerListViewItem(
                 vertical = dimensionResource(id = R.dimen.minor_100)
             ),
     ) {
-        Row {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(customer.avatarUrl)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(R.drawable.img_gravatar_placeholder),
-                error = painterResource(R.drawable.img_gravatar_placeholder),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .size(dimensionResource(R.dimen.major_300))
-                    .clip(RoundedCornerShape(3.dp))
+        Column(
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        ) {
+            Text(
+                text = "${customer.firstName} ${customer.lastName}",
+                style = MaterialTheme.typography.subtitle1,
+                color = MaterialTheme.colors.onSurface
             )
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    .align(Alignment.CenterVertically)
-            ) {
-                Text(
-                    text = "${customer.firstName} ${customer.lastName}",
-                    style = MaterialTheme.typography.subtitle1,
-                    color = MaterialTheme.colors.onSurface
-                )
-                Text(
-                    text = customer.email,
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface
-                )
-            }
+            Text(
+                text = customer.email,
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.onSurface
+            )
         }
     }
 }
@@ -154,6 +134,7 @@ private fun EmptyCustomerList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = MaterialTheme.colors.surface)
             .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
