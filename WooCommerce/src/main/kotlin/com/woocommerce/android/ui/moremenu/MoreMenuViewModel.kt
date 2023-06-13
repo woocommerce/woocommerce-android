@@ -87,6 +87,12 @@ class MoreMenuViewModel @Inject constructor(
             onClick = ::onPaymentsButtonClick,
         ),
         MenuUiButton(
+            title = R.string.more_menu_button_blaze,
+            description = R.string.more_menu_button_blaze_description,
+            icon = R.drawable.ic_more_menu_blaze,
+            onClick = ::onPromoteProductsWithBlaze,
+        ),
+        MenuUiButton(
             title = R.string.more_menu_button_wс_admin,
             description = R.string.more_menu_button_wc_admin_description,
             icon = R.drawable.ic_more_menu_wp_admin,
@@ -186,6 +192,10 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
+    private fun onPromoteProductsWithBlaze() {
+        triggerEvent(MoreMenuEvent.OpenBlazeEvent("TODO"))
+    }
+
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrlOrDefault))
@@ -258,6 +268,7 @@ class MoreMenuViewModel @Inject constructor(
         object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
+        data class OpenBlazeEvent(val url: String) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

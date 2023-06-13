@@ -3278,6 +3278,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
 
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
+
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_inbox_description">Stay up-to-date</string>
 
