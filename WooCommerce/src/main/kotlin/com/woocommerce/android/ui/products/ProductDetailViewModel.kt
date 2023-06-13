@@ -385,7 +385,11 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+                if (FeatureFlag.SHARING_PRODUCT_AI.isEnabled()) {
+                    triggerEvent(ProductNavigationTarget.ShareProductWithAI)
+                } else {
+                    triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+                }
             }
         }
     }
