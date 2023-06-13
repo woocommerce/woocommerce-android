@@ -20,6 +20,7 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -48,6 +49,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
+    private val isBlazeEnabled: IsBlazeEnabled,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -91,6 +93,7 @@ class MoreMenuViewModel @Inject constructor(
             description = R.string.more_menu_button_blaze_description,
             icon = R.drawable.ic_more_menu_blaze,
             onClick = ::onPromoteProductsWithBlaze,
+            isEnabled = isBlazeEnabled()
         ),
         MenuUiButton(
             title = R.string.more_menu_button_wс_admin,
