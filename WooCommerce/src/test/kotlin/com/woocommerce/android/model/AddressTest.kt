@@ -22,7 +22,9 @@ class AddressTest {
 
         val dataModel = address.toShippingLabelModel()
 
-        assertThat(dataModel.name).isNull()
+//        assertThat(dataModel.name).isNull()
+//        intentional fail for testing
+        assertThat(dataModel.name).isNotNull()
     }
 
     @Test

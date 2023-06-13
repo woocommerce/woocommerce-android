@@ -30,7 +30,9 @@ class OrderTest {
         val result = order.isOrderPaid
 
         // THEN
-        assertFalse(result)
+//        assertFalse(result)
+//        intentional fail for testing
+        assertTrue(result)
     }
 
     @Test
