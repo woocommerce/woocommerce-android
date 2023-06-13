@@ -13,19 +13,20 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
   echo "Unit Tests failed!"
 fi
 
-# Pattern to match the paths
-path_pattern="*/build/test-results/*/*.xml"
+results_files=()
+while IFS= read -r -d '' file; do
+  results_files+=("$file")
+done < <(find . -path "$path_pattern" -type f -name "*.xml" -print0)
 
-# Find the XML files matching the pattern
-results_files=($(find . -path "$path_pattern" -type f -name "*.xml"))
+printf "results files value: %s\n" "${results_files[@]}"
 
-echo "results files value: $results_files"
-
-if [[ $BUILDKITE_BRANCH == add-annotate-test-failures ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
-    annotate_test_failures "$results_files" --slack "jos-testing-notif"
-else
-    annotate_test_failures "$results_files"
-fi
+for file in "${results_files[@]}"; do
+  if [[ $BUILDKITE_BRANCH == add-annotate-test-failures ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
+    annotate_test_failures "$file" --slack "jos-testing-notif"
+  else
+    annotate_test_failures "$file"
+  fi
+done
 
 echo "--- ⚒️ Generating and uploading code coverage"
 ./gradlew jacocoTestReport
