@@ -19,6 +19,8 @@ path_pattern="*/build/test-results/*/*.xml"
 # Find the XML files matching the pattern
 results_files=($(find . -path "$path_pattern" -type f -name "*.xml"))
 
+echo "results files value: $results_files"
+
 if [[ $BUILDKITE_BRANCH == add-annotate-test-failures ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
     annotate_test_failures "$results_files" --slack "jos-testing-notif"
 else
