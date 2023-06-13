@@ -54,7 +54,7 @@ class CustomerListRepository @Inject constructor(
         return customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
     }
 
-    fun getCustomerByRemoteIdFromLocal(remoteId: Long): WCCustomerModel? {
+    fun getCustomerByRemoteIdFromLocalStorage(remoteId: Long): WCCustomerModel? {
         return customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
     }
 }

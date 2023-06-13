@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.customerlist
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -52,16 +51,16 @@ class CustomerListViewModel @Inject constructor(
                 _viewState.value = _viewState.value?.copy(isSkeletonShown = false)
 
                 if (customerFetchingResult.isError || customerFetchingResult.model == null) {
-                    triggerEvent(ShowErrorToast(R.string.error_generic_network))
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic_network))
                 } else {
                     openCustomerDetails(customerFetchingResult.model!!)
                 }
             } else {
-                val customer = customerListRepository.getCustomerByRemoteIdFromLocal(customerRemoteId)
+                val customer = customerListRepository.getCustomerByRemoteIdFromLocalStorage(customerRemoteId)
                 if (customer != null) {
                     openCustomerDetails(customer)
                 } else {
-                    triggerEvent(ShowErrorToast(R.string.error_generic))
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
                 }
             }
         }
@@ -194,8 +193,6 @@ class CustomerListViewModel @Inject constructor(
         val billingAddress: Address,
         val shippingAddress: Address
     ) : MultiLiveEvent.Event()
-
-    data class ShowErrorToast(@StringRes val message: Int) : MultiLiveEvent.Event()
 }
 
 private fun WCCustomerModel.toUiModel() =
