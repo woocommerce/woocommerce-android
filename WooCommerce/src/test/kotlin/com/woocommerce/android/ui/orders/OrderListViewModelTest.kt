@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.IPPSurveyFeedbackBannerState
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
@@ -542,7 +543,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then when the order status change fails, the retry message is shown
         val resultEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(resultEvent is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack)
+        assertTrue(resultEvent is OrderListEvent.ShowRetryErrorSnack)
     }
 
     @Test
@@ -688,7 +689,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel.onDismissIPPFeedbackBannerClicked()
 
             // then
-            assertEquals(OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
+            assertEquals(OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
         }
 
     @Test
@@ -706,7 +707,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertEquals(
-            OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
+            OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
             viewModel.event.value
         )
     }
@@ -978,7 +979,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
         viewModel.onScanClicked()
 
-        assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OnBarcodeScanned::class.java)
     }
 
     @Test
@@ -1055,7 +1056,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onScanClicked()
 
         assertThat(viewModel.event.value).isEqualTo(
-            OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
+            OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
         )
     }
 
@@ -1177,6 +1178,86 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            OrderListEvent.VMKilledWhenScanningInProgress::class.java
+        )
+    }
+
+    @Test
+    fun `given scanning not in progress and vm got killed, when vm restarts, then do not trigger vm killed event`() {
+        savedStateHandle["scanning_in_progress"] = false
+        viewModel = createViewModel()
+
+        assertThat(viewModel.event.value).isNull()
+    }
+
+    @Test
+    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.onScanClicked()
+
+        assertFalse(savedStateHandle["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        assertFalse(savedStateHandle["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        verify(analyticsTracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
+        savedStateHandle["scanning_in_progress"] = true
+        viewModel = createViewModel()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+            )
+        )
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event with proper message`() {
+        savedStateHandle["scanning_in_progress"] = true
+
+        viewModel = createViewModel()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            OrderListEvent.VMKilledWhenScanningInProgress(R.string.order_list_barcode_scanning_process_death)
+        )
+    }
     //endregion
 
     private companion object {

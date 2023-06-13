@@ -252,6 +252,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 selectedSite,
                 mock(),
                 mock(),
+                mock(),
                 mock()
             )
         )

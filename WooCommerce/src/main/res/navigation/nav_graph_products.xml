@@ -102,6 +102,16 @@
         <action
             android:id="@+id/action_productDetailFragment_to_compositeProductFragment"
             app:destination="@id/compositeProductFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_firstProductCelebrationDialog"
+            app:destination="@id/firstProductCelebrationDialog">
+            <argument
+                android:name="permalink"
+                app:argType="string" />
+            <argument
+                android:name="productName"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -694,4 +704,15 @@
         android:id="@+id/generateVariationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment"
         android:label="GenerateVariationBottomSheetFragment" />
+    <dialog
+        android:id="@+id/firstProductCelebrationDialog"
+        android:name="com.woocommerce.android.ui.products.FirstProductCelebrationDialog"
+        android:label="FirstProductCelebrationDialog">
+        <argument
+            android:name="permalink"
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            app:argType="string" />
+    </dialog>
 </navigation>

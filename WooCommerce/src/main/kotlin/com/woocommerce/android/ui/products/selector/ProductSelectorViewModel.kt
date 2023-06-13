@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.getStockText
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -136,7 +137,7 @@ class ProductSelectorViewModel @Inject constructor(
         viewModelScope.launch {
             loadPopularProducts()
             loadRecentProducts()
-            fetchProducts(forceRefresh = true, searchType = searchState.value.searchType)
+            fetchProducts(searchType = searchState.value.searchType)
         }
     }
 
@@ -379,6 +380,14 @@ class ProductSelectorViewModel @Inject constructor(
         triggerEvent(ExitWithResult(selectedItems.value))
     }
 
+    fun onNavigateBack() {
+        if (searchState.value.isActive) {
+            searchState.value = SearchState.EMPTY
+        } else {
+            triggerEvent(Exit)
+        }
+    }
+
     private fun isFilterActive() = filterState.value.filterOptions.isNotEmpty()
 
     fun onSearchQueryChanged(query: String) {
@@ -490,7 +499,6 @@ class ProductSelectorViewModel @Inject constructor(
         filters: FilterState = filterState.value,
         query: String = "",
         searchType: SearchType = SearchType.DEFAULT,
-        forceRefresh: Boolean = false
     ) {
         loadMoreJob?.cancel()
         fetchProductsJob?.cancel()
@@ -499,7 +507,6 @@ class ProductSelectorViewModel @Inject constructor(
             listHandler.loadFromCacheAndFetch(
                 filters = filters.filterOptions,
                 searchQuery = query,
-                forceRefresh = forceRefresh,
                 searchType = searchType,
             ).onFailure {
                 val message = if (query.isEmpty()) string.product_selector_loading_failed
@@ -513,15 +520,6 @@ class ProductSelectorViewModel @Inject constructor(
     fun onSearchTypeChanged(searchType: SearchType) {
         this.searchState.update {
             it.copy(searchType = searchType)
-        }
-    }
-
-    fun onExternalBackPressInterceptRequest(): Boolean {
-        return if (searchState.value.isActive) {
-            searchState.value = SearchState.EMPTY
-            false
-        } else {
-            true
         }
     }
 

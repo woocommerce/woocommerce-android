@@ -86,16 +86,18 @@ class StoreCreationSummaryViewModel @Inject constructor(
     }
 
     private fun manageDeferredNotifications() {
-        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_STORE_CREATION_READY)) {
-            val name = if (accountStore.account.firstName.isNotNullOrEmpty())
-                accountStore.account.firstName
-            else
-                accountStore.account.userName
-            localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
-        }
+        launch {
+            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_STORE_CREATION_READY)) {
+                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                    accountStore.account.firstName
+                else
+                    accountStore.account.userName
+                localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
+            }
 
-        // No need to display a notification to complete store creation anymore
-        localNotificationScheduler.cancelScheduledNotification(STORE_CREATION_INCOMPLETE)
+            // No need to display a notification to complete store creation anymore
+            localNotificationScheduler.cancelScheduledNotification(STORE_CREATION_INCOMPLETE)
+        }
     }
 
     object OnCancelPressed : MultiLiveEvent.Event()

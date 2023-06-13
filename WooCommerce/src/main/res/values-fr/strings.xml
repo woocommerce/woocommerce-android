@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-31 16:54:22+0000
+Translation-Revision-Date: 2023-06-07 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">La carte a été retirée trop tôt</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, nous avons suspendu votre boutique, mais vous pouvez la conserver en choisissant le plan qui vous convient le mieux.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Poursuivez vos activités avec notre abonnement !</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Votre période d’essai gratuit de Woo Express se termine demain (%1$s). Le moment est venu de prendre votre avenir en main. Choisissez un plan et préparez-vous à prospérer.</string>

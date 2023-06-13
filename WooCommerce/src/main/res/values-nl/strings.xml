@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-31 16:54:22+0000
+Translation-Revision-Date: 2023-06-07 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">De kaart is te vroeg verwijderd</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we hebben je winkel even stilgezet, maar je kan doorgaan door het abonnement te kiezen dat het beste bij je past.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Houd je bedrijf draaiende met ons abonnement!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Je gratis proefabonnement op Woo Express loopt morgen af (%1$s). Dit is hét moment om in je toekomst te investeren: kies een abonnement en bereid je voor om door te groeien.</string>

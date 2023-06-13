@@ -1,2 +1,0 @@
-13.8:
-Tolle Neuigkeiten! Du kannst jetzt den Barcode auf Produkten scannen, wenn du in der App eine Bestellung erstellst. Kein manuelles Scrollen auf der Suche nach Produkten mehr! Außerdem haben wir einige Abstürze in der Bestellliste und im Bildschirm mit den Produktdetails behoben. Sende uns bitte weiter Feedback – wir freuen uns darauf!

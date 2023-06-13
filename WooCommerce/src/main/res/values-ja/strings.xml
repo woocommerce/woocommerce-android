@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-01 09:54:04+0000
+Translation-Revision-Date: 2023-06-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_payment_card_removed_too_early">カードが早急に削除されました</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s さん、ストアは休止されていますが、最適なプランをお選びいただくと再開できます。</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 プランを利用してビジネスを順調に進めましょう !</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express の無料お試し期間は明日 (%1$s) までです。 今こそ、未来を自分で創るときです。プランを選び、大きく成長する第一歩を踏み出しましょう。</string>

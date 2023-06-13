@@ -42,6 +42,8 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -180,72 +182,92 @@ class AnalyticsHubViewModel @Inject constructor(
         updateStats.ordersState.onEach { state ->
             when (state) {
                 is OrdersState.Available -> mutableState.update { viewState ->
-                    transactionLauncher.onOrdersFetched()
                     viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
                 }
+
                 is OrdersState.Error -> mutableState.update { viewState ->
                     val message = resourceProvider.getString(R.string.analytics_orders_no_data)
                     viewState.copy(ordersState = NoDataState(message))
                 }
+
                 is OrdersState.Loading -> mutableState.update { viewState ->
                     viewState.copy(ordersState = LoadingViewState)
                 }
             }
-        }.launchIn(viewModelScope)
+        }
+            .drop(1)
+            .filter { state -> state is OrdersState.Available }
+            .onEach { transactionLauncher.onOrdersFetched() }
+            .launchIn(viewModelScope)
     }
 
     private fun observeSessionChanges() {
         updateStats.sessionState.onEach { state ->
             when (state) {
                 is SessionState.Available -> mutableState.update { viewState ->
-                    transactionLauncher.onSessionFetched()
                     viewState.copy(sessionState = buildSessionViewState(state.session))
                 }
+
                 is SessionState.Error -> mutableState.update { viewState ->
                     val message = resourceProvider.getString(R.string.analytics_session_no_data)
                     viewState.copy(sessionState = NoDataState(message))
                 }
+
                 is SessionState.Loading -> mutableState.update { viewState ->
                     viewState.copy(sessionState = LoadingViewState)
                 }
             }
-        }.launchIn(viewModelScope)
+        }
+            .drop(1)
+            .filter { state -> state is SessionState.Available }
+            .onEach { transactionLauncher.onSessionFetched() }
+            .launchIn(viewModelScope)
     }
 
     private fun observeProductsChanges() {
         updateStats.productsState.onEach { state ->
             when (state) {
                 is ProductsState.Available -> mutableState.update { viewState ->
-                    transactionLauncher.onProductsFetched()
                     viewState.copy(productsState = buildProductsDataState(state.products))
                 }
+
                 is ProductsState.Error -> mutableState.update { viewState ->
                     val message = resourceProvider.getString(R.string.analytics_products_no_data)
                     viewState.copy(productsState = ProductsNoDataState(message))
                 }
+
                 is ProductsState.Loading -> mutableState.update { viewState ->
                     viewState.copy(productsState = ProductsViewState.LoadingViewState)
                 }
             }
-        }.launchIn(viewModelScope)
+        }
+            .drop(1)
+            .filter { state -> state is ProductsState.Available }
+            .onEach { transactionLauncher.onProductsFetched() }
+            .launchIn(viewModelScope)
     }
 
     private fun observeRevenueChanges() {
         updateStats.revenueState.onEach { state ->
             when (state) {
                 is RevenueState.Available -> mutableState.update { viewState ->
-                    transactionLauncher.onRevenueFetched()
                     viewState.copy(revenueState = buildRevenueDataViewState(state.revenue))
                 }
+
                 is RevenueState.Error -> mutableState.update { viewState ->
                     val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
                     viewState.copy(revenueState = NoDataState(message))
                 }
+
                 is RevenueState.Loading -> mutableState.update { viewState ->
                     viewState.copy(revenueState = LoadingViewState)
                 }
             }
-        }.launchIn(viewModelScope)
+        }
+            .drop(1)
+            .filter { state -> state is RevenueState.Available }
+            .onEach { transactionLauncher.onRevenueFetched() }
+            .launchIn(viewModelScope)
     }
 
     private fun updateDateSelector() {
