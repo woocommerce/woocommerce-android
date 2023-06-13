@@ -13,6 +13,8 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
   echo "Unit Tests failed!"
 fi
 
+path_pattern="*/build/test-results/*/*.xml"
+
 results_files=()
 while IFS= read -r -d '' file; do
   results_files+=("$file")
