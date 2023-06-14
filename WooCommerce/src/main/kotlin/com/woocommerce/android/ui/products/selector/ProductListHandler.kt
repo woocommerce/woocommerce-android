@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.model.Product
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class ProductListHandler @Inject constructor(private val repository: ProductSelectorRepository) {
@@ -18,8 +21,8 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private val mutex = Mutex()
-    private var offset = 0
-    private var canLoadMore = true
+    private val offset = MutableStateFlow(0)
+    private val canLoadMore = AtomicBoolean(true)
 
     private val searchQuery = MutableStateFlow("")
     private val searchType = MutableStateFlow(SearchType.DEFAULT)
@@ -28,9 +31,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private val productFilters = MutableStateFlow(mapOf<ProductFilterOption, String>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val productsFlow = combine(searchQuery, productFilters) { query, filters ->
+    val productsFlow: Flow<List<Product>> = combine(searchQuery, productFilters, offset) { query, filters, offset ->
         if (query.isEmpty()) {
-            repository.observeProducts(filters)
+            repository.observeProducts(filters).map {
+                it.take(if (offset == 0) PAGE_SIZE else offset)
+            }
         } else {
             searchResults
         }
@@ -38,12 +43,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     suspend fun loadFromCacheAndFetch(
         searchQuery: String = "",
-        forceRefresh: Boolean = false,
         filters: Map<ProductFilterOption, String> = emptyMap(),
         searchType: SearchType,
     ): Result<Unit> = mutex.withLock {
-        offset = 0
-        canLoadMore = true
+        offset.value = 0
+        canLoadMore.set(true)
         searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
@@ -61,18 +65,14 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
                 }
             }
         } else {
-            if (forceRefresh) {
-                fetchProducts()
-            } else {
-                Result.success(Unit)
-            }
+            fetchProducts()
         }
     }
 
     // The implementation of loadMore has limited functionality. Essentially, more items from local cache are loaded
     // only after the remote request to fetch the previous page finishes successfully.
     suspend fun loadMore() = mutex.withLock {
-        if (!canLoadMore) return@withLock Result.success(Unit)
+        if (!canLoadMore.get()) return@withLock Result.success(Unit)
         if (searchQuery.value.isEmpty()) {
             fetchProducts()
         } else {
@@ -82,15 +82,15 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private suspend fun fetchProducts(): Result<Unit> {
-        return repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
-            canLoadMore = it
-            offset += PAGE_SIZE
+        return repository.fetchProducts(offset.value, PAGE_SIZE, productFilters.value).onSuccess {
+            canLoadMore.set(it)
+            offset.value += PAGE_SIZE
         }.map { }
     }
 
     private fun searchInCache() {
         repository.searchProductsInCache(
-            offset = offset,
+            offset = offset.value,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
         ).let { loadedProducts ->
@@ -105,13 +105,13 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             SkuSearchOptions.Disabled
         }
         return repository.searchProducts(
-            offset = offset,
+            offset = offset.value,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
             skuSearchOption = searchOptions
         ).onSuccess { result ->
-            canLoadMore = result.canLoadMore
-            offset += PAGE_SIZE
+            canLoadMore.set(result.canLoadMore)
+            offset.value += PAGE_SIZE
             searchResults.update { list -> updateSearchResult(list, result.products) }
         }.map { }
     }

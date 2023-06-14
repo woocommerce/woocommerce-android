@@ -1781,6 +1781,7 @@
     <string name="product_category_selector_loading_failed">Loading product categories failed</string>
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <string name="product_list_multiselect">Select multiple</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promote with Blaze</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -3276,6 +3277,9 @@
 
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
 
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_inbox_description">Stay up-to-date</string>

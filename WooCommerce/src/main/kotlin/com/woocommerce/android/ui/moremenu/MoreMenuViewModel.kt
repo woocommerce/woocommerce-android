@@ -20,6 +20,7 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -41,6 +42,7 @@ import javax.inject.Inject
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
+    unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
     private val planRepository: SitePlanRepository,
@@ -48,7 +50,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler
+    private val isBlazeEnabled: IsBlazeEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
@@ -85,6 +87,13 @@ class MoreMenuViewModel @Inject constructor(
             icon = R.drawable.ic_more_menu_payments,
             badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
             onClick = ::onPaymentsButtonClick,
+        ),
+        MenuUiButton(
+            title = R.string.more_menu_button_blaze,
+            description = R.string.more_menu_button_blaze_description,
+            icon = R.drawable.ic_more_menu_blaze,
+            onClick = ::onPromoteProductsWithBlaze,
+            isEnabled = isBlazeEnabled()
         ),
         MenuUiButton(
             title = R.string.more_menu_button_wс_admin,
@@ -186,6 +195,10 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
+    private fun onPromoteProductsWithBlaze() {
+        triggerEvent(MoreMenuEvent.OpenBlazeEvent("TODO"))
+    }
+
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrlOrDefault))
@@ -258,6 +271,7 @@ class MoreMenuViewModel @Inject constructor(
         object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
+        data class OpenBlazeEvent(val url: String) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
