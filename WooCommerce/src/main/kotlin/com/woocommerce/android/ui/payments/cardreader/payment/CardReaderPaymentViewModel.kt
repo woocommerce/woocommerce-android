@@ -572,7 +572,9 @@ class CardReaderPaymentViewModel
                     errorType = errorType,
                     amountLabel = amountLabel,
                     primaryLabel = R.string.card_reader_payment_payment_failed_purchase_hardware_reader,
-                    onPrimaryActionClicked = { onPurchaseCardReaderClicked() }
+                    onPrimaryActionClicked = { onPurchaseCardReaderClicked() },
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
                 )
 
             else ->
