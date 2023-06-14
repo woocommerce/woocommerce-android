@@ -349,7 +349,8 @@ sealed class PaymentFlowError(val message: UiString) {
             BuiltInReader(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground),
             ContactSupportError
 
-        object PinRequired : Declined(UiStringRes(R.string.card_reader_payment_failed_pin_required_tap_to_pay)),
+        object PinRequired :
+            Declined(UiStringRes(R.string.card_reader_payment_failed_pin_required_tap_to_pay)),
             PurchaseHardwareReaderError
     }
 

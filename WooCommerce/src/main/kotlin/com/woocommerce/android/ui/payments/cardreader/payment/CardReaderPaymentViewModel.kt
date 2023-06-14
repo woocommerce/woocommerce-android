@@ -766,8 +766,10 @@ class CardReaderPaymentViewModel
     private fun onPurchaseCardReaderClicked() {
         onCancelPaymentFlow()
         val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
-        triggerEvent(PurchaseCardReader(
-            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode")
+        triggerEvent(
+            PurchaseCardReader(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
+            )
         )
     }
 
