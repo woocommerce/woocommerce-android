@@ -21,6 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -196,7 +197,11 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onPromoteProductsWithBlaze() {
-        triggerEvent(MoreMenuEvent.OpenBlazeEvent("TODO"))
+        triggerEvent(
+            MoreMenuEvent.OpenBlazeEvent(
+                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM)
+            )
+        )
     }
 
     private fun onViewAdminButtonClick() {

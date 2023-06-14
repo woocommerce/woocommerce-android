@@ -17,8 +17,8 @@ class IsBlazeEnabled @Inject constructor(
 
     operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled()
 
-    fun buildUrlForCurrentSite(source: BlazeFlowSource): String {
-        val siteUrl = selectedSite.get().url
+    fun buildUrlForSite(source: BlazeFlowSource): String {
+        val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
         return BLAZE_CREATION_FLOW_SITE.format(siteUrl, source.trackingName)
     }
 
