@@ -13,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -25,6 +26,8 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Regenerate
+import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.WriteWithAI
 import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.ProductSharingViewState
 
 @Composable
@@ -81,11 +84,25 @@ fun ProductShareWithAI(
                         vertical = dimensionResource(id = R.dimen.minor_100)
                     )
             ) {
+
                 WCOutlinedButton(onClick = onGenerateButtonClick) {
-                    Text(
-                        text = stringResource(id = R.string.product_sharing_write_with_ai)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (viewState.buttonState is Regenerate) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_refresh_grey),
+                                contentDescription = null
+                            )
+                        }
+                        Text(
+                            text = viewState.buttonState.label,
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = dimensionResource(id = R.dimen.minor_100)
+                                )
+                        )
+                    }
                 }
+
                 IconButton(
                     onClick = { /* TODO */ }
                 ) {
@@ -117,15 +134,32 @@ fun ProductShareWithAI(
 fun DefaultUIWithSharingContent() {
     val shareMessage =
         "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
-        "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
-        "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
+            "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
+            "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
     WooThemeWithBackground {
         ProductShareWithAI(
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",
                 shareMessage = shareMessage,
-                showRegenerateButton = false,
-                enableShareButton = true
+                buttonState = WriteWithAI(stringResource(id = R.string.product_sharing_write_with_ai))
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun DefaultUIWithRegenerateButton() {
+    val shareMessage =
+        "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
+            "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
+            "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
+    WooThemeWithBackground {
+        ProductShareWithAI(
+            viewState = ProductSharingViewState(
+                productTitle = "Music Album",
+                shareMessage = shareMessage,
+                buttonState = Regenerate(stringResource(id = R.string.product_sharing_regenerate))
             )
         )
     }
