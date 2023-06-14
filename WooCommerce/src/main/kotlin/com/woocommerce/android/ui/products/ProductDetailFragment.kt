@@ -292,10 +292,7 @@ class ProductDetailFragment :
     private fun observeEvents(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is LaunchUrlInChromeTab -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                }
-
+                is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is RefreshMenu -> activity?.invalidateOptionsMenu()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(
@@ -464,6 +461,11 @@ class ProductDetailFragment :
 
             R.id.menu_trash_product -> {
                 viewModel.onTrashButtonClicked()
+                true
+            }
+
+            R.id.promote_with_blaze -> {
+                viewModel.onPromoteWithBlazeClicked()
                 true
             }
 

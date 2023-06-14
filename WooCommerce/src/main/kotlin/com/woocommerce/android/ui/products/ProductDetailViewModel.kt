@@ -46,6 +46,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -393,6 +394,19 @@ class ProductDetailViewModel @Inject constructor(
             viewState.productDraft?.let {
                 triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
             }
+        }
+    }
+
+    fun onPromoteWithBlazeClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(
+                LaunchUrlInChromeTab(
+                    url = isBlazeEnabled.buildUrlForProduct(
+                        productId = it.remoteId,
+                        source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
+                    )
+                )
+            )
         }
     }
 
