@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -107,16 +109,23 @@ fun ProductShareWithAI(
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "RTL mode", locale = "ar")
+@Preview(name = "Smaller screen", device = Devices.NEXUS_5)
 @Composable
-fun ProductShareWithAIPreview() {
+fun DefaultUIWithSharingContent() {
+    val shareMessage =
+        "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
+        "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
+        "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
     WooThemeWithBackground {
         ProductShareWithAI(
             viewState = ProductSharingViewState(
-                productTitle = "Product Title",
-                shareMessage = "Share Message",
+                productTitle = "Music Album",
+                shareMessage = shareMessage,
                 showRegenerateButton = false,
-                enableShareButton = false
+                enableShareButton = true
             )
         )
     }
