@@ -253,6 +253,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mock(),
                 mock(),
                 mock(),
+                mock(),
                 mock()
             )
         )
