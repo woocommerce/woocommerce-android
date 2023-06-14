@@ -400,7 +400,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onPromoteWithBlazeClicked() {
         viewState.productDraft?.let {
             triggerEvent(
-                LaunchUrlInChromeTab(
+                NavigateToBlazeProductWebView(
                     url = isBlazeEnabled.buildUrlForProduct(
                         productId = it.remoteId,
                         source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
@@ -2331,6 +2331,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductError : Event()
 
     object ShowDuplicateProductInProgress : Event()
+
+    data class NavigateToBlazeProductWebView(val url: String) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

@@ -23,7 +23,9 @@ import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -33,6 +35,7 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -46,6 +49,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeProductWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
@@ -309,6 +313,7 @@ class ProductDetailFragment :
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
                 is ShowDuplicateProductError -> showDuplicateProductError()
+                is NavigateToBlazeProductWebView -> openBlazeProductWebView(event)
                 is ShowDuplicateProductInProgress -> showProgressDialog(
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
@@ -317,6 +322,15 @@ class ProductDetailFragment :
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun openBlazeProductWebView(event: NavigateToBlazeProductWebView) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = event.url,
+                title = getString(string.more_menu_button_blaze)
+            )
+        )
     }
 
     private fun showDuplicateProductError() {
