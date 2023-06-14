@@ -17,10 +17,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.ProductSharingViewState
 
 @Composable
@@ -102,5 +104,20 @@ fun ProductShareWithAI(
                 Text(text = stringResource(id = R.string.share))
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun ProductShareWithAIPreview() {
+    WooThemeWithBackground {
+        ProductShareWithAI(
+            viewState = ProductSharingViewState(
+                productTitle = "Product Title",
+                shareMessage = "Share Message",
+                showRegenerateButton = false,
+                enableShareButton = false
+            )
+        )
     }
 }
