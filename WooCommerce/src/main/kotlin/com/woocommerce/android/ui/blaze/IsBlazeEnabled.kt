@@ -9,13 +9,12 @@ class IsBlazeEnabled @Inject constructor(
 ) {
     companion object {
         private const val BASE_URL = "https://wordpress.com/advertising/"
-
         const val BLAZE_CREATION_FLOW_PRODUCT = "$BASE_URL%s?blazepress-widget=post-%d&_source=%s"
         const val BLAZE_CREATION_FLOW_SITE = "$BASE_URL%s?_source=%s"
         const val HTTP_PATTERN = "(https?://)"
     }
 
-    operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled()
+    operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() && selectedSite.get().canBlaze ?: false
 
     fun buildUrlForSite(source: BlazeFlowSource): String {
         val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
