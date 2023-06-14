@@ -1,7 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.1
 -----
-
+- [*][Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
+- [*] [Internal] Added caching mechanism for JITMs [https://github.com/woocommerce/woocommerce-android/pull/9158]
+- [*] [Internal] Fixed coupon validation logic [https://github.com/woocommerce/woocommerce-android/pull/9210]
 
 14.0
 -----
