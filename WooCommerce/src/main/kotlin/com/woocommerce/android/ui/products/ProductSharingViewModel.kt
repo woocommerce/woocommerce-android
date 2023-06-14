@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.AIGeneratingState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.ProductSharingViewState
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -23,12 +22,10 @@ class ProductSharingViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
-
     init {
         _viewState.update {
             ProductSharingViewState(
                 productTitle = navArgs.productName,
-                shareMessage = "",
                 buttonState = AIButtonState.WriteWithAI(
                     resourceProvider.getString(R.string.product_sharing_write_with_ai)
                 )
@@ -38,22 +35,30 @@ class ProductSharingViewModel @Inject constructor(
 
     fun onGenerateButtonClicked() {
         _viewState.update {
-            AIGeneratingState
+            ProductSharingViewState(
+                productTitle = navArgs.productName,
+                buttonState = AIButtonState.Generating(
+                    resourceProvider.getString(R.string.product_sharing_generating)
+                ),
+                isGenerating = true
+            )
         }
+        // todo generate message here.
     }
 
     sealed class ViewState {
         object LoadingState : ViewState()
-        object AIGeneratingState : ViewState()
         data class ProductSharingViewState(
             val productTitle: String,
-            val shareMessage: String,
-            val buttonState: AIButtonState
+            val shareMessage: String = "",
+            val buttonState: AIButtonState,
+            val isGenerating: Boolean = false
         ) : ViewState()
     }
 
     sealed class AIButtonState(val label: String) {
         data class WriteWithAI(val text: String) : AIButtonState(text)
         data class Regenerate(val text: String) : AIButtonState(text)
+        data class Generating(val text: String) : AIButtonState(text)
     }
 }
