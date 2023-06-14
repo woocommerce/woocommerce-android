@@ -137,7 +137,7 @@ class ProductSelectorViewModel @Inject constructor(
         viewModelScope.launch {
             loadPopularProducts()
             loadRecentProducts()
-            fetchProducts(forceRefresh = true, searchType = searchState.value.searchType)
+            fetchProducts(searchType = searchState.value.searchType)
         }
     }
 
@@ -499,7 +499,6 @@ class ProductSelectorViewModel @Inject constructor(
         filters: FilterState = filterState.value,
         query: String = "",
         searchType: SearchType = SearchType.DEFAULT,
-        forceRefresh: Boolean = false
     ) {
         loadMoreJob?.cancel()
         fetchProductsJob?.cancel()
@@ -508,7 +507,6 @@ class ProductSelectorViewModel @Inject constructor(
             listHandler.loadFromCacheAndFetch(
                 filters = filters.filterOptions,
                 searchQuery = query,
-                forceRefresh = forceRefresh,
                 searchType = searchType,
             ).onFailure {
                 val message = if (query.isEmpty()) string.product_selector_loading_failed
