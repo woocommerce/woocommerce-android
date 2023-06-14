@@ -3335,5 +3335,12 @@
     <string name="first_product_celebration_body_message">Congratulations! You\'re one step closer to get the new store ready.</string>
     <string name="share_product">Share product</string>
 
+    <!--
+    Product sharing with AI
+    -->
+    <string name="product_sharing_write_with_ai">✨ Write with AI</string>
+    <string name="product_sharing_optional_message_label">Add an optional message</string>
+    <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
+
 
 </resources>
