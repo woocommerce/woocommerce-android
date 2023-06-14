@@ -28,7 +28,8 @@ enum class FeatureFlag {
     STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
     PRIVACY_CHOICES,
-    BLAZE;
+    BLAZE,
+    PRODUCT_DESCRIPTION_AI_GENERATOR;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -57,7 +58,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            BLAZE -> PackageUtils.isDebugBuild()
+            BLAZE,
+            PRODUCT_DESCRIPTION_AI_GENERATOR -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
