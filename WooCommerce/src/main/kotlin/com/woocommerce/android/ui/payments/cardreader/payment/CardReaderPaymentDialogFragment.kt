@@ -14,8 +14,10 @@ import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
@@ -95,6 +97,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 ).show()
                 is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
+                is PurchaseCardReader -> openPurchaseCardReaderScreen(event.url)
                 else -> event.isHandled = false
             }
         }
@@ -134,6 +137,12 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             }
         }
+    }
+
+    private fun openPurchaseCardReaderScreen(url: String) {
+        findNavController().navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = url)
+        )
     }
 
     private fun openSupportRequestScreen() {
