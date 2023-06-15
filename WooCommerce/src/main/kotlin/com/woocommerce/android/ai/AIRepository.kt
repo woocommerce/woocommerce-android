@@ -1,5 +1,6 @@
 package com.woocommerce.android.ai
 
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
@@ -21,9 +22,11 @@ class AIRepository @Inject constructor(
         jetpackAIStore.fetchJetpackAICompletionsForSite(site, prompt, skipCache).run {
             when (this) {
                 is JetpackAICompletionsResponse.Success -> {
+                    WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")
                     Result.success(completion)
                 }
                 is JetpackAICompletionsResponse.Error -> {
+                    WooLog.w(WooLog.T.AI, "Fetching Jetpack AI completions failed: $message")
                     Result.failure(Exception(message ?: "Unable to fetch AI completions"))
                 }
             }
