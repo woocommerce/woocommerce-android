@@ -31,7 +31,9 @@ class IsBlazeEnabled @Inject constructor(
         return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrl, productId, source.trackingName)
     }
 
-    private fun hasAdministratorRole() = userEligibilityFetcher.getUser()?.roles?.any { it is Administrator } ?: false
+    private fun hasAdministratorRole() =
+        selectedSite.exists() &&
+            userEligibilityFetcher.getUser()?.roles?.any { it is Administrator } ?: false
 
     enum class BlazeFlowSource(val trackingName: String) {
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
