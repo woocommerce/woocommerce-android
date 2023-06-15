@@ -69,7 +69,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val isBlazeEnabled: IsBlazeEnabled = mock()
+    private val isBlazeEnabled: IsBlazeEnabled = mock {
+        onBlocking { invoke() } doReturn false
+    }
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
