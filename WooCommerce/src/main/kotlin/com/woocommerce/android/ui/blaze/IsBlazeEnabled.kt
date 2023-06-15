@@ -14,7 +14,7 @@ class IsBlazeEnabled @Inject constructor(
         const val HTTP_PATTERN = "(https?://)"
     }
 
-    operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() && selectedSite.get().canBlaze ?: false
+    operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() && selectedSite.getIfExists()?.canBlaze ?: false
 
     fun buildUrlForSite(source: BlazeFlowSource): String {
         val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
