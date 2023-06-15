@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.blaze
 
+import com.woocommerce.android.model.UserRole.Administrator
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 
 class IsBlazeEnabled @Inject constructor(
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) {
     companion object {
         private const val BASE_URL = "https://wordpress.com/advertising/"
@@ -14,7 +17,9 @@ class IsBlazeEnabled @Inject constructor(
         const val HTTP_PATTERN = "(https?://)"
     }
 
-    operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() && selectedSite.getIfExists()?.canBlaze ?: false
+    operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() &&
+        hasAdministratorRole() &&
+        selectedSite.getIfExists()?.canBlaze ?: false
 
     fun buildUrlForSite(source: BlazeFlowSource): String {
         val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
@@ -25,6 +30,8 @@ class IsBlazeEnabled @Inject constructor(
         val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
         return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrl, productId, source.trackingName)
     }
+
+    private fun hasAdministratorRole() = userEligibilityFetcher.getUser()?.roles?.any { it is Administrator } ?: false
 
     enum class BlazeFlowSource(val trackingName: String) {
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
