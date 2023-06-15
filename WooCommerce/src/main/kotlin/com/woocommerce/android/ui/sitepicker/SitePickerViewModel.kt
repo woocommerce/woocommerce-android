@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -64,7 +65,8 @@ class SitePickerViewModel @Inject constructor(
     private val unifiedLoginTracker: UnifiedLoginTracker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val experimentTracker: ExperimentTracker
+    private val experimentTracker: ExperimentTracker,
+    private val isBlazeEnabled: IsBlazeEnabled,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -501,7 +503,7 @@ class SitePickerViewModel @Inject constructor(
                             userEligibilityFetcher.fetchUserInfo().fold(
                                 onSuccess = {
                                     sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-
+                                    launch { isBlazeEnabled.fetchBlazeStatus() }
                                     trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                                     appPrefsWrapper.removeLoginSiteAddress()
                                     triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
