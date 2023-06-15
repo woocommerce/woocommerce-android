@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.blaze
 
-import com.woocommerce.android.model.UserRole.Administrator
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_BLAZE
@@ -10,7 +8,6 @@ import javax.inject.Inject
 
 class IsBlazeEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val userEligibilityFetcher: UserEligibilityFetcher,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
 ) {
     companion object {
@@ -21,7 +18,7 @@ class IsBlazeEnabled @Inject constructor(
     }
 
     suspend operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() &&
-        userIsAdminForCurrentSite() &&
+        selectedSite.getIfExists()?.isAdmin ?: false &&
         selectedSite.getIfExists()?.canBlaze ?: false &&
         isRemoteFeatureFlagEnabled(WOO_BLAZE)
 
@@ -34,10 +31,6 @@ class IsBlazeEnabled @Inject constructor(
         val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
         return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrl, productId, source.trackingName)
     }
-
-    private fun userIsAdminForCurrentSite() =
-        selectedSite.exists() &&
-            userEligibilityFetcher.getUser()?.roles?.any { it is Administrator } ?: false
 
     enum class BlazeFlowSource(val trackingName: String) {
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
