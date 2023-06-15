@@ -163,18 +163,28 @@ fun SharingMessageSkeletonView() {
 @Composable
 fun AIButtonContent(buttonState: AIButtonState) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        if (buttonState is Regenerate) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_refresh_grey),
-                contentDescription = null
-            )
-        } else if (buttonState is Generating) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_100)),
-                strokeWidth = dimensionResource(id = R.dimen.minor_25)
+        when (buttonState) {
+            is WriteWithAI -> {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_ai),
+                    contentDescription = null
+                )
+            }
 
-            )
+            is Regenerate -> {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_regenerate),
+                    contentDescription = null
+                )
+            }
+
+            is Generating -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(dimensionResource(id = R.dimen.major_100)),
+                    strokeWidth = dimensionResource(id = R.dimen.minor_25)
+                )
+            }
         }
         Text(
             text = buttonState.label,
