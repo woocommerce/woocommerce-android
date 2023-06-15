@@ -24,12 +24,14 @@ class ProductSharingViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ProductSharingDialogArgs by savedStateHandle.navArgs()
 
+    private val labelForWriteWithAI = resourceProvider.getString(R.string.product_sharing_write_with_ai)
+    private val labelForGenerating = resourceProvider.getString(R.string.product_sharing_generating)
+    private val labelForRegenerate = resourceProvider.getString(R.string.product_sharing_regenerate)
+
     private val _viewState = MutableStateFlow(
         ProductSharingViewState(
             productTitle = navArgs.productName,
-            buttonState = AIButtonState.WriteWithAI(
-                resourceProvider.getString(R.string.product_sharing_write_with_ai)
-            )
+            buttonState = AIButtonState.WriteWithAI(labelForWriteWithAI)
         )
     )
     val viewState = _viewState.asLiveData()
@@ -37,9 +39,7 @@ class ProductSharingViewModel @Inject constructor(
     fun onGenerateButtonClicked() {
         _viewState.update {
             it.copy(
-                buttonState = AIButtonState.Generating(
-                    resourceProvider.getString(R.string.product_sharing_generating)
-                ),
+                buttonState = AIButtonState.Generating(labelForGenerating),
                 isGenerating = true
             )
         }
@@ -57,9 +57,7 @@ class ProductSharingViewModel @Inject constructor(
                 onSuccess = { completions ->
                     _viewState.update {
                         it.copy(
-                            buttonState = AIButtonState.Regenerate(
-                                resourceProvider.getString(R.string.product_sharing_regenerate)
-                            ),
+                            buttonState = AIButtonState.Regenerate(labelForRegenerate),
                             shareMessage = completions,
                             isGenerating = false
                         )
