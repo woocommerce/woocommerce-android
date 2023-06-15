@@ -28,6 +28,7 @@ class ProductSharingViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
+
     init {
         _viewState.update {
             ProductSharingViewState(
@@ -79,6 +80,16 @@ class ProductSharingViewModel @Inject constructor(
         }
 
 
+    }
+
+    fun onShareMessageEdited(message: String) {
+        _viewState.update { state ->
+            if (state is ProductSharingViewState) {
+                state.copy(shareMessage = message)
+            } else {
+                state// shouldn't happen but needed to satisfy compiler
+            }
+        }
     }
 
     sealed class ViewState {

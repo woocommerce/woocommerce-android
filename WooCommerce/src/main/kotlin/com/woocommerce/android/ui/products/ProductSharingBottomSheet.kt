@@ -46,6 +46,7 @@ fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
                 ProductShareWithAI(
                     viewState = it,
                     onGenerateButtonClick = viewModel::onGenerateButtonClicked,
+                    onShareMessageEdit = viewModel::onShareMessageEdited
                 )
             }
 
@@ -57,7 +58,8 @@ fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
 @Composable
 fun ProductShareWithAI(
     viewState: ProductSharingViewState,
-    onGenerateButtonClick: () -> Unit = {}
+    onGenerateButtonClick: () -> Unit = {},
+    onShareMessageEdit: (String) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -82,7 +84,7 @@ fun ProductShareWithAI(
             } else {
                 WCOutlinedTextField(
                     value = viewState.shareMessage,
-                    onValueChange = { /*TODO*/ },
+                    onValueChange = { onShareMessageEdit(it) },
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
                     maxLines = 4
                 )
