@@ -27,6 +27,7 @@ class ProductSharingViewModel @Inject constructor(
     private val labelForWriteWithAI = resourceProvider.getString(R.string.product_sharing_write_with_ai)
     private val labelForGenerating = resourceProvider.getString(R.string.product_sharing_generating)
     private val labelForRegenerate = resourceProvider.getString(R.string.product_sharing_regenerate)
+    private val labelForGeneratingFailure = resourceProvider.getString(R.string.product_sharing_ai_generating_failure)
 
     private val _viewState = MutableStateFlow(
         ProductSharingViewState(
@@ -40,7 +41,8 @@ class ProductSharingViewModel @Inject constructor(
         _viewState.update {
             it.copy(
                 buttonState = AIButtonState.Generating(labelForGenerating),
-                isGenerating = true
+                isGenerating = true,
+                errorMessage = ""
             )
         }
 
@@ -65,7 +67,18 @@ class ProductSharingViewModel @Inject constructor(
                 },
                 onFailure = {
                     _viewState.update {
-                        it.copy(isGenerating = false)
+                        // This is to return the previous button's state before generating.
+                        val previousButtonState = if (it.buttonState is AIButtonState.Regenerate) {
+                            AIButtonState.Regenerate(labelForRegenerate)
+                        } else {
+                            AIButtonState.WriteWithAI(labelForWriteWithAI)
+                        }
+
+                        it.copy(
+                            buttonState = previousButtonState,
+                            errorMessage = labelForGeneratingFailure,
+                            isGenerating = false
+                        )
                     }
                 }
             )
@@ -74,14 +87,18 @@ class ProductSharingViewModel @Inject constructor(
 
     fun onShareMessageEdited(message: String) {
         _viewState.update { state ->
-            state.copy(shareMessage = message)
+            state.copy(
+                shareMessage = message,
+                errorMessage = ""
+            )
         }
     }
     data class ProductSharingViewState(
         val productTitle: String,
         val shareMessage: String = "",
         val buttonState: AIButtonState,
-        val isGenerating: Boolean = false
+        val isGenerating: Boolean = false,
+        val errorMessage: String = ""
     )
 
     sealed class AIButtonState(val label: String) {

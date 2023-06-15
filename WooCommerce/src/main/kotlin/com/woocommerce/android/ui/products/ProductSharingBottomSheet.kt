@@ -76,11 +76,15 @@ fun ProductShareWithAI(
             if (viewState.isGenerating) {
                 SharingMessageSkeletonView()
             } else {
+                val isError = viewState.errorMessage.isNotEmpty()
+
                 WCOutlinedTextField(
                     value = viewState.shareMessage,
                     onValueChange = { onShareMessageEdit(it) },
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
-                    maxLines = 4
+                    maxLines = 4,
+                    isError = isError,
+                    helperText = if (isError) viewState.errorMessage else null
                 )
             }
 
