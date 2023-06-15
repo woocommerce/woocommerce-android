@@ -60,11 +60,8 @@ class ProductSharingViewModel @Inject constructor(
                     navArgs.productDescription.orEmpty()
                 )
             )
-            if (result.isFailure) {
-                // error handling
-            } else {
-                val completions = result.getOrNull()
-                completions?.let {
+            result.fold(
+                onSuccess = { completions ->
                     _viewState.update {
                         ProductSharingViewState(
                             productTitle = navArgs.productName,
@@ -75,11 +72,12 @@ class ProductSharingViewModel @Inject constructor(
                             isGenerating = false
                         )
                     }
+                },
+                onFailure = {
+                    // error handling
                 }
-            }
+            )
         }
-
-
     }
 
     fun onShareMessageEdited(message: String) {
@@ -87,7 +85,8 @@ class ProductSharingViewModel @Inject constructor(
             if (state is ProductSharingViewState) {
                 state.copy(shareMessage = message)
             } else {
-                state// shouldn't happen but needed to satisfy compiler
+                // shouldn't happen but needed to satisfy compiler
+                state
             }
         }
     }
