@@ -66,7 +66,9 @@ class ProductSharingViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    // error handling
+                    _viewState.update {
+                        it.copy(isGenerating = false)
+                    }
                 }
             )
         }
