@@ -28,6 +28,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.appwidgets.getWidgetName
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
@@ -104,6 +105,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
     @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
+    @Inject lateinit var isBlazeEnabled: IsBlazeEnabled
 
     @Inject lateinit var explat: ExPlat
 
@@ -190,7 +192,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
         }
-
+        appCoroutineScope.launch {
+            if (selectedSite.exists()) {
+                isBlazeEnabled.fetchBlazeStatus()
+            }
+        }
         monitorApplicationPasswordsStatus()
     }
 
@@ -327,6 +333,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // to prevent duplicate install events being called
                 prefs.setLastAppVersionCode(versionCode)
             }
+
             oldVersionCode < versionCode -> {
                 // Track upgrade event only if oldVersionCode is not -1, to prevent
                 // duplicate upgrade events being called
@@ -338,6 +345,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // is greater than the stored version code
                 prefs.setLastAppVersionCode(versionCode)
             }
+
             versionCode == PackageUtils.PACKAGE_VERSION_CODE_DEFAULT -> {
                 // we are not able to read the current app version code
                 // track this event along with the last stored version code
