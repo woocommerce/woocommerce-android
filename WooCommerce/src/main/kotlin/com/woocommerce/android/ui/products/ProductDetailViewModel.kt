@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -274,9 +275,7 @@ class ProductDetailViewModel @Inject constructor(
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
-                showPromoteWithBlaze = isBlazeEnabled() &&
-                    getProductVisibility() == PUBLIC &&
-                    productDraft.status != ProductStatus.DRAFT
+                showPromoteWithBlaze = shouldShowBlaze(productDraft)
             )
         }.asLiveData()
 
@@ -2285,6 +2284,11 @@ class ProductDetailViewModel @Inject constructor(
         if (FeatureFlag.COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getComponentProducts(remoteId)
     }
+
+    private suspend fun shouldShowBlaze(productDraft: Product) =
+        getProductVisibility() == PUBLIC &&
+            productDraft.status != DRAFT &&
+            isBlazeEnabled()
 
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common

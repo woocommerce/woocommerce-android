@@ -21,7 +21,7 @@ class IsBlazeEnabled @Inject constructor(
     }
 
     suspend operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() &&
-        hasAdministratorRole() &&
+        userIsAdminForCurrentSite() &&
         selectedSite.getIfExists()?.canBlaze ?: false &&
         isRemoteFeatureFlagEnabled(WOO_BLAZE)
 
@@ -35,7 +35,7 @@ class IsBlazeEnabled @Inject constructor(
         return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrl, productId, source.trackingName)
     }
 
-    private fun hasAdministratorRole() =
+    private fun userIsAdminForCurrentSite() =
         selectedSite.exists() &&
             userEligibilityFetcher.getUser()?.roles?.any { it is Administrator } ?: false
 
