@@ -36,22 +36,16 @@ import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Generating
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Regenerate
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.WriteWithAI
-import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.ProductSharingViewState
+import com.woocommerce.android.ui.products.ProductSharingViewModel.ProductSharingViewState
 
 @Composable
 fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        when (it) {
-            is ProductSharingViewState -> {
-                ProductShareWithAI(
-                    viewState = it,
-                    onGenerateButtonClick = viewModel::onGenerateButtonClicked,
-                    onShareMessageEdit = viewModel::onShareMessageEdited
-                )
-            }
-
-            else -> { /* nothing to show for Loading state. */ }
-        }
+        ProductShareWithAI(
+            viewState = it,
+            onGenerateButtonClick = viewModel::onGenerateButtonClicked,
+            onShareMessageEdit = viewModel::onShareMessageEdited
+        )
     }
 }
 

@@ -6,8 +6,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIPrompts
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.LoadingState
-import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.ProductSharingViewState
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -26,24 +24,19 @@ class ProductSharingViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ProductSharingDialogArgs by savedStateHandle.navArgs()
 
-    private val _viewState = MutableStateFlow<ViewState>(LoadingState)
-    val viewState = _viewState.asLiveData()
-
-    init {
-        _viewState.update {
-            ProductSharingViewState(
-                productTitle = navArgs.productName,
-                buttonState = AIButtonState.WriteWithAI(
-                    resourceProvider.getString(R.string.product_sharing_write_with_ai)
-                )
+    private val _viewState = MutableStateFlow(
+        ProductSharingViewState(
+            productTitle = navArgs.productName,
+            buttonState = AIButtonState.WriteWithAI(
+                resourceProvider.getString(R.string.product_sharing_write_with_ai)
             )
-        }
-    }
+        )
+    )
+    val viewState = _viewState.asLiveData()
 
     fun onGenerateButtonClicked() {
         _viewState.update {
-            ProductSharingViewState(
-                productTitle = navArgs.productName,
+            it.copy(
                 buttonState = AIButtonState.Generating(
                     resourceProvider.getString(R.string.product_sharing_generating)
                 ),
@@ -63,8 +56,7 @@ class ProductSharingViewModel @Inject constructor(
             result.fold(
                 onSuccess = { completions ->
                     _viewState.update {
-                        ProductSharingViewState(
-                            productTitle = navArgs.productName,
+                        it.copy(
                             buttonState = AIButtonState.Regenerate(
                                 resourceProvider.getString(R.string.product_sharing_regenerate)
                             ),
@@ -82,24 +74,15 @@ class ProductSharingViewModel @Inject constructor(
 
     fun onShareMessageEdited(message: String) {
         _viewState.update { state ->
-            if (state is ProductSharingViewState) {
-                state.copy(shareMessage = message)
-            } else {
-                // shouldn't happen but needed to satisfy compiler
-                state
-            }
+            state.copy(shareMessage = message)
         }
     }
-
-    sealed class ViewState {
-        object LoadingState : ViewState()
-        data class ProductSharingViewState(
-            val productTitle: String,
-            val shareMessage: String = "",
-            val buttonState: AIButtonState,
-            val isGenerating: Boolean = false
-        ) : ViewState()
-    }
+    data class ProductSharingViewState(
+        val productTitle: String,
+        val shareMessage: String = "",
+        val buttonState: AIButtonState,
+        val isGenerating: Boolean = false
+    )
 
     sealed class AIButtonState(val label: String) {
         data class WriteWithAI(val text: String) : AIButtonState(text)
