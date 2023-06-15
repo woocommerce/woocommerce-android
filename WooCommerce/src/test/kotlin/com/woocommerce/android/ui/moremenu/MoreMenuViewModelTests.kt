@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
@@ -68,6 +69,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val isBlazeEnabled: IsBlazeEnabled = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
@@ -77,14 +79,15 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         viewModel = MoreMenuViewModel(
             savedState = SavedStateHandle(),
             accountStore = accountStore,
+            unseenReviewsCountHandler = unseenReviewsCountHandler,
             selectedSite = selectedSite,
             moreMenuRepository = moreMenuRepository,
             moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
             planRepository = planRepository,
             resourceProvider = resourceProvider,
-            unseenReviewsCountHandler = unseenReviewsCountHandler,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            isBlazeEnabled = isBlazeEnabled
         )
     }
 

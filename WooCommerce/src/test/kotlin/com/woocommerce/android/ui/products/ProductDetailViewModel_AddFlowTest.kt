@@ -180,6 +180,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mock(),
                 mock(),
                 mock(),
+                mock(),
                 mock()
             )
         )
