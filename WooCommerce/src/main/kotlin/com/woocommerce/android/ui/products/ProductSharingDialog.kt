@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,5 +40,10 @@ class ProductSharingDialog : BottomSheetDialogFragment() {
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        viewModel.onDialogDismissed()
     }
 }

@@ -137,6 +137,10 @@ class ProductSharingViewModel @Inject constructor(
         )
     }
 
+    fun onDialogDismissed() {
+        tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_DISMISSED)
+    }
+
     data class ProductSharingViewState(
         val productTitle: String,
         val shareMessage: String = "",
