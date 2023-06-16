@@ -54,7 +54,7 @@ enum class FeatureFlag {
             COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
             EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
-            SHARING_PRODUCT_AI-> true
+            SHARING_PRODUCT_AI -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
