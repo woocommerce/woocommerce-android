@@ -52,12 +52,12 @@ enum class FeatureFlag {
             STORE_CREATION_PROFILER,
             COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
             EU_SHIPPING_NOTIFICATION,
-            PRIVACY_CHOICES -> true
+            PRIVACY_CHOICES,
+            BLAZE -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IPP_TAP_TO_PAY,
-            BLAZE -> PackageUtils.isDebugBuild()
+            IPP_TAP_TO_PAY -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
