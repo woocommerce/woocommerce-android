@@ -412,12 +412,11 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun canSiteUseSharingWithAI() : Boolean {
+    private fun canSiteUseSharingWithAI(): Boolean {
         return FeatureFlag.SHARING_PRODUCT_AI.isEnabled() &&
             selectedSite.get().isSitePublic &&
             selectedSite.get().isWPComAtomic
     }
-
 
     fun onBlazeClicked() {
         tracker.track(
