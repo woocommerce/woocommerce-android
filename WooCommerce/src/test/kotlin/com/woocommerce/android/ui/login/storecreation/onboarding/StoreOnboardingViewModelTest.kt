@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,6 +68,7 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingRepository: StoreOnboardingRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val shouldShowOnboarding: ShouldShowOnboarding = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
 
     private lateinit var viewModel: StoreOnboardingViewModel
 
@@ -158,7 +160,8 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
             savedState,
             onboardingRepository,
             analyticsTrackerWrapper,
-            shouldShowOnboarding
+            shouldShowOnboarding,
+            isAIProductDescriptionEnabled
         )
     }
 }
