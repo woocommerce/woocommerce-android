@@ -28,6 +28,7 @@ import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
+import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.MediaFilesRepository
@@ -396,7 +397,7 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                if (FeatureFlag.SHARING_PRODUCT_AI.isEnabled() && selectedSite.get().isWPComAtomic) {
+                if (canSiteUseSharingWithAI()) {
                     triggerEvent(
                         ProductNavigationTarget.ShareProductWithAI(
                             it.permalink,
@@ -410,6 +411,13 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
+
+    private fun canSiteUseSharingWithAI() : Boolean {
+        return FeatureFlag.SHARING_PRODUCT_AI.isEnabled() &&
+            selectedSite.get().isSitePublic &&
+            selectedSite.get().isWPComAtomic
+    }
+
 
     fun onBlazeClicked() {
         tracker.track(
