@@ -535,6 +535,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
+        const val KEY_BLAZE_STEP = "step"
 
         var sendUsageStats: Boolean = true
             set(value) {
