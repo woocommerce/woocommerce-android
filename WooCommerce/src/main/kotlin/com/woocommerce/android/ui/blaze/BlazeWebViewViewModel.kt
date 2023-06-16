@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.blaze
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
@@ -45,9 +44,7 @@ class BlazeWebViewViewModel @Inject constructor(
                 properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to viewState.source.trackingName)
             )
         }
-        Log.d("BlazeWebViewViewModel", "onUrlLoaded: $url")
         currentBlazeStep = extractCurrentStep(url)
-        Log.d("BlazeWebViewViewModel", "extracted step: ${currentBlazeStep.label}")
         if (currentBlazeStep == BlazeFlowStep.STEP_5) {
             isCompleted = true
             analyticsTracker.track(
@@ -75,7 +72,6 @@ class BlazeWebViewViewModel @Inject constructor(
 
     private fun extractCurrentStep(url: String): BlazeFlowStep {
         val uri = Uri.parse(url)
-        Log.d("BlazeWebViewViewModel", "uri.fragment: ${uri.fragment}")
         return when {
             uri.fragment != null -> BlazeFlowStep.fromString(uri.fragment!!)
             findQueryParameter(uri.toString(), BLAZEPRESS_WIDGET) != null -> BlazeFlowStep.STEP_1
