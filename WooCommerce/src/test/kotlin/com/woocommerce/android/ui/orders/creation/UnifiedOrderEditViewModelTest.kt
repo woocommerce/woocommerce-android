@@ -67,7 +67,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var codeScanner: CodeScanner
-    private lateinit var checkDigitRemover: UPCCheckDigitRemover
+    private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
@@ -130,7 +130,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         tracker = mock()
         codeScanner = mock()
-        checkDigitRemover = mock()
+        checkDigitRemoverFactory = mock()
         productListRepository = mock()
     }
 
@@ -1319,6 +1319,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             val sku = "12345678901"
             val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
@@ -1326,9 +1329,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 }
             }
             whenever(
-                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
             ).thenReturn(
-                skuWithCheckDigitRemoved
+                mockUPCCheckDigitRemover
             )
             whenever(
                 productListRepository.searchProductList(
@@ -1351,6 +1354,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             val sku = "12345678901"
             val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
@@ -1358,9 +1364,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 }
             }
             whenever(
-                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
             ).thenReturn(
-                skuWithCheckDigitRemoved
+                mockUPCCheckDigitRemover
             )
             whenever(
                 productListRepository.searchProductList(
@@ -1384,6 +1390,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             val sku = "12345678901"
             val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
@@ -1391,9 +1400,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 }
             }
             whenever(
-                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
             ).thenReturn(
-                skuWithCheckDigitRemoved
+                mockUPCCheckDigitRemover
             )
             whenever(
                 productListRepository.searchProductList(
@@ -1410,7 +1419,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.onScanClicked()
 
-            verify(checkDigitRemover, times(1)).getSKUWithoutCheckDigit(any())
+            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(any())
             verify(productListRepository, times(1)).searchProductList(
                 skuWithCheckDigitRemoved,
                 WCProductStore.SkuSearchOptions.ExactSearch
@@ -1423,6 +1432,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             val sku = "12345678901"
             val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
@@ -1430,9 +1442,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 }
             }
             whenever(
-                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
             ).thenReturn(
-                skuWithCheckDigitRemoved
+                mockUPCCheckDigitRemover
             )
             whenever(
                 productListRepository.searchProductList(
@@ -1466,6 +1478,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             val sku = "12345678901"
             val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
@@ -1473,9 +1488,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 }
             }
             whenever(
-                checkDigitRemover.getSKUWithoutCheckDigit(sku)
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
             ).thenReturn(
-                skuWithCheckDigitRemoved
+                mockUPCCheckDigitRemover
             )
             whenever(
                 productListRepository.searchProductList(
@@ -1521,7 +1536,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.onScanClicked()
 
-            verify(checkDigitRemover, never()).getSKUWithoutCheckDigit(any())
+            verify(checkDigitRemoverFactory, never()).getCheckDigitRemoverFor(any())
             verify(productListRepository, never()).searchProductList(
                 skuWithCheckDigitRemoved,
                 WCProductStore.SkuSearchOptions.ExactSearch
@@ -1631,7 +1646,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             tracker = tracker,
             codeScanner = codeScanner,
             productRepository = productListRepository,
-            checkDigitRemover = checkDigitRemover
+            checkDigitRemoverFactory = checkDigitRemoverFactory
         )
     }
 
