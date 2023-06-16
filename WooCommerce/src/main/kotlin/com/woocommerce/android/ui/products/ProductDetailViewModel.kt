@@ -392,7 +392,7 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                if (FeatureFlag.SHARING_PRODUCT_AI.isEnabled() && selectedSite.get().isWPCom) {
+                if (FeatureFlag.SHARING_PRODUCT_AI.isEnabled() && selectedSite.get().isWPComAtomic) {
                     triggerEvent(
                         ProductNavigationTarget.ShareProductWithAI(
                             it.permalink,
