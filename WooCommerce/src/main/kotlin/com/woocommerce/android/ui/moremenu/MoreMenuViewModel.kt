@@ -37,6 +37,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
@@ -79,6 +80,7 @@ class MoreMenuViewModel @Inject constructor(
 
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
+        launch { trackBlazeDisplayed() }
     }
 
     private suspend fun generateGeneralMenuButtons(
@@ -97,7 +99,7 @@ class MoreMenuViewModel @Inject constructor(
             description = R.string.more_menu_button_blaze_description,
             icon = R.drawable.ic_more_menu_blaze,
             onClick = ::onPromoteProductsWithBlaze,
-            isEnabled = shouldShowBlaze()
+            isEnabled = isBlazeEnabled()
         ),
         MenuUiButton(
             title = R.string.more_menu_button_wс_admin,
@@ -133,13 +135,11 @@ class MoreMenuViewModel @Inject constructor(
         )
     )
 
-    private suspend fun shouldShowBlaze(): Boolean {
-        val showBlaze = isBlazeEnabled()
-        if (showBlaze) AnalyticsTracker.track(
+    private suspend fun trackBlazeDisplayed() {
+        if (isBlazeEnabled()) AnalyticsTracker.track(
             stat = BLAZE_ENTRY_POINT_DISPLAYED,
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
         )
-        return showBlaze
     }
 
     private fun generateSettingsMenuButtons() = listOf(
