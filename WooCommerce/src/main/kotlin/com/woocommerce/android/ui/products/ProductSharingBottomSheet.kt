@@ -166,7 +166,7 @@ fun AIButtonContent(buttonState: AIButtonState) {
         when (buttonState) {
             is WriteWithAI -> {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_ai),
+                    painter = painterResource(id = R.drawable.ic_ai_share_button),
                     contentDescription = null
                 )
             }
