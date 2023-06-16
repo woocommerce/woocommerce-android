@@ -8,18 +8,18 @@ interface CheckDigitRemover {
 
 class UPCCheckDigitRemover @Inject constructor() : CheckDigitRemover {
     override fun getSKUWithoutCheckDigit(sku: String): String {
-        return sku.substring(0, sku.length - 1)
+        return sku.dropLast(1)
     }
 }
 
 class EAN13CheckDigitRemover @Inject constructor() : CheckDigitRemover {
     override fun getSKUWithoutCheckDigit(sku: String): String {
-        return sku.substring(0, sku.length - 1)
+        return sku.dropLast(1)
     }
 }
 
 class EAN8CheckDigitRemover @Inject constructor() : CheckDigitRemover {
     override fun getSKUWithoutCheckDigit(sku: String): String {
-        return sku.substring(0, sku.length - 1)
+        return sku.dropLast(1)
     }
 }
