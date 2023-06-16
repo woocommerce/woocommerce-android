@@ -59,7 +59,7 @@ enum class FeatureFlag {
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IPP_TAP_TO_PAY  -> PackageUtils.isDebugBuild()
+            IPP_TAP_TO_PAY -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
