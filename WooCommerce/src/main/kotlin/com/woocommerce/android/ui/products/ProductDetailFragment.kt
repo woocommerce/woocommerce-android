@@ -479,7 +479,7 @@ class ProductDetailFragment :
             }
 
             R.id.promote_with_blaze -> {
-                viewModel.onPromoteWithBlazeClicked()
+                viewModel.onBlazeClicked()
                 true
             }
 

@@ -13,6 +13,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
@@ -48,7 +49,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -398,13 +399,17 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun onPromoteWithBlazeClicked() {
+    fun onBlazeClicked() {
+        tracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
         viewState.productDraft?.let {
             triggerEvent(
                 NavigateToBlazeProductWebView(
                     url = isBlazeEnabled.buildUrlForProduct(
                         productId = it.remoteId,
-                        source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
+                        source = PRODUCT_DETAIL_OVERFLOW_MENU
                     )
                 )
             )
@@ -2293,7 +2298,7 @@ class ProductDetailViewModel @Inject constructor(
             isBlazeEnabled()
         if (showBlaze) tracker.track(
             stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
         )
         return showBlaze
     }
