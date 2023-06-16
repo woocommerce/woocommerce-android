@@ -59,8 +59,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            SHARING_PRODUCT_AI,
-            BLAZE -> PackageUtils.isDebugBuild()
+            SHARING_PRODUCT_AI -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
