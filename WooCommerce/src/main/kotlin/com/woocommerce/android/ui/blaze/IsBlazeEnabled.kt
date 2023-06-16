@@ -11,10 +11,13 @@ class IsBlazeEnabled @Inject constructor(
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
 ) {
     companion object {
+        const val HTTP_PATTERN = "(https?://)"
         private const val BASE_URL = "https://wordpress.com/advertising/"
         const val BLAZE_CREATION_FLOW_PRODUCT = "$BASE_URL%s?blazepress-widget=post-%d&_source=%s"
         const val BLAZE_CREATION_FLOW_SITE = "$BASE_URL%s?_source=%s"
-        const val HTTP_PATTERN = "(https?://)"
+
+        // Analytics
+        const val BLAZEPRESS_WIDGET = "blazepress-widget"
     }
 
     suspend operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() &&

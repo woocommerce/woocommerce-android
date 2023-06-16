@@ -49,6 +49,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
@@ -406,11 +407,12 @@ class ProductDetailViewModel @Inject constructor(
         )
         viewState.productDraft?.let {
             triggerEvent(
-                NavigateToBlazeProductWebView(
+                NavigateToBlazeWebView(
                     url = isBlazeEnabled.buildUrlForProduct(
                         productId = it.remoteId,
                         source = PRODUCT_DETAIL_OVERFLOW_MENU
-                    )
+                    ),
+                    source = PRODUCT_DETAIL_OVERFLOW_MENU
                 )
             )
         }
@@ -2349,7 +2351,7 @@ class ProductDetailViewModel @Inject constructor(
 
     object ShowDuplicateProductInProgress : Event()
 
-    data class NavigateToBlazeProductWebView(val url: String) : Event()
+    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

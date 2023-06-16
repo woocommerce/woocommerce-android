@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -214,7 +215,8 @@ class MoreMenuViewModel @Inject constructor(
         )
         triggerEvent(
             MoreMenuEvent.OpenBlazeEvent(
-                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM)
+                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
+                source = MORE_MENU_ITEM
             )
         )
     }
@@ -291,7 +293,7 @@ class MoreMenuViewModel @Inject constructor(
         object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
-        data class OpenBlazeEvent(val url: String) : MoreMenuEvent()
+        data class OpenBlazeEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
