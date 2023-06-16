@@ -18,7 +18,7 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given UPC-A barcode format, when factory is called, then return UPCA check digit remover` () {
+    fun `given UPC-A barcode format, when factory is called, then return UPCA check digit remover`() {
         assertThat(
             checkDigitRemoverFactory.getCheckDigitRemoverFor(
                 BarcodeFormat.FormatUPCA
@@ -27,7 +27,7 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given UPC-E barcode format, when factory is called, then return UPCA check digit remover` () {
+    fun `given UPC-E barcode format, when factory is called, then return UPCA check digit remover`() {
         assertThat(
             checkDigitRemoverFactory.getCheckDigitRemoverFor(
                 BarcodeFormat.FormatUPCE
@@ -36,7 +36,7 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given EAN-13 barcode format, when factory is called, then return UPCA check digit remover` () {
+    fun `given EAN-13 barcode format, when factory is called, then return UPCA check digit remover`() {
         assertThat(
             checkDigitRemoverFactory.getCheckDigitRemoverFor(
                 BarcodeFormat.FormatEAN13
@@ -45,7 +45,7 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given EAN-8 barcode format, when factory is called, then return UPCA check digit remover` () {
+    fun `given EAN-8 barcode format, when factory is called, then return UPCA check digit remover`() {
         assertThat(
             checkDigitRemoverFactory.getCheckDigitRemoverFor(
                 BarcodeFormat.FormatEAN8
@@ -54,7 +54,7 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non-supported barcode format, when factory is called, then throw illegal state exception` () {
+    fun `given non-supported barcode format, when factory is called, then throw illegal state exception`() {
         assertThatIllegalStateException().isThrownBy {
             checkDigitRemoverFactory.getCheckDigitRemoverFor(
                 BarcodeFormat.FormatQRCode
