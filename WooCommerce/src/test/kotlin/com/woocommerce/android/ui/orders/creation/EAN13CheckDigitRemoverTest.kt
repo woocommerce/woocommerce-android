@@ -11,9 +11,17 @@ class EAN13CheckDigitRemoverTest : BaseUnitTest() {
 
     @Test
     fun `given EAN-13 format barcode SKU with check digit, then return SKU with check digit removed`() {
-        val sku = "12345678901"
+        val sku = "1234567890123"
         Assertions.assertThat(checkDigitRemover.getSKUWithoutCheckDigit(sku)).isEqualTo(
-            "1234567890"
+            "123456789012"
+        )
+    }
+
+    @Test
+    fun `given alpha numeric EAN-13 format barcode SKU with check digit, then return SKU with check digit removed`() {
+        val sku = "1a345Z7890123"
+        Assertions.assertThat(checkDigitRemover.getSKUWithoutCheckDigit(sku)).isEqualTo(
+            "1a345Z789012"
         )
     }
 }
