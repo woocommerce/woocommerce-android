@@ -12,10 +12,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -2285,10 +2287,16 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product) =
-        getProductVisibility() == PUBLIC &&
+    private suspend fun shouldShowBlaze(productDraft: Product): Boolean {
+        val showBlaze = getProductVisibility() == PUBLIC &&
             productDraft.status != DRAFT &&
             isBlazeEnabled()
+        if (showBlaze) tracker.track(
+            stat = BLAZE_ENTRY_POINT_DISPLAYED,
+            properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
+        return showBlaze
+    }
 
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common

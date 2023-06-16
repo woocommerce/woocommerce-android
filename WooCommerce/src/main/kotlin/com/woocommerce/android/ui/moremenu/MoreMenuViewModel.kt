@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
@@ -94,7 +95,7 @@ class MoreMenuViewModel @Inject constructor(
             description = R.string.more_menu_button_blaze_description,
             icon = R.drawable.ic_more_menu_blaze,
             onClick = ::onPromoteProductsWithBlaze,
-            isEnabled = isBlazeEnabled()
+            isEnabled = shouldShowBlaze()
         ),
         MenuUiButton(
             title = R.string.more_menu_button_wс_admin,
@@ -129,6 +130,15 @@ class MoreMenuViewModel @Inject constructor(
             onClick = ::onInboxButtonClick
         )
     )
+
+    private suspend fun shouldShowBlaze(): Boolean {
+        val showBlaze = isBlazeEnabled()
+        if (showBlaze) AnalyticsTracker.track(
+            stat = BLAZE_ENTRY_POINT_DISPLAYED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+        )
+        return showBlaze
+    }
 
     private fun generateSettingsMenuButtons() = listOf(
         MenuUiButton(
