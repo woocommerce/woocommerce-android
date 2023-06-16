@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIPrompts
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
@@ -47,6 +48,14 @@ class ProductSharingViewModel @Inject constructor(
     }
 
     fun onGenerateButtonClicked() {
+        val isRetry = _viewState.value.buttonState is AIButtonState.Regenerate
+        tracker.track(
+            AnalyticsEvent.PRODUCT_SHARING_AI_GENERATE_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_RETRY to isRetry
+            )
+        )
+
         _viewState.update {
             it.copy(
                 buttonState = AIButtonState.Generating(labelForGenerating),
