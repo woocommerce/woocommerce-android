@@ -1360,13 +1360,48 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             createSut()
             whenever(codeScanner.startScan()).thenAnswer {
                 flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13))
                 }
             }
             whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
             ).thenReturn(
                 mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given EAN-8 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
             )
             whenever(
                 productListRepository.searchProductList(
