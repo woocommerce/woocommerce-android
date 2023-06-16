@@ -101,7 +101,7 @@ class BlazeWebViewViewModel @Inject constructor(
         val queryParams = uri.split("\\?".toRegex())
             .drop(1)
             .joinToString("")
-        val parameterRegex = "(^|&)${parameterName}=([^&]*)".toRegex()
+        val parameterRegex = "(^|&)$parameterName=([^&]*)".toRegex()
         val parameterMatchResult = parameterRegex.find(queryParams)
 
         return parameterMatchResult?.groupValues?.getOrNull(2)
