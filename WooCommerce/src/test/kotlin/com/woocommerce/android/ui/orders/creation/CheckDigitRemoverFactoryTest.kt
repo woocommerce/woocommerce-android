@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.Before
 import org.junit.Test
 
@@ -50,5 +51,14 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
                 BarcodeFormat.FormatEAN8
             )
         ).isInstanceOf(EAN8CheckDigitRemover::class.java)
+    }
+
+    @Test
+    fun `given non-supported barcode format, when factory is called, then throw illegal state exception` () {
+        assertThatIllegalStateException().isThrownBy {
+            checkDigitRemoverFactory.getCheckDigitRemoverFor(
+                BarcodeFormat.FormatQRCode
+            )
+        }
     }
 }
