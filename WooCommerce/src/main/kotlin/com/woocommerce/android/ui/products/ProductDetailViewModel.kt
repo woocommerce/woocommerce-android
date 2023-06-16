@@ -47,10 +47,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -274,9 +276,7 @@ class ProductDetailViewModel @Inject constructor(
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
-                showPromoteWithBlaze = isBlazeEnabled() &&
-                    getProductVisibility() == PUBLIC &&
-                    productDraft.status != ProductStatus.DRAFT
+                showPromoteWithBlaze = shouldShowBlaze(productDraft)
             )
         }.asLiveData()
 
@@ -404,6 +404,19 @@ class ProductDetailViewModel @Inject constructor(
                     triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
                 }
             }
+        }
+    }
+
+    fun onPromoteWithBlazeClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(
+                NavigateToBlazeProductWebView(
+                    url = isBlazeEnabled.buildUrlForProduct(
+                        productId = it.remoteId,
+                        source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
+                    )
+                )
+            )
         }
     }
 
@@ -2283,6 +2296,11 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
+    private suspend fun shouldShowBlaze(productDraft: Product) =
+        getProductVisibility() == PUBLIC &&
+            productDraft.status != DRAFT &&
+            isBlazeEnabled()
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2328,6 +2346,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductError : Event()
 
     object ShowDuplicateProductInProgress : Event()
+
+    data class NavigateToBlazeProductWebView(val url: String) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

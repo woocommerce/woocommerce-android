@@ -53,7 +53,8 @@ enum class FeatureFlag {
             STORE_CREATION_PROFILER,
             COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
             EU_SHIPPING_NOTIFICATION,
-            PRIVACY_CHOICES -> true
+            PRIVACY_CHOICES,
+            BLAZE -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
