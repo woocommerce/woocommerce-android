@@ -12,10 +12,13 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -25,6 +28,7 @@ import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
@@ -46,10 +50,13 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -273,9 +280,7 @@ class ProductDetailViewModel @Inject constructor(
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
-                showPromoteWithBlaze = isBlazeEnabled() &&
-                    getProductVisibility() == PUBLIC &&
-                    productDraft.status != ProductStatus.DRAFT
+                showPromoteWithBlaze = shouldShowBlaze(productDraft)
             )
         }.asLiveData()
 
@@ -391,8 +396,36 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+                if (FeatureFlag.SHARING_PRODUCT_AI.isEnabled()) {
+                    triggerEvent(
+                        ProductNavigationTarget.ShareProductWithAI(
+                            it.permalink,
+                            it.name,
+                            it.description.orNullIfEmpty()
+                        )
+                    )
+                } else {
+                    triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+                }
             }
+        }
+    }
+
+    fun onBlazeClicked() {
+        tracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
+        viewState.productDraft?.let {
+            triggerEvent(
+                NavigateToBlazeWebView(
+                    url = isBlazeEnabled.buildUrlForProduct(
+                        productId = it.remoteId,
+                        source = PRODUCT_DETAIL_OVERFLOW_MENU
+                    ),
+                    source = PRODUCT_DETAIL_OVERFLOW_MENU
+                )
+            )
         }
     }
 
@@ -2272,6 +2305,17 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
+    private suspend fun shouldShowBlaze(productDraft: Product): Boolean {
+        val showBlaze = getProductVisibility() == PUBLIC &&
+            productDraft.status != DRAFT &&
+            isBlazeEnabled()
+        if (showBlaze) tracker.track(
+            stat = BLAZE_ENTRY_POINT_DISPLAYED,
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
+        return showBlaze
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2317,6 +2361,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductError : Event()
 
     object ShowDuplicateProductInProgress : Event()
+
+    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

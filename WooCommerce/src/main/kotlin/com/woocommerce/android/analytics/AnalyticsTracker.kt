@@ -533,6 +533,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCT_SELECTOR = "product_selector"
         const val VALUE_VARIATION_SELECTOR = "variation_selector"
 
+        // -- Blaze
+        const val KEY_BLAZE_SOURCE = "source"
+        const val KEY_BLAZE_STEP = "step"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
