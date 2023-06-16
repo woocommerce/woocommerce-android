@@ -3348,6 +3348,7 @@
     <string name="product_sharing_generating">Generating…</string>
     <string name="product_sharing_optional_message_label">Add an optional message</string>
     <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
+    <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
 
 
 </resources>
