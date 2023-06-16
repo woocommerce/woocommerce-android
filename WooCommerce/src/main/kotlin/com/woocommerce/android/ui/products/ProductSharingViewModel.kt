@@ -75,6 +75,8 @@ class ProductSharingViewModel @Inject constructor(
             )
             result.fold(
                 onSuccess = { completions ->
+                    tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATED)
+
                     _viewState.update {
                         it.copy(
                             buttonState = AIButtonState.Regenerate(labelForRegenerate),
