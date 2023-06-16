@@ -17,7 +17,7 @@ object AIPrompts {
         "their customers a product named \"%1\$s\". More information about the product:\n" +
         "%2\$s\n" +
         "- Product URL: %3\$s.\n" +
-        "Identify the language used in the product name and use the same language in your response.\n" +
+        "Identify the language used in the product name and product description, if any, to use in your response.\n" +
         "The length should be up to 3 sentences.\n" +
         "Use a 9th grade reading level.\n" +
         "Add related hashtags at the end of the message.\n" +
