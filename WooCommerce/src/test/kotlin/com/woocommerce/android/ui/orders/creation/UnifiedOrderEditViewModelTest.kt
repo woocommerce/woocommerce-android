@@ -1350,6 +1350,41 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given EAN-13 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
     fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
         testBlocking {
             val sku = "12345678901"
