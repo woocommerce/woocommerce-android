@@ -137,7 +137,7 @@ class ProductSharingViewModel @Inject constructor(
         val messageToShare = writtenMessage.ifEmpty { navArgs.productName } + "\n" + navArgs.permalink
 
         tracker.track(
-            AnalyticsEvent.PRODUCT_SHARING_AI_GENERATE_TAPPED,
+            AnalyticsEvent.PRODUCT_SHARING_AI_SHARE_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_WITH_MESSAGE to writtenMessage.isEmpty()
             )
