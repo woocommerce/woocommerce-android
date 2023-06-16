@@ -29,6 +29,7 @@ class BlazeWebViewViewModel @Inject constructor(
 
     private var currentBlazeStep = BlazeFlowStep.UNSPECIFIED
     private var isCompleted = false
+    private var firstTimeLoading = false
     val viewState = navArgs.let {
         BlazeWebViewState(
             urlToLoad = it.urlToLoad,
@@ -36,16 +37,17 @@ class BlazeWebViewViewModel @Inject constructor(
         )
     }
 
-    init {
-        analyticsTracker.track(
-            stat = BLAZE_FLOW_STARTED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to viewState.source.trackingName)
-        )
-    }
-
-    fun onUrlLoaded(url: String) {
+    fun onPageFinished(url: String) {
+        if (!firstTimeLoading) {
+            firstTimeLoading = true
+            analyticsTracker.track(
+                stat = BLAZE_FLOW_STARTED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to viewState.source.trackingName)
+            )
+        }
         Log.d("BlazeWebViewViewModel", "onUrlLoaded: $url")
         currentBlazeStep = extractCurrentStep(url)
+        Log.d("BlazeWebViewViewModel", "extracted step: ${currentBlazeStep.label}")
         if (currentBlazeStep == BlazeFlowStep.STEP_5) {
             isCompleted = true
             analyticsTracker.track(
@@ -73,8 +75,9 @@ class BlazeWebViewViewModel @Inject constructor(
 
     private fun extractCurrentStep(url: String): BlazeFlowStep {
         val uri = Uri.parse(url)
+        Log.d("BlazeWebViewViewModel", "uri.fragment: ${uri.fragment}")
         return when {
-            uri.fragment != null -> BlazeFlowStep.fromString(url)
+            uri.fragment != null -> BlazeFlowStep.fromString(uri.fragment!!)
             findQueryParameter(uri.toString(), BLAZEPRESS_WIDGET) != null -> BlazeFlowStep.STEP_1
             isAdvertisingCampaign(uri.toString()) -> BlazeFlowStep.CAMPAIGNS_LIST
             matchAdvertisingPath(uri.path) -> BlazeFlowStep.PRODUCTS_LIST
@@ -94,11 +97,11 @@ class BlazeWebViewViewModel @Inject constructor(
         } ?: return false
     }
 
-    @Suppress("SameParameterValue")
     private fun findQueryParameter(uri: String, parameterName: String): String? {
-        val queryParams = uri.split("\\?".toRegex()).drop(1).joinToString("")
+        val queryParams = uri.split("\\?".toRegex())
+            .drop(1)
+            .joinToString("")
         val parameterRegex = "(^|&)${parameterName}=([^&]*)".toRegex()
-
         val parameterMatchResult = parameterRegex.find(queryParams)
 
         return parameterMatchResult?.groupValues?.getOrNull(2)
@@ -111,7 +114,7 @@ class BlazeWebViewViewModel @Inject constructor(
 
     enum class BlazeFlowStep(val label: String, val trackingName: String) {
         CAMPAIGNS_LIST("campaigns_list", "campaigns_list"),
-        PRODUCTS_LIST("products_list", "posts_list"),
+        PRODUCTS_LIST("products_list", "products_list"),
         STEP_1("step-1", "step_1"),
         STEP_2("step-2", "step_2"),
         STEP_3("step-3", "step_3"),
@@ -123,10 +126,8 @@ class BlazeWebViewViewModel @Inject constructor(
 
         companion object {
             @JvmStatic
-            fun fromString(strSource: String?): BlazeFlowStep =
-                strSource?.let { source ->
-                    values().firstOrNull { it.label.equals(source, ignoreCase = true) }
-                } ?: UNSPECIFIED
+            fun fromString(source: String): BlazeFlowStep =
+                values().firstOrNull { it.label.equals(source, ignoreCase = true) } ?: UNSPECIFIED
         }
     }
 }

@@ -16,13 +16,12 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
-
 @Composable
 fun BlazeWebViewScreen(
     viewState: BlazeWebViewState,
     userAgent: UserAgent,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
-    onUrlLoaded: (String) -> Unit,
+    onPageFinished: (String) -> Unit,
     onClose: () -> Unit,
 ) {
     BackHandler(onBack = onClose)
@@ -39,7 +38,7 @@ fun BlazeWebViewScreen(
             url = viewState.urlToLoad,
             userAgent = userAgent,
             wpComAuthenticator = wpcomWebViewAuthenticator,
-            onUrlLoaded = onUrlLoaded,
+            onPageFinished = onPageFinished,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
