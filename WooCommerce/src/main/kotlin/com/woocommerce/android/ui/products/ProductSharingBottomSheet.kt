@@ -45,7 +45,8 @@ fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
             viewState = it,
             onGenerateButtonClick = viewModel::onGenerateButtonClicked,
             onShareMessageEdit = viewModel::onShareMessageEdited,
-            onSharingButtonClick = viewModel::onShareButtonClicked
+            onSharingButtonClick = viewModel::onShareButtonClicked,
+            onInfoButtonClick = viewModel::onInfoButtonClicked
         )
     }
 }
@@ -55,7 +56,8 @@ fun ProductShareWithAI(
     viewState: ProductSharingViewState,
     onGenerateButtonClick: () -> Unit = {},
     onShareMessageEdit: (String) -> Unit = {},
-    onSharingButtonClick: () -> Unit = {}
+    onSharingButtonClick: () -> Unit = {},
+    onInfoButtonClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -84,7 +86,7 @@ fun ProductShareWithAI(
                     value = viewState.shareMessage,
                     onValueChange = { onShareMessageEdit(it) },
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
-                    maxLines = 4,
+                    maxLines = 5,
                     isError = isError,
                     helperText = if (isError) viewState.errorMessage else null
                 )
@@ -104,7 +106,7 @@ fun ProductShareWithAI(
                 }
 
                 IconButton(
-                    onClick = { /* TODO */ },
+                    onClick = onInfoButtonClick,
                     enabled = !viewState.isGenerating
                 ) {
                     Icon(

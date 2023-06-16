@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIPrompts
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -101,6 +103,12 @@ class ProductSharingViewModel @Inject constructor(
                 title = navArgs.productName,
                 subject = subject
             )
+        )
+    }
+
+    fun onInfoButtonClicked() {
+        triggerEvent(
+            LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES)
         )
     }
 
