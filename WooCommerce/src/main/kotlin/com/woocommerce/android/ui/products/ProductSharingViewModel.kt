@@ -6,6 +6,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIPrompts
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -75,43 +76,49 @@ class ProductSharingViewModel @Inject constructor(
             )
             result.fold(
                 onSuccess = { completions ->
-                    tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATED)
-
-                    _viewState.update {
-                        it.copy(
-                            buttonState = AIButtonState.Regenerate(labelForRegenerate),
-                            shareMessage = completions,
-                            isGenerating = false
-                        )
-                    }
+                    handleCompletionsSuccess(completions)
                 },
                 onFailure = { exception ->
-                    val completionsError = exception as AIRepository.JetpackAICompletionsException
-
-                    tracker.track(
-                        AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
-                        mapOf(
-                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to completionsError.errorType,
-                            AnalyticsTracker.KEY_ERROR_DESC to completionsError.errorMessage
-                        )
-                    )
-
-                    _viewState.update {
-                        // This is to return the previous button's state before generating.
-                        val previousButtonState = if (it.buttonState is AIButtonState.Regenerate) {
-                            AIButtonState.Regenerate(labelForRegenerate)
-                        } else {
-                            AIButtonState.WriteWithAI(labelForWriteWithAI)
-                        }
-
-                        it.copy(
-                            buttonState = previousButtonState,
-                            errorMessage = labelForGeneratingFailure,
-                            isGenerating = false
-                        )
-                    }
+                    handleCompletionsFailure(exception as JetpackAICompletionsException)
                 }
+            )
+        }
+    }
+
+    private fun handleCompletionsSuccess(completions: String) {
+        tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATED)
+
+        _viewState.update {
+            it.copy(
+                buttonState = AIButtonState.Regenerate(labelForRegenerate),
+                shareMessage = completions,
+                isGenerating = false
+            )
+        }
+    }
+
+    private fun handleCompletionsFailure(error: JetpackAICompletionsException) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                AnalyticsTracker.KEY_ERROR_TYPE to error.errorType,
+                AnalyticsTracker.KEY_ERROR_DESC to error.errorMessage
+            )
+        )
+
+        _viewState.update {
+            // This is to return the previous button's state before generating.
+            val previousButtonState = if (it.buttonState is AIButtonState.Regenerate) {
+                AIButtonState.Regenerate(labelForRegenerate)
+            } else {
+                AIButtonState.WriteWithAI(labelForWriteWithAI)
+            }
+
+            it.copy(
+                buttonState = previousButtonState,
+                errorMessage = labelForGeneratingFailure,
+                isGenerating = false
             )
         }
     }
