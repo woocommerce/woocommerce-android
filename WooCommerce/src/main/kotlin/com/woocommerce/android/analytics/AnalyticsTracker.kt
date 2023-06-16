@@ -537,6 +537,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IS_RETRY = "is_retry"
         const val KEY_WITH_MESSAGE = "with_message"
 
+        // -- Blaze
+        const val KEY_BLAZE_SOURCE = "source"
+        const val KEY_BLAZE_STEP = "step"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
