@@ -12,10 +12,13 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -48,6 +51,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -407,14 +411,19 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun onPromoteWithBlazeClicked() {
+    fun onBlazeClicked() {
+        tracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
         viewState.productDraft?.let {
             triggerEvent(
-                NavigateToBlazeProductWebView(
+                NavigateToBlazeWebView(
                     url = isBlazeEnabled.buildUrlForProduct(
                         productId = it.remoteId,
-                        source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
-                    )
+                        source = PRODUCT_DETAIL_OVERFLOW_MENU
+                    ),
+                    source = PRODUCT_DETAIL_OVERFLOW_MENU
                 )
             )
         }
@@ -2296,10 +2305,16 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product) =
-        getProductVisibility() == PUBLIC &&
+    private suspend fun shouldShowBlaze(productDraft: Product): Boolean {
+        val showBlaze = getProductVisibility() == PUBLIC &&
             productDraft.status != DRAFT &&
             isBlazeEnabled()
+        if (showBlaze) tracker.track(
+            stat = BLAZE_ENTRY_POINT_DISPLAYED,
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
+        return showBlaze
+    }
 
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
@@ -2347,7 +2362,7 @@ class ProductDetailViewModel @Inject constructor(
 
     object ShowDuplicateProductInProgress : Event()
 
-    data class NavigateToBlazeProductWebView(val url: String) : Event()
+    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

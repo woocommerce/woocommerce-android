@@ -5,6 +5,8 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
@@ -21,6 +23,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -34,6 +37,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
@@ -76,6 +80,7 @@ class MoreMenuViewModel @Inject constructor(
 
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
+        launch { trackBlazeDisplayed() }
     }
 
     private suspend fun generateGeneralMenuButtons(
@@ -129,6 +134,13 @@ class MoreMenuViewModel @Inject constructor(
             onClick = ::onInboxButtonClick
         )
     )
+
+    private suspend fun trackBlazeDisplayed() {
+        if (isBlazeEnabled()) AnalyticsTracker.track(
+            stat = BLAZE_ENTRY_POINT_DISPLAYED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+        )
+    }
 
     private fun generateSettingsMenuButtons() = listOf(
         MenuUiButton(
@@ -197,9 +209,14 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onPromoteProductsWithBlaze() {
+        AnalyticsTracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+        )
         triggerEvent(
             MoreMenuEvent.OpenBlazeEvent(
-                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM)
+                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
+                source = MORE_MENU_ITEM
             )
         )
     }
@@ -276,7 +293,7 @@ class MoreMenuViewModel @Inject constructor(
         object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
-        data class OpenBlazeEvent(val url: String) : MoreMenuEvent()
+        data class OpenBlazeEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
