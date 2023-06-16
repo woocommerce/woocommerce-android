@@ -36,28 +36,28 @@ import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Generating
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Regenerate
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.WriteWithAI
-import com.woocommerce.android.ui.products.ProductSharingViewModel.ViewState.ProductSharingViewState
+import com.woocommerce.android.ui.products.ProductSharingViewModel.ProductSharingViewState
 
 @Composable
 fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        when (it) {
-            is ProductSharingViewState -> {
-                ProductShareWithAI(
-                    viewState = it,
-                    onGenerateButtonClick = viewModel::onGenerateButtonClicked,
-                )
-            }
-
-            else -> { /* nothing to show for Loading state. */ }
-        }
+        ProductShareWithAI(
+            viewState = it,
+            onGenerateButtonClick = viewModel::onGenerateButtonClicked,
+            onShareMessageEdit = viewModel::onShareMessageEdited,
+            onSharingButtonClick = viewModel::onShareButtonClicked,
+            onInfoButtonClick = viewModel::onInfoButtonClicked
+        )
     }
 }
 
 @Composable
 fun ProductShareWithAI(
     viewState: ProductSharingViewState,
-    onGenerateButtonClick: () -> Unit = {}
+    onGenerateButtonClick: () -> Unit = {},
+    onShareMessageEdit: (String) -> Unit = {},
+    onSharingButtonClick: () -> Unit = {},
+    onInfoButtonClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -80,11 +80,15 @@ fun ProductShareWithAI(
             if (viewState.isGenerating) {
                 SharingMessageSkeletonView()
             } else {
+                val isError = viewState.errorMessage.isNotEmpty()
+
                 WCOutlinedTextField(
                     value = viewState.shareMessage,
-                    onValueChange = { /*TODO*/ },
+                    onValueChange = { onShareMessageEdit(it) },
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
-                    maxLines = 4
+                    maxLines = 5,
+                    isError = isError,
+                    helperText = if (isError) viewState.errorMessage else null
                 )
             }
 
@@ -102,7 +106,7 @@ fun ProductShareWithAI(
                 }
 
                 IconButton(
-                    onClick = { /* TODO */ },
+                    onClick = onInfoButtonClick,
                     enabled = !viewState.isGenerating
                 ) {
                     Icon(
@@ -116,7 +120,7 @@ fun ProductShareWithAI(
             }
 
             WCColoredButton(
-                onClick = { /*TODO*/ },
+                onClick = onSharingButtonClick,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !viewState.isGenerating
             ) {
