@@ -85,7 +85,18 @@ class ProductSharingViewModel @Inject constructor(
                         )
                     }
                 },
-                onFailure = {
+                onFailure = { exception ->
+                    val completionsError = exception as AIRepository.JetpackAICompletionsException
+
+                    tracker.track(
+                        AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to completionsError.errorType,
+                            AnalyticsTracker.KEY_ERROR_DESC to completionsError.errorMessage
+                        )
+                    )
+
                     _viewState.update {
                         // This is to return the previous button's state before generating.
                         val previousButtonState = if (it.buttonState is AIButtonState.Regenerate) {

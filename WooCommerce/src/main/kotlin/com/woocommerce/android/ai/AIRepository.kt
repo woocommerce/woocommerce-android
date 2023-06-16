@@ -27,9 +27,19 @@ class AIRepository @Inject constructor(
                 }
                 is JetpackAICompletionsResponse.Error -> {
                     WooLog.w(WooLog.T.AI, "Fetching Jetpack AI completions failed: $message")
-                    Result.failure(Exception(message ?: "Unable to fetch AI completions"))
+                    Result.failure(this.mapToException())
                 }
             }
         }
     }
+    data class JetpackAICompletionsException(
+        val errorMessage: String,
+        val errorType: String
+    ) : Exception(errorMessage)
+
+    private fun JetpackAICompletionsResponse.Error.mapToException() =
+        JetpackAICompletionsException(
+            errorMessage = message ?: "Unable to fetch AI completions",
+            errorType = type.name
+        )
 }
