@@ -123,7 +123,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val codeScanner: CodeScanner,
     private val productRepository: ProductListRepository,
-    private val checkDigitRemover: UPCCheckDigitRemover,
+    private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -489,18 +489,27 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(isUpdatingOrderDraft = true)
         fetchProductBySKU(
             barcodeOptions.copy(
-                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
+                sku = checkDigitRemoverFactory.getCheckDigitRemoverFor(
+                    barcodeOptions.barcodeFormat
+                ).getSKUWithoutCheckDigit(barcodeOptions.sku),
                 shouldHandleCheckDigitOnFailure = false
             )
         )
     }
 
     private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
-        isBarcodeFormatUPC(barcodeOptions) && barcodeOptions.shouldHandleCheckDigitOnFailure
+        (isBarcodeFormatUPC(barcodeOptions) ||
+            isBarcodeFormatEAN(barcodeOptions)
+            ) &&
+            barcodeOptions.shouldHandleCheckDigitOnFailure
 
     private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
             barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
+
+    private fun isBarcodeFormatEAN(barcodeOptions: BarcodeOptions) =
+        barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
+            barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
     private fun addScannedProduct(
         product: ModelProduct,
