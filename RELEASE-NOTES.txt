@@ -2,6 +2,7 @@
 14.2
 -----
 - [*] [Internal] Rounded corners to the payments dialogs [https://github.com/woocommerce/woocommerce-android/pull/9231]
+- [*] [Internal] Adding products via barcode scanning - Handle EAN-13, EAN-8 barcode formats [https://github.com/woocommerce/woocommerce-android/pull/9240]
 
 14.1
 -----
