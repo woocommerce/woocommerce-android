@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
@@ -14,13 +12,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderTutorialDialogBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tutorial_dialog) {
+class CardReaderTutorialDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_tutorial_dialog) {
     private val args: CardReaderTutorialDialogFragmentArgs by navArgs()
     @Inject lateinit var appPrefs: AppPrefs
 
@@ -28,7 +27,6 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
         dialog?.let {
             it.setCancelable(false)
             it.setCanceledOnTouchOutside(false)
-            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
         if (!appPrefs.getShowCardReaderConnectedTutorial() || args.cardReaderType == BUILT_IN) {

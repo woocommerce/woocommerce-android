@@ -66,7 +66,10 @@ class ObserveSiteInstallation @Inject constructor(
     }
 
     private val SiteModel?.isReadyToUse: Boolean
-        get() = this?.isJetpackInstalled == true && this.isJetpackConnected
+        get() = this?.isJetpackInstalled == true &&
+            this.isJetpackConnected &&
+            this.isWpComStore &&
+            this.hasWooCommerce
 
     private fun SiteModel?.isDesynced(expectedName: String): Boolean =
         this?.isJetpackInstalled == true && this.isJetpackConnected &&

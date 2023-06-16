@@ -26,13 +26,13 @@ class IsBlazeEnabled @Inject constructor(
         isRemoteFeatureFlagEnabled(WOO_BLAZE)
 
     fun buildUrlForSite(source: BlazeFlowSource): String {
-        val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
-        return BLAZE_CREATION_FLOW_SITE.format(siteUrl, source.trackingName)
+        val siteUrlWithoutProtocol = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
+        return BLAZE_CREATION_FLOW_SITE.format(siteUrlWithoutProtocol, source.trackingName)
     }
 
     fun buildUrlForProduct(productId: Long, source: BlazeFlowSource): String {
-        val siteUrl = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
-        return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrl, productId, source.trackingName)
+        val siteUrlWithoutProtocol = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
+        return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrlWithoutProtocol, productId, source.trackingName)
     }
 
     enum class BlazeFlowSource(val trackingName: String) {

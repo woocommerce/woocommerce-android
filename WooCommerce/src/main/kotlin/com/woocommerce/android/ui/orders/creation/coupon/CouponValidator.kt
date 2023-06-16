@@ -10,6 +10,6 @@ class CouponValidator @Inject constructor(
 ) {
     suspend fun isCouponValid(code: String): Boolean {
         val result = store.searchCoupons(selectedSite.get(), code).model ?: return false
-        return result.coupons.find { code == it.coupon.code } != null
+        return result.coupons.find { code.lowercase() == it.coupon.code?.lowercase() } != null
     }
 }
