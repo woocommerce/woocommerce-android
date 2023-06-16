@@ -4,7 +4,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import javax.inject.Inject
 
 class CheckDigitRemoverFactory @Inject constructor() {
-    fun getCheckDigitRemoverFor(barcodeFormat: BarcodeFormat) : CheckDigitRemover {
+    fun getCheckDigitRemoverFor(barcodeFormat: BarcodeFormat): CheckDigitRemover {
         return when (barcodeFormat) {
             BarcodeFormat.FormatEAN13 -> EAN13CheckDigitRemover()
             BarcodeFormat.FormatEAN8 -> EAN8CheckDigitRemover()

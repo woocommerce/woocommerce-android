@@ -383,6 +383,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun trackBarcodeScanningTapped() {
         tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
+
     private fun startScan() {
         scanningJob = viewModelScope.launch {
             isScanningInProgress = true
@@ -498,9 +499,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
-        (isBarcodeFormatUPC(barcodeOptions) ||
-            isBarcodeFormatEAN(barcodeOptions)
-            ) &&
+        (isBarcodeFormatUPC(barcodeOptions) || isBarcodeFormatEAN(barcodeOptions)) &&
             barcodeOptions.shouldHandleCheckDigitOnFailure
 
     private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
