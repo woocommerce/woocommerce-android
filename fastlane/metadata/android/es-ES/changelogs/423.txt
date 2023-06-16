@@ -1,2 +1,0 @@
-13.9:
-Hemos introducido una nueva función que te permite buscar productos por SKU en la pantalla del selector de productos, lo cual hace que sea más fácil que encuentres los elementos que buscas. Pruébala y déjanos tus comentarios.
