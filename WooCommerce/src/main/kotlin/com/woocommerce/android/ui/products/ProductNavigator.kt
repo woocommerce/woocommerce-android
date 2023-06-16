@@ -86,9 +86,8 @@ class ProductNavigator @Inject constructor() {
 
             is ShareProductWithMessage -> {
                 val shareIntent: Intent = Intent().apply {
-                    val text = target.subject + "\n" + target.permalink
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, text)
+                    putExtra(Intent.EXTRA_TEXT, target.subject)
                     putExtra(Intent.EXTRA_TITLE, target.title)
                     type = "text/plain"
                 }
