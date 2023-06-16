@@ -1674,6 +1674,52 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given product search fails for EAN-8 barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
     fun `given product search fails for UPC barcode format, when retrying, then do not trigger failure event`() {
         testBlocking {
             val sku = "12345678901"
