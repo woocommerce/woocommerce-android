@@ -93,6 +93,18 @@ class ProductSharingViewModel @Inject constructor(
             )
         }
     }
+
+    fun onShareButtonClicked() {
+        val subject = _viewState.value.shareMessage.ifEmpty { navArgs.productName }
+        triggerEvent(
+            ProductNavigationTarget.ShareProductWithMessage(
+                permalink = navArgs.permalink,
+                title = navArgs.productName,
+                subject = subject
+            )
+        )
+    }
+
     data class ProductSharingViewState(
         val productTitle: String,
         val shareMessage: String = "",

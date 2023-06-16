@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToPro
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithAI
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithMessage
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
@@ -82,7 +84,19 @@ class ProductNavigator @Inject constructor() {
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
             }
 
-            is ProductNavigationTarget.ShareProductWithAI -> {
+            is ShareProductWithMessage -> {
+                val shareIntent: Intent = Intent().apply {
+                    val text = target.subject + "\n" + target.permalink
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, text)
+                    putExtra(Intent.EXTRA_TITLE, target.title)
+                    type = "text/plain"
+                }
+                val title = fragment.resources.getText(R.string.product_share_dialog_title)
+                fragment.startActivity(Intent.createChooser(shareIntent, title))
+            }
+
+            is ShareProductWithAI -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductSharingFragment(
                         target.permalink,

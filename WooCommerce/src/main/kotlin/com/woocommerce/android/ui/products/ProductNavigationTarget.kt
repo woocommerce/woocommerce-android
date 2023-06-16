@@ -23,6 +23,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
  */
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
+    data class ShareProductWithMessage(
+        val permalink: String,
+        val title: String,
+        val subject: String
+    ) : ProductNavigationTarget()
     data class ShareProductWithAI(
         val permalink: String,
         val title: String,

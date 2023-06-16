@@ -10,9 +10,12 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductSharingDialog : BottomSheetDialogFragment() {
+    @Inject
+    lateinit var navigator: ProductNavigator
     private val viewModel: ProductSharingViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -23,6 +26,14 @@ class ProductSharingDialog : BottomSheetDialogFragment() {
                 WooThemeWithBackground {
                     ProductSharingBottomSheet(viewModel = viewModel)
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ProductNavigationTarget -> navigator.navigate(this, event)
             }
         }
     }

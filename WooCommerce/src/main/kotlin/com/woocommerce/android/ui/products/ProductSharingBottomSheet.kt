@@ -44,7 +44,8 @@ fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
         ProductShareWithAI(
             viewState = it,
             onGenerateButtonClick = viewModel::onGenerateButtonClicked,
-            onShareMessageEdit = viewModel::onShareMessageEdited
+            onShareMessageEdit = viewModel::onShareMessageEdited,
+            onSharingButtonClick = viewModel::onShareButtonClicked
         )
     }
 }
@@ -53,7 +54,8 @@ fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
 fun ProductShareWithAI(
     viewState: ProductSharingViewState,
     onGenerateButtonClick: () -> Unit = {},
-    onShareMessageEdit: (String) -> Unit = {}
+    onShareMessageEdit: (String) -> Unit = {},
+    onSharingButtonClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -116,7 +118,7 @@ fun ProductShareWithAI(
             }
 
             WCColoredButton(
-                onClick = { /*TODO*/ },
+                onClick = onSharingButtonClick,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !viewState.isGenerating
             ) {
