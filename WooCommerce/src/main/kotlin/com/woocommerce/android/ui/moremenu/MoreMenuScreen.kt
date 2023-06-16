@@ -335,6 +335,7 @@ private fun MoreMenuButton(
         Box(Modifier.fillMaxSize()) {
             MoreMenuBadge(badgeState = badgeState)
             Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -354,7 +355,6 @@ private fun MoreMenuButton(
                 }
                 Column(
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(
