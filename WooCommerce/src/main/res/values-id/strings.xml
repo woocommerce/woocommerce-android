@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-06 09:54:27+0000
+Translation-Revision-Date: 2023-06-14 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="share_product">Bagikan produk</string>
+    <string name="first_product_celebration_body_message">Selamat! Anda selangkah lebih dekat untuk mewujudkan toko baru.</string>
+    <string name="first_product_celebration_title">Produk pertama dibuat 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
+    <string name="order_list_barcode_scanning_process_death">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
     <string name="card_reader_payment_card_removed_too_early">Kartu dihapus terlalu dini</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, kami menjeda operasi toko Anda. Anda dapat melanjutkannya dengan memilih paket yang paling sesuai untuk Anda.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Terus jalankan bisnis Anda dengan paket kami!</string>

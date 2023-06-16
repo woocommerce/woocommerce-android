@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-05 17:54:04+0000
+Translation-Revision-Date: 2023-06-14 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="share_product">Produkt teilen</string>
+    <string name="first_product_celebration_body_message">Glückwunsch! Du bist einen Schritt weiter auf dem Weg zu deinem neuen Shop.</string>
+    <string name="first_product_celebration_title">Erstes Produkt erstellt 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
+    <string name="order_list_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
     <string name="card_reader_payment_card_removed_too_early">Die Karte wurde zu früh entfernt</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, wir haben deinen Shop deaktiviert, aber du kannst ihn wieder aktivieren, indem du einen für dich passenden Tarif auswählst.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Halte dein Geschäft mit unserem Tarif am Laufen!</string>

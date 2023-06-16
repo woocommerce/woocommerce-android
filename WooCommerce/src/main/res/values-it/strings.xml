@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-06 14:54:04+0000
+Translation-Revision-Date: 2023-06-14 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="share_product">Condividi prodotto</string>
+    <string name="first_product_celebration_body_message">Complimenti. Il nuovo negozio è ora più vicino.</string>
+    <string name="first_product_celebration_title">Primo prodotto creato 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Il sistema ha terminato l\'app Woo mentre era in esecuzione in background. Puoi provare a usarla di nuovo.</string>
+    <string name="order_list_barcode_scanning_process_death">Il sistema ha terminato l\'app Woo mentre era in esecuzione in background. Puoi provare a usarla di nuovo.</string>
     <string name="card_reader_payment_card_removed_too_early">La scheda è stata rimossa troppo presto</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, abbiamo sospeso il negozio, ma puoi continuare scegliendo il piano più adatto a te.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Mantieni attiva la tua attività con il nostro piano.</string>
