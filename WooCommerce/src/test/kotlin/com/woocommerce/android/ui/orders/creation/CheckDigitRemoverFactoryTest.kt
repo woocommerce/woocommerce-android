@@ -33,4 +33,13 @@ class CheckDigitRemoverFactoryTest : BaseUnitTest() {
             )
         ).isInstanceOf(UPCCheckDigitRemover::class.java)
     }
+
+    @Test
+    fun `given EAN-13 barcode format, when factory is called, then return UPCA check digit remover` () {
+        assertThat(
+            checkDigitRemoverFactory.getCheckDigitRemoverFor(
+                BarcodeFormat.FormatEAN13
+            )
+        ).isInstanceOf(EAN13CheckDigitRemover::class.java)
+    }
 }
