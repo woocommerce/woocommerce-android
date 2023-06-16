@@ -6,6 +6,8 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIPrompts
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -20,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductSharingViewModel @Inject constructor(
     private val aiRepository: AIRepository,
+    private val tracker: AnalyticsTrackerWrapper,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
@@ -38,6 +41,10 @@ class ProductSharingViewModel @Inject constructor(
         )
     )
     val viewState = _viewState.asLiveData()
+
+    init {
+        tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_DISPLAYED)
+    }
 
     fun onGenerateButtonClicked() {
         _viewState.update {
