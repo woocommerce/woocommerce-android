@@ -74,7 +74,7 @@ class BlazeWebViewViewModel @Inject constructor(
         val uri = Uri.parse(url)
         return when {
             uri.fragment != null -> BlazeFlowStep.fromString(uri.fragment!!)
-            findQueryParameter(uri.toString(), BLAZEPRESS_WIDGET) != null -> BlazeFlowStep.STEP_1
+            uri.getQueryParameter(BLAZEPRESS_WIDGET) != null -> BlazeFlowStep.STEP_1
             isAdvertisingCampaign(uri.toString()) -> BlazeFlowStep.CAMPAIGNS_LIST
             matchAdvertisingPath(uri.path) -> BlazeFlowStep.PRODUCTS_LIST
             else -> BlazeFlowStep.UNSPECIFIED
@@ -91,16 +91,6 @@ class BlazeWebViewViewModel @Inject constructor(
             val advertisingRegex = "^/advertising/[^/]+(/posts)?$".toRegex()
             return advertisingRegex.matches(it)
         } ?: return false
-    }
-
-    private fun findQueryParameter(uri: String, parameterName: String): String? {
-        val queryParams = uri.split("\\?".toRegex())
-            .drop(1)
-            .joinToString("")
-        val parameterRegex = "(^|&)$parameterName=([^&]*)".toRegex()
-        val parameterMatchResult = parameterRegex.find(queryParams)
-
-        return parameterMatchResult?.groupValues?.getOrNull(2)
     }
 
     data class BlazeWebViewState(
