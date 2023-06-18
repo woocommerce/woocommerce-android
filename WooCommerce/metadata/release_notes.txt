@@ -1,6 +1,1 @@
-- [*][Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
-- [*] [Internal] Added caching mechanism for JITMs [https://github.com/woocommerce/woocommerce-android/pull/9158]
-- [***] Adds new entry point to promote product using Blaze [https://github.com/woocommerce/woocommerce-android/issues/9209]
-- [*] [Internal] Fixed coupon validation logic [https://github.com/woocommerce/woocommerce-android/pull/9210]
-- [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product sharing messages for you. [https://github.com/woocommerce/woocommerce-android/pull/9236]
-
+This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!
