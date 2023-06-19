@@ -16,8 +16,8 @@ if (localBuilds.exists()) {
         includeBuild(ext.localFluxCPath) {
             dependencySubstitution {
                 println "Substituting fluxc with the local build"
-                substitute module(gradle.ext.fluxCBinaryPath) with project(':fluxc')
-                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) with project(':plugins:woocommerce')
+                substitute module(gradle.ext.fluxCBinaryPath) using project(':fluxc')
+                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) using project(':plugins:woocommerce')
             }
         }
     }
@@ -26,7 +26,7 @@ if (localBuilds.exists()) {
         includeBuild(ext.localLoginFlowPath) {
             dependencySubstitution {
                 println "Substituting login-flow with the local build"
-                substitute module("$gradle.ext.loginFlowBinaryPath") with project(':WordPressLoginFlow')
+                substitute module("$gradle.ext.loginFlowBinaryPath") using project(':WordPressLoginFlow')
             }
         }
     }
@@ -35,11 +35,11 @@ if (localBuilds.exists()) {
         includeBuild(ext.localMediaPickerPath) {
             dependencySubstitution {
                 println "Substituting media-picker with the local build"
-                substitute module("$gradle.ext.mediaPickerBinaryPath") with project(':mediapicker')
-                substitute module("$gradle.ext.mediaPickerDomainBinaryPath") with project(':mediapicker:domain')
-                substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") with project(':mediapicker:source-device')
-                substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") with project(':mediapicker:source-gif')
-                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") with project(':mediapicker:source-wordpress')
+                substitute module("$gradle.ext.mediaPickerBinaryPath") using project(':mediapicker')
+                substitute module("$gradle.ext.mediaPickerDomainBinaryPath") using project(':mediapicker:domain')
+                substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") using project(':mediapicker:source-device')
+                substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") using project(':mediapicker:source-gif')
+                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") using project(':mediapicker:source-wordpress')
             }
         }
     }
@@ -48,7 +48,7 @@ if (localBuilds.exists()) {
         includeBuild(ext.localWooCommerceSharedPath) {
             dependencySubstitution {
                 println "Substituting WooCommerce-Shared with the local build"
-                substitute module("$gradle.ext.wooCommerceSharedBinaryPath") with project(':library')
+                substitute module("$gradle.ext.wooCommerceSharedBinaryPath") using project(':library')
             }
         }
     }
