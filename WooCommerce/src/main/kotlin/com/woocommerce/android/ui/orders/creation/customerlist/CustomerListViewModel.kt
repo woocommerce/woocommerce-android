@@ -56,7 +56,7 @@ class CustomerListViewModel @Inject constructor(
                     openCustomerDetails(customerFetchingResult.model!!)
                 }
             } else {
-                val customer = customerListRepository.getCustomerByRemoteIdFromLocalStorage(customerRemoteId)
+                val customer = customerListRepository.getCustomerByRemoteId(customerRemoteId)
                 if (customer != null) {
                     openCustomerDetails(customer)
                 } else {

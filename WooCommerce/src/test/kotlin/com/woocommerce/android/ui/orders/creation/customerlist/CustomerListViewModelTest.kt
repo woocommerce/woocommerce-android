@@ -123,7 +123,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // GIVEN
             val customerId = 0L
             val customer = createCustomer(customerId)
-            whenever(customerListRepository.getCustomerByRemoteIdFromLocalStorage(customerId)).thenReturn(customer)
+            whenever(customerListRepository.getCustomerByRemoteId(customerId)).thenReturn(customer)
             val country = Location(
                 code = "code",
                 name = "name",
@@ -285,7 +285,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val customerId = 0L
-            whenever(customerListRepository.getCustomerByRemoteIdFromLocalStorage(customerId)).thenReturn(null)
+            whenever(customerListRepository.getCustomerByRemoteId(customerId)).thenReturn(null)
 
             // WHEN
             viewModel.onCustomerClick(customerId)
