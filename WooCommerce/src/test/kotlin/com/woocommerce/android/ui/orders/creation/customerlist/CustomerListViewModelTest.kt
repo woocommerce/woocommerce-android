@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +18,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
@@ -60,6 +64,23 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(customerListRepository).searchCustomerList(query)
+    }
+
+    @Test
+    fun `given internet, when search customers, then skeleton is shown and then hidden`() = testBlocking {
+        // GIVEN
+        val query = "test"
+        whenever(networkStatus.isConnected()).thenReturn(true)
+
+        val values = viewModel.viewState.captureValues()
+
+        // WHEN
+        viewModel.onSearchQueryChanged(query)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(values[1].isSkeletonShown).isTrue()
+        assertThat(values[2].isSkeletonShown).isFalse()
     }
 
     @Test
@@ -182,6 +203,100 @@ class CustomerListViewModelTest : BaseUnitTest() {
             assertThat(event.shippingAddress.phone).isEqualTo("")
             assertThat(event.shippingAddress.country).isEqualTo(country)
             assertThat(event.shippingAddress.postcode).isEqualTo(customer.shippingPostcode)
+        }
+
+    @Test
+    fun `when on customer clicked, then skeleton shown and hidden`() =
+        testBlocking {
+            // GIVEN
+            val customerId = 1L
+            val customer = createCustomer(customerId)
+            whenever(customerListRepository.fetchCustomerByRemoteId(customerId)).thenReturn(WooResult(customer))
+            val country = Location(
+                code = "code",
+                name = "name",
+                parentCode = "parentCode",
+            )
+            val state = Location(
+                code = "code1",
+                name = "name1",
+                parentCode = "parentCode1",
+            )
+            whenever(customerListRepository.getCountry("us")).thenReturn(country)
+            whenever(customerListRepository.getState("us", "ny")).thenReturn(state)
+
+            val values = viewModel.viewState.captureValues()
+
+            // WHEN
+            viewModel.onCustomerClick(customerId)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(values[1].isSkeletonShown).isTrue()
+            assertThat(values[2].isSkeletonShown).isFalse()
+        }
+
+    @Test
+    fun `given error and not 0 customer id, when on customer clicked, then error snackbar shown`() =
+        testBlocking {
+            // GIVEN
+            val customerId = 1L
+            whenever(customerListRepository.fetchCustomerByRemoteId(customerId)).thenReturn(
+                WooResult(WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, null))
+            )
+
+            // WHEN
+            viewModel.onCustomerClick(customerId)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(
+                viewModel.event.value
+            ).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.error_generic_network
+                )
+            )
+        }
+
+    @Test
+    fun `given null response and not 0 customer id, when on customer clicked, then error snackbar shown`() =
+        testBlocking {
+            // GIVEN
+            val customerId = 1L
+            whenever(customerListRepository.fetchCustomerByRemoteId(customerId)).thenReturn(
+                WooResult(null)
+            )
+
+            // WHEN
+            viewModel.onCustomerClick(customerId)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.error_generic_network
+                )
+            )
+        }
+
+    @Test
+    fun `given null response and 0 customer id, when on customer clicked, then error snackbar shown`() =
+        testBlocking {
+            // GIVEN
+            val customerId = 0L
+            whenever(customerListRepository.getCustomerByRemoteIdFromLocalStorage(customerId)).thenReturn(null)
+
+            // WHEN
+            viewModel.onCustomerClick(customerId)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(
+                    R.string.error_generic
+                )
+            )
         }
 
     private fun createCustomer(customerId: Long): WCCustomerModel {
