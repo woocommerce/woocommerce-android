@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCCustomerStore
 import org.wordpress.android.fluxc.store.WCDataStore
 import javax.inject.Inject
@@ -42,12 +43,18 @@ class CustomerListRepository @Inject constructor(
     suspend fun searchCustomerList(
         searchQuery: String,
     ): List<WCCustomerModel>? =
-        customerStore.fetchCustomers(
+        customerStore.fetchCustomersFromAnalytics(
             site = selectedSite.get(),
             searchQuery = searchQuery,
-            role = "all"
+            pageSize = 50,
+            page = 1,
         ).takeUnless { it.isError }?.model
 
-    fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? =
-        customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
+    suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> {
+        return customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
+    }
+
+    fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? {
+        return customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
+    }
 }

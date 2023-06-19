@@ -1260,6 +1260,7 @@
     <string name="card_reader_payment_completed_payment_header">Payment successful</string>
     <string name="card_reader_payment_payment_failed_header">Payment failed</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Buy a card reader</string>
 
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Built-in reader is ready</string>
@@ -1282,6 +1283,7 @@
     <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
     <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
     <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">A PIN code is required, but Tap To Pay doesn\'t support it yet. Consider using an external card reader</string>
     <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
     <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
@@ -1781,6 +1783,7 @@
     <string name="product_category_selector_loading_failed">Loading product categories failed</string>
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <string name="product_list_multiselect">Select multiple</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promote with Blaze</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -3088,6 +3091,7 @@
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
@@ -3277,6 +3281,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
 
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
+
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_inbox_description">Stay up-to-date</string>
 
@@ -3334,6 +3341,16 @@
     <string name="first_product_celebration_title">First product created 🎉</string>
     <string name="first_product_celebration_body_message">Congratulations! You\'re one step closer to get the new store ready.</string>
     <string name="share_product">Share product</string>
+
+    <!--
+    Product sharing with AI
+    -->
+    <string name="product_sharing_write_with_ai">Write with AI</string>
+    <string name="product_sharing_regenerate">Regenerate</string>
+    <string name="product_sharing_generating">Generating…</string>
+    <string name="product_sharing_optional_message_label">Add an optional message</string>
+    <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
+    <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
 
 
 </resources>

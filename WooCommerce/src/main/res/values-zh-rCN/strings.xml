@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-07 11:54:04+0000
+Translation-Revision-Date: 2023-06-14 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="share_product">共享产品</string>
+    <string name="first_product_celebration_body_message">恭喜！ 您离准备好新的商店又近了一步。</string>
+    <string name="first_product_celebration_title">第一个产品已创建 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">当 Woo 应用程序在后台运行时，系统会将其终止。 您可以尝试再次使用它。</string>
+    <string name="order_list_barcode_scanning_process_death">当 Woo 应用程序在后台运行时，系统会将其终止。 您可以尝试再次使用它。</string>
     <string name="card_reader_payment_card_removed_too_early">该卡被过早移除了</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s，我们已经暂停了您的商店，但您可以选择一个最适合您的套餐继续。</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我们的套餐继续发展您的业务！</string>
