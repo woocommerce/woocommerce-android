@@ -1,0 +1,2 @@
+14.0:
+Met deze release hebben we een aantal bugs verholpen en verbeteringen doorgevoerd om je bedrijf op te starten en je ervaring soepeler te maken. Houd de nieuwe toekomstige verbeteringen in de gaten!

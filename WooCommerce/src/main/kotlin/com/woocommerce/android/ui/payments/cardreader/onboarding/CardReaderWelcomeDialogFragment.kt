@@ -1,28 +1,20 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderWelcomeDialogBinding
+import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderWelcomeViewModel.CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CardReaderWelcomeDialogFragment : DialogFragment(R.layout.card_reader_welcome_dialog) {
+class CardReaderWelcomeDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_welcome_dialog) {
     val viewModel: CardReaderWelcomeViewModel by viewModels()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = CardReaderWelcomeDialogBinding.bind(view)

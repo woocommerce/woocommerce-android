@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-06 19:02:47+0000
+Translation-Revision-Date: 2023-06-14 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="share_product">Dela produkt</string>
+    <string name="first_product_celebration_body_message">Grattis. Du är ett steg närmare att kunna lansera din nya butik.</string>
+    <string name="first_product_celebration_title">Den första produkten har skapats 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
+    <string name="order_list_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
     <string name="card_reader_payment_card_removed_too_early">Kortet togs bort för tidigt</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, vi har pausat din butik, men du kan fortsätta genom att välja ett paket som passar dig bäst.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
