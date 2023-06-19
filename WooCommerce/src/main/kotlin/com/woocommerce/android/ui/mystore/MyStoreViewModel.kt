@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -331,26 +332,27 @@ class MyStoreViewModel @Inject constructor(
 
     private fun trackLocalTimezoneDifferenceFromStore() {
         val selectedSite = selectedSite.getIfExists() ?: return
+        val siteTimezone = selectedSite.timezone.takeIf { it.isNotNullOrEmpty() } ?: return
         val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
 
         val shouldTriggerTimezoneTrack = appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
             siteId = selectedSite.siteId,
             localTimezone = localTimeZoneOffset,
-            storeTimezone = selectedSite.timezone
+            storeTimezone = siteTimezone
         ) && selectedSite.timezone != localTimeZoneOffset
 
         if (shouldTriggerTimezoneTrack) {
             analyticsTrackerWrapper.track(
                 stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_STORE_TIMEZONE to selectedSite.timezone,
+                    AnalyticsTracker.KEY_STORE_TIMEZONE to siteTimezone,
                     AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
                 )
             )
             appPrefsWrapper.setTimezoneTrackEventTriggeredFor(
                 siteId = selectedSite.siteId,
                 localTimezone = localTimeZoneOffset,
-                storeTimezone = selectedSite.timezone
+                storeTimezone = siteTimezone
             )
         }
     }
