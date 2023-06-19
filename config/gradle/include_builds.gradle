@@ -49,6 +49,10 @@ if (localBuilds.exists()) {
             dependencySubstitution {
                 println "Substituting WooCommerce-Shared with the local build"
                 substitute module("$gradle.ext.wooCommerceSharedBinaryPath") using project(':library')
+                def reactNativeVersionForSubstitution = '0.71.8'
+                substitute module("com.facebook.react:react-native:+") using module("com.facebook.react:react-android:$reactNativeVersionForSubstitution")
+                substitute module("com.facebook.react:react-android:") using module("com.facebook.react:react-android:$reactNativeVersionForSubstitution")
+                substitute module("com.facebook.react:hermes-android:") using module("com.facebook.react:hermes-android:$reactNativeVersionForSubstitution")
             }
         }
     }
