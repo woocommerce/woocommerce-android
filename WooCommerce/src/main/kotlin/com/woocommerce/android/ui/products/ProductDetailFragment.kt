@@ -25,7 +25,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -49,7 +48,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeProductWebView
+import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
@@ -313,7 +312,7 @@ class ProductDetailFragment :
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
                 is ShowDuplicateProductError -> showDuplicateProductError()
-                is NavigateToBlazeProductWebView -> openBlazeProductWebView(event)
+                is NavigateToBlazeWebView -> openBlazeWebView(event)
                 is ShowDuplicateProductInProgress -> showProgressDialog(
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
@@ -324,11 +323,11 @@ class ProductDetailFragment :
         }
     }
 
-    private fun openBlazeProductWebView(event: NavigateToBlazeProductWebView) {
+    private fun openBlazeWebView(event: NavigateToBlazeWebView) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
                 urlToLoad = event.url,
-                title = getString(string.more_menu_button_blaze)
+                source = event.source
             )
         )
     }
@@ -479,7 +478,7 @@ class ProductDetailFragment :
             }
 
             R.id.promote_with_blaze -> {
-                viewModel.onPromoteWithBlazeClicked()
+                viewModel.onBlazeClicked()
                 true
             }
 

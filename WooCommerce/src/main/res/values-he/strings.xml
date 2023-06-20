@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-07 15:54:03+0000
+Translation-Revision-Date: 2023-06-14 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="share_product">לשתף מוצר</string>
+    <string name="first_product_celebration_body_message">ברכותינו! התקדמת עוד שלב בהכנת החנות החדשה.</string>
+    <string name="first_product_celebration_title">המוצר הראשון נוצר 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
+    <string name="order_list_barcode_scanning_process_death">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
     <string name="card_reader_payment_card_removed_too_early">הכרטיס הוסר מהר מדי</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩, השהינו את החנות שלך, אבל באפשרותך להמשיך על ידי בחירת התוכנית שמתאימה לך.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 ניתן להמשיך לתפעל את העסק עם התוכנית שלנו!</string>

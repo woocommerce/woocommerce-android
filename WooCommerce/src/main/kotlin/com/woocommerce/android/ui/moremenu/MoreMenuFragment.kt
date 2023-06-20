@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -91,16 +90,16 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewInboxEvent -> navigateToInbox()
                 is ViewCouponsEvent -> navigateToCoupons()
                 is ViewPayments -> navigateToPayments()
-                is OpenBlazeEvent -> openBlazeWebview(event)
+                is OpenBlazeEvent -> openBlazeWebView(event)
             }
         }
     }
 
-    private fun openBlazeWebview(event: OpenBlazeEvent) {
+    private fun openBlazeWebView(event: OpenBlazeEvent) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
                 urlToLoad = event.url,
-                title = getString(string.more_menu_button_blaze)
+                source = event.source
             )
         )
     }

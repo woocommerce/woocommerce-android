@@ -12,6 +12,7 @@ object AppUrls {
     const val AUTOMATTIC_PRIVACY_POLICY_CA = "https://automattic.com/privacy/#california-consumer-privacy-act-ccpa"
     const val AUTOMATTIC_COOKIE_POLICY = "https://www.automattic.com/cookies"
     const val AUTOMATTIC_HIRING = "https://automattic.com/work-with-us"
+    const val AUTOMATTIC_AI_GUIDELINES = "https://automattic.com/ai-guidelines/"
 
     const val WOOCOMMERCE_UPGRADE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
