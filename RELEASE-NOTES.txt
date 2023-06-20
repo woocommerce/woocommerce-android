@@ -1,16 +1,15 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-14.2
------
-
 
 14.2
 -----
+- [*] [Internal] Stripe SDK updated to 2.21.0 [https://github.com/woocommerce/woocommerce-android/pull/9223]
 - [*] [Internal] Rounded corners to the payments dialogs [https://github.com/woocommerce/woocommerce-android/pull/9231]
 - [*] [Internal] Adding products via barcode scanning - Handle EAN-13, EAN-8 barcode formats [https://github.com/woocommerce/woocommerce-android/pull/9240]
+- [*] [Internal] Changes the endpoint use for customer search during order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9212]
 
 14.1
 -----
-- [*][Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
+- [*] [Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
 - [*] [Internal] Added caching mechanism for JITMs [https://github.com/woocommerce/woocommerce-android/pull/9158]
 - [***] Adds new entry point to promote product using Blaze [https://github.com/woocommerce/woocommerce-android/issues/9209]
 - [*] [Internal] Fixed coupon validation logic [https://github.com/woocommerce/woocommerce-android/pull/9210]
