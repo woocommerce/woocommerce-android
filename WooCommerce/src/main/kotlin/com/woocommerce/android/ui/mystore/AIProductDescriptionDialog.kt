@@ -18,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -27,56 +26,52 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun AIProductDescriptionDialog(
     onTryNowButtonClick: () -> Unit,
-    onMaybeLaterButtonClick: () -> Unit,
-    onCloseRequest: (() -> Unit) = {}
+    onMaybeLaterButtonClick: () -> Unit
 ) {
-    Dialog(
-        onDismissRequest = onCloseRequest,
-        content = {
-            Box(
+    Box(
+        modifier = Modifier
+            .background(
+                color = colorResource(id = R.color.color_surface)
+            )
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.fillMaxWidth(),
+                painter = painterResource(R.drawable.img_ai_dialog),
+                contentDescription = "Generate AI Description",
+            )
+            Text(
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
+                text = stringResource(id = R.string.ai_product_description_dialog_title),
+                style = MaterialTheme.typography.h4,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
+                text = stringResource(id = R.string.ai_product_description_dialog_message),
+                style = MaterialTheme.typography.body1,
+                textAlign = TextAlign.Center
+            )
+            WCColoredButton(
                 modifier = Modifier
-                    .background(color = colorResource(id = R.color.color_surface))
-                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth(),
+                onClick = onTryNowButtonClick
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        modifier = Modifier.fillMaxWidth(),
-                        painter = painterResource(R.drawable.img_ai_dialog),
-                        contentDescription = "Generate AI Description",
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
-                        text = stringResource(id = R.string.ai_product_description_dialog_title),
-                        style = MaterialTheme.typography.h4,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
-                        text = stringResource(id = R.string.ai_product_description_dialog_message),
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center
-                    )
-                    WCColoredButton(
-                        modifier = Modifier
-                            .padding(top = dimensionResource(id = R.dimen.major_100))
-                            .fillMaxWidth(),
-                        onClick = onTryNowButtonClick
-                    ) {
-                        Text(stringResource(id = R.string.try_it_now))
-                    }
-                    WCOutlinedButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onMaybeLaterButtonClick
-                    ) {
-                        Text(stringResource(id = R.string.maybe_later))
-                    }
-                }
+                Text(stringResource(id = R.string.try_it_now))
+            }
+            WCOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onMaybeLaterButtonClick
+            ) {
+                Text(stringResource(id = R.string.maybe_later))
             }
         }
-    )
+    }
 }
 
 @Preview(name = "Light Mode")
@@ -84,6 +79,6 @@ fun AIProductDescriptionDialog(
 @Composable
 fun PreviewAIProductDescriptionDialog() {
     WooThemeWithBackground {
-        AIProductDescriptionDialog({}, {}, {})
+        AIProductDescriptionDialog({}, {})
     }
 }
