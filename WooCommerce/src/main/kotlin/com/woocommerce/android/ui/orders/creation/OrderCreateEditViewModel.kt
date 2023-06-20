@@ -105,6 +105,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -776,8 +777,13 @@ class OrderCreateEditViewModel @Inject constructor(
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
                         is OrderUpdateStatus.Failed -> {
-                            trackOrderSyncFailed(updateStatus.throwable)
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                            if (updateStatus.isInvalidCouponFailure()) {
+                                _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
+                                triggerEvent(OnCouponRejectedByBackend)
+                            } else {
+                                trackOrderSyncFailed(updateStatus.throwable)
+                                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                            }
                         }
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
@@ -802,6 +808,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
+        (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
 
     private fun isOrderEditable(updateStatus: OrderUpdateStatus.Succeeded) =
         updateStatus.order.isEditable || mode is Mode.Creation
@@ -990,6 +999,11 @@ data class OnAddingProductViaScanningFailed(
 data class VMKilledWhenScanningInProgress(
     @StringRes val message: Int
 ) : Event()
+
+object OnCouponRejectedByBackend : Event() {
+    @StringRes
+    val message: Int = R.string.order_sync_coupon_removed
+}
 
 data class ProductUIModel(
     val item: Order.Item,
