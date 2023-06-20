@@ -51,6 +51,7 @@
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
+    <string name="maybe_later">Maybe later</string>
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -3352,5 +3353,11 @@
     <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
     <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
 
+
+    <!--
+    AI product Description
+    -->
+    <string name="ai_product_description_dialog_title">Add product description with AI</string>
+    <string name="ai_product_description_dialog_message">Add descriptions in a snap with AI. Try our feature today!</string>
 
 </resources>
