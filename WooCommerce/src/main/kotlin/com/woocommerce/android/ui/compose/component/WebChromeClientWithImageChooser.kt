@@ -7,6 +7,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 
 class WebChromeClientWithImageChooser(
     registry: ActivityResultRegistry,
@@ -29,10 +31,13 @@ class WebChromeClientWithImageChooser(
         fileChooserParams: FileChooserParams
     ): Boolean {
         try {
-            fileChooserValueCallback = filePathCallback;
+            fileChooserValueCallback = filePathCallback
             getImageContent.launch("image/*")
         } catch (e: ActivityNotFoundException) {
-            // You may handle "No activity found to handle intent" error
+            WooLog.d(
+                T.UTILS,
+                "WebChromeClientWithImageChooser. No activity found to handle image selection: ${e.message}"
+            )
         }
         return true
     }
