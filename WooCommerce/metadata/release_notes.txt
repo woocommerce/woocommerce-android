@@ -1,1 +1,1 @@
-This release includes several bug fixes and improvements to help you get your business started and ensure a smooth experience. Stay tuned for more enhancements in the future.
+This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!
