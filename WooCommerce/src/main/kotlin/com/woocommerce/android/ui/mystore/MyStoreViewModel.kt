@@ -24,6 +24,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.TimezoneProvider
@@ -82,6 +84,7 @@ class MyStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -148,6 +151,10 @@ class MyStoreViewModel @Inject constructor(
                     }
                 }
             }
+        }
+
+        if (isAIProductDescriptionEnabled()) {
+            triggerEvent(ShowAIProductDescriptionDialog)
         }
 
         // A notification is only displayed when the store has never been opened before
@@ -474,6 +481,8 @@ class MyStoreViewModel @Inject constructor(
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
 
         object ShowPrivacyBanner : MyStoreEvent()
+
+        object ShowAIProductDescriptionDialog : MyStoreEvent()
 
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
     }
