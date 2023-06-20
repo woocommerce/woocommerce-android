@@ -2989,18 +2989,18 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
-    <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
+    <string name="store_creation_in_progress_title_1">Creating Your Store! It\'ll be just a few minutes</string>
     <string name="store_creation_in_progress_title_2">Building the foundations</string>
     <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
     <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
     <string name="store_creation_in_progress_title_5">Turning on the lights</string>
     <string name="store_creation_in_progress_title_6">Opening the doors</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers almost 4 million stores worldwide? You’re in good company.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo was founded by two South Africans and a Norwegian? Here are three alternative ways to say “store” in those countries – Winkel, ivenkile, and butikk.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Are you Team Cat or Team Dog? The Woo team is split 50/50!</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; The Woo team is made up of over 350 talented individuals, distributed across 30+ countries.</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple. 💜</string>
+    <string name="store_creation_in_progress_description_1">You will be notified once the store is ready! Sit back, relax, and let us work our magic while sharing helpful tips. 🔮</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay updated on your store\'s real-time performance. Identify your top-selling products and make informed decisions for maximum profitability.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Handle orders with ease. Scroll, search, and change order status. Create new orders on the fly for in-store or phone purchases. Simplify your order management process.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Expand your sales opportunities by accepting payments in person. Use the app to securely process credit card transactions or even connect with compatible card readers for convenient in-person payments.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Add and edit products with a touch:&lt;/b&gt; Add new products, update details, upload images, and manage variations, all from the app. Keep your inventory up to date effortlessly.</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Get notified of every sale:&lt;/b&gt; Never miss a beat with instant sale notifications. Receive alerts for each new sale, allowing you to celebrate your success and stay on top of your store\'s activity.</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
