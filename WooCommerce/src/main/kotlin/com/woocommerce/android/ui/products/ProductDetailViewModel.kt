@@ -2312,15 +2312,19 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product): Boolean {
-        val showBlaze = getProductVisibility() == PUBLIC &&
+    private suspend fun shouldShowBlaze(productDraft: Product) =
+        getProductVisibility() == PUBLIC &&
             productDraft.status != DRAFT &&
             isBlazeEnabled()
-        if (showBlaze) tracker.track(
-            stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-        )
-        return showBlaze
+
+    fun trackBlazeDisplayed() {
+        launch {
+            if (shouldShowBlaze(draftChanges.value!!))
+                tracker.track(
+                    stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                    properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+                )
+        }
     }
 
     /**
