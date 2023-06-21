@@ -36,7 +36,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
@@ -1127,11 +1126,20 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         )
     }
 
-
     @Test
     fun `given coupon code rejected by backend, then should display message`() {
         createUpdateOrderUseCase = mock {
-            onBlocking { invoke(any(), any()) } doReturn flowOf(Failed(WooException(WooError(WooErrorType.INVALID_COUPON, BaseRequest.GenericErrorType.UNKNOWN))))
+            onBlocking { invoke(any(), any()) } doReturn
+                flowOf(
+                    Failed(
+                        WooException(
+                            WooError(
+                                WooErrorType.INVALID_COUPON,
+                                BaseRequest.GenericErrorType.UNKNOWN
+                            )
+                        )
+                    )
+                )
         }
         createSut()
         var lastReceivedEvent: Event? = null
