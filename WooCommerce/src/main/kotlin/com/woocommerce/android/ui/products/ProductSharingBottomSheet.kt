@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -132,9 +133,13 @@ fun ProductShareWithAI(
 
 @Composable
 fun SharingMessageSkeletonView() {
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_85)))
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colors.background)
+            .background(
+                color = MaterialTheme.colors.background,
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
+            )
             .padding(dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
     ) {
@@ -159,6 +164,12 @@ fun SharingMessageSkeletonView() {
         SkeletonView(
             modifier = Modifier
                 .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
+                .height(dimensionResource(id = R.dimen.major_100))
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        SkeletonView(
+            modifier = Modifier
+                .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
                 .height(dimensionResource(id = R.dimen.major_100))
         )
     }
