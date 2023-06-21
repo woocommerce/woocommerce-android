@@ -86,9 +86,9 @@ fun ProductShareWithAI(
                     value = viewState.shareMessage,
                     onValueChange = { onShareMessageEdit(it) },
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
-                    maxLines = 5,
                     isError = isError,
-                    helperText = if (isError) viewState.errorMessage else null
+                    helperText = if (isError) viewState.errorMessage else null,
+                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.product_sharing_message_height))
                 )
             }
 
@@ -132,19 +132,19 @@ fun ProductShareWithAI(
 
 @Composable
 fun SharingMessageSkeletonView() {
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_85)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
     Column(
         modifier = Modifier
             .background(
                 color = MaterialTheme.colors.background,
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
             )
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_110))
             .fillMaxWidth()
     ) {
         SkeletonView(
             modifier = Modifier
-                .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
+                .fillMaxWidth()
                 .height(dimensionResource(id = R.dimen.major_100))
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
