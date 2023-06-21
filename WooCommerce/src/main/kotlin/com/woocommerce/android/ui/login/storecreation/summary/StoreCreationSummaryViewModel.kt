@@ -79,7 +79,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
                         tracker.track(
                             stat = AnalyticsEvent.SITE_CREATION_FREE_TRIAL_CREATED_SUCCESS,
                             properties = mapOf(
-                                AnalyticsTracker.KEY_BLOG_ID to newStore.data.siteId,
+                                AnalyticsTracker.KEY_NEW_SITE_ID to newStore.data.siteId,
                                 AnalyticsTracker.KEY_INITIAL_DOMAIN to newStore.data.domain
                             )
                         )
