@@ -186,7 +186,8 @@ fun AIButtonContent(buttonState: AIButtonState) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.major_100)),
-                    strokeWidth = dimensionResource(id = R.dimen.minor_25)
+                    strokeWidth = dimensionResource(id = R.dimen.minor_25),
+                    color = colorResource(id = R.color.color_on_surface_disabled)
                 )
             }
         }
