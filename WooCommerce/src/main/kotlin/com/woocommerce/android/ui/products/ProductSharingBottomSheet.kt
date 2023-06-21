@@ -259,7 +259,7 @@ fun Generating() {
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",
                 shareMessage = "",
-                buttonState = Generating(stringResource(id = R.string.product_sharing_regenerate)),
+                buttonState = Generating(stringResource(id = R.string.product_sharing_generating)),
                 isGenerating = true
             )
         )
