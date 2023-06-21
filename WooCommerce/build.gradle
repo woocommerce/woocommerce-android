@@ -265,7 +265,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
-    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.2.0'
+    implementation 'com.google.mlkit:barcode-scanning:17.1.0'
 
     kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
