@@ -3346,7 +3346,7 @@
     Product sharing with AI
     -->
     <string name="product_sharing_write_with_ai">Write with AI</string>
-    <string name="product_sharing_regenerate">Regenerate</string>
+    <string name="product_sharing_regenerate">Write again</string>
     <string name="product_sharing_generating">Generating…</string>
     <string name="product_sharing_optional_message_label">Add an optional message</string>
     <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
