@@ -19,7 +19,7 @@ class AIRepository @Inject constructor(
         prompt: String,
         skipCache: Boolean = false
     ): Result<String> = withContext(Dispatchers.IO) {
-        jetpackAIStore.fetchJetpackAICompletionsForSite(site, prompt, skipCache).run {
+        jetpackAIStore.fetchJetpackAICompletionsForSite(site, prompt, skipCache = skipCache).run {
             when (this) {
                 is JetpackAICompletionsResponse.Success -> {
                     WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")
