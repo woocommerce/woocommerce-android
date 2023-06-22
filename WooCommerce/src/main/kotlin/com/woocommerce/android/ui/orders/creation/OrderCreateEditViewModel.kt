@@ -778,6 +778,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
+                                trackCouponAddFailure(updateStatus)
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
                                 triggerEvent(OnCouponRejectedByBackend)
                             } else {
@@ -807,6 +808,15 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun trackCouponAddFailure(updateStatus: OrderUpdateStatus.Failed) {
+        tracker.track(
+            AnalyticsEvent.ORDER_COUPON_ADD_FAILURE,
+            mapOf(
+                KEY_ERROR_TYPE to (updateStatus.throwable as? WooException)?.error?.type
+            )
+        )
     }
 
     private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
