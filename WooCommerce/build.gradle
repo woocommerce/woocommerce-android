@@ -285,6 +285,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
 
+    implementation "com.google.mlkit:barcode-scanning:$mlkitVersion"
+
     implementation "com.google.zxing:core:3.5.1"
 
     // Debug dependencies
