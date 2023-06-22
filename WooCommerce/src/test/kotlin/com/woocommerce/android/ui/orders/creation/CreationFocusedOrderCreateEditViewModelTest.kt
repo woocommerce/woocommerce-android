@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
@@ -1152,6 +1153,33 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
         }
+    }
+
+    @Test
+    fun `given coupon code rejected by backend, then should track event`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn
+                    flowOf(
+                        Failed(
+                            WooException(
+                                WooError(
+                                    WooErrorType.INVALID_COUPON,
+                                    BaseRequest.GenericErrorType.UNKNOWN
+                                )
+                            )
+                        )
+                    )
+        }
+        createSut()
+
+        sut.onCouponEntered("ABC")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_COUPON_ADD_FAILURE,
+            mapOf(
+                KEY_ERROR_TYPE to "woocommerce_rest_invalid_coupon"
+            )
+        )
     }
 
     @Test
