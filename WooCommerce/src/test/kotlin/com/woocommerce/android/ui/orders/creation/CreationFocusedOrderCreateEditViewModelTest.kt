@@ -1159,16 +1159,16 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given coupon code rejected by backend, then should track event`() {
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn
-                    flowOf(
-                        Failed(
-                            WooException(
-                                WooError(
-                                    WooErrorType.INVALID_COUPON,
-                                    BaseRequest.GenericErrorType.UNKNOWN
-                                )
+                flowOf(
+                    Failed(
+                        WooException(
+                            WooError(
+                                WooErrorType.INVALID_COUPON,
+                                BaseRequest.GenericErrorType.UNKNOWN
                             )
                         )
                     )
+                )
         }
         createSut()
 
