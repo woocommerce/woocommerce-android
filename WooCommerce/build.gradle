@@ -388,6 +388,13 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.8'
+
+    // CameraX
+    implementation "androidx.camera:camera-camera2:$camerax"
+    implementation "androidx.camera:camera-lifecycle:$cameraLifecycle"
+    implementation "androidx.camera:camera-view:$cameraView"
+
+    implementation "com.google.guava:guava:31.0.1-android"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
