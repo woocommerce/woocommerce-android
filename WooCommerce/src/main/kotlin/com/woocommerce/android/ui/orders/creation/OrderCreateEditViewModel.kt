@@ -781,9 +781,9 @@ class OrderCreateEditViewModel @Inject constructor(
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
                                 triggerEvent(OnCouponRejectedByBackend)
                             } else {
-                                trackOrderSyncFailed(updateStatus.throwable)
                                 viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                             }
+                            trackOrderSyncFailed(updateStatus.throwable)
                         }
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
