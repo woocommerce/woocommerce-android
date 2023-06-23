@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Generating
@@ -93,10 +95,12 @@ fun ProductShareWithAI(
             }
 
             Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .padding(
                         vertical = dimensionResource(id = R.dimen.minor_100)
                     )
+                    .fillMaxWidth()
             ) {
                 WCOutlinedButton(
                     onClick = onGenerateButtonClick,
@@ -105,16 +109,15 @@ fun ProductShareWithAI(
                     AIButtonContent(buttonState = viewState.buttonState)
                 }
 
-                IconButton(
+                WCTextButton(
                     onClick = onInfoButtonClick,
                     enabled = !viewState.isGenerating
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_info_outline_20dp),
-                        contentDescription = stringResource(
-                            id = R.string.product_sharing_ai_info_label
-                        ),
-                        tint = colorResource(id = R.color.color_on_surface)
+                    Text(
+                        text = stringResource(id = R.string.learn_more),
+                        style = MaterialTheme.typography.body2,
+                        color = colorResource(id = R.color.color_primary),
+                        textAlign = TextAlign.End
                     )
                 }
             }
@@ -213,8 +216,8 @@ fun AIButtonContent(buttonState: AIButtonState) {
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Smaller screen", device = Devices.NEXUS_5)
+@Preview(name = "RTL mode", locale = "ar")
 @Composable
 fun DefaultUIWithSharingContent() {
     val shareMessage =
