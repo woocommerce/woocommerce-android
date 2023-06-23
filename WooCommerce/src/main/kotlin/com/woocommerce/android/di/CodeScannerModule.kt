@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import androidx.camera.core.ExperimentalGetImage
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
@@ -19,14 +20,19 @@ class CodeScannerModule {
     @Reusable
     @ExperimentalGetImage
     fun provideGoogleCodeScanner(
+        barcodeScanner: BarcodeScanner,
         googleCodeScannerErrorMapper: GoogleCodeScannerErrorMapper,
         barcodeFormatMapper: GoogleBarcodeFormatMapper,
     ): CodeScanner {
 //        val options = GmsBarcodeScannerOptions.Builder().allowManualInput().build()
         return GoogleMLKitCodeScanner(
-            BarcodeScanning.getClient(),
+            barcodeScanner,
             googleCodeScannerErrorMapper,
             barcodeFormatMapper
         )
     }
+
+    @Provides
+    @Reusable
+    fun providesGoogleBarcodeScanner() = BarcodeScanning.getClient()
 }
