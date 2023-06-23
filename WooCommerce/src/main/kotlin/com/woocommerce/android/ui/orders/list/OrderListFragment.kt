@@ -262,7 +262,10 @@ class OrderListFragment :
                 true
             }
             R.id.menu_barcode -> {
-                viewModel.onScanClicked()
+                findNavController().navigateSafely(
+                    OrderListFragmentDirections.actionOrderListFragmentToBarcodeScanningFragment()
+                )
+//                viewModel.onScanClicked()
                 true
             }
             else -> false
