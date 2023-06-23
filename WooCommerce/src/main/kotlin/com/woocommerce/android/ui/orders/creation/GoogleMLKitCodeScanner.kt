@@ -22,8 +22,10 @@ class GoogleMLKitCodeScanner @Inject constructor(
             val inputImage = InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
             barcodeScanner.process(inputImage)
                 .addOnSuccessListener { barcodeList ->
-                    handleScanSuccess(barcodeList.firstOrNull())
-                    this@callbackFlow.close()
+                    if (!barcodeList.isNullOrEmpty()) {
+                        handleScanSuccess(barcodeList.firstOrNull())
+                        this@callbackFlow.close()
+                    }
                 }
                 .addOnFailureListener { exception ->
                     this@callbackFlow.trySend(
