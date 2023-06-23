@@ -114,7 +114,6 @@ class OrderListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
     private val feedbackPrefs: FeedbackPrefs,
-    private val codeScanner: CodeScanner,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
