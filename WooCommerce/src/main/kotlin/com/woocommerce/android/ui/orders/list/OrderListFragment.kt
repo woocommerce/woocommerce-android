@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -477,8 +478,15 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleResult<String>("barcode") {
-            openOrderCreationFragment(it, BarcodeFormat.FormatUnknown)
+        handleResult<CodeScannerStatus>("barcode") {
+            when (it) {
+                is CodeScannerStatus.Failure -> {
+
+                }
+                is CodeScannerStatus.Success -> {
+                    openOrderCreationFragment(it.code, it.format)
+                }
+            }
         }
     }
 
