@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -164,20 +163,10 @@ fun SearchLayout(
     val isFocused = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-
-    val searchQuery = remember { mutableStateOf(state.searchState.searchQuery) }
-    val newLineRegex = Regex("[\n\r]")
-
     Column {
         WCSearchField(
             value = state.searchState.searchQuery,
-            onValueChange = { newValue: String ->
-                if (newValue.contains(newLineRegex)) {
-                    searchQuery.value = newValue.replace(newLineRegex, "")
-                } else {
-                    onSearchQueryChanged(newValue)
-                }
-            },
+            onValueChange = onSearchQueryChanged,
             hint = stringResource(id = string.product_selector_search_hint),
             modifier = Modifier
                 .fillMaxWidth()
@@ -187,7 +176,6 @@ fun SearchLayout(
                 )
                 .onFocusChanged { isFocused.value = it.isFocused }
                 .focusRequester(focusRequester),
-            keyboardOptions = KeyboardOptions(autoCorrect = false),
         )
         if (isFocused.value) {
             Row(
