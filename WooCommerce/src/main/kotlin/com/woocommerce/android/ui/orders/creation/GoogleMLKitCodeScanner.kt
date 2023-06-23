@@ -14,11 +14,10 @@ import javax.inject.Inject
 @ExperimentalGetImage
 class GoogleMLKitCodeScanner @Inject constructor(
     private val barcodeScanner: BarcodeScanner,
-    private val imageProxy: ImageProxy,
     private val errorMapper: GoogleCodeScannerErrorMapper,
     private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
 ) : CodeScanner {
-    override fun startScan(): Flow<CodeScannerStatus> {
+    override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
         return callbackFlow {
             val inputImage = InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
             barcodeScanner.process(inputImage)
