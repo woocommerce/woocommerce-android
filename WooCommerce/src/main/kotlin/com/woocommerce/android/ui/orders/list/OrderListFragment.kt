@@ -477,6 +477,9 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
+        handleResult<String>("barcode") {
+            openOrderCreationFragment(it, BarcodeFormat.FormatUnknown)
+        }
     }
 
     private fun showOrderFilters() {
