@@ -387,31 +387,31 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun startScan() {
         scanningJob = viewModelScope.launch {
             isScanningInProgress = true
-            codeScanner.startScan().collect { status ->
-                isScanningInProgress = false
-                when (status) {
-                    is CodeScannerStatus.Failure -> {
-                        tracker.track(
-                            BARCODE_SCANNING_FAILURE,
-                            mapOf(
-                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
-                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
-                            )
-                        )
-                        sendAddingProductsViaScanningFailedEvent(
-                            R.string.order_creation_barcode_scanning_scanning_failed
-                        )
-                    }
-                    is CodeScannerStatus.Success -> {
-                        tracker.track(
-                            BARCODE_SCANNING_SUCCESS,
-                            mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
-                        )
-                        viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(BarcodeOptions(status.code, status.format))
-                    }
-                }
-            }
+//            codeScanner.startScan().collect { status ->
+//                isScanningInProgress = false
+//                when (status) {
+//                    is CodeScannerStatus.Failure -> {
+//                        tracker.track(
+//                            BARCODE_SCANNING_FAILURE,
+//                            mapOf(
+//                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+//                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
+//                            )
+//                        )
+//                        sendAddingProductsViaScanningFailedEvent(
+//                            R.string.order_creation_barcode_scanning_scanning_failed
+//                        )
+//                    }
+//                    is CodeScannerStatus.Success -> {
+//                        tracker.track(
+//                            BARCODE_SCANNING_SUCCESS,
+//                            mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
+//                        )
+//                        viewState = viewState.copy(isUpdatingOrderDraft = true)
+//                        fetchProductBySKU(BarcodeOptions(status.code, status.format))
+//                    }
+//                }
+//            }
         }
     }
 

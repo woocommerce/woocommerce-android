@@ -327,41 +327,41 @@ class OrderListViewModel @Inject constructor(
     private fun startScan() {
         scanningJob = launch {
             isScanningInProgress = true
-            codeScanner.startScan().collect { status ->
-                isScanningInProgress = false
-                when (status) {
-                    is CodeScannerStatus.Failure -> {
-                        analyticsTracker.track(
-                            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-                            mapOf(
-                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
-                            )
-                        )
-                        triggerEvent(
-                            OrderListEvent.OnAddingProductViaScanningFailed(
-                                R.string.order_list_barcode_scanning_scanning_failed
-                            ) {
-                                startScan()
-                            }
-                        )
-                    }
-                    is CodeScannerStatus.Success -> {
-                        analyticsTracker.track(
-                            BARCODE_SCANNING_SUCCESS,
-                            mapOf(
-                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
-                            )
-                        )
-                        triggerEvent(
-                            OrderListEvent.OnBarcodeScanned(
-                                status.code,
-                                status.format
-                            )
-                        )
-                    }
-                }
-            }
+//            codeScanner.startScan().collect { status ->
+//                isScanningInProgress = false
+//                when (status) {
+//                    is CodeScannerStatus.Failure -> {
+//                        analyticsTracker.track(
+//                            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+//                            mapOf(
+//                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+//                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
+//                            )
+//                        )
+//                        triggerEvent(
+//                            OrderListEvent.OnAddingProductViaScanningFailed(
+//                                R.string.order_list_barcode_scanning_scanning_failed
+//                            ) {
+//                                startScan()
+//                            }
+//                        )
+//                    }
+//                    is CodeScannerStatus.Success -> {
+//                        analyticsTracker.track(
+//                            BARCODE_SCANNING_SUCCESS,
+//                            mapOf(
+//                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
+//                            )
+//                        )
+//                        triggerEvent(
+//                            OrderListEvent.OnBarcodeScanned(
+//                                status.code,
+//                                status.format
+//                            )
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 
