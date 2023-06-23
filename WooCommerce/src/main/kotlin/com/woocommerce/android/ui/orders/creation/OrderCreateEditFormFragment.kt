@@ -9,6 +9,7 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -447,6 +448,14 @@ class OrderCreateEditFormFragment :
         ) { viewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
+        }
+        handleResult<String>("barcode") {
+            viewModel.fetchProductBySKU(
+                BarcodeOptions(
+                    sku = it,
+                    barcodeFormat = GoogleBarcodeFormatMapper.BarcodeFormat.FormatUnknown
+                )
+            )
         }
     }
 
