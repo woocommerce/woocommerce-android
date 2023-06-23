@@ -121,7 +121,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
-    private val codeScanner: CodeScanner,
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     autoSyncOrder: AutoSyncOrder,
@@ -415,7 +414,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun fetchProductBySKU(
+    fun fetchProductBySKU(
         barcodeOptions: BarcodeOptions,
         source: ScanningSource = ScanningSource.ORDER_CREATION,
     ) {
