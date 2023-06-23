@@ -1,14 +1,10 @@
 package com.woocommerce.android.ui.orders.creation
 
+import android.os.Parcelable
 import androidx.camera.core.ImageProxy
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import kotlinx.coroutines.channels.ProducerScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
 interface CodeScanner {
     fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus>
@@ -58,45 +54,76 @@ interface CodeScanner {
 //    }
 //}
 
-sealed class CodeScannerStatus {
+sealed class CodeScannerStatus : Parcelable {
+    @Parcelize
     data class Success(val code: String, val format: BarcodeFormat) : CodeScannerStatus()
+    @Parcelize
     data class Failure(
         val error: String?,
         val type: CodeScanningErrorType
     ) : CodeScannerStatus()
 }
 
-sealed class CodeScanningErrorType {
+sealed class CodeScanningErrorType: Parcelable {
+    @Parcelize
     object Aborted : CodeScanningErrorType()
+    @Parcelize
     object AlreadyExists : CodeScanningErrorType()
+    @Parcelize
     object Cancelled : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerAppNameUnavailable : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerCameraPermissionNotGranted : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerCancelled : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerGooglePlayServicesVersionTooOld : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerPipelineInferenceError : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerPipelineInitializationError : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerTaskInProgress : CodeScanningErrorType()
+    @Parcelize
     object CodeScannerUnavailable : CodeScanningErrorType()
+    @Parcelize
     object DataLoss : CodeScanningErrorType()
+    @Parcelize
     object DeadlineExceeded : CodeScanningErrorType()
+    @Parcelize
     object FailedPrecondition : CodeScanningErrorType()
+    @Parcelize
     object Internal : CodeScanningErrorType()
+    @Parcelize
     object InvalidArgument : CodeScanningErrorType()
+    @Parcelize
     object ModelHashMismatch : CodeScanningErrorType()
+    @Parcelize
     object ModelIncompatibleWithTFLite : CodeScanningErrorType()
+    @Parcelize
     object NetworkIssue : CodeScanningErrorType()
+    @Parcelize
     object NotEnoughSpace : CodeScanningErrorType()
+    @Parcelize
     object NotFound : CodeScanningErrorType()
+    @Parcelize
     object OutOfRange : CodeScanningErrorType()
+    @Parcelize
     object PermissionDenied : CodeScanningErrorType()
+    @Parcelize
     object ResourceExhausted : CodeScanningErrorType()
+    @Parcelize
     object UnAuthenticated : CodeScanningErrorType()
+    @Parcelize
     object UnAvailable : CodeScanningErrorType()
+    @Parcelize
     object UnImplemented : CodeScanningErrorType()
+    @Parcelize
     object Unknown : CodeScanningErrorType()
-
+    @Parcelize
     object VMKilledWhileScanning : CodeScanningErrorType()
+    @Parcelize
     data class Other(val throwable: Throwable?) : CodeScanningErrorType()
 
     override fun toString(): String = when (this) {
