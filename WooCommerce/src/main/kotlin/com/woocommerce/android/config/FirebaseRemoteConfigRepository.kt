@@ -19,7 +19,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val remoteConfig: FirebaseRemoteConfig
 ) : RemoteConfigRepository {
     companion object {
-        private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
@@ -65,9 +64,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 WooLog.e(T.UTILS, it)
             }
     }
-
-    override fun getPerformanceMonitoringSampleRate(): Double =
-        remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
 
     @VisibleForTesting
     fun observeStringRemoteValue(key: String) = changesTrigger

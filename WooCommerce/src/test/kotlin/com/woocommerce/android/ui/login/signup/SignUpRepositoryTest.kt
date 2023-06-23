@@ -1,28 +1,25 @@
 package com.woocommerce.android.ui.login.signup
 
 import com.woocommerce.android.FakeDispatcher
-import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.signup.SignUpStore
-import org.wordpress.android.fluxc.store.signup.SignUpStore.CreateWpAccountResult
+import org.wordpress.android.fluxc.store.account.SignUpStore
+import org.wordpress.android.fluxc.store.account.SignUpStore.CreateWpAccountResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpRepositoryTest : BaseUnitTest() {
     private companion object {
         const val EMAIL_WITHOUT_DOMAIN = "email"
         const val VALID_USER_EMAIL = "email@gmail.com"
-        const val INVALID_USER_EMAIL = "email@gm"
         const val USER_EMAIL_CONTAINING_WORDPRESS = "emailWordPress@gmail.com"
         const val ANY_VALID_PASSWORD = "anypassword"
         const val DEFAULT_USERNAME_SUGGESTION = "usernameOne"
@@ -37,18 +34,15 @@ class SignUpRepositoryTest : BaseUnitTest() {
 
     private val signUpStore: SignUpStore = mock()
     private val dispatcher: Dispatcher = FakeDispatcher()
-    private val signUpCredentialsValidator: SignUpCredentialsValidator = mock()
 
     private val sut: SignUpRepository = SignUpRepository(
         signUpStore,
-        dispatcher,
-        signUpCredentialsValidator
+        dispatcher
     )
 
     @Test
     fun `given valid credentials, when creating account, then fetch username suggestions`() =
         testBlocking {
-            givenValidateCredentialsReturns(null)
             givenAccountCreationResult(SUCCESSFUL_ACCOUNT_CREATION_RESULT)
             givenFetchUserNameSuggestionsReturns(
                 SignUpStore.UsernameSuggestionsResult(
@@ -71,7 +65,6 @@ class SignUpRepositoryTest : BaseUnitTest() {
     @Test
     fun `given fetching username suggestion fails, when creating account, then use email without domain as username`() =
         testBlocking {
-            givenValidateCredentialsReturns(null)
             givenAccountCreationResult(SUCCESSFUL_ACCOUNT_CREATION_RESULT)
             givenFetchUserNameSuggestionsReturns(
                 SignUpStore.UsernameSuggestionsResult(SignUpStore.UsernameSuggestionsError("error"))
@@ -90,7 +83,6 @@ class SignUpRepositoryTest : BaseUnitTest() {
     @Test
     fun `given an email with wordpress wording in it, when create account, then fetch usernames without wordpress`() =
         testBlocking {
-            givenValidateCredentialsReturns(null)
             givenAccountCreationResult(SUCCESSFUL_ACCOUNT_CREATION_RESULT)
             givenFetchUserNameSuggestionsReturns(
                 SignUpStore.UsernameSuggestionsResult(
@@ -113,28 +105,8 @@ class SignUpRepositoryTest : BaseUnitTest() {
             )
         }
 
-    @Test
-    fun `given credentials validation error, when create new account , then no api request is fired`() =
-        testBlocking {
-            givenValidateCredentialsReturns(SignUpError.EMAIL_INVALID)
-
-            val task = async { sut.createAccount(INVALID_USER_EMAIL, ANY_VALID_PASSWORD) }
-            // Handle token update
-            dispatcher.emitChange(OnAuthenticationChanged())
-            // Handle account fetching
-            dispatcher.emitChange(OnAccountChanged())
-            task.await()
-
-            verify(signUpStore, never()).fetchUserNameSuggestions(anyString())
-            verify(signUpStore, never()).createWpAccount(anyString(), anyString(), anyString())
-        }
-
     private suspend fun givenFetchUserNameSuggestionsReturns(result: SignUpStore.UsernameSuggestionsResult) {
         whenever(signUpStore.fetchUserNameSuggestions(anyString())).thenReturn(result)
-    }
-
-    private fun givenValidateCredentialsReturns(error: SignUpError?) {
-        whenever(signUpCredentialsValidator.validateCredentials(anyString(), anyString())).thenReturn(error)
     }
 
     private suspend fun givenAccountCreationResult(result: CreateWpAccountResult) {

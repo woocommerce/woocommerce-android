@@ -7,29 +7,29 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
-import org.wordpress.android.fluxc.store.JitmStore
 import javax.inject.Inject
+
+private typealias Assets = Map<String, String>?
 
 @HiltViewModel
 class JitmViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val jitmStore: JitmStore,
+    private val jitmStoreCache: JitmStoreInMemoryCache,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
-    private val queryParamsEncoder: QueryParamsEncoder,
     private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
-    private val _jitmState: MutableLiveData<BannerState> = MutableLiveData()
-    val jitmState: LiveData<BannerState> = _jitmState
+    private val _jitmState: MutableLiveData<JitmState> = MutableLiveData()
+    val jitmState: LiveData<JitmState> = _jitmState
+
+    private val messagePath = savedState.get<String>(JITM_MESSAGE_PATH_KEY)!!
+    private val utmSource = messagePath.split(":")[1]
 
     init {
         fetchJitms()
@@ -41,100 +41,84 @@ class JitmViewModel @Inject constructor(
 
     private fun fetchJitms(jitmMessagePath: String) {
         launch {
-            val response = jitmStore.fetchJitmMessage(
-                selectedSite.get(),
-                jitmMessagePath,
-                queryParamsEncoder.getEncodedQueryParams(),
-            )
-            populateResultToUI(response, jitmMessagePath)
+            val messages = jitmStoreCache.getMessagesForPath(jitmMessagePath)
+            populateResultToUI(messages.firstOrNull())
         }
     }
 
-    private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>, jitmMessagePath: String) {
-        if (response.isError) {
-            jitmTracker.trackJitmFetchFailure(MyStoreViewModel.UTM_SOURCE, response.error.type, response.error.message)
-            WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $jitmMessagePath")
-            return
-        }
-
-        jitmTracker.trackJitmFetchSuccess(
-            MyStoreViewModel.UTM_SOURCE,
-            response.model?.getOrNull(0)?.id,
-            response.model?.size
-        )
-        response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
+    private fun populateResultToUI(response: JITMApiResponse?) {
+        response?.let { model: JITMApiResponse ->
             jitmTracker.trackJitmDisplayed(
-                MyStoreViewModel.UTM_SOURCE,
+                utmSource,
                 model.id,
                 model.featureClass
             )
 
-            _jitmState.value = BannerState.DisplayBannerState(
-                onPrimaryActionClicked = {
-                    onJitmCtaClicked(
-                        id = model.id,
-                        featureClass = model.featureClass,
-                        url = model.cta.link
-                    )
-                },
-                onDismissClicked = {
-                    onJitmDismissClicked(
-                        model.id,
-                        model.featureClass
-                    )
-                },
-                title = UiString.UiStringText(model.content.message),
-                description = UiString.UiStringText(model.content.description),
-                primaryActionLabel = UiString.UiStringText(model.cta.message),
-                backgroundImage = model.assets.getBackgroundImage(),
-                badgeIcon = model.assets.getBadgeIcon(),
-            )
+            _jitmState.value = when (model.template) {
+                JITM_TEMPLATE_MODAL -> JitmState.Modal(
+                    onPrimaryActionClicked = { onJitmCtaClicked(model) },
+                    onDismissClicked = { onJitmDismissClicked(model) },
+                    title = UiString.UiStringText(model.content.message),
+                    description = UiString.UiStringText(model.content.description),
+                    primaryActionLabel = UiString.UiStringText(model.cta.message),
+                    backgroundLightImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY),
+                    backgroundDarkImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_DARK_THEME_KEY)
+                        ?: model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY),
+                )
+
+                else -> JitmState.Banner(
+                    onPrimaryActionClicked = { onJitmCtaClicked(model) },
+                    onDismissClicked = { onJitmDismissClicked(model) },
+                    title = UiString.UiStringText(model.content.message),
+                    description = UiString.UiStringText(model.content.description),
+                    primaryActionLabel = UiString.UiStringText(model.cta.message),
+                    backgroundImage = model.assets.getBackgroundImage(),
+                    badgeIcon = model.assets.getBadgeIcon(),
+                )
+            }
         } ?: run {
-            _jitmState.value = BannerState.HideBannerState
+            _jitmState.value = JitmState.Hidden
             WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
         }
     }
 
-    private fun onJitmCtaClicked(
-        id: String,
-        featureClass: String,
-        url: String
-    ) {
+    private fun onJitmCtaClicked(model: JITMApiResponse) {
         jitmTracker.trackJitmCtaTapped(
-            MyStoreViewModel.UTM_SOURCE,
-            id,
-            featureClass
+            utmSource,
+            model.id,
+            model.featureClass
         )
         triggerEvent(
             CtaClick(
                 myStoreUtmProvider.getUrlWithUtmParams(
-                    source = MyStoreViewModel.UTM_SOURCE,
-                    id = id,
-                    featureClass = featureClass,
+                    source = utmSource,
+                    id = model.id,
+                    featureClass = model.featureClass,
                     siteId = selectedSite.getIfExists()?.siteId,
-                    url = url
+                    url = model.cta.link
                 )
             )
         )
     }
 
-    private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
-        _jitmState.value = BannerState.HideBannerState
-        jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, jitmId, featureClass)
+    private fun onJitmDismissClicked(model: JITMApiResponse) {
+        _jitmState.value = JitmState.Hidden
+        jitmTracker.trackJitmDismissTapped(utmSource, model.id, model.featureClass)
         launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
+            jitmStoreCache.dismissJitmMessage(messagePath, model.id, model.featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
                         jitmTracker.trackJitmDismissSuccess(
-                            MyStoreViewModel.UTM_SOURCE,
-                            jitmId,
-                            featureClass
+                            utmSource,
+                            model.id,
+                            model.featureClass
                         )
                     }
+
                     else -> jitmTracker.trackJitmDismissFailure(
-                        MyStoreViewModel.UTM_SOURCE,
-                        jitmId,
-                        featureClass,
+                        utmSource,
+                        model.id,
+                        model.featureClass,
                         response.error?.type,
                         response.error?.message
                     )
@@ -143,13 +127,22 @@ class JitmViewModel @Inject constructor(
         }
     }
 
-    private fun Map<String, String>?.getBackgroundImage() =
-        this?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY)?.let { BannerState.LocalOrRemoteImage.Remote(it) }
-            ?: BannerState.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+    private fun Assets.getBackgroundImage() =
+        this?.get(JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY)?.let {
+            JitmState.Banner.LocalOrRemoteImage.Remote(
+                urlLightMode = it,
+                urlDarkMode = this[JITM_ASSETS_BACKGROUND_IMAGE_DARK_THEME_KEY] ?: it
+            )
+        } ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
 
-    private fun Map<String, String>?.getBadgeIcon() =
-        this?.get(JITM_ASSETS_BADGE_IMAGE_KEY)?.let { BannerState.LabelOrRemoteIcon.Remote(it) }
-            ?: BannerState.LabelOrRemoteIcon.Label(
+    private fun Assets.getBadgeIcon() =
+        this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)?.let {
+            JitmState.Banner.LabelOrRemoteIcon.Remote(
+                urlLightMode = it,
+                urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: it
+            )
+        }
+            ?: JitmState.Banner.LabelOrRemoteIcon.Label(
                 UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
             )
 
@@ -157,7 +150,13 @@ class JitmViewModel @Inject constructor(
 
     companion object {
         const val JITM_MESSAGE_PATH_KEY = "jitm_message_path_key"
-        private const val JITM_ASSETS_BACKGROUND_IMAGE_KEY = "background_image_url"
-        private const val JITM_ASSETS_BADGE_IMAGE_KEY = "badge_image_url"
+
+        private const val JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY = "background_image_url"
+        private const val JITM_ASSETS_BACKGROUND_IMAGE_DARK_THEME_KEY = "background_image_dark_url"
+
+        private const val JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY = "badge_image_url"
+        private const val JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY = "badge_image_dark_url"
+
+        private const val JITM_TEMPLATE_MODAL = "modal"
     }
 }

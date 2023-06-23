@@ -3,16 +3,25 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.InputField
 import com.woocommerce.android.ui.common.OptionalField
 import com.woocommerce.android.ui.common.RequiredField
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.ORIGIN
@@ -39,7 +48,8 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     private val addressValidator: ShippingLabelAddressValidator,
     private val resourceProvider: ResourceProvider,
     private val dataStore: WCDataStore,
-    private val site: SelectedSite
+    private val site: SelectedSite,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         val ACCEPTED_USPS_ORIGIN_COUNTRIES = arrayOf(
@@ -134,7 +144,9 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
     private fun handleValidationResult(address: Address, result: ValidationResult, showToastErrors: Boolean = true) {
         when (result) {
-            ValidationResult.Valid -> triggerEvent(ExitWithResult(address))
+            ValidationResult.Valid -> {
+                exitWithAddress(address)
+            }
             is ValidationResult.Invalid -> {
                 val validationErrorMessage = getAddressErrorStringRes(result.message)
                 viewState = viewState.copy(
@@ -148,7 +160,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
 
             is ValidationResult.SuggestedChanges -> {
                 if (result.isTrivial) {
-                    triggerEvent(ExitWithResult(result.suggested))
+                    exitWithAddress(result.suggested)
                 } else {
                     triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
                 }
@@ -197,7 +209,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
         // Validate fields locally
         viewState = viewState.validateAllFields()
         if (viewState.areAllRequiredFieldsValid) {
-            triggerEvent(ExitWithResult(viewState.getAddress()))
+            exitWithAddress(viewState.getAddress())
         } else {
             triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
         }
@@ -240,6 +252,13 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     }
 
     fun onAddressSelected(address: Address) {
+        exitWithAddress(address)
+    }
+
+    private fun exitWithAddress(address: Address) {
+        if (arguments.addressType == ORIGIN) {
+            appPrefs.setStorePhoneNumber(site.getSelectedSiteId(), address.phone)
+        }
         triggerEvent(ExitWithResult(address))
     }
 

@@ -99,6 +99,22 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productBundleFragment"
             app:destination="@id/productBundleFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_compositeProductFragment"
+            app:destination="@id/compositeProductFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_firstProductCelebrationDialog"
+            app:destination="@id/firstProductCelebrationDialog">
+            <argument
+                android:name="permalink"
+                app:argType="string" />
+            <argument
+                android:name="productName"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSharingFragment"
+            app:destination="@id/productSharingFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -132,6 +148,9 @@
             android:name="isReadOnlyMode"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_variationListFragment_to_generateVariationBottomSheetFragment"
+            app:destination="@id/generateVariationBottomSheetFragment" />
 
     </fragment>
     <dialog
@@ -276,6 +295,9 @@
             app:destination="@id/productDetailFragment"
             app:launchSingleTop="true"
             app:popUpTo="@id/nav_graph_products" />
+        <action
+            android:id="@+id/action_attributesAddedFragment_to_generateVariationBottomSheetFragment"
+            app:destination="@id/generateVariationBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/aztecEditorFragment"
@@ -662,4 +684,54 @@
             android:name="productId"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/compositeProductFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentListFragment"
+        android:label="CompositeProductFragment" >
+        <argument
+            android:name="components"
+            app:argType="com.woocommerce.android.model.Component[]" />
+        <action
+            android:id="@+id/action_compositeProductFragment_to_componentDetailsFragment"
+            app:destination="@id/componentDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/componentDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentDetailsFragment"
+        android:label="ComponentDetailsFragment" >
+        <argument
+            android:name="component"
+            app:argType="com.woocommerce.android.model.Component" />
+    </fragment>
+    <dialog
+        android:id="@+id/generateVariationBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment"
+        android:label="GenerateVariationBottomSheetFragment" />
+    <dialog
+        android:id="@+id/firstProductCelebrationDialog"
+        android:name="com.woocommerce.android.ui.products.FirstProductCelebrationDialog"
+        android:label="FirstProductCelebrationDialog">
+        <argument
+            android:name="permalink"
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/productSharingFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSharingDialog"
+        android:label="ProductSharingFragment">
+        <argument
+            android:name="permalink"
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            app:argType="string" />
+        <argument
+            android:name="productDescription"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 </navigation>

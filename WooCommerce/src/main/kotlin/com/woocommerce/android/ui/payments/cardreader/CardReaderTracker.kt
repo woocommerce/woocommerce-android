@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE
@@ -63,7 +64,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
@@ -152,6 +153,7 @@ class CardReaderTracker @Inject constructor(
             is CardReaderOnboardingState.StoreCountryNotSupported -> "country_not_supported"
             is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry ->
                 "${getPluginNameReasonPrefix(state.preferredPlugin)}_is_not_supported_in_${state.countryCode}"
+
             is CardReaderOnboardingState.StripeAccountOverdueRequirement -> "account_overdue_requirements"
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> "account_pending_requirements"
             is CardReaderOnboardingState.StripeAccountRejected -> "account_rejected"
@@ -159,16 +161,20 @@ class CardReaderTracker @Inject constructor(
             is CardReaderOnboardingState.StripeAccountCountryNotSupported -> "account_country_not_supported"
             is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount ->
                 "${getPluginNameReasonPrefix(state.preferredPlugin)}_in_test_mode_with_live_account"
+
             is CardReaderOnboardingState.WcpayNotActivated -> "wcpay_not_activated"
             is CardReaderOnboardingState.WcpayNotInstalled -> "wcpay_not_installed"
             is CardReaderOnboardingState.SetupNotCompleted ->
                 "${getPluginNameReasonPrefix(state.preferredPlugin)}_not_setup"
+
             is CardReaderOnboardingState.PluginUnsupportedVersion ->
                 "${getPluginNameReasonPrefix(state.preferredPlugin)}_unsupported_version"
+
             is CardReaderOnboardingState.GenericError -> "generic_error"
             is CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
             CardReaderOnboardingState.ChoosePaymentGatewayProvider ->
                 "multiple_payment_providers_conflict"
+
             is CardReaderOnboardingState.CashOnDeliveryDisabled -> "cash_on_delivery_disabled"
         }
 
@@ -472,6 +478,10 @@ class CardReaderTracker @Inject constructor(
 
     fun trackAutomaticReadDisconnectWhenConnectedAnotherType() {
         track(CARD_READER_AUTOMATIC_DISCONNECT)
+    }
+
+    fun trackPaymentFailedContactSupportTapped() {
+        track(CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED)
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {

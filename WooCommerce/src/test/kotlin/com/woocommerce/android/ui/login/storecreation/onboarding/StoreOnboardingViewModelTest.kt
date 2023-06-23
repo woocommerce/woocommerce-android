@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,6 +67,8 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val onboardingRepository: StoreOnboardingRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val shouldShowOnboarding: ShouldShowOnboarding = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
 
     private lateinit var viewModel: StoreOnboardingViewModel
 
@@ -87,9 +90,10 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given at least one onboarding task incompleted, when view model is created, onboarding is shown`() =
+    fun `given a list of incomplete tasks , when view model is created, onboarding is shown`() =
         testBlocking {
             onboardingTasksCacheFlow.tryEmit(ONBOARDING_TASK_INCOMPLETED_LIST)
+            whenever(shouldShowOnboarding.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)).thenReturn(true)
 
             whenViewModelIsCreated()
 
@@ -98,7 +102,7 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given onboarding is incomplete, when on resume called, onboarding tasks are fetched`() = testBlocking {
-        whenever(!onboardingRepository.isOnboardingCompleted()).thenReturn(false)
+        whenever(!shouldShowOnboarding.isOnboardingMarkedAsCompleted()).thenReturn(false)
 
         whenViewModelIsCreated()
         viewModel.onResume(lifecycleOwner)
@@ -108,7 +112,7 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given onboarding is incomplete, when pull to refresh, onboarding tasks are fetched`() = testBlocking {
-        whenever(!onboardingRepository.isOnboardingCompleted()).thenReturn(false)
+        whenever(!shouldShowOnboarding.isOnboardingMarkedAsCompleted()).thenReturn(false)
 
         whenViewModelIsCreated()
         viewModel.onPullToRefresh()
@@ -119,7 +123,7 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `given onboarding is completed, when on resume called, onboarding list is hidden and task are not fetched`() =
         testBlocking {
-            whenever(!onboardingRepository.isOnboardingCompleted()).thenReturn(true)
+            whenever(!shouldShowOnboarding.isOnboardingMarkedAsCompleted()).thenReturn(true)
 
             whenViewModelIsCreated()
             viewModel.onResume(lifecycleOwner)
@@ -131,7 +135,7 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `given onboarding is completed, when pull to refresh, onboarding list is hidden and task are not fetched`() =
         testBlocking {
-            whenever(!onboardingRepository.isOnboardingCompleted()).thenReturn(true)
+            whenever(!shouldShowOnboarding.isOnboardingMarkedAsCompleted()).thenReturn(true)
 
             whenViewModelIsCreated()
             viewModel.onResume(lifecycleOwner)
@@ -155,7 +159,9 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
         viewModel = StoreOnboardingViewModel(
             savedState,
             onboardingRepository,
-            analyticsTrackerWrapper
+            analyticsTrackerWrapper,
+            shouldShowOnboarding,
+            isAIProductDescriptionEnabled
         )
     }
 }

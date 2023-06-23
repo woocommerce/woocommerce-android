@@ -6,13 +6,17 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.offsetInHours
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +28,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -34,6 +39,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.TimeZone
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -49,6 +55,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
+    private val localNotificationScheduler: LocalNotificationScheduler = mock()
+    private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
+    private val timezoneProvider: TimezoneProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -412,6 +422,221 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given the viewModel started, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
+        ) doReturn true
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when device and store timezones are the same, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "0"
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
+        ) doReturn true
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when timezone track was NOT triggered before, then trigger expected analytics event`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+            siteId = 7777777
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+                siteId = 7777777,
+                localTimezone = "0",
+                storeTimezone = "-3"
+            )
+        ) doReturn true
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when timezone track is triggered, then set appPrefs flag`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+            siteId = 7777777
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+                siteId = 7777777,
+                localTimezone = "0",
+                storeTimezone = "-3"
+            )
+        ) doReturn true
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(appPrefsWrapper).setTimezoneTrackEventTriggeredFor(
+            siteId = 7777777,
+            localTimezone = "0",
+            storeTimezone = "-3"
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when timezone track was triggered before, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "-3"
+            siteId = 7777777
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+        whenever(
+            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+                siteId = 7777777,
+                localTimezone = "0",
+                storeTimezone = "-3"
+            )
+        ) doReturn false
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when the store is null, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = "0"
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn null
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given the viewModel started, when the store timezone is null, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = null
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
@@ -464,7 +689,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             appPrefsWrapper,
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
-            myStoreTransactionLauncher = mock(),
+            myStoreTransactionLauncher,
+            timezoneProvider,
+            localNotificationScheduler,
+            shouldShowPrivacyBanner,
         )
     }
 

@@ -116,6 +116,9 @@
     <color name="tag_bg_other">@color/woo_gray_5</color>
     <color name="tag_bg_main">@color/woo_purple_15</color>
     <color name="tag_text_main">@color/color_primary</color>
+    <color name="tag_task_label">@color/woo_gray_6</color>
+    <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
+    <color name="tag_icon">@color/color_primary</color>
 
     <!--
         Nav bar color protection for behavior differences between Android P and Q. All sdk
@@ -230,8 +233,13 @@
     <!--
     Free Trial
     -->
-    <color name="free_trial_banner_background">@color/woo_purple_0</color>
-    <color name="free_trial_banner_link_text">@color/woo_purple_60</color>
+    <color name="free_trial_component_background">@color/woo_purple_0</color>
+    <color name="free_trial_component_text">@color/woo_purple_60</color>
     <color name="free_trial_banner_content">@color/color_on_surface</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="creating_store_linear_progress_background">@color/woo_purple_0</color>
 
 </resources>

@@ -3,11 +3,16 @@ package com.woocommerce.android.ui.moremenu
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.push.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +20,15 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 class MoreMenuViewModelTests : BaseUnitTest() {
@@ -35,52 +43,66 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     )
     private val selectedSite: SelectedSite = mock {
         on { observe() } doReturn selectedSiteFlow
+        on { get() } doReturn selectedSiteFlow.value
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
         onBlocking { isInboxEnabled() } doReturn true
-        on { observeCouponBetaSwitch() } doReturn flowOf(true)
     }
     private val accountStore: AccountStore = mock {
         on { account } doReturn AccountModel().apply {
             avatarUrl = "avatar"
         }
     }
+    private val planRepository: SitePlanRepository = mock {
+        onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
+            name = "",
+            expirationDate = ZonedDateTime.now(),
+            type = SitePlan.Type.FREE_TRIAL
+        )
+    }
+
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.subscription_free_trial) } doReturn "Free Trial"
+    }
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock {
+        on { moreMenuPaymentsFeatureWasClicked }.thenReturn(flowOf(true))
+    }
 
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val isBlazeEnabled: IsBlazeEnabled = mock {
+        onBlocking { invoke() } doReturn false
+    }
 
     private lateinit var viewModel: MoreMenuViewModel
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
 
     suspend fun setup(setupMocks: suspend () -> Unit = {}) {
         setupMocks()
         viewModel = MoreMenuViewModel(
             savedState = SavedStateHandle(),
             accountStore = accountStore,
+            unseenReviewsCountHandler = unseenReviewsCountHandler,
             selectedSite = selectedSite,
             moreMenuRepository = moreMenuRepository,
-            unseenReviewsCountHandler = unseenReviewsCountHandler,
-            appPrefsWrapper = appPrefsWrapper
+            moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
+            planRepository = planRepository,
+            resourceProvider = resourceProvider,
+            tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
+            appPrefsWrapper = appPrefsWrapper,
+            isBlazeEnabled = isBlazeEnabled
         )
     }
 
     @Test
-    fun `when coupons beta feature toggle is updated, then refresh the list of button`() = testBlocking {
-        val prefsChanges = MutableSharedFlow<Boolean>()
-        setup {
-            whenever(moreMenuRepository.observeCouponBetaSwitch()).thenReturn(prefsChanges)
-        }
-        val states = viewModel.moreMenuViewState.captureValues()
-
-        prefsChanges.emit(false)
-        prefsChanges.emit(true)
-
-        assertThat(states.size).isEqualTo(2)
-    }
-
-    @Test
-    fun `when building state, then payments icon displayed`() = testBlocking {
+    fun `given ttp is available, when building state, then payments icon displayed with badge`() = testBlocking {
         // GIVEN
         val prefsChanges = MutableSharedFlow<Boolean>()
-        setup {}
+        setup {
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+            whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(
+                TapToPayAvailabilityStatus.Result.Available
+            )
+        }
 
         // WHEN
         val states = viewModel.moreMenuViewState.captureValues()
@@ -89,6 +111,38 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
+        assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
+            R.color.color_on_surface
+        )
+        assertThat(paymentsButton.badgeState?.badgeSize).isEqualTo(
+            R.dimen.major_110
+        )
+        assertThat(paymentsButton.badgeState?.backgroundColor).isEqualTo(
+            R.color.color_secondary
+        )
+        assertThat(paymentsButton.badgeState?.animateAppearance).isEqualTo(true)
+        assertThat(paymentsButton.badgeState?.textState?.text).isEqualTo("")
+        assertThat(paymentsButton.badgeState?.textState?.fontSize)
+            .isEqualTo(R.dimen.text_minor_80)
+    }
+
+    @Test
+    fun `given ttp is not available, when building state, then payments badge is not displayed`() = testBlocking {
+        // GIVEN
+        val prefsChanges = MutableSharedFlow<Boolean>()
+        setup {
+            whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(
+                TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+            )
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+        prefsChanges.emit(false)
+
+        // THEN
+        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.badgeState).isNull()
     }
 
@@ -173,4 +227,146 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             // THEN
             assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
         }
+
+    @Test
+    fun `given site plan is free trial, then free trial name is configured`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.FREE_TRIAL
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Free Trial")
+    }
+
+    @Test
+    fun `given site plan is not free trial, then SitePlan name is used`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `given site plan is WPcom, then SitePlan name is formatted`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "WordPress.com Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `when on view resumed, then new feature handler marks new feature as seen`() = testBlocking {
+        // GIVEN
+        setup { }
+
+        // WHEN
+        viewModel.onViewResumed()
+
+        // THEN
+        verify(moreMenuNewFeatureHandler).markNewFeatureAsSeen()
+    }
+
+    @Test
+    fun `given user never clicked payments and ttp available, when building state, then badge displayed`() =
+        testBlocking {
+            // GIVEN
+            val prefsChanges = MutableSharedFlow<Boolean>()
+            setup {
+                whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(
+                    TapToPayAvailabilityStatus.Result.Available
+                )
+                whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+            prefsChanges.emit(false)
+
+            // THEN
+            assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
+        }
+
+    @Test
+    fun `given user clicked payments, when building state, then badge is not displayed`() = testBlocking {
+        // GIVEN
+        val prefsChanges = MutableSharedFlow<Boolean>()
+        setup {
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+        prefsChanges.emit(true)
+
+        // THEN
+        assertThat(states.last().generalMenuItems.first().badgeState).isNull()
+    }
+
+    @Test
+    fun `given site plan is paid Woo Express, then SitePlan name is formatted`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Woo Express: Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `given site plan is null, then SitePlan name is empty`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(null)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("")
+    }
 }

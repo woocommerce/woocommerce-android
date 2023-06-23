@@ -10,8 +10,6 @@
     <string name="notification_channel_review_title">Product review alerts</string>
     <string name="notification_channel_review_id" content_override="true" translatable="false">wooandroid_notification_channel_review_id</string>
     <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
-    <string name="notification_channel_pre_login_title">Login troubleshooting reminders</string>
-    <string name="notification_channel_pre_login_id" content_override="true" translatable="false">wooandroid_notification_channel_pre_login_id</string>
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" content_override="true" translatable="false">@string/notification_channel_general_id</string>
     <!--
@@ -101,12 +99,14 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="scan_barcode">Scan Barcode</string>
     <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>
     <string name="close">Close</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
+    <string name="allow">Allow</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -383,10 +383,11 @@
     -->
     <string name="signup_get_started_button">Get Started</string>
     <string name="signup_get_started_label">Get started in minutes</string>
-    <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_create_password_label">Create your password</string>
+    <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
-    <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
+    <string name="signup_terms_of_service">By continuing, you agree to our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
     <string name="signup_email_exist_input">An account with this email already exists.</string>
     <string name="signup_email_invalid_input">Please enter a valid email address.</string>
@@ -466,6 +467,7 @@
     <string name="orderlist_mark_completed">Mark\ncompleted</string>
     <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
     <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
+    <string name="order_list_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <!--
          Simple Payments
     -->
@@ -502,6 +504,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
@@ -512,7 +515,12 @@
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add products</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_add_fee">Add fee</string>
+    <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
@@ -542,6 +550,10 @@
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
+    <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <!--
         Domains
@@ -1006,6 +1018,7 @@
     <string name="shipping_label_customs_contents_type_description_missing">Please describe what kind of goods this package contains.</string>
     <string name="shipping_label_customs_restriction_type_description_missing">Please describe what kind of restrictions this package must have.</string>
     <string name="shipping_label_customs_required_field">This field is required</string>
+    <string name="shipping_label_customs_item_description_too_short">You must provide a clear, specific description for every item.</string>
     <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
     <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
     <string name="shipping_label_customs_form">Customs form</string>
@@ -1170,12 +1183,17 @@
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">The refund failed. Try to refund manually</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
+    <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
 
     <!--
             Card Reader Type Selection
@@ -1184,6 +1202,14 @@
     <string name="card_reader_type_selection_tap_to_pay_description">Securely accept contactless payments directly from your phone.</string>
     <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
+    <string name="tap_to_pay_refund_reason">Test Tap To Pay payment auto refund</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+
+
+    <!--
+    Scan To Pay
+        -->
+    <string name="scan_to_pay_title">Scan QR and follow instructions</string>
 
     <!--
             Card Reader Interac refund
@@ -1243,7 +1269,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least %1$s</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
@@ -1273,6 +1299,7 @@
     <string name="card_reader_payment_try_another_read_method_prompt">Retry tapping, inserting or swiping your card</string>
     <string name="card_reader_payment_try_another_card_prompt">Retry with another card</string>
     <string name="card_reader_payment_check_mobile_device_prompt">Check your mobile device</string>
+    <string name="card_reader_payment_card_removed_too_early">The card was removed too early</string>
 
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
@@ -1286,6 +1313,7 @@
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
     <string name="card_reader_payment_reader_receipt_sent">A receipt has been sent to &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
     <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>
@@ -1585,6 +1613,7 @@
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_stock_status_insufficient_stock">Insufficient stock</string>
     <string name="product_stock_count">%s in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
@@ -1752,6 +1781,7 @@
     <string name="product_category_selector_loading_failed">Loading product categories failed</string>
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <string name="product_list_multiselect">Select multiple</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promote with Blaze</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1842,6 +1872,7 @@
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="photo_picker_title">Device Media Library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
@@ -1882,9 +1913,17 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
-    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
+    <string name="settings_close_account">Close Account</string>
+    <string name="settings_close_account_dialog_title">Confirm Close Account</string>
+    <string name="settings_close_account_dialog_description">To confirm, please re-enter your username before closing</string>
+    <string name="settings_close_account_dialog_confirm_button">Permanently Close Account</string>
+    <string name="settings_close_account_dialog_loading_title">Closing account…</string>
+    <string name="settings_close_account_error_dialog_title">Couldn\'t close account</string>
+    <string name="settings_close_account_generic_error_description">An error occurred while attempting to close your account.</string>
+    <string name="settings_close_account_active_stores_error_description">This account cannot be closed while it has active stores.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Contact Support</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
@@ -1901,7 +1940,35 @@
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_privacy_policy_ca">Privacy Notice for California Users</string>
+    <string name="settings_privacy_statement">We value your privacy. Your personal data is used to optimize our mobile apps, improve security, conduct analytics, and enhance your user experience.</string>
+    <string name="settings_tracking_header">Tracking</string>
+    <string name="settings_tracking_analytics">Analytics</string>
+    <string name="settings_tracking_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="settings_tracking_analytics_error_fetch">There was an error fetching your privacy settings</string>
+    <string name="settings_tracking_analytics_error_update">There was an error updating your privacy settings</string>
+    <string name="settings_more_privacy_options_header">More privacy options</string>
+    <string name="settings_web_options">Web Options</string>
+    <string name="settings_web_options_description">More privacy options available for woocommerce.com users. Check here to learn more.</string>
+    <string name="settings_usage_tracking">Usage Tracking</string>
+    <string name="settings_usage_tracking_description">Learn more about the data we collect about your store and your options to control this data sharing.</string>
+    <string name="settings_privacy_header">Privacy</string>
+    <string name="settings_privacy_cookies_polices">Privacy and Cookies Polices</string>
+    <string name="settings_privacy_cookies_polices_description">Learn more about our privacy and cookies policies.</string>
+    <string name="settings_reports_header">Reports</string>
+    <string name="settings_reports_report_crashes">Report Crashes</string>
+    <string name="settings_reports_report_crashes_description">To help us improve the app’s performance and fix the occasional bug, enable automatic crash report.</string>
+    <string name="privacy_banner_description">Your privacy is critically important to us and always has been. We use, store, and process your personal data to optimize our app (and your experience) in various ways. Some uses of your data we absolutely need in order to make things work, and others you can customize from your Settings.</string>
+    <string name="privacy_banner_title">Manage privacy</string>
+    <string name="privacy_banner_analytics">Analytics</string>
+    <string name="privacy_banner_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="privacy_banner_settings">Settings</string>
+    <string name="privacy_banner_save">Save</string>
+    <string name="privacy_banner_error_save">There was an error saving your privacy choices.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
+    <string name="settings_policies_privacy_policy">Privacy Policy</string>
+    <string name="settings_policies_privacy_policy_description">Your information helps us to improve our products, marketing, and personalize your experience on WooCommerce.</string>
+    <string name="settings_policies_cookie_policy">Cookie Policy</string>
+    <string name="settings_policies_cookie_policy_description">Our cookie policy explains how we and others use cookies and how you can manage them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
@@ -2190,6 +2257,8 @@
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
+    <string name="product_type_composite">Composite product</string>
+    <string name="product_type_variation">Variation product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -2251,10 +2320,12 @@
     <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
     <string name="permission_camera">Camera</string>
     <string name="button_edit_permissions">Edit permissions</string>
+    <string name="notifications_permission_title">Notifications</string>
+    <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
-    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_bottom_banner_title">Get order notifications and more</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Stay updated and boost store security. Explore Jetpack now.</string>
     <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
     <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
     <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
@@ -2345,8 +2416,6 @@
     <string name="coupon_summary_template">%1$s off %2$s</string>
     <string name="coupon_details_expiration_date">Expires %1$s</string>
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
-    <string name="coupon_beta_features_heading">Coupons Management</string>
-    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
     <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
     <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
     <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
@@ -2918,6 +2987,18 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+    <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
+    <string name="store_creation_in_progress_title_2">Building the foundations</string>
+    <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
+    <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
+    <string name="store_creation_in_progress_title_5">Turning on the lights</string>
+    <string name="store_creation_in_progress_title_6">Opening the doors</string>
+    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers almost 4 million stores worldwide? You’re in good company.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo was founded by two South Africans and a Norwegian? Here are three alternative ways to say “store” in those countries – Winkel, ivenkile, and butikk.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Are you Team Cat or Team Dog? The Woo team is split 50/50!</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; The Woo team is made up of over 350 talented individuals, distributed across 30+ countries.</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple. 💜</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
@@ -2978,164 +3059,14 @@
 
     <!-- Store profiler industries. To be removed when API is available to fetch these items localized
      TODO Github issue https://github.com/woocommerce/woocommerce-android/issues/8218  -->
-    <string name="store_creation_profiler_industry_boat_sales">Boat Sales</string>
-    <string name="store_creation_profiler_industry_car_washes">Car Washes</string>
-    <string name="store_creation_profiler_industry_fuel_dispensers">Fuel Dispensers</string>
-    <string name="store_creation_profiler_industry_towing_services">Towing Services</string>
-    <string name="store_creation_profiler_industry_truck_stop">Truck Stop</string>
-    <string name="store_creation_profiler_industry_a_c_and_heating_contractors">A C And Heating Contractors</string>
-    <string name="store_creation_profiler_industry_carpentry_contractors">Carpentry Contractors</string>
-    <string name="store_creation_profiler_industry_electrical_contractors">Electrical Contractors</string>
-    <string name="store_creation_profiler_industry_general_contractors">General Contractors</string>
-    <string name="store_creation_profiler_industry_other_building_services">Other Building Services</string>
-    <string name="store_creation_profiler_industry_special_trade_contractors">Special Trade Contractors</string>
-    <string name="store_creation_profiler_industry_telecom_equipment">Telecom Equipment</string>
-    <string name="store_creation_profiler_industry_telecom_services">Telecom Services</string>
-    <string name="store_creation_profiler_industry_apps">Apps</string>
-    <string name="store_creation_profiler_industry_blogs_and_written_content">Blogs And Written Content</string>
-    <string name="store_creation_profiler_industry_books">Books</string>
-    <string name="store_creation_profiler_industry_games">Games</string>
-    <string name="store_creation_profiler_industry_music_or_other_media">Music Or Other Media</string>
-    <string name="store_creation_profiler_industry_other_digital_goods">Other Digital Goods</string>
-    <string name="store_creation_profiler_industry_software_as_a_service">Software As A Service</string>
-    <string name="store_creation_profiler_industry_business_and_secretarial_schools">Business And Secretarial Schools</string>
-    <string name="store_creation_profiler_industry_child_care_services">Child Care Services</string>
-    <string name="store_creation_profiler_industry_colleges_or_universities">Colleges Or Universities</string>
-    <string name="store_creation_profiler_industry_elementary_or_secondary_schools">Elementary Or Secondary Schools</string>
-    <string name="store_creation_profiler_industry_other_educational_services">Educational Services</string>
-    <string name="store_creation_profiler_industry_vocational_schools_and_trade_schools">Vocational Schools And Trade Schools</string>
-    <string name="store_creation_profiler_industry_amusement_parks_carnivals_or_circuses">Amusement Parks, Carnivals, Or Circuses</string>
-    <string name="store_creation_profiler_industry_betting_or_fantasy_sports">Betting Or Fantasy Sports</string>
-    <string name="store_creation_profiler_industry_event_ticketing">Event Ticketing</string>
-    <string name="store_creation_profiler_industry_fortune_tellers">Fortune Tellers</string>
-    <string name="store_creation_profiler_industry_lotteries">Lotteries</string>
-    <string name="store_creation_profiler_industry_movie_theaters">Movie Theaters</string>
-    <string name="store_creation_profiler_industry_musicians_bands_or_orchestras">Musicians, Bands, Or Orchestras</string>
-    <string name="store_creation_profiler_industry_online_gambling">Online Gambling</string>
-    <string name="store_creation_profiler_industry_other_entertainment_and_recreation">Other Entertainment And Recreation</string>
-    <string name="store_creation_profiler_industry_recreational_camps">Recreational Camps</string>
-    <string name="store_creation_profiler_industry_sports_forecasting_or_prediction_services">Sports Forecasting Or Prediction Services</string>
-    <string name="store_creation_profiler_industry_tourist_attractions">Tourist Attractions</string>
-    <string name="store_creation_profiler_industry_check_cashing">Check Cashing</string>
-    <string name="store_creation_profiler_industry_collections_agencies">Collections Agencies</string>
-    <string name="store_creation_profiler_industry_cryptocurrencies">Cryptocurrencies</string>
-    <string name="store_creation_profiler_industry_currency_exchanges">Currency Exchanges</string>
-    <string name="store_creation_profiler_industry_digital_wallets">Digital Wallets</string>
-    <string name="store_creation_profiler_industry_financial_information_and_research">Financial Information And Research</string>
-    <string name="store_creation_profiler_industry_insurance">Insurance</string>
-    <string name="store_creation_profiler_industry_investment_services">Investment Services</string>
-    <string name="store_creation_profiler_industry_loans_or_lending">Loans Or Lending</string>
-    <string name="store_creation_profiler_industry_money_orders">Money Orders</string>
-    <string name="store_creation_profiler_industry_money_services_or_transmission">Money Services Or Transmission</string>
-    <string name="store_creation_profiler_industry_other_financial_institutions">Other Financial Institutions</string>
-    <string name="store_creation_profiler_industry_personal_fundraising_or_crowdfunding">Personal Fundraising Or Crowdfunding</string>
-    <string name="store_creation_profiler_industry_security_brokers_or_dealers">Security Brokers Or Dealers</string>
-    <string name="store_creation_profiler_industry_virtual_currencies">Virtual Currencies</string>
-    <string name="store_creation_profiler_industry_wire_transfers">Wire Transfers</string>
-    <string name="store_creation_profiler_industry_bars_and_nightclubs">Bars And Nightclubs</string>
-    <string name="store_creation_profiler_industry_caterers">Caterers</string>
-    <string name="store_creation_profiler_industry_fast_food_restaurants">Fast Food Restaurants</string>
-    <string name="store_creation_profiler_industry_grocery_stores">Grocery Stores</string>
-    <string name="store_creation_profiler_industry_other_food_and_dining">Other Food And Dining</string>
-    <string name="store_creation_profiler_industry_restaurants_and_nightlife">Restaurants And Nightlife</string>
-    <string name="store_creation_profiler_industry_assisted_living">Assisted Living</string>
-    <string name="store_creation_profiler_industry_chiropractors">Chiropractors</string>
-    <string name="store_creation_profiler_industry_dentists_and_orthodontists">Dentists And Orthodontists</string>
-    <string name="store_creation_profiler_industry_doctors_and_physicians">Doctors And Physicians</string>
-    <string name="store_creation_profiler_industry_health_and_wellness_coaching">Health And Wellness Coaching</string>
-    <string name="store_creation_profiler_industry_hospitals">Hospitals</string>
-    <string name="store_creation_profiler_industry_medical_devices">Medical Devices</string>
-    <string name="store_creation_profiler_industry_medical_laboratories">Medical Laboratories</string>
-    <string name="store_creation_profiler_industry_medical_organizations">Medical Organizations</string>
-    <string name="store_creation_profiler_industry_mental_health_services">Mental Health Services</string>
-    <string name="store_creation_profiler_industry_nursing_or_personal_care_facilities">Nursing Or Personal Care Facilities</string>
-    <string name="store_creation_profiler_industry_opticians_and_eyeglasses">Opticians And Eyeglasses</string>
-    <string name="store_creation_profiler_industry_optometrists_and_ophthalmologists">Optometrists and Ophthalmologists</string>
-    <string name="store_creation_profiler_industry_osteopaths">Osteopaths</string>
-    <string name="store_creation_profiler_industry_other_medical_services">Other Medical Services</string>
-    <string name="store_creation_profiler_industry_podiatrists_and_chiropodists">Podiatrists and Chiropodists</string>
-    <string name="store_creation_profiler_industry_telemedicine_and_telehealth">Telemedicine And Telehealth</string>
-    <string name="store_creation_profiler_industry_veterinary_services">Veterinary Services</string>
-    <string name="store_creation_profiler_industry_charities_or_social_service_organizations">Charities Or Social Service Organizations</string>
-    <string name="store_creation_profiler_industry_civic_fraternal_or_social_associations">Civic, Fraternal, Or Social Associations</string>
-    <string name="store_creation_profiler_industry_country_clubs">Country Clubs</string>
-    <string name="store_creation_profiler_industry_other_membership_organizations">Other Membership Organizations</string>
-    <string name="store_creation_profiler_industry_political_organizations">Political Organizations</string>
-    <string name="store_creation_profiler_industry_religious_organizations">Religious Organizations</string>
-    <string name="store_creation_profiler_industry_counseling_services">Counseling Services</string>
-    <string name="store_creation_profiler_industry_dating_services">Dating Services</string>
-    <string name="store_creation_profiler_industry_funeral_services">Funeral Services</string>
-    <string name="store_creation_profiler_industry_health_and_beauty_spas">Health And Beauty Spas</string>
-    <string name="store_creation_profiler_industry_landscaping_services">Landscaping Services</string>
-    <string name="store_creation_profiler_industry_laundry_or_cleaning_services">Laundry Or Cleaning Services</string>
-    <string name="store_creation_profiler_industry_massage_parlors">Massage Parlors</string>
-    <string name="store_creation_profiler_industry_other_personal_services">Other Personal Services</string>
-    <string name="store_creation_profiler_industry_photography_studios">Photography Studios</string>
-    <string name="store_creation_profiler_industry_salons_or_barbers">Salons Or Barbers</string>
-    <string name="store_creation_profiler_industry_accounting_auditing_or_tax_prep">Accounting, Auditing, Or Tax Prep</string>
-    <string name="store_creation_profiler_industry_attorneys_and_lawyers">Attorneys And Lawyers</string>
-    <string name="store_creation_profiler_industry_auto_services">Auto Services</string>
-    <string name="store_creation_profiler_industry_bail_bonds">Bail Bonds</string>
-    <string name="store_creation_profiler_industry_bankruptcy_services">Bankruptcy Services</string>
-    <string name="store_creation_profiler_industry_car_rentals">Car Rentals</string>
-    <string name="store_creation_profiler_industry_car_sales">Car Sales</string>
-    <string name="store_creation_profiler_industry_computer_repair">Computer Repair</string>
-    <string name="store_creation_profiler_industry_consulting">Consulting</string>
-    <string name="store_creation_profiler_industry_credit_counseling_or_credit_repair">Credit Counseling Or Credit Repair</string>
-    <string name="store_creation_profiler_industry_debt_reduction_services">Debt Reduction Services</string>
-    <string name="store_creation_profiler_industry_digital_marketing">Digital Marketing</string>
-    <string name="store_creation_profiler_industry_employment_agencies">Employment Agencies</string>
-    <string name="store_creation_profiler_industry_government_services">Government Services</string>
-    <string name="store_creation_profiler_industry_lead_generation">Lead Generation</string>
-    <string name="store_creation_profiler_industry_mortgage_consulting_services">Mortgage Consulting Services</string>
-    <string name="store_creation_profiler_industry_other_business_services">Other Business Services</string>
-    <string name="store_creation_profiler_industry_other_marketing_services">Other Marketing Services</string>
-    <string name="store_creation_profiler_industry_printing_and_publishing">Printing and Publishing</string>
-    <string name="store_creation_profiler_industry_protective_or_security_services">Protective Or Security Services</string>
-    <string name="store_creation_profiler_industry_telemarketing">Telemarketing</string>
-    <string name="store_creation_profiler_industry_testing_laboratories">Testing Laboratories</string>
-    <string name="store_creation_profiler_industry_utilities">Utilities</string>
-    <string name="store_creation_profiler_industry_warranty_services">Warranty Services</string>
-    <string name="store_creation_profiler_industry_accessories_for_tobacco_and_marijuana">Accessories For Tobacco And Marijuana</string>
-    <string name="store_creation_profiler_industry_adult_content_or_services">Adult Content Or Services</string>
-    <string name="store_creation_profiler_industry_alcohol">Alcohol</string>
-    <string name="store_creation_profiler_industry_marijuana_dispensaries">Marijuana Dispensaries</string>
-    <string name="store_creation_profiler_industry_marijuana_related_products">Marijuana-related Products</string>
-    <string name="store_creation_profiler_industry_pharmacies_or_pharmaceuticals">Pharmacies Or Pharmaceuticals</string>
-    <string name="store_creation_profiler_industry_supplements_or_nutraceuticals">Supplements Or Nutraceuticals</string>
-    <string name="store_creation_profiler_industry_tobacco_or_cigars">Tobacco Or Cigars</string>
-    <string name="store_creation_profiler_industry_vapes_e_cigarettes_e_juice_or_related_products">Vapes, E-cigarettes, E-juice Or Related Products</string>
-    <string name="store_creation_profiler_industry_weapons_or_munitions">Weapons Or Munitions</string>
-    <string name="store_creation_profiler_industry_accessories">Accessories</string>
-    <string name="store_creation_profiler_industry_antiques">Antiques</string>
-    <string name="store_creation_profiler_industry_auto_parts_and_accessories">Auto Parts And Accessories</string>
-    <string name="store_creation_profiler_industry_beauty_products">Beauty Products</string>
-    <string name="store_creation_profiler_industry_clothing_and_accessories">Clothing And Accessories</string>
-    <string name="store_creation_profiler_industry_convenience_stores">Convenience Stores</string>
-    <string name="store_creation_profiler_industry_designer_products">Designer Products</string>
-    <string name="store_creation_profiler_industry_flowers">Flowers</string>
-    <string name="store_creation_profiler_industry_hardware_stores">Hardware Stores</string>
-    <string name="store_creation_profiler_industry_home_electronics">Home Electronics</string>
-    <string name="store_creation_profiler_industry_home_goods_and_furniture">Home Goods And Furniture</string>
-    <string name="store_creation_profiler_industry_other_merchandise">Other Merchandise</string>
-    <string name="store_creation_profiler_industry_shoes">Shoes</string>
-    <string name="store_creation_profiler_industry_software">Software</string>
-    <string name="store_creation_profiler_industry_airlines_and_air_carriers">Airlines And Air Carriers</string>
-    <string name="store_creation_profiler_industry_commuter_transportation">Commuter Transportation</string>
-    <string name="store_creation_profiler_industry_courier_services">Courier Services</string>
-    <string name="store_creation_profiler_industry_cruise_lines">Cruise Lines</string>
-    <string name="store_creation_profiler_industry_freight_forwarders">Freight Forwarders</string>
-    <string name="store_creation_profiler_industry_other_transportation_services">Other Transportation Services</string>
-    <string name="store_creation_profiler_industry_parking_lots">Parking Lots</string>
-    <string name="store_creation_profiler_industry_ridesharing">Ridesharing</string>
-    <string name="store_creation_profiler_industry_shipping_or_forwarding">Shipping Or Forwarding</string>
-    <string name="store_creation_profiler_industry_taxis_and_limos">Taxis And Limos</string>
-    <string name="store_creation_profiler_industry_travel_agencies">Travel Agencies</string>
-    <string name="store_creation_profiler_industry_hotels_inns_or_motels">Hotels, Inns, Or Motels</string>
-    <string name="store_creation_profiler_industry_other_travel_leisure">Other Travel And Lodging</string>
-    <string name="store_creation_profiler_industry_property_rentals">Property Rentals</string>
-    <string name="store_creation_profiler_industry_timeshares">Timeshares</string>
-    <string name="store_creation_profiler_industry_trailer_parks_and_campgrounds">Trailer Parks and Campgrounds</string>
+    <string name="store_creation_profiler_industry_clothing_accessories">Clothing and accessories</string>
+    <string name="store_creation_profiler_industry_health_beauty">Health and beauty</string>
+    <string name="store_creation_profiler_industry_food_drink">Food and drink</string>
+    <string name="store_creation_profiler_industry_home_furniture_garden">Home, furniture, and garden</string>
+    <string name="store_creation_profiler_industry_education_learning">Education and learning</string>
+    <string name="store_creation_profiler_industry_electronic_computers">Electronics and computers</string>
+    <string name="store_creation_profiler_industry_other">Other</string>
+
     <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
@@ -3158,9 +3089,13 @@
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_menu_hide_store_setup">Hide store setup list</string>
+    <string name="store_onboarding_dialog_title">Hide store setup list</string>
+    <string name="store_onboarding_dialog_description">You can restore it back when you need it from Menu &gt; Settings &gt; Store</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
     <string name="store_onboarding_launch_store_button">Publish my store</string>
     <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
@@ -3176,6 +3111,8 @@
     <string name="store_onboarding_launch_store_ok">OK</string>
     <string name="store_onboarding_get_paid_title">Payments Setup</string>
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
+    <string name="store_onboarding_setting_title">Store Setup List</string>
+    <string name="store_onboarding_setting_description">Show or hide store setup list</string>
 
     <!--
     Support Request
@@ -3325,7 +3262,6 @@
     <string name="product_bundle_multiple_count">%d products</string>
     <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
 
-
     <!--
     More Menu
     -->
@@ -3342,6 +3278,9 @@
 
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
 
     <string name="more_menu_button_inbox">Inbox</string>
     <string name="more_menu_button_inbox_description">Stay up-to-date</string>
@@ -3360,5 +3299,56 @@
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
+
+    <!--
+    Composite products
+    -->
+    <string name="product_components">Components</string>
+    <string name="product_component_settings">Component settings</string>
+    <string name="product_component_single_count">1 component</string>
+    <string name="product_component_multiple_count">%d components</string>
+    <string name="component_products_info_notice">You can edit components in the web dashboard.</string>
+    <string name="component_options">Component options</string>
+    <string name="component_default_option">Default option</string>
+    <string name="component_type_products">Products</string>
+    <string name="component_type_categories">Categories</string>
+
+    <!--
+    Eu-Bound Shipping notice banner
+    -->
+    <string name="shipping_notice_banner_warning_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_learn_more">Learn More</string>
+    <string name="shipping_notice_dismiss">Dismiss</string>
+
+    <!--
+    Local Notifications
+    -->
+    <string name="local_notification_store_creation_complete_title">🎉 Your store is ready!</string>
+    <string name="local_notification_store_creation_complete_description">Hi %1$s! Welcome to your 14-day free trial of Woo Express – everything you need to start and grow a successful online business, all in one place. Ready to explore?</string>
+    <string name="local_notification_without_free_trial_title">🛍️ Your store is waiting!</string>
+    <string name="local_notification_without_free_trial_description">Hi %1$s, %2$s is ready for you! Start your 14-day free trial of Woo Express right in just one click to start your online business.  </string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Time’s running out on your free trial!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
+
+    <!--
+    First product published congratulatory feature
+    -->
+    <string name="first_product_celebration_title">First product created 🎉</string>
+    <string name="first_product_celebration_body_message">Congratulations! You\'re one step closer to get the new store ready.</string>
+    <string name="share_product">Share product</string>
+
+    <!--
+    Product sharing with AI
+    -->
+    <string name="product_sharing_write_with_ai">Write with AI</string>
+    <string name="product_sharing_regenerate">Regenerate</string>
+    <string name="product_sharing_generating">Generating…</string>
+    <string name="product_sharing_optional_message_label">Add an optional message</string>
+    <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
+    <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
+
 
 </resources>

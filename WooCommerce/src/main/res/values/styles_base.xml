@@ -469,6 +469,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Button filled with color  -->
     <style name="Woo.Button.Colored" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textColor">@color/woo_white</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="rippleColor">?colorPrimaryVariant</item>
@@ -477,6 +478,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Circular button filled with color  -->
     <style name="Woo.Button.Colored.Circle" parent="Widget.MaterialComponents.Button">
         <item name="cornerSize">50%</item>
+        <item name="android:textColor">@color/woo_white</item>
         <item name="android:insetTop">@dimen/minor_00</item>
         <item name="android:insetBottom">@dimen/minor_00</item>
         <item name="android:insetLeft">@dimen/minor_00</item>
@@ -487,7 +489,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
 
     <style name="Woo.Button.Colored.Circle.White" parent="Woo.Button.Colored.Circle">
         <item name="android:textColor">@color/color_on_surface</item>
-        <item name="backgroundTint">@color/color_surface</item>
+        <item name="backgroundTint">@color/color_surface_elevated</item>
     </style>
 
     <style name="Woo.Button.Colored.White">

@@ -67,6 +67,15 @@
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/notifications_permission_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/trial_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/trial_bar"
         style="@style/Woo.TextView.Subtitle1.OnPrimary.Icon"
@@ -74,7 +83,7 @@
         android:layout_height="0dp"
         android:minHeight="@dimen/major_350"
         android:layout_margin="0dp"
-        android:background="@color/free_trial_banner_background"
+        android:background="@color/free_trial_component_background"
         android:drawablePadding="@dimen/minor_100"
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/minor_100"

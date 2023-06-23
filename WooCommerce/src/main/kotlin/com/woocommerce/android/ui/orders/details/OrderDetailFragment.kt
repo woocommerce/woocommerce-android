@@ -100,6 +100,8 @@ class OrderDetailFragment :
     lateinit var dateUtils: DateUtils
     @Inject
     lateinit var cardReaderManager: CardReaderManager
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -114,7 +116,7 @@ class OrderDetailFragment :
         }
 
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
+        get() = feedbackPrefs.getFeatureFeedbackSettings(SHIPPING_LABEL_M4)?.feedbackState
             ?: UNANSWERED
 
     override fun onResume() {
@@ -374,7 +376,7 @@ class OrderDetailFragment :
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleDialogNotice<String>(
+        handleDialogNotice(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {
@@ -486,11 +488,11 @@ class OrderDetailFragment :
         }
     }
 
-    private fun showOrderProducts(products: List<Order.Item>, currency: String) {
+    private fun showOrderProducts(products: List<OrderProduct>, currency: String) {
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
-                updateProductList(
-                    orderItems = products,
+                updateProductItemsList(
+                    orderProductItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
@@ -596,7 +598,7 @@ class OrderDetailFragment :
         FeatureFeedbackSettings(
             SHIPPING_LABEL_M4,
             state
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
     }
 
     private fun displayUndoSnackbar(

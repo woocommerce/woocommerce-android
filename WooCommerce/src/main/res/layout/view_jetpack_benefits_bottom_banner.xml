@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/jetpack_black"
     android:minHeight="@dimen/major_350"
-    android:background="@color/jetpack_black">
+    android:paddingTop="@dimen/major_75"
+    android:paddingBottom="@dimen/major_75">
 
     <ImageView
         android:id="@+id/jetpack_logo"
@@ -40,6 +42,7 @@
         android:text="@string/jetpack_benefits_bottom_banner_subtitle"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textColor="@color/woo_white_alpha_060"
+        android:lineSpacingExtra="@dimen/minor_25"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/dismiss_button"
         app:layout_constraintStart_toEndOf="@id/jetpack_logo"

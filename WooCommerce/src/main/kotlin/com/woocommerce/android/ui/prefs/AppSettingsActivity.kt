@@ -18,7 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
-import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.util.parcelable
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,6 +38,8 @@ class AppSettingsActivity :
     AppSettingsListener,
     AppSettingsContract.View {
     companion object {
+        const val EXTRA_SHOW_PRIVACY_SETTINGS = "extra_show_privacy_settings"
+        const val EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR = "extra_requested_analytics_value_from_error"
         const val RESULT_CODE_BETA_OPTIONS_CHANGED = 2
         const val KEY_BETA_OPTION_CHANGED = "key_beta_option_changed"
     }
@@ -74,6 +77,19 @@ class AppSettingsActivity :
 
         if (isBetaOptionChanged) {
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
+        }
+
+        if (intent.getBooleanExtra(EXTRA_SHOW_PRIVACY_SETTINGS, false)) {
+
+            val requestedAnalyticsValue =
+                intent.parcelable(EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR)
+                    ?: RequestedAnalyticsValue.NONE
+
+            navHostFragment.navController.navigate(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToPrivacySettingsFragment(
+                    requestedAnalyticsValue
+                )
+            )
         }
     }
 
@@ -124,14 +140,6 @@ class AppSettingsActivity :
         if (AppPrefs.isProductAddonsEnabled != enabled) {
             isBetaOptionChanged = true
             AppPrefs.isProductAddonsEnabled = enabled
-            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
-        }
-    }
-
-    override fun onCouponsOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isCouponsEnabled != enabled) {
-            isBetaOptionChanged = true
-            AppPrefs.isCouponsEnabled = enabled
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }

@@ -2,7 +2,10 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.R
-import com.woocommerce.android.push.*
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.WooNotificationType
+import com.woocommerce.android.notifications.getGroupId
+import com.woocommerce.android.notifications.getWooType
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -18,7 +21,9 @@ data class Notification(
     val noteTitle: String,
     val noteMessage: String?,
     val noteType: WooNotificationType,
-    val channelType: NotificationChannelType
+    val channelType: NotificationChannelType,
+    val tag: String? = null,
+    val data: String? = null
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderNotification = noteType == WooNotificationType.NEW_ORDER

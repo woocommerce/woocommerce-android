@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.common.wpcomwebview
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode.PARTIAL
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode.STARTS_WITH
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -18,13 +19,15 @@ class WPComWebViewViewModel @Inject constructor(
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: WPComWebViewFragmentArgs by savedStateHandle.navArgs()
+    private var isExiting = false
 
     val viewState = navArgs.let {
         ViewState(
             urlToLoad = it.urlToLoad,
             title = it.title,
             displayMode = it.displayMode,
-            captureBackButton = it.captureBackButton
+            captureBackButton = it.captureBackButton,
+            clearCache = it.clearCache
         )
     }
 
@@ -32,9 +35,11 @@ class WPComWebViewViewModel @Inject constructor(
         fun String.matchesUrl(url: String) = when (navArgs.urlComparisonMode) {
             PARTIAL -> url.contains(this, ignoreCase = true)
             EQUALITY -> equals(url, ignoreCase = true)
+            STARTS_WITH -> url.startsWith(this, ignoreCase = true)
         }
 
-        if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true) {
+        if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true && !isExiting) {
+            isExiting = true
             triggerEvent(ExitWithResult(Unit))
         }
     }
@@ -47,11 +52,12 @@ class WPComWebViewViewModel @Inject constructor(
         val urlToLoad: String,
         val title: String?,
         val displayMode: DisplayMode,
-        val captureBackButton: Boolean
+        val captureBackButton: Boolean,
+        val clearCache: Boolean = false
     )
 
     enum class UrlComparisonMode {
-        PARTIAL, EQUALITY
+        PARTIAL, EQUALITY, STARTS_WITH
     }
 
     enum class DisplayMode {

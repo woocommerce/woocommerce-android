@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.summary
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -10,6 +11,8 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SIT
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnCancelPressed
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +23,8 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.store.AccountStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
@@ -27,6 +32,9 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private lateinit var createStore: CreateFreeTrialStore
     private lateinit var newStore: NewStore
     private lateinit var tracker: AnalyticsTrackerWrapper
+    private lateinit var localNotificationScheduler: LocalNotificationScheduler
+    private lateinit var isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
+    private lateinit var accountStore: AccountStore
     private val savedState = SavedStateHandle()
 
     @Test
@@ -40,7 +48,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         sut.onTryForFreeButtonPressed()
 
         // Then
-        verify(createStore).invoke(expectedDomain, expectedTitle)
+        verify(createStore).invoke(expectedDomain, expectedTitle, null, null)
     }
 
     @Test
@@ -195,6 +203,13 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         expectedCreationState: StoreCreationState? = null
     ) {
         tracker = mock()
+        localNotificationScheduler = mock()
+        isRemoteFeatureFlagEnabled = mock {
+            onBlocking { invoke(LOCAL_NOTIFICATION_STORE_CREATION_READY) } doReturn true
+        }
+        accountStore = mock {
+            on { account } doReturn AccountModel().apply { firstName = "test" }
+        }
 
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
@@ -205,7 +220,12 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
 
         createStore = mock {
             onBlocking {
-                invoke(newStore.data.domain, newStore.data.name)
+                invoke(
+                    newStore.data.domain,
+                    newStore.data.name,
+                    newStore.data.profilerData,
+                    newStore.data.country?.code
+                )
             } doAnswer {
                 flow {
                     emit(StoreCreationState.Loading)
@@ -219,6 +239,9 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
             createStore = createStore,
             newStore = newStore,
             tracker = tracker,
+            localNotificationScheduler = localNotificationScheduler,
+            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
+            accountStore = accountStore
         )
     }
 }

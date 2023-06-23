@@ -53,7 +53,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         orderUpdateStore = mock {
             onBlocking {
-                createSimplePayment(eq(defaultSiteModel), eq("1"), eq(true), eq(null))
+                createSimplePayment(eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(null))
             } doReturn WooResult(
                 WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, DEFAULT_ERROR_MESSAGE)
             )
@@ -86,6 +86,26 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given simple payment order with note, when created, then note is passed`() = testBlocking {
+        // GIVEN
+        val note = "note"
+        whenever(
+            orderUpdateStore.createSimplePayment(
+                eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(note)
+            )
+        )
+            .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+        // WHEN
+        sut.createSimplePaymentOrder(BigDecimal.ONE, note)
+
+        // THEN
+        verify(orderUpdateStore).createSimplePayment(
+            eq(defaultSiteModel), eq("1"), eq(true), eq(null), eq(note)
+        )
+    }
+
+    @Test
     fun `when AUTO_DRAFT is not supported then status is changed to PENDING`() = testBlocking {
         // Given a site using a version that doesn't support AUTO_DRAFT
         whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
@@ -109,7 +129,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             billingAddress = null,
             customerNote = order.customerNote,
             shippingLines = emptyList(),
-            feeLines = emptyList()
+            feeLines = emptyList(),
+            couponLines = emptyList(),
         )
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request)
@@ -139,7 +160,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             billingAddress = null,
             customerNote = order.customerNote,
             shippingLines = emptyList(),
-            feeLines = emptyList()
+            feeLines = emptyList(),
+            couponLines = emptyList(),
         )
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request)

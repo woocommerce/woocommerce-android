@@ -209,6 +209,26 @@
                 android:layout_height="1dp"
                 android:background="@color/divider_color" />
 
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvScanToPay"
+                style="@style/Woo.Card.Body.Bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_baseline_qr_code_scanner"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:drawablePadding="@dimen/major_100"
+                android:padding="@dimen/major_100"
+                android:text="@string/card_reader_type_selection_scan_to_pay" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/dividerAfterScanToPay"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/divider_color" />
+
         </LinearLayout>
 
         <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
@@ -220,16 +240,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/container" />
-
-        <include
-            android:id="@+id/upsellCardReaderComposeView"
-            layout="@layout/fragment_card_reader_upsell_banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/learn_more_ipp_payment_methods_tv" />
 
         <ProgressBar
             android:id="@+id/pbLoading"

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.main
 
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
@@ -12,13 +14,23 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.local.LocalNotificationType
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType.Jetpack
+import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
+import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
+import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -27,7 +39,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -43,8 +56,10 @@ class MainActivityViewModel @Inject constructor(
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
+    private val privacyRepository: PrivacySettingsRepository,
+    moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val determineTrialStatusBarState: DetermineTrialStatusBarState,
+    determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -54,12 +69,18 @@ class MainActivityViewModel @Inject constructor(
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
-    val moreMenuBadgeState = unseenReviewsCountHandler.observeUnseenCount().map { reviewsCount ->
-        determineMenuBadgeState(reviewsCount)
+    val moreMenuBadgeState = combine(
+        unseenReviewsCountHandler.observeUnseenCount(),
+        moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable,
+    ) { reviewsCount, features ->
+        determineMenuBadgeState(reviewsCount, features)
     }.asLiveData()
 
     private val _bottomBarState: MutableStateFlow<BottomBarState> = MutableStateFlow(BottomBarState.Visible)
     val bottomBarState = _bottomBarState.asLiveData()
+
+    private val _isNotificationPermissionCardVisible = MutableStateFlow(false)
+    val isNotificationsPermissionCardVisible = _isNotificationPermissionCardVisible.asLiveData()
 
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
@@ -155,13 +176,13 @@ class MainActivityViewModel @Inject constructor(
 
     private fun onZendeskNotificationOpened(localPushId: Int, remoteNoteId: Long) {
         notificationHandler.markNotificationTapped(remoteNoteId)
-        notificationHandler.removeNotificationByPushIdFromSystemsBar(localPushId)
+        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
         triggerEvent(ViewZendeskTickets)
     }
 
     private fun onSingleNotificationOpened(localPushId: Int, notification: Notification) {
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
-        notificationHandler.removeNotificationByPushIdFromSystemsBar(localPushId)
+        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
         if (notification.channelType == NotificationChannelType.REVIEW) {
             analyticsTrackerWrapper.track(REVIEW_OPEN)
             triggerEvent(ViewReviewDetail(notification.uniqueId))
@@ -175,7 +196,9 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun determineMenuBadgeState(reviews: Int) = if (reviews > 0) UnseenReviews(reviews) else Hidden
+    private fun determineMenuBadgeState(count: Int, features: List<MoreMenuNewFeature>) =
+        if (features.isNotEmpty()) NewFeature
+        else if (count > 0) UnseenReviews(count) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {
@@ -202,6 +225,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
+        val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
+            !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
+            selectedSite.get().connectionType == Jetpack
+
+        _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+    }
+
     fun hideBottomNav() {
         _bottomBarState.value = BottomBarState.Hidden
     }
@@ -210,23 +241,81 @@ class MainActivityViewModel @Inject constructor(
         _bottomBarState.value = BottomBarState.Visible
     }
 
+    fun onNotificationsPermissionBarDismissButtonTapped() {
+        AppPrefs.setWasNotificationsPermissionBarDismissed(true)
+        _isNotificationPermissionCardVisible.update { false }
+    }
+
+    fun onNotificationsPermissionBarAllowButtonTapped() {
+        triggerEvent(RequestNotificationsPermission)
+    }
+
+    fun onLocalNotificationTapped(notification: Notification) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
+        )
+
+        when (notification.tag) {
+            LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
+                triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+            }
+            LocalNotificationType.FREE_TRIAL_EXPIRED.value,
+            LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
+                triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+            }
+        }
+    }
+
+    fun onPrivacyPreferenceUpdateFailed(analyticsEnabled: Boolean) {
+        triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+    }
+
+    fun onRequestPrivacyUpdate(analyticsEnabled: Boolean) {
+        launch {
+            privacyRepository.updateTracksSetting(analyticsEnabled).fold(
+                onSuccess = {
+                    prefs.savedPrivacySettings = true
+                },
+                onFailure = {
+                    triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+                }
+            )
+        }
+    }
+
+    fun onPrivacySettingsTapped() {
+        triggerEvent(ShowPrivacySettings)
+    }
+
+    fun onSettingsPrivacyPreferenceUpdateFailed(requestedAnalyticsPreference: RequestedAnalyticsValue) {
+        triggerEvent(ShowPrivacySettingsWithError(requestedAnalyticsPreference))
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    object RequestNotificationsPermission : Event()
     data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
+    data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
+    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
+    object ShowPrivacySettings : Event()
+    data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
+        object NewFeature : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
     }
 

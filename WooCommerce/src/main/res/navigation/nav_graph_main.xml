@@ -104,6 +104,14 @@
             <argument
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+            <argument
+                android:name="sku"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="barcodeFormat"
+                app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+                app:nullable="true" />
         </action>
     </fragment>
     <fragment
@@ -137,6 +145,11 @@
             <argument
                 android:name="selectedProductCategoryName"
                 app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="restrictions"
+                android:defaultValue="@null"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]"
                 app:nullable="true" />
         </action>
         <action
@@ -373,6 +386,10 @@
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
             app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
@@ -514,6 +531,9 @@
             app:destination="@id/getPaidFragment"
             app:popUpTo="@id/dashboard" />
     </fragment>
+    <dialog
+        android:id="@+id/privacyBannerFragment"
+        android:name="com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragment" />
     <fragment
         android:id="@+id/launchStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
@@ -536,7 +556,25 @@
             app:argType="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment$PlanUpgradeStartSource"
             app:nullable="false" />
     </fragment>
+    <fragment
+        android:id="@+id/BlazeWebViewFragment"
+        android:name="com.woocommerce.android.ui.blaze.BlazeWebViewFragment"
+        android:label="BlazeWebViewFragment">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="source"
+            app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
+            app:nullable="false" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_blazeWebViewFragment"
+        app:destination="@id/BlazeWebViewFragment" />
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />
+    <action
+        android:id="@+id/action_global_privacyBannerFragment"
+        app:destination="@id/privacyBannerFragment" />
 </navigation>

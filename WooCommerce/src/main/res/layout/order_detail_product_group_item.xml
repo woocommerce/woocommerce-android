@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/expand_icon"
+        android:layout_width="@dimen/image_minor_80"
+        android:layout_height="@dimen/image_minor_80"
+        android:padding="@dimen/minor_50"
+        android:src="@drawable/ic_arrow_down"
+        android:tint="@color/color_on_surface_high"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_125"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="?selectableItemBackgroundBorderless"/>
+
+    <com.woocommerce.android.ui.orders.OrderDetailProductItemView
+        android:id="@+id/productInfo_groupedProduct"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/expand_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/minor_50"
+        android:background="?selectableItemBackground"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/productInfo_children_divider"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/minor_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_groupedProduct" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/productInfo_childrenRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_children_divider"
+        tools:listitem="@layout/order_detail_product_child_item"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

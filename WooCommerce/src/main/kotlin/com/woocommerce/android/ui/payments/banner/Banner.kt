@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.banner
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,99 +33,99 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.util.UiHelpers
 
 @Composable
-fun Banner(bannerState: BannerState) {
-    if (bannerState is BannerState.DisplayBannerState) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
+fun Banner(bannerState: JitmState.Banner) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.minor_100)
+                ),
+            horizontalArrangement = Arrangement.End
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                        top = dimensionResource(id = R.dimen.minor_100)
-                    ),
-                horizontalArrangement = Arrangement.End
+            IconButton(
+                onClick = bannerState.onDismissClicked
             ) {
-                IconButton(
-                    onClick = bannerState.onDismissClicked
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
-                        contentDescription = stringResource(
-                            id = R.string.card_reader_upsell_card_reader_banner_dismiss
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_close),
+                    contentDescription = stringResource(
+                        id = R.string.card_reader_upsell_card_reader_banner_dismiss
+                    ),
+                    tint = colorResource(id = R.color.color_on_surface)
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.minor_100)
+                ),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                BadgeIcon(bannerState)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(
+                        bottom = dimensionResource(id = R.dimen.minor_100)
+                    )
+                )
+                Text(
+                    text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.description),
+                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier.padding(
+                        bottom = dimensionResource(id = R.dimen.minor_100)
+                    )
+                )
+                TextButton(
+                    modifier = Modifier
+                        .padding(
+                            top = dimensionResource(id = R.dimen.minor_100),
+                            bottom = dimensionResource(id = R.dimen.minor_100),
                         ),
-                        tint = colorResource(id = R.color.color_on_surface)
+                    contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
+                    onClick = bannerState.onPrimaryActionClicked
+                ) {
+                    Text(
+                        text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.primaryActionLabel),
+                        color = colorResource(id = R.color.color_secondary),
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                        top = dimensionResource(id = R.dimen.minor_100)
-                    ),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    BadgeIcon(bannerState)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(
-                            bottom = dimensionResource(id = R.dimen.minor_100)
-                        )
-                    )
-                    Text(
-                        text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.description),
-                        style = MaterialTheme.typography.subtitle1,
-                        modifier = Modifier.padding(
-                            bottom = dimensionResource(id = R.dimen.minor_100)
-                        )
-                    )
-                    TextButton(
-                        modifier = Modifier
-                            .padding(
-                                top = dimensionResource(id = R.dimen.minor_100),
-                                bottom = dimensionResource(id = R.dimen.minor_100),
-                            ),
-                        contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
-                        onClick = bannerState.onPrimaryActionClicked
-                    ) {
-                        Text(
-                            text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.primaryActionLabel),
-                            color = colorResource(id = R.color.color_secondary),
-                            style = MaterialTheme.typography.subtitle1,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                }
-                Column {
-                    BackgroundImage(bannerState)
-                }
+            Column {
+                BackgroundImage(bannerState)
             }
         }
     }
 }
 
 @Composable
-private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
+private fun BackgroundImage(bannerState: JitmState.Banner) {
     when (val icon = bannerState.backgroundImage) {
-        is BannerState.LocalOrRemoteImage.Local -> {
+        is JitmState.Banner.LocalOrRemoteImage.Local -> {
             Image(
                 painter = painterResource(id = icon.drawableId),
                 contentDescription = null,
@@ -132,10 +133,14 @@ private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
                 modifier = Modifier.width(154.dp)
             )
         }
-        is BannerState.LocalOrRemoteImage.Remote -> {
+        is JitmState.Banner.LocalOrRemoteImage.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(icon.url)
+                    .data(
+                        if (isSystemInDarkTheme()) icon.urlDarkMode
+                        else icon.urlLightMode
+                    )
+                    .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.width(154.dp)
@@ -145,9 +150,9 @@ private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
 }
 
 @Composable
-private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
+private fun BadgeIcon(bannerState: JitmState.Banner) {
     when (val icon = bannerState.badgeIcon) {
-        is BannerState.LabelOrRemoteIcon.Label -> {
+        is JitmState.Banner.LabelOrRemoteIcon.Label -> {
             val bcgColor = colorResource(id = R.color.woo_purple_10)
             Text(
                 text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
@@ -167,10 +172,14 @@ private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
                     )
             )
         }
-        is BannerState.LabelOrRemoteIcon.Remote -> {
+        is JitmState.Banner.LabelOrRemoteIcon.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(icon.url)
+                    .data(
+                        if (isSystemInDarkTheme()) icon.urlDarkMode
+                        else icon.urlLightMode
+                    )
+                    .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.height(26.dp)
@@ -185,16 +194,16 @@ private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
 fun PaymentScreenBannerPreview() {
     WooThemeWithBackground {
         Banner(
-            BannerState.DisplayBannerState(
+            JitmState.Banner(
                 onPrimaryActionClicked = {},
                 onDismissClicked = {},
                 title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
                 description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
                 primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-                backgroundImage = BannerState.LocalOrRemoteImage.Local(
+                backgroundImage = JitmState.Banner.LocalOrRemoteImage.Local(
                     R.drawable.ic_banner_upsell_card_reader_illustration
                 ),
-                badgeIcon = BannerState.LabelOrRemoteIcon.Label(
+                badgeIcon = JitmState.Banner.LabelOrRemoteIcon.Label(
                     UiString.UiStringRes(
                         R.string.card_reader_upsell_card_reader_banner_new
                     )

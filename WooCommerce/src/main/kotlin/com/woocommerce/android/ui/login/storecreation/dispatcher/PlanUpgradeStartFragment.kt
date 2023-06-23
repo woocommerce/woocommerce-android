@@ -57,6 +57,6 @@ class PlanUpgradeStartFragment : BaseFragment() {
     }
 
     enum class PlanUpgradeStartSource {
-        BANNER, UPGRADES_SCREEN
+        BANNER, UPGRADES_SCREEN, NOTIFICATION
     }
 }

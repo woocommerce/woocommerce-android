@@ -76,7 +76,7 @@ class ProductsRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
-    private val productSalad = ProductData(
+    val productSalad = ProductData(
         name = "Chicken Teriyaki Salad",
         stockStatusRaw = "instock",
         priceDiscountedRaw = "7",
@@ -92,17 +92,24 @@ class ProductsRealAPI : TestBase() {
     )
 
     private val productCappuccinoAlmondMedium = ProductData(
-        name = "Cappuccino",
-        stockStatusRaw = "instock",
+        name = productCappuccino.name,
+        stockStatusRaw = productCappuccino.stockStatusRaw,
         priceDiscountedRaw = "3",
-        sku = "CF-CPC-ALM-M"
+        sku = productCappuccino.sku + "-ALM-M"
     )
 
     private val productCappuccinoAlmondLarge = ProductData(
-        name = "Cappuccino",
-        stockStatusRaw = "instock",
+        name = productCappuccino.name,
+        stockStatusRaw = productCappuccino.stockStatusRaw,
         priceDiscountedRaw = "4",
-        sku = "CF-CPC-ALM-L"
+        sku = productCappuccino.sku + "-ALM-L"
+    )
+
+    val productCappuccinoCocoMedium = ProductData(
+        name = productCappuccino.name,
+        stockStatusRaw = productCappuccino.stockStatusRaw,
+        priceDiscountedRaw = "3",
+        sku = productCappuccino.sku + "-COCO-M"
     )
 
     @Test
@@ -119,12 +126,16 @@ class ProductsRealAPI : TestBase() {
             .enterSearchTerm(productCappuccino.name)
             .assertProductCard(productCappuccino)
             .assertProductsCount(1)
+            .leaveSearchMode()
             // Search for 'productSalad'
+            .openSearchPane()
             .enterSearchTerm(productSalad.name)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
+            .leaveSearchMode()
             // Search for non-existing product
-            .enterSearchTerm("Unexisting Product")
+            .openSearchPane()
+            .enterAbsentSearchTerm("Unexisting Product")
             .assertProductsCount(0)
             // Leave search and make sure all products are listed
             .leaveSearchMode()
@@ -136,18 +147,24 @@ class ProductsRealAPI : TestBase() {
     @Test
     fun e2eRealApiProductsSearchBySKU() {
         ProductListScreen()
+            // Search for a simple product SKU
             .openSearchPane()
             .tapSearchSKU()
-            // Search for a simple product SKU
             .enterSearchTerm(productSalad.sku)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
+            .leaveSearchMode()
             // Search for variations sharing a part of SKU
+            .openSearchPane()
+            .tapSearchSKU()
             .enterSearchTerm(productCappuccino.sku + "-ALM")
             .assertProductCard(productCappuccinoAlmondMedium)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(2)
+            .leaveSearchMode()
             // Search for exact variation SKU
+            .openSearchPane()
+            .tapSearchSKU()
             .enterSearchTerm(productCappuccinoAlmondLarge.sku)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(1)
@@ -160,20 +177,20 @@ class ProductsRealAPI : TestBase() {
             // Filter by "Product type" = "Simple"
             .tapFilters()
             .filterByPropertyAndValue("Product type", "Simple")
-            .tapShowProducts()
+            .showProducts(true)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .tapShowProducts()
+            .showProducts(true)
             .assertProductCard(productSalad)
             .assertProductCard(productCappuccino)
             .assertProductsCount(2)
             // Filter by "Stock status" = "Out of Stock" and expect to see zero products
             .tapFilters()
             .filterByPropertyAndValue("Stock status", "Out of stock")
-            .tapShowProducts()
+            .showProducts(false)
             .assertProductsCount(0)
     }
 

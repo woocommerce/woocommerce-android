@@ -8,3 +8,7 @@ class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 object PlayChaChing : Event()
 
 object InteracRefundSuccessful : Event()
+
+object ContactSupport : Event()
+
+data class PurchaseCardReader(val url: String) : Event()

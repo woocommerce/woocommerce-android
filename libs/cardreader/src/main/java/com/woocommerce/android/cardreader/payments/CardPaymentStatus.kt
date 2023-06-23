@@ -18,7 +18,7 @@ sealed class CardPaymentStatus {
     sealed class CardPaymentStatusErrorType {
         object CardReadTimeOut : CardPaymentStatusErrorType()
         object NoNetwork : CardPaymentStatusErrorType()
-        object Server : CardPaymentStatusErrorType()
+        data class Server(val errorMessage: String) : CardPaymentStatusErrorType()
         object Generic : CardPaymentStatusErrorType()
         object Canceled : CardPaymentStatusErrorType()
 
@@ -135,6 +135,13 @@ sealed class CardPaymentStatus {
             object DeviceIsNotSupported : BuiltInReader()
             object InvalidAppSetup : BuiltInReader()
         }
+
+        override fun toString(): String = when (this) {
+            is Server -> toString()
+            else -> this.javaClass.run {
+                name.removePrefix("${`package`?.name ?: ""}.")
+            }
+        }
     }
 
     enum class AdditionalInfoType {
@@ -147,6 +154,7 @@ sealed class CardPaymentStatus {
         TRY_ANOTHER_READ_METHOD,
         TRY_ANOTHER_CARD,
         CHECK_MOBILE_DEVICE,
+        CARD_REMOVED_TOO_EARLY,
     }
 
     enum class PaymentMethodType(val stringRepresentation: String) {

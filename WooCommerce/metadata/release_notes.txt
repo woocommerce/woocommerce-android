@@ -1,1 +1,1 @@
-This release includes some bug fixes, visual & accessibility enhancements to the orders and products sections of the app. Keep your feedback rolling in; it helps us figure out what to work on next.
+This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!

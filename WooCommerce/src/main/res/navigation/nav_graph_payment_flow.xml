@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
-        android:name="com.woocommerce.android.ui.payments.SelectPaymentMethodFragment"
+        android:name="com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragment"
         android:label="SelectPaymentMethodFragment">
         <argument
             android:name="cardReaderFlowParam"
@@ -36,13 +36,21 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders"
             app:popUpTo="@+id/tapToPaySummaryFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/nav_graph_orders">
+            app:popUpToInclusive="true">
             <argument
                 android:name="orderId"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_tapToPaySummaryFragment"
+            app:destination="@id/tapToPaySummaryFragment"
+            app:popUpTo="@+id/tapToPaySummaryFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_scanToPayDialogFragment"
+            app:destination="@id/scanToPayDialogFragment" />
     </fragment>
 
     <!-- Onboarding flow -->
@@ -312,8 +320,30 @@
         android:name="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment"
         android:label="TapToPaySummaryFragment">
         <action
-            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentFragment"
+            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentsFragment"
             app:destination="@+id/simplePaymentsFragment" />
+        <action
+            android:id="@+id/action_tapToPaySummaryFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
+
+        <argument
+            android:name="testTapToPayFlow"
+            app:argType="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment$TestTapToPayFlow"
+            app:nullable="false" />
     </fragment>
+
+    <dialog
+        android:id="@+id/scanToPayDialogFragment"
+        android:name="com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment"
+        android:label="ScanToPayDialogFragment">
+        <argument
+            android:name="qrContent"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
 
 </navigation>

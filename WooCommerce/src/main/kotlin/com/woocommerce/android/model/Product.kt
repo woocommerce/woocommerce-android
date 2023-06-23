@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -27,6 +28,7 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
+    val parentId: Long,
     val name: String,
     val description: String,
     val shortDescription: String,
@@ -82,6 +84,7 @@ data class Product(
     override val height: Float,
     override val weight: Float,
     val subscription: SubscriptionDetails?,
+    val specialStockStatus: ProductStockStatus? = null
     val parentId: Long,
 ) : Parcelable, IProduct {
     companion object {
@@ -142,7 +145,8 @@ data class Product(
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
-            subscription == product.subscription
+            subscription == product.subscription &&
+            specialStockStatus == product.specialStockStatus
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -328,7 +332,8 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                subscription = updatedProduct.subscription
+                subscription = updatedProduct.subscription,
+                specialStockStatus = specialStockStatus
             )
         } ?: this.copy()
     }
@@ -478,6 +483,7 @@ fun WCProductModel.toAppModel(): Product {
     }
     return Product(
         remoteId = this.remoteProductId,
+        parentId = this.parentId,
         name = this.name,
         description = this.description,
         shortDescription = this.shortDescription,
@@ -561,6 +567,11 @@ fun WCProductModel.toAppModel(): Product {
         isPurchasable = this.purchasable,
         subscription = subscription,
         parentId = this.parentId,
+        specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
+            ProductStockStatus.fromString(this.specialStockStatus)
+        } else {
+            null
+        }
     )
 }
 

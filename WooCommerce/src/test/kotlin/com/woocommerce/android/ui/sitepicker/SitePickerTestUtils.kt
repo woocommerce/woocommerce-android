@@ -47,7 +47,8 @@ object SitePickerTestUtils {
     fun getDefaultLoginViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) = defaultViewState.copy(
         isHelpBtnVisible = true,
         isSecondaryBtnVisible = true,
-        isPrimaryBtnVisible = true
+        isPrimaryBtnVisible = true,
+        toolbarTitle = ""
     )
 
     fun getDefaultSwitchStoreViewState(

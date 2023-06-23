@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
@@ -67,7 +68,10 @@ class OrderCreateEditRepository @Inject constructor(
         }
     }
 
-    suspend fun createSimplePaymentOrder(currentPrice: BigDecimal): Result<Order> {
+    suspend fun createSimplePaymentOrder(
+        currentPrice: BigDecimal,
+        customerNote: String? = null,
+    ): Result<Order> {
         val status = if (isAutoDraftSupported()) {
             WCOrderStatusModel(statusKey = AUTO_DRAFT)
         } else {
@@ -78,7 +82,8 @@ class OrderCreateEditRepository @Inject constructor(
             site = selectedSite.get(),
             amount = currentPrice.toString(),
             isTaxable = true,
-            status = status
+            status = status,
+            customerNote = customerNote
         )
 
         return when {
@@ -116,7 +121,8 @@ class OrderCreateEditRepository @Inject constructor(
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
             shippingLines = order.shippingLines.map { it.toDataModel() },
-            feeLines = order.feesLines.map { it.toDataModel() }
+            feeLines = order.feesLines.map { it.toDataModel() },
+            couponLines = order.couponLines.map { it.toDataModel() },
         )
 
         val result = if (order.id == 0L) {
@@ -188,6 +194,9 @@ class OrderCreateEditRepository @Inject constructor(
         it.name = name
         it.total = total.toPlainString()
     }
+
+    private fun Order.CouponLine.toDataModel() =
+        WCCouponLine(code = code, id = null, discount = null, discountTax = null)
 
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"

@@ -11,12 +11,12 @@ interface CardReaderStore {
             object PaymentAlreadyCaptured : Successful()
         }
 
-        sealed class Error : CapturePaymentResponse() {
-            object GenericError : Error()
-            object MissingOrder : Error()
-            object CaptureError : Error()
-            object ServerError : Error()
-            object NetworkError : Error()
+        sealed class Error(val message: String) : CapturePaymentResponse() {
+            data class GenericError(val errorMsg: String) : Error(errorMsg)
+            data class MissingOrder(val errorMsg: String) : Error(errorMsg)
+            data class CaptureError(val errorMsg: String) : Error(errorMsg)
+            data class ServerError(val errorMsg: String) : Error(errorMsg)
+            data class NetworkError(val errorMsg: String) : Error(errorMsg)
         }
     }
 }

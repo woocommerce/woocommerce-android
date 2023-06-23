@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
@@ -8,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -21,6 +23,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
  */
 sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
+    data class ShareProductWithMessage(
+        val title: String,
+        val subject: String
+    ) : ProductNavigationTarget()
+    data class ShareProductWithAI(
+        val permalink: String,
+        val title: String,
+        val description: String? = null
+    ) : ProductNavigationTarget()
     data class ViewProductVariations(
         val remoteId: Long,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
@@ -127,7 +138,8 @@ sealed class ProductNavigationTarget : Event() {
         val productType: String?,
         val productStatus: String?,
         val productCategory: String?,
-        val productCategoryName: String?
+        val productCategoryName: String?,
+        val restrictions: List<ProductSelectorRestriction>
     ) : ProductNavigationTarget()
 
     data class ViewProductSubscription(
@@ -138,4 +150,11 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
 
     data class ViewBundleProducts(val productId: Long) : ProductNavigationTarget()
+
+    data class ViewProductComponents(val components: List<Component>) : ProductNavigationTarget()
+
+    data class ViewFirstProductCelebration(
+        val permalink: String,
+        val productName: String
+    ) : ProductNavigationTarget()
 }

@@ -12,13 +12,12 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
-import org.wordpress.android.fluxc.store.signup.SignUpStore
+import org.wordpress.android.fluxc.store.account.SignUpStore
 import javax.inject.Inject
 
 class SignUpRepository @Inject constructor(
     private val signUpStore: SignUpStore,
     private val dispatcher: Dispatcher,
-    private val signUpCredentialsValidator: SignUpCredentialsValidator
 ) {
     private companion object {
         const val EMAIL_EXIST_API_ERROR = "email_exists"
@@ -29,11 +28,6 @@ class SignUpRepository @Inject constructor(
     }
 
     suspend fun createAccount(email: String, password: String): AccountCreationResult {
-        val invalidCredentialsError = signUpCredentialsValidator.validateCredentials(email, password)
-        if (invalidCredentialsError != null) {
-            return AccountCreationError(invalidCredentialsError)
-        }
-
         WooLog.d(WooLog.T.LOGIN, "Fetching suggestions for username")
         val userNameSuggestionsResult = signUpStore.fetchUserNameSuggestions(
             email.lowercase().replace(BLACKLISTED_WORDING_ON_USERNAME, "")

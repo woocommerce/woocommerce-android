@@ -12,8 +12,10 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
+        fun setupOnboardingListVisibilitySetting()
 
         val isDomainOptionVisible: Boolean
+        val isCloseAccountOptionVisible: Boolean
     }
 
     interface View : BaseView<Presenter> {
@@ -21,5 +23,6 @@ interface MainSettingsContract {
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()
+        fun handleStoreSetupListSetting(enabled: Boolean, onToggleChange: (Boolean) -> Unit)
     }
 }

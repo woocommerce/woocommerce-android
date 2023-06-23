@@ -12,9 +12,12 @@ object AppUrls {
     const val AUTOMATTIC_PRIVACY_POLICY_CA = "https://automattic.com/privacy/#california-consumer-privacy-act-ccpa"
     const val AUTOMATTIC_COOKIE_POLICY = "https://www.automattic.com/cookies"
     const val AUTOMATTIC_HIRING = "https://automattic.com/work-with-us"
+    const val AUTOMATTIC_AI_GUIDELINES = "https://automattic.com/ai-guidelines/"
 
     const val WOOCOMMERCE_UPGRADE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
+    const val WOOCOMMERCE_WEB_OPTIONS = "https://woocommerce.com/tracking-and-opt-outs/"
+    const val WOOCOMMERCE_USAGE_TRACKER = "https://woocommerce.com/usage-tracking/"
 
     const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/posts/reviews-woocommerce-best-practices/"
     const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"
@@ -31,7 +34,7 @@ object AppUrls {
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
 
-    const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-testing"
+    const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-production"
 
     const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
 
@@ -86,4 +89,6 @@ object AppUrls {
         LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
         LOGIN_USERNAME_PASSWORD to "$LOGIN_HELP_CENTER#enter-store-credentials",
     )
+
+    const val EU_SHIPPING_CUSTOMS_REQUIREMENTS = "https://www.usps.com/international/new-eu-customs-rules.htm"
 }

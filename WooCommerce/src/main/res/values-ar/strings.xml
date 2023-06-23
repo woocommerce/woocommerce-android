@@ -1,11 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-10 15:54:16+0000
+Translation-Revision-Date: 2023-06-15 19:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="share_product">مشاركة المنتج</string>
+    <string name="first_product_celebration_body_message">تهانينا! لقد قمت بخطوة واحدة أقرب لجعل المتجر الجديد جاهزًا.</string>
+    <string name="first_product_celebration_title">تم إنشاء المنتج أولاً 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="order_list_barcode_scanning_process_death">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="card_reader_payment_card_removed_too_early">تمت إزالة البطاقة مبكرًا جدًا</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩لقد أوقفنا متجرك مؤقتًا، لكن يمكنك الاستمرار من خلال اختيار خطة تلائمك على أفضل نحو.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 واصل أعمالك مع خطتنا!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">ينتهي الإصدار التجريبي المجاني الذي تستخدمه من Woo Express غدًا (⁦%1$s⁩). حان الوقت الآن لإيجاد مكانتك في المستقبل - اختر خطة واستعد للتطور.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ أوشك وقت الإصدار التجريبي المجاني على النفاد!</string>
+    <string name="local_notification_without_free_trial_description">مرحبًا يا ⁦%1$s⁩، أصبح ⁦%2$s⁩ جاهزًا من أجلك! ابدأ الإصدار التجريبي المجاني الذي تستخدمه من Woo Express الذي تصل مدته إلى 14 يومًا مباشرة بنقرة واحدة فقط لبدء عملك على الإنترنت.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ متجرك في الانتظار!</string>
+    <string name="local_notification_store_creation_complete_description">مرحبًا يا ⁦%1$s⁩! مرحبًا في الإصدار التجريبي المجاني من Woo Express الذي تصل مدته إلى 14 يومًا - حيث يوجد كل ما تحتاج إليه لبدء عمل ناجح على الإنترنت وتطويره، كل ذلك في مكان واحد. هل أنت مستعد للاستكشاف؟</string>
+    <string name="local_notification_store_creation_complete_title">🎉 أصبح متجرك جاهزًا!</string>
+    <string name="product_type_variation">منتج التباين</string>
+    <string name="settings_policies_cookie_policy_description">توضّح سياسة الكوكيز لدينا كيف نستخدم نحن والآخرون الكوكيز، وكيف يمكننا إدارتها.</string>
+    <string name="settings_policies_cookie_policy">سياسة الكوكيز</string>
+    <string name="settings_policies_privacy_policy_description">تساعدنا معلوماتك على تحسين منتجاتنا والتسويق وتخصيص تجربتك على WooCommerce.</string>
+    <string name="settings_policies_privacy_policy">سياسة الخصوصية</string>
+    <string name="privacy_banner_error_save">كان هناك خطأ في أثناء حفظ خيارات الخصوصية الخاصة بك.</string>
+    <string name="privacy_banner_save">حفظ</string>
+    <string name="privacy_banner_settings">الإعدادات</string>
+    <string name="privacy_banner_analytics_description">اسمح لنا بتحسين الأداء عن طريق جمع المعلومات حول كيفية تفاعل المستخدمين مع تطبيقاتنا للهواتف المحمولة.</string>
+    <string name="privacy_banner_analytics">التحليلات</string>
+    <string name="privacy_banner_title">إدارة الخصوصية</string>
+    <string name="privacy_banner_description">تُمثِّل خصوصيتك أهمية بالغة بالنسبة إلينا وكانت دومًا كذلك. إننا نستخدم بياناتك الشخصية ونخزّنها ونعالجها لتحسين تطبيقنا (وتجربتك) بطرق متنوعة. إننا بحاجة إلى بعض استخدامات بياناتك بشكل كلي لكي تسير الأمور على ما يرام، إلى جانب استخدامات أخرى يمكنك تحسينها من إعداداتك.</string>
+    <string name="settings_reports_report_crashes_description">لمساعدتنا على تحسين أداء التطبيق وإصلاح الأخطاء العرضية، قم بتمكين تقرير الأعطال التلقائية.</string>
+    <string name="settings_reports_report_crashes">الإبلاغ عن الأعطال</string>
+    <string name="settings_reports_header">التقارير</string>
+    <string name="settings_privacy_cookies_polices_description">تعرّف على المزيد حول سياستَي الخصوصية والكوكيز لدينا.</string>
+    <string name="settings_privacy_cookies_polices">سياستَا الخصوصية والكوكيز</string>
+    <string name="settings_privacy_header">الخصوصية</string>
+    <string name="settings_usage_tracking_description">تعرّف على المزيد حول البيانات التي نجمعها حول متجرك وخياراتك للتحكم في مشاركة البيانات هذه.</string>
+    <string name="settings_usage_tracking">تعقب الاستخدام</string>
+    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
+    <string name="settings_web_options">خيارات الويب</string>
+    <string name="settings_more_privacy_options_header">مزيد من خيارات الخصوصية</string>
+    <string name="settings_tracking_analytics_error_update">كان هناك خطأ في أثناء تحديث إعدادات الخصوصية لديك</string>
+    <string name="settings_tracking_analytics_error_fetch">كان هناك خطأ في أثناء إحضار إعدادات الخصوصية لديك</string>
+    <string name="settings_tracking_analytics_description">اسمح لنا بتحسين الأداء عن طريق جمع المعلومات حول كيفية تفاعل المستخدمين مع تطبيقاتنا للهواتف المحمولة.</string>
+    <string name="settings_tracking_analytics">التحليلات</string>
+    <string name="settings_tracking_header">التعقُّب</string>
+    <string name="settings_privacy_statement">نقدّر خصوصيتك. تُستخدم بياناتك الشخصية لتحسين تطبيقاتنا للهواتف المحمولة وتعزيز الأمان وإجراء التحليلات إلى جانب دعم تجربة المستخدمين لديك.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">يتعذر عليك إضافة المنتج المتغير مباشرة. يرجى تحديد تباين محدد</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">المنتج غير موجود. تتعذر إضافة طلب جديد</string>
+    <string name="order_list_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
+    <string name="scan_barcode">مسح الرمز الشريطي ضوئيًا</string>
+    <string name="shipping_notice_banner_instructions_content">يتطلب منك الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي وصف كل عنصر الآن بوضوح. على سبيل المثال، إذا كنت ترسل ملابس، فيجب عليك تحديد نوع الملابس (مثل: قمصان الرجال وسترات النساء التحتية وسترات الأولاد) لكي يصبح الوصف مقبولاً. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="settings_close_account_dialog_contact_support_button">الاتصال بالدعم</string>
+    <string name="settings_close_account_active_stores_error_description">يتعذر إغلاق هذا الحساب بينما يحتوي على متاجر نشطة.</string>
+    <string name="settings_close_account_generic_error_description">حدث خطأ في أثناء إغلاق حسابك.</string>
+    <string name="settings_close_account_error_dialog_title">يتعذر إغلاق الحساب</string>
+    <string name="settings_close_account_dialog_loading_title">جارٍ إغلاق الحساب…</string>
+    <string name="settings_close_account_dialog_confirm_button">إغلاق الحساب نهائيًا</string>
+    <string name="settings_close_account_dialog_description">للتأكيد، ترجى إعادة إدخال اسم المستخدم الخاص بك قبل الإغلاق</string>
+    <string name="settings_close_account_dialog_title">تأكيد إغلاق الحساب</string>
+    <string name="settings_close_account">إغلاق الحساب</string>
+    <string name="scan_to_pay_title">مسح الاستجابة السريعة ضوئيًا واتباع التعليمات</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+    <string name="order_creation_remove_coupon">إزالة قسيمة من الطلب</string>
+    <string name="order_creation_coupon_codes">القسيمة (⁦%1$s⁩)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">إضافة قسيمة</string>
+    <string name="product_stock_status_insufficient_stock">مخزون غير كافٍ</string>
+    <string name="shipping_label_customs_item_description_too_short">يجب عليك توفير واضح ومحدد لكل عنصر.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">إضافة منتجات عبر الفاحص</string>
+    <string name="shipping_notice_dismiss">تجاهل</string>
+    <string name="shipping_notice_learn_more">التعرّف على المزيد</string>
+    <string name="shipping_notice_banner_warning_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">ابقَّ على اطلاع وعزز أمان المتجر. استكشف Jetpack الآن.</string>
+    <string name="jetpack_benefits_bottom_banner_title">تلقي تنبيهات الطلبات والمزيد</string>
+    <string name="store_onboarding_setting_description">إظهار قائمة إعداد المتجر أو إخفاؤها</string>
+    <string name="store_onboarding_setting_title">قائمة إعداد المتجر</string>
+    <string name="store_onboarding_dialog_description">يمكنك استعادته مجددًا عندما تحتاج إليه من القائمة &gt; الإعدادات &gt; المتجر</string>
+    <string name="store_onboarding_dialog_title">إخفاء قائمة إعداد المتجر</string>
+    <string name="store_onboarding_menu_hide_store_setup">إخفاء قائمة إعداد المتجر</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">عرض الطلب</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">تم استرداد دفعة اختبار Tap To Pay بنجاح</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">فشلت عملية استرداد الأموال. تجربة الاسترداد يدويًا</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">جارٍ استرداد دفعة الاختبار…</string>
+    <string name="signup_terms_of_service">يعني الاستمرار أنك توافق على &lt;a href=\'termsOfService\'&gt;&lt;u&gt;شروط الخدمة التي نقرها.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">لنقم بإنشاء حسابك أولاً. </string>
+    <string name="signup_create_password_label">إنشاء كلمة المرور الخاصة بك</string>
+    <string name="component_type_categories">التصنيفات</string>
+    <string name="component_type_products">المنتجات</string>
+    <string name="component_default_option">الخيار الافتراضي</string>
+    <string name="component_options">خيارات المكوّنات</string>
+    <string name="component_products_info_notice">يمكنك تحرير المكوّنات في لوحة معلومات الويب.</string>
+    <string name="product_component_multiple_count">%d من المكوّنات</string>
+    <string name="product_component_single_count">مكوّن واحد</string>
+    <string name="product_component_settings">إعدادات المكوّنات</string>
+    <string name="product_components">المكوّنات</string>
+    <string name="store_creation_profiler_industry_electronic_computers">الأجهزة الإلكترونية وأجهزة الحاسوب</string>
+    <string name="store_creation_profiler_industry_education_learning">التعليم والتعلُّم</string>
+    <string name="store_creation_profiler_industry_home_furniture_garden">المنزل والأثاث والحديقة</string>
+    <string name="store_creation_profiler_industry_food_drink">الطعام والشراب</string>
+    <string name="store_creation_profiler_industry_health_beauty">الصحة والجمال</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; اللون المفضّل لنا هو البنفسجي. 💜</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; يتشكل فريق Woo من أكثر من 350 من الأفراد الموهوبين، ويتم توزيعهم عبر أكثر من 30 بلدًا.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; هناك أكثر من 150 اجتماع WooCommerce يُعقد في جميع أنحاء العالم! طريقة رائعة لمقابلة مالكي المتاجر الزملاء.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل أنت Team Cat أم Team Dog؟ ينقسم فريق Woo 50/50!</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل كنت على دراية بتأسيس Woo على يد شخصين من جنوب إفريقيا وآخر من النرويج؟ في ما يأتي ثلاث طرق بديلة لقول \"متجر\" في تلك البلدان، وهي: Winkel وivenkile وbutikk.</string>
+    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل كنت على دراية بأن Woo يشغِّل 4 ملايين متجر تقريبًا على مستوى العالم؟ أنت تتعامل مع شركة رائدة.</string>
+    <string name="store_creation_in_progress_title_6">فتح الأبواب</string>
+    <string name="store_creation_in_progress_title_5">تشغيل المصابيح</string>
+    <string name="store_creation_in_progress_title_4">تطبيق اللمسات النهائية</string>
+    <string name="store_creation_in_progress_title_3">تنظيم غرفة التخزين</string>
+    <string name="store_creation_in_progress_title_2">إنشاء الأساسات</string>
+    <string name="store_creation_in_progress_title_1">Woo! ننشئ متجرك</string>
+    <string name="notifications_permission_description">نحتاج إلى صلاحية إرسال تنبيهات الدفع للطلبات والمراجعات الجديدة وغير ذلك، ويتم توصيلها إلى جهازك.</string>
+    <string name="notifications_permission_title">التنبيهات</string>
+    <string name="product_type_composite">المنتجات المركّبة</string>
+    <string name="photo_picker_title">مكتبة الوسائط في الجهاز</string>
+    <string name="tap_to_pay_refund_reason">اختبار الاسترداد التلقائي لمدفوعات Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_test_payment_note">مدفوعات اختبار Tap To Pay</string>
+    <string name="allow">السماح</string>
+    <string name="more_menu_button_settings_description">تحديث تفضيلاتك</string>
+    <string name="more_menu_button_settings">الإعدادات</string>
+    <string name="more_menu_button_upgrades_description">إدارة خططي</string>
+    <string name="more_menu_button_reviews_description">الحصول على مراجعات لمتجرك</string>
+    <string name="more_menu_button_coupons_description">زيادة المبيعات من خلال العروض الخاصة</string>
+    <string name="more_menu_button_store_description">عرض متجرك</string>
+    <string name="more_menu_button_inbox_description">البقاء على اطلاع</string>
+    <string name="more_menu_button_payments_description">الانضمام إلى المدفوعات عبر الهاتف المحمول</string>
+    <string name="more_menu_button_wc_admin_description">إدارة المزيد على المسؤول</string>
+    <string name="more_menu_general_section_title">عام</string>
+    <string name="more_menu_settings_section_title">الإعدادات</string>
+    <string name="bundled_products_info_notice">يمكنك تحرير المنتجات المجمعة في لوحة معلومات الويب.</string>
+    <string name="product_bundle_multiple_count">%d المنتجات</string>
+    <string name="product_bundle_single_count">منتج واحد</string>
+    <string name="product_bundle">المنتجات المجمعة</string>
+    <string name="empty_group_of">غير مجمعة</string>
+    <string name="empty_max_quantity">بلا حد أقصى</string>
+    <string name="empty_min_quantity">بلا حد أدنى</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">فهمت!</string>
+    <string name="free_trial_summary_store_creation_error_message">عذرًا، يتعذر علينا إنشاء متجرك على الفور، ترجى المحاولة مجددًا لاحقًا.</string>
+    <string name="free_trial_summary_store_creation_error_title">حدث خطأ</string>
+    <string name="product_type_bundle">حزمة</string>
     <string name="quantity_rules_info_notice">يمكنك تحرير قواعد كميات المنتجات في لوحة تحكم الويب.</string>
     <string name="group_of">مجموعة</string>
     <string name="max_quantity">الحد الأقصى للكمية</string>
@@ -173,7 +313,7 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">حدث خطأ. ترجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> يمكنك العثور على ميزة Pay on Android ضمن\nالقائمة &gt; المدفوعات، أو تحصيل المدفوعات و\nاختر Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">محاولة سداد دفعة باستخدام بطاقتك و\nاستردادها عند الانتهاء.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">محاولة سداد دفعة باستخدام بطاقتك و\nستُستَرد عند الانتهاء. </string>
     <string name="card_reader_tap_to_pay_explanation_ready">أصبح هاتفك جاهزًا لميزة Tap to Pay.\nيمكن لعميلك النقر على البطاقة\nعلى هاتفك للدفع.</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
@@ -256,164 +396,8 @@ Language: ar
     <string name="store_creation_profiler_merchant_journey_selling_online">أبيع بالفعل وأنا متصل بالإنترنت </string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">أبيع بالفعل، ولكنني لست متصلاً بالإنترنت </string>
     <string name="store_creation_profiler_merchant_journey_starting_business">سأبدأ عملي التجاري</string>
-    <string name="store_creation_profiler_industry_trailer_parks_and_campgrounds">مكان انتظار المقطورات والمخيمات</string>
-    <string name="store_creation_profiler_industry_timeshares">المشاركات بالوقت</string>
-    <string name="store_creation_profiler_industry_property_rentals">عمليات تأجير العقارات</string>
-    <string name="store_creation_profiler_industry_other_travel_leisure">وسائل السفر والإقامة الأخرى</string>
-    <string name="store_creation_profiler_industry_hotels_inns_or_motels">الفنادق أو النزل أو الفنادق الصغيرة على الطرق السريعة</string>
-    <string name="store_creation_profiler_industry_travel_agencies">وكالات السفر</string>
-    <string name="store_creation_profiler_industry_taxis_and_limos">سيارات الأجرة والليموزين</string>
-    <string name="store_creation_profiler_industry_shipping_or_forwarding">الشحن أو إعادة التوجيه</string>
-    <string name="store_creation_profiler_industry_ridesharing">مشاركة المركبات</string>
-    <string name="store_creation_profiler_industry_parking_lots">باحات وقوف السيارات</string>
-    <string name="store_creation_profiler_industry_other_transportation_services">خدمات النقل الأخرى</string>
-    <string name="store_creation_profiler_industry_freight_forwarders">وكلاء الشحن</string>
-    <string name="store_creation_profiler_industry_cruise_lines">خطوط الرحلات البحرية</string>
-    <string name="store_creation_profiler_industry_courier_services">خدمات نقل الرسائل</string>
-    <string name="store_creation_profiler_industry_commuter_transportation">نقل الركاب</string>
-    <string name="store_creation_profiler_industry_airlines_and_air_carriers">شركات الطيران وشركات النقل الجوي</string>
-    <string name="store_creation_profiler_industry_software">البرامج</string>
-    <string name="store_creation_profiler_industry_shoes">أحذية</string>
-    <string name="store_creation_profiler_industry_other_merchandise">البضائع الأخرى</string>
-    <string name="store_creation_profiler_industry_home_goods_and_furniture">السلع المنزلية والأثاث</string>
-    <string name="store_creation_profiler_industry_home_electronics">الأجهزة الإلكترونية المنزلية</string>
-    <string name="store_creation_profiler_industry_hardware_stores">متاجر الأجهزة</string>
-    <string name="store_creation_profiler_industry_flowers">زهور</string>
-    <string name="store_creation_profiler_industry_designer_products">منتجات المصممين</string>
-    <string name="store_creation_profiler_industry_convenience_stores">متاجر التموين</string>
-    <string name="store_creation_profiler_industry_clothing_and_accessories">الملابس والإكسسوارات</string>
-    <string name="store_creation_profiler_industry_beauty_products">منتجات الجمال</string>
-    <string name="store_creation_profiler_industry_auto_parts_and_accessories">قطع غيار السيارات وإكسسواراتها</string>
-    <string name="store_creation_profiler_industry_antiques">التحف</string>
-    <string name="store_creation_profiler_industry_accessories">ملحقات</string>
-    <string name="store_creation_profiler_industry_weapons_or_munitions">الأسلحة أو الذخائر</string>
-    <string name="store_creation_profiler_industry_vapes_e_cigarettes_e_juice_or_related_products">أجهزة النفث أو السجائر الإلكترونية أو العصائر الإلكترونية أو المنتجات ذات الصلة</string>
-    <string name="store_creation_profiler_industry_tobacco_or_cigars">التبغ أو السيجار</string>
-    <string name="store_creation_profiler_industry_supplements_or_nutraceuticals">المكملات الغذائية أو المغذيات</string>
-    <string name="store_creation_profiler_industry_pharmacies_or_pharmaceuticals">الصيدليات أو المستحضرات الدوائية</string>
-    <string name="store_creation_profiler_industry_marijuana_related_products">المنتجات المتعلقة بالماريغوانا</string>
-    <string name="store_creation_profiler_industry_marijuana_dispensaries">مستوصفات الماريغوانا</string>
-    <string name="store_creation_profiler_industry_alcohol">المشروبات الروحية</string>
-    <string name="store_creation_profiler_industry_adult_content_or_services">محتوى أو خدمات للبالغين</string>
-    <string name="store_creation_profiler_industry_accessories_for_tobacco_and_marijuana">إكسسوارات التبغ والماريغوانا</string>
-    <string name="store_creation_profiler_industry_warranty_services">خدمات الضمان</string>
-    <string name="store_creation_profiler_industry_utilities">المرافق</string>
-    <string name="store_creation_profiler_industry_testing_laboratories">معامل الاختبار</string>
-    <string name="store_creation_profiler_industry_telemarketing">التسويق عبر الهاتف</string>
-    <string name="store_creation_profiler_industry_protective_or_security_services">خدمات الحماية أو الأمان</string>
-    <string name="store_creation_profiler_industry_printing_and_publishing">الطباعة والنشر</string>
-    <string name="store_creation_profiler_industry_other_marketing_services">خدمات التسويق الأخرى</string>
-    <string name="store_creation_profiler_industry_other_business_services">خدمات الأعمال الأخرى</string>
-    <string name="store_creation_profiler_industry_mortgage_consulting_services">خدمات استشارات الرهن العقاري</string>
-    <string name="store_creation_profiler_industry_lead_generation">جذب العملاء المحتملين</string>
-    <string name="store_creation_profiler_industry_government_services">الخدمات الحكومية</string>
-    <string name="store_creation_profiler_industry_employment_agencies">وكالات التوظيف</string>
-    <string name="store_creation_profiler_industry_digital_marketing">تسويق إلكتروني</string>
-    <string name="store_creation_profiler_industry_debt_reduction_services">خدمات إنقاص الديون</string>
-    <string name="store_creation_profiler_industry_credit_counseling_or_credit_repair">تقديم المشورات الائتمانية أو إصلاح الائتمان</string>
-    <string name="store_creation_profiler_industry_consulting">استشارة</string>
-    <string name="store_creation_profiler_industry_computer_repair">إصلاح جهاز الكمبيوتر</string>
-    <string name="store_creation_profiler_industry_car_sales">وكالات بيع السيارات</string>
-    <string name="store_creation_profiler_industry_car_rentals">إيجارات السيارات</string>
-    <string name="store_creation_profiler_industry_bankruptcy_services">خدمات الإفلاس</string>
-    <string name="store_creation_profiler_industry_bail_bonds">صكوك الكفالة</string>
-    <string name="store_creation_profiler_industry_auto_services">خدمات السيارات</string>
-    <string name="store_creation_profiler_industry_attorneys_and_lawyers">الوكلاء المفوضون والمحامون</string>
-    <string name="store_creation_profiler_industry_accounting_auditing_or_tax_prep">المحاسبة أو التدقيق أو إعداد الكشوفات الضريبية</string>
-    <string name="store_creation_profiler_industry_salons_or_barbers">الصالونات أو الحلاقون</string>
-    <string name="store_creation_profiler_industry_photography_studios">أستوديوهات التصوير</string>
-    <string name="store_creation_profiler_industry_other_personal_services">الخدمات الشخصية الأخرى</string>
-    <string name="store_creation_profiler_industry_massage_parlors">صالونات التدليك</string>
-    <string name="store_creation_profiler_industry_laundry_or_cleaning_services">خدمات الغسيل أو التنظيف</string>
-    <string name="store_creation_profiler_industry_landscaping_services">خدمات تنسيق الحدائق</string>
-    <string name="store_creation_profiler_industry_health_and_beauty_spas">منتجعات الصحة والجمال</string>
-    <string name="store_creation_profiler_industry_funeral_services">خدمات الدفن</string>
-    <string name="store_creation_profiler_industry_dating_services">خدمات المواعدة</string>
-    <string name="store_creation_profiler_industry_counseling_services">خدمات تقديم المشورات</string>
-    <string name="store_creation_profiler_industry_religious_organizations">المؤسسات الدينية</string>
-    <string name="store_creation_profiler_industry_political_organizations">المؤسسات السياسية</string>
-    <string name="store_creation_profiler_industry_other_membership_organizations">منظمات أخرى قائمة على العضويات</string>
-    <string name="store_creation_profiler_industry_country_clubs">النوادي الريفية</string>
-    <string name="store_creation_profiler_industry_civic_fraternal_or_social_associations">الجمعيات المدنية أو الأخوية أو الاجتماعية</string>
-    <string name="store_creation_profiler_industry_charities_or_social_service_organizations">المنظمات الخيرية أو منظمات الخدمات الاجتماعية</string>
-    <string name="store_creation_profiler_industry_veterinary_services">الخدمات البيطرية</string>
-    <string name="store_creation_profiler_industry_telemedicine_and_telehealth">التطبيب عن بُعد والرعاية الصحية عن بُعد</string>
-    <string name="store_creation_profiler_industry_podiatrists_and_chiropodists">الأطباء المتخصصون في رعاية الأقدام وأخصائيو العناية بالأقدام</string>
-    <string name="store_creation_profiler_industry_other_medical_services">الخدمات الطبية الأخرى</string>
-    <string name="store_creation_profiler_industry_osteopaths">أخصائيو تقويم العظام</string>
-    <string name="store_creation_profiler_industry_optometrists_and_ophthalmologists">أخصائيو فحص النظر وأطباء العيون</string>
-    <string name="store_creation_profiler_industry_opticians_and_eyeglasses">صانعو الأدوات البصرية والنظارات</string>
-    <string name="store_creation_profiler_industry_nursing_or_personal_care_facilities">مرافق التمريض أو العناية الشخصية</string>
-    <string name="store_creation_profiler_industry_mental_health_services">خدمات الصحة العقلية</string>
-    <string name="store_creation_profiler_industry_medical_organizations">المؤسسات الطبية</string>
-    <string name="store_creation_profiler_industry_medical_laboratories">المعامل الطبية</string>
-    <string name="store_creation_profiler_industry_medical_devices">الأجهزة الطبية</string>
-    <string name="store_creation_profiler_industry_hospitals">المستشفيات</string>
-    <string name="store_creation_profiler_industry_health_and_wellness_coaching">التدريب المتعلق بالصحة والعافية</string>
-    <string name="store_creation_profiler_industry_doctors_and_physicians">الأطباء والأخصائيون</string>
-    <string name="store_creation_profiler_industry_dentists_and_orthodontists">أطباء الأسنان وأخصائيو تقويم الأسنان</string>
-    <string name="store_creation_profiler_industry_chiropractors">مقومو العظام</string>
-    <string name="store_creation_profiler_industry_assisted_living">مرافق الرعاية الدائمة</string>
-    <string name="store_creation_profiler_industry_restaurants_and_nightlife">المطاعم والحياة الليلية</string>
-    <string name="store_creation_profiler_industry_other_food_and_dining">الأطعمة ووسائل تناول الطعام الأخرى</string>
-    <string name="store_creation_profiler_industry_grocery_stores">محالات البقالة</string>
-    <string name="store_creation_profiler_industry_fast_food_restaurants">مطاعم الوجبات السريعة</string>
-    <string name="store_creation_profiler_industry_caterers">جهات التزويد بالطعام</string>
-    <string name="store_creation_profiler_industry_bars_and_nightclubs">الحانات والنوادي الليلية</string>
-    <string name="store_creation_profiler_industry_wire_transfers">التحويلات البرقية</string>
-    <string name="store_creation_profiler_industry_virtual_currencies">العملات الافتراضية</string>
-    <string name="store_creation_profiler_industry_security_brokers_or_dealers">Security Brokers أو الموزعون</string>
-    <string name="store_creation_profiler_industry_personal_fundraising_or_crowdfunding">جمع التبرعات الشخصية أو التمويل الجماعي</string>
-    <string name="store_creation_profiler_industry_other_financial_institutions">المؤسسات المالية الأخرى</string>
-    <string name="store_creation_profiler_industry_money_services_or_transmission">خدمات الأموال أو تحويلها</string>
-    <string name="store_creation_profiler_industry_money_orders">طلبات الأموال</string>
-    <string name="store_creation_profiler_industry_loans_or_lending">القروض أو الإقراض</string>
-    <string name="store_creation_profiler_industry_investment_services">خدمات الاستثمار</string>
-    <string name="store_creation_profiler_industry_insurance">تأمين</string>
-    <string name="store_creation_profiler_industry_financial_information_and_research">المعلومات المالية والبحث</string>
-    <string name="store_creation_profiler_industry_digital_wallets">المحافظ الرقمية</string>
-    <string name="store_creation_profiler_industry_currency_exchanges">عمليات تبادل العملات</string>
-    <string name="store_creation_profiler_industry_cryptocurrencies">العملات المشفرة</string>
-    <string name="store_creation_profiler_industry_collections_agencies">وكالات التحصيل</string>
-    <string name="store_creation_profiler_industry_check_cashing">صرف الشيكات</string>
-    <string name="store_creation_profiler_industry_tourist_attractions">معالم الجذب السياحي</string>
-    <string name="store_creation_profiler_industry_sports_forecasting_or_prediction_services">خدمات التنبؤ أو التكهن الرياضي</string>
-    <string name="store_creation_profiler_industry_recreational_camps">المعسكرات الترفيهية</string>
-    <string name="store_creation_profiler_industry_other_entertainment_and_recreation">وسائل الترفيه والتسلية الأخرى</string>
-    <string name="store_creation_profiler_industry_online_gambling">المضاربة على الإنترنت</string>
-    <string name="store_creation_profiler_industry_musicians_bands_or_orchestras">الموسيقيون أو الفرق الموسيقية أو الأوركسترا</string>
-    <string name="store_creation_profiler_industry_movie_theaters">صالات السينما</string>
-    <string name="store_creation_profiler_industry_lotteries">اليانصيب</string>
-    <string name="store_creation_profiler_industry_fortune_tellers">العرَّافون</string>
-    <string name="store_creation_profiler_industry_event_ticketing">تذاكر الأحداث</string>
-    <string name="store_creation_profiler_industry_betting_or_fantasy_sports">الرهان أو الفانتازي في الرياضة</string>
-    <string name="store_creation_profiler_industry_amusement_parks_carnivals_or_circuses">المتنزهات الترفيهية أو المهرجانات الشعبية أو عروض السيرك</string>
-    <string name="store_creation_profiler_industry_vocational_schools_and_trade_schools">المدارس المهنية والمدارس التجارية</string>
-    <string name="store_creation_profiler_industry_other_educational_services">الخدمات التعليمية</string>
-    <string name="store_creation_profiler_industry_elementary_or_secondary_schools">المدارس الابتدائية أو الثانوية</string>
-    <string name="store_creation_profiler_industry_colleges_or_universities">الكليات أو الجامعات</string>
-    <string name="store_creation_profiler_industry_child_care_services">خدمات رعاية الأطفال</string>
-    <string name="store_creation_profiler_industry_business_and_secretarial_schools">مدارس الأعمال والسكرتارية</string>
-    <string name="store_creation_profiler_industry_software_as_a_service">البرمجيات كخدمة</string>
-    <string name="store_creation_profiler_industry_other_digital_goods">السلع الرقمية الأخرى</string>
-    <string name="store_creation_profiler_industry_music_or_other_media">الموسيقى أو الوسائط الأخرى</string>
-    <string name="store_creation_profiler_industry_games">الألعاب</string>
-    <string name="store_creation_profiler_industry_books">كتب</string>
-    <string name="store_creation_profiler_industry_blogs_and_written_content">المدونات والمحتوى المكتوب</string>
-    <string name="store_creation_profiler_industry_apps">التطبيقات</string>
-    <string name="store_creation_profiler_industry_telecom_services">خدمات الاتصالات</string>
-    <string name="store_creation_profiler_industry_telecom_equipment">معدات الاتصالات</string>
-    <string name="store_creation_profiler_industry_special_trade_contractors">مقاولو التجارة الخاصة</string>
-    <string name="store_creation_profiler_industry_other_building_services">خدمات البناء الأخرى</string>
-    <string name="store_creation_profiler_industry_general_contractors">المقاولون العامون</string>
-    <string name="store_creation_profiler_industry_electrical_contractors">مقاولو الكهرباء</string>
-    <string name="store_creation_profiler_industry_carpentry_contractors">مقاولو النجارة</string>
-    <string name="store_creation_profiler_industry_a_c_and_heating_contractors">مقاولو مكيفات الهواء وأجهزة التدفئة</string>
-    <string name="store_creation_profiler_industry_truck_stop">محطة وقوف الشاحنات</string>
-    <string name="store_creation_profiler_industry_towing_services">خدمات سحب السيارات</string>
-    <string name="store_creation_profiler_industry_fuel_dispensers">جهات توزيع الوقود</string>
-    <string name="store_creation_profiler_industry_car_washes">محطات غسل السيارات</string>
-    <string name="store_creation_profiler_industry_boat_sales">وكالات بيع القوارب</string>
+    <string name="store_creation_profiler_industry_clothing_accessories">الملابس والإكسسوارات</string>
+    <string name="store_creation_profiler_industry_other">أخرى</string>
     <string name="store_creation_profiler_options_search_empty">لا تتوافر نتائج لهذا البحث</string>
     <string name="store_creation_store_profiler_industries_search_hint">كتابة تصنيف</string>
     <string name="product_duplicate_copied_product_name">نسخ ⁦%1$s⁩</string>
@@ -598,14 +582,12 @@ Language: ar
     <string name="signup_password_too_short">كلمة مرورك قصيرة للغاية. يرجى اختيار كلمة مرور تحتوي على 6 أحرف على الأقل.</string>
     <string name="signup_email_invalid_input">الرجاء إدخال عنوان بريد إلكتروني صالح.</string>
     <string name="signup_email_exist_input">يوجد حساب موجود لهذا البريد الإلكتروني بالفعل.</string>
-    <string name="signup_already_registered">لنقم بإنشاء حسابك أولاً. هل تم التسجيل بالفعل. &lt;a href=\'login\'&gt;&lt;u&gt;تسجيل الدخول&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">إنشاء حساب</string>
     <string name="login_try_another_email">تجربة عنوان آخر</string>
     <string name="date_timeframe_custom_date_range_title">نطاق تاريخ مخصص</string>
     <string name="date_timeframe_custom">مخصص</string>
     <string name="what_is_wordpress_link">ما المقصود بووردبريس.كوم؟</string>
     <string name="signup_creating_account_loading_message">إنشاء حساب جديد</string>
-    <string name="signup_terms_of_service">يعني الاستمرار أنك توافق على &lt;u&gt;شروط الخدمة التي نقرها.&lt;/u&gt;</string>
     <string name="signup_password_hint">اختر كلمة مرور</string>
     <string name="signup_email_address_hint">عنوان بريدك الإلكتروني</string>
     <string name="signup_get_started_label">بدء \nفي غضون دقائق</string>
@@ -712,7 +694,6 @@ Language: ar
     <string name="login_prologue_label_orders_subtitle">يمكنك إدارتها بسرعة وسهولة</string>
     <string name="login_prologue_label_analytics_subtitle">نعلم أنه ضروري لعملك التجاري</string>
     <string name="login_prologue_new_to_woo">جديد على WooCommerce</string>
-    <string name="notification_channel_pre_login_title">تذكيرات حل مشكلات تسجيل الدخول</string>
     <string name="tests_notification_new_order_message">طلب جديد مقابل 50 دولارًا على متجر WooCommerce الخاص بك</string>
     <string name="tests_notification_new_order_title">لديك طلب جديد! 🎉</string>
     <string name="lines_all_details">التفاصيل</string>
@@ -909,8 +890,6 @@ Language: ar
     <string name="coupon_details_copy_error">خطأ في أثناء نسخ رمز القسيمة إلى الحافظة.</string>
     <string name="coupon_details_copy_success">تم نسخ رمز القسيمة إلى الحافظة.</string>
     <string name="coupon_details_copy_clipboard_label">رمز القسيمة</string>
-    <string name="coupon_beta_features_subheading">اختبار إدارة القسائم في التطبيق</string>
-    <string name="coupon_beta_features_heading">إدارة القسائم</string>
     <string name="coupon_summary_loading_failure">فشل تحميل ملخص القسيمة</string>
     <string name="coupon_details_expiration_date">تنتهي الصلاحية بتاريخ ⁦%1$s⁩</string>
     <string name="coupon_summary_template">خصم قدره ⁦%1$s⁩ على ⁦%2$s⁩</string>
@@ -922,7 +901,6 @@ Language: ar
     <string name="coupon_details_menu_share">مشاركة قسيمة</string>
     <string name="coupon_details_menu_copy">نسخ رمز القسيمة</string>
     <string name="inbox_note_survey_actioned">نشكرك على ملاحظاتك!</string>
-    <string name="beta_features_coupons">إدارة القسائم</string>
     <string name="card_reader_connect_permission_rationale_hint">تتطلب مدفوعات قارئ البطاقة صلاحية موقع دقيقة</string>
     <string name="card_reader_connect_permission_rationale_header">يلزم الوصول إلى الموقع</string>
     <string name="simple_payments_share_payment_dialog_title">إجراءات السداد - %s</string>
@@ -1206,8 +1184,6 @@ Language: ar
     <string name="orderfilters_show_orders_button">إظهار الطلبات</string>
     <string name="orderlist_filters_title">الطلبات التي تمت تصفيتها</string>
     <string name="orderlist_no_filters_title">جميع الطلبات</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">الاطلاع على المزايا</string>
-    <string name="jetpack_benefits_bottom_banner_title">الحصول على التجربة الكاملة باستخدام Jetpack</string>
     <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
     <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>
@@ -1237,7 +1213,7 @@ Language: ar
     <string name="support_system_status_report">تقرير حالة النظام</string>
     <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
     <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
-    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار على الأقل</string>
+    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ أقل من ⁦%1$s⁩</string>
     <string name="card_reader_payment_payment_failed_ok">موافق</string>
     <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
     <string name="settings_switch_store">تبديل المخزن</string>

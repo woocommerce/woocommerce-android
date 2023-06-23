@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -90,7 +91,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         getString(event.accessibilityConnectedText)
                     )
                 is NavigateToUrlInGenericWebView ->
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url, ThreeQuarters)
                 else -> event.isHandled = false
             }
         }

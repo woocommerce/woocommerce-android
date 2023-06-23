@@ -5,24 +5,12 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -34,23 +22,31 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.methodselection.NavigateBackToHub
+import com.woocommerce.android.ui.payments.methodselection.NavigateBackToOrderList
+import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderHubFlow
+import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderPaymentFlow
+import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.methodselection.OpenGenericWebView
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
+import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -66,7 +62,6 @@ import java.math.BigDecimal
 
 private const val PAYMENT_URL = "paymentUrl"
 private const val ORDER_TOTAL = "100$"
-private const val COUNTRY_CODE = "US"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SelectPaymentMethodViewModelTest : BaseUnitTest() {
@@ -76,6 +71,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val order: Order = mock {
         on { paymentUrl }.thenReturn(PAYMENT_URL)
         on { total }.thenReturn(BigDecimal(1L))
+        on { id }.thenReturn(1L)
     }
     private val orderEntity: OrderEntity = mock()
 
@@ -100,14 +96,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         onBlocking { isCollectable(order) }.thenReturn(false)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
-    private val selectPaymentUtmProvider: UtmProvider = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
-    private val wooStore: WooCommerceStore = mock {
-        on { getStoreCountryCode(site) }.thenReturn(COUNTRY_CODE)
-    }
-    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
 
     @Test
@@ -178,7 +169,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(IsTapToPayAvailable.Result.Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
             // WHEN
@@ -193,7 +184,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(IsTapToPayAvailable.Result.Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
             // WHEN
@@ -208,8 +199,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(
-                IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
+            whenever(tapToPayAvailabilityStatus()).thenReturn(
+                TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
             )
             val orderId = 1L
 
@@ -310,6 +301,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -329,6 +321,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -348,6 +341,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                     "card_reader_type" to "external"
                 )
@@ -368,6 +362,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                     "card_reader_type" to "external"
                 )
@@ -386,7 +381,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow(
+                NavigateToCardReaderPaymentFlow(
                     cardReaderFlowParam,
                     CardReaderType.EXTERNAL
                 )
@@ -405,7 +400,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow(
+                NavigateToCardReaderPaymentFlow(
                     cardReaderFlowParam,
                     CardReaderType.BUILT_IN
                 )
@@ -426,6 +421,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     "payment_method" to "card",
+                    "order_id" to 1L,
                     "flow" to "simple_payment",
                     "card_reader_type" to "built_in",
                 )
@@ -446,6 +442,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     "payment_method" to "card",
+                    "order_id" to 1L,
                     "flow" to "order_payment",
                     "card_reader_type" to "built_in",
                 )
@@ -518,6 +515,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
@@ -539,6 +537,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
@@ -616,21 +615,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given try ttp payment flow, when on reader payment complete, then exit to order details`() =
-        testBlocking {
-            // GIVEN
-            whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
-            val viewModel = initViewModel(Payment(1L, TRY_TAP_TO_PAY))
-
-            // WHEN
-            viewModel.onCardReaderPaymentCompleted()
-            advanceUntilIdle()
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateToOrderDetails(1))
-        }
-
-    @Test
     fun `given order payment flow, when on share link clicked, then coll tracked with order flow`() =
         testBlocking {
             // GIVEN
@@ -644,6 +628,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -663,6 +648,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -682,6 +668,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to "tap_to_pay_try_a_payment",
                 )
             )
@@ -701,6 +688,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -720,6 +708,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -816,317 +805,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             )
         }
 
-    //region Card Reader Upsell
-    @Test
-    fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
-        runTest {
-            // GIVEN
-            whenever(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
-            ).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-            whenever(selectPaymentUtmProvider.getUrlWithUtmParams(any())).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-
-            // WHEN
-            val viewModel = initViewModel(Payment(1L, ORDER))
-            (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).onPrimaryActionClicked.invoke()
-
-            // Then
-            assertThat(
-                viewModel.event.value
-            ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
-        }
-    }
-
-    @Test
-    fun `given upsell banner, when banner is dismissed, then trigger DismissCardReaderUpsellBanner event`() {
-        runTest {
-            // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-
-            // WHEN
-            val viewModel = initViewModel(Payment(1L, ORDER))
-            (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).onDismissClicked.invoke()
-
-            // Then
-            assertThat(viewModel.event.value).isEqualTo(SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner)
-        }
-    }
-
-    @Test
-    fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
-        // GIVEN
-        val viewModel = initViewModel(Payment(1L, ORDER))
-
-        // WHEN
-        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
-
-        // Then
-        assertThat(viewModel.event.value).isEqualTo(
-            SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater
-        )
-    }
-
-    @Test
-    fun `given upsell banner, when banner is dismissed via don't show again, then trigger proper event`() {
-        // GIVEN
-        val viewModel = initViewModel(Payment(1L, ORDER))
-
-        // WHEN
-        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
-
-        // Then
-        assertThat(viewModel.event.value).isEqualTo(
-            SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain
-        )
-    }
-
-    @Test
-    fun `given card reader banner has dismissed, then update dialogShow state to true`() {
-        runTest {
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-
-            val viewModel = initViewModel(Payment(1L, ORDER))
-            (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).onDismissClicked.invoke()
-
-            assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
-        }
-    }
-
-    @Test
-    fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-
-        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-
-        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given view model init, then update dialogShow state to false`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
-        val viewModel = initViewModel(Payment(1L, ORDER))
-
-        viewModel.onBannerAlertDismiss()
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given banner displayable, when success state, then display the banner`() =
-        testBlocking {
-            // GIVEN & WHEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-
-            // THEN
-            assertThat(
-                (viewModel.viewStateData.value as Success).bannerState
-            ).isInstanceOf(BannerState.DisplayBannerState::class.java)
-        }
-
-    @Test
-    fun `given payment not collectable, when success state, then do not display the banner`() =
-        testBlocking {
-            // GIVEN & WHEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-
-            // THEN
-            assertThat(
-                (viewModel.viewStateData.value as Success).bannerState
-            ).isInstanceOf(BannerState.HideBannerState::class.java)
-        }
-
-    @Test
-    fun `given banner not displayable, when success state, then do not display the banner`() =
-        testBlocking {
-            // GIVEN & WHEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(false)
-            val orderId = 1L
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-
-            // THEN
-            assertThat(
-                (viewModel.viewStateData.value as Success).bannerState
-            ).isInstanceOf(BannerState.HideBannerState::class.java)
-        }
-
-    @Test
-    fun `given banner displayed, when primary action invoked, then correct source is tracked`() =
-        testBlocking {
-            // GIVEN
-            whenever(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
-            ).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-            val captor = argumentCaptor<String>()
-
-            // WHEN
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-            (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).onPrimaryActionClicked.invoke()
-
-            // THEN
-            verify(bannerDisplayEligibilityChecker).getPurchaseCardReaderUrl(captor.capture())
-            assertThat(captor.firstValue).isEqualTo(KEY_BANNER_PAYMENTS)
-        }
-
-    @Test
-    fun `given banner displayed, then correct title is displayed`() =
-        testBlocking {
-            // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-
-            // WHEN
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-            val title = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).title
-
-            // THEN
-            assertThat(title).isEqualTo(
-                UiString.UiStringRes(
-                    stringRes = R.string.card_reader_upsell_card_reader_banner_title,
-                    params = emptyList(),
-                    containsHtml = false
-                )
-            )
-        }
-
-    @Test
-    fun `given banner displayed, then correct description is displayed`() =
-        testBlocking {
-            // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-
-            // WHEN
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-            val description = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).description
-
-            // THEN
-            assertThat(description).isEqualTo(
-                UiString.UiStringRes(
-                    stringRes = R.string.card_reader_upsell_card_reader_banner_description,
-                    params = emptyList(),
-                    containsHtml = false
-                )
-            )
-        }
-
-    @Test
-    fun `given banner displayed, then correct primary action label is displayed`() =
-        testBlocking {
-            // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-
-            // WHEN
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-            val primaryActionLabel = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).primaryActionLabel
-
-            // THEN
-            assertThat(primaryActionLabel).isEqualTo(
-                UiString.UiStringRes(
-                    stringRes = R.string.card_reader_upsell_card_reader_banner_cta,
-                    params = emptyList(),
-                    containsHtml = false
-                )
-            )
-        }
-
-    @Test
-    fun `given banner displayed, then correct chip label is displayed`() =
-        testBlocking {
-            // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            val orderId = 1L
-
-            // WHEN
-            val viewModel = initViewModel(Payment(orderId, ORDER))
-            val badgeIcon = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).badgeIcon
-
-            // THEN
-            assertThat(badgeIcon).isEqualTo(
-                BannerState.LabelOrRemoteIcon.Label(
-                    UiString.UiStringRes(stringRes = R.string.card_reader_upsell_card_reader_banner_new)
-                )
-            )
-        }
-    //endregion
-
     @Test
     fun `when learn more link clicked, then correct event is triggered`() {
         // GIVEN
@@ -1141,7 +819,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(SelectPaymentMethodViewModel.OpenGenericWebView::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
     }
 
     @Test
@@ -1159,7 +837,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
-            SelectPaymentMethodViewModel.OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+            OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         )
     }
 
@@ -1169,8 +847,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            val tapToPayDisabled = IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayDisabled)
+            val tapToPayDisabled = TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayDisabled)
 
             // WHEN
             initViewModel(param)
@@ -1185,8 +863,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            val tapToPaySystemNotSupported = IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPaySystemNotSupported)
+            val tapToPaySystemNotSupported = TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPaySystemNotSupported)
 
             // WHEN
             initViewModel(param)
@@ -1201,8 +879,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            val tapToPayCountryNotSupported = IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayCountryNotSupported)
+            val tapToPayCountryNotSupported = TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayCountryNotSupported)
 
             // WHEN
             initViewModel(param)
@@ -1215,8 +893,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow ttp gps not available, when vm init, then tracks ttp gps`() =
         testBlocking {
             // GIVEN
-            val tapToPayGpsNotAvailable = IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayGpsNotAvailable)
+            val tapToPayGpsNotAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayGpsNotAvailable)
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
 
@@ -1233,14 +911,176 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            val tapToPayNfcNotAvailable = IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
-            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayNfcNotAvailable)
+            val tapToPayNfcNotAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayNfcNotAvailable)
 
             // WHEN
             initViewModel(param)
 
             // THEN
             verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable)
+        }
+
+    @Test
+    fun `given paymentUrl not empty, when vm init, then true returned`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            whenever(order.paymentUrl).thenReturn(PAYMENT_URL)
+
+            // WHEN
+            val viewModel = initViewModel(param)
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isTrue()
+        }
+
+    @Test
+    fun `given paymentUrl empty, when vm init, then false returned`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            whenever(order.paymentUrl).thenReturn("")
+
+            // WHEN
+            val viewModel = initViewModel(param)
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isFalse()
+        }
+
+    @Test
+    fun `given update order status success, when onScanToPayClicked, then SharePaymentUrlViaQr emitted`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val viewModel = initViewModel(param)
+            val event = mock<OnOrderChanged> {
+                on { isError }.thenReturn(false)
+            }
+            whenever(orderStore.updateOrderStatus(eq(orderId), any(), any())).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(event))
+            )
+
+            // WHEN
+            val stateValues = viewModel.viewStateData.captureValues()
+            viewModel.onScanToPayClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                SharePaymentUrlViaQr(PAYMENT_URL)
+            )
+            assertThat(stateValues[0]).isInstanceOf(Success::class.java)
+            assertThat(stateValues[1]).isEqualTo(Loading)
+            assertThat(stateValues[2]).isInstanceOf(Success::class.java)
+        }
+
+    @Test
+    fun `given update order status error, when onScanToPayClicked, then error tracked and ShowSnackbar emitted`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val viewModel = initViewModel(param)
+            val event = mock<OnOrderChanged> {
+                on { isError }.thenReturn(true)
+            }
+            whenever(orderStore.updateOrderStatus(eq(orderId), any(), any())).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(event))
+            )
+
+            // WHEN
+            viewModel.onScanToPayClicked()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to
+                        AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
+                )
+            )
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general)
+            )
+        }
+
+    @Test
+    fun `when onScanToPayClicked, then collect tracked`() {
+        // GIVEN
+        val orderId = 1L
+        val param = Payment(orderId = orderId, paymentType = ORDER)
+        val viewModel = initViewModel(param)
+
+        // WHEN
+        viewModel.onScanToPayClicked()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                "payment_method" to "scan_to_pay",
+                "order_id" to 1L,
+                "flow" to "order_payment",
+            )
+        )
+    }
+
+    @Test
+    fun `given order payment type, when onScanToPayCompleted, then NavigateBackToOrderList`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val viewModel = initViewModel(param)
+
+            // WHEN
+            viewModel.onScanToPayCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackToOrderList)
+        }
+
+    @Test
+    fun `when onScanToPayCompleted, then completed tracked`() {
+        // GIVEN
+        val orderId = 1L
+        val param = Payment(orderId = orderId, paymentType = ORDER)
+        val viewModel = initViewModel(param)
+
+        // WHEN
+        viewModel.onScanToPayCompleted()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
+            mapOf(
+                "payment_method" to "scan_to_pay",
+                "order_id" to 1L,
+                "flow" to "order_payment",
+            )
+        )
+    }
+
+    @Test
+    fun `given simple payment type, when onScanToPayCompleted, then NavigateBackToHub`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = SIMPLE)
+            val viewModel = initViewModel(param)
+
+            // WHEN
+            viewModel.onScanToPayCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub()))
         }
 
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
@@ -1255,13 +1095,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             orderMapper,
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
-            bannerDisplayEligibilityChecker,
             learnMoreUrlProvider,
             cardReaderTracker,
-            wooStore,
-            isTapToPayAvailable,
+            tapToPayAvailabilityStatus,
             appPrefs,
-            selectPaymentUtmProvider,
         )
     }
 }

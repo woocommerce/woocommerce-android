@@ -23,27 +23,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/button_help"
-                    style="@style/Woo.Button.TextButton"
-                    android:layout_width="48dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/minor_50"
-                    android:contentDescription="@string/help"
-                    android:src="@drawable/ic_help_24dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
                 <!-- Login User Info -->
                 <com.woocommerce.android.ui.sitepicker.views.LoginUserInfoView
                     android:id="@+id/login_user_info"
                     style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/major_100"
                     android:layout_marginHorizontal="@dimen/major_100"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_help"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_goneMarginTop="@dimen/minor_100" />
 
                 <androidx.recyclerview.widget.RecyclerView

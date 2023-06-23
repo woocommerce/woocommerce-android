@@ -2,20 +2,29 @@ package com.woocommerce.android.util.crashlogging
 
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.config.RemoteConfigRepository
+import com.woocommerce.android.util.BuildConfigWrapper
 import javax.inject.Inject
 
 class SpecifyPerformanceMonitoringConfig @Inject constructor(
-    private val remoteConfigRepository: RemoteConfigRepository,
+    private val buildConfig: BuildConfigWrapper,
     private val analyticsWrapper: AnalyticsTrackerWrapper
 ) {
+
+    private companion object {
+        const val PERFORMANCE_MONITORING_SAMPLE_RATE = 0.02
+        const val PROFILING_SAMPLE_RATE = 0.01
+    }
+
     operator fun invoke(): PerformanceMonitoringConfig {
-        val sampleRate = remoteConfigRepository.getPerformanceMonitoringSampleRate()
         val userEnabled = analyticsWrapper.sendUsageStats
 
-        return when {
-            !userEnabled || sampleRate <= 0.0 || sampleRate > 1.0 -> PerformanceMonitoringConfig.Disabled
-            else -> PerformanceMonitoringConfig.Enabled(sampleRate)
+        return if (!userEnabled || buildConfig.debug) {
+            PerformanceMonitoringConfig.Disabled
+        } else {
+            PerformanceMonitoringConfig.Enabled(
+                sampleRate = PERFORMANCE_MONITORING_SAMPLE_RATE,
+                profilesSampleRate = PROFILING_SAMPLE_RATE
+            )
         }
     }
 }

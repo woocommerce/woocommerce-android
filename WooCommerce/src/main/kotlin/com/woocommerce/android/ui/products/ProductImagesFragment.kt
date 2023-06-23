@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -175,26 +176,23 @@ class ProductImagesFragment :
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is Exit -> findNavController().navigateUp()
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
-                    is ShowDialog -> event.showDialog()
-                    ShowImageSourceDialog -> showImageSourceDialog()
-                    is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
-                    ShowStorageChooser -> showLocalDeviceMediaPicker()
-                    ShowCamera -> captureProductImage()
-                    ShowWPMediaPicker -> showMediaLibraryPicker()
-                    is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> findNavController().navigateUp()
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
+                is ShowDialog -> event.showDialog()
+                ShowImageSourceDialog -> showImageSourceDialog()
+                is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
+                ShowStorageChooser -> showLocalDeviceMediaPicker()
+                ShowCamera -> captureProductImage()
+                ShowWPMediaPicker -> showMediaLibraryPicker()
+                is ShowDeleteImageConfirmation -> showConfirmationDialog(event.image)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showConfirmationDialog(image: Image) {
@@ -243,7 +241,12 @@ class ProductImagesFragment :
     private fun showImageDetail(image: Image, skipThrottling: Boolean) {
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
             isDeletingAllowed = viewModel.isImageDeletingAllowed,
-            mediaId = image.id
+            mediaId = image.id,
+            remoteId = navArgs.remoteId,
+            requestCode = navArgs.requestCode,
+            selectedImage = null,
+            showChooser = false,
+            images = viewModel.images.toTypedArray()
         )
         findNavController().navigateSafely(action, skipThrottling)
     }
@@ -256,7 +259,7 @@ class ProductImagesFragment :
                     viewModel.onShowStorageChooserButtonClicked()
                 }
                 it.findViewById<View>(R.id.textCamera)?.apply {
-                    isVisible = mediaPickerUtils.isCameraAvailable
+                    isVisible = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
                     setOnClickListener {
                         viewModel.onShowCameraButtonClicked()
                     }

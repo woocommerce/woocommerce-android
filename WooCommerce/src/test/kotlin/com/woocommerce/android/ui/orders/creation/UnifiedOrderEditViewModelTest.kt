@@ -2,24 +2,36 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -28,11 +40,16 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
@@ -49,6 +66,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var parameterRepository: ParameterRepository
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
+    private lateinit var codeScanner: CodeScanner
+    private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
+    lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -59,12 +79,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     protected abstract val mode: OrderCreateEditViewModel.Mode
+    protected abstract val sku: String
+    protected abstract val barcodeFormat: BarcodeFormat
 
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode).toSavedStateHandle()) {
+        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
@@ -107,6 +129,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
         }
         tracker = mock()
+        codeScanner = mock()
+        checkDigitRemoverFactory = mock()
+        productListRepository = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -121,7 +146,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to 1
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
             ),
         )
     }
@@ -141,7 +167,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to 4
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
             ),
         )
     }
@@ -326,11 +353,1619 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
-    protected fun createSut() {
+    // region Scanned and Deliver
+    @Test
+    fun `when code scanner returns code, then set isUpdatingOrderDraft to true`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+            }
+        }
+        var isUpdatingOrderDraft: Boolean? = null
+        sut.viewStateData.observeForever { _, viewState ->
+            isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+        }
+
+        sut.onScanClicked()
+
+        assertTrue(isUpdatingOrderDraft!!)
+    }
+
+    @Test
+    fun `when SKU search succeeds, then set isUpdatingOrderDraft to false`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                ProductTestUtils.generateProductList()
+            )
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.onScanClicked()
+
+            assertFalse(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        isVariable = true,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.onScanClicked()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable-subscription product, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.onScanClicked()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then trigger proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(
+                OnAddingProductViaScanningFailed::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then trigger event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then do not track any product search via sku success event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variation product, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variation",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.onScanClicked()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.onScanClicked()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+        }
+    }
+
+    @Test
+    fun `when code scanner fails to recognize the barcode, then trigger proper event`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+    }
+
+    @Test
+    fun `when code scanner fails to recognize the barcode, then proper message is sent`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
+            R.string.order_creation_barcode_scanning_scanning_failed
+        )
+    }
+
+    @Test
+    fun `given code scanner fails to recognize the barcode, when retry clicked, then restart code scanning`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+        (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
+
+        verify(codeScanner).startScan()
+    }
+
+    @Test
+    fun `when product search by SKU fails, then trigger proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
+    @Test
+    fun `when product search by SKU succeeds but has empty result, then trigger proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
+    @Test
+    fun `when product search by SKU fails, then proper message is displayed`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
+        }
+    }
+
+    @Test
+    fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+            (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
+
+            verify(codeScanner).startScan()
+        }
+    }
+
+    @Test
+    fun `given that same variable subscription product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(1L, 10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.onScanClicked()
+            sut.onScanClicked()
+            sut.onScanClicked()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.variationId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with variationId 10L with quantity as 3")
+        }
+    }
+
+    @Test
+    fun `given that same product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.onScanClicked()
+            sut.onScanClicked()
+            sut.onScanClicked()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.productId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with productId 10L with quantity as 3")
+        }
+    }
+
+    @Test
+    fun `when scan clicked, then track proper event`() {
+        createSut()
+
+        sut.onScanClicked()
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    @Test
+    fun `when scan success, then track proper event`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
+            any()
+        )
+    }
+
+    @Test
+    fun `when scan success, then track event with proper source`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation"
+            )
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track proper event`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track event with proper source`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation",
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track event with proper failure reason`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation",
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
+            )
+        )
+    }
+
+    @Test
+    fun `given product search via sku succeeds, then track proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku succeeds, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track event with proper reason`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails when trying to add parent variable product, then track event with proper reason`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to
+                        "Instead of specific variations, user tried to add parent variable product."
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku succeeds but contains no product, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given variable product from order creation screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-variable product from order creation screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given UPC SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given EAN-13 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
+            ).thenReturn(
+                mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given EAN-8 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.onScanClicked()
+
+            assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(any())
+            verify(productListRepository, times(1)).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for EAN-13 barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
+            ).thenReturn(
+                mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
+            verify(productListRepository, times(1)).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for EAN-8 barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            verify(productListRepository, times(1)).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for EAN-13 barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
+            ).thenReturn(
+                mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for EAN-8 barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not trigger failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given product search fails for EAN-13 barcode format, when retrying, then do not trigger failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
+            ).thenReturn(
+                mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given product search fails for EAN-8 barcode format, when retrying, then do not trigger failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
+                }
+            }
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given product search fails for non UPC barcode format, then do not do any checksum operation`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatQRCode))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(checkDigitRemoverFactory, never()).getCheckDigitRemoverFor(any())
+            verify(productListRepository, never()).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isInstanceOf(VMKilledWhenScanningInProgress::class.java)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event with proper message`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isEqualTo(
+            VMKilledWhenScanningInProgress(R.string.order_creation_barcode_scanning_process_death)
+        )
+    }
+
+    @Test
+    fun `given scanning not in progress and vm got killed, when vm restarts, then do not trigger vm killed event`() {
+        savedState["scanning_in_progress"] = false
+
+        createSut(savedState)
+
+        assertThat(sut.event.value).isNull()
+    }
+
+    @Test
+    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+
+        createSut()
+        sut.onScanClicked()
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        assertFalse(savedState["scanning_in_progress"]!!)
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
+            any()
+        )
+    }
+
+    @Test
+    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
+        savedState["scanning_in_progress"] = true
+
+        createSut(savedState)
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
+            )
+        )
+    }
+    //endregion
+
+    protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
         autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
         autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
         sut = OrderCreateEditViewModel(
-            savedState = savedState,
+            savedState = savedStateHandle,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,
@@ -340,7 +1975,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             parameterRepository = parameterRepository,
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier,
-            tracker = tracker
+            tracker = tracker,
+            codeScanner = codeScanner,
+            productRepository = productListRepository,
+            checkDigitRemoverFactory = checkDigitRemoverFactory
         )
     }
 

@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding
+import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.SETTINGS
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.FeatureFlag
@@ -20,6 +23,8 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
+    private val shouldShowOnboarding: ShouldShowOnboarding,
+    private val accountRepository: AccountRepository,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -78,6 +83,24 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
+    override fun setupOnboardingListVisibilitySetting() {
+        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
+            appSettingsFragmentView?.handleStoreSetupListSetting(
+                enabled = shouldShowOnboarding.isOnboardingListSettingVisible(),
+                onToggleChange = { isChecked ->
+                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
+                        show = isChecked,
+                        source = SETTINGS
+                    )
+                }
+            )
+        }
+    }
+
     override val isDomainOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override val isCloseAccountOptionVisible: Boolean
+        get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
+            accountRepository.getUserAccount()?.userName != null
 }

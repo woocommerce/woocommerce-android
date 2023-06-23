@@ -3,13 +3,18 @@ package com.woocommerce.android.ui.mystore
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -21,7 +26,6 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
@@ -42,6 +46,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
+import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -49,14 +54,18 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,7 +80,9 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 @OptIn(FlowPreview::class)
-class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
+class MyStoreFragment :
+    TopLevelFragment(R.layout.fragment_my_store),
+    MenuProvider {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
 
@@ -79,7 +90,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
 
-        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
@@ -92,6 +102,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject lateinit var feedbackPrefs: FeedbackPrefs
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -137,6 +148,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initTabLayout()
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -206,7 +218,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                                     onboardingState = state,
                                     onViewAllClicked = storeOnboardingViewModel::viewAllClicked,
                                     onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked,
-                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked
+                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked,
+                                    onHideOnboardingClicked = storeOnboardingViewModel::onHideOnboardingClicked
                                 )
                             }
                         }
@@ -222,26 +235,33 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                         findNavController().navigateSafely(this)
                     }
+
                 is StoreOnboardingViewModel.NavigateToLaunchStore ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
                     )
+
                 is StoreOnboardingViewModel.NavigateToDomains ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
                     )
+
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
                     )
+
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment()
                     )
+
                 is StoreOnboardingViewModel.NavigateToAboutYourStore ->
                     findNavController().navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                     )
+
+                is ShowDialog -> event.showDialog()
             }
         }
     }
@@ -263,6 +283,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
+        myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
+
         myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
@@ -287,6 +309,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     binding.jetpackBenefitsBanner.root.isVisible = false
                     binding.myStoreStats.showVisitorStatsError()
                 }
+
                 is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
             }
         }
@@ -311,9 +334,18 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         isTrashEnabled = false
                     )
                 )
+
                 is OpenAnalytics -> {
                     mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
                 }
+
+                is ShowPrivacyBanner ->
+                    findNavController().navigate(
+                        PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
+                    )
+
+                is ShareStore -> ActivityUtils.shareStoreUrl(requireActivity(), event.storeUrl)
+
                 else -> event.isHandled = false
             }
         }
@@ -464,7 +496,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         // Show banners only if onboarding list is not displayed
         if (!binding.storeOnboardingView.isVisible && savedInstanceState == null) {
             childFragmentManager.beginTransaction()
-                .replace(R.id.jitmFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+                .replace(
+                    R.id.jitmFragment,
+                    JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
+                    JITM_FRAGMENT_TAG
+                )
                 .commit()
         }
     }
@@ -496,9 +532,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
      * If should be and it's already visible, nothing happens
      */
     private fun handleFeedbackRequestCardState() = with(binding.storeFeedbackRequestCard) {
-        if (userFeedbackIsDue && visibility == View.GONE) {
+        if (feedbackPrefs.userFeedbackIsDue && visibility == View.GONE) {
             setupFeedbackRequestCard()
-        } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
+        } else if (feedbackPrefs.userFeedbackIsDue.not() && visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
@@ -508,14 +544,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         val negativeCallback = {
             mainNavigationRouter?.showFeedbackSurvey()
             binding.storeFeedbackRequestCard.visibility = View.GONE
-            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+            feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
         }
         binding.storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
 
     private fun handleFeedbackRequestPositiveClick() {
         // set last feedback date to now and hide the card
-        FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
         binding.storeFeedbackRequestCard.visibility = View.GONE
 
         // Request a ReviewInfo object from the Google Reviews API. If this fails
@@ -549,8 +585,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         if (show) {
             dashboardVisibility = View.GONE
             binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+                myStoreViewModel.onShareStoreClicked()
             }
         } else {
             binding.emptyView.hide()
@@ -584,4 +619,24 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_my_store_fragment, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.menu_share_store -> {
+                myStoreViewModel.onShareStoreClicked()
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.menu_share_store).isVisible =
+            myStoreViewModel.appbarState.value?.showShareStoreButton ?: false
+    }
 }

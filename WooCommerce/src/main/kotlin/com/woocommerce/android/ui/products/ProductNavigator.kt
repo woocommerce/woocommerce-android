@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToPro
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithAI
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ShareProductWithMessage
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
@@ -80,6 +82,27 @@ class ProductNavigator @Inject constructor() {
                 }
                 val title = fragment.resources.getText(R.string.product_share_dialog_title)
                 fragment.startActivity(Intent.createChooser(shareIntent, title))
+            }
+
+            is ShareProductWithMessage -> {
+                val shareIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, target.subject)
+                    putExtra(Intent.EXTRA_TITLE, target.title)
+                    type = "text/plain"
+                }
+                val title = fragment.resources.getText(R.string.product_share_dialog_title)
+                fragment.startActivity(Intent.createChooser(shareIntent, title))
+            }
+
+            is ShareProductWithAI -> {
+                val action = ProductDetailFragmentDirections
+                    .actionProductDetailFragmentToProductSharingFragment(
+                        target.permalink,
+                        target.title,
+                        target.description
+                    )
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ViewProductVariations -> {
@@ -381,7 +404,8 @@ class ProductNavigator @Inject constructor() {
                         target.productType,
                         target.productStatus,
                         target.productCategory,
-                        target.productCategoryName
+                        target.productCategoryName,
+                        target.restrictions.toTypedArray(),
                     )
                 )
             }
@@ -407,7 +431,22 @@ class ProductNavigator @Inject constructor() {
                 ).let { fragment.findNavController().navigateSafely(it) }
             }
 
+            is ProductNavigationTarget.ViewProductComponents -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCompositeProductFragment(
+                    target.components.toTypedArray()
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ExitProduct -> fragment.findNavController().navigateUp()
+
+            is ProductNavigationTarget.ViewFirstProductCelebration -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToFirstProductCelebrationDialog(
+                    productName = target.productName,
+                    permalink = target.permalink
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
         }
     }
 

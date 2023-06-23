@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    var isCouponsEnabled: Boolean by AppPrefs::isCouponsEnabled
-
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
@@ -172,25 +170,18 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
 
-    fun getPreLoginNotificationWorkRequestId() = AppPrefs.getLocalNotificationWorkRequestId()
-
-    fun setPreLoginNotificationWorkRequestId(workRequestId: String) =
-        AppPrefs.setLocalNotificationWorkRequestId(workRequestId)
-
-    fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
-
-    fun setPreLoginNotificationDisplayedType(notificationType: String) =
-        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
-
-    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
-
-    fun setPreLoginNotificationDisplayed(displayed: Boolean) =
-        AppPrefs.setPreLoginNotificationDisplayed(displayed)
-
     fun setLoginEmail(email: String) =
         AppPrefs.setLoginEmail(email)
 
     fun getLoginEmail() = AppPrefs.getLoginEmail()
+
+    fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
+
+    fun setUserSeenNewFeatureOnMoreScreen() = AppPrefs.setUserSeenNewFeatureOnMoreScreen()
+
+    fun isPaymentsIconWasClickedOnMoreScreen() = AppPrefs.isPaymentsIconWasClickedOnMoreScreen()
+
+    fun setPaymentsIconWasClickedOnMoreScreen() = AppPrefs.setPaymentsIconWasClickedOnMoreScreen()
 
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)
@@ -332,4 +323,29 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
+
+    fun getOnboardingSettingVisibility(siteId: Int): Boolean = AppPrefs.getOnboardingSettingVisibility(siteId)
+
+    fun setOnboardingSettingVisibility(siteId: Int, show: Boolean) {
+        AppPrefs.setOnboardingSettingVisibility(siteId, show)
+    }
+
+    fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
+
+    fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
+
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
+
+    fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
+
+    fun setCrashReportingEnabled(enabled: Boolean) {
+        AppPrefs.setCrashReportingEnabled(enabled)
+    }
+
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
+        AppPrefs.setTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
+    }
+
+    fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 }

@@ -11,6 +11,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
@@ -95,6 +96,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
     private val addonRepository: AddonRepository = mock {
         onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
+    }
+
+    private val isBlazeEnabled: IsBlazeEnabled = mock {
+        onBlocking { invoke() } doReturn false
     }
 
     private var savedState: SavedStateHandle =
@@ -251,7 +256,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 tracker,
                 selectedSite,
                 mock(),
-                mock()
+                mock(),
+                mock(),
+                mock(),
+                isBlazeEnabled
             )
         )
 

@@ -16,12 +16,12 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,8 +36,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -54,9 +56,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -106,6 +108,181 @@ fun MoreMenuScreen(
     }
 }
 
+@Composable
+private fun MoreMenuHeader(
+    onSwitchStore: () -> Unit,
+    state: MoreMenuViewState
+) {
+    HeaderButton(
+        onClick = onSwitchStore,
+        enabled = state.isStoreSwitcherEnabled
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            HeaderContent(
+                userAvatarUrl = state.userAvatarUrl,
+                siteName = state.siteName,
+                planName = state.sitePlan,
+                siteUrl = state.siteUrl,
+                modifier = Modifier.weight(1f, false)
+            )
+
+            if (state.isStoreSwitcherEnabled) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_on_surface),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(dimensionResource(id = R.dimen.major_150))
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Since the header is also a button that opens the store switch, it can be disabled
+ * through the [MoreMenuViewState.isStoreSwitcherEnabled] flag.
+ *
+ * But since it's also a header with store information,
+ * we want to just hide the drop down arrow to reflect the disabled appearance.
+ *
+ * This custom color scheme ensures that.
+ */
+@Composable
+private fun HeaderButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    content: @Composable RowScope.() -> Unit
+) {
+    val headerBackgroundColors = colorResource(
+        id = R.color.more_menu_button_background
+    ).let { backgroundColor ->
+        ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor,
+            disabledBackgroundColor = backgroundColor,
+            disabledContentColor = contentColorFor(backgroundColor)
+        )
+    }
+
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
+        colors = headerBackgroundColors,
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+        content = content
+    )
+}
+
+@Composable
+private fun HeaderContent(
+    modifier: Modifier,
+    userAvatarUrl: String,
+    siteName: String,
+    planName: String,
+    siteUrl: String
+) {
+    Row(modifier) {
+        HeaderAvatar(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            avatarUrl = userAvatarUrl
+        )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))
+            ) {
+                Text(
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f, false)
+                )
+                if (planName.isNotEmpty()) {
+                    StorePlanBadge(planName)
+                }
+            }
+            Text(
+                text = siteUrl,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+            )
+        }
+    }
+}
+
+@Composable
+private fun StorePlanBadge(planName: String) {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.free_trial_component_background))
+    ) {
+        Text(
+            text = planName.uppercase(),
+            color = colorResource(id = R.color.free_trial_component_text),
+            style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(
+                vertical = dimensionResource(id = R.dimen.minor_25),
+                horizontal = dimensionResource(id = R.dimen.minor_100)
+            )
+        )
+    }
+}
+
+@Composable
+private fun HeaderAvatar(
+    modifier: Modifier,
+    avatarUrl: String
+) {
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+
+    if (avatarUrl.isNotEmpty()) {
+        Glide.with(LocalContext.current)
+            .asBitmap()
+            .load(avatarUrl)
+            .into(
+                object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        bitmapState.value = resource
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        // Nothing to do here.
+                    }
+                }
+            )
+    }
+
+    val circledModifier = modifier
+        .size(dimensionResource(id = R.dimen.major_250))
+        .clip(CircleShape)
+        .background(color = colorResource(id = R.color.more_menu_button_icon_background))
+
+    bitmapState.value?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentScale = ContentScale.Crop,
+            contentDescription = stringResource(id = R.string.more_menu_avatar),
+            modifier = circledModifier
+        )
+    } ?: Image(
+        painter = painterResource(id = R.drawable.img_gravatar_placeholder),
+        contentDescription = stringResource(id = R.string.more_menu_avatar),
+        modifier = circledModifier
+    )
+}
+
 @ExperimentalFoundationApi
 @Composable
 private fun MoreMenuSection(
@@ -139,116 +316,6 @@ private fun MoreMenuSection(
 }
 
 @Composable
-private fun MoreMenuHeader(
-    onSwitchStore: () -> Unit,
-    state: MoreMenuViewState
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = state.isStoreSwitcherEnabled,
-                onClickLabel = stringResource(id = R.string.settings_switch_store),
-                role = Role.Button,
-                onClick = onSwitchStore
-            )
-            .padding(
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.major_100)
-            ),
-    ) {
-        StoreDetailsHeader(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(
-                    start = dimensionResource(id = R.dimen.minor_100),
-                    end = dimensionResource(id = R.dimen.major_325)
-                ),
-            userAvatarUrl = state.userAvatarUrl,
-            siteName = state.siteName,
-            siteUrl = state.siteUrl,
-            isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
-        )
-    }
-}
-
-@Composable
-private fun StoreDetailsHeader(
-    modifier: Modifier,
-    userAvatarUrl: String,
-    siteName: String,
-    siteUrl: String,
-    isStoreSwitcherEnabled: Boolean
-) {
-    Row(modifier = modifier) {
-        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-        Column {
-            Text(
-                text = siteName,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.h6,
-            )
-            Text(
-                text = siteUrl,
-                style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
-            )
-            if (isStoreSwitcherEnabled) {
-                Text(
-                    text = stringResource(R.string.settings_switch_store),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.body2,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MoreMenuUserAvatar(avatarUrl: String) {
-    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
-
-    if (avatarUrl.isNotEmpty()) {
-        Glide.with(LocalContext.current)
-            .asBitmap()
-            .load(avatarUrl)
-            .into(
-                object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        bitmapState.value = resource
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        // Nothing to do here.
-                    }
-                }
-            )
-    }
-
-    val circledModifier = Modifier
-        .size(dimensionResource(id = R.dimen.major_300))
-        .padding(
-            top = dimensionResource(id = R.dimen.minor_75),
-            start = dimensionResource(id = R.dimen.minor_100)
-        )
-        .clip(CircleShape)
-
-    bitmapState.value?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentScale = ContentScale.Crop,
-            contentDescription = stringResource(id = R.string.more_menu_avatar),
-            modifier = circledModifier
-        )
-    } ?: Image(
-        painter = painterResource(id = R.drawable.img_gravatar_placeholder),
-        contentDescription = stringResource(id = R.string.more_menu_avatar),
-        modifier = circledModifier
-    )
-}
-
-@Composable
 private fun MoreMenuButton(
     @StringRes title: Int,
     @StringRes description: Int,
@@ -268,6 +335,7 @@ private fun MoreMenuButton(
         Box(Modifier.fillMaxSize()) {
             MoreMenuBadge(badgeState = badgeState)
             Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -287,7 +355,6 @@ private fun MoreMenuButton(
                 }
                 Column(
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(
@@ -313,6 +380,8 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.weight(1f))
+
+            @Suppress("RememberReturnType")
             val visible = remember {
                 MutableTransitionState(badgeState.animateAppearance.not()).apply { targetState = true }
             }
@@ -406,7 +475,9 @@ private fun MoreMenuPreview() {
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
-        userAvatarUrl = "" // To force displaying placeholder image
+        sitePlan = "free trial",
+        userAvatarUrl = "", // To force displaying placeholder image
+        isStoreSwitcherEnabled = true
     )
     MoreMenuScreen(state, {})
 }

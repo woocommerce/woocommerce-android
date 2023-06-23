@@ -5,6 +5,8 @@ plugins {
 }
 
 android {
+    namespace "com.woocommerce.android.cardreader"
+
     compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
@@ -37,12 +39,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
 
-    if (project.hasProperty("stripe_repo_url")) {
-        implementation "com.stripe:stripeterminal-localmobile:2.16.0-b0"
-        implementation "com.stripe:stripeterminal-core:2.16.0-b0"
-    } else {
-        implementation "com.stripe:stripeterminal:2.16.0"
-    }
+    implementation "com.stripe:stripeterminal-localmobile:$stripeTerminalVersion"
+    implementation "com.stripe:stripeterminal-core:$stripeTerminalVersion"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

@@ -5,6 +5,8 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
@@ -16,16 +18,26 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.push.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.taptopay.isAvailable
+import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
@@ -35,39 +47,59 @@ import javax.inject.Inject
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
+    unseenReviewsCountHandler: UnseenReviewsCountHandler,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
+    private val planRepository: SitePlanRepository,
+    private val resourceProvider: ResourceProvider,
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
+    private val isBlazeEnabled: IsBlazeEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            moreMenuRepository.observeCouponBetaSwitch(),
-        ) { count, selectedSite, isCouponsEnabled ->
+            loadSitePlanName(),
+            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
+        ) { count, selectedSite, sitePlanName, paymentsFeatureWasClicked ->
             MoreMenuViewState(
                 generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
-                    isCouponsEnabled = isCouponsEnabled,
+                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
                 ),
                 settingsMenuItems = generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
+                sitePlan = sitePlanName,
                 userAvatarUrl = accountStore.account.avatarUrl,
                 isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             )
         }.asLiveData()
 
+    fun onViewResumed() {
+        moreMenuNewFeatureHandler.markNewFeatureAsSeen()
+        launch { trackBlazeDisplayed() }
+    }
+
     private suspend fun generateGeneralMenuButtons(
         unseenReviewsCount: Int,
-        isCouponsEnabled: Boolean
+        paymentsFeatureWasClicked: Boolean,
     ) = listOf(
         MenuUiButton(
             title = R.string.more_menu_button_payments,
             description = R.string.more_menu_button_payments_description,
             icon = R.drawable.ic_more_menu_payments,
+            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
             onClick = ::onPaymentsButtonClick,
+        ),
+        MenuUiButton(
+            title = R.string.more_menu_button_blaze,
+            description = R.string.more_menu_button_blaze_description,
+            icon = R.drawable.ic_more_menu_blaze,
+            onClick = ::onPromoteProductsWithBlaze,
+            isEnabled = isBlazeEnabled()
         ),
         MenuUiButton(
             title = R.string.more_menu_button_wс_admin,
@@ -85,7 +117,6 @@ class MoreMenuViewModel @Inject constructor(
             title = R.string.more_menu_button_coupons,
             description = R.string.more_menu_button_coupons_description,
             icon = R.drawable.ic_more_menu_coupons,
-            isEnabled = isCouponsEnabled,
             onClick = ::onCouponsButtonClick
         ),
         MenuUiButton(
@@ -104,6 +135,13 @@ class MoreMenuViewModel @Inject constructor(
         )
     )
 
+    private suspend fun trackBlazeDisplayed() {
+        if (isBlazeEnabled()) AnalyticsTracker.track(
+            stat = BLAZE_ENTRY_POINT_DISPLAYED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+        )
+    }
+
     private fun generateSettingsMenuButtons() = listOf(
         MenuUiButton(
             title = R.string.more_menu_button_settings,
@@ -119,6 +157,15 @@ class MoreMenuViewModel @Inject constructor(
             onClick = ::onUpgradesButtonClick
         )
     )
+
+    private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
+        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) BadgeState(
+            badgeSize = R.dimen.major_110,
+            backgroundColor = R.color.color_secondary,
+            textColor = R.color.color_on_surface,
+            textState = TextState("", R.dimen.text_minor_80),
+            animateAppearance = true,
+        ) else null
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
         if (unseenReviewsCount > 0) BadgeState(
@@ -157,7 +204,21 @@ class MoreMenuViewModel @Inject constructor(
             VALUE_MORE_MENU_PAYMENTS,
             mapOf(VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE to isPaymentBadgeVisible().toString())
         )
+        moreMenuNewFeatureHandler.markPaymentsIconAsClicked()
         triggerEvent(MoreMenuEvent.ViewPayments)
+    }
+
+    private fun onPromoteProductsWithBlaze() {
+        AnalyticsTracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+        )
+        triggerEvent(
+            MoreMenuEvent.OpenBlazeEvent(
+                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
+                source = MORE_MENU_ITEM
+            )
+        )
     }
 
     private fun onViewAdminButtonClick() {
@@ -205,11 +266,21 @@ class MoreMenuViewModel @Inject constructor(
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
+    private fun loadSitePlanName() = flow {
+        planRepository.fetchCurrentPlanDetails(selectedSite.get())
+            ?.formattedPlanName.orEmpty()
+            .let { emit(it) }
+    }
+
+    private val SitePlan.formattedPlanName
+        get() = generateFormattedPlanName(resourceProvider)
+
     data class MoreMenuViewState(
         val generalMenuItems: List<MenuUiButton> = emptyList(),
         val settingsMenuItems: List<MenuUiButton> = emptyList(),
         val siteName: String = "",
         val siteUrl: String = "",
+        val sitePlan: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
     ) {
@@ -222,6 +293,7 @@ class MoreMenuViewModel @Inject constructor(
         object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
+        data class OpenBlazeEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

@@ -2,21 +2,28 @@
 
 package com.woocommerce.android.ui.main
 
+import NotificationsPermissionCard
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.os.Handler
+import android.os.Parcelable
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -29,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -55,6 +63,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
@@ -63,11 +72,14 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenStoreCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -75,6 +87,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewStorePlanUpgrade
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
@@ -87,10 +100,14 @@ import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
+import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
-import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,11 +136,14 @@ class MainActivity :
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
+        const val FIELD_LOCAL_NOTIFICATION = "local-notification"
         const val FIELD_PUSH_ID = "local-push-id"
 
         // widget-related constants
         const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
         const val FIELD_WIDGET_NAME = "widget-name"
+
+        const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -223,6 +243,12 @@ class MainActivity :
         }
     }
 
+    private val launcher = this.registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.checkForNotificationsPermission(hasNotificationsPermission = true)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         return super.onCreateOptionsMenu(menu)
@@ -232,6 +258,8 @@ class MainActivity :
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -311,6 +339,10 @@ class MainActivity :
 
         if (selectedSite.exists()) {
             updateOrderBadge(false)
+
+            if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                viewModel.checkForNotificationsPermission(WooPermissionUtils.hasNotificationsPermission(this))
+            }
         }
 
         checkConnection()
@@ -570,6 +602,17 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
+    private fun showPrivacySettingsScreen(requestedAnalyticsValue: Parcelable) {
+        val intent = Intent(this, AppSettingsActivity::class.java).apply {
+            putExtra(AppSettingsActivity.EXTRA_SHOW_PRIVACY_SETTINGS, true)
+            putExtra(
+                AppSettingsActivity.EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR,
+                requestedAnalyticsValue
+            )
+        }
+        startActivityForResult(intent, RequestCodes.SETTINGS)
+    }
+
     override fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType) {
         val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
         navController.navigateSafely(action)
@@ -672,6 +715,8 @@ class MainActivity :
     private fun initFragment(savedInstanceState: Bundle?) {
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
+        val localNotification = intent.getParcelableExtra<Notification>(FIELD_LOCAL_NOTIFICATION)
+
         // Reset this flag now that it's being processed
         intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
@@ -688,6 +733,9 @@ class MainActivity :
             intent.removeExtra(FIELD_PUSH_ID)
 
             viewModel.handleIncomingNotification(localPushId, notification)
+        } else if (localNotification != null) {
+            viewModel.onLocalNotificationTapped(localNotification)
+            intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
         }
     }
     // endregion
@@ -706,16 +754,73 @@ class MainActivity :
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
+                is RequestNotificationsPermission -> requestNotificationsPermission()
+                is ShortcutOpenStoreCreation -> shortcutOpenStoreCreation(event.storeName)
+                is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
+                is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
+                    uiMessageResolver.getIndefiniteActionSnack(
+                        R.string.privacy_banner_error_save,
+                        actionText = getString(R.string.retry)
+                    ) {
+                        viewModel.onRequestPrivacyUpdate(event.analyticsEnabled)
+                    }.show()
+                }
+                MainActivityViewModel.ShowPrivacySettings -> {
+                    showPrivacySettingsScreen(RequestedAnalyticsValue.NONE)
+                }
+                is MainActivityViewModel.ShowPrivacySettingsWithError -> {
+                    showPrivacySettingsScreen(event.requestedAnalyticsValue)
+                }
             }
         }
 
+        observeNotificationsPermissionBarVisibility()
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun shortcutOpenStoreCreation(storeName: String?) {
+        navController.apply {
+            navigate(
+                NavGraphMainDirections.actionGlobalLoginToSitePickerFragment(
+                    openedFromLogin = AppPrefs.getStoreCreationSource() != AnalyticsTracker.VALUE_SWITCHING_STORE
+                )
+            )
+            navigate(
+                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow(storeName),
+                navOptions {
+                    popUpTo(R.id.sitePickerFragment) { inclusive = true }
+                }
+            )
+        }
+    }
+
+    private fun observeNotificationsPermissionBarVisibility() {
+        viewModel.isNotificationsPermissionCardVisible.observe(this) { isVisible ->
+            if (isVisible) {
+                binding.notificationsPermissionBar.apply {
+                    setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                    setContent {
+                        WooThemeWithBackground {
+                            NotificationsPermissionCard()
+                        }
+                    }
+                }
+                Handler().postDelayed(
+                    {
+                        animateBottomBar(binding.notificationsPermissionBar, show = true)
+                    },
+                    NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
+                )
+            } else {
+                animateBottomBar(binding.notificationsPermissionBar, show = false)
+            }
+        }
     }
 
     private fun observeBottomBarState() {
@@ -725,7 +830,7 @@ class MainActivity :
                 BottomBarState.Visible -> true
             }
 
-            WooAnimUtils.animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
+            animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
         }
     }
 
@@ -733,6 +838,7 @@ class MainActivity :
         viewModel.moreMenuBadgeState.observe(this) { moreMenuBadgeState ->
             when (moreMenuBadgeState) {
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
+                NewFeature -> binding.bottomNav.showMoreMenuNewFeatureBadge()
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
             }.exhaustive
         }
@@ -742,16 +848,22 @@ class MainActivity :
         viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
             when (trialStatusBarState) {
                 TrialStatusBarState.Hidden ->
-                    binding.trialBar.visibility = View.GONE
+                    animateBottomBar(binding.trialBar, show = false)
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
                         context = this,
                         startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
-                    binding.trialBar.visibility = View.VISIBLE
+                    animateBottomBar(binding.trialBar, show = true)
                 }
             }
+        }
+    }
+
+    private fun requestNotificationsPermission() {
+        if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            WooPermissionUtils.requestNotificationsPermission(launcher)
         }
     }
 
@@ -870,7 +982,9 @@ class MainActivity :
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-            OrderCreateEditViewModel.Mode.Creation
+            OrderCreateEditViewModel.Mode.Creation,
+            null,
+            null,
         )
         navController.navigateSafely(action)
     }
@@ -964,6 +1078,7 @@ class MainActivity :
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
+            navController.popBackStack(R.id.orders, false)
         }
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)

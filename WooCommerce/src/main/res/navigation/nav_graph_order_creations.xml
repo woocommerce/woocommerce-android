@@ -83,9 +83,30 @@
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditionFragment"
+            app:destination="@id/orderCreationCouponEditionFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim">
+            <argument
+                android:name="couponCode"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <argument
+            android:name="sku"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="barcodeFormat"
+            app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+            app:nullable="true"/>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -167,6 +188,16 @@
         <argument
             android:name="currentFeeValue"
             app:argType="java.math.BigDecimal"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationCouponEditionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionFragment"
+        android:label="OrderCreationCouponEditionFragment">
+        <argument
+            android:name="couponCode"
+            app:argType="string"
             app:nullable="true"
             android:defaultValue="@null"/>
     </fragment>

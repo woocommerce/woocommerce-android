@@ -67,7 +67,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     interface AppSettingsListener {
         fun onRequestLogout()
         fun onProductAddonsOptionChanged(enabled: Boolean)
-        fun onCouponsOptionChanged(enabled: Boolean)
         fun onTapToPayOptionChanged(enabled: Boolean)
     }
 
@@ -185,7 +184,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionPrivacy.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_PRIVACY_SETTINGS_BUTTON_TAPPED)
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_privacySettingsFragment)
+            findNavController().navigateSafely(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToPrivacySettingsFragment(
+                    RequestedAnalyticsValue.NONE
+                )
+            )
         }
 
         binding.optionSendFeedback.setOnClickListener {
@@ -205,21 +208,29 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
-            // FIXME AMANDA tracks event
             showThemeChooser()
         }
 
         lifecycleScope.launch {
-            binding.domainGroup.isVisible = presenter.isDomainOptionVisible
+            binding.optionDomain.isVisible = presenter.isDomainOptionVisible
             binding.optionDomain.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
                 showDomainDashboard()
             }
         }
 
+        binding.containerOptionCloseAccount.isVisible = presenter.isCloseAccountOptionVisible
+        binding.btnOptionCloseAccount.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_closeAccountDialogFragment)
+        }
+
         presenter.setupAnnouncementOption()
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
+        presenter.setupOnboardingListVisibilitySetting()
+
+        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
+            binding.optionDomain.isVisible || binding.optionStoreOnboardingListVisibility.isVisible
     }
 
     private fun showDomainDashboard() {
@@ -255,16 +266,12 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     override fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean) {
         if (supportsJetpackInstallation) {
-            binding.storeSettingsContainer.visibility = View.VISIBLE
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {
                 findNavController().navigateSafely(
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphJetpackInstall()
                 )
             }
-        } else {
-            // Hide the whole container because jetpack is the only option there
-            binding.storeSettingsContainer.visibility = View.GONE
         }
     }
 
@@ -292,6 +299,14 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionNotifications.hide()
     }
 
+    override fun handleStoreSetupListSetting(enabled: Boolean, onToggleChange: (Boolean) -> Unit) {
+        binding.optionStoreOnboardingListVisibility.show()
+        binding.optionStoreOnboardingListVisibility.isChecked = enabled
+        binding.optionStoreOnboardingListVisibility.setOnCheckedChangeListener { _, isChecked ->
+            onToggleChange(isChecked)
+        }
+    }
+
     private fun updateStoreSettings() {
         generateBetaFeaturesTitleList()
             .joinToString(", ")
@@ -302,7 +317,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     private fun generateBetaFeaturesTitleList() =
         mutableListOf<String>().apply {
             add(getString(R.string.beta_features_add_ons))
-            add(getString(R.string.beta_features_coupons))
         }
 
     /**

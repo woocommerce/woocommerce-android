@@ -45,9 +45,12 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.jitm.JitmFragment
+import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -57,6 +60,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
@@ -73,11 +77,21 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+
+        private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
     }
 
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var selectedSite: SelectedSite
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    internal lateinit var selectedSite: SelectedSite
+
+    @Inject
+    internal lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
@@ -113,10 +127,6 @@ class OrderListFragment :
 
     private val emptyView
         get() = binding.orderListView.emptyView
-
-    private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS_AND_ORDER_CREATION)?.feedbackState
-            ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
@@ -229,10 +239,12 @@ class OrderListFragment :
      */
     private fun refreshOptionsMenu() {
         if (!isChildFragmentShowing() && isSearching) {
-            enableSearchListeners()
             val savedSearchQuery = searchQuery
             searchMenuItem?.expandActionView()
+            enableSearchListeners()
             searchQuery = savedSearchQuery
+            searchView?.setQuery(searchQuery, false)
+            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -247,6 +259,10 @@ class OrderListFragment :
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
+                true
+            }
+            R.id.menu_barcode -> {
+                viewModel.onScanClicked()
                 true
             }
             else -> false
@@ -342,6 +358,22 @@ class OrderListFragment :
                 is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
                     showIPPFeedbackDismissConfirmationDialog()
                 }
+                is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
+                    openOrderCreationFragment(event.code, event.barcodeFormat)
+                }
+                is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
+                    uiMessageResolver.getRetrySnack(
+                        stringResId = event.message,
+                        isIndefinite = false,
+                        actionListener = event.retry
+                    ).show()
+                }
+                is OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
+                    ToastUtils.showToast(
+                        context,
+                        event.message
+                    )
+                }
                 else -> event.isHandled = false
             }
         }
@@ -377,9 +409,14 @@ class OrderListFragment :
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
             new.ippFeedbackBannerState.takeIfNotEqualTo(old?.ippFeedbackBannerState) { bannerState ->
-                renderIPPBanner(bannerState)
+                renderIPPFeedbackRequestBanner(bannerState)
             }
-            new.isSimplePaymentsWIPNoticeCardVisible.takeIfNotEqualTo(old?.isSimplePaymentsWIPNoticeCardVisible) {
+            new.jitmEnabled.takeIfNotEqualTo(old?.jitmEnabled) { jitmEnabled ->
+                initJitm(jitmEnabled)
+            }
+            new.isSimplePaymentsAndOrderCreationFeedbackVisible.takeIfNotEqualTo(
+                old?.isSimplePaymentsAndOrderCreationFeedbackVisible
+            ) {
                 displaySimplePaymentsWIPCard(it)
             }
         }
@@ -397,7 +434,7 @@ class OrderListFragment :
         )
     }
 
-    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
+    private fun renderIPPFeedbackRequestBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
         val isVisible =
             bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
 
@@ -417,6 +454,22 @@ class OrderListFragment :
         }
     }
 
+    private fun initJitm(jitmEnabled: Boolean) {
+        if (jitmEnabled) {
+            childFragmentManager.beginTransaction()
+                .replace(
+                    R.id.jitmOrdersFragment,
+                    JitmFragment.newInstance(JitmMessagePathsProvider.ORDER_LIST),
+                    JITM_FRAGMENT_TAG
+                )
+                .commit()
+        } else {
+            childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
+                childFragmentManager.beginTransaction().remove(it).commit()
+            }
+        }
+    }
+
     private fun initializeResultHandlers() {
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
@@ -427,12 +480,14 @@ class OrderListFragment :
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun openOrderCreationFragment() {
+    private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation
+                OrderCreateEditViewModel.Mode.Creation,
+                code,
+                barcodeFormat,
             )
         )
     }
@@ -447,6 +502,8 @@ class OrderListFragment :
 
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
+
+        _binding?.createOrderButton?.hide()
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)
@@ -486,6 +543,7 @@ class OrderListFragment :
             submitSearchDelayed(newText)
         } else {
             binding.orderListView.clearAdapterData()
+            hideEmptyView()
         }
         return true
     }
@@ -597,7 +655,7 @@ class OrderListFragment :
     }
 
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
-        if (!show || feedbackState == FeedbackState.DISMISSED) {
+        if (!show) {
             binding.simplePaymentsWIPcard.isVisible = false
             return
         }
@@ -607,7 +665,13 @@ class OrderListFragment :
             getString(R.string.orderlist_simple_payments_wip_title),
             getString(R.string.orderlist_simple_payments_wip_message_enabled),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = { onDismissWIPCardClicked() },
+            onDismissClick = {
+                FeatureFeedbackSettings(
+                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
+                    FeedbackState.DISMISSED
+                ).registerItself(feedbackPrefs)
+                viewModel.onDismissOrderCreationSimplePaymentsFeedback()
+            },
             showFeedbackButton = true
         )
     }
@@ -620,29 +684,13 @@ class OrderListFragment :
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
-        registerFeedbackSetting(FeedbackState.GIVEN)
+        FeatureFeedbackSettings(
+            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
+            FeedbackState.GIVEN
+        ).registerItself(feedbackPrefs)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissWIPCardClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(FeedbackState.DISMISSED)
-        displaySimplePaymentsWIPCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(
-            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-            state
-        ).registerItself()
     }
 
     override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {

@@ -12,6 +12,7 @@ import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
+import com.woocommerce.android.e2e.screens.orders.SingleOrderScreen
 import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -79,8 +80,12 @@ class OrdersRealAPI : TestBase() {
     private val order40 = OrderData(
         customerName = "Samuel Ayala",
         id = 40,
+        productsTotalRaw = "10.00",
+        taxesRaw = "0.00",
+        shippingRaw = "0.00",
         totalRaw = "10.00",
-        statusRaw = "pending"
+        statusRaw = "pending",
+        customerNoteRaw = "Cappuccino is made on doppio, free of charge. Enjoy!"
     )
 
     private val order41 = OrderData(
@@ -96,13 +101,13 @@ class OrdersRealAPI : TestBase() {
             // Filter by "Order Status" = "Completed"
             .tapFilters()
             .filterByPropertyAndValue("Order Status", "Completed")
-            .tapShowOrders()
+            .showOrders(true)
             .assertOrderCard(order41)
             .assertOrdersCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .tapShowOrders()
+            .showOrders(true)
             .assertOrderCard(order40)
             .assertOrderCard(order41)
             .assertOrdersCount(2)
@@ -120,7 +125,9 @@ class OrdersRealAPI : TestBase() {
             .enterSearchTerm(order40.customerName)
             .assertOrderCard(order40)
             .assertOrdersCount(1)
+            .leaveSearchMode()
             // Search for non-existing order
+            .openSearchPane()
             .enterAbsentSearchTerm("Absent Order")
             .assertSearchResultsAbsent("Absent Order")
             // Leave search and make sure all orders are listed
@@ -128,5 +135,23 @@ class OrdersRealAPI : TestBase() {
             .assertOrderCard(order40)
             .assertOrderCard(order41)
             .assertOrdersCount(2)
+    }
+
+    @Test
+    fun e2eRealApiOrderDetails() {
+        try {
+            OrderListScreen()
+                .selectOrderById(order40.id)
+                .assertOrderId(order40.id)
+                .assertCustomerName(order40.customerName)
+                .assertOrderStatus(order40.status)
+                .assertOrderHasProduct(ProductsRealAPI().productSalad)
+                .assertOrderHasProduct(ProductsRealAPI().productCappuccinoCocoMedium)
+                .assertPayments(order40)
+                .assertCustomerNote(order40.customerNote)
+        } finally {
+            SingleOrderScreen()
+                .goBackToOrdersScreen()
+        }
     }
 }

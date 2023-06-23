@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.reviews.domain
 
 import com.woocommerce.android.model.RequestResult.*
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListRepository
 import javax.inject.Inject

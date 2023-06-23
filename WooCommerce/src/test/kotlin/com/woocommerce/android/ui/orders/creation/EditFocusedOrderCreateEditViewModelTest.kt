@@ -5,10 +5,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -21,12 +26,15 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 // Remove Silent runner when feature is completed
 @RunWith(MockitoJUnitRunner.Silent::class)
 class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Edit(defaultOrderValue.id)
+    override val sku: String = "123"
+    override val barcodeFormat: BarcodeFormat = BarcodeFormat.FormatUPCA
     override val tracksFlow: String = VALUE_FLOW_EDITING
 
     override fun initMocksForAnalyticsWithOrder(order: Order) {
@@ -136,6 +144,184 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                 AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
                 AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
             )
+        )
+    }
+
+    @Test
+    fun `when new non-empty coupon added then should update coupon lines in order draft`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var latestOrderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            latestOrderDraft = it
+        }
+
+        sut.onCouponEntered("new_code")
+
+        latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
+            assertTrue(isNotEmpty())
+            assertEquals(1, size)
+        }
+    }
+
+    @Test
+    fun `given order with non-empty coupon when empty coupon added then should remove coupon lines from order draft`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var latestOrderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            latestOrderDraft = it
+        }
+        sut.onCouponEntered("new_code")
+        latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
+            assertTrue(isNotEmpty())
+            assertEquals(1, size)
+        }
+
+        // when
+        sut.onCouponEntered("")
+
+        // then
+        latestOrderDraft!!.couponLines.apply {
+            assertTrue(isEmpty())
+        }
+    }
+
+    @Test
+    fun `given no coupon added to order when add new coupon clicked should redirect to coupon form`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var latestEvent: Event? = null
+        sut.event.observeForever {
+            latestEvent = it
+        }
+
+        sut.onCouponButtonClicked()
+
+        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(null), latestEvent)
+    }
+
+    @Test
+    fun `given coupon line present in order when add new coupon clicked should redirect to coupon form with coupon code`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        sut.onCouponEntered("code")
+        var latestEvent: Event? = null
+        sut.event.observeForever {
+            latestEvent = it
+        }
+
+        // when
+        sut.onCouponButtonClicked()
+
+        // then
+        assertEquals(OrderCreateEditNavigationTarget.EditCoupon("code"), latestEvent)
+    }
+
+    @Test
+    fun `given no items in order then add coupon button should be hidden`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        assertFalse(sut.viewStateData.liveData.value!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `given editable order and containing at least one item, then add coupon button should be enabled`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            items = listOf(
+                Order.Item(
+                    1L,
+                    1L,
+                    "name",
+                    BigDecimal(1),
+                    "",
+                    1f,
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    1L,
+                    listOf()
+                )
+            )
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+
+        assertTrue(lastReceivedState!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `given not editable order and containing at least one item, then add coupon button should be disabled`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val order = defaultOrderValue.copy(
+            isEditable = false,
+            items = listOf(
+                Order.Item(
+                    1L,
+                    1L,
+                    "name",
+                    BigDecimal(1),
+                    "",
+                    1f,
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    BigDecimal(1),
+                    1L,
+                    listOf()
+                )
+            )
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever {
+            lastReceivedState = it
+        }
+
+        assertFalse(lastReceivedState!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `when coupon added should track event`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCouponEntered("code")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_COUPON_ADD,
+            mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
+        )
+    }
+
+    @Test
+    fun `when coupon removed should track event`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCouponEntered("")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_COUPON_REMOVE,
+            mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
         )
     }
 }
