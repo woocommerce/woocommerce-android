@@ -272,17 +272,11 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onDecreaseProductsQuantity(id: Long) {
-        _orderDraft.value.items
-            .find { it.itemId == id }
-            ?.takeIf { it.quantity == 1F }
-            ?.let { onProductClicked(it) }
-            ?: run {
-                tracker.track(
-                    ORDER_PRODUCT_QUANTITY_CHANGE,
-                    mapOf(KEY_FLOW to flow)
-                )
-                _orderDraft.update { it.adjustProductQuantity(id, -1) }
-            }
+        tracker.track(
+            ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(KEY_FLOW to flow)
+        )
+        _orderDraft.update { it.adjustProductQuantity(id, -1) }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
