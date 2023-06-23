@@ -197,14 +197,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when decreasing product quantity to zero, then call the full product view`() = testBlocking {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
+    fun `when decreasing product quantity to zero, then remove product from order`() = testBlocking {
+        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
+            orderDraft = order
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
@@ -212,34 +209,29 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
-        assertThat(addedProductItem!!.quantity).isEqualTo(1F)
 
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
-            } ?: fail("Last event should be of ShowProductDetails type")
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.productId == 123L && it.itemId == addedProductItemId }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
     }
 
     @Test
-    fun `when decreasing variation quantity to zero, then call the full product view`() {
+    fun `when decreasing variation quantity to zero, then remove product from order`() {
+        var orderDraft: Order? = null
         val variationOrderItem = createOrderItem().copy(productId = 0, variationId = 123)
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn variationOrderItem
         }
-        createSut()
 
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
+        createSut()
 
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
+            orderDraft = order
             addedProductItem = order.items.find { it.variationId == 123L }
         }
 
@@ -250,13 +242,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.variationId).isEqualTo(123)
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
-            } ?: fail("Last event should be of ShowProductDetails type")
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.variationId == 123L && it.itemId == addedProductItemId }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
+
     }
 
     @Test
