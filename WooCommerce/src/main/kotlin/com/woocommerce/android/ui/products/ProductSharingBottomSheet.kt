@@ -109,6 +109,11 @@ fun ProductShareWithAI(
                     AIButtonContent(buttonState = viewState.buttonState)
                 }
 
+                val learnMoreButtonColor = if (viewState.isGenerating) {
+                    colorResource(id = R.color.color_on_surface_disabled)
+                } else {
+                    colorResource(id = R.color.color_primary)
+                }
                 WCTextButton(
                     onClick = onInfoButtonClick,
                     enabled = !viewState.isGenerating
@@ -116,7 +121,7 @@ fun ProductShareWithAI(
                     Text(
                         text = stringResource(id = R.string.learn_more),
                         style = MaterialTheme.typography.body2,
-                        color = colorResource(id = R.color.color_primary),
+                        color = learnMoreButtonColor,
                         textAlign = TextAlign.End
                     )
                 }
