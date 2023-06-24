@@ -42,6 +42,7 @@ class CodeScannerTest : BaseUnitTest() {
     @Test
     fun `when scanning code succeeds, then success is emitted`() {
         testBlocking {
+            // arrange
             val barcodeRawValue = "12345"
             val mockBarcodeList = mock<Task<List<Barcode>>>()
             val mockBarcode = mock<Barcode>() {
@@ -70,8 +71,10 @@ class CodeScannerTest : BaseUnitTest() {
                 mock<Task<List<Barcode>>>()
             }
 
+            // act
             val result = codeScanner.startScan(imageProxy).first()
 
+            // assert
             assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Success::class.java)
         }
     }
@@ -79,6 +82,7 @@ class CodeScannerTest : BaseUnitTest() {
     @Test
     fun `when scanning code succeeds, then proper barcode value is emitted`() {
         testBlocking {
+            // arrange
             val barcodeRawValue = "12345"
             val mockBarcodeList = mock<Task<List<Barcode>>>()
             val mockBarcode = mock<Barcode>() {
@@ -106,15 +110,17 @@ class CodeScannerTest : BaseUnitTest() {
                 mock<Task<List<Barcode>>>()
             }
 
+            // act
             val result = codeScanner.startScan(imageProxy).first()
 
+            // assert
             assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
         }
     }
-//
     @Test
     fun `when scanning code succeeds, then flow is terminated`() {
         testBlocking {
+            // arrange
             val barcodeRawValue = "12345"
             val mockBarcodeList = mock<Task<List<Barcode>>>()
             val mockBarcode = mock<Barcode>() {
@@ -142,14 +148,17 @@ class CodeScannerTest : BaseUnitTest() {
                 mock<Task<List<Barcode>>>()
             }
 
+            // act
             val result = codeScanner.startScan(imageProxy).toList()
 
+            // assert
             assertThat(result.size).isEqualTo(1)
         }
     }
     @Test
     fun `when scanning code fails, then failure is emitted`() {
         testBlocking {
+            // arrange
             val mockBarcodeList = mock<Task<List<Barcode>>>()
             val inputImage = mock<InputImage>()
             whenever(inputImageProvider.provideImage(imageProxy)).thenReturn(inputImage)
@@ -165,8 +174,10 @@ class CodeScannerTest : BaseUnitTest() {
                 mock<Task<Barcode>>()
             }
 
+            // act
             val result = codeScanner.startScan(imageProxy).first()
 
+            // assert
             assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Failure::class.java)
         }
     }
