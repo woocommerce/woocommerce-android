@@ -56,9 +56,7 @@ class CodeScannerTest : BaseUnitTest() {
                 mockBarcodeList
             }
             whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
-            whenever(mockBarcodeList.addOnFailureListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
-            doNothing().`when`(imageProxy).close()
             whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
                 (it.arguments[0] as OnSuccessListener<List<Barcode>>).onSuccess(
@@ -96,7 +94,6 @@ class CodeScannerTest : BaseUnitTest() {
                 mockBarcodeList
             }
             whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
-            whenever(mockBarcodeList.addOnFailureListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -134,7 +131,6 @@ class CodeScannerTest : BaseUnitTest() {
                 mockBarcodeList
             }
             whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
-            whenever(mockBarcodeList.addOnFailureListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -231,8 +227,6 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.process(inputImage)).thenAnswer {
                 mockBarcodeList
             }
-            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
-            whenever(mockBarcodeList.addOnFailureListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -270,8 +264,6 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.process(inputImage)).thenAnswer {
                 mockBarcodeList
             }
-            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
-            whenever(mockBarcodeList.addOnFailureListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
             whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
