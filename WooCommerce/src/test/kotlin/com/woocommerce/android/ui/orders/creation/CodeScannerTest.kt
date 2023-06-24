@@ -344,4 +344,30 @@ class CodeScannerTest : BaseUnitTest() {
             verify(imageProxy).close()
         }
     }
+
+    @Test
+    fun `given scanning code succeeds, when no barcode in barcode list, then do not emit any event`() {
+        testBlocking {
+            // arrange
+            val mockBarcodeList = mock<Task<List<Barcode>>>()
+            val inputImage = mock<InputImage>()
+            whenever(inputImageProvider.provideImage(imageProxy)).thenReturn(inputImage)
+            whenever(scanner.process(inputImage)).thenAnswer {
+                mockBarcodeList
+            }
+            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
+            whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnSuccessListener<List<Barcode>>).onSuccess(emptyList())
+                mock<Task<List<Barcode>>>()
+            }
+
+            // act
+            val result = codeScanner.startScan(imageProxy).toList()
+
+            // assert
+            assertThat(result).isNotInstanceOf(CodeScannerStatus.Success::class.java)
+        }
+    }
 }
