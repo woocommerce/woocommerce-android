@@ -229,6 +229,21 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         job.cancel()
     }
 
+    @Test
+    fun `when syncing stats data starts, then store the expected timestamp`() = testBlocking {
+
+    }
+
+    @Test
+    fun `when syncing stats data starts under the cache interval, then request data from cache`() = testBlocking {
+
+    }
+
+    @Test
+    fun `when syncing stats data starts outside the cache interval, then request data from network`() = testBlocking {
+
+    }
+
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
