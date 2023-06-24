@@ -10,50 +10,6 @@ interface CodeScanner {
     fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus>
 }
 
-//class GoogleCodeScanner @Inject constructor(
-//    private val scanner: GmsBarcodeScanner,
-//    private val errorMapper: GoogleCodeScannerErrorMapper,
-//    private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
-//) : CodeScanner {
-//    override fun startScan(): Flow<CodeScannerStatus> {
-//        return callbackFlow {
-//            scanner.startScan()
-//                .addOnSuccessListener { code ->
-//                    handleScanSuccess(code)
-//                    this@callbackFlow.close()
-//                }
-//                .addOnFailureListener { throwable ->
-//                    this@callbackFlow.trySend(
-//                        CodeScannerStatus.Failure(
-//                            error = throwable.message,
-//                            type = errorMapper.mapGoogleMLKitScanningErrors(throwable)
-//                        )
-//                    )
-//                    this@callbackFlow.close()
-//                }
-//            awaitClose()
-//        }
-//    }
-//
-//    private fun ProducerScope<CodeScannerStatus>.handleScanSuccess(code: Barcode) {
-//        code.rawValue?.let {
-//            trySend(
-//                CodeScannerStatus.Success(
-//                    it,
-//                    barcodeFormatMapper.mapBarcodeFormat(code.format)
-//                )
-//            )
-//        } ?: run {
-//            trySend(
-//                CodeScannerStatus.Failure(
-//                    error = "Failed to find a valid raw value!",
-//                    type = CodeScanningErrorType.Other(Throwable("Empty raw value"))
-//                )
-//            )
-//        }
-//    }
-//}
-
 sealed class CodeScannerStatus : Parcelable {
     @Parcelize
     data class Success(val code: String, val format: BarcodeFormat) : CodeScannerStatus()
