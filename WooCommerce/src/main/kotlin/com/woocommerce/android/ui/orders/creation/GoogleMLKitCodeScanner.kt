@@ -4,7 +4,7 @@ import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
+import com.woocommerce.android.ui.orders.creation.barcodescanner.InputImageProvider
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,16 +16,21 @@ class GoogleMLKitCodeScanner @Inject constructor(
     private val barcodeScanner: BarcodeScanner,
     private val errorMapper: GoogleCodeScannerErrorMapper,
     private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
+    private val inputImageProvider: InputImageProvider,
 ) : CodeScanner {
     override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
         return callbackFlow {
-            val inputImage = InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
-            barcodeScanner.process(inputImage)
+            barcodeScanner.process(inputImageProvider.provideImage(imageProxy))
+                .addOnCompleteListener {
+                    // We must call image.close() on received images when finished using them.
+                    // Otherwise, new images may not be received or the camera may stall.
+                    imageProxy.close()
+                }
                 .addOnSuccessListener { barcodeList ->
                     if (!barcodeList.isNullOrEmpty()) {
                         handleScanSuccess(barcodeList.firstOrNull())
-                        this@callbackFlow.close()
                     }
+                    this@callbackFlow.close()
                 }
                 .addOnFailureListener { exception ->
                     this@callbackFlow.trySend(
@@ -36,11 +41,7 @@ class GoogleMLKitCodeScanner @Inject constructor(
                     )
                     this@callbackFlow.close()
                 }
-                .addOnCompleteListener {
-                    // We must call image.close() on received images when finished using them.
-                    // Otherwise, new images may not be received or the camera may stall.
-                    imageProxy.close()
-                }
+
             awaitClose()
         }
     }
