@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.barcodescanner.InputImageProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
@@ -21,6 +22,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -309,6 +311,37 @@ class CodeScannerTest : BaseUnitTest() {
 
             // assert
             assertThat(result.size).isEqualTo(1)
+        }
+    }
+
+    @Test
+    fun `when scanning code completes, then image proxy is closed`() {
+        testBlocking {
+            // arrange
+            val mockBarcodeList = mock<Task<List<Barcode>>>()
+            val inputImage = mock<InputImage>()
+            whenever(inputImageProvider.provideImage(imageProxy)).thenReturn(inputImage)
+            whenever(scanner.process(inputImage)).thenAnswer {
+                mockBarcodeList
+            }
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
+            whenever(mockBarcodeList.addOnSuccessListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnFailureListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnFailureListener).onFailure(mock())
+                mock<Task<Barcode>>()
+            }
+            whenever(mockBarcodeList.addOnCompleteListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnCompleteListener<List<Barcode>>).onComplete(mock())
+                mock<Task<List<Barcode>>>()
+            }
+
+            // act
+            codeScanner.startScan(imageProxy).first()
+
+            // assert
+            verify(imageProxy).close()
         }
     }
 }
