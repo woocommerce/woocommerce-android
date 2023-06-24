@@ -46,14 +46,26 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
+        updateStatsData(scope, rangeSelection, fetchStrategy)
+
+        return fullStatsRequestState
+    }
+
+    private suspend fun updateStatsData(
+        scope: CoroutineScope,
+        rangeSelection: StatsTimeRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) {
         awaitAll(
             scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy),
             scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy),
             scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy),
             scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
         )
+    }
 
-        return fullStatsRequestState
+    private suspend fun getStatsDataFromCache() {
+
     }
 
     private fun combineFullUpdateState() =
@@ -110,5 +122,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
+    }
+
+    private fun generateRequestTimestamp() {
+
     }
 }
