@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleCodeScannerErrorMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.barcodescanner.InputImageProvider
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -23,12 +24,13 @@ class CodeScannerModule {
         barcodeScanner: BarcodeScanner,
         googleCodeScannerErrorMapper: GoogleCodeScannerErrorMapper,
         barcodeFormatMapper: GoogleBarcodeFormatMapper,
+        inputImageProvider: InputImageProvider,
     ): CodeScanner {
-//        val options = GmsBarcodeScannerOptions.Builder().allowManualInput().build()
         return GoogleMLKitCodeScanner(
             barcodeScanner,
             googleCodeScannerErrorMapper,
-            barcodeFormatMapper
+            barcodeFormatMapper,
+            inputImageProvider,
         )
     }
 
