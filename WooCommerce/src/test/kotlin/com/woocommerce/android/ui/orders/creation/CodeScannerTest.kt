@@ -76,32 +76,41 @@ class CodeScannerTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when scanning code succeeds, then proper barcode value is emitted`() {
-//        testBlocking {
-//            val mockBarcode = mock<Task<Barcode>>()
-//            whenever(scanner.startScan()).thenAnswer {
-//                mockBarcode
-//            }
-//            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
-//            val barcodeRawValue = "12345"
-//            whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
-//                @Suppress("UNCHECKED_CAST")
-//                (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(
-//                    mock {
-//                        on {
-//                            rawValue
-//                        }.thenReturn(barcodeRawValue)
-//                    }
-//                )
-//                mock<Task<Barcode>>()
-//            }
-//
-//            val result = codeScanner.startScan().first()
-//
-//            assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
-//        }
-//    }
+    @Test
+    fun `when scanning code succeeds, then proper barcode value is emitted`() {
+        testBlocking {
+            val barcodeRawValue = "12345"
+            val mockBarcodeList = mock<Task<List<Barcode>>>()
+            val mockBarcode = mock<Barcode>() {
+                on {
+                    rawValue
+                }.thenReturn(barcodeRawValue)
+            }
+            val inputImage = mock<InputImage>()
+            whenever(inputImageProvider.provideImage(imageProxy)).thenReturn(inputImage)
+            whenever(scanner.process(inputImage)).thenAnswer {
+                mockBarcodeList
+            }
+            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
+            whenever(mockBarcodeList.addOnFailureListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnSuccessListener<List<Barcode>>).onSuccess(
+                    mock {
+                        on {
+                            firstOrNull()
+                        }.thenReturn(mockBarcode)
+                    }
+                )
+                mock<Task<List<Barcode>>>()
+            }
+
+            val result = codeScanner.startScan(imageProxy).first()
+
+            assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
+        }
+    }
 //
 //    @Test
 //    fun `when scanning code succeeds, then flow is terminated`() {
