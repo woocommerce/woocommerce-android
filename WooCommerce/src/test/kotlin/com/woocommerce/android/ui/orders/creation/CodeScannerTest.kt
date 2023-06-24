@@ -147,27 +147,29 @@ class CodeScannerTest : BaseUnitTest() {
             assertThat(result.size).isEqualTo(1)
         }
     }
-//
-//    @Test
-//    fun `when scanning code fails, then failure is emitted`() {
-//        testBlocking {
-//            val mockBarcode = mock<Task<Barcode>>()
-//            whenever(scanner.startScan()).thenAnswer {
-//                mockBarcode
-//            }
-//            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
-//            whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
-//            whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
-//                @Suppress("UNCHECKED_CAST")
-//                (it.arguments[0] as OnFailureListener).onFailure(mock())
-//                mock<Task<Barcode>>()
-//            }
-//
-//            val result = codeScanner.startScan().first()
-//
-//            assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Failure::class.java)
-//        }
-//    }
+    @Test
+    fun `when scanning code fails, then failure is emitted`() {
+        testBlocking {
+            val mockBarcodeList = mock<Task<List<Barcode>>>()
+            val inputImage = mock<InputImage>()
+            whenever(inputImageProvider.provideImage(imageProxy)).thenReturn(inputImage)
+            whenever(scanner.process(inputImage)).thenAnswer {
+                mockBarcodeList
+            }
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
+            whenever(mockBarcodeList.addOnSuccessListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnFailureListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnFailureListener).onFailure(mock())
+                mock<Task<Barcode>>()
+            }
+
+            val result = codeScanner.startScan(imageProxy).first()
+
+            assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Failure::class.java)
+        }
+    }
 //
 //    @Test
 //    fun `when scanning code fails, then proper failure message is emitted`() {
