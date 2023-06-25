@@ -593,4 +593,8 @@ class ProductDetailFragment :
     }
 
     override fun getFragmentTitle(): String = productName
+
+    fun trackBlazeDisplayedIfVisible() {
+        viewModel.trackBlazeDisplayed()
+    }
 }
