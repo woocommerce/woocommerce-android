@@ -45,48 +45,67 @@ class CustomerListViewModel @Inject constructor(
     fun onCustomerClick(customerRemoteId: Long) {
         AnalyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         launch {
-            customerListRepository.getCustomerByRemoteId(customerRemoteId)?.let { wcCustomer ->
-                val shippingAddress = OrderAddress.Shipping(
-                    company = wcCustomer.shippingCompany,
-                    address1 = wcCustomer.shippingAddress1,
-                    address2 = wcCustomer.shippingAddress2,
-                    city = wcCustomer.shippingCity,
-                    firstName = wcCustomer.shippingFirstName,
-                    lastName = wcCustomer.shippingLastName,
-                    country = wcCustomer.shippingCountry,
-                    state = wcCustomer.shippingState,
-                    postcode = wcCustomer.shippingPostcode,
-                    phone = ""
-                )
-                val billingAddress = OrderAddress.Billing(
-                    company = wcCustomer.billingCompany,
-                    address1 = wcCustomer.billingAddress1,
-                    address2 = wcCustomer.billingAddress2,
-                    city = wcCustomer.billingCity,
-                    firstName = wcCustomer.billingFirstName,
-                    lastName = wcCustomer.billingLastName,
-                    country = wcCustomer.billingCountry,
-                    state = wcCustomer.billingState,
-                    postcode = wcCustomer.billingPostcode,
-                    phone = wcCustomer.billingPhone,
-                    email = wcCustomer.billingEmail
-                )
+            if (customerRemoteId != 0L) {
+                _viewState.value = _viewState.value?.copy(isSkeletonShown = true)
+                val customerFetchingResult = customerListRepository.fetchCustomerByRemoteId(customerRemoteId)
+                _viewState.value = _viewState.value?.copy(isSkeletonShown = false)
 
-                val shippingCountry = customerListRepository.getCountry(shippingAddress.country)
-                val shippingState = customerListRepository.getState(shippingAddress.country, shippingAddress.state)
-
-                val billingCountry = customerListRepository.getCountry(billingAddress.country)
-                val billingState = customerListRepository.getState(billingAddress.country, billingAddress.state)
-
-                triggerEvent(
-                    CustomerSelected(
-                        customerId = customerRemoteId,
-                        shippingAddress = shippingAddress.toAddressModel(shippingCountry, shippingState),
-                        billingAddress = billingAddress.toAddressModel(billingCountry, billingState)
-                    )
-                )
+                if (customerFetchingResult.isError || customerFetchingResult.model == null) {
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic_network))
+                } else {
+                    openCustomerDetails(customerFetchingResult.model!!)
+                }
+            } else {
+                val customer = customerListRepository.getCustomerByRemoteId(customerRemoteId)
+                if (customer != null) {
+                    openCustomerDetails(customer)
+                } else {
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
+                }
             }
         }
+    }
+
+    private fun openCustomerDetails(wcCustomer: WCCustomerModel) {
+        val shippingAddress = OrderAddress.Shipping(
+            company = wcCustomer.shippingCompany,
+            address1 = wcCustomer.shippingAddress1,
+            address2 = wcCustomer.shippingAddress2,
+            city = wcCustomer.shippingCity,
+            firstName = wcCustomer.shippingFirstName,
+            lastName = wcCustomer.shippingLastName,
+            country = wcCustomer.shippingCountry,
+            state = wcCustomer.shippingState,
+            postcode = wcCustomer.shippingPostcode,
+            phone = ""
+        )
+        val billingAddress = OrderAddress.Billing(
+            company = wcCustomer.billingCompany,
+            address1 = wcCustomer.billingAddress1,
+            address2 = wcCustomer.billingAddress2,
+            city = wcCustomer.billingCity,
+            firstName = wcCustomer.billingFirstName,
+            lastName = wcCustomer.billingLastName,
+            country = wcCustomer.billingCountry,
+            state = wcCustomer.billingState,
+            postcode = wcCustomer.billingPostcode,
+            phone = wcCustomer.billingPhone,
+            email = wcCustomer.billingEmail
+        )
+
+        val shippingCountry = customerListRepository.getCountry(shippingAddress.country)
+        val shippingState = customerListRepository.getState(shippingAddress.country, shippingAddress.state)
+
+        val billingCountry = customerListRepository.getCountry(billingAddress.country)
+        val billingState = customerListRepository.getState(billingAddress.country, billingAddress.state)
+
+        triggerEvent(
+            CustomerSelected(
+                customerId = wcCustomer.remoteCustomerId,
+                shippingAddress = shippingAddress.toAddressModel(shippingCountry, shippingState),
+                billingAddress = billingAddress.toAddressModel(billingCountry, billingState)
+            )
+        )
     }
 
     private fun OrderAddress.toAddressModel(
@@ -113,7 +132,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onSearchQueryChanged(query: String?) {
-        if (query != null && query.length > 2) {
+        if (!query.isNullOrEmpty()) {
             // cancel any existing search, then start a new one after a brief delay so we don't
             // actually perform the fetch until the user stops typing
             searchJob?.cancel()

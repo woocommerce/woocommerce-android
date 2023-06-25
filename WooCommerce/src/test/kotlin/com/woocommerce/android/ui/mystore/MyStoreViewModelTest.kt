@@ -611,6 +611,32 @@ class MyStoreViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given the viewModel started, when the store timezone is null, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = null
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
