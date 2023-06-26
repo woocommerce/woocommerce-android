@@ -3,14 +3,6 @@
 -----
 - [*] Fixed scenarios in which the app would lose state when it was relaunched [https://github.com/woocommerce/woocommerce-android/pull/9285]
 
-14.3
------
-
-
-14.3
------
-
-
 14.2
 -----
 - [*] [Internal] Center the text on the "more menu" screen buttons [https://github.com/woocommerce/woocommerce-android/pull/9241]
