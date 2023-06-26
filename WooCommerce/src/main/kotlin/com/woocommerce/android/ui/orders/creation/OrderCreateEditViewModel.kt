@@ -66,6 +66,7 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
@@ -123,6 +124,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -417,9 +419,17 @@ class OrderCreateEditViewModel @Inject constructor(
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
             is CodeScannerStatus.Failure -> {
-
+                barcodeScanningTracker.trackScanFailure(
+                    source = ScanningSource.ORDER_CREATION,
+                    type = status.type
+                )
+                sendAddingProductsViaScanningFailedEvent(
+                    R.string.order_creation_barcode_scanning_scanning_failed
+                )
             }
             is CodeScannerStatus.Success -> {
+                barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
+                viewState = viewState.copy(isUpdatingOrderDraft = true)
                 fetchProductBySKU(
                     BarcodeOptions(
                         sku = status.code,
