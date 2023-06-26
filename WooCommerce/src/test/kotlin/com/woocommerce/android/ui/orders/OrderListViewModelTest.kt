@@ -1093,6 +1093,19 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(barcodeScanningTracker).trackScanFailure(any(), any())
     }
 
+    @Test
+    fun `when scan failure, then track analytics event with proper source`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(eq(ScanningSource.ORDER_LIST), any())
+    }
+
 //    @Test
 //    fun `when scan failure, then track analytics event with proper source`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
