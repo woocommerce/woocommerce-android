@@ -1037,15 +1037,24 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
-//    @Test
-//    fun `when scan clicked, then track proper analytics event`() {
-//        viewModel = createViewModel()
-//
-//        viewModel.onScanClicked()
-//
-//        verify(analyticsTracker).track(AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
-//    }
-//
+    @Test
+    fun `when scan clicked, then track proper analytics event`() {
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    @Test
+    fun `when scan clicked, then trigger openBarcodeScanningFragment event`() {
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
+    }
+
 //    @Test
 //    fun `when scan success, then track proper analytics event`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
