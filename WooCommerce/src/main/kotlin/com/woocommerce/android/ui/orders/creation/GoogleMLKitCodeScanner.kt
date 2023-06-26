@@ -20,27 +20,27 @@ class GoogleMLKitCodeScanner @Inject constructor(
 ) : CodeScanner {
     override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
         return callbackFlow {
-            barcodeScanner.process(inputImageProvider.provideImage(imageProxy))
-                .addOnCompleteListener {
-                    // We must call image.close() on received images when finished using them.
-                    // Otherwise, new images may not be received or the camera may stall.
-                    imageProxy.close()
-                }
-                .addOnSuccessListener { barcodeList ->
-                    if (!barcodeList.isNullOrEmpty()) {
-                        handleScanSuccess(barcodeList.firstOrNull())
-                    }
+            val barcodeTask = barcodeScanner.process(inputImageProvider.provideImage(imageProxy))
+            barcodeTask.addOnCompleteListener {
+                // We must call image.close() on received images when finished using them.
+                // Otherwise, new images may not be received or the camera may stall.
+                imageProxy.close()
+            }
+            barcodeTask.addOnSuccessListener { barcodeList ->
+                if (!barcodeList.isNullOrEmpty()) {
+                    handleScanSuccess(barcodeList.firstOrNull())
                     this@callbackFlow.close()
                 }
-                .addOnFailureListener { exception ->
-                    this@callbackFlow.trySend(
-                        CodeScannerStatus.Failure(
-                            error = exception.message,
-                            type = errorMapper.mapGoogleMLKitScanningErrors(exception)
-                        )
+            }
+            barcodeTask.addOnFailureListener { exception ->
+                this@callbackFlow.trySend(
+                    CodeScannerStatus.Failure(
+                        error = exception.message,
+                        type = errorMapper.mapGoogleMLKitScanningErrors(exception)
                     )
-                    this@callbackFlow.close()
-                }
+                )
+                this@callbackFlow.close()
+            }
 
             awaitClose()
         }
