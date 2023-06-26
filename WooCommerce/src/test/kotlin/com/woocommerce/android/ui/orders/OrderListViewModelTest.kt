@@ -1028,7 +1028,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             code = "12345",
             format = BarcodeFormat.FormatUPCA
         )
-
         viewModel = createViewModel()
         viewModel.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1055,23 +1054,19 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
     }
 
-//    @Test
-//    fun `when scan success, then track proper analytics event`() {
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//            }
-//        }
-//        viewModel = createViewModel()
-//
-//        viewModel.onScanClicked()
-//
-//        verify(analyticsTracker).track(
-//            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
-//            any()
-//        )
-//    }
-//
+    @Test
+    fun `when scan success, then track proper analytics event`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(any())
+    }
+
 //    @Test
 //    fun `when scan success, then track analytics event with proper source`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
