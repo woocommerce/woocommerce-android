@@ -1022,22 +1022,21 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
     }
 
-//    @Test
-//    fun `when code scanner succeeds, then trigger event with proper sku`() {
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//            }
-//        }
-//
-//        viewModel = createViewModel()
-//        viewModel.onScanClicked()
-//
-//        assertThat(viewModel.event.value).isEqualTo(
-//            OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
-//        )
-//    }
-//
+    @Test
+    fun `when code scanner succeeds, then trigger event with proper sku`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
+
+        viewModel = createViewModel()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat(viewModel.event.value).isEqualTo(
+            OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
+        )
+    }
+
 //    @Test
 //    fun `when scan clicked, then track proper analytics event`() {
 //        viewModel = createViewModel()
