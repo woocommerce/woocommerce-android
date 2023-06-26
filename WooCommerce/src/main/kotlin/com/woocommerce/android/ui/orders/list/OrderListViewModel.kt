@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.ScanningSource
+import com.woocommerce.android.ui.orders.creation.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -114,6 +115,7 @@ class OrderListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
     private val feedbackPrefs: FeedbackPrefs,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -367,9 +369,20 @@ class OrderListViewModel @Inject constructor(
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
             is CodeScannerStatus.Failure -> {
-
+                barcodeScanningTracker.trackScanFailure(
+                    ScanningSource.ORDER_LIST,
+                    status.type
+                )
+                triggerEvent(
+                    OrderListEvent.OnAddingProductViaScanningFailed(
+                        R.string.order_list_barcode_scanning_scanning_failed
+                    ) {
+                        triggerEvent(OrderListEvent.OpenBarcodeScanningFragment)
+                    }
+                )
             }
             is CodeScannerStatus.Success -> {
+                barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
                 triggerEvent(
                     OrderListEvent.OnBarcodeScanned(status.code, status.format)
                 )
@@ -817,6 +830,8 @@ class OrderListViewModel @Inject constructor(
         object ShowIPPDismissConfirmationDialog : OrderListEvent()
 
         data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
+
+        object OpenBarcodeScanningFragment : OrderListEvent()
 
         data class OnBarcodeScanned(
             val code: String,

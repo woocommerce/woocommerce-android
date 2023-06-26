@@ -263,14 +263,17 @@ class OrderListFragment :
                 true
             }
             R.id.menu_barcode -> {
-                findNavController().navigateSafely(
-                    OrderListFragmentDirections.actionOrderListFragmentToBarcodeScanningFragment()
-                )
-//                viewModel.onScanClicked()
+                openBarcodeScanningFragment()
                 true
             }
             else -> false
         }
+    }
+
+    private fun openBarcodeScanningFragment() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToBarcodeScanningFragment()
+        )
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
