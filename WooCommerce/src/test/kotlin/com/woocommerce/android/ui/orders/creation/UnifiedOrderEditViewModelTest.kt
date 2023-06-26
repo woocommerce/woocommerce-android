@@ -369,34 +369,30 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         assertTrue(isUpdatingOrderDraft!!)
     }
 
-//    @Test
-//    fun `when SKU search succeeds, then set isUpdatingOrderDraft to false`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                ProductTestUtils.generateProductList()
-//            )
-//            var isUpdatingOrderDraft: Boolean? = null
-//            sut.viewStateData.observeForever { _, viewState ->
-//                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
-//            }
-//
-//            sut.onScanClicked()
-//
-//            assertFalse(isUpdatingOrderDraft!!)
-//        }
-//    }
-//
+    @Test
+    fun `when SKU search succeeds, then set isUpdatingOrderDraft to false`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                ProductTestUtils.generateProductList()
+            )
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertFalse(isUpdatingOrderDraft!!)
+        }
+    }
+
 //    @Test
 //    fun `when SKU search succeeds, then add the scanned product`() {
 //        testBlocking {
