@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
+    private val shouldFetchNewStatsData: ShouldFetchNewStatsData,
     private val analyticsRepository: AnalyticsRepository
 ) {
     private val _revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
@@ -38,7 +39,6 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
-        fetchStrategy: FetchStrategy,
         scope: CoroutineScope
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
@@ -46,7 +46,11 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        updateStatsData(scope, rangeSelection, fetchStrategy)
+        if (shouldFetchNewStatsData()) {
+            updateStatsData(scope, rangeSelection, FetchStrategy.ForceNew)
+        } else {
+            updateStatsData(scope, rangeSelection, FetchStrategy.Saved)
+        }
 
         return fullStatsRequestState
     }
@@ -62,10 +66,6 @@ class UpdateAnalyticsHubStats @Inject constructor(
             scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy),
             scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
         )
-    }
-
-    private suspend fun getStatsDataFromCache() {
-
     }
 
     private fun combineFullUpdateState() =
