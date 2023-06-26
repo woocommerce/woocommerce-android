@@ -1080,28 +1080,19 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(barcodeScanningTracker).trackSuccess(ScanningSource.ORDER_LIST)
     }
 
-//    @Test
-//    fun `when scan failure, then track analytics event`() {
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//        viewModel = createViewModel()
-//
-//        viewModel.onScanClicked()
-//
-//        verify(analyticsTracker).track(
-//            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
-//            any()
-//        )
-//    }
-//
+    @Test
+    fun `when scan failure, then track analytics event`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(any(), any())
+    }
+
 //    @Test
 //    fun `when scan failure, then track analytics event with proper source`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
