@@ -357,6 +357,12 @@ class MainActivity :
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
+        // Verify authenticated session
+        if (!presenter.userIsLoggedIn()) {
+            showLoginScreen()
+            return
+        }
+
         setIntent(intent)
         initFragment(null)
 
