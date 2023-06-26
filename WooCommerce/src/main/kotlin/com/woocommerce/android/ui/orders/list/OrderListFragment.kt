@@ -263,7 +263,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_barcode -> {
-                openBarcodeScanningFragment()
+                viewModel.onScanClicked()
                 true
             }
             else -> false
@@ -380,6 +380,9 @@ class OrderListFragment :
                         context,
                         event.message
                     )
+                }
+                is OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment -> {
+                    openBarcodeScanningFragment()
                 }
                 else -> event.isHandled = false
             }

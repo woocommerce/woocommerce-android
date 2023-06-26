@@ -318,7 +318,7 @@ class OrderListViewModel @Inject constructor(
 
     fun onScanClicked() {
         trackScanClickedEvent()
-        startScan()
+        triggerEvent(OrderListEvent.OpenBarcodeScanningFragment)
     }
 
     private fun trackScanClickedEvent() {
