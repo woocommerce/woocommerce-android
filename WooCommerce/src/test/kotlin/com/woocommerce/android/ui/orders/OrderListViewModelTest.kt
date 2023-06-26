@@ -995,19 +995,19 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
-//    @Test
-//    fun `when code scanner fails, then trigger event proper message`() {
-//        val scannedStatus = CodeScannerStatus.Failure(
-//            error = "Failed to recognize the barcode",
-//            type = CodeScanningErrorType.NotFound
-//        )
-//        viewModel = createViewModel()
-//        viewModel.handleBarcodeScannedStatus(scannedStatus)
-//
-//        assertThat(
-//            (viewModel.event.value as OnAddingProductViaScanningFailed).message
-//        ).isEqualTo(R.string.order_list_barcode_scanning_scanning_failed)
-//    }
+    @Test
+    fun `when code scanner fails, then trigger event proper message`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat(
+            (viewModel.event.value as OnAddingProductViaScanningFailed).message
+        ).isEqualTo(R.string.order_list_barcode_scanning_scanning_failed)
+    }
 
 //    @Test
 //    fun `given code scanner failure, when retry clicked, then scan restarted`() {
