@@ -8,4 +8,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDescriptionAICelebrationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
-) : ScopedViewModel(savedStateHandle)
+) : ScopedViewModel(savedStateHandle) {
+    fun onConfirmedClick() {
+        /* to do */
+    }
+}
