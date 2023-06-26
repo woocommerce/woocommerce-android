@@ -414,7 +414,23 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun fetchProductBySKU(
+    fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
+        when (status) {
+            is CodeScannerStatus.Failure -> {
+
+            }
+            is CodeScannerStatus.Success -> {
+                fetchProductBySKU(
+                    BarcodeOptions(
+                        sku = status.code,
+                        barcodeFormat = status.format
+                    )
+                )
+            }
+        }
+    }
+
+    private fun fetchProductBySKU(
         barcodeOptions: BarcodeOptions,
         source: ScanningSource = ScanningSource.ORDER_CREATION,
     ) {

@@ -448,20 +448,8 @@ class OrderCreateEditFormFragment :
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
         }
-        handleResult<CodeScannerStatus>("barcode") {
-            when (it) {
-                is CodeScannerStatus.Failure -> {
-
-                }
-                is CodeScannerStatus.Success -> {
-                    viewModel.fetchProductBySKU(
-                        BarcodeOptions(
-                            sku = it.code,
-                            barcodeFormat = it.format
-                        )
-                    )
-                }
-            }
+        handleResult<CodeScannerStatus>("barcode") { status ->
+            viewModel.handleBarcodeScannedStatus(status)
         }
     }
 
