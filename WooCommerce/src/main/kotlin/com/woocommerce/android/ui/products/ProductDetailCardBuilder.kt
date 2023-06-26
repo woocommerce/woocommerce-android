@@ -64,7 +64,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
-@SuppressWarnings("LargeClass")
+@Suppress("LargeClass", "LongParameterList")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
@@ -100,10 +100,10 @@ class ProductDetailCardBuilder(
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = PRIMARY,
-            properties = (listOf(
-                product.title()) +
-                product.description(isAIProductDescriptionEnabled(), viewModel::onWriteWithAIClicked)
-            ).filterNotEmpty()
+            properties = (
+                listOf(product.title()) +
+                    product.description(isAIProductDescriptionEnabled(), viewModel::onWriteWithAIClicked)
+                ).filterNotEmpty()
         )
     }
 
@@ -460,6 +460,7 @@ class ProductDetailCardBuilder(
                     else -> resources.getString(string.product_type_physical)
                 }
             }
+
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)

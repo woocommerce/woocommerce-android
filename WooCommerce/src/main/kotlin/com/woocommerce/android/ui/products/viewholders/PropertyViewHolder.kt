@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products.viewholders
 
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyView
 import com.woocommerce.android.ui.products.models.ProductProperty.Property

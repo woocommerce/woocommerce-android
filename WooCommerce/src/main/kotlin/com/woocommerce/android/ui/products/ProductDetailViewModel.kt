@@ -117,6 +117,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+@Suppress("EmptyFunctionBlock")
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -427,9 +428,7 @@ class ProductDetailViewModel @Inject constructor(
             selectedSite.get().isWPComAtomic
     }
 
-    fun onWriteWithAIClicked() {
-
-    }
+    fun onWriteWithAIClicked() {}
 
     fun onBlazeClicked() {
         tracker.track(
