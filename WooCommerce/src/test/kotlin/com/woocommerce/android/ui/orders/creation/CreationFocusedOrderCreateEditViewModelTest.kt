@@ -247,7 +247,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ?.find { it.variationId == 123L && it.itemId == addedProductItemId }
             ?.let { assertThat(it.quantity).isEqualTo(0f) }
             ?: fail("Expected an item with productId 123 with quantity set as 0")
-
     }
 
     @Test
