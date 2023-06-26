@@ -478,15 +478,8 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleResult<CodeScannerStatus>("barcode") {
-            when (it) {
-                is CodeScannerStatus.Failure -> {
-
-                }
-                is CodeScannerStatus.Success -> {
-                    openOrderCreationFragment(it.code, it.format)
-                }
-            }
+        handleResult<CodeScannerStatus>("barcode") { status ->
+            viewModel.handleBarcodeScannedStatus(status)
         }
     }
 

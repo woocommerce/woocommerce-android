@@ -364,6 +364,19 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
+        when (status) {
+            is CodeScannerStatus.Failure -> {
+
+            }
+            is CodeScannerStatus.Success -> {
+                triggerEvent(
+                    OrderListEvent.OnBarcodeScanned(status.code, status.format)
+                )
+            }
+        }
+    }
+
     /**
      * Track user clicked to open an order and the status of that order, along with some
      * data about the order custom fields
