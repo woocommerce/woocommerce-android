@@ -12,9 +12,12 @@ class PropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, 
     fun bind(item: Property) {
         val context = itemView.context
         val propertyView = itemView as WCProductPropertyView
-        propertyView.show(LinearLayout.HORIZONTAL, context.getString(item.title), item.value, true)
-
-        val divider = propertyView.findViewById<View>(R.id.divider)
-        divider.isVisible = item.isDividerVisible
+        propertyView.show(
+            orientation = LinearLayout.HORIZONTAL,
+            caption = context.getString(item.title),
+            detail = item.value,
+            showTitle = true,
+            isDividerVisible = item.isDividerVisible
+        )
     }
 }

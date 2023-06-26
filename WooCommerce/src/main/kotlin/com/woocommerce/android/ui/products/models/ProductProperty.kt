@@ -59,6 +59,7 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
         val maxLines: Int = 1,
+        val isDividerVisible: Boolean = true,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(COMPLEX_PROPERTY) {
         override fun isNotEmpty(): Boolean {
