@@ -1009,26 +1009,19 @@ class OrderListViewModelTest : BaseUnitTest() {
         ).isEqualTo(R.string.order_list_barcode_scanning_scanning_failed)
     }
 
-//    @Test
-//    fun `given code scanner failure, when retry clicked, then scan restarted`() {
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//
-//        viewModel = createViewModel()
-//        viewModel.onScanClicked()
-//        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
-//
-//        verify(codeScanner).startScan()
-//    }
-//
+    @Test
+    fun `given code scanner failure, when retry clicked, then scan restarted`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
+    }
+
 //    @Test
 //    fun `when code scanner succeeds, then trigger event with proper sku`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
