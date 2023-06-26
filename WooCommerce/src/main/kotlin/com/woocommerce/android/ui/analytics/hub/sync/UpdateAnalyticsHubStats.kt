@@ -46,7 +46,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        if (shouldFetchNewStatsData()) {
+        val shouldFetchNewData = shouldFetchNewStatsData(rangeSelection)
+
+        if (shouldFetchNewData) {
             updateStatsData(scope, rangeSelection, FetchStrategy.ForceNew)
         } else {
             updateStatsData(scope, rangeSelection, FetchStrategy.Saved)
@@ -122,9 +124,5 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
-    }
-
-    private fun generateRequestTimestamp() {
-
     }
 }
