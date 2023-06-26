@@ -1,2 +1,0 @@
-14.0:
-Den här versionen inkluderar ett flertal buggkorrigeringar och förbättringar som hjälper dig att komma igång med din verksamhet och säkerställer en smidig upplevelse. Håll ögonen öppna efter fler förbättringar framöver.

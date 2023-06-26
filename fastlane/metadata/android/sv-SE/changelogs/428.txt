@@ -1,0 +1,2 @@
+14.1:
+Den här versionen inkluderar ett antal buggkorrigeringar och prestandaförbättringar av appens beställnings- och produktsektioner. Fortsätt att lämna feedback.

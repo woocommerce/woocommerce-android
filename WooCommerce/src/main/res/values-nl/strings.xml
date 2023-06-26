@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 22:54:21+0000
+Translation-Revision-Date: 2023-06-21 11:54:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Kon deelbericht niet genereren Probeer het nog eens!</string>
+    <string name="product_sharing_ai_info_label">Meer informatie over deze AI-functie</string>
+    <string name="product_sharing_optional_message_label">Voeg een optioneel bericht toe</string>
+    <string name="product_sharing_generating">Bezig met genereren …</string>
+    <string name="product_sharing_regenerate">Regenereren</string>
+    <string name="product_sharing_write_with_ai">Schijf met AI</string>
+    <string name="more_menu_button_blaze_description">Producten promoten met Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI-contentgenerator beschikbaar</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promoten met Blaze</string>
     <string name="share_product">Product delen</string>
     <string name="first_product_celebration_body_message">Gefeliciteerd! Je bent een stap dichter bij het voltooien van je nieuwe winkel.</string>
     <string name="first_product_celebration_title">Eerste product aangemaakt 🎉</string>

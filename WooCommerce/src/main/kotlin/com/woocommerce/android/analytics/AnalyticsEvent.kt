@@ -804,6 +804,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_TRY_FOR_FREE_TAPPED(siteless = true),
     SITE_CREATION_TIMED_OUT(siteless = true),
     SITE_CREATION_PROPERTIES_OUT_OF_SYNC(siteless = true),
+    SITE_CREATION_FREE_TRIAL_CREATED_SUCCESS,
 
     // Domain change
     CUSTOM_DOMAINS_STEP,

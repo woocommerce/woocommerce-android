@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-06-21 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">No se ha podido generar un mensaje de compartición. Inténtalo de nuevo.</string>
+    <string name="product_sharing_ai_info_label">Más información sobre esta función de IA</string>
+    <string name="product_sharing_optional_message_label">Añade un mensaje (opcional)</string>
+    <string name="product_sharing_generating">Generando…</string>
+    <string name="product_sharing_regenerate">Regenerar</string>
+    <string name="product_sharing_write_with_ai">Escribir con IA</string>
+    <string name="more_menu_button_blaze_description">Promociona productos con Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Generador de contenidos de IA disponible</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promocionar con Blaze</string>
     <string name="share_product">Compartir producto</string>
     <string name="first_product_celebration_body_message">¡Enhorabuena! Ya estás un paso más cerca de que tu tienda esté lista.</string>
     <string name="first_product_celebration_title">Has creado el primer producto 🎉</string>
