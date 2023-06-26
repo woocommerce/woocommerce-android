@@ -60,7 +60,6 @@ fun WCOutlinedTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    textFieldModifier: Modifier = Modifier,
     helperText: String? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -89,7 +88,7 @@ fun WCOutlinedTextField(
             },
             enabled = enabled,
             readOnly = readOnly,
-            modifier = textFieldModifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             isError = isError,
@@ -147,6 +146,65 @@ fun WCOutlinedTextField(
             enabled = enabled,
             readOnly = readOnly,
             modifier = Modifier.fillMaxWidth(),
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
+            isError = isError,
+            colors = colors,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            singleLine = singleLine,
+            maxLines = maxLines,
+            interactionSource = interactionSource,
+            placeholder = {
+                placeholderText?.let {
+                    Text(text = it)
+                }
+            }
+        )
+    }
+}
+
+/**
+ * An [OutlinedTextField] that displays an optional helper text below the field.
+ * [textFieldModifier] is added to allow adding modifier to the actual [OutlinedTextField]
+ */
+@Composable
+fun WCOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
+    helperText: String? = null,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    placeholderText: String? = null
+) {
+    WCOutlinedTextFieldLayout(
+        modifier = modifier,
+        helperText = helperText,
+        isError = isError
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = {
+                Text(text = label)
+            },
+            enabled = enabled,
+            readOnly = readOnly,
+            modifier = textFieldModifier.fillMaxWidth(),
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             isError = isError,
