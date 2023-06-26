@@ -1081,25 +1081,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
 //    @Test
-//    fun `when scan success, then track analytics event with proper source`() {
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//            }
-//        }
-//        viewModel = createViewModel()
-//
-//        viewModel.onScanClicked()
-//
-//        verify(analyticsTracker).track(
-//            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
-//            mapOf(
-//                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
-//            )
-//        )
-//    }
-//
-//    @Test
 //    fun `when scan failure, then track analytics event`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
 //            flow<CodeScannerStatus> {
