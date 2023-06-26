@@ -1067,6 +1067,19 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(barcodeScanningTracker).trackSuccess(any())
     }
 
+    @Test
+    fun `when scan success, then track proper analytics event with proper source`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(ScanningSource.ORDER_LIST)
+    }
+
 //    @Test
 //    fun `when scan success, then track analytics event with proper source`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
