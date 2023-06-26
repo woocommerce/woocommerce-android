@@ -1106,6 +1106,22 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(barcodeScanningTracker).trackScanFailure(eq(ScanningSource.ORDER_LIST), any())
     }
 
+    @Test
+    fun `when scan failure, then track analytics event with proper type`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(
+            any(),
+            eq(CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld)
+        )
+    }
+
 //    @Test
 //    fun `when scan failure, then track analytics event with proper source`() {
 //        whenever(codeScanner.startScan()).thenAnswer {
