@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Button
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -70,7 +71,8 @@ class ProductDetailCardBuilder(
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
-    private val variationRepository: VariationRepository
+    private val variationRepository: VariationRepository,
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
 ) {
     private lateinit var originalSku: String
 
@@ -98,9 +100,9 @@ class ProductDetailCardBuilder(
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = PRIMARY,
-            properties = listOf(
-                product.title(),
-                product.description()
+            properties = (listOf(
+                product.title()) +
+                product.description(isAIProductDescriptionEnabled(), viewModel::onWriteWithAIClicked)
             ).filterNotEmpty()
         )
     }
@@ -574,29 +576,42 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.description(): ProductProperty {
+    private fun Product.description(showAIButton: Boolean, onWriteWithAIClicked: () -> Unit): List<ProductProperty> {
         val productDescription = this.description
         val productTitle = this.name
         val showTitle = productDescription.isNotEmpty()
-        val description = if (productDescription.isEmpty()) {
+        val description = productDescription.ifEmpty {
             resources.getString(string.product_description_empty)
-        } else {
-            productDescription
         }
 
-        return ComplexProperty(
-            string.product_description,
-            description,
-            showTitle = showTitle
-        ) {
-            viewModel.onEditProductCardClicked(
-                ViewProductDescriptionEditor(
-                    productDescription, resources.getString(string.product_description),
-                    productTitle
-                ),
-                PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+        val properties = mutableListOf<ProductProperty>()
+        properties.add(
+            ComplexProperty(
+                string.product_description,
+                description,
+                showTitle = showTitle,
+                isDividerVisible = !showAIButton
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductDescriptionEditor(
+                        productDescription, resources.getString(string.product_description),
+                        productTitle
+                    ),
+                    PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+                )
+            }
+        )
+
+        if (showAIButton) {
+            properties.add(
+                Button(
+                    string.product_sharing_write_with_ai,
+                    drawable.ic_ai,
+                    onClick = onWriteWithAIClicked
+                )
             )
         }
+        return properties
     }
 
     // show product variations only if product type is variable and if there are variations for the product
