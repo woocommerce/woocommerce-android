@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ai.AIPrompts
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -25,7 +24,7 @@ import javax.inject.Inject
 class ProductSharingViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     private val tracker: AnalyticsTrackerWrapper,
-    private val resourceProvider: ResourceProvider,
+    resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
@@ -66,13 +65,11 @@ class ProductSharingViewModel @Inject constructor(
         }
 
         launch {
-            val result = aiRepository.fetchJetpackAICompletionsForSite(
+            val result = aiRepository.generateProductSharingText(
                 site = selectedSite.get(),
-                prompt = AIPrompts.generateProductSharingPrompt(
-                    navArgs.productName,
-                    navArgs.permalink,
-                    navArgs.productDescription.orEmpty()
-                )
+                navArgs.productName,
+                navArgs.permalink,
+                navArgs.productDescription.orEmpty()
             )
             result.fold(
                 onSuccess = { completions ->

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 11:54:04+0000
+Translation-Revision-Date: 2023-06-22 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Det gick inte att generera meddelandet för delning. Försök igen.</string>
+    <string name="product_sharing_ai_info_label">Lär dig mer om vår AI-funktion</string>
+    <string name="product_sharing_optional_message_label">Lägg till ett valfritt meddelande</string>
+    <string name="product_sharing_generating">Genererar …</string>
+    <string name="product_sharing_regenerate">Återskapa</string>
+    <string name="product_sharing_write_with_ai">Skriv med AI</string>
+    <string name="more_menu_button_blaze_description">Marknadsför produkter med Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI-innehållsgenerator tillgänglig</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Marknadsför med Blaze</string>
     <string name="share_product">Dela produkt</string>
     <string name="first_product_celebration_body_message">Grattis. Du är ett steg närmare att kunna lansera din nya butik.</string>
     <string name="first_product_celebration_title">Den första produkten har skapats 🎉</string>

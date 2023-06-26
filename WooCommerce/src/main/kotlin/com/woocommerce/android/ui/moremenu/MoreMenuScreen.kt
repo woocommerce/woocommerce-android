@@ -359,12 +359,12 @@ private fun MoreMenuButton(
                 ) {
                     Text(
                         text = stringResource(id = title),
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
                     )
                     Text(
                         text = stringResource(id = description),
                         style = MaterialTheme.typography.caption,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
                     )
                 }
             }
