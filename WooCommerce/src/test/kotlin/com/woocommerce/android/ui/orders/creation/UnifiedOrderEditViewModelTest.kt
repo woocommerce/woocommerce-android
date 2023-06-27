@@ -937,41 +937,37 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search via sku succeeds, then track event with proper source`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                        parentID = 1L,
-//                        productType = "variable-subscription",
-//                    )
-//                )
-//            )
-//
-//            sut.onScanClicked()
-//
-//            verify(tracker).track(
-//                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
-//                mapOf(
-//                    KEY_SCANNING_SOURCE to "order_creation"
-//                )
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given product search via sku succeeds, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation"
+                )
+            )
+        }
+    }
+
 //    @Test
 //    fun `given product search via sku fails, then track proper event`() {
 //        testBlocking {
