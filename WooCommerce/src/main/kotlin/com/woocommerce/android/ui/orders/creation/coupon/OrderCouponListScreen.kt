@@ -43,7 +43,7 @@ fun OrderCouponListScreen(
         topBar = { TopBar(onNavigateBackClicked) },
         floatingActionButton = { FAB(onAddCouponClicked) }
     ) { padding ->
-        CouponsList(padding, couponsState, onCouponClicked)
+        CouponList(padding, couponsState, onCouponClicked)
     }
 }
 
@@ -75,7 +75,7 @@ private fun FAB(onClick: () -> Unit) {
 }
 
 @Composable
-private fun CouponsList(
+private fun CouponList(
     padding: PaddingValues,
     couponsState: State<List<Order.CouponLine>>,
     onCouponClicked: (Order.CouponLine) -> Unit
@@ -120,11 +120,11 @@ private fun FABPreview() {
 
 @Composable
 @Preview
-private fun CouponsListPreview() {
+private fun CouponListPreview() {
     val state = remember {
         mutableStateOf(listOf(Order.CouponLine(code = "coupon1"), Order.CouponLine(code = "coupon2")))
     }
-    CouponsList(
+    CouponList(
         padding = PaddingValues(),
         couponsState = state,
         onCouponClicked = {}
