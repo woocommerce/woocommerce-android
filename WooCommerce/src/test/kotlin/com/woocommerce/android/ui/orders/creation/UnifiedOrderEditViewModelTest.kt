@@ -1226,41 +1226,37 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given EAN-8 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
-//        testBlocking {
-//            val sku = "12345678901"
-//            val skuWithCheckDigitRemoved = "1234567890"
-//            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
-//                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-//            }
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8))
-//                }
-//            }
-//            whenever(
-//                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
-//            ).thenReturn(
-//                mockEAN8CheckDigitRemover
-//            )
-//            whenever(
-//                productListRepository.searchProductList(
-//                    sku,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(emptyList())
-//
-//            sut.onScanClicked()
-//
-//            verify(productListRepository).searchProductList(
-//                skuWithCheckDigitRemoved,
-//                WCProductStore.SkuSearchOptions.ExactSearch
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given EAN-8 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8)
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
+            ).thenReturn(
+                mockEAN8CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(productListRepository).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
 //    @Test
 //    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
 //        testBlocking {
