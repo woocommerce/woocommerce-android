@@ -50,6 +50,15 @@ steps:
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
 
+  - wait
+
+  - label: "🔍 Test Analytics"
+    command: buildkite-agent artifact download test-result_1.xml
+    plugins:
+      - test-collector#v1.8.0:
+          files: "test-result_1.xml"
+          format: "junit"      
+
   - label: "Ensure Screenshot Tests Build"
     command: |
       echo "--- ⚒️ Building"
