@@ -1257,42 +1257,38 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
-//        testBlocking {
-//            val sku = "12345678901"
-//            val skuWithCheckDigitRemoved = "1234567890"
-//            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-//                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-//            }
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-//            ).thenReturn(
-//                mockUPCCheckDigitRemover
-//            )
-//            whenever(
-//                productListRepository.searchProductList(
-//                    sku,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(emptyList())
-//            var isUpdatingOrderDraft: Boolean? = null
-//            sut.viewStateData.observeForever { _, viewState ->
-//                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
-//            }
-//
-//            sut.onScanClicked()
-//
-//            assertTrue(isUpdatingOrderDraft!!)
-//        }
-//    }
-//
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
+
 //    @Test
 //    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
 //        testBlocking {
