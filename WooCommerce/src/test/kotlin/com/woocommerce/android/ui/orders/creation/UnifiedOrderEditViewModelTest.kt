@@ -1646,34 +1646,30 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search fails for non UPC barcode format, then do not do any checksum operation`() {
-//        testBlocking {
-//            val sku = "12345678901"
-//            val skuWithCheckDigitRemoved = "1234567890"
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatQRCode))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    sku,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(emptyList())
-//
-//            sut.onScanClicked()
-//
-//            verify(checkDigitRemoverFactory, never()).getCheckDigitRemoverFor(any())
-//            verify(productListRepository, never()).searchProductList(
-//                skuWithCheckDigitRemoved,
-//                WCProductStore.SkuSearchOptions.ExactSearch
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given product search fails for non UPC barcode format, then do not do any checksum operation`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatQRCode)
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(checkDigitRemoverFactory, never()).getCheckDigitRemoverFor(any())
+            verify(productListRepository, never()).searchProductList(
+                skuWithCheckDigitRemoved,
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
 //    @Test
 //    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
 //        savedState["scanning_in_progress"] = true
