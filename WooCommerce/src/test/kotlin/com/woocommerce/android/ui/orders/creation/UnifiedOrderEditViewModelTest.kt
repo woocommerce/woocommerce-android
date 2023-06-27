@@ -864,25 +864,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
 //    @Test
-//    fun `when scan success, then track event with proper source`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//
-//        verify(tracker).track(
-//            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
-//            mapOf(
-//                KEY_SCANNING_SOURCE to "order_creation"
-//            )
-//        )
-//    }
-//
-//    @Test
 //    fun `when scan failure, then track proper event`() {
 //        createSut()
 //        whenever(codeScanner.startScan()).thenAnswer {
