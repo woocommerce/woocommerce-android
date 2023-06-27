@@ -1,0 +1,71 @@
+package com.woocommerce.android.ui.compose.component
+
+import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
+import com.woocommerce.android.R
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.launch
+
+// Credit: https://proandroiddev.com/jetpack-compose-bottom-sheet-over-android-view-using-kotlin-extension-7fecfa8fe369
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun BottomSheetWrapper(
+    parent: ViewGroup,
+    composeView: ComposeView,
+    content: @Composable (() -> Unit) -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    var isSheetOpened by remember { mutableStateOf(false) }
+
+    ModalBottomSheetLayout(
+        sheetBackgroundColor = colorResource(id = R.color.color_surface),
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            content {
+                // Action passed for clicking close button in the content
+                coroutineScope.launch {
+                    modalBottomSheetState.hide() // will trigger the LaunchedEffect
+                }
+            }
+        }
+    ) {}
+
+    BackHandler {
+        coroutineScope.launch {
+            modalBottomSheetState.hide() // will trigger the LaunchedEffect
+        }
+    }
+
+    // Take action based on hidden state
+    LaunchedEffect(modalBottomSheetState.currentValue) {
+        when (modalBottomSheetState.currentValue) {
+            ModalBottomSheetValue.Hidden -> {
+                when {
+                    isSheetOpened -> parent.removeView(composeView)
+                    else -> {
+                        isSheetOpened = true
+                        modalBottomSheetState.show()
+                    }
+                }
+            }
+            else -> {
+                WooLog.i(T.UTILS, "Bottom sheet ${modalBottomSheetState.currentValue} state")
+            }
+        }
+    }
+}
