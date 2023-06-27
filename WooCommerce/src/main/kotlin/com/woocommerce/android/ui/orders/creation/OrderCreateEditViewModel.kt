@@ -129,7 +129,6 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
-        private const val KEY_SCANNING_IN_PROGRESS = "scanning_in_progress"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
