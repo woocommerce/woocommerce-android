@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
 
-class ShouldFetchNewStatsData @Inject constructor(
+class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>
 ) {
     operator fun invoke(rangeSelection: StatsTimeRangeSelection): Boolean {

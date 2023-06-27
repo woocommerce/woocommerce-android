@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
-    private val shouldFetchNewStatsData: ShouldFetchNewStatsData,
+    private val shouldFetchNewStatsData: AnalyticsUpdateDataStore,
     private val analyticsRepository: AnalyticsRepository
 ) {
     private val _revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
