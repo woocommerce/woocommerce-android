@@ -546,43 +546,39 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when SKU search succeeds for variation product, then add the scanned product`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                        parentID = 1L,
-//                        productType = "variation",
-//                    )
-//                )
-//            )
-//            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
-//                createOrderItem(10L)
-//            )
-//            var newOrder: Order? = null
-//            sut.orderDraft.observeForever { newOrderData ->
-//                newOrder = newOrderData
-//            }
-//
-//            sut.onScanClicked()
-//
-//            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
-//        }
-//    }
-//
+    @Test
+    fun `when SKU search succeeds for variation product, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variation",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
 //    @Test
 //    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
 //        testBlocking {
