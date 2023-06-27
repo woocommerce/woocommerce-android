@@ -352,8 +352,13 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.process(inputImage)).thenAnswer {
                 mockBarcodeList
             }
-            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcodeList.addOnCompleteListener(any())).thenReturn(mockBarcodeList)
+            whenever(mockBarcodeList.addOnFailureListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnFailureListener).onFailure(mock())
+                mock<Task<Barcode>>()
+            }
             whenever(mockBarcodeList.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
                 (it.arguments[0] as OnSuccessListener<List<Barcode>>).onSuccess(emptyList())
