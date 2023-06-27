@@ -795,8 +795,4 @@ class OrderListViewModel @Inject constructor(
             val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
         ) : IPPSurveyFeedbackBannerState()
     }
-
-    companion object {
-        private const val KEY_SCANNING_IN_PROGRESS = "scanning_in_progress"
-    }
 }
