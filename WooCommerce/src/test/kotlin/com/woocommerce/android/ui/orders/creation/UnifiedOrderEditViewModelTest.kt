@@ -1098,44 +1098,40 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given variable product from order creation screen, when product added via scanning, then track correct source`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                        parentID = 1L,
-//                        isVariable = true
-//                    )
-//                )
-//            )
-//
-//            sut.onScanClicked()
-//
-//            verify(tracker).track(
-//                AnalyticsEvent.ORDER_PRODUCT_ADD,
-//                mapOf(
-//                    AnalyticsTracker.KEY_FLOW to tracksFlow,
-//                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
-//                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
-//                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-//                )
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given variable product from order creation screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
+            )
+        }
+    }
+
 //    @Test
 //    fun `given non-variable product from order creation screen, when product added via scanning, then track correct source`() {
 //        testBlocking {
