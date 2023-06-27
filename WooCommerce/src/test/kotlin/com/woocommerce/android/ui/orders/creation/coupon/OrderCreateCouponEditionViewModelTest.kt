@@ -19,7 +19,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
         onBlocking { isCouponValid(anyString()) } doReturn true
     }
     @Test
-    fun `given non empty coupon when passed to coupon edition screen then should show remove button`() {
+    fun `given non empty coupon, when passed to coupon edition screen, then should show remove button`() {
         val navArgs = OrderCreateCouponEditionFragmentArgs("coupon_code").initSavedStateHandle()
 
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
@@ -30,7 +30,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given empty coupon when passed to coupon edition screen then should not show remove button`() {
+    fun `given empty coupon, when passed to coupon edition screen, then should not show remove button`() {
         val navArgs = OrderCreateCouponEditionFragmentArgs("coupon_code").initSavedStateHandle()
 
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
@@ -41,7 +41,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when non empty coupon code entered then should show done button`() {
+    fun `when non empty coupon code entered, then should show done button`() {
         val navArgs = OrderCreateCouponEditionFragmentArgs().initSavedStateHandle()
 
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
@@ -53,7 +53,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when empty coupon code entered then should not show done button`() {
+    fun `when empty coupon code entered, then should not show done button`() {
         val navArgs = OrderCreateCouponEditionFragmentArgs().initSavedStateHandle()
 
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
@@ -65,7 +65,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non empty coupon when coupon removed then should clear coupon`() {
+    fun `given non empty coupon, when coupon removed, then should clear coupon`() {
         val initialCouponCode = "coupon_code"
         val navArgs = OrderCreateCouponEditionFragmentArgs(initialCouponCode).initSavedStateHandle()
 
@@ -79,12 +79,12 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
         sut.onCouponRemoved()
 
         sut.event.observeForever {
-            assertEquals(OrderCreateCouponEditionViewModel.UpdateCouponCode(""), it)
+            assertEquals(OrderCreateCouponEditionViewModel.RemoveCoupon("coupon_code"), it)
         }
     }
 
     @Test
-    fun `given non empty coupon when done button is clicked then should update order with coupon`() = testBlocking {
+    fun `given non empty coupon, when done button is clicked, then should update order with coupon`() = testBlocking {
         val initialCouponCode = "coupon_code"
         val navArgs = OrderCreateCouponEditionFragmentArgs(initialCouponCode).initSavedStateHandle()
 
@@ -104,7 +104,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non empty coupon when remove button is clicked then should remove coupon from order`() {
+    fun `given non empty coupon, when remove button is clicked, then should remove coupon from order`() {
         val initialCouponCode = "coupon_code"
         val navArgs = OrderCreateCouponEditionFragmentArgs(initialCouponCode).initSavedStateHandle()
 
@@ -118,12 +118,31 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
         sut.onCouponRemoved()
 
         sut.event.observeForever {
-            assertEquals(OrderCreateCouponEditionViewModel.UpdateCouponCode(""), it)
+            assertEquals(OrderCreateCouponEditionViewModel.RemoveCoupon("coupon_code"), it)
         }
     }
 
     @Test
-    fun `given invalid coupon when done clicked should show error`() = testBlocking {
+    fun `given non empty coupon, when code is modified and remove button is clicked, then should remove correct coupon from order`() {
+        val initialCouponCode = "coupon_code"
+        val navArgs = OrderCreateCouponEditionFragmentArgs(initialCouponCode).initSavedStateHandle()
+
+        val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
+
+        sut.viewState.observeForever {
+            assertTrue(it.couponCode.isNotNullOrEmpty())
+            assertEquals(initialCouponCode, it.couponCode)
+        }
+        sut.onCouponCodeChanged("coupon_co")
+        sut.onCouponRemoved()
+
+        sut.event.observeForever {
+            assertEquals(OrderCreateCouponEditionViewModel.RemoveCoupon("coupon_code"), it)
+        }
+    }
+
+    @Test
+    fun `given invalid coupon, when done clicked, then should show error`() = testBlocking {
         val navArgs = OrderCreateCouponEditionFragmentArgs().initSavedStateHandle()
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
 
@@ -138,7 +157,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given invalid coupon when done clicked should hide done button`() = testBlocking {
+    fun `given invalid coupon, when done clicked, then should hide done button`() = testBlocking {
         val navArgs = OrderCreateCouponEditionFragmentArgs().initSavedStateHandle()
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
 
@@ -153,7 +172,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given invalid coupon when coupon code modified should clear error`() = testBlocking {
+    fun `given invalid coupon, when coupon code modified, then should clear error`() = testBlocking {
         // given
         val navArgs = OrderCreateCouponEditionFragmentArgs().initSavedStateHandle()
         val sut = OrderCreateCouponEditionViewModel(validator, navArgs)
@@ -172,7 +191,7 @@ class OrderCreateCouponEditionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given invalid coupon when coupon code modified should show done button`() = testBlocking {
+    fun `given invalid coupon, when coupon code modified, then should show done button`() = testBlocking {
         // given
         whenever(validator.isCouponValid(anyString())).thenReturn(false)
         val navArgs = OrderCreateCouponEditionFragmentArgs().initSavedStateHandle()

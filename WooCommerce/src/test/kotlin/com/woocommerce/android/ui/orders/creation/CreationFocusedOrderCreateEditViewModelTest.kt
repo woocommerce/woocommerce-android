@@ -1118,7 +1118,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("")
+        sut.onCouponRemoved("abc")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,
