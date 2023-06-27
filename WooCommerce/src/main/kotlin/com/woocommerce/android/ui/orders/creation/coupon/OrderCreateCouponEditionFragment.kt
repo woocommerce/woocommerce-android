@@ -58,7 +58,6 @@ class OrderCreateCouponEditionFragment : BaseFragment() {
         requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
 
         return ComposeView(requireContext()).apply {
-            id = R.id.more_menu_compose_view
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val state = viewModel.viewState.observeAsState()
@@ -78,7 +77,11 @@ class OrderCreateCouponEditionFragment : BaseFragment() {
             when (it) {
                 is UpdateCouponCode -> {
                     sharedViewModel.onCouponEntered(it.couponCode)
-                    findNavController().navigateUp()
+                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+                }
+                is OrderCreateCouponEditionViewModel.RemoveCoupon -> {
+                    sharedViewModel.onCouponRemoved(it.couponCode)
+                    findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
             }
         }

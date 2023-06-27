@@ -66,6 +66,7 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
@@ -686,7 +687,11 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCouponButtonClicked() {
-        triggerEvent(EditCoupon(_orderDraft.value.couponLines.firstOrNull()?.code))
+        if (_orderDraft.value.couponLines.isEmpty()) {
+            triggerEvent(EditCoupon(null))
+        } else {
+            triggerEvent(CouponList(_orderDraft.value.couponLines))
+        }
     }
 
     fun onShippingButtonClicked() {
@@ -933,16 +938,22 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponEntered(couponCode: String?) {
+    fun onCouponEntered(couponCode: String) {
+        if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
+
         _orderDraft.update { draft ->
-            val couponLines = if (couponCode.isNullOrEmpty()) {
-                trackCouponRemoved()
-                emptyList()
-            } else {
-                trackCouponAdded()
-                listOf(Order.CouponLine(code = couponCode))
-            }
-            draft.copy(couponLines = couponLines)
+            val couponLines = draft.couponLines
+            draft.copy(couponLines = couponLines + Order.CouponLine(code = couponCode))
+        }.also {
+            trackCouponAdded()
+        }
+    }
+
+    fun onCouponRemoved(couponCode: String) {
+        trackCouponRemoved()
+        _orderDraft.update { draft ->
+            val updatedCouponLines = draft.couponLines.filter { it.code != couponCode }
+            draft.copy(couponLines = updatedCouponLines)
         }
     }
 

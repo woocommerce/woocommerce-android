@@ -80,6 +80,17 @@
                 android:defaultValue="@null"/>
         </action>
         <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponListFragment"
+            app:destination="@id/orderCreationCouponListFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim">
+            <argument
+                android:name="couponLines"
+                app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
+        </action>
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditionFragment"
             app:destination="@id/orderCreationCouponEditionFragment"
             app:enterAnim="@anim/default_enter_anim"
@@ -181,6 +192,22 @@
             app:argType="java.math.BigDecimal"
             app:nullable="true"
             android:defaultValue="@null"/>
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationCouponListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponListFragment"
+        android:label="OrderCreationCouponListFragment">
+        <argument
+            android:name="couponLines"
+            app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
+        <action
+            android:id="@+id/action_orderCreationCouponListFragment_to_orderCreationCouponEditionFragment"
+            app:destination="@id/orderCreationCouponEditionFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
+            />
     </fragment>
     <fragment
         android:id="@+id/orderCreationCouponEditionFragment"

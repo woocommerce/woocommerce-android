@@ -22,4 +22,5 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class EditCoupon(val couponCode: String?) : OrderCreateEditNavigationTarget()
+    data class CouponList(val couponLines: Collection<Order.CouponLine>) : OrderCreateEditNavigationTarget()
 }

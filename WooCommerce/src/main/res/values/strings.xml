@@ -520,6 +520,7 @@
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_coupons_title">Coupons applied</string>
     <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>

@@ -71,10 +71,9 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
     }
 
     fun onCouponRemoved() {
-        couponCode.update {
-            ""
+        navArgs.couponCode?.let {
+            triggerEvent(RemoveCoupon(it))
         }
-        triggerEvent(UpdateCouponCode(couponCode.value))
     }
 
     data class ViewState(
@@ -86,5 +85,6 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
 
     enum class ValidationState { IDLE, IN_PROGRESS, ERROR }
 
-    data class UpdateCouponCode(val couponCode: String?) : MultiLiveEvent.Event()
+    data class UpdateCouponCode(val couponCode: String) : MultiLiveEvent.Event()
+    data class RemoveCoupon(val couponCode: String) : MultiLiveEvent.Event()
 }

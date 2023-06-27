@@ -170,10 +170,7 @@ private fun CouponListItem(
                 role = Role.Button,
                 onClick = { onCouponClick(coupon.id) }
             )
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.minor_100)
-            ),
+            .padding(dimensionResource(id = R.dimen.major_100),),
     ) {
         coupon.code?.let {
             Text(
