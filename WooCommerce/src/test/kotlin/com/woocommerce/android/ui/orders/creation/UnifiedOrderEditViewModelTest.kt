@@ -853,6 +853,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         verify(barcodeScanningTracker).trackSuccess(any())
     }
 
+    @Test
+    fun `when scan success, then track proper event with proper source`() {
+        createSut()
+        val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+
+        sut.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(ScanningSource.ORDER_CREATION)
+    }
+
 //    @Test
 //    fun `when scan success, then track event with proper source`() {
 //        createSut()
