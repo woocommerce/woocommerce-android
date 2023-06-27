@@ -37,7 +37,7 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                         lifecycleScope.launch {
                             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                                 codeScannerStatus.collect { status ->
-                                    navigateBackWithResult("barcode", status)
+                                    navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
                                 }
                             }
                         }
@@ -49,5 +49,11 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun getFragmentTitle() = getString(R.string.barcode_scanning_title)
+
+    companion object {
+        const val KEY_BARCODE_SCANNING_SCAN_STATUS = "barcode_scanning_scan_status"
     }
 }
