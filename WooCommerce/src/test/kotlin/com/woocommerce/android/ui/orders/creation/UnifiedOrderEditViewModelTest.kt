@@ -792,47 +792,43 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given that same product scanned thrice, then increment the product quantity accordingly`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                    )
-//                )
-//            )
-//            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
-//                createOrderItem(10L)
-//            )
-//            var orderDraft: Order? = null
-//            sut.orderDraft.observeForever { order ->
-//                orderDraft = order
-//            }
-//
-//            sut.onScanClicked()
-//            sut.onScanClicked()
-//            sut.onScanClicked()
-//
-//            orderDraft?.items
-//                ?.takeIf { it.isNotEmpty() }
-//                ?.find { it.productId == 10L }
-//                ?.let { assertThat(it.quantity).isEqualTo(3f) }
-//                ?: fail("Expected an item with productId 10L with quantity as 3")
-//        }
-//    }
-//
+    @Test
+    fun `given that same product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+            sut.handleBarcodeScannedStatus(scannedStatus)
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.productId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with productId 10L with quantity as 3")
+        }
+    }
+
 //    @Test
 //    fun `when scan clicked, then track proper event`() {
 //        createSut()
