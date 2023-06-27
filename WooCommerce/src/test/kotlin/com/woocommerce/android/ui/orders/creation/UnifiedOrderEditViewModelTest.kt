@@ -631,25 +631,19 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when code scanner fails to recognize the barcode, then trigger proper event`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//
-//        assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
-//    }
-//
+    @Test
+    fun `when code scanner fails to recognize the barcode, then trigger proper event`() {
+        createSut()
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+
+        sut.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+    }
+
 //    @Test
 //    fun `when code scanner fails to recognize the barcode, then proper message is sent`() {
 //        createSut()
