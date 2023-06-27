@@ -1529,49 +1529,45 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search fails for UPC barcode format, when retrying, then do not trigger failure event`() {
-//        testBlocking {
-//            val sku = "12345678901"
-//            val skuWithCheckDigitRemoved = "1234567890"
-//            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-//                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-//            }
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-//            ).thenReturn(
-//                mockUPCCheckDigitRemover
-//            )
-//            whenever(
-//                productListRepository.searchProductList(
-//                    sku,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(emptyList())
-//
-//            whenever(
-//                productListRepository.searchProductList(
-//                    skuWithCheckDigitRemoved,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(1L)
-//                )
-//            )
-//
-//            sut.onScanClicked()
-//
-//            assertThat(sut.event.value).isNull()
-//        }
-//    }
-//
+    @Test
+    fun `given product search fails for UPC barcode format, when retrying, then do not trigger failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(sut.event.value).isNull()
+        }
+    }
+
 //    @Test
 //    fun `given product search fails for EAN-13 barcode format, when retrying, then do not trigger failure event`() {
 //        testBlocking {
