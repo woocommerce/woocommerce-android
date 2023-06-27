@@ -908,89 +908,35 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
-//    @Test
-//    fun `when scan failure, then track event with proper source`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//
-//        verify(tracker).track(
-//            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-//            mapOf(
-//                KEY_SCANNING_SOURCE to "order_creation",
-//                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
-//            )
-//        )
-//    }
-//
-//    @Test
-//    fun `when scan failure, then track event with proper failure reason`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//
-//        verify(tracker).track(
-//            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-//            mapOf(
-//                KEY_SCANNING_SOURCE to "order_creation",
-//                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
-//            )
-//        )
-//    }
-//
-//    @Test
-//    fun `given product search via sku succeeds, then track proper event`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                        parentID = 1L,
-//                        productType = "variable-subscription",
-//                    )
-//                )
-//            )
-//
-//            sut.onScanClicked()
-//
-//            verify(tracker).track(
-//                eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
-//                any()
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given product search via sku succeeds, then track proper event`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
+                any()
+            )
+        }
+    }
+
 //    @Test
 //    fun `given product search via sku succeeds, then track event with proper source`() {
 //        testBlocking {
