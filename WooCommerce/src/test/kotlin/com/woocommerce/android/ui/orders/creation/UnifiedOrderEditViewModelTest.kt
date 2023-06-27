@@ -732,29 +732,27 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(null)
-//
-//            sut.onScanClicked()
-//            (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
-//
-//            verify(codeScanner).startScan()
-//        }
-//    }
-//
+    @Test
+    fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+            (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
+
+            assertThat(sut.event.value).isInstanceOf(
+                OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment::class.java
+            )
+        }
+    }
+
 //    @Test
 //    fun `given that same variable subscription product scanned thrice, then increment the product quantity accordingly`() {
 //        testBlocking {
