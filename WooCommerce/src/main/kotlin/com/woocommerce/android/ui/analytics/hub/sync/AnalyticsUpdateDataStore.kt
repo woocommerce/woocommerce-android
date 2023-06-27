@@ -13,11 +13,7 @@ import kotlinx.coroutines.flow.map
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>
 ) {
-    operator fun invoke(rangeSelection: StatsTimeRangeSelection): Boolean {
-        dataStore.data.map { preferences ->
-            val timestampKey = rangeSelection.selectionType.identifier
-            preferences[longPreferencesKey(timestampKey)]
-        }
+    fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
         return true
     }
 
@@ -27,6 +23,11 @@ class AnalyticsUpdateDataStore @Inject constructor(
             preferences[longPreferencesKey(timestampKey)] = System.currentTimeMillis()
         }
     }
+
+    private val StatsTimeRangeSelection.lastUpdateTimestamp
+        get() = dataStore.data.map { preferences ->
+            preferences[longPreferencesKey(selectionType.identifier)]
+        }
 
     companion object {
         const val maxOutdatedTime = 1000 * 30 // 30 seconds
