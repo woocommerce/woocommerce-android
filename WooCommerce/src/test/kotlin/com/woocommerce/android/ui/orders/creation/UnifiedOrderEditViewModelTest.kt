@@ -644,27 +644,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
     }
 
-//    @Test
-//    fun `when code scanner fails to recognize the barcode, then proper message is sent`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//
-//        assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
-//            R.string.order_creation_barcode_scanning_scanning_failed
-//        )
-//    }
-//
+    @Test
+    fun `when code scanner fails to recognize the barcode, then proper message is sent`() {
+        createSut()
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+
+        sut.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
+            R.string.order_creation_barcode_scanning_scanning_failed
+        )
+    }
+
 //    @Test
 //    fun `given code scanner fails to recognize the barcode, when retry clicked, then restart code scanning`() {
 //        createSut()
