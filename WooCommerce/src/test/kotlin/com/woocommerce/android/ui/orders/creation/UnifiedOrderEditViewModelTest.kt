@@ -671,9 +671,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.handleBarcodeScannedStatus(scannedStatus)
         (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
 
-        assertThat(sut.event.value).isInstanceOf(
-            OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment::class.java
-        )
+        assertThat(sut.event.value).isInstanceOf(OpenBarcodeScanningFragment::class.java)
     }
 
     @Test
@@ -747,9 +745,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.handleBarcodeScannedStatus(scannedStatus)
             (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
-            assertThat(sut.event.value).isInstanceOf(
-                OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment::class.java
-            )
+            assertThat(sut.event.value).isInstanceOf(OpenBarcodeScanningFragment::class.java)
         }
     }
 
@@ -829,15 +825,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when scan clicked, then track proper event`() {
-//        createSut()
-//
-//        sut.onScanClicked()
-//
-//        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
-//    }
-//
+    @Test
+    fun `when scan clicked, then track proper event`() {
+        createSut()
+
+        sut.onScanClicked()
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
 //    @Test
 //    fun `when scan success, then track proper event`() {
 //        createSut()

@@ -379,7 +379,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onScanClicked() {
         trackBarcodeScanningTapped()
-        startScan()
+        triggerEvent(OpenBarcodeScanningFragment)
     }
 
     private fun trackBarcodeScanningTapped() {
@@ -621,7 +621,7 @@ class OrderCreateEditViewModel @Inject constructor(
     ) {
         triggerEvent(
             OnAddingProductViaScanningFailed(message) {
-                triggerEvent(OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment)
+                triggerEvent(OpenBarcodeScanningFragment)
             }
         )
     }
@@ -1012,6 +1012,8 @@ data class OnAddingProductViaScanningFailed(
     val message: Int,
     val retry: View.OnClickListener,
 ) : Event()
+
+object OpenBarcodeScanningFragment : Event()
 
 data class VMKilledWhenScanningInProgress(
     @StringRes val message: Int

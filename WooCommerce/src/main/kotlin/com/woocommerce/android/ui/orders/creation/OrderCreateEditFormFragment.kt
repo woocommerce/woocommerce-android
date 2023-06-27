@@ -204,12 +204,7 @@ class OrderCreateEditFormFragment :
             ),
             addProductsViaScanButton = AddButton(
                 text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = {
-                    findNavController().navigateSafely(
-                        OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
-                    )
-                //viewModel.onScanClicked()
-                }
+                onClickListener = { viewModel.onScanClicked() }
             )
         )
     }
@@ -470,6 +465,11 @@ class OrderCreateEditFormFragment :
                     isIndefinite = false,
                     actionListener = event.retry
                 ).show()
+            }
+            is OpenBarcodeScanningFragment -> {
+                findNavController().navigateSafely(
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
+                )
             }
             is VMKilledWhenScanningInProgress -> {
                 ToastUtils.showToast(
