@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -659,26 +660,22 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
-//    @Test
-//    fun `given code scanner fails to recognize the barcode, when retry clicked, then restart code scanning`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(
-//                    CodeScannerStatus.Failure(
-//                        error = "Failed to recognize the barcode",
-//                        type = CodeScanningErrorType.NotFound
-//                    )
-//                )
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//        (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
-//
-//        verify(codeScanner).startScan()
-//    }
-//
+    @Test
+    fun `given code scanner fails to recognize the barcode, when retry clicked, then restart code scanning`() {
+        createSut()
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+
+        sut.handleBarcodeScannedStatus(scannedStatus)
+        (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
+
+        assertThat(sut.event.value).isInstanceOf(
+            OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment::class.java
+        )
+    }
+
 //    @Test
 //    fun `when product search by SKU fails, then trigger proper event`() {
 //        testBlocking {

@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -620,7 +621,7 @@ class OrderCreateEditViewModel @Inject constructor(
     ) {
         triggerEvent(
             OnAddingProductViaScanningFailed(message) {
-                startScan()
+                triggerEvent(OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment)
             }
         )
     }
