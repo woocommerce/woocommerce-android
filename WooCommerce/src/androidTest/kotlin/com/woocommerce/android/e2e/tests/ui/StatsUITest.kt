@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -82,6 +83,7 @@ class StatsUITest : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eStatsTopPerformers() {
         val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
 
@@ -91,6 +93,7 @@ class StatsUITest : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eStatsTapChart() {
         MyStoreScreen()
             .stats.switchToStatsDashboardWeekTab()

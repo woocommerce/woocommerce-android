@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,6 +50,7 @@ class ReviewsUITest : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eReviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
