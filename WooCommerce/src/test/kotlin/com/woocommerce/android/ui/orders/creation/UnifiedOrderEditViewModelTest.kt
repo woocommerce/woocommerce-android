@@ -843,23 +843,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isInstanceOf(OpenBarcodeScanningFragment::class.java)
     }
 
-//    @Test
-//    fun `when scan success, then track proper event`() {
-//        createSut()
-//        whenever(codeScanner.startScan()).thenAnswer {
-//            flow<CodeScannerStatus> {
-//                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//            }
-//        }
-//
-//        sut.onScanClicked()
-//
-//        verify(tracker).track(
-//            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
-//            any()
-//        )
-//    }
-//
+    @Test
+    fun `when scan success, then track proper event`() {
+        createSut()
+        val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+
+        sut.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(any())
+    }
+
 //    @Test
 //    fun `when scan success, then track event with proper source`() {
 //        createSut()
