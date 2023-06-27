@@ -78,8 +78,6 @@ sealed class CodeScanningErrorType : Parcelable {
     @Parcelize
     object Unknown : CodeScanningErrorType()
     @Parcelize
-    object VMKilledWhileScanning : CodeScanningErrorType()
-    @Parcelize
     data class Other(val throwable: Throwable?) : CodeScanningErrorType()
 
     override fun toString(): String = when (this) {
