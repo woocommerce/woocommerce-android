@@ -834,6 +834,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
+    @Test
+    fun `when scan clicked, then trigger proper event`() {
+        createSut()
+
+        sut.onScanClicked()
+
+        assertThat(sut.event.value).isInstanceOf(OpenBarcodeScanningFragment::class.java)
+    }
+
 //    @Test
 //    fun `when scan success, then track proper event`() {
 //        createSut()
