@@ -1014,35 +1014,31 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search via sku fails, then track event with proper reason`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(null)
-//
-//            sut.onScanClicked()
-//
-//            verify(tracker).track(
-//                PRODUCT_SEARCH_VIA_SKU_FAILURE,
-//                mapOf(
-//                    KEY_SCANNING_SOURCE to "order_creation",
-//                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
-//                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
-//                )
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given product search via sku fails, then track event with proper reason`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
 //    @Test
 //    fun `given product search via sku fails when trying to add parent variable product, then track event with proper reason`() {
 //        testBlocking {
