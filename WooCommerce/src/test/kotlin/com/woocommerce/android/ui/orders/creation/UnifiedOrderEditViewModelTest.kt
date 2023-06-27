@@ -712,30 +712,26 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when product search by SKU fails, then proper message is displayed`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(null)
-//
-//            sut.onScanClicked()
-//
-//            assertThat(
-//                (sut.event.value as OnAddingProductViaScanningFailed).message
-//            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
-//        }
-//    }
-//
+    @Test
+    fun `when product search by SKU fails, then proper message is displayed`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
+        }
+    }
+
 //    @Test
 //    fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
 //        testBlocking {
