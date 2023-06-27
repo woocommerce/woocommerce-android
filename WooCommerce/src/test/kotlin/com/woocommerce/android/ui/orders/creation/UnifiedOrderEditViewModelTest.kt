@@ -892,6 +892,22 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when scan failure, then track proper event with proper error type`() {
+        createSut()
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+
+        sut.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(
+            any(),
+            eq(CodeScanningErrorType.NotFound)
+        )
+    }
+
 //    @Test
 //    fun `when scan failure, then track event with proper source`() {
 //        createSut()
