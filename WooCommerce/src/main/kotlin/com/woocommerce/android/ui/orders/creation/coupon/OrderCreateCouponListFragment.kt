@@ -42,10 +42,9 @@ class OrderCreateCouponListFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is OrderCreateEditNavigationTarget.EditCoupon -> {
-                    actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment(it.couponCode)
-                        .apply {
-                            findNavController().navigate(this)
-                        }
+                    findNavController().navigate(
+                        actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment(it.couponCode)
+                    )
                 }
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().popBackStack()
