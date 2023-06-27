@@ -579,35 +579,31 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                        parentID = 0L,
-//                        isVariable = true,
-//                    )
-//                )
-//            )
-//            sut.onScanClicked()
-//
-//            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
-//        }
-//    }
-//
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
 //    @Test
 //    fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
 //        testBlocking {
