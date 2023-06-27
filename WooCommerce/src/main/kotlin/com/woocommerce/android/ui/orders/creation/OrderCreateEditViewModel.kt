@@ -12,7 +12,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_FAILURE
-import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
@@ -76,7 +75,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -384,37 +382,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackBarcodeScanningTapped() {
         tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
-    }
-
-    private fun startScan() {
-        scanningJob = viewModelScope.launch {
-            isScanningInProgress = true
-//            codeScanner.startScan().collect { status ->
-//                isScanningInProgress = false
-//                when (status) {
-//                    is CodeScannerStatus.Failure -> {
-//                        tracker.track(
-//                            BARCODE_SCANNING_FAILURE,
-//                            mapOf(
-//                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
-//                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
-//                            )
-//                        )
-//                        sendAddingProductsViaScanningFailedEvent(
-//                            R.string.order_creation_barcode_scanning_scanning_failed
-//                        )
-//                    }
-//                    is CodeScannerStatus.Success -> {
-//                        tracker.track(
-//                            BARCODE_SCANNING_SUCCESS,
-//                            mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
-//                        )
-//                        viewState = viewState.copy(isUpdatingOrderDraft = true)
-//                        fetchProductBySKU(BarcodeOptions(status.code, status.format))
-//                    }
-//                }
-//            }
-        }
     }
 
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {

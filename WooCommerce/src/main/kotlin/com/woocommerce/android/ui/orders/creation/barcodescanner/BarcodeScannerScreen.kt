@@ -67,11 +67,11 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                     preview.setSurfaceProvider(previewView.surfaceProvider)
                     val selector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
                     val imageAnalysis = ImageAnalysis.Builder().setTargetResolution(
-                            Size(
-                                previewView.width,
-                                previewView.height
-                            )
+                        Size(
+                            previewView.width,
+                            previewView.height
                         )
+                    )
                         .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->

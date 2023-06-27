@@ -31,7 +31,7 @@ class BarcodeScanningViewModel @Inject constructor(
             }
         }
     }
-    private fun startCodeScan(imageProxy: ImageProxy) : Flow<CodeScannerStatus> {
+    private fun startCodeScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
         return codeScanner.startScan(imageProxy)
     }
 }

@@ -22,7 +22,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
@@ -40,7 +39,6 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -323,47 +321,6 @@ class OrderListViewModel @Inject constructor(
 
     private fun trackScanClickedEvent() {
         analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
-    }
-
-    private fun startScan() {
-        scanningJob = launch {
-            isScanningInProgress = true
-//            codeScanner.startScan().collect { status ->
-//                isScanningInProgress = false
-//                when (status) {
-//                    is CodeScannerStatus.Failure -> {
-//                        analyticsTracker.track(
-//                            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-//                            mapOf(
-//                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-//                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
-//                            )
-//                        )
-//                        triggerEvent(
-//                            OrderListEvent.OnAddingProductViaScanningFailed(
-//                                R.string.order_list_barcode_scanning_scanning_failed
-//                            ) {
-//                                startScan()
-//                            }
-//                        )
-//                    }
-//                    is CodeScannerStatus.Success -> {
-//                        analyticsTracker.track(
-//                            BARCODE_SCANNING_SUCCESS,
-//                            mapOf(
-//                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
-//                            )
-//                        )
-//                        triggerEvent(
-//                            OrderListEvent.OnBarcodeScanned(
-//                                status.code,
-//                                status.format
-//                            )
-//                        )
-//                    }
-//                }
-//            }
-        }
     }
 
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {

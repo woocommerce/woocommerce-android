@@ -20,7 +20,7 @@ sealed class CodeScannerStatus : Parcelable {
     ) : CodeScannerStatus()
 }
 
-sealed class CodeScanningErrorType: Parcelable {
+sealed class CodeScanningErrorType : Parcelable {
     @Parcelize
     object Aborted : CodeScanningErrorType()
     @Parcelize

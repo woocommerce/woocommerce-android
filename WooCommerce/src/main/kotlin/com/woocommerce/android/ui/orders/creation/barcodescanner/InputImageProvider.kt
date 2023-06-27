@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @ExperimentalGetImage
 class InputImageProvider @Inject constructor() {
-    fun provideImage(imageProxy: ImageProxy) : InputImage {
+    fun provideImage(imageProxy: ImageProxy): InputImage {
         return InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
     }
 }
