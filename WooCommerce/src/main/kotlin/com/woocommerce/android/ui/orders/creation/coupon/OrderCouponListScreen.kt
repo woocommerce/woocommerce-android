@@ -112,7 +112,6 @@ private fun CouponsList(
     }
 }
 
-
 @Composable
 @Preview
 private fun FABPreview() {
@@ -122,7 +121,9 @@ private fun FABPreview() {
 @Composable
 @Preview
 private fun CouponsListPreview() {
-    val state = remember { mutableStateOf(listOf(Order.CouponLine(code = "coupon1"), Order.CouponLine(code = "coupon2")))}
+    val state = remember {
+        mutableStateOf(listOf(Order.CouponLine(code = "coupon1"), Order.CouponLine(code = "coupon2")))
+    }
     CouponsList(
         padding = PaddingValues(),
         couponsState = state,
