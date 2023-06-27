@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Button
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -63,14 +64,15 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
-@SuppressWarnings("LargeClass")
+@Suppress("LargeClass", "LongParameterList")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
-    private val variationRepository: VariationRepository
+    private val variationRepository: VariationRepository,
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
 ) {
     private lateinit var originalSku: String
 
@@ -98,10 +100,10 @@ class ProductDetailCardBuilder(
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = PRIMARY,
-            properties = listOf(
-                product.title(),
-                product.description()
-            ).filterNotEmpty()
+            properties = (
+                listOf(product.title()) +
+                    product.description(isAIProductDescriptionEnabled(), viewModel::onWriteWithAIClicked)
+                ).filterNotEmpty()
         )
     }
 
@@ -458,6 +460,7 @@ class ProductDetailCardBuilder(
                     else -> resources.getString(string.product_type_physical)
                 }
             }
+
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
@@ -574,29 +577,42 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.description(): ProductProperty {
+    private fun Product.description(showAIButton: Boolean, onWriteWithAIClicked: () -> Unit): List<ProductProperty> {
         val productDescription = this.description
         val productTitle = this.name
         val showTitle = productDescription.isNotEmpty()
-        val description = if (productDescription.isEmpty()) {
+        val description = productDescription.ifEmpty {
             resources.getString(string.product_description_empty)
-        } else {
-            productDescription
         }
 
-        return ComplexProperty(
-            string.product_description,
-            description,
-            showTitle = showTitle
-        ) {
-            viewModel.onEditProductCardClicked(
-                ViewProductDescriptionEditor(
-                    productDescription, resources.getString(string.product_description),
-                    productTitle
-                ),
-                PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+        val properties = mutableListOf<ProductProperty>()
+        properties.add(
+            ComplexProperty(
+                string.product_description,
+                description,
+                showTitle = showTitle,
+                isDividerVisible = !showAIButton
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ViewProductDescriptionEditor(
+                        productDescription, resources.getString(string.product_description),
+                        productTitle
+                    ),
+                    PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
+                )
+            }
+        )
+
+        if (showAIButton) {
+            properties.add(
+                Button(
+                    string.product_sharing_write_with_ai,
+                    drawable.ic_ai,
+                    onClick = onWriteWithAIClicked
+                )
             )
         }
+        return properties
     }
 
     // show product variations only if product type is variable and if there are variations for the product
