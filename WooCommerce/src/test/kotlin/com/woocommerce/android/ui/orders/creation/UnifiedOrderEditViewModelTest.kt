@@ -515,41 +515,37 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `when parent variable product is scanned, then do not track any product search via sku success event`() {
-//        testBlocking {
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-//                }
-//            }
-//            whenever(
-//                productListRepository.searchProductList(
-//                    "12345",
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(
-//                        productId = 10L,
-//                        parentID = 0L,
-//                        isVariable = true
-//                    )
-//                )
-//            )
-//
-//            sut.onScanClicked()
-//
-//            verify(tracker, never()).track(
-//                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
-//                mapOf(
-//                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
-//                )
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `when parent variable product is scanned, then do not track any product search via sku success event`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker, never()).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                )
+            )
+        }
+    }
+
 //    @Test
 //    fun `when SKU search succeeds for variation product, then add the scanned product`() {
 //        testBlocking {
