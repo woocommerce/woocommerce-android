@@ -12,10 +12,13 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -25,6 +28,8 @@ import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEmpty
+import com.woocommerce.android.extensions.isSitePublic
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
@@ -45,10 +50,14 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
@@ -57,6 +66,7 @@ import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.settings.ProductVisibility.PUBLIC
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
@@ -130,7 +140,8 @@ class ProductDetailViewModel @Inject constructor(
     private val getProductQuantityRules: GetProductQuantityRules,
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
-    private val productListRepository: ProductListRepository
+    private val productListRepository: ProductListRepository,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -269,7 +280,8 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = isProductPublished && !isProductUnderCreation,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
-                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
+                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
+                showPromoteWithBlaze = shouldShowBlaze(productDraft)
             )
         }.asLiveData()
 
@@ -385,8 +397,42 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+                if (canSiteUseSharingWithAI()) {
+                    triggerEvent(
+                        ProductNavigationTarget.ShareProductWithAI(
+                            it.permalink,
+                            it.name,
+                            it.description.orNullIfEmpty()
+                        )
+                    )
+                } else {
+                    triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+                }
             }
+        }
+    }
+
+    private fun canSiteUseSharingWithAI(): Boolean {
+        return FeatureFlag.SHARING_PRODUCT_AI.isEnabled() &&
+            selectedSite.get().isSitePublic &&
+            selectedSite.get().isWPComAtomic
+    }
+
+    fun onBlazeClicked() {
+        tracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+        )
+        viewState.productDraft?.let {
+            triggerEvent(
+                NavigateToBlazeWebView(
+                    url = isBlazeEnabled.buildUrlForProduct(
+                        productId = it.remoteId,
+                        source = PRODUCT_DETAIL_OVERFLOW_MENU
+                    ),
+                    source = PRODUCT_DETAIL_OVERFLOW_MENU
+                )
+            )
         }
     }
 
@@ -484,9 +530,11 @@ class ProductDetailViewModel @Inject constructor(
                 variationCandidates.isEmpty() -> {
                     triggerEvent(ShowGenerateVariationsError.NoCandidates)
                 }
+
                 variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT -> {
                     triggerEvent(VariationListViewModel.ShowGenerateVariationConfirmation(variationCandidates))
                 }
+
                 else -> {
                     tracker.track(
                         stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
@@ -518,6 +566,7 @@ class ProductDetailViewModel @Inject constructor(
                             ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ProductExitEvent.ExitAttributesAdded)
                     }
+
                     else -> {
                         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
                         triggerEvent(ShowGenerateVariationsError.NetworkError)
@@ -651,9 +700,11 @@ class ProductDetailViewModel @Inject constructor(
                         is UploadFailure -> triggerEvent(
                             ShowSnackbar(R.string.product_downloadable_files_upload_failed)
                         )
+
                         is UploadProgress -> {
                             // TODO
                         }
+
                         is UploadSuccess -> showAddProductDownload(it.media.url)
                     }
                 }
@@ -682,30 +733,37 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitSettings -> {
                 hasChanges = hasSettingsChanges()
             }
+
             is ProductExitEvent.ExitExternalLink -> {
                 eventName = AnalyticsEvent.EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasExternalLinkChanges()
             }
+
             is ProductExitEvent.ExitProductCategories -> {
                 eventName = AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasCategoryChanges()
             }
+
             is ProductExitEvent.ExitProductTags -> {
                 eventName = AnalyticsEvent.PRODUCT_TAG_SETTINGS_DONE_BUTTON_TAPPED
                 hasChanges = hasTagChanges()
             }
+
             is ProductExitEvent.ExitProductAttributeList -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             is ProductExitEvent.ExitProductAddAttribute -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_EDIT_ATTRIBUTE_OPTIONS_DONE_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             is ProductExitEvent.ExitAttributesAdded -> {
                 eventName = AnalyticsEvent.PRODUCT_VARIATION_ATTRIBUTE_ADDED_BACK_BUTTON_TAPPED
                 hasChanges = hasAttributeChanges()
             }
+
             is ProductExitEvent.ExitLinkedProducts -> Unit // Do nothing
             is ProductExitEvent.ExitProductAddAttributeTerms -> Unit // Do nothing
             is ProductExitEvent.ExitProductAddons -> Unit // Do nothing
@@ -1234,12 +1292,14 @@ class ProductDetailViewModel @Inject constructor(
         viewState = viewState.copy(draftPassword = password)
 
         when (visibility) {
-            ProductVisibility.PUBLIC -> {
+            PUBLIC -> {
                 updateProductDraft(productStatus = ProductStatus.PUBLISH)
             }
+
             ProductVisibility.PRIVATE -> {
                 updateProductDraft(productStatus = ProductStatus.PRIVATE)
             }
+
             ProductVisibility.PASSWORD_PROTECTED -> {
                 updateProductDraft(productStatus = ProductStatus.PUBLISH)
             }
@@ -1259,11 +1319,13 @@ class ProductDetailViewModel @Inject constructor(
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
             }
+
             status == ProductStatus.PRIVATE -> {
                 ProductVisibility.PRIVATE
             }
+
             else -> {
-                ProductVisibility.PUBLIC
+                PUBLIC
             }
         }
     }
@@ -2250,6 +2312,21 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
+    private suspend fun shouldShowBlaze(productDraft: Product) =
+        getProductVisibility() == PUBLIC &&
+            productDraft.status != DRAFT &&
+            isBlazeEnabled()
+
+    fun trackBlazeDisplayed() {
+        launch {
+            if (shouldShowBlaze(draftChanges.value!!))
+                tracker.track(
+                    stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                    properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+                )
+        }
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2295,6 +2372,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductError : Event()
 
     object ShowDuplicateProductInProgress : Event()
+
+    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
@@ -2378,6 +2457,7 @@ class ProductDetailViewModel @Inject constructor(
         val viewProductOption: Boolean,
         val shareOption: Boolean,
         val showShareOptionAsActionWithText: Boolean,
-        val trashOption: Boolean
+        val trashOption: Boolean,
+        val showPromoteWithBlaze: Boolean
     )
 }

@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-06 09:54:26+0000
+Translation-Revision-Date: 2023-06-21 11:54:25+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">無法產生分享訊息。 請再試一次！</string>
+    <string name="product_sharing_ai_info_label">深入瞭解我們的 AI 功能</string>
+    <string name="product_sharing_optional_message_label">新增選用訊息</string>
+    <string name="product_sharing_generating">正在產生…</string>
+    <string name="product_sharing_regenerate">重新產生</string>
+    <string name="product_sharing_write_with_ai">使用 AI 撰寫</string>
+    <string name="more_menu_button_blaze_description">使用 Blaze 宣傳產品</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI 內容產生器現已可供使用</string>
+    <string name="product_detail_menu_item_promote_with_blaze">使用 Blaze 進行宣傳</string>
+    <string name="share_product">分享產品</string>
+    <string name="first_product_celebration_body_message">恭喜！ 你離新商店正式開幕更近一步了。</string>
+    <string name="first_product_celebration_title">你建立了第一個產品 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
+    <string name="order_list_barcode_scanning_process_death">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
     <string name="card_reader_payment_card_removed_too_early">太早移除這張卡片了</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s，你的商店已暫停運作，不過你可選擇最符合需求的方案，以繼續營運。</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我們的方案維持業務運作！</string>

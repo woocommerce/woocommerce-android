@@ -105,6 +105,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -123,7 +124,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val codeScanner: CodeScanner,
     private val productRepository: ProductListRepository,
-    private val checkDigitRemover: UPCCheckDigitRemover,
+    private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -383,6 +384,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun trackBarcodeScanningTapped() {
         tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
+
     private fun startScan() {
         scanningJob = viewModelScope.launch {
             isScanningInProgress = true
@@ -489,18 +491,25 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(isUpdatingOrderDraft = true)
         fetchProductBySKU(
             barcodeOptions.copy(
-                sku = checkDigitRemover.getSKUWithoutCheckDigit(barcodeOptions.sku),
+                sku = checkDigitRemoverFactory.getCheckDigitRemoverFor(
+                    barcodeOptions.barcodeFormat
+                ).getSKUWithoutCheckDigit(barcodeOptions.sku),
                 shouldHandleCheckDigitOnFailure = false
             )
         )
     }
 
     private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
-        isBarcodeFormatUPC(barcodeOptions) && barcodeOptions.shouldHandleCheckDigitOnFailure
+        (isBarcodeFormatUPC(barcodeOptions) || isBarcodeFormatEAN(barcodeOptions)) &&
+            barcodeOptions.shouldHandleCheckDigitOnFailure
 
     private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
             barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
+
+    private fun isBarcodeFormatEAN(barcodeOptions: BarcodeOptions) =
+        barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
+            barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
     private fun addScannedProduct(
         product: ModelProduct,
@@ -768,8 +777,13 @@ class OrderCreateEditViewModel @Inject constructor(
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
                         is OrderUpdateStatus.Failed -> {
+                            if (updateStatus.isInvalidCouponFailure()) {
+                                _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
+                                triggerEvent(OnCouponRejectedByBackend)
+                            } else {
+                                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                            }
                             trackOrderSyncFailed(updateStatus.throwable)
-                            viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
                         }
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
@@ -794,6 +808,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun OrderUpdateStatus.Failed.isInvalidCouponFailure() =
+        (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
 
     private fun isOrderEditable(updateStatus: OrderUpdateStatus.Succeeded) =
         updateStatus.order.isEditable || mode is Mode.Creation
@@ -982,6 +999,11 @@ data class OnAddingProductViaScanningFailed(
 data class VMKilledWhenScanningInProgress(
     @StringRes val message: Int
 ) : Event()
+
+object OnCouponRejectedByBackend : Event() {
+    @StringRes
+    val message: Int = R.string.order_sync_coupon_removed
+}
 
 data class ProductUIModel(
     val item: Order.Item,

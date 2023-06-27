@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
@@ -44,6 +45,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
@@ -1120,6 +1124,34 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             AnalyticsEvent.ORDER_COUPON_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION)
         )
+    }
+
+    @Test
+    fun `given coupon code rejected by backend, then should display message`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn
+                flowOf(
+                    Failed(
+                        WooException(
+                            WooError(
+                                WooErrorType.INVALID_COUPON,
+                                BaseRequest.GenericErrorType.UNKNOWN
+                            )
+                        )
+                    )
+                )
+        }
+        createSut()
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onCouponEntered("ABC")
+
+        with(lastReceivedEvent) {
+            this == OnCouponRejectedByBackend
+        }
     }
 
     @Test

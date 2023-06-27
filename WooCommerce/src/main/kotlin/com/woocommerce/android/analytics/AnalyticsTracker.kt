@@ -486,6 +486,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
+        const val KEY_NEW_SITE_ID = "new_site_id"
+        const val KEY_INITIAL_DOMAIN = "initial_domain"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"
@@ -532,6 +534,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Product Selector
         const val VALUE_PRODUCT_SELECTOR = "product_selector"
         const val VALUE_VARIATION_SELECTOR = "variation_selector"
+
+        // -- Product sharing with AI
+        const val KEY_IS_RETRY = "is_retry"
+        const val KEY_WITH_MESSAGE = "with_message"
+
+        // -- Blaze
+        const val KEY_BLAZE_SOURCE = "source"
+        const val KEY_BLAZE_STEP = "step"
 
         var sendUsageStats: Boolean = true
             set(value) {

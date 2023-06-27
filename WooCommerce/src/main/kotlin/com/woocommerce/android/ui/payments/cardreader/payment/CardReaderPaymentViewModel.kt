@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
@@ -535,7 +536,11 @@ class CardReaderPaymentViewModel
             "State mismatch: received unsupported country config"
         }
 
-        val errorType = errorMapper.mapPaymentErrorToUiError(error.type, config)
+        val errorType = errorMapper.mapPaymentErrorToUiError(
+            error.type,
+            config,
+            arguments.cardReaderType == CardReaderType.BUILT_IN
+        )
         viewState.postValue(buildFailedPaymentState(errorType, amountLabel, onRetryClicked))
     }
 
@@ -559,6 +564,17 @@ class CardReaderPaymentViewModel
                     amountLabel = amountLabel,
                     primaryLabel = R.string.card_reader_payment_payment_failed_ok,
                     onPrimaryActionClicked = { onBackPressed() }
+                )
+
+            is PaymentFlowError.PurchaseHardwareReaderError ->
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
+                    errorType = errorType,
+                    amountLabel = amountLabel,
+                    primaryLabel = R.string.card_reader_payment_payment_failed_purchase_hardware_reader,
+                    onPrimaryActionClicked = { onPurchaseCardReaderClicked() },
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
                 )
 
             else ->
@@ -747,6 +763,16 @@ class CardReaderPaymentViewModel
         tracker.trackPaymentFailedContactSupportTapped()
         onCancelPaymentFlow()
         triggerEvent(ContactSupport)
+    }
+
+    private fun onPurchaseCardReaderClicked() {
+        onCancelPaymentFlow()
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
+        triggerEvent(
+            PurchaseCardReader(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
+            )
+        )
     }
 
     private fun onCancelPaymentFlow() {

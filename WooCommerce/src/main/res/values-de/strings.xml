@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-05 17:54:04+0000
+Translation-Revision-Date: 2023-06-21 11:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Nachricht zum Teilen kann nicht erstellt werden. Versuche es bitte noch einmal!</string>
+    <string name="product_sharing_ai_info_label">Erfahre mehr über unsere KI-Funktion</string>
+    <string name="product_sharing_optional_message_label">Optionale Nachricht hinzufügen</string>
+    <string name="product_sharing_generating">Generierung läuft …</string>
+    <string name="product_sharing_regenerate">Neu generieren</string>
+    <string name="product_sharing_write_with_ai">Mit KI schreiben</string>
+    <string name="more_menu_button_blaze_description">Produkte mit Blaze bewerben</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">KI-Inhaltsgenerator verfügbar</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Mit Blaze bewerben</string>
+    <string name="share_product">Produkt teilen</string>
+    <string name="first_product_celebration_body_message">Glückwunsch! Du bist einen Schritt weiter auf dem Weg zu deinem neuen Shop.</string>
+    <string name="first_product_celebration_title">Erstes Produkt erstellt 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
+    <string name="order_list_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
     <string name="card_reader_payment_card_removed_too_early">Die Karte wurde zu früh entfernt</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, wir haben deinen Shop deaktiviert, aber du kannst ihn wieder aktivieren, indem du einen für dich passenden Tarif auswählst.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Halte dein Geschäft mit unserem Tarif am Laufen!</string>

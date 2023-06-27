@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-06 11:54:04+0000
+Translation-Revision-Date: 2023-06-21 17:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">يتعذر إنشاء رسالة مشاركة. يرجى المحاولة مرة أخرى!</string>
+    <string name="product_sharing_ai_info_label">معرفة المزيد حول ميزة الذكاء الاصطناعي التي نطرحها</string>
+    <string name="product_sharing_optional_message_label">إضافة رسالة اختيارية</string>
+    <string name="product_sharing_generating">جاري الإنشاء…</string>
+    <string name="product_sharing_regenerate">إعادة الإنشاء</string>
+    <string name="product_sharing_write_with_ai">الكتابة باستخدام الذكاء الاصطناعي</string>
+    <string name="more_menu_button_blaze_description">ترويج المنتجات باستخدام Blaze</string>
+    <string name="more_menu_button_blaze">التوهج</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">يتوافر منشئ محتوى الذكاء الاصطناعي</string>
+    <string name="product_detail_menu_item_promote_with_blaze">الترويج باستخدام Blaze</string>
+    <string name="share_product">مشاركة المنتج</string>
+    <string name="first_product_celebration_body_message">تهانينا! لقد قمت بخطوة واحدة أقرب لجعل المتجر الجديد جاهزًا.</string>
+    <string name="first_product_celebration_title">تم إنشاء المنتج أولاً 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="order_list_barcode_scanning_process_death">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
     <string name="card_reader_payment_card_removed_too_early">تمت إزالة البطاقة مبكرًا جدًا</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩لقد أوقفنا متجرك مؤقتًا، لكن يمكنك الاستمرار من خلال اختيار خطة تلائمك على أفضل نحو.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 واصل أعمالك مع خطتنا!</string>

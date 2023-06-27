@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-07 11:54:04+0000
+Translation-Revision-Date: 2023-06-22 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Impossible de générer le message de partage. Veuillez réessayer !</string>
+    <string name="product_sharing_ai_info_label">En savoir plus sur notre fonctionnalité d’IA</string>
+    <string name="product_sharing_optional_message_label">Ajouter un message facultatif</string>
+    <string name="product_sharing_generating">Génération en cours…</string>
+    <string name="product_sharing_regenerate">Régénérer</string>
+    <string name="product_sharing_write_with_ai">Rédiger avec l’IA</string>
+    <string name="more_menu_button_blaze_description">Promouvoir des produits avec Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Générateur de contenu par IA disponible</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promouvoir avec Blaze</string>
+    <string name="share_product">Partager le produit</string>
+    <string name="first_product_celebration_body_message">Bravo ! Il ne vous reste qu’une seule étape à effectuer avant que votre nouvelle boutique ne soit prête.</string>
+    <string name="first_product_celebration_title">Premier produit créé 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
+    <string name="order_list_barcode_scanning_process_death">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
     <string name="card_reader_payment_card_removed_too_early">La carte a été retirée trop tôt</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, nous avons suspendu votre boutique, mais vous pouvez la conserver en choisissant le plan qui vous convient le mieux.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Poursuivez vos activités avec notre abonnement !</string>

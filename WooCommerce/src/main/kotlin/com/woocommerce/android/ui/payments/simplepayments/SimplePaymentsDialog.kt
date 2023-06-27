@@ -6,7 +6,6 @@ import android.view.View
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -16,6 +15,7 @@ import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -25,18 +25,13 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
+class SimplePaymentsDialog : PaymentsBaseDialogFragment(R.layout.dialog_simple_payments) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: SimplePaymentsDialogViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = ComponentDialog(requireContext(), theme)

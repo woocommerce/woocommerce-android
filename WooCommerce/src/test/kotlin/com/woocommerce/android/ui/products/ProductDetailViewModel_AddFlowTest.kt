@@ -10,6 +10,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
@@ -78,7 +79,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
-
+    private val isBlazeEnabled: IsBlazeEnabled = mock {
+        onBlocking { invoke() } doReturn false
+    }
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
 
@@ -180,7 +183,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mock(),
                 mock(),
                 mock(),
-                mock()
+                mock(),
+                isBlazeEnabled
             )
         )
 

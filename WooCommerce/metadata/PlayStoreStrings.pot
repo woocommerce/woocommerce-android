@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_140"
+msgctxt "release_note_142"
 msgid ""
-"14.0:\n"
-"This release includes several bug fixes and improvements to help you get your business started and ensure a smooth experience. Stay tuned for more enhancements in the future.\n"
+"14.2:\n"
+"Did you know you can now add coupons when creating an order? Yes, you can! You can also manage your coupons by heading over to the menu tab and clicking on the Coupons feature. Lastly, we’ve made some improvements to the scanning functionality when searching for a product. But we’re not done. Keep an eye out for more enhancements in the future.\n"
 msgstr ""
 
-msgctxt "release_note_139"
+msgctxt "release_note_141"
 msgid ""
-"13.9:\n"
-"We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!\n"
+"14.1:\n"
+"This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

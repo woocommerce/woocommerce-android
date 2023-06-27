@@ -176,9 +176,6 @@ class StoreCreationRepository @Inject constructor(
 
         return when (createSiteResult) {
             is Success -> {
-                val site = siteStore.getSiteBySiteId(createSiteResult.data)
-                val domain = Uri.parse(site?.url.orEmpty()).host.orEmpty()
-                newStore.update(domain = domain)
                 sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data, siteData)
                     .let { addTrialResult ->
                         return when (addTrialResult) {
@@ -252,7 +249,10 @@ class StoreCreationRepository @Inject constructor(
                 }
             }
 
-            else -> Success(result.newSiteRemoteId)
+            else -> {
+                newStore.update(domain = Uri.parse(result.url.orEmpty()).host.orEmpty())
+                Success(result.newSiteRemoteId)
+            }
         }
     }
 

@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.2
+Did you know you can now add coupons when creating an order? Yes, you can! You can also manage your coupons by heading over to the menu tab and clicking on the Coupons feature. Lastly, we’ve made some improvements to the scanning functionality when searching for a product. But we’re not done. Keep an eye out for more enhancements in the future.
+
+## 14.1
+This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!
+
 ## 14.0
 This release includes several bug fixes and improvements to help you get your business started and ensure a smooth experience. Stay tuned for more enhancements in the future.
 
