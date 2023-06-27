@@ -1445,52 +1445,48 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
-//    @Test
-//    fun `given product search fails for EAN-13 barcode format, when retrying, then do not track any failure event`() {
-//        testBlocking {
-//            val sku = "12345678901"
-//            val skuWithCheckDigitRemoved = "1234567890"
-//            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
-//                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-//            }
-//            createSut()
-//            whenever(codeScanner.startScan()).thenAnswer {
-//                flow<CodeScannerStatus> {
-//                    emit(CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13))
-//                }
-//            }
-//            whenever(
-//                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
-//            ).thenReturn(
-//                mockEAN13CheckDigitRemover
-//            )
-//            whenever(
-//                productListRepository.searchProductList(
-//                    sku,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(emptyList())
-//
-//            whenever(
-//                productListRepository.searchProductList(
-//                    skuWithCheckDigitRemoved,
-//                    WCProductStore.SkuSearchOptions.ExactSearch
-//                )
-//            ).thenReturn(
-//                listOf(
-//                    ProductTestUtils.generateProduct(1L)
-//                )
-//            )
-//
-//            sut.onScanClicked()
-//
-//            verify(tracker, never()).track(
-//                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
-//                any()
-//            )
-//        }
-//    }
-//
+    @Test
+    fun `given product search fails for EAN-13 barcode format, when retrying, then do not track any failure event`() {
+        testBlocking {
+            val sku = "12345678901"
+            val skuWithCheckDigitRemoved = "1234567890"
+            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
+                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
+            }
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13)
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
+            ).thenReturn(
+                mockEAN13CheckDigitRemover
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    sku,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            whenever(
+                productListRepository.searchProductList(
+                    skuWithCheckDigitRemoved,
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(1L)
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
+                any()
+            )
+        }
+    }
+
 //    @Test
 //    fun `given product search fails for EAN-8 barcode format, when retrying, then do not track any failure event`() {
 //        testBlocking {
