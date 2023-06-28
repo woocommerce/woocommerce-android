@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.compose.component
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
@@ -14,8 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.launch
@@ -26,21 +28,28 @@ import kotlinx.coroutines.launch
 fun BottomSheetWrapper(
     parent: ViewGroup,
     composeView: ComposeView,
-    content: @Composable (() -> Unit) -> Unit
+    onDismissed: () -> Unit,
+    content: @Composable (dismiss: () -> Unit) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     var isSheetOpened by remember { mutableStateOf(false) }
 
     ModalBottomSheetLayout(
-        sheetBackgroundColor = colorResource(id = R.color.color_surface),
+        sheetBackgroundColor = MaterialTheme.colors.surface,
         sheetState = modalBottomSheetState,
+        sheetElevation = dimensionResource(id = R.dimen.minor_100),
         sheetContent = {
-            content {
-                // Action passed for clicking close button in the content
-                coroutineScope.launch {
-                    modalBottomSheetState.hide() // will trigger the LaunchedEffect
-                }
+            WooThemeWithBackground {
+                content(
+                    dismiss = {
+                        // Action passed for clicking close button in the content
+                        coroutineScope.launch {
+                            modalBottomSheetState.hide() // will trigger the LaunchedEffect
+                            onDismissed()
+                        }
+                    }
+                )
             }
         }
     ) {}
@@ -48,6 +57,7 @@ fun BottomSheetWrapper(
     BackHandler {
         coroutineScope.launch {
             modalBottomSheetState.hide() // will trigger the LaunchedEffect
+            onDismissed()
         }
     }
 
@@ -59,7 +69,9 @@ fun BottomSheetWrapper(
                     isSheetOpened -> parent.removeView(composeView)
                     else -> {
                         isSheetOpened = true
-                        modalBottomSheetState.show()
+                        coroutineScope.launch {
+                            modalBottomSheetState.show()
+                        }
                     }
                 }
             }

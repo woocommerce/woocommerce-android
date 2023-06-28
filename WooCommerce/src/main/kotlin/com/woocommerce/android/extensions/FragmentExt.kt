@@ -193,19 +193,23 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
     )
 }
 
-fun Fragment.showAsBottomSheet(content: @Composable (() -> Unit) -> Unit) {
+fun Fragment.showAsBottomSheet(
+    onDismissed: () -> Unit = {},
+    content: @Composable (dismiss: () -> Unit) -> Unit
+) {
     fun addContentToView(
         viewGroup: ViewGroup,
-        content: @Composable (() -> Unit) -> Unit
+        content: @Composable (dismiss: () -> Unit) -> Unit
     ) {
         viewGroup.addView(
             ComposeView(viewGroup.context).apply {
                 setContent {
-                    BottomSheetWrapper(viewGroup, this, content)
+                    BottomSheetWrapper(viewGroup, this, onDismissed, content)
                 }
             }
         )
     }
+
     val viewGroup = requireActivity().findViewById(android.R.id.content) as ViewGroup
     addContentToView(viewGroup, content)
 }
