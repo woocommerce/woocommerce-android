@@ -3363,5 +3363,6 @@
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
     <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
+    <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
 
 </resources>
