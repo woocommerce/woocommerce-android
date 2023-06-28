@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.coupon
+package com.woocommerce.android.ui.orders.creation.coupon.edit
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.coupon
+package com.woocommerce.android.ui.orders.creation.coupon.edit
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditViewModel.ValidationState.ERROR
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditViewModel.ValidationState.IDLE
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.ERROR
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.IDLE
 
 @Composable
 fun OrderCreateCouponEditScreen(

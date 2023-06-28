@@ -195,7 +195,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationCouponListFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragment"
         android:label="OrderCreationCouponListFragment">
         <argument
             android:name="couponLines"
@@ -211,7 +211,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationCouponEditionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragment"
         android:label="OrderCreationCouponEditionFragment">
         <argument
             android:name="couponCode"

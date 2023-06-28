@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.coupon
+package com.woocommerce.android.ui.orders.creation.coupon.edit
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditViewModel.UpdateCouponCode
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.UpdateCouponCode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.coupon
+package com.woocommerce.android.ui.orders.creation.coupon.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponListFragmentDirections.Companion.actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment
+import com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragmentDirections.Companion.actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
