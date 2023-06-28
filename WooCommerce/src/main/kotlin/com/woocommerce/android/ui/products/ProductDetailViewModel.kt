@@ -428,7 +428,9 @@ class ProductDetailViewModel @Inject constructor(
             selectedSite.get().isWPComAtomic
     }
 
-    fun onWriteWithAIClicked() {}
+    fun onWriteWithAIClicked() {
+        triggerEvent(ShowAIDescriptionGenerationBottomSheet)
+    }
 
     fun onBlazeClicked() {
         tracker.track(
@@ -2386,6 +2388,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductInProgress : Event()
 
     data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
+
+    object ShowAIDescriptionGenerationBottomSheet : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

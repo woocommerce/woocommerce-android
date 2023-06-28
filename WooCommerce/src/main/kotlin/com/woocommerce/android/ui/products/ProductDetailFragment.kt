@@ -37,6 +37,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.showAsBottomSheet
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
@@ -51,6 +52,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsSta
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIDescriptionGenerationBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
@@ -317,9 +319,16 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
+                is ShowAIDescriptionGenerationBottomSheet -> showAIDescriptionGenerationBottomSheet()
 
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    private fun showAIDescriptionGenerationBottomSheet() {
+        showAsBottomSheet { dismiss ->
+            ProductAIDescriptionScreen(dismiss)
         }
     }
 
