@@ -83,6 +83,10 @@ class JitmStoreInMemoryCache
         return jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
     }
 
+    fun onCtaClicked(messagePath: String) {
+        evictFirstMessage(messagePath)
+    }
+
     private fun handleResponse(path: String, response: WooResult<Array<JITMApiResponse>>) {
         val utmSource = path.split(":")[1]
         if (!response.isError) {

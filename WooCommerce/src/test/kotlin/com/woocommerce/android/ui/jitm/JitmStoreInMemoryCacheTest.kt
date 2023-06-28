@@ -195,4 +195,22 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
         // THEN
         assertThat(cache.getMessagesForPath(messagePath = messagePath)).isEmpty()
     }
+
+    @Test
+    fun `when onCtaClicked, then message evicted from cache`() = testBlocking {
+        // GIVEN
+        val messagePath = "path:screen:1"
+        val jitmApiResponse1 = mock<JITMApiResponse>()
+        val jitmResponseArray = arrayOf(jitmApiResponse1)
+        whenever(selectedSite.exists()).thenReturn(true)
+        whenever(pathsProvider.paths).thenReturn(listOf(messagePath))
+        whenever(jitmStore.fetchJitmMessage(any(), any(), any())).thenReturn(WooResult(jitmResponseArray))
+        cache.init()
+
+        // WHEN
+        cache.onCtaClicked(messagePath)
+
+        // THEN
+        assertThat(cache.getMessagesForPath(messagePath = messagePath)).isEmpty()
+    }
 }

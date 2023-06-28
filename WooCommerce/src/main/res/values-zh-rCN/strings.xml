@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-06-21 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">无法生成共享信息。 请重试！</string>
+    <string name="product_sharing_ai_info_label">详细了解我们的 AI 功能</string>
+    <string name="product_sharing_optional_message_label">添加一条可选消息</string>
+    <string name="product_sharing_generating">正在生成…</string>
+    <string name="product_sharing_regenerate">重新生成</string>
+    <string name="product_sharing_write_with_ai">使用 AI 写作</string>
+    <string name="more_menu_button_blaze_description">通过 Blaze 推广产品</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">✨ AI 内容生成器现已可用</string>
+    <string name="product_detail_menu_item_promote_with_blaze">通过 Blaze 推广</string>
     <string name="share_product">共享产品</string>
     <string name="first_product_celebration_body_message">恭喜！ 您离准备好新的商店又近了一步。</string>
     <string name="first_product_celebration_title">第一个产品已创建 🎉</string>

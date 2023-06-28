@@ -1,0 +1,2 @@
+14.1:
+Questo rilascio include alcune correzioni di bug e miglioramenti delle prestazioni nelle sezioni di ordini e prodotti dell'app. Mantieni il tuo feedback pronto.

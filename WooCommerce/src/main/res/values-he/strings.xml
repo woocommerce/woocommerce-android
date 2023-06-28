@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 13:54:03+0000
+Translation-Revision-Date: 2023-06-22 12:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">לא ניתן ליצור הודעה לשיתוף. יש לנסות שוב!</string>
+    <string name="product_sharing_ai_info_label">מידע נוסף על האפשרות שלנו לבינה מלאכותית</string>
+    <string name="product_sharing_optional_message_label">להוסיף הודעה אופציונלית</string>
+    <string name="product_sharing_generating">יוצר…</string>
+    <string name="product_sharing_regenerate">ליצור מחדש</string>
+    <string name="product_sharing_write_with_ai">לכתוב באמצעות בינה מלאכותית</string>
+    <string name="more_menu_button_blaze_description">לקדם מוצרים עם Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">יוצר תוכן של בינה מלאכותית זמין לשימוש</string>
+    <string name="product_detail_menu_item_promote_with_blaze">לקדם עם Blaze</string>
     <string name="share_product">לשתף מוצר</string>
     <string name="first_product_celebration_body_message">ברכותינו! התקדמת עוד שלב בהכנת החנות החדשה.</string>
     <string name="first_product_celebration_title">המוצר הראשון נוצר 🎉</string>
