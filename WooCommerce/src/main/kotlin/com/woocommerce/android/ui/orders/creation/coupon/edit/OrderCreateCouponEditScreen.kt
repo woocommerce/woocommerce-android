@@ -41,6 +41,7 @@ fun OrderCreateCouponEditScreen(
             onValueChange = { onCouponCodeChanged(it) },
             label = stringResource(id = R.string.coupon_edit_code_hint),
             isError = isError,
+            singleLine = true,
         )
         if (state.value?.isRemoveButtonVisible == true) {
             WCColoredButton(
