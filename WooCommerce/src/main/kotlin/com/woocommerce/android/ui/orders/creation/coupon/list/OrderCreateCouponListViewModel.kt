@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -24,14 +23,18 @@ class OrderCreateCouponListViewModel @Inject constructor(
     ).asLiveData()
 
     fun onAddCouponClicked() {
-        triggerEvent(OrderCreateEditNavigationTarget.EditCoupon(null))
+        triggerEvent(AddCoupon)
     }
 
     fun onCouponClicked(coupon: Order.CouponLine) {
-        triggerEvent(OrderCreateEditNavigationTarget.EditCoupon(coupon.code))
+        triggerEvent(EditCoupon(coupon.code))
     }
 
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
+
+    data class EditCoupon(val couponCode: String) : MultiLiveEvent.Event()
+
+    object AddCoupon : MultiLiveEvent.Event()
 }

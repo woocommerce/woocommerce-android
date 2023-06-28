@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragmentDirections.Companion.actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 class OrderCreateCouponListFragment : BaseFragment() {
@@ -41,10 +40,13 @@ class OrderCreateCouponListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is OrderCreateEditNavigationTarget.EditCoupon -> {
+                is OrderCreateCouponListViewModel.EditCoupon -> {
                     findNavController().navigate(
                         actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment(it.couponCode)
                     )
+                }
+                is OrderCreateCouponListViewModel.AddCoupon -> {
+                    actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment()
                 }
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().popBackStack()
