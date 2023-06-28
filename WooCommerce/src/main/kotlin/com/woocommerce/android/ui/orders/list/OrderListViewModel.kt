@@ -237,7 +237,10 @@ class OrderListViewModel @Inject constructor(
 
     fun loadOrders() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        viewState = viewState.copy(
+            filterCount = getSelectedOrderFiltersCount(),
+            isErrorFetchingDataBannerVisible = false
+        )
         activatePagedListWrapper(ordersPagedListWrapper!!)
         fetchOrdersAndOrderDependencies()
     }
@@ -275,13 +278,14 @@ class OrderListViewModel @Inject constructor(
      */
     fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
+            viewState = viewState.copy(isErrorFetchingDataBannerVisible = false)
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
-            viewState = viewState.copy(isRefreshPending = true)
+            viewState = viewState.copy(isRefreshPending = true, isErrorFetchingDataBannerVisible = false)
             showOfflineSnack()
         }
     }
@@ -440,10 +444,7 @@ class OrderListViewModel @Inject constructor(
             .filterNotNull()
             .observe(this) { error ->
                 if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
-                    clearLiveDataSources(activePagedListWrapper)
-                    _isLoadingMore.value = false
-                    _isFetchingFirstPage.value = false
-                    _emptyViewType.postValue(EmptyViewType.ORDER_PARSING_ERROR)
+                   viewState = viewState.copy(isErrorFetchingDataBannerVisible = true)
                 } else {
                     triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
@@ -836,6 +837,7 @@ class OrderListViewModel @Inject constructor(
         val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
+        val isErrorFetchingDataBannerVisible: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

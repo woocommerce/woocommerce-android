@@ -21,6 +21,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.transition.TransitionManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
@@ -397,11 +398,6 @@ class OrderListFragment :
                             refreshOrders()
                         }
                     }
-                    EmptyViewType.ORDER_PARSING_ERROR -> {
-                        emptyView.show(emptyViewType) {
-                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_PLUGIN_CONFLICTS)
-                        }
-                    }
                     else -> {
                         emptyView.show(emptyViewType)
                     }
@@ -423,6 +419,9 @@ class OrderListFragment :
                 old?.isSimplePaymentsAndOrderCreationFeedbackVisible
             ) {
                 displaySimplePaymentsWIPCard(it)
+            }
+            new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible){
+                displayErrorParsingOrdersCard(it)
             }
         }
     }
@@ -700,5 +699,19 @@ class OrderListFragment :
 
     override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         viewModel.onSwipeStatusUpdate(gestureSource)
+    }
+
+    private fun displayErrorParsingOrdersCard(show: Boolean) {
+        TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
+        if (!show) {
+            binding.errorParsingOrdersCard.isVisible = false
+            return
+        }
+
+        binding.errorParsingOrdersCard.isVisible = true
+        binding.errorParsingOrdersCard.initView(
+            getString(R.string.orderlist_parsing_error_title),
+            getString(R.string.orderlist_parsing_error_message)
+        )
     }
 }
