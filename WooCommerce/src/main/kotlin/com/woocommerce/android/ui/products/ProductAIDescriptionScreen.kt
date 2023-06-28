@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -150,10 +151,15 @@ fun DescriptionGenerationForm(
                     Initial -> {
                         WCColoredButton(
                             onClick = onGenerateButtonClicked,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(text = stringResource(id = string.product_sharing_write_with_ai))
-                        }
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(id = string.product_sharing_write_with_ai),
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_ai),
+                                    contentDescription = null
+                                )
+                            }
+                        )
                     }
 
                     Regenerating -> {
@@ -384,7 +390,7 @@ fun ProductDescriptionSkeletonView() {
 fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
         ViewState(
-            generationState = Generated,
+            generationState = Initial,
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."
