@@ -43,20 +43,20 @@ fun ProductDescriptionAICelebrationBottomSheet(
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.product_description_ai_note_dialog_heading),
+            text = stringResource(id = R.string.ai_product_description_note_dialog_heading),
             style = MaterialTheme.typography.h6,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.product_description_ai_note_dialog_message),
+            text = stringResource(id = R.string.ai_product_description_note_dialog_message),
             style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         WCColoredButton(onClick = onConfirmClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.product_description_ai_note_dialog_confirmation))
+            Text(text = stringResource(id = R.string.ai_product_description_note_dialog_confirmation))
         }
     }
 }
