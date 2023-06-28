@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.orders.creation.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before

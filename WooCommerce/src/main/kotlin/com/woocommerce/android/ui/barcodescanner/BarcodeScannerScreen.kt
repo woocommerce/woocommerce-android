@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.barcodescanner
+package com.woocommerce.android.ui.barcodescanner
 
 import android.Manifest
 import android.content.pm.PackageManager

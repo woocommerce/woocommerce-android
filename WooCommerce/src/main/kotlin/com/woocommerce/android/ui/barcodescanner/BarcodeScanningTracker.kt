@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.barcodescanner
+package com.woocommerce.android.ui.barcodescanner
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
