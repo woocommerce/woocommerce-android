@@ -37,6 +37,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
@@ -255,6 +256,8 @@ private fun GeneratedDescription(
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
+                        end.linkTo(like.start)
+                        width = Dimension.fillToConstraints
                     },
                 text = stringResource(id = string.ai_product_description_feedback),
                 color = colorResource(id = color.color_on_surface_medium),
@@ -268,7 +271,8 @@ private fun GeneratedDescription(
                         end.linkTo(dislike.start)
                         bottom.linkTo(parent.bottom)
                     },
-                onClick = { onDescriptionFeedbackReceived(true) }) {
+                onClick = { onDescriptionFeedbackReceived(true) }
+            ) {
                 Icon(
                     imageVector = Icons.Default.ThumbUp,
                     contentDescription = null,
@@ -284,7 +288,8 @@ private fun GeneratedDescription(
                         end.linkTo(parent.end)
                         bottom.linkTo(parent.bottom)
                     },
-                onClick = { onDescriptionFeedbackReceived(false) }) {
+                onClick = { onDescriptionFeedbackReceived(false) }
+            ) {
                 Icon(
                     imageVector = Icons.Default.ThumbDown,
                     contentDescription = null,
@@ -377,10 +382,18 @@ fun ProductDescriptionSkeletonView() {
 @Preview
 @Composable
 fun PreviewAIDescriptionGenerationForm() {
-    DescriptionGenerationForm(ViewState(
-        generationState = Generated,
-        description = "This stylish and comfortable set is designed to enhance your performance and " +
-            "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
-            "make a statement with the \"Fit Fashionista\" activewear set."
-    ), {}, {}, {}, {}, {}, {})
+    DescriptionGenerationForm(
+        ViewState(
+            generationState = Generated,
+            description = "This stylish and comfortable set is designed to enhance your performance and " +
+                "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
+                "make a statement with the \"Fit Fashionista\" activewear set."
+        ),
+        onFeaturesChanged = {},
+        onGenerateButtonClicked = {},
+        onRegenerateButtonClicked = {},
+        onCopyButtonClicked = {},
+        onApplyButtonClicked = {},
+        onDescriptionFeedbackReceived = {}
+    )
 }
