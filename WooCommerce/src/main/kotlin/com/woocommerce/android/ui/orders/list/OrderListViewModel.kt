@@ -127,7 +127,7 @@ class OrderListViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = orderListTransactionLauncher
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    override val lifecycle: Lifecycle = lifecycleRegistry
 
     internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
