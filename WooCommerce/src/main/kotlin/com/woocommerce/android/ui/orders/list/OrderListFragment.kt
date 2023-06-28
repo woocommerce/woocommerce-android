@@ -397,6 +397,11 @@ class OrderListFragment :
                             refreshOrders()
                         }
                     }
+                    EmptyViewType.ORDER_PARSING_ERROR -> {
+                        emptyView.show(emptyViewType) {
+                            ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_PLUGIN_CONFLICTS)
+                        }
+                    }
                     else -> {
                         emptyView.show(emptyViewType)
                     }

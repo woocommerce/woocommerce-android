@@ -33,6 +33,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -434,10 +435,18 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.filter { error ->
-            !dismissListErrors && error != null
-        }.observe(this) {
-            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+        pagedListWrapper.listError
+            .filter { !dismissListErrors }
+            .filterNotNull()
+            .observe(this) { error ->
+            if(error.type == ListStore.ListErrorType.PARSE_ERROR){
+                clearLiveDataSources(activePagedListWrapper)
+                _isLoadingMore.value = false
+                _isFetchingFirstPage.value = false
+                _emptyViewType.postValue(EmptyViewType.ORDER_PARSING_ERROR)
+            } else {
+                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+            }
         }
         this.activePagedListWrapper = pagedListWrapper
 
