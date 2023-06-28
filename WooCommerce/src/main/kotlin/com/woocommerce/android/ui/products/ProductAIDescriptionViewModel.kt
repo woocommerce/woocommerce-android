@@ -3,9 +3,6 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
-import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Generated
@@ -30,28 +27,6 @@ class ProductAIDescriptionViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
 
-    init {
-//        tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_DISPLAYED)
-    }
-
-    private fun generateDescription() {
-        launch {
-            val result = aiRepository.generateProductDescription(
-                site = selectedSite.get(),
-                _viewState.value.productTitle,
-                _viewState.value.features
-            )
-            result.fold(
-                onSuccess = { completions ->
-                    handleCompletionsSuccess(completions)
-                },
-                onFailure = { exception ->
-                    handleCompletionsFailure(exception as JetpackAICompletionsException)
-                }
-            )
-        }
-    }
-
     fun onGenerateButtonClicked() {
         _viewState.update { it.copy(generationState = GenerationState.Generating) }
 
@@ -59,15 +34,6 @@ class ProductAIDescriptionViewModel @Inject constructor(
             delay(3000)
             _viewState.update { it.copy(generationState = Generated) }
         }
-
-//        generateDescription()
-
-//        tracker.track(
-//            AnalyticsEvent.PRODUCT_SHARING_AI_GENERATE_TAPPED,
-//            mapOf(
-//                AnalyticsTracker.KEY_IS_RETRY to isRetry
-//            )
-//        )
     }
 
     fun onRegenerateButtonClicked() {
@@ -76,45 +42,6 @@ class ProductAIDescriptionViewModel @Inject constructor(
         launch {
             delay(3000)
             _viewState.update { it.copy(generationState = Generated) }
-        }
-
-//        generateDescription()
-    }
-
-    private fun handleCompletionsSuccess(description: String) {
-//        tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATED)
-
-        _viewState.update {
-            it.copy(
-                description = description,
-                generationState = Generated
-            )
-        }
-    }
-
-    private fun handleCompletionsFailure(error: JetpackAICompletionsException) {
-        tracker.track(
-            AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
-            mapOf(
-                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                AnalyticsTracker.KEY_ERROR_TYPE to error.errorType,
-                AnalyticsTracker.KEY_ERROR_DESC to error.errorMessage
-            )
-        )
-
-        if (_viewState.value.generationState is GenerationState.Generating) {
-            _viewState.update {
-                // This is to return the previous button's state before generating.
-                it.copy(
-                    generationState = Initial
-                )
-            }
-        } else if (_viewState.value.generationState is Regenerating) {
-            _viewState.update {
-                it.copy(
-                    generationState = Generated
-                )
-            }
         }
     }
 
@@ -131,10 +58,6 @@ class ProductAIDescriptionViewModel @Inject constructor(
     }
 
     fun onDescriptionFeedbackReceived(isPositive: Boolean) {
-    }
-
-    fun onDialogDismissed() {
-//        tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_DISMISSED)
     }
 
     data class ViewState(
