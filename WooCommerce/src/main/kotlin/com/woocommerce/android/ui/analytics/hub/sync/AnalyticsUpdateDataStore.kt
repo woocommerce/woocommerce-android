@@ -9,12 +9,17 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.singleOrNull
 
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>
 ) {
-    fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
-        return true
+    suspend fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
+        rangeSelection.lastUpdateTimestamp.singleOrNull()
+            ?.let { System.currentTimeMillis() - it }
+            ?.takeIf { it > maxOutdatedTime }
+            ?.let { return true }
+            ?: return false
     }
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
