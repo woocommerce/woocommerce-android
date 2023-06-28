@@ -1,12 +1,12 @@
 package com.woocommerce.android.di
 
-import androidx.camera.core.ExperimentalGetImage
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleCodeScannerErrorMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.ui.orders.creation.barcodescanner.BitmapImageProvider
 import com.woocommerce.android.ui.orders.creation.barcodescanner.InputImageProvider
 import dagger.Module
 import dagger.Provides
@@ -19,12 +19,11 @@ import dagger.hilt.components.SingletonComponent
 class CodeScannerModule {
     @Provides
     @Reusable
-    @ExperimentalGetImage
     fun provideGoogleCodeScanner(
         barcodeScanner: BarcodeScanner,
         googleCodeScannerErrorMapper: GoogleCodeScannerErrorMapper,
         barcodeFormatMapper: GoogleBarcodeFormatMapper,
-        inputImageProvider: InputImageProvider,
+        inputImageProvider: BitmapImageProvider,
     ): CodeScanner {
         return GoogleMLKitCodeScanner(
             barcodeScanner,
@@ -37,4 +36,8 @@ class CodeScannerModule {
     @Provides
     @Reusable
     fun providesGoogleBarcodeScanner() = BarcodeScanning.getClient()
+
+    @Provides
+    @Reusable
+    fun provideInputImageProvider() = BitmapImageProvider()
 }
