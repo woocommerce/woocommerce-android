@@ -9,13 +9,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragmentDirections.Companion.actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment
+import com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragmentDirections.Companion.actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 class OrderCreateCouponListFragment : BaseFragment() {
+    private val args: OrderCreateCouponListFragmentArgs by navArgs()
     override val activityAppBarStatus = AppBarStatus.Hidden
 
     private val viewModel by viewModels<OrderCreateCouponListViewModel>()
@@ -42,12 +44,19 @@ class OrderCreateCouponListFragment : BaseFragment() {
             when (it) {
                 is OrderCreateCouponListViewModel.EditCoupon -> {
                     findNavController().navigate(
-                        actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment(it.couponCode)
+                        actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment(
+                            args.orderCreationMode,
+                            it.couponCode
+                        )
                     )
                 }
+
                 is OrderCreateCouponListViewModel.AddCoupon -> {
-                    actionOrderCreationCouponListFragmentToOrderCreationCouponEditionFragment()
+                    findNavController().navigate(
+                        actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment(args.orderCreationMode)
+                    )
                 }
+
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().popBackStack()
                 }

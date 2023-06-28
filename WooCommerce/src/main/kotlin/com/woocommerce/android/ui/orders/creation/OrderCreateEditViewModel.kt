@@ -694,9 +694,9 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCouponButtonClicked() {
         if (_orderDraft.value.couponLines.isEmpty()) {
-            triggerEvent(EditCoupon(null))
+            triggerEvent(EditCoupon(mode))
         } else {
-            triggerEvent(CouponList(_orderDraft.value.couponLines))
+            triggerEvent(CouponList(mode, _orderDraft.value.couponLines))
         }
     }
 
@@ -952,6 +952,26 @@ class OrderCreateEditViewModel @Inject constructor(
             draft.copy(couponLines = couponLines + Order.CouponLine(code = couponCode))
         }.also {
             trackCouponAdded()
+        }
+    }
+
+    fun onCouponAdded(couponCode: String) {
+        if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
+        _orderDraft.update { draft ->
+            val couponLines = draft.couponLines
+            draft.copy(couponLines = couponLines + Order.CouponLine(code = couponCode))
+        }.also {
+            trackCouponAdded()
+        }
+    }
+
+    fun onCouponUpdated(oldCode: String, newCode: String) {
+        if (!_orderDraft.value.couponLines.any { it.code == oldCode }) return
+        _orderDraft.update { draft ->
+            val couponLines = draft.couponLines
+            val updatedCouponLines =
+                couponLines.filter { it.code != oldCode } + Order.CouponLine(code = newCode)
+            draft.copy(couponLines = updatedCouponLines)
         }
     }
 

@@ -82,6 +82,8 @@
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCouponListFragment"
             app:destination="@id/orderCreationCouponListFragment"
+            app:popUpTo="@id/orderCreationCouponListFragment"
+            app:popUpToInclusive="true"
             app:enterAnim="@anim/default_enter_anim"
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
@@ -91,8 +93,10 @@
                 app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
         </action>
         <action
-            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditionFragment"
-            app:destination="@id/orderCreationCouponEditionFragment"
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditFragment"
+            app:destination="@id/orderCreationCouponEditFragment"
+            app:popUpTo="@id/orderCreationCouponEditFragment"
+            app:popUpToInclusive="true"
             app:enterAnim="@anim/default_enter_anim"
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
@@ -114,6 +118,11 @@
             android:name="barcodeFormat"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
             app:nullable="true"/>
+        <argument
+            android:name="couponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -200,9 +209,14 @@
         <argument
             android:name="couponLines"
             app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
+        <argument
+            android:name="orderCreationMode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         <action
-            android:id="@+id/action_orderCreationCouponListFragment_to_orderCreationCouponEditionFragment"
-            app:destination="@id/orderCreationCouponEditionFragment"
+            android:id="@+id/action_orderCreationCouponListFragment_to_orderCreationCouponEditFragment"
+            app:destination="@id/orderCreationCouponEditFragment"
+            app:popUpTo="@id/orderCreationCouponEditFragment"
+            app:popUpToInclusive="true"
             app:enterAnim="@null"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
@@ -210,14 +224,33 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/orderCreationCouponEditionFragment"
+        android:id="@+id/orderCreationCouponEditFragment"
         android:name="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragment"
-        android:label="OrderCreationCouponEditionFragment">
+        android:label="OrderCreationCouponEditFragment">
         <argument
             android:name="couponCode"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null"/>
+        <argument
+            android:name="orderCreationMode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <action
+            android:id="@+id/action_orderCreationCouponEditFragment_to_orderCreationFragment"
+            app:destination="@id/orderCreationFragment"
+            app:popUpTo="@id/orderCreationFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
+            >
+            <argument
+                android:name="couponEditResult"
+                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
     </fragment>
 
     <action

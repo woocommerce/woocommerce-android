@@ -10,6 +10,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
@@ -78,6 +80,8 @@ class OrderCreateEditFormFragment :
         )
     }
 
+    private val args: OrderCreateEditFormFragmentArgs by navArgs()
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
@@ -91,12 +95,28 @@ class OrderCreateEditFormFragment :
             ?.run { adapter as? OrderCreateEditProductsAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
+        }
+        handleCouponEditResult()
+    }
+
+    private fun handleCouponEditResult() {
+        args.couponEditResult?.let {
+            when (it) {
+                is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+                    viewModel.onCouponRemoved(it.couponCode)
+                }
+                is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
+                    viewModel.onCouponAdded(it.couponCode)
+                }
+                is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
+                    viewModel.onCouponUpdated(it.oldCode, it.newCode)
+                }
+            }
         }
     }
 

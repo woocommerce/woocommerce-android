@@ -220,7 +220,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
         sut.onCouponButtonClicked()
 
-        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(null), latestEvent)
+        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(sut.mode, null), latestEvent)
     }
 
     @Test
@@ -242,7 +242,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.onCouponButtonClicked()
 
         // then
-        assertEquals(OrderCreateEditNavigationTarget.CouponList(orderDraft!!.couponLines), latestEvent)
+        assertEquals(OrderCreateEditNavigationTarget.CouponList(sut.mode, orderDraft!!.couponLines), latestEvent)
     }
 
     @Test

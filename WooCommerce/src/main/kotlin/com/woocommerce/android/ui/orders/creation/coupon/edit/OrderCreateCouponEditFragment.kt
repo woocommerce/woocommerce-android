@@ -12,19 +12,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.UpdateCouponCode
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragmentDirections.Companion.actionOrderCreationCouponEditFragmentToOrderCreationFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class OrderCreateCouponEditFragment : BaseFragment() {
+    private val args: OrderCreateCouponEditFragmentArgs by navArgs()
     private var doneMenuItem: MenuItem? = null
     private val menuProvider: MenuProvider by lazy {
         object : MenuProvider {
@@ -48,7 +48,6 @@ class OrderCreateCouponEditFragment : BaseFragment() {
         }
     }
     private val viewModel by viewModels<OrderCreateCouponEditViewModel>()
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,13 +74,36 @@ class OrderCreateCouponEditFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is UpdateCouponCode -> {
-                    sharedViewModel.onCouponEntered(it.couponCode)
-                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+                is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
+                    val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
+                        mode = args.orderCreationMode,
+                        couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode(
+                            it.oldCode,
+                            it.newCode
+                        ),
+                        sku = null,
+                        barcodeFormat = null
+                    )
+                    findNavController().navigate(action)
                 }
-                is OrderCreateCouponEditViewModel.RemoveCoupon -> {
-                    sharedViewModel.onCouponRemoved(it.couponCode)
-                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+                is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+                    val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
+                        mode = args.orderCreationMode,
+                        couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon(it.couponCode),
+                        sku = null,
+                        barcodeFormat = null
+                    )
+                    findNavController().navigate(action)
+                }
+                is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
+                    val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
+                        mode = args.orderCreationMode,
+                        couponEditResult =
+                        OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode(it.couponCode),
+                        sku = null,
+                        barcodeFormat = null
+                    )
+                    findNavController().navigate(action)
                 }
             }
         }

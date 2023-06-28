@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.coupon
 
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.coupon.edit.CouponValidator
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragmentArgs
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
@@ -23,7 +24,10 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
     }
     @Test
     fun `given non empty coupon, when passed to coupon edition screen, then should show remove button`() {
-        val navArgs = OrderCreateCouponEditFragmentArgs("coupon_code").initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            "coupon_code"
+        ).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
@@ -34,7 +38,10 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given empty coupon, when passed to coupon edition screen, then should not show remove button`() {
-        val navArgs = OrderCreateCouponEditFragmentArgs("coupon_code").initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            "coupon_code"
+        ).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
@@ -45,7 +52,7 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when non empty coupon code entered, then should show done button`() {
-        val navArgs = OrderCreateCouponEditFragmentArgs().initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
         sut.onCouponCodeChanged("new_code")
@@ -57,7 +64,8 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when empty coupon code entered, then should not show done button`() {
-        val navArgs = OrderCreateCouponEditFragmentArgs().initSavedStateHandle()
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
         sut.onCouponCodeChanged("new_code")
@@ -70,7 +78,10 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given non empty coupon, when coupon removed, then should clear coupon`() {
         val initialCouponCode = "coupon_code"
-        val navArgs = OrderCreateCouponEditFragmentArgs(initialCouponCode).initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            initialCouponCode
+        ).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
@@ -82,14 +93,17 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
         sut.onCouponRemoved()
 
         sut.event.observeForever {
-            assertEquals(OrderCreateCouponEditViewModel.RemoveCoupon("coupon_code"), it)
+            assertEquals(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("coupon_code"), it)
         }
     }
 
     @Test
     fun `given non empty coupon, when done button is clicked, then should update order with coupon`() = testBlocking {
         val initialCouponCode = "coupon_code"
-        val navArgs = OrderCreateCouponEditFragmentArgs(initialCouponCode).initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            initialCouponCode
+        ).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
@@ -102,14 +116,23 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
         sut.onDoneClicked()
 
         sut.event.observeForever {
-            assertEquals(OrderCreateCouponEditViewModel.UpdateCouponCode("new_code"), it)
+            assertEquals(
+                OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode(
+                    "coupon_code",
+                    "new_code"
+                ),
+                it
+            )
         }
     }
 
     @Test
     fun `given non empty coupon, when remove button is clicked, then should remove coupon from order`() {
         val initialCouponCode = "coupon_code"
-        val navArgs = OrderCreateCouponEditFragmentArgs(initialCouponCode).initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            initialCouponCode
+        ).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
@@ -121,14 +144,17 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
         sut.onCouponRemoved()
 
         sut.event.observeForever {
-            assertEquals(OrderCreateCouponEditViewModel.RemoveCoupon("coupon_code"), it)
+            assertEquals(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("coupon_code"), it)
         }
     }
 
     @Test
     fun `given non empty coupon, when code is modified and remove button is clicked, then should remove correct coupon from order`() {
         val initialCouponCode = "coupon_code"
-        val navArgs = OrderCreateCouponEditFragmentArgs(initialCouponCode).initSavedStateHandle()
+        val navArgs = OrderCreateCouponEditFragmentArgs(
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            initialCouponCode
+        ).initSavedStateHandle()
 
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
@@ -140,13 +166,14 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
         sut.onCouponRemoved()
 
         sut.event.observeForever {
-            assertEquals(OrderCreateCouponEditViewModel.RemoveCoupon("coupon_code"), it)
+            assertEquals(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("coupon_code"), it)
         }
     }
 
     @Test
     fun `given invalid coupon, when done clicked, then should show error`() = testBlocking {
-        val navArgs = OrderCreateCouponEditFragmentArgs().initSavedStateHandle()
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
         var latestViewState: OrderCreateCouponEditViewModel.ViewState? = null
@@ -161,7 +188,8 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given invalid coupon, when done clicked, then should hide done button`() = testBlocking {
-        val navArgs = OrderCreateCouponEditFragmentArgs().initSavedStateHandle()
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
 
         var latestViewState: OrderCreateCouponEditViewModel.ViewState? = null
@@ -177,7 +205,8 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given invalid coupon, when coupon code modified, then should clear error`() = testBlocking {
         // given
-        val navArgs = OrderCreateCouponEditFragmentArgs().initSavedStateHandle()
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
         var latestViewState: OrderCreateCouponEditViewModel.ViewState? = null
         sut.viewState.observeForever {
@@ -197,7 +226,8 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
     fun `given invalid coupon, when coupon code modified, then should show done button`() = testBlocking {
         // given
         whenever(validator.isCouponValid(anyString())).thenReturn(false)
-        val navArgs = OrderCreateCouponEditFragmentArgs().initSavedStateHandle()
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
         var latestViewState: OrderCreateCouponEditViewModel.ViewState? = null
         sut.viewState.observeForever {

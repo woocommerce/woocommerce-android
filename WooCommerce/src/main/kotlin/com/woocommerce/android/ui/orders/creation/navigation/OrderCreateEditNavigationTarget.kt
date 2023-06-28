@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.math.BigDecimal
@@ -21,6 +22,13 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val currentFeeValue: BigDecimal? = null
     ) : OrderCreateEditNavigationTarget()
 
-    data class EditCoupon(val couponCode: String?) : OrderCreateEditNavigationTarget()
-    data class CouponList(val couponLines: Collection<Order.CouponLine>) : OrderCreateEditNavigationTarget()
+    data class EditCoupon(
+        val orderCreationMode: OrderCreateEditViewModel.Mode,
+        val couponCode: String? = null
+    ) : OrderCreateEditNavigationTarget()
+
+    data class CouponList(
+        val orderCreationMode: OrderCreateEditViewModel.Mode,
+        val couponLines: Collection<Order.CouponLine>
+    ) : OrderCreateEditNavigationTarget()
 }
