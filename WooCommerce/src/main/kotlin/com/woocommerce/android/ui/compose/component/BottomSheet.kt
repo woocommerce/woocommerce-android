@@ -29,10 +29,14 @@ fun BottomSheetWrapper(
     parent: ViewGroup,
     composeView: ComposeView,
     onDismissed: () -> Unit,
+    skipHalfExpanded: Boolean,
     content: @Composable (dismiss: () -> Unit) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = skipHalfExpanded
+    )
     var isSheetOpened by remember { mutableStateOf(false) }
 
     ModalBottomSheetLayout(

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -195,6 +196,7 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
 
 fun Fragment.showAsBottomSheet(
     onDismissed: () -> Unit = {},
+    skipHalfExpanded: Boolean = false,
     content: @Composable (dismiss: () -> Unit) -> Unit
 ) {
     fun addContentToView(
@@ -204,7 +206,7 @@ fun Fragment.showAsBottomSheet(
         viewGroup.addView(
             ComposeView(viewGroup.context).apply {
                 setContent {
-                    BottomSheetWrapper(viewGroup, this, onDismissed, content)
+                    BottomSheetWrapper(viewGroup, this, onDismissed, skipHalfExpanded, content)
                 }
             }
         )
