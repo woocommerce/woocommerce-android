@@ -17,9 +17,9 @@ class AnalyticsUpdateDataStore @Inject constructor(
     suspend fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
         rangeSelection.lastUpdateTimestamp.singleOrNull()
             ?.let { System.currentTimeMillis() - it }
-            ?.takeIf { it > maxOutdatedTime }
-            ?.let { return true }
-            ?: return false
+            ?.takeIf { it < maxOutdatedTime }
+            ?.let { return false }
+            ?: return true
     }
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
