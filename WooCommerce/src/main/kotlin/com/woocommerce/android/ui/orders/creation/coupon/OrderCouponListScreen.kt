@@ -88,7 +88,7 @@ private fun CouponList(
         itemsIndexed(
             items = couponsState.value,
             key = { _: Int, item: Order.CouponLine -> item.code }
-        ) { _, coupon ->
+        ) { index, coupon ->
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,11 +103,13 @@ private fun CouponList(
                 style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.onSurface,
             )
-            Divider(
-                modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
-            )
+            if (index < couponsState.value.lastIndex) {
+                Divider(
+                    modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = dimensionResource(id = R.dimen.minor_10)
+                )
+            }
         }
     }
 }
