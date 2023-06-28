@@ -394,7 +394,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$cameraLifecycle"
     implementation "androidx.camera:camera-view:$cameraView"
 
-    implementation "com.google.guava:guava:31.0.1-android"
+    implementation "com.google.guava:guava:$guava"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
