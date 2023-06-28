@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember")
+@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember", "UNUSED_PARAMETER")
 @HiltViewModel
 class ProductAIDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
