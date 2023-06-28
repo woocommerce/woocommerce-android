@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -59,6 +60,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
     private val timezoneProvider: TimezoneProvider = mock()
+    private val isAIProductDescriptionEnabled : IsAIProductDescriptionEnabled = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -665,8 +667,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             myStoreTransactionLauncher,
             timezoneProvider,
+            isAIProductDescriptionEnabled,
             localNotificationScheduler,
-            shouldShowPrivacyBanner,
+            shouldShowPrivacyBanner
         )
     }
 
