@@ -46,13 +46,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        val shouldFetchNewData = analyticsUpdateDataStore.shouldUpdateAnalytics(rangeSelection)
-
-        if (shouldFetchNewData) {
-            updateStatsData(scope, rangeSelection, FetchStrategy.ForceNew)
-        } else {
-            updateStatsData(scope, rangeSelection, FetchStrategy.Saved)
-        }
+        updateStatsData(scope, rangeSelection, generateFetchStrategy(rangeSelection))
 
         return fullStatsRequestState
     }
@@ -68,6 +62,10 @@ class UpdateAnalyticsHubStats @Inject constructor(
             scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy),
             scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
         )
+
+        if (fetchStrategy == FetchStrategy.ForceNew) {
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection)
+        }
     }
 
     private fun combineFullUpdateState() =
@@ -125,4 +123,11 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
     }
+
+    private suspend fun generateFetchStrategy(rangeSelection: StatsTimeRangeSelection) =
+        if (analyticsUpdateDataStore.shouldUpdateAnalytics(rangeSelection)) {
+            FetchStrategy.ForceNew
+        } else {
+            FetchStrategy.Saved
+        }
 }
