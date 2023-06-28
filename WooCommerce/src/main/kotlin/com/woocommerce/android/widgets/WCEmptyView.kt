@@ -50,7 +50,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         PRODUCT_CATEGORY_LIST,
         PRODUCT_TAG_LIST,
         SHIPPING_LABEL_CARRIER_RATES,
-        SHIPPING_LABEL_SERVICE_PACKAGE_LIST
+        SHIPPING_LABEL_SERVICE_PACKAGE_LIST,
+        ORDER_PARSING_ERROR
     }
 
     init {
@@ -198,6 +199,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_orders_all_fulfilled
+            }
+            EmptyViewType.ORDER_PARSING_ERROR -> {
+                isTitleBold = false
+                title = context.getString(R.string.orderlist_parsing_error_title)
+                message = context.getString(R.string.orderlist_parsing_error_message)
+                buttonText = context.getString(R.string.learn_more)
+                drawableId = R.drawable.img_woo_generic_error
             }
         }
 
