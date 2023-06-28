@@ -5,11 +5,12 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -29,14 +30,19 @@ import org.mockito.kotlin.stub
 
 @ExperimentalCoroutinesApi
 internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
+    private lateinit var analyticsDataStore: AnalyticsUpdateDataStore
     private lateinit var repository: AnalyticsRepository
 
     private lateinit var sut: UpdateAnalyticsHubStats
 
     @Before
     fun setUp() {
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn true
+        }
         repository = mock()
         sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
             analyticsRepository = repository
         )
     }
@@ -51,7 +57,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -74,7 +80,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -97,7 +103,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -120,7 +126,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -143,7 +149,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -166,7 +172,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -193,7 +199,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -216,7 +222,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -247,19 +253,19 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
-                repository.fetchRevenueData(testRangeSelection, Saved)
+                repository.fetchRevenueData(testRangeSelection, ForceNew)
             } doReturn testRevenueResult
 
             onBlocking {
-                repository.fetchOrdersData(testRangeSelection, Saved)
+                repository.fetchOrdersData(testRangeSelection, ForceNew)
             } doReturn testOrdersResult
 
             onBlocking {
-                repository.fetchProductsData(testRangeSelection, Saved)
+                repository.fetchProductsData(testRangeSelection, ForceNew)
             } doReturn testProductsResult
 
             onBlocking {
-                repository.fetchVisitorsData(testRangeSelection, Saved)
+                repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn testVisitorsResult
         }
     }
@@ -267,19 +273,19 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     private fun configureErrorResponseStub() {
         repository.stub {
             onBlocking {
-                repository.fetchRevenueData(testRangeSelection, Saved)
+                repository.fetchRevenueData(testRangeSelection, ForceNew)
             } doReturn RevenueResult.RevenueError
 
             onBlocking {
-                repository.fetchOrdersData(testRangeSelection, Saved)
+                repository.fetchOrdersData(testRangeSelection, ForceNew)
             } doReturn OrdersResult.OrdersError
 
             onBlocking {
-                repository.fetchProductsData(testRangeSelection, Saved)
+                repository.fetchProductsData(testRangeSelection, ForceNew)
             } doReturn ProductsResult.ProductsError
 
             onBlocking {
-                repository.fetchVisitorsData(testRangeSelection, Saved)
+                repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn VisitorsResult.VisitorsError
         }
     }
