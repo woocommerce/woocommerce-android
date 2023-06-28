@@ -18,6 +18,7 @@ class GoogleMLKitCodeScanner @Inject constructor(
     private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
     private val inputImageProvider: InputImageProvider,
 ) : CodeScanner {
+    private var barcodeFound = false
     override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
         return callbackFlow {
             val barcodeTask = barcodeScanner.process(inputImageProvider.provideImage(imageProxy))
@@ -27,7 +28,12 @@ class GoogleMLKitCodeScanner @Inject constructor(
                 imageProxy.close()
             }
             barcodeTask.addOnSuccessListener { barcodeList ->
-                if (!barcodeList.isNullOrEmpty()) {
+                // The check for barcodeFound is done because the startScan method will be called
+                // continuously by the library as long as we are in the scanning screen.
+                // There will be a good chance that the same barcode gets identified multiple times and as a result
+                // success callback will be called multiple times.
+                if (!barcodeList.isNullOrEmpty() && !barcodeFound) {
+                    barcodeFound = true
                     handleScanSuccess(barcodeList.firstOrNull())
                     this@callbackFlow.close()
                 }
