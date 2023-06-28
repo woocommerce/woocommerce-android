@@ -93,7 +93,7 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                     }
                     previewView
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
