@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,13 +30,15 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -43,34 +46,46 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState
 import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Generated
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Initial
 import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Regenerating
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState
+import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Start
+import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState.Celebration
+import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState.Dismissed
+import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState.GenerationFlow
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ProductAIDescriptionScreen(
     dismiss: () -> Unit,
     viewModel: ProductAIDescriptionViewModel = viewModel()
 ) {
-    viewModel.viewState.observeAsState().value?.let { state ->
-        if (state.isDismissed) {
-            dismiss()
-        } else {
-            DescriptionGenerationForm(
-                state = state,
-                onFeaturesChanged = viewModel::onFeaturesChanged,
-                onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
-                onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
-                onCopyButtonClicked = viewModel::onCopyButtonClicked,
-                onApplyButtonClicked = viewModel::onApplyButtonClicked,
-                onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived,
-            )
+    val viewState by viewModel.viewState.collectAsState()
+
+    AnimatedContent(targetState = viewState) { state ->
+        when (state) {
+            Dismissed -> {
+                dismiss()
+            }
+            Celebration -> {
+                CelebrationDialog(viewModel::onCelebrationConfirmClicked)
+            }
+            is GenerationFlow -> {
+                DescriptionGenerationForm(
+                    state = state,
+                    onFeaturesChanged = viewModel::onFeaturesChanged,
+                    onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
+                    onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
+                    onCopyButtonClicked = viewModel::onCopyButtonClicked,
+                    onApplyButtonClicked = viewModel::onApplyButtonClicked,
+                    onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived
+                )
+            }
         }
     }
 }
@@ -78,7 +93,7 @@ fun ProductAIDescriptionScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DescriptionGenerationForm(
-    state: ViewState,
+    state: GenerationFlow,
     onFeaturesChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onRegenerateButtonClicked: () -> Unit,
@@ -143,25 +158,33 @@ fun DescriptionGenerationForm(
                             onDescriptionFeedbackReceived = onDescriptionFeedbackReceived
                         )
                     }
-
                     GenerationState.Generating -> {
                         ProductDescriptionSkeletonView()
-                    }
 
-                    Initial -> {
+                        WCColoredButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { },
+                            enabled = false
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(dimensionResource(id = dimen.major_100)),
+                                color = colorResource(id = color.color_on_surface_disabled)
+                            )
+                        }
+                    }
+                    Start -> {
                         WCColoredButton(
                             onClick = onGenerateButtonClicked,
                             modifier = Modifier.fillMaxWidth(),
                             text = stringResource(id = string.product_sharing_write_with_ai),
                             leadingIcon = {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_ai),
+                                    painter = painterResource(id = drawable.ic_ai),
                                     contentDescription = null
                                 )
                             }
                         )
                     }
-
                     Regenerating -> {
                         RegenerationInProgress(onApplyButtonClicked)
                     }
@@ -385,12 +408,47 @@ fun ProductDescriptionSkeletonView() {
     }
 }
 
+@Composable
+fun CelebrationDialog(
+    onConfirmClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .padding(all = dimensionResource(id = R.dimen.major_100))
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = drawable.img_ai_generated_content),
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Text(
+            text = stringResource(id = R.string.ai_product_description_note_dialog_heading),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Text(
+            text = stringResource(id = R.string.ai_product_description_note_dialog_message),
+            style = MaterialTheme.typography.body2,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+        WCColoredButton(onClick = onConfirmClick, modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(id = R.string.ai_product_description_note_dialog_confirmation))
+        }
+    }
+}
+
 @Preview
 @Composable
 fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
-        ViewState(
-            generationState = Initial,
+        GenerationFlow(
+            generationState = Start,
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."
