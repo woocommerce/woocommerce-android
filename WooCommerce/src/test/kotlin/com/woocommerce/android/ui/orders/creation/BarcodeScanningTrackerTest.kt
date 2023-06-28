@@ -56,4 +56,16 @@ class BarcodeScanningTrackerTest : BaseUnitTest() {
             any()
         )
     }
+
+    @Test
+    fun `when scan success, then track barcode scanning success with proper source`() {
+        barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+            )
+        )
+    }
 }
