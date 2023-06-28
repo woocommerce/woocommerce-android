@@ -5,11 +5,7 @@
 
 14.3
 -----
-
-
-14.3
------
-
+- [*] Fixed scenarios in which the app would lose state when it was relaunched [https://github.com/woocommerce/woocommerce-android/pull/9285]
 
 14.2
 -----
