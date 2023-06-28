@@ -12,11 +12,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
 
 class AnalyticsUpdateDataStore @Inject constructor(
-    @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>
+    @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
+    private val currentTimeInMillis: () -> Long = { System.currentTimeMillis() }
 ) {
     suspend fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
         rangeSelection.lastUpdateTimestamp.singleOrNull()
-            ?.let { System.currentTimeMillis() - it }
+            ?.let { currentTimeInMillis() - it }
             ?.takeIf { it < maxOutdatedTime }
             ?.let { return false }
             ?: return true
@@ -25,7 +26,7 @@ class AnalyticsUpdateDataStore @Inject constructor(
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
         dataStore.edit { preferences ->
             val timestampKey = rangeSelection.selectionType.identifier
-            preferences[longPreferencesKey(timestampKey)] = System.currentTimeMillis()
+            preferences[longPreferencesKey(timestampKey)] = currentTimeInMillis()
         }
     }
 
