@@ -439,15 +439,15 @@ class OrderListViewModel @Inject constructor(
             .filter { !dismissListErrors }
             .filterNotNull()
             .observe(this) { error ->
-            if(error.type == ListStore.ListErrorType.PARSE_ERROR){
-                clearLiveDataSources(activePagedListWrapper)
-                _isLoadingMore.value = false
-                _isFetchingFirstPage.value = false
-                _emptyViewType.postValue(EmptyViewType.ORDER_PARSING_ERROR)
-            } else {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
+                    clearLiveDataSources(activePagedListWrapper)
+                    _isLoadingMore.value = false
+                    _isFetchingFirstPage.value = false
+                    _emptyViewType.postValue(EmptyViewType.ORDER_PARSING_ERROR)
+                } else {
+                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                }
             }
-        }
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
