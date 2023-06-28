@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -72,6 +73,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
@@ -388,16 +390,20 @@ class MyStoreFragment :
         }
         val appBarLayout = appBarLayout ?: return
         // For the banner to be above the bottom navigation view when the toolbar is expanded
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
-            // we are using `launchWhenCreated` here, since if this view doesn't reach the created state,
-            // the scope will not get cancelled.
-            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
-            appBarLayout.verticalOffsetChanges()
-                .collect { verticalOffset ->
-                    binding.jetpackBenefitsBanner.root.translationY =
-                        (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+        viewLifecycleOwner.lifecycleScope.launch {
+            withCreated {
+                launch {
+                    // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
+                    // we are using `withCreated` here, since if this view doesn't reach the created state,
+                    // the scope will not get cancelled.
+                    // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+                    appBarLayout.verticalOffsetChanges()
+                        .collect { verticalOffset ->
+                            binding.jetpackBenefitsBanner.root.translationY =
+                                (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
+                        }
                 }
+            }
         }
     }
 

@@ -18,7 +18,8 @@ class ComplexPropertyViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(p
             context.getString(item.title ?: R.string.product_name),
             SpannableString(HtmlUtils.fromHtml(item.value)),
             item.title != null && item.showTitle,
-            item.icon
+            item.icon,
+            item.isDividerVisible
         )
 
         propertyView.setMaxLines(item.maxLines)

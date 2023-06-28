@@ -125,6 +125,7 @@
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
     <string name="more_options">More options</string>
+    <string name="more_settings">More settings</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
@@ -3354,8 +3355,15 @@
     <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
 
     <!--
-    Product description with AI
+    AI Product description
     -->
+    <string name="ai_product_description_title">Write a description</string>
+    <string name="ai_product_description_product_name">Enter your product name</string>
+    <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
+    <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
+    <string name="ai_product_description_survey">Is the generated description helpful?</string>
+    <string name="ai_product_description_regenerate_button">Regenerate</string>
+    <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
     <string name="product_description_ai_note_dialog_heading">Great start!</string>
     <string name="product_description_ai_note_dialog_message">Please keep in mind that this product description was generated using our AI-powered tool. Please review and edit the content to ensure it aligns with your brand and messaging.</string>
     <string name="product_description_ai_note_dialog_confirmation">Got it</string>
