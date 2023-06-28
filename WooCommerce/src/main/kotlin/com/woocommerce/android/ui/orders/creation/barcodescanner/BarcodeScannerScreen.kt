@@ -26,6 +26,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -80,9 +81,15 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                     try {
                         cameraProviderFuture.get().bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
                     } catch (e: IllegalStateException) {
-                        e.printStackTrace()
+                        WooLog.e(
+                            WooLog.T.BARCODE_SCANNER,
+                            e.message ?: "Illegal state exception while binding camera provider to lifecycle"
+                        )
                     } catch (e: IllegalArgumentException) {
-                        e.printStackTrace()
+                        WooLog.e(
+                            WooLog.T.BARCODE_SCANNER,
+                            e.message ?: "Illegal argument exception while binding camera provider to lifecycle"
+                        )
                     }
                     previewView
                 },
