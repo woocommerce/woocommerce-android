@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning) {
+class BarcodeScanningFragment : BaseFragment() {
 
     @Inject lateinit var codeScanner: GoogleMLKitCodeScanner
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
