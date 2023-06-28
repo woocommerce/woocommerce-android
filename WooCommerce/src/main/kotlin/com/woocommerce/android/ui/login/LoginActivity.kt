@@ -13,7 +13,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
