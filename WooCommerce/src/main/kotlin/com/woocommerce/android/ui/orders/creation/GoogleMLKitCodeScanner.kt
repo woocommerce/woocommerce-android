@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.woocommerce.android.ui.orders.creation.barcodescanner.BitmapImageProvider
+import com.woocommerce.android.ui.barcodescanner.BitmapImageProvider
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

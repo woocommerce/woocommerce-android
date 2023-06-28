@@ -109,7 +109,7 @@
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.barcodescanner.BarcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
         android:label="BarcodeScanningFragment"
         tools:layout="@layout/fragment_barcode_scanning" />
     <dialog
