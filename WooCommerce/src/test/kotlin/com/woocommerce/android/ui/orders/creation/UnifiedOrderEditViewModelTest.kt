@@ -251,7 +251,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when product quantity decreased, send tracks event`() {
+    fun `given product qt greater than 1, when product quantity decreased, send tracks event`() {
         val productId = 1L
         val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 3F)
         val order = defaultOrderValue.copy(items = products)
@@ -265,15 +265,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when product quantity decreased but quantity 1, don't send tracks event`() {
+    fun `given product qt equals to 1, when product quantity decreased, send tracks event`() {
         val productId = 1L
         val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 1F)
         val order = defaultOrderValue.copy(items = products)
         initMocksForAnalyticsWithOrder(order)
         createSut()
         sut.onDecreaseProductsQuantity(productId)
-        verify(tracker, never()).track(
-            AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE,
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
         )
     }

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-06-21 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Tidak dapat membuat pesan berbagi. Coba lagi!</string>
+    <string name="product_sharing_ai_info_label">Baca selengkapnya tentang fitur AI</string>
+    <string name="product_sharing_optional_message_label">Tambah pesan opsional</string>
+    <string name="product_sharing_generating">Membuat…</string>
+    <string name="product_sharing_regenerate">Buat Ulang</string>
+    <string name="product_sharing_write_with_ai">Tulis dengan AI</string>
+    <string name="more_menu_button_blaze_description">Promosikan produk dengan Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Pembuat konten AI tersedia</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promosikan dengan Blaze</string>
     <string name="share_product">Bagikan produk</string>
     <string name="first_product_celebration_body_message">Selamat! Anda selangkah lebih dekat untuk mewujudkan toko baru.</string>
     <string name="first_product_celebration_title">Produk pertama dibuat 🎉</string>

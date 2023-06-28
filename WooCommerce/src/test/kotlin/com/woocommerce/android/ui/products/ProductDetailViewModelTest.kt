@@ -81,6 +81,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val mediaFilesRepository: MediaFilesRepository = mock()
     private val variationRepository: VariationRepository = mock()
     private val selectedSite: SelectedSite = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -233,6 +234,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn(false).whenever(isAIProductDescriptionEnabled).invoke()
+
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -259,7 +262,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mock(),
                 mock(),
                 mock(),
-                isBlazeEnabled
+                isBlazeEnabled,
+                isAIProductDescriptionEnabled
             )
         )
 

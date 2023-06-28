@@ -479,6 +479,11 @@ class OrderCreateEditFormFragment :
                     event.message
                 )
             }
+            is OnCouponRejectedByBackend -> {
+                uiMessageResolver.getSnack(
+                    stringResId = event.message
+                ).show()
+            }
             is Exit -> findNavController().navigateUp()
         }
     }

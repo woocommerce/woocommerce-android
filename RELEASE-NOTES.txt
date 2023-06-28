@@ -2,6 +2,15 @@
 14.3
 -----
 - [***] [Internal] Migrate the barcode scanning library from Google Code Scanner to Google's MLKit [https://github.com/woocommerce/woocommerce-android/pull/9298]
+- [*] Payments: Products are removed directly from an order when its count is below one, instead of opening an extra screen to remove it. [https://github.com/woocommerce/woocommerce-android/pull/9280]
+
+14.3
+-----
+
+
+14.3
+-----
+
 
 14.2
 -----
@@ -10,6 +19,8 @@
 - [*] [Internal] Rounded corners to the payments dialogs [https://github.com/woocommerce/woocommerce-android/pull/9231]
 - [*] [Internal] Adding products via barcode scanning - Handle EAN-13, EAN-8 barcode formats [https://github.com/woocommerce/woocommerce-android/pull/9240]
 - [*] [Internal] Changes the endpoint use for customer search during order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9212]
+- [*] Store creation: improve messaging while waiting for the new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/9252]
+- [*] Handle case when backend rejects discount coupon while creating an order [https://github.com/woocommerce/woocommerce-android/pull/9263]
 
 14.1
 -----

@@ -16,6 +16,11 @@ class MyStoreScreen : Screen(MY_STORE) {
 
     val stats = StatsComponent()
 
+    fun tapChartMiddle(): MyStoreScreen {
+        clickOn(R.id.chart)
+        return this
+    }
+
     fun assertStatsSummary(summary: StatsSummaryData): MyStoreScreen {
         Espresso.onView(
             Matchers.allOf(

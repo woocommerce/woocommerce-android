@@ -30,6 +30,7 @@ class BlazeWebViewFragment : BaseFragment() {
                         viewModel.viewState,
                         viewModel.userAgent,
                         viewModel.wpComWebViewAuthenticator,
+                        requireActivity().activityResultRegistry,
                         viewModel::onPageFinished,
                         viewModel::onClose
                     )

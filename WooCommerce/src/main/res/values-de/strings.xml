@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 11:54:04+0000
+Translation-Revision-Date: 2023-06-21 11:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Nachricht zum Teilen kann nicht erstellt werden. Versuche es bitte noch einmal!</string>
+    <string name="product_sharing_ai_info_label">Erfahre mehr über unsere KI-Funktion</string>
+    <string name="product_sharing_optional_message_label">Optionale Nachricht hinzufügen</string>
+    <string name="product_sharing_generating">Generierung läuft …</string>
+    <string name="product_sharing_regenerate">Neu generieren</string>
+    <string name="product_sharing_write_with_ai">Mit KI schreiben</string>
+    <string name="more_menu_button_blaze_description">Produkte mit Blaze bewerben</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">KI-Inhaltsgenerator verfügbar</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Mit Blaze bewerben</string>
     <string name="share_product">Produkt teilen</string>
     <string name="first_product_celebration_body_message">Glückwunsch! Du bist einen Schritt weiter auf dem Weg zu deinem neuen Shop.</string>
     <string name="first_product_celebration_title">Erstes Produkt erstellt 🎉</string>

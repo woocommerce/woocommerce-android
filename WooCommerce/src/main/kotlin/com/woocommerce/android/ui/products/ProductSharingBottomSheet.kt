@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Generating
@@ -86,17 +89,19 @@ fun ProductShareWithAI(
                     value = viewState.shareMessage,
                     onValueChange = { onShareMessageEdit(it) },
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
-                    maxLines = 5,
                     isError = isError,
-                    helperText = if (isError) viewState.errorMessage else null
+                    helperText = if (isError) viewState.errorMessage else null,
+                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.product_sharing_message_height))
                 )
             }
 
             Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .padding(
                         vertical = dimensionResource(id = R.dimen.minor_100)
                     )
+                    .fillMaxWidth()
             ) {
                 WCOutlinedButton(
                     onClick = onGenerateButtonClick,
@@ -105,16 +110,20 @@ fun ProductShareWithAI(
                     AIButtonContent(buttonState = viewState.buttonState)
                 }
 
-                IconButton(
+                val learnMoreButtonColor = if (viewState.isGenerating) {
+                    colorResource(id = R.color.color_on_surface_disabled)
+                } else {
+                    colorResource(id = R.color.color_primary)
+                }
+                WCTextButton(
                     onClick = onInfoButtonClick,
                     enabled = !viewState.isGenerating
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_info_outline_20dp),
-                        contentDescription = stringResource(
-                            id = R.string.product_sharing_ai_info_label
-                        ),
-                        tint = colorResource(id = R.color.color_on_surface)
+                    Text(
+                        text = stringResource(id = R.string.learn_more),
+                        style = MaterialTheme.typography.body2,
+                        color = learnMoreButtonColor,
+                        textAlign = TextAlign.End
                     )
                 }
             }
@@ -132,15 +141,19 @@ fun ProductShareWithAI(
 
 @Composable
 fun SharingMessageSkeletonView() {
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colors.background)
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .background(
+                color = MaterialTheme.colors.background,
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
+            )
+            .padding(dimensionResource(id = R.dimen.major_110))
             .fillMaxWidth()
     ) {
         SkeletonView(
             modifier = Modifier
-                .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
+                .fillMaxWidth()
                 .height(dimensionResource(id = R.dimen.major_100))
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
@@ -159,6 +172,12 @@ fun SharingMessageSkeletonView() {
         SkeletonView(
             modifier = Modifier
                 .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
+                .height(dimensionResource(id = R.dimen.major_100))
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        SkeletonView(
+            modifier = Modifier
+                .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
                 .height(dimensionResource(id = R.dimen.major_100))
         )
     }
@@ -166,7 +185,9 @@ fun SharingMessageSkeletonView() {
 
 @Composable
 fun AIButtonContent(buttonState: AIButtonState) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         when (buttonState) {
             is WriteWithAI -> {
                 Icon(
@@ -186,7 +207,8 @@ fun AIButtonContent(buttonState: AIButtonState) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.major_100)),
-                    strokeWidth = dimensionResource(id = R.dimen.minor_25)
+                    strokeWidth = dimensionResource(id = R.dimen.minor_25),
+                    color = colorResource(id = R.color.color_on_surface_disabled)
                 )
             }
         }
@@ -202,8 +224,8 @@ fun AIButtonContent(buttonState: AIButtonState) {
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Smaller screen", device = Devices.NEXUS_5)
+@Preview(name = "RTL mode", locale = "ar")
 @Composable
 fun DefaultUIWithSharingContent() {
     val shareMessage =
@@ -247,7 +269,7 @@ fun Generating() {
             viewState = ProductSharingViewState(
                 productTitle = "Music Album",
                 shareMessage = "",
-                buttonState = Generating(stringResource(id = R.string.product_sharing_regenerate)),
+                buttonState = Generating(stringResource(id = R.string.product_sharing_generating)),
                 isGenerating = true
             )
         )

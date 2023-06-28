@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-06-21 09:54:08+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">공유 메시지를 생성할 수 없습니다. 다시 시도하세요.</string>
+    <string name="product_sharing_ai_info_label">AI 기능 살펴보기</string>
+    <string name="product_sharing_optional_message_label">선택적 메시지 추가</string>
+    <string name="product_sharing_generating">생성 중…</string>
+    <string name="product_sharing_regenerate">재생성</string>
+    <string name="product_sharing_write_with_ai">AI로 쓰기</string>
+    <string name="more_menu_button_blaze_description">Blaze로 제품 홍보</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI 콘텐츠 생성기를 사용할 수 있습니다.</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Blaze로 홍보</string>
     <string name="share_product">상품 공유</string>
     <string name="first_product_celebration_body_message">축하합니다! 새 스토어 준비 완료까지 한 걸음 가까워지셨습니다.</string>
     <string name="first_product_celebration_title">첫 번째 상품 생성됨 🎉</string>
