@@ -91,4 +91,6 @@ object AppUrls {
     )
 
     const val EU_SHIPPING_CUSTOMS_REQUIREMENTS = "https://www.usps.com/international/new-eu-customs-rules.htm"
+
+    const val WOOCOMMERCE_PLUGIN_CONFLICTS= "https://woocommerce.com/document/how-to-test-for-conflicts/"
 }
