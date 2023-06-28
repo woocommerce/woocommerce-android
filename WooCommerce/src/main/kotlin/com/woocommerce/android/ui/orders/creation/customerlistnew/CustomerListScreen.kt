@@ -9,16 +9,5 @@ fun CustomerListScreen(
     viewModel: CustomerListViewModel
 ) {
     val state by viewModel.viewState.observeAsState(CustomerListViewModel.ViewState.Loading)
-    CustomerListScreen(
-        state,
-        viewModel::onCustomerClick
-    )
-}
-
-@Composable
-@Suppress("UnusedPrivateMember", "EmptyFunctionBlock")
-fun CustomerListScreen(
-    state: CustomerListViewModel.ViewState,
-    onCustomerClick: ((Long) -> Unit?)? = null
-) {
+    print(state)
 }

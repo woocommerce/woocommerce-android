@@ -9,12 +9,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("UnusedPrivateMember", "EmptyFunctionBlock")
+@Suppress("UnusedPrivateMember")
 class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val customerListRepository: CustomerListRepository
 ) : ScopedViewModel(savedState) {
-    private val _viewState = MutableLiveData<ViewState>(ViewState.Loading)
+    private val _viewState = MutableLiveData<ViewState>()
     val viewState: LiveData<ViewState> = _viewState
 
     private var searchQuery: String
@@ -27,9 +27,6 @@ class CustomerListViewModel @Inject constructor(
         set(value) {
             savedState[SEARCH_MODE_KEY] = value
         }
-
-    fun onCustomerClick(customerRemoteId: Long) {
-    }
 
     sealed class ViewState {
         object Loading : ViewState()
