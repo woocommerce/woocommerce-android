@@ -9,7 +9,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import com.woocommerce.android.ui.orders.creation.barcodescanner.InputImageProvider
+import com.woocommerce.android.ui.orders.creation.barcodescanner.BitmapImageProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -29,7 +29,7 @@ class CodeScannerTest : BaseUnitTest() {
     private val errorMapper: GoogleCodeScannerErrorMapper = mock()
     private val barcodeFormatMapper: GoogleBarcodeFormatMapper = mock()
     private val imageProxy: ImageProxy = mock()
-    private val inputImageProvider: InputImageProvider = mock()
+    private val inputImageProvider: BitmapImageProvider = mock()
 
     private lateinit var codeScanner: CodeScanner
 
