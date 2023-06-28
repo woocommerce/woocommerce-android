@@ -468,6 +468,8 @@
     <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
     <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
     <string name="order_list_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
+    <string name="orderlist_parsing_error_title">There is an error getting your orders.</string>
+    <string name="orderlist_parsing_error_message">There is an error getting your orders. This is likely caused by using an unsupported plugin</string>
     <!--
          Simple Payments
     -->
