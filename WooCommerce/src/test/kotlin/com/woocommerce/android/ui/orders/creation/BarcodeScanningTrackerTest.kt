@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,6 +31,19 @@ class BarcodeScanningTrackerTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(
             eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
             any()
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track barcode scanning failure with correct source and type`() {
+        barcodeScanningTracker.trackScanFailure(ScanningSource.ORDER_LIST, CodeScanningErrorType.NotFound)
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                AnalyticsTracker.KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString(),
+            )
         )
     }
 }
