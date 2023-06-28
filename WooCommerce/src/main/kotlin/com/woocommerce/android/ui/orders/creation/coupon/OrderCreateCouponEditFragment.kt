@@ -19,12 +19,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionViewModel.UpdateCouponCode
+import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditViewModel.UpdateCouponCode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class OrderCreateCouponEditionFragment : BaseFragment() {
+class OrderCreateCouponEditFragment : BaseFragment() {
     private var doneMenuItem: MenuItem? = null
     private val menuProvider: MenuProvider by lazy {
         object : MenuProvider {
@@ -47,7 +47,7 @@ class OrderCreateCouponEditionFragment : BaseFragment() {
             }
         }
     }
-    private val viewModel by viewModels<OrderCreateCouponEditionViewModel>()
+    private val viewModel by viewModels<OrderCreateCouponEditViewModel>()
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
@@ -62,7 +62,7 @@ class OrderCreateCouponEditionFragment : BaseFragment() {
             setContent {
                 val state = viewModel.viewState.observeAsState()
                 WooThemeWithBackground {
-                    OrderCreateCouponEditionScreen(
+                    OrderCreateCouponEditScreen(
                         state = state,
                         onCouponCodeChanged = viewModel::onCouponCodeChanged,
                         onCouponRemoved = viewModel::onCouponRemoved
@@ -79,7 +79,7 @@ class OrderCreateCouponEditionFragment : BaseFragment() {
                     sharedViewModel.onCouponEntered(it.couponCode)
                     findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
-                is OrderCreateCouponEditionViewModel.RemoveCoupon -> {
+                is OrderCreateCouponEditViewModel.RemoveCoupon -> {
                     sharedViewModel.onCouponRemoved(it.couponCode)
                     findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }

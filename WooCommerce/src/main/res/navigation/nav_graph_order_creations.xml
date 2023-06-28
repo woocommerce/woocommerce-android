@@ -211,7 +211,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationCouponEditionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditFragment"
         android:label="OrderCreationCouponEditionFragment">
         <argument
             android:name="couponCode"

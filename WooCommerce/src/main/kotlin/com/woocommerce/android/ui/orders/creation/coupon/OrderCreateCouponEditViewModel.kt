@@ -14,12 +14,12 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreateCouponEditionViewModel @Inject constructor(
+class OrderCreateCouponEditViewModel @Inject constructor(
     private val validator: CouponValidator,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val navArgs: OrderCreateCouponEditionFragmentArgs by savedState.navArgs()
+    private val navArgs: OrderCreateCouponEditFragmentArgs by savedState.navArgs()
     private val couponCode = savedState.getNullableStateFlow(
         viewModelScope,
         navArgs.couponCode,
