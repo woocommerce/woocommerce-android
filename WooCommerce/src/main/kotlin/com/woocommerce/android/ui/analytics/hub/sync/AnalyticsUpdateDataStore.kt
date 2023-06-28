@@ -10,14 +10,15 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
-    private val currentTimeInMillis: () -> Long = { System.currentTimeMillis() }
+    private val currentTimeProvider: CurrentTimeProvider
 ) {
     suspend fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
         rangeSelection.lastUpdateTimestamp.singleOrNull()
-            ?.let { currentTimeInMillis() - it }
+            ?.let { currentTime - it }
             ?.takeIf { it < maxOutdatedTime }
             ?.let { return false }
             ?: return true
@@ -26,7 +27,7 @@ class AnalyticsUpdateDataStore @Inject constructor(
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
         dataStore.edit { preferences ->
             val timestampKey = rangeSelection.selectionType.identifier
-            preferences[longPreferencesKey(timestampKey)] = currentTimeInMillis()
+            preferences[longPreferencesKey(timestampKey)] = currentTime
         }
     }
 
@@ -34,6 +35,9 @@ class AnalyticsUpdateDataStore @Inject constructor(
         get() = dataStore.data.map { preferences ->
             preferences[longPreferencesKey(selectionType.identifier)]
         }
+
+    private val currentTime
+        get() = currentTimeProvider.currentDate().time
 
     companion object {
         const val maxOutdatedTime = 1000 * 30 // 30 seconds
