@@ -44,21 +44,6 @@ steps:
     artifact_paths:
       - "**/build/test-results/*/*.xml"
 
-  - label: "Instrumented tests"
-    command: .buildkite/commands/run-instrumented-tests.sh
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/instrumented-tests/**/*"
-
-  - wait
-
-  - label: "🔍 Test Analytics"
-    command: buildkite-agent artifact download "**/test_result_1.xml" .
-    plugins:
-      - test-collector#v1.8.0:
-          files: "test_result_1.xml"
-          format: "junit"
-
   - label: "Ensure Screenshot Tests Build"
     command: |
       echo "--- ⚒️ Building"
@@ -70,3 +55,20 @@ steps:
     command: ".buildkite/commands/installable-build.sh"
     if: build.pull_request.id != null
     plugins: *common_plugins
+
+  - label: "Instrumented tests"
+    command: .buildkite/commands/run-instrumented-tests.sh
+    plugins: *common_plugins
+    artifact_paths:
+      - "**/build/instrumented-tests/**/*"
+
+  - wait
+
+  - label: "🔍 Test Analytics"
+    commands: 
+      - .buildkite/commands/set-analytics-token.sh
+      - buildkite-agent artifact download '**/test_result_1.xml' .
+    plugins:
+      - test-collector#v1.8.0:
+          files: "test_result_1.xml"
+          format: "junit"
