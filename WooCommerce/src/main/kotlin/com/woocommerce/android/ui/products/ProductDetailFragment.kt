@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -110,8 +109,6 @@ class ProductDetailFragment :
 
     private var _binding: FragmentProductDetailBinding? = null
     private val binding get() = _binding!!
-
-    private val descriptionBottomSheetViewModel: ProductAIDescriptionViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() {
