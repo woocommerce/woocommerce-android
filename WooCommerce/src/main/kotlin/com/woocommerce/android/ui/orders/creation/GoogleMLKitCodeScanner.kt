@@ -17,6 +17,7 @@ class GoogleMLKitCodeScanner @Inject constructor(
     private val inputImageProvider: MediaImageProvider,
 ) : CodeScanner {
     private var barcodeFound = false
+    @androidx.camera.core.ExperimentalGetImage
     override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
         return callbackFlow {
             val barcodeTask = barcodeScanner.process(inputImageProvider.provideImage(imageProxy))
