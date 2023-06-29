@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
-    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
     private val analyticsRepository: AnalyticsRepository
 ) {
     private val _revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
@@ -39,6 +38,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
+        fetchStrategy: FetchStrategy,
         scope: CoroutineScope
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
@@ -46,16 +46,6 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        updateStatsData(scope, rangeSelection, generateFetchStrategy(rangeSelection))
-
-        return fullStatsRequestState
-    }
-
-    private suspend fun updateStatsData(
-        scope: CoroutineScope,
-        rangeSelection: StatsTimeRangeSelection,
-        fetchStrategy: FetchStrategy
-    ) {
         awaitAll(
             scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy),
             scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy),
@@ -63,9 +53,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
             scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
         )
 
-        if (fetchStrategy == FetchStrategy.ForceNew) {
-            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection)
-        }
+        return fullStatsRequestState
     }
 
     private fun combineFullUpdateState() =
@@ -123,11 +111,4 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
     }
-
-    private suspend fun generateFetchStrategy(rangeSelection: StatsTimeRangeSelection) =
-        if (analyticsUpdateDataStore.shouldUpdateAnalytics(rangeSelection)) {
-            FetchStrategy.ForceNew
-        } else {
-            FetchStrategy.Saved
-        }
 }
