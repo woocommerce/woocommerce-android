@@ -36,15 +36,11 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog.showDialog
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.MainActivity
@@ -414,11 +410,6 @@ class OrderListFragment :
             new.jitmEnabled.takeIfNotEqualTo(old?.jitmEnabled) { jitmEnabled ->
                 initJitm(jitmEnabled)
             }
-            new.isSimplePaymentsAndOrderCreationFeedbackVisible.takeIfNotEqualTo(
-                old?.isSimplePaymentsAndOrderCreationFeedbackVisible
-            ) {
-                displaySimplePaymentsWIPCard(it)
-            }
         }
     }
 
@@ -652,45 +643,6 @@ class OrderListFragment :
 
     override fun shouldExpandToolbar(): Boolean {
         return binding.orderListView.ordersList.computeVerticalScrollOffset() == 0 && !isSearching
-    }
-
-    private fun displaySimplePaymentsWIPCard(show: Boolean) {
-        if (!show) {
-            binding.simplePaymentsWIPcard.isVisible = false
-            return
-        }
-
-        binding.simplePaymentsWIPcard.isVisible = true
-        binding.simplePaymentsWIPcard.initView(
-            getString(R.string.orderlist_simple_payments_wip_title),
-            getString(R.string.orderlist_simple_payments_wip_message_enabled),
-            onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = {
-                FeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-                    FeedbackState.DISMISSED
-                ).registerItself(feedbackPrefs)
-                viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-            },
-            showFeedbackButton = true
-        )
-    }
-
-    private fun onGiveFeedbackClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-            )
-        )
-        FeatureFeedbackSettings(
-            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-            FeedbackState.GIVEN
-        ).registerItself(feedbackPrefs)
-        NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
-            .apply { findNavController().navigateSafely(this) }
     }
 
     override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {

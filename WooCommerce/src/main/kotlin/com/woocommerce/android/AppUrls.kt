@@ -36,8 +36,6 @@ object AppUrls {
 
     const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-production"
 
-    const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
-
     const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
 
     const val CROWDSIGNAL_STORE_SETUP_SURVEY =

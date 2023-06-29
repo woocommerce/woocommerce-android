@@ -24,7 +24,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_STORE_SETUP_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SHIPPING_LABELS_M4_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_TAP_TO_PAY_FEEDBACK
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
@@ -46,7 +45,6 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
             SurveyType.MAIN -> VALUE_FEEDBACK_GENERAL_CONTEXT
             SurveyType.PRODUCT -> VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
             SurveyType.STORE_ONBOARDING -> VALUE_FEEDBACK_STORE_SETUP_CONTEXT
-            SurveyType.ORDER_CREATION -> VALUE_SIMPLE_PAYMENTS_FEEDBACK
             SurveyType.SHIPPING_LABELS -> VALUE_SHIPPING_LABELS_M4_FEEDBACK
             SurveyType.COUPONS -> VALUE_COUPONS_FEEDBACK
             SurveyType.ADDONS -> VALUE_PRODUCT_ADDONS_FEEDBACK

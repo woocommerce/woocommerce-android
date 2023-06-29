@@ -459,8 +459,6 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_simple_payments_wip_title">Create orders from your device!</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders from your device! You can try this feature out by tapping on the "+" button</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
