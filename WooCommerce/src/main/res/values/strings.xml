@@ -556,6 +556,11 @@
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <!--
+         Barcode Scanning
+    -->
+    <string name="barcode_scanning_title">Scan Barcode</string>
+    <string name="barcode_scanning_camera_permission_denied">Camera permission is required to scan the barcode.</string>
+    <!--
         Domains
     -->
     <string name="domains_your_free_store_address">Your free store address</string>
