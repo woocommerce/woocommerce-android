@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.woocommerce.android.ui.barcodescanner.BitmapImageProvider
+import com.woocommerce.android.ui.barcodescanner.MediaImageProvider
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ class GoogleMLKitCodeScanner @Inject constructor(
     private val barcodeScanner: BarcodeScanner,
     private val errorMapper: GoogleCodeScannerErrorMapper,
     private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
-    private val inputImageProvider: BitmapImageProvider,
+    private val inputImageProvider: MediaImageProvider,
 ) : CodeScanner {
     private var barcodeFound = false
     override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {

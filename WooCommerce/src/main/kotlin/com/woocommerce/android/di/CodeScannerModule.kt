@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleCodeScannerErrorMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
-import com.woocommerce.android.ui.barcodescanner.BitmapImageProvider
+import com.woocommerce.android.ui.barcodescanner.MediaImageProvider
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -22,7 +22,7 @@ class CodeScannerModule {
         barcodeScanner: BarcodeScanner,
         googleCodeScannerErrorMapper: GoogleCodeScannerErrorMapper,
         barcodeFormatMapper: GoogleBarcodeFormatMapper,
-        inputImageProvider: BitmapImageProvider,
+        inputImageProvider: MediaImageProvider,
     ): CodeScanner {
         return GoogleMLKitCodeScanner(
             barcodeScanner,
@@ -38,5 +38,5 @@ class CodeScannerModule {
 
     @Provides
     @Reusable
-    fun provideInputImageProvider() = BitmapImageProvider()
+    fun provideInputImageProvider() = MediaImageProvider()
 }

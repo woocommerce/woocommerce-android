@@ -121,7 +121,7 @@ ext {
     mlkitVersion = '17.1.0'
     camerax = '1.2.3'
     cameraLifecycle = '1.2.3'
-    cameraView = '1.3.0-alpha07'
+    cameraView = '1.2.3'
     guava = '31.0.1-android'
 
     // Apache

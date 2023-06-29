@@ -8,8 +8,9 @@ import javax.inject.Inject
 interface InputImageProvider {
     fun provideImage(imageProxy: ImageProxy): InputImage
 }
-class BitmapImageProvider @Inject constructor() : InputImageProvider {
+class MediaImageProvider @Inject constructor() : InputImageProvider {
+    @androidx.camera.core.ExperimentalGetImage
     override fun provideImage(imageProxy: ImageProxy): InputImage {
-        return InputImage.fromBitmap(imageProxy.toBitmap(), imageProxy.imageInfo.rotationDegrees)
+        return InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
     }
 }
