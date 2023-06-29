@@ -39,7 +39,6 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 
 @Composable
-@Suppress("deprecation")
 fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeScannerStatus>) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
