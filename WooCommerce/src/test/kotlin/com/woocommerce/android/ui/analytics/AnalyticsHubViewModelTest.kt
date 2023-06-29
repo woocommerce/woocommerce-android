@@ -410,7 +410,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { invoke(any(), any()) } doReturn flow {
+            onBlocking { invoke(any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
                 emit(AnalyticsHubUpdateState.Loading)
             }
@@ -744,7 +744,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 emit(SessionState.Loading)
                 emit(SessionState.Available(testSessionStat))
             }
-            onBlocking { invoke(any(), any()) } doReturn flow {
+            onBlocking { invoke(any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
             }
         }

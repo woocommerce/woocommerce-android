@@ -53,6 +53,8 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -141,6 +143,7 @@ class AnalyticsHubViewModel @Inject constructor(
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
+                fetchStrategy = getFetchStrategy(isRefreshing = true),
                 scope = viewModelScope
             ).collect {
                 mutableState.update { viewState ->
@@ -161,12 +164,15 @@ class AnalyticsHubViewModel @Inject constructor(
     private fun formatValue(value: String, currencyCode: String?) =
         currencyCode?.let { currencyFormatter.formatCurrency(value, it) } ?: value
 
+    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
+
     private fun observeRangeSelectionChanges() {
         rangeSelectionState.onEach {
             updateDateSelector()
             trackSelectedDateRange()
             updateStats(
                 rangeSelection = it,
+                fetchStrategy = getFetchStrategy(isRefreshing = false),
                 scope = viewModelScope
             )
         }.launchIn(viewModelScope)
