@@ -13,7 +13,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.compose.component.BottomSheetWrapper
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
@@ -191,26 +190,4 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
             extraSupportTags = null
         )
     )
-}
-
-fun Fragment.showAsBottomSheet(
-    onDismissed: () -> Unit = {},
-    skipHalfExpanded: Boolean = false,
-    content: @Composable (dismiss: () -> Unit) -> Unit
-) {
-    fun addContentToView(
-        viewGroup: ViewGroup,
-        content: @Composable (dismiss: () -> Unit) -> Unit
-    ) {
-        viewGroup.addView(
-            ComposeView(viewGroup.context).apply {
-                setContent {
-                    BottomSheetWrapper(viewGroup, this, onDismissed, skipHalfExpanded, content)
-                }
-            }
-        )
-    }
-
-    val viewGroup = requireActivity().findViewById(android.R.id.content) as ViewGroup
-    addContentToView(viewGroup, content)
 }
