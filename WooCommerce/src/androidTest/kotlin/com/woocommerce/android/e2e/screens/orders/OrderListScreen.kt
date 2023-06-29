@@ -4,6 +4,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.CustomMatchers
@@ -13,7 +15,7 @@ import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matchers
 
-class OrderListScreen : Screen {
+class OrderListScreen : Screen(LIST_VIEW) {
     companion object {
         const val LIST_VIEW = R.id.ordersList
         const val LIST_ITEM = R.id.linearLayout
@@ -21,7 +23,9 @@ class OrderListScreen : Screen {
         const val CREATE_ORDER_BUTTON = R.id.createOrderButton
     }
 
-    constructor() : super(LIST_VIEW)
+    init {
+        dismissPromoDialog()
+    }
 
     fun selectOrder(index: Int): SingleOrderScreen {
         val correctedIndex = index + 1 // account for the header
@@ -68,6 +72,11 @@ class OrderListScreen : Screen {
             Espresso.pressBack()
             Espresso.pressBack()
         }
+        return this
+    }
+
+    private fun dismissPromoDialog(): OrderListScreen {
+        dismissDialog()
         return this
     }
 

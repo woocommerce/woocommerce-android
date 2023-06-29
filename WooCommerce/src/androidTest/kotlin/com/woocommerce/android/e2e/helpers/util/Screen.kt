@@ -1,5 +1,7 @@
 package com.woocommerce.android.e2e.helpers.util
 
+import android.R.attr.x
+import android.R.attr.y
 import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
@@ -28,8 +30,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
+import androidx.test.uiautomator.UiDevice
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
@@ -39,6 +43,7 @@ import org.hamcrest.Matchers
 import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
+
 
 open class Screen {
     private val elementID: Int
@@ -133,6 +138,11 @@ open class Screen {
         )
 
         clickOn(element)
+    }
+
+    fun dismissDialog() {
+        val device = UiDevice.getInstance(getInstrumentation())
+        device.click(1, 1)
     }
 
     fun scrollTo(elementID: Int) {
