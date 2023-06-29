@@ -16,7 +16,10 @@ class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
     private val currentTimeProvider: CurrentTimeProvider
 ) {
-    suspend fun shouldUpdateAnalytics(rangeSelection: StatsTimeRangeSelection): Boolean {
+    suspend fun shouldUpdateAnalytics(
+        rangeSelection: StatsTimeRangeSelection,
+        maxOutdatedTime: Long = defaultMaxOutdatedTime
+    ): Boolean {
         rangeSelection.lastUpdateTimestamp.singleOrNull()
             ?.let { currentTime - it }
             ?.takeIf { it < maxOutdatedTime }
@@ -40,6 +43,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         get() = currentTimeProvider.currentDate().time
 
     companion object {
-        const val maxOutdatedTime = 1000 * 30 // 30 seconds
+        const val defaultMaxOutdatedTime = 1000 * 30L // 30 seconds
     }
 }
