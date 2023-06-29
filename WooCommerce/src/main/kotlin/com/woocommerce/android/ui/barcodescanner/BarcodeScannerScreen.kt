@@ -10,7 +10,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import androidx.compose.ui.tooling.preview.Preview as ComposePreview
+import androidx.camera.core.Preview as CameraPreview
 
 @Composable
 fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeScannerStatus>) -> Unit) {
@@ -78,7 +78,7 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
             AndroidView(
                 factory = { context ->
                     val previewView = PreviewView(context)
-                    val preview = Preview.Builder().build()
+                    val preview = CameraPreview.Builder().build()
                     preview.setSurfaceProvider(previewView.surfaceProvider)
                     val selector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
                     val imageAnalysis = ImageAnalysis.Builder().setTargetResolution(
@@ -98,8 +98,8 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                         onScannedResult(
                             flowOf(
                                 CodeScannerStatus.Failure(
-                                    e.message ?:
-                                    "Illegal state exception while binding camera provider to lifecycle",
+                                    e.message
+                                        ?: "Illegal state exception while binding camera provider to lifecycle",
                                     CodeScanningErrorType.Other(e)
                                 )
                             )
@@ -108,8 +108,8 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                         onScannedResult(
                             flowOf(
                                 CodeScannerStatus.Failure(
-                                    e.message ?:
-                                    "Illegal argument exception while binding camera provider to lifecycle",
+                                    e.message
+                                        ?: "Illegal argument exception while binding camera provider to lifecycle",
                                     CodeScanningErrorType.Other(e)
                                 )
                             )
@@ -144,8 +144,8 @@ class DummyCodeScanner : CodeScanner {
     }
 }
 
-@ComposePreview(name = "Light mode")
-@ComposePreview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun BarcodeScannerScreenPreview() {
     WooThemeWithBackground {
