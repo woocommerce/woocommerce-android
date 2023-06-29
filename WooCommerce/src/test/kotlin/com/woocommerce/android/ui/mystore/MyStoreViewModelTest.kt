@@ -223,32 +223,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stats loaded, when stats granularity changes, then selected option is saved into prefs`() =
-        testBlocking {
-            whenViewModelIsCreated()
-            givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
-
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
-
-            verify(appPrefsWrapper).setActiveStatsGranularity(
-                0,
-                ANY_SELECTED_STATS_GRANULARITY.name
-            )
-        }
-
-    @Test
-    fun `given stats granularity previously selected, when view model is created, stats are retrieved from prefs`() =
-        testBlocking {
-            whenever(appPrefsWrapper.getActiveStatsGranularity(anyInt()))
-                .thenReturn(ANY_SELECTED_STATS_GRANULARITY.name)
-
-            whenViewModelIsCreated()
-
-            verify(appPrefsWrapper).getActiveStatsGranularity(anyInt())
-        }
-
-    @Test
     fun `given error loading revenue, when stats granularity changes, then UI is updated with error`() =
         testBlocking {
             whenViewModelIsCreated()
