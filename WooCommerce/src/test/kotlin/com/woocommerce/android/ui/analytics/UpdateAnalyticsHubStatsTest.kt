@@ -5,7 +5,6 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
@@ -233,19 +232,19 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
-                repository.fetchRevenueData(testRangeSelection, ForceNew)
+                repository.fetchRevenueData(testRangeSelection, Saved)
             } doReturn testRevenueResult
 
             onBlocking {
-                repository.fetchOrdersData(testRangeSelection, ForceNew)
+                repository.fetchOrdersData(testRangeSelection, Saved)
             } doReturn testOrdersResult
 
             onBlocking {
-                repository.fetchProductsData(testRangeSelection, ForceNew)
+                repository.fetchProductsData(testRangeSelection, Saved)
             } doReturn testProductsResult
 
             onBlocking {
-                repository.fetchVisitorsData(testRangeSelection, ForceNew)
+                repository.fetchVisitorsData(testRangeSelection, Saved)
             } doReturn testVisitorsResult
         }
     }
@@ -253,19 +252,19 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     private fun configureErrorResponseStub() {
         repository.stub {
             onBlocking {
-                repository.fetchRevenueData(testRangeSelection, ForceNew)
+                repository.fetchRevenueData(testRangeSelection, Saved)
             } doReturn RevenueResult.RevenueError
 
             onBlocking {
-                repository.fetchOrdersData(testRangeSelection, ForceNew)
+                repository.fetchOrdersData(testRangeSelection, Saved)
             } doReturn OrdersResult.OrdersError
 
             onBlocking {
-                repository.fetchProductsData(testRangeSelection, ForceNew)
+                repository.fetchProductsData(testRangeSelection, Saved)
             } doReturn ProductsResult.ProductsError
 
             onBlocking {
-                repository.fetchVisitorsData(testRangeSelection, ForceNew)
+                repository.fetchVisitorsData(testRangeSelection, Saved)
             } doReturn VisitorsResult.VisitorsError
         }
     }
