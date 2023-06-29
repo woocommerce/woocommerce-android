@@ -2,11 +2,11 @@ package com.woocommerce.android.di
 
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.woocommerce.android.ui.barcodescanner.MediaImageProvider
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.creation.GoogleCodeScannerErrorMapper
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
-import com.woocommerce.android.ui.barcodescanner.MediaImageProvider
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
