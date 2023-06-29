@@ -6,11 +6,11 @@ import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -30,19 +30,14 @@ import org.mockito.kotlin.stub
 
 @ExperimentalCoroutinesApi
 internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
-    private lateinit var analyticsDataStore: AnalyticsUpdateDataStore
     private lateinit var repository: AnalyticsRepository
 
     private lateinit var sut: UpdateAnalyticsHubStats
 
     @Before
     fun setUp() {
-        analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn true
-        }
         repository = mock()
         sut = UpdateAnalyticsHubStats(
-            analyticsUpdateDataStore = analyticsDataStore,
             analyticsRepository = repository
         )
     }
@@ -57,7 +52,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -80,7 +75,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -103,7 +98,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -126,7 +121,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -149,7 +144,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -172,7 +167,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -199,7 +194,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -222,7 +217,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, this)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -233,21 +228,6 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         assertThat(sessionStatsUpdates[2]).isEqualTo(SessionState.Error)
 
         job.cancel()
-    }
-
-    @Test
-    fun `when syncing stats data starts, then store the expected timestamp`() = testBlocking {
-
-    }
-
-    @Test
-    fun `when syncing stats data starts under the cache interval, then request data from cache`() = testBlocking {
-
-    }
-
-    @Test
-    fun `when syncing stats data starts outside the cache interval, then request data from network`() = testBlocking {
-
     }
 
     private fun configureSuccessResponseStub() {
