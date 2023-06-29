@@ -123,7 +123,15 @@
             app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
             app:nullable="true"
             android:defaultValue="@null"/>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment"/>
     </fragment>
+    <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
         android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
