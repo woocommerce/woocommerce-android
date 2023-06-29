@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -25,6 +26,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs = AIProductDescriptionBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
@@ -58,7 +60,12 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onApplyButtonClicked() {
-        _viewState.update { Celebration }
+        if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown()) {
+            _viewState.update { Dismissed }
+        } else {
+            _viewState.update { Celebration }
+            appPrefsWrapper.setAIProductDescriptionCelebrationShown(true)
+        }
     }
 
     fun onCopyButtonClicked() {
