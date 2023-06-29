@@ -1095,7 +1095,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("code")
+        sut.onCouponAdded("code")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -1137,7 +1137,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        sut.onCouponEntered("ABC")
+        sut.onCouponAdded("ABC")
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
