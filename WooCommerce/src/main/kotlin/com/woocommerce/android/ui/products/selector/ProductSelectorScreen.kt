@@ -135,11 +135,11 @@ fun ProductSelectorScreen(
                     isActive = state.searchState.isActive,
                     supportedSearchTypes = listOf(
                         SearchLayoutWithParamsState.SearchType(
-                            textId = string.product_search_all,
+                            labelResId = string.product_search_all,
                             isSelected = state.searchState.searchType.labelResId == string.product_search_all
                         ),
                         SearchLayoutWithParamsState.SearchType(
-                            textId = string.product_search_sku,
+                            labelResId = string.product_search_sku,
                             isSelected = state.searchState.searchType.labelResId == string.product_search_sku
                         ),
                     )

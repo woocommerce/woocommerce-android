@@ -95,8 +95,8 @@ private fun SearchParamsRowScrollable(
     ) {
         supportedSearchTypes.forEach { searchType ->
             WCSelectableChip(
-                onClick = { onSearchTypeSelected(searchType.textId) },
-                text = stringResource(id = searchType.textId),
+                onClick = { onSearchTypeSelected(searchType.labelResId) },
+                text = stringResource(id = searchType.labelResId),
                 isSelected = searchType.isSelected
             )
         }
@@ -119,8 +119,8 @@ private fun SearchParamsRowFillWidth(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
                     .weight(1f),
-                onClick = { onSearchTypeSelected(searchType.textId) },
-                text = stringResource(id = searchType.textId),
+                onClick = { onSearchTypeSelected(searchType.labelResId) },
+                text = stringResource(id = searchType.labelResId),
                 isSelected = searchType.isSelected
             )
         }
@@ -134,7 +134,7 @@ data class SearchLayoutWithParamsState(
     val supportedSearchTypes: List<SearchType>,
 ) {
     data class SearchType(
-        @StringRes val textId: Int,
+        @StringRes val labelResId: Int,
         val isSelected: Boolean = false
     )
 }
@@ -149,17 +149,17 @@ fun SearchLayoutPreviewFillMaxWidth() {
             isActive = true,
             supportedSearchTypes = listOf(
                 SearchLayoutWithParamsState.SearchType(
-                    textId = R.string.product_search_all,
+                    labelResId = R.string.product_search_all,
                 ),
                 SearchLayoutWithParamsState.SearchType(
-                    textId = R.string.product_search_all,
+                    labelResId = R.string.product_search_all,
                 ),
                 SearchLayoutWithParamsState.SearchType(
-                    textId = R.string.product_search_sku,
+                    labelResId = R.string.product_search_sku,
                     isSelected = true,
                 ),
                 SearchLayoutWithParamsState.SearchType(
-                    textId = R.string.product_visibility_public,
+                    labelResId = R.string.product_visibility_public,
                 ),
             )
         ),
