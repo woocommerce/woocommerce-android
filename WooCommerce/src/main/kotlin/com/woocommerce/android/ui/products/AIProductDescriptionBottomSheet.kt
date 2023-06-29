@@ -42,7 +42,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -62,15 +61,13 @@ import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewSta
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ProductAIDescriptionScreen(
-    dismiss: () -> Unit,
-    viewModel: ProductAIDescriptionViewModel = viewModel()
+    viewModel: ProductAIDescriptionViewModel
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
     AnimatedContent(targetState = viewState) { state ->
         when (state) {
             Dismissed -> {
-                dismiss()
             }
             Celebration -> {
                 CelebrationDialog(viewModel::onCelebrationConfirmClicked)
@@ -115,7 +112,7 @@ fun DescriptionGenerationForm(
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = stringResource(id = string.ai_product_description_product_name),
+                text = state.productTitle ?: stringResource(id = string.ai_product_description_product_name),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = color.color_on_surface_medium)
             )
@@ -133,11 +130,10 @@ fun DescriptionGenerationForm(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = state.features,
-                    minLines = 3,
                     onValueChange = { onFeaturesChanged(it) },
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_hint))
-                    },
+                    }
                 )
 
                 Text(

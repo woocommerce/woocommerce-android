@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
+import androidx.lifecycle.Transformations
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -48,7 +48,7 @@ class RefundDetailViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
-    val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems.map {
+    val refundItems: LiveData<List<ProductRefundListItem>> = Transformations.map(_refundItems) {
         it.apply { checkAddonAvailability(this) }
     }
 

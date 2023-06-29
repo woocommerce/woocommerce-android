@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -80,7 +80,7 @@ class VariationListViewModel @Inject constructor(
     private val isReadOnlyMode = navArgs.isReadOnlyMode
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
-    val variationList: LiveData<List<ProductVariation>> = _variationList.map { variations ->
+    val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
         variations.apply {
             viewState = viewState.copy(
                 isEmptyViewVisible = isEmpty,

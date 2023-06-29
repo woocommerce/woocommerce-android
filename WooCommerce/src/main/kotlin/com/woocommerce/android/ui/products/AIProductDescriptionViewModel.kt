@@ -27,11 +27,13 @@ class ProductAIDescriptionViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
+    val navArgs = AIProductDescriptionBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
+
     private var generationFlow: GenerationFlow
         get() = _viewState.value as? GenerationFlow ?: GenerationFlow()
         set(value) = _viewState.update { value }
 
-    private val _viewState = MutableStateFlow<ViewState>(GenerationFlow())
+    private val _viewState = MutableStateFlow<ViewState>(GenerationFlow(productTitle = navArgs.productTitle))
     val viewState = _viewState.asStateFlow()
 
     fun onGenerateButtonClicked() {
@@ -72,7 +74,7 @@ class ProductAIDescriptionViewModel @Inject constructor(
 
     sealed class ViewState {
         data class GenerationFlow(
-            val productTitle: String = "",
+            val productTitle: String? = null,
             val features: String = "",
             val description: String = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
