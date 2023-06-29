@@ -20,14 +20,15 @@ class AnalyticsUpdateDataStoreTest {
 
     private lateinit var sut: AnalyticsUpdateDataStore
 
+    private val defaultSelectionData = LAST_MONTH.generateSelectionData(
+        calendar = mock(),
+        locale = mock()
+    )
+
     @Before
     fun setUp() {
-        val selectionData = LAST_MONTH.generateSelectionData(
-            calendar = mock(),
-            locale = mock()
-        )
         dataStore = createDataStoreMockFor(
-            rangeSelection = selectionData,
+            rangeSelection = defaultSelectionData,
             lastUpdateTimestamp = 1000
         )
 
@@ -45,8 +46,18 @@ class AnalyticsUpdateDataStoreTest {
     }
 
     @Test
-    fun `first basic test`() {
-        assertThat(false).isFalse
+    fun `given shouldUpdateAnalytics is called, when time elapsed is enough, then return true`() {
+
+    }
+
+    @Test
+    fun `given shouldUpdateAnalytics is called, when time elapsed is not enough, then return false`() {
+
+    }
+
+    @Test
+    fun `given shouldUpdateAnalytics is called, when no previous update exists, then return true`() {
+
     }
 
     private fun createDataStoreMockFor(
