@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -34,17 +33,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -58,15 +50,14 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
+import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCSearchField
-import com.woocommerce.android.ui.compose.component.WCSelectableChip
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
-import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
@@ -128,7 +119,7 @@ fun ProductSelectorScreen(
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    onSearchTypeChanged: (SearchType) -> Unit,
+    onSearchTypeChanged: (Int) -> Unit,
     onClearFiltersButtonClick: () -> Unit
 ) {
     Column(
@@ -137,7 +128,25 @@ fun ProductSelectorScreen(
             .background(MaterialTheme.colors.surface)
     ) {
         if (state.filterState.filterOptions.isEmpty()) {
-            SearchLayout(state, onSearchQueryChanged, onSearchTypeChanged)
+            SearchLayoutWithParams(
+                state = SearchLayoutWithParamsState(
+                    hint = string.product_selector_search_hint,
+                    initialSearchQuery = state.searchState.searchQuery,
+                    isActive = state.searchState.isActive,
+                    supportedSearchTypes = listOf(
+                        SearchLayoutWithParamsState.SearchType(
+                            textId = string.product_search_all,
+                            isSelected = state.searchState.searchType.labelResId == string.product_search_all
+                        ),
+                        SearchLayoutWithParamsState.SearchType(
+                            textId = string.product_search_sku,
+                            isSelected = state.searchState.searchType.labelResId == string.product_search_sku
+                        ),
+                    )
+                ),
+                onSearchQueryChanged = onSearchQueryChanged,
+                onSearchTypeSelected = onSearchTypeChanged,
+            )
         }
 
         when {
@@ -151,75 +160,6 @@ fun ProductSelectorScreen(
             )
             state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
             else -> EmptyProductList(state, onClearFiltersButtonClick)
-        }
-    }
-}
-
-@Composable
-fun SearchLayout(
-    state: ViewState,
-    onSearchQueryChanged: (String) -> Unit,
-    onSearchTypeChanged: (SearchType) -> Unit
-) {
-    val isFocused = remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
-    val searchQuery = remember { mutableStateOf(state.searchState.searchQuery) }
-    val newLineRegex = Regex("[\n\r]")
-
-    Column {
-        WCSearchField(
-            value = state.searchState.searchQuery,
-            onValueChange = { newValue: String ->
-                if (newValue.contains(newLineRegex)) {
-                    searchQuery.value = newValue.replace(newLineRegex, "")
-                } else {
-                    onSearchQueryChanged(newValue)
-                }
-            },
-            hint = stringResource(id = string.product_selector_search_hint),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = dimen.major_100),
-                    vertical = dimensionResource(id = dimen.minor_100)
-                )
-                .onFocusChanged { isFocused.value = it.isFocused }
-                .focusRequester(focusRequester),
-            keyboardOptions = KeyboardOptions(autoCorrect = false),
-        )
-        if (isFocused.value) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = dimen.minor_100)),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                WCSelectableChip(
-                    modifier = Modifier
-                        .padding(dimensionResource(id = dimen.minor_100))
-                        .weight(1f),
-                    onClick = { onSearchTypeChanged(SearchType.DEFAULT) },
-                    text = stringResource(id = string.product_search_all),
-                    isSelected = state.searchState.searchType == SearchType.DEFAULT
-                )
-                WCSelectableChip(
-                    modifier = Modifier
-                        .padding(dimensionResource(id = dimen.minor_100))
-                        .weight(1f),
-                    onClick = { onSearchTypeChanged(SearchType.SKU) },
-                    text = stringResource(id = string.product_search_sku),
-                    isSelected = state.searchState.searchType == SearchType.SKU
-                )
-            }
-        }
-    }
-    LaunchedEffect(state.searchState.isActive) {
-        if (state.searchState.isActive) {
-            focusRequester.requestFocus()
-        } else {
-            focusManager.clearFocus()
         }
     }
 }
@@ -762,18 +702,4 @@ fun ProductListEmptyPreview() {
 @Composable
 fun ProductListSkeletonPreview() {
     ProductListSkeleton()
-}
-@Preview
-@Composable
-fun SearchLayoutPreview() {
-    val state = ViewState(
-        products = emptyList(),
-        selectedItemsCount = 3,
-        loadingState = IDLE,
-        filterState = FilterState(),
-        searchState = ProductSelectorViewModel.SearchState(),
-        popularProducts = emptyList(),
-        recentProducts = emptyList(),
-    )
-    SearchLayout(state = state, onSearchQueryChanged = {}, onSearchTypeChanged = {})
 }
