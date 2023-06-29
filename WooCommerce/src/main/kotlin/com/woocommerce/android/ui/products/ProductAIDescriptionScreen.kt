@@ -39,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -55,23 +54,18 @@ import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewSta
 
 @Composable
 fun ProductAIDescriptionScreen(
-    dismiss: () -> Unit,
-    viewModel: ProductAIDescriptionViewModel = viewModel()
+    viewModel: ProductAIDescriptionViewModel
 ) {
     viewModel.viewState.observeAsState().value?.let { state ->
-        if (state.isDismissed) {
-            dismiss()
-        } else {
-            DescriptionGenerationForm(
-                state = state,
-                onFeaturesChanged = viewModel::onFeaturesChanged,
-                onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
-                onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
-                onCopyButtonClicked = viewModel::onCopyButtonClicked,
-                onApplyButtonClicked = viewModel::onApplyButtonClicked,
-                onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived,
-            )
-        }
+        DescriptionGenerationForm(
+            state = state,
+            onFeaturesChanged = viewModel::onFeaturesChanged,
+            onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
+            onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
+            onCopyButtonClicked = viewModel::onCopyButtonClicked,
+            onApplyButtonClicked = viewModel::onApplyButtonClicked,
+            onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived,
+        )
     }
 }
 

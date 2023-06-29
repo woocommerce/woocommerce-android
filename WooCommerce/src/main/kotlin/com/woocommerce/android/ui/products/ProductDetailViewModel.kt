@@ -429,7 +429,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onWriteWithAIClicked() {
-        triggerEvent(ShowAIDescriptionGenerationBottomSheet)
+        triggerEvent(ShowAIProductDescriptionBottomSheet(viewState.productDraft?.name))
     }
 
     fun onBlazeClicked() {
@@ -2389,7 +2389,7 @@ class ProductDetailViewModel @Inject constructor(
 
     data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
-    object ShowAIDescriptionGenerationBottomSheet : Event()
+    data class ShowAIProductDescriptionBottomSheet(val productTitle: String?) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
