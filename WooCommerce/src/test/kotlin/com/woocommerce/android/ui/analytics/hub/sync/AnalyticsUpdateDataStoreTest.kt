@@ -67,8 +67,22 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given shouldUpdateAnalytics is called, when no previous update exists, then return true`() {
+    fun `given shouldUpdateAnalytics is called, when no previous update exists, then return true`() = testBlocking {
+        // Given
+        createAnalyticsUpdateScenarioWith(
+            lastUpdateTimestamp = null,
+            currentTimestamp = 100
+        )
+        val maxOutdatedTime = 500L
 
+        // When
+        val result = sut.shouldUpdateAnalytics(
+            rangeSelection = defaultSelectionData,
+            maxOutdatedTime = maxOutdatedTime
+        )
+
+        // Then
+        assertThat(result).isTrue
     }
 
     private fun createAnalyticsUpdateScenarioWith(
@@ -78,7 +92,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val analyticsPreferences = mock<Preferences> {
             on {
                 get(longPreferencesKey(defaultSelectionData.selectionType.identifier))
-            } doReturn (lastUpdateTimestamp ?: 0L)
+            } doReturn lastUpdateTimestamp
         }
 
         dataStore = mock {
