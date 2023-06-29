@@ -83,6 +83,7 @@ class JitmViewModel @Inject constructor(
     }
 
     private fun onJitmCtaClicked(model: JITMApiResponse) {
+        jitmStoreCache.onCtaClicked(messagePath)
         jitmTracker.trackJitmCtaTapped(
             utmSource,
             model.id,
