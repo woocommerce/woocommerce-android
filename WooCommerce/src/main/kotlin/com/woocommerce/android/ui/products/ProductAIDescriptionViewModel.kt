@@ -27,31 +27,33 @@ class ProductAIDescriptionViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
+    private var generationFlow: GenerationFlow
+        get() = _viewState.value as? GenerationFlow ?: GenerationFlow()
+        set(value) = _viewState.update { value }
+
     private val _viewState = MutableStateFlow<ViewState>(GenerationFlow())
     val viewState = _viewState.asStateFlow()
 
     fun onGenerateButtonClicked() {
-        _viewState.update { GenerationFlow().copy(generationState = GenerationState.Generating) }
+        generationFlow = generationFlow.copy(generationState = GenerationState.Generating)
 
         launch {
             delay(3000)
-            _viewState.update { GenerationFlow().copy(generationState = Generated) }
+            generationFlow = generationFlow.copy(generationState = Generated)
         }
     }
 
     fun onRegenerateButtonClicked() {
-        _viewState.update { GenerationFlow().copy(generationState = Regenerating) }
+        generationFlow = generationFlow.copy(generationState = Regenerating)
 
         launch {
             delay(3000)
-            _viewState.update { GenerationFlow().copy(generationState = Generated) }
+            generationFlow = generationFlow.copy(generationState = Generated)
         }
     }
 
     fun onFeaturesChanged(features: String) {
-        _viewState.update {
-            GenerationFlow().copy(features = features)
-        }
+        generationFlow = generationFlow.copy(features = features)
     }
 
     fun onApplyButtonClicked() {
