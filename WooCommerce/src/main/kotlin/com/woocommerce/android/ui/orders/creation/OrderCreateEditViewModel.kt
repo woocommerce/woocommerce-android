@@ -701,6 +701,10 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onAddCouponButtonClicked() {
+        triggerEvent(EditCoupon(mode))
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }

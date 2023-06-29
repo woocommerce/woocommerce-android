@@ -274,6 +274,7 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.shippingButton.isEnabled = idle
                     binding.paymentSection.feeButton.isEnabled = idle
                     binding.paymentSection.couponButton.isEnabled = new.isCouponButtonEnabled && idle
+                    binding.paymentSection.addCouponButton.isEnabled = new.isCouponButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
                 }
             }
@@ -300,6 +301,7 @@ class OrderCreateEditFormFragment :
             }
             new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
                 binding.paymentSection.couponButton.isEnabled = it
+                binding.paymentSection.addCouponButton.isEnabled = it
             }
         }
 
@@ -365,17 +367,21 @@ class OrderCreateEditFormFragment :
 
     private fun OrderCreationPaymentSectionBinding.bindCouponsSubSection(newOrderData: Order) {
         couponButton.setOnClickListener { viewModel.onCouponButtonClicked() }
+        addCouponButton.setOnClickListener { viewModel.onAddCouponButtonClicked() }
+
         if (newOrderData.discountCodes.isNotNullOrEmpty()) {
+            couponButton.isVisible = true
+            couponValue.isVisible = true
+            addCouponButton.isVisible = true
             couponButton.text = getString(R.string.order_creation_coupon_codes, newOrderData.discountCodes)
             couponValue.text = getString(
                 R.string.order_creation_coupon_discount_value,
                 bigDecimalFormatter(newOrderData.discountTotal)
             )
-            couponButton.setIconResource(0)
         } else {
-            couponButton.setIconResource(R.drawable.ic_add)
-            couponButton.text = getString(R.string.order_creation_add_coupon)
-            couponValue.text = null
+            couponButton.isVisible = false
+            couponValue.isVisible = false
+            addCouponButton.isVisible = true
         }
     }
 
@@ -562,6 +568,7 @@ class OrderCreateEditFormFragment :
             shippingButton.isEnabled = true
             lockIcon.isVisible = false
             couponButton.isEnabled = state.isCouponButtonEnabled
+            addCouponButton.isEnabled = state.isCouponButtonEnabled
         }
     }
 
@@ -577,6 +584,7 @@ class OrderCreateEditFormFragment :
             shippingButton.isEnabled = false
             lockIcon.isVisible = true
             couponButton.isEnabled = false
+            addCouponButton.isEnabled = false
         }
     }
 }
