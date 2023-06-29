@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("UnusedPrivateMember")
+@Suppress("UnusedPrivateMember", "EmptyFunctionBlock")
 class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val customerListRepository: CustomerListRepository
@@ -24,8 +24,8 @@ class CustomerListViewModel @Inject constructor(
         set(value) {
             savedState[SEARCH_QUERY_KEY] = value
         }
-    private var selectedSearchMode: SearchMode?
-        get() = savedState.get<SearchMode>(SEARCH_MODE_KEY)
+    private var selectedSearchMode: SearchMode
+        get() = savedState.get<SearchMode>(SEARCH_MODE_KEY) ?: supportedSearchModes.first()
         set(value) {
             savedState[SEARCH_MODE_KEY] = value
         }
@@ -34,7 +34,7 @@ class CustomerListViewModel @Inject constructor(
         launch {
             _viewState.value = CustomerListViewState(
                 searchQuery = searchQuery,
-                searchModes = selectSearchMode(selectedSearchMode?.labelResId),
+                searchModes = selectSearchMode(selectedSearchMode.labelResId),
                 customers = CustomerListViewState.CustomerList.Loading
             )
         }
@@ -49,7 +49,8 @@ class CustomerListViewModel @Inject constructor(
 
     fun onSearchTypeChanged(searchTypeId: Int) {
         with(searchTypeId) {
-            selectedSearchMode = supportedSearchModes.first { it.labelResId == this }.copy(isSelected = true)
+            selectedSearchMode = supportedSearchModes.first { it.labelResId == this }
+                .copy(isSelected = true)
             _viewState.value = _viewState.value!!.copy(
                 searchModes = selectSearchMode(this)
             )
@@ -59,7 +60,7 @@ class CustomerListViewModel @Inject constructor(
     fun onNavigateBack() {
     }
 
-    private fun selectSearchMode(searchTypeId: Int?) =
+    private fun selectSearchMode(searchTypeId: Int) =
         supportedSearchModes.map {
             it.copy(isSelected = it.labelResId == searchTypeId)
         }
@@ -70,7 +71,7 @@ class CustomerListViewModel @Inject constructor(
 
         private val supportedSearchModes = listOf(
             SearchMode(
-                labelResId = R.string.order_creation_customer_search_all,
+                labelResId = R.string.order_creation_customer_search_everything,
                 searchParam = "all",
                 isSelected = false,
             ),

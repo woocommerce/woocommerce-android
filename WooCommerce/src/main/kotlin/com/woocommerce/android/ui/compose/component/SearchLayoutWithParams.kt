@@ -89,7 +89,7 @@ private fun SearchParamsRowScrollable(
 ) {
     Row(
         Modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
@@ -163,7 +163,7 @@ fun SearchLayoutPreviewFillMaxWidth() {
                 ),
             )
         ),
-        paramsFillWidth = true,
+        paramsFillWidth = false,
         onSearchQueryChanged = {},
         onSearchTypeSelected = {},
     )

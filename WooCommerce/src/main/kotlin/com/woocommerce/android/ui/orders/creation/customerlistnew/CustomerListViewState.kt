@@ -29,4 +29,4 @@ data class SearchMode(
     @StringRes val labelResId: Int,
     val searchParam: String,
     val isSelected: Boolean,
-): Parcelable
+) : Parcelable
