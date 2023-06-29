@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
@@ -106,17 +105,7 @@ class OrderCreateEditFormFragment :
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
-            when (it) {
-                is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
-                    viewModel.onCouponRemoved(it.couponCode)
-                }
-                is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
-                    viewModel.onCouponAdded(it.couponCode)
-                }
-                is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
-                    viewModel.onCouponUpdated(it.oldCode, it.newCode)
-                }
-            }
+            viewModel.onReturnedFromCouponEdit(it)
         }
     }
 

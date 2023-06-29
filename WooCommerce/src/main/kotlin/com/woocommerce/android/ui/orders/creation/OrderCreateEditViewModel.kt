@@ -67,6 +67,7 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -214,6 +215,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         ScanningSource.ORDER_LIST
                     )
                 }
+                handleCouponEditResult()
             }
             is Mode.Edit -> {
                 viewModelScope.launch {
@@ -227,6 +229,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
+                        handleCouponEditResult()
                     }
                 }
             }
@@ -245,6 +248,34 @@ class OrderCreateEditViewModel @Inject constructor(
                     R.string.order_creation_barcode_scanning_process_death
                 )
             )
+        }
+    }
+
+    private fun handleCouponEditResult() {
+        args.couponEditResult?.let {
+            handleCouponEditResult(it)
+        }
+    }
+
+    private fun handleCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+        when (couponEditResult) {
+            is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+                onCouponRemoved(couponEditResult.couponCode)
+            }
+
+            is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
+                onCouponAdded(couponEditResult.couponCode)
+            }
+
+            is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
+                onCouponUpdated(couponEditResult.oldCode, couponEditResult.newCode)
+            }
+        }
+    }
+
+    fun onReturnedFromCouponEdit(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+        viewModelScope.launch {
+            handleCouponEditResult(couponEditResult)
         }
     }
 
@@ -949,7 +980,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponAdded(couponCode: String) {
+    private fun onCouponAdded(couponCode: String) {
         if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
         _orderDraft.update { draft ->
             val couponLines = draft.couponLines
@@ -959,7 +990,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponUpdated(oldCode: String, newCode: String) {
+    private fun onCouponUpdated(oldCode: String, newCode: String) {
         _orderDraft.value.couponLines.run {
             if (oldCode == newCode || any { it.code == newCode } || none { it.code == oldCode }) return
         }
@@ -974,7 +1005,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponRemoved(couponCode: String) {
+    private fun onCouponRemoved(couponCode: String) {
         trackCouponRemoved()
         _orderDraft.update { draft ->
             val updatedCouponLines = draft.couponLines.filter { it.code != couponCode }
