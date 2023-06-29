@@ -79,9 +79,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "14.1-rc-1"
+            versionName "14.2-rc-1"
         }
-        versionCode 426
+        versionCode 429
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -285,6 +285,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
 
+    implementation "com.google.mlkit:barcode-scanning:$mlkitVersion"
+
     implementation "com.google.zxing:core:3.5.1"
 
     // Debug dependencies
@@ -386,6 +388,13 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.8'
+
+    // CameraX
+    implementation "androidx.camera:camera-camera2:$androidxCameraVersion"
+    implementation "androidx.camera:camera-lifecycle:$androidxCameraVersion"
+    implementation "androidx.camera:camera-view:$androidxCameraVersion"
+
+    implementation "com.google.guava:guava:$guavaVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

@@ -216,6 +216,12 @@
     <color name="link_text">@color/woo_blue_40</color>
 
     <!--
+    Button colors
+    -->
+    <color name="light_colored_button_text">@color/color_primary</color>
+    <color name="light_colored_button_background">@color/woo_gray_6</color>
+
+    <!--
     Analytics
     -->
     <color name="analytics_background">@color/woo_white</color>

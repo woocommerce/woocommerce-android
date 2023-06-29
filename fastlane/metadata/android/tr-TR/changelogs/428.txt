@@ -1,0 +1,2 @@
+14.1:
+Bu sürüm, uygulamanın siparişler ve ürünler bölümleriyle ilgili bazı hata düzeltmeleri ve performans iyileştirmeleri içeriyor. Görüşlerinizi bildirmeye devam edin!

@@ -485,6 +485,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
+        const val KEY_NEW_SITE_ID = "new_site_id"
+        const val KEY_INITIAL_DOMAIN = "initial_domain"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"
