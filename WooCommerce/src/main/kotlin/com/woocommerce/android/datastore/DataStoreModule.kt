@@ -38,7 +38,7 @@ class DataStoreModule {
     fun provideAnalyticsDataStore(
         appContext: Context,
         @AppCoroutineScope appCoroutineScope: CoroutineScope
-    ) : DataStore<Preferences> = PreferenceDataStoreFactory.create(
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("analytics")
         },

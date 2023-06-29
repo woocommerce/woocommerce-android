@@ -5,9 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -15,6 +12,9 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
