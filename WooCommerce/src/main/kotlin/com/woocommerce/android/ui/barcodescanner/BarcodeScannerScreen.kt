@@ -2,12 +2,14 @@ package com.woocommerce.android.ui.barcodescanner
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -33,10 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import androidx.compose.ui.tooling.preview.Preview as ComposePreview
 
 @Composable
 fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeScannerStatus>) -> Unit) {
@@ -89,14 +95,24 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                     try {
                         cameraProviderFuture.get().bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
                     } catch (e: IllegalStateException) {
-                        WooLog.e(
-                            WooLog.T.BARCODE_SCANNER,
-                            e.message ?: "Illegal state exception while binding camera provider to lifecycle"
+                        onScannedResult(
+                            flowOf(
+                                CodeScannerStatus.Failure(
+                                    e.message ?:
+                                    "Illegal state exception while binding camera provider to lifecycle",
+                                    CodeScanningErrorType.Other(e)
+                                )
+                            )
                         )
                     } catch (e: IllegalArgumentException) {
-                        WooLog.e(
-                            WooLog.T.BARCODE_SCANNER,
-                            e.message ?: "Illegal argument exception while binding camera provider to lifecycle"
+                        onScannedResult(
+                            flowOf(
+                                CodeScannerStatus.Failure(
+                                    e.message ?:
+                                    "Illegal argument exception while binding camera provider to lifecycle",
+                                    CodeScanningErrorType.Other(e)
+                                )
+                            )
                         )
                     }
                     previewView
@@ -119,5 +135,20 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                 )
             }
         }
+    }
+}
+
+class DummyCodeScanner : CodeScanner {
+    override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
+        return flowOf(CodeScannerStatus.Success("", BarcodeFormat.FormatUPCA))
+    }
+}
+
+@ComposePreview(name = "Light mode")
+@ComposePreview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun BarcodeScannerScreenPreview() {
+    WooThemeWithBackground {
+        BarcodeScannerScreen(codeScanner = DummyCodeScanner(), onScannedResult = {})
     }
 }
