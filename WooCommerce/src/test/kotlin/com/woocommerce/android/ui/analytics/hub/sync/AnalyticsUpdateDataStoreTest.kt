@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.longPreferencesKey
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import java.util.Calendar
@@ -12,7 +11,6 @@ import java.util.Locale
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -34,8 +32,8 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     fun `given shouldUpdateAnalytics is called, when time elapsed is enough, then return true`() = testBlocking {
         // Given
         createAnalyticsUpdateScenarioWith(
-            lastUpdateTimestamp = 0,
-            currentTimestamp = 1000
+            lastUpdateTimestamp = 1000,
+            currentTimestamp = 2000
         )
         val maxOutdatedTime = 500L
 
@@ -50,8 +48,22 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given shouldUpdateAnalytics is called, when time elapsed is not enough, then return false`() {
+    fun `given shouldUpdateAnalytics is called, when time elapsed is not enough, then return false`() = testBlocking {
+        // Given
+        createAnalyticsUpdateScenarioWith(
+            lastUpdateTimestamp = 1000,
+            currentTimestamp = 1200
+        )
+        val maxOutdatedTime = 500L
 
+        // When
+        val result = sut.shouldUpdateAnalytics(
+            rangeSelection = defaultSelectionData,
+            maxOutdatedTime = maxOutdatedTime
+        )
+
+        // Then
+        assertThat(result).isFalse
     }
 
     @Test
@@ -60,13 +72,13 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     }
 
     private fun createAnalyticsUpdateScenarioWith(
-        lastUpdateTimestamp: Long,
+        lastUpdateTimestamp: Long?,
         currentTimestamp: Long
     ) {
         val analyticsPreferences = mock<Preferences> {
             on {
                 get(longPreferencesKey(defaultSelectionData.selectionType.identifier))
-            } doReturn lastUpdateTimestamp
+            } doReturn (lastUpdateTimestamp ?: 0L)
         }
 
         dataStore = mock {
