@@ -42,7 +42,8 @@
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Woo.Splash"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
