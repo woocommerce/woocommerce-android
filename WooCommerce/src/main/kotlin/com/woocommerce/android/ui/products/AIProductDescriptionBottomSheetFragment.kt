@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
-    private val viewModel: ProductAIDescriptionViewModel by viewModels()
+    private val viewModel: AIProductDescriptionViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -21,7 +21,7 @@ class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    ProductAIDescriptionScreen(viewModel = viewModel)
+                    AIProductDescriptionBottomSheet(viewModel = viewModel)
                 }
             }
         }

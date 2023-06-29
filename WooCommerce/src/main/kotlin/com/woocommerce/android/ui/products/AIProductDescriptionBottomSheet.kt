@@ -30,8 +30,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -50,25 +49,20 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Generated
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Regenerating
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.GenerationState.Start
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState.Celebration
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState.Dismissed
-import com.woocommerce.android.ui.products.ProductAIDescriptionViewModel.ViewState.GenerationFlow
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Generated
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Regenerating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Start
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.Celebration
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.Dismissed
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationFlow
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ProductAIDescriptionScreen(
-    viewModel: ProductAIDescriptionViewModel
+fun AIProductDescriptionBottomSheet(
+    viewModel: AIProductDescriptionViewModel
 ) {
-    val viewState by viewModel.viewState.collectAsState()
-
-    AnimatedContent(targetState = viewState) { state ->
+    viewModel.viewState.observeAsState().value?.let { state ->
         when (state) {
-            Dismissed -> {
-            }
             Celebration -> {
                 CelebrationDialog(viewModel::onCelebrationConfirmClicked)
             }
@@ -82,6 +76,8 @@ fun ProductAIDescriptionScreen(
                     onApplyButtonClicked = viewModel::onApplyButtonClicked,
                     onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived
                 )
+            }
+            Dismissed -> {
             }
         }
     }
@@ -128,9 +124,9 @@ fun DescriptionGenerationForm(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
             ) {
                 OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
                     value = state.features,
-                    onValueChange = { onFeaturesChanged(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = onFeaturesChanged,
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_hint))
                     }
