@@ -247,10 +247,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onReturnedFromCouponEdit(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
-        viewModelScope.launch {
-            handleCouponEditResult(couponEditResult)
-        }
+    fun onCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+        handleCouponEditResult(couponEditResult)
     }
 
     fun onCustomerNoteEdited(newNote: String) {

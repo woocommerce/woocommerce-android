@@ -106,7 +106,7 @@ class OrderCreateEditFormFragment :
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
-            viewModel.onReturnedFromCouponEdit(it)
+            viewModel.onCouponEditResult(it)
         }
     }
 
