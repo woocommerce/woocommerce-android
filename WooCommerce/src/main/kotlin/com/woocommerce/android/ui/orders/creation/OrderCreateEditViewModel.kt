@@ -111,6 +111,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_UPDATE
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -966,12 +967,17 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCouponUpdated(oldCode: String, newCode: String) {
-        if (!_orderDraft.value.couponLines.any { it.code == oldCode }) return
+        _orderDraft.value.couponLines.run {
+            if (oldCode == newCode || any { it.code == newCode } || none { it.code == oldCode }) return
+        }
+
         _orderDraft.update { draft ->
             val couponLines = draft.couponLines
             val updatedCouponLines =
                 couponLines.filter { it.code != oldCode } + Order.CouponLine(code = newCode)
             draft.copy(couponLines = updatedCouponLines)
+        }.also {
+            trackCouponUpdated()
         }
     }
 
@@ -989,6 +995,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCouponRemoved() {
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
+    }
+
+    private fun trackCouponUpdated() {
+        tracker.track(ORDER_COUPON_UPDATE, mapOf(KEY_FLOW to flow))
     }
 
     @Parcelize
