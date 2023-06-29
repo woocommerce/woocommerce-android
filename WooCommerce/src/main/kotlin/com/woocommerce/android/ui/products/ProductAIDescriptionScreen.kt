@@ -94,7 +94,7 @@ fun DescriptionGenerationForm(
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = stringResource(id = string.ai_product_description_product_name),
+                text = state.productTitle ?: stringResource(id = string.ai_product_description_product_name),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = color.color_on_surface_medium)
             )

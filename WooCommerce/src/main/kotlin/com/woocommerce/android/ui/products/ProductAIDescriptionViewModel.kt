@@ -24,7 +24,9 @@ class ProductAIDescriptionViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
-    private val _viewState = MutableStateFlow(ViewState())
+    val navArgs = AIProductDescriptionBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
+
+    private val _viewState = MutableStateFlow(ViewState(productTitle = navArgs.productTitle))
     val viewState = _viewState.asLiveData()
 
     fun onGenerateButtonClicked() {
@@ -61,7 +63,7 @@ class ProductAIDescriptionViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val productTitle: String = "",
+        val productTitle: String? = null,
         val features: String = "",
         val description: String = "This stylish and comfortable set is designed to enhance your performance and " +
             "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
