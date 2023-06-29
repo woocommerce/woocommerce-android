@@ -112,11 +112,10 @@ fun DescriptionGenerationForm(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = state.features,
-                    minLines = 3,
                     onValueChange = { onFeaturesChanged(it) },
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_hint))
-                    },
+                    }
                 )
 
                 Text(
