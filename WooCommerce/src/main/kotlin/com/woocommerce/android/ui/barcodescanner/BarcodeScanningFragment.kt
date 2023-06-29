@@ -41,10 +41,6 @@ class BarcodeScanningFragment : BaseFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     override fun getFragmentTitle() = getString(R.string.barcode_scanning_title)
 
     companion object {
