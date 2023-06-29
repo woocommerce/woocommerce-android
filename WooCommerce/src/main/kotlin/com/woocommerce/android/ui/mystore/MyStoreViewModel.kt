@@ -179,7 +179,7 @@ class MyStoreViewModel @Inject constructor(
         usageTracksEventEmitter.interacted()
         _activeStatsGranularity.update { granularity }
         launch {
-            appPrefsWrapper.setActiveStatsGranularity(selectedSite.getSelectedSiteId(), granularity.name)
+            appPrefsWrapper.setActiveStatsGranularity(granularity.name)
         }
     }
 
@@ -420,9 +420,7 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedStatsGranularityIfAny(): StatsGranularity {
-        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity(selectedSite.getSelectedSiteId())
-        return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
-            .getOrElse { StatsGranularity.DAYS }
+        return runCatching { _activeStatsGranularity.value }.getOrDefault(StatsGranularity.DAYS)
     }
 
     private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {
