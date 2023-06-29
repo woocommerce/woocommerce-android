@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.compose.component
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +27,7 @@ import com.woocommerce.android.R
 @Composable
 fun SearchLayoutWithParams(
     state: SearchLayoutWithParamsState,
+    paramsFillWidth: Boolean,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeSelected: (Int) -> Unit
 ) {
@@ -31,12 +35,12 @@ fun SearchLayoutWithParams(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    val searchQuery = remember { mutableStateOf(state.initialSearchQuery) }
+    val searchQuery = remember { mutableStateOf(state.searchQuery) }
     val newLineRegex = Regex("[\n\r]")
 
     Column {
         WCSearchField(
-            value = state.initialSearchQuery,
+            value = state.searchQuery,
             onValueChange = { newValue: String ->
                 if (newValue.contains(newLineRegex)) {
                     searchQuery.value = newValue.replace(newLineRegex, "")
@@ -56,22 +60,16 @@ fun SearchLayoutWithParams(
             keyboardOptions = KeyboardOptions(autoCorrect = false),
         )
         if (isFocused.value) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.minor_100)),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                state.supportedSearchTypes.forEach { searchType ->
-                    WCSelectableChip(
-                        modifier = Modifier
-                            .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
-                            .weight(1f),
-                        onClick = { onSearchTypeSelected(searchType.textId) },
-                        text = stringResource(id = searchType.textId),
-                        isSelected = searchType.isSelected
-                    )
-                }
+            if (paramsFillWidth) {
+                SearchParamsRowFillWidth(
+                    supportedSearchTypes = state.supportedSearchTypes,
+                    onSearchTypeSelected = onSearchTypeSelected,
+                )
+            } else {
+                SearchParamsRowScrollable(
+                    supportedSearchTypes = state.supportedSearchTypes,
+                    onSearchTypeSelected = onSearchTypeSelected,
+                )
             }
         }
     }
@@ -84,9 +82,54 @@ fun SearchLayoutWithParams(
     }
 }
 
+@Composable
+private fun SearchParamsRowScrollable(
+    supportedSearchTypes: List<SearchLayoutWithParamsState.SearchType>,
+    onSearchTypeSelected: (Int) -> Unit,
+) {
+    Row(
+        Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = spacedBy(dimensionResource(id = R.dimen.minor_100))
+    ) {
+        supportedSearchTypes.forEach { searchType ->
+            WCSelectableChip(
+                onClick = { onSearchTypeSelected(searchType.textId) },
+                text = stringResource(id = searchType.textId),
+                isSelected = searchType.isSelected
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchParamsRowFillWidth(
+    supportedSearchTypes: List<SearchLayoutWithParamsState.SearchType>,
+    onSearchTypeSelected: (Int) -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(id = R.dimen.minor_100)),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        supportedSearchTypes.forEach { searchType ->
+            WCSelectableChip(
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
+                    .weight(1f),
+                onClick = { onSearchTypeSelected(searchType.textId) },
+                text = stringResource(id = searchType.textId),
+                isSelected = searchType.isSelected
+            )
+        }
+    }
+}
+
 data class SearchLayoutWithParamsState(
     @StringRes val hint: Int,
-    val initialSearchQuery: String,
+    val searchQuery: String,
     val isActive: Boolean,
     val supportedSearchTypes: List<SearchType>,
 ) {
@@ -98,13 +141,16 @@ data class SearchLayoutWithParamsState(
 
 @Preview
 @Composable
-fun SearchLayoutPreview() {
+fun SearchLayoutPreviewFillMaxWidth() {
     SearchLayoutWithParams(
         state = SearchLayoutWithParamsState(
             hint = R.string.product_selector_search_hint,
-            initialSearchQuery = "",
+            searchQuery = "",
             isActive = true,
             supportedSearchTypes = listOf(
+                SearchLayoutWithParamsState.SearchType(
+                    textId = R.string.product_search_all,
+                ),
                 SearchLayoutWithParamsState.SearchType(
                     textId = R.string.product_search_all,
                 ),
@@ -117,6 +163,7 @@ fun SearchLayoutPreview() {
                 ),
             )
         ),
+        paramsFillWidth = true,
         onSearchQueryChanged = {},
         onSearchTypeSelected = {},
     )

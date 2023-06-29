@@ -131,7 +131,7 @@ fun ProductSelectorScreen(
             SearchLayoutWithParams(
                 state = SearchLayoutWithParamsState(
                     hint = string.product_selector_search_hint,
-                    initialSearchQuery = state.searchState.searchQuery,
+                    searchQuery = state.searchState.searchQuery,
                     isActive = state.searchState.isActive,
                     supportedSearchTypes = listOf(
                         SearchLayoutWithParamsState.SearchType(
@@ -144,6 +144,7 @@ fun ProductSelectorScreen(
                         ),
                     )
                 ),
+                paramsFillWidth = true,
                 onSearchQueryChanged = onSearchQueryChanged,
                 onSearchTypeSelected = onSearchTypeChanged,
             )
