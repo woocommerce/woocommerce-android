@@ -66,6 +66,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onCopyButtonClicked() {
+        triggerEvent(CopyDescriptionToClipboard(_viewState.value.description))
     }
 
     fun onCelebrationButtonClicked() {
@@ -91,4 +92,6 @@ class AIProductDescriptionViewModel @Inject constructor(
             object Celebration : GenerationState()
         }
     }
+
+    data class CopyDescriptionToClipboard(val description: String) : Event()
 }
