@@ -1,7 +1,5 @@
 package com.woocommerce.android.e2e.helpers.util
 
-import android.R.attr.x
-import android.R.attr.y
 import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
@@ -33,7 +31,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
-import androidx.test.uiautomator.UiDevice
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -44,7 +41,6 @@ import org.hamcrest.Matchers
 import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
-
 
 open class Screen {
     private val elementID: Int
