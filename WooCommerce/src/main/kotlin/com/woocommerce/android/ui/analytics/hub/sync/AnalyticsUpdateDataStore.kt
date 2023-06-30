@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
@@ -29,14 +30,21 @@ class AnalyticsUpdateDataStore @Inject constructor(
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
         dataStore.edit { preferences ->
-            val timestampKey = rangeSelection.selectionType.identifier
+            val timestampKey = rangeSelection.identifier
             preferences[longPreferencesKey(timestampKey)] = currentTime
         }
     }
 
     private val StatsTimeRangeSelection.lastUpdateTimestamp
         get() = dataStore.data.map { preferences ->
-            preferences[longPreferencesKey(selectionType.identifier)]
+            preferences[longPreferencesKey(identifier)]
+        }
+
+    private val StatsTimeRangeSelection.identifier
+        get() = if (selectionType == CUSTOM) {
+            "${currentRange.start.time}-${currentRange.end.time}"
+        } else {
+            selectionType.identifier
         }
 
     private val currentTime
