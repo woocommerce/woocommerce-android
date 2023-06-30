@@ -9,14 +9,20 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.CopyDescriptionToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
+    companion object {
+        const val KEY_AI_GENERATED_DESCRIPTION_RESULT = "key_ai_generated_description_result"
+    }
+
     private val viewModel: AIProductDescriptionViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -40,7 +46,7 @@ class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Exit -> dismiss()
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_AI_GENERATED_DESCRIPTION_RESULT, event.data)
                 is CopyDescriptionToClipboard -> copyDescriptionToClipboard(event.description)
             }
         }

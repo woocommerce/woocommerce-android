@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewSta
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Start
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,7 +95,7 @@ class AIProductDescriptionViewModel @Inject constructor(
 
     fun onApplyButtonClicked() {
         if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown) {
-            triggerEvent(Exit)
+            triggerEvent(ExitWithResult(_viewState.value.description))
         } else {
             _viewState.update { _viewState.value.copy(generationState = Celebration) }
             appPrefsWrapper.wasAIProductDescriptionCelebrationShown = true
@@ -106,7 +107,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onCelebrationButtonClicked() {
-        triggerEvent(Exit)
+        triggerEvent(ExitWithResult(_viewState.value.description))
     }
 
     fun onDescriptionFeedbackReceived(isPositive: Boolean) {
