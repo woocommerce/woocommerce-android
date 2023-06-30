@@ -276,7 +276,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when selection type is CUSTOM, then ignore the data store and request data with ForceNew strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+            onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn false
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
