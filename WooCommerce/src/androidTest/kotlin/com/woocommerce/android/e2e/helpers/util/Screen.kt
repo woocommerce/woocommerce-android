@@ -35,6 +35,7 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import androidx.test.uiautomator.UiDevice
 import com.google.android.material.tabs.TabLayout
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -51,11 +52,20 @@ open class Screen {
     constructor(elementID: Int) {
         this.elementID = elementID
 
+        initializeAppPrefs()
+
         // If we fail to find the element, attempt recovery
         if (!waitForElementToBeDisplayedWithoutFailure(elementID)) {
             recover()
             waitForElementToBeDisplayed(elementID)
         }
+    }
+
+    private fun initializeAppPrefs() {
+        AppPrefs.init(getInstrumentation().targetContext.applicationContext)
+
+        // hide the promo dialog because it breaks the tests
+        AppPrefs.wasAIProductDescriptionPromoDialogShown = true
     }
 
     open fun recover() = Unit
