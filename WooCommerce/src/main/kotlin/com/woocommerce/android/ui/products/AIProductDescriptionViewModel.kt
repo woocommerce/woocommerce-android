@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewSta
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Start
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

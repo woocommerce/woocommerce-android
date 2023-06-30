@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
@@ -190,6 +189,7 @@ class ProductDetailFragment :
         setupResultHandlers(viewModel)
     }
 
+    @Suppress("LongMethod")
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
             viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
