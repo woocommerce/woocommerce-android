@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
@@ -25,6 +26,8 @@ class CheckIapEligibilityFragment : BaseFragment() {
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    private val navArgs by navArgs<CheckIapEligibilityFragmentArgs>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -68,7 +71,8 @@ class CheckIapEligibilityFragment : BaseFragment() {
     private fun navigateToStoreCreationNative() {
         findNavController()
             .navigateSafely(
-                CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToStoreNamePickerFragment(),
+                CheckIapEligibilityFragmentDirections
+                    .actionCheckIapEligibilityFragmentToStoreNamePickerFragment(navArgs.storeName),
                 skipThrottling = true
             )
     }

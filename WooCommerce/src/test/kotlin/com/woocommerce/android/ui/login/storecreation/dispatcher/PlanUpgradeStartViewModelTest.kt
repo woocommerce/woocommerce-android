@@ -14,6 +14,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -29,6 +30,7 @@ class PlanUpgradeStartViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn selectedSiteModel
     }
+    private val wooCommerceStore: WooCommerceStore = mock()
 
     private val sitePlan = SitePlan(
         "test",
@@ -45,7 +47,8 @@ class PlanUpgradeStartViewModelTest : BaseUnitTest() {
             userAgent = mock(),
             selectedSite = selectedSite,
             tracks = mock(),
-            sitePlanRepository = sitePlanRepository
+            sitePlanRepository = sitePlanRepository,
+            wooCommerceStore = wooCommerceStore
         )
     }
 

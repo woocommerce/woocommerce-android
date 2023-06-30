@@ -154,6 +154,7 @@ sealed class CardPaymentStatus {
         TRY_ANOTHER_READ_METHOD,
         TRY_ANOTHER_CARD,
         CHECK_MOBILE_DEVICE,
+        CARD_REMOVED_TOO_EARLY,
     }
 
     enum class PaymentMethodType(val stringRepresentation: String) {

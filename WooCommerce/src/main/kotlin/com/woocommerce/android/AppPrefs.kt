@@ -859,13 +859,11 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
-    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
-        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    fun setActiveStatsGranularity(activeStatsGranularity: String) {
+        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, activeStatsGranularity)
     }
 
-    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
-        getActiveStatsGranularityFilterKey(currentSiteId)
-    )
+    fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
     fun markAsNewSignUp(newSignUp: Boolean) {
         setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
@@ -896,9 +894,6 @@ object AppPrefs {
     }
 
     fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
-
-    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
-        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Used for storing IPP feedback banner interaction data.
@@ -977,12 +972,15 @@ object AppPrefs {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
 
-    fun hasSavedPrivacyBannerSettings(): Boolean {
-        return getBoolean(
-            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
+    var savedPrivacySettings: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
             default = false
         )
-    }
+        set(value) = setBoolean(
+            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            value = value
+        )
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
         setString(
@@ -994,6 +992,19 @@ object AppPrefs {
     fun getStorePhoneNumber(siteId: Int): String =
         getString(
             key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+        )
+
+    fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
+        setBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            value = true
+        )
+    }
+
+    fun isTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
+        getBoolean(
+            key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
+            default = false
         )
 
     /**

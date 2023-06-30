@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
@@ -12,6 +16,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
@@ -22,6 +27,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -36,9 +42,12 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
@@ -47,7 +56,8 @@ import java.util.function.Consumer
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
-    override val sku: String = "123"
+    override val sku: String = ""
+    override val barcodeFormat: BarcodeFormat = BarcodeFormat.FormatUPCA
     override val tracksFlow: String = VALUE_FLOW_CREATION
 
     companion object {
@@ -187,14 +197,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when decreasing product quantity to zero, then call the full product view`() = testBlocking {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
+    fun `when decreasing product quantity to zero, then remove product from order`() = testBlocking {
+        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
+            orderDraft = order
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
@@ -202,34 +209,29 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
-        assertThat(addedProductItem!!.quantity).isEqualTo(1F)
 
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
-            } ?: fail("Last event should be of ShowProductDetails type")
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.productId == 123L && it.itemId == addedProductItemId }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
     }
 
     @Test
-    fun `when decreasing variation quantity to zero, then call the full product view`() {
+    fun `when decreasing variation quantity to zero, then remove product from order`() {
+        var orderDraft: Order? = null
         val variationOrderItem = createOrderItem().copy(productId = 0, variationId = 123)
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn variationOrderItem
         }
-        createSut()
 
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
+        createSut()
 
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
+            orderDraft = order
             addedProductItem = order.items.find { it.variationId == 123L }
         }
 
@@ -240,13 +242,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.variationId).isEqualTo(123)
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
-            } ?: fail("Last event should be of ShowProductDetails type")
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.variationId == 123L && it.itemId == addedProductItemId }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
     }
 
     @Test
@@ -1117,10 +1117,38 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given coupon code rejected by backend, then should display message`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn
+                flowOf(
+                    Failed(
+                        WooException(
+                            WooError(
+                                WooErrorType.INVALID_COUPON,
+                                BaseRequest.GenericErrorType.UNKNOWN
+                            )
+                        )
+                    )
+                )
+        }
+        createSut()
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onCouponEntered("ABC")
+
+        with(lastReceivedEvent) {
+            this == OnCouponRejectedByBackend
+        }
+    }
+
+    @Test
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123"
+                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1135,7 +1163,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository, times(2)).searchProductList(
+            verify(productListRepository).searchProductList(
                 "123",
                 WCProductStore.SkuSearchOptions.ExactSearch
             )
@@ -1143,10 +1171,37 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given sku, when view model init, then display progress indicator`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+
+            createSut(navArgs)
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            assertTrue(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, ""
+                OrderCreateEditViewModel.Mode.Creation, "", null,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1161,9 +1216,211 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository, times(1)).searchProductList(
+            verify(productListRepository, never()).searchProductList(
                 "123",
                 WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given scanning initiated from the order list screen, when product search via sku succeeds, then track event with proper source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given scanning initiated from the order list screen, when product search via sku fails, then track event with proper source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatQRCode,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345", BarcodeFormat.FormatUPCA,
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
+                )
             )
         }
     }

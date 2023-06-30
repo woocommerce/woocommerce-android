@@ -46,26 +46,32 @@ class StatsUITest : TestBase() {
             .gotoMyStoreScreen()
     }
 
+    private val todayStats = StatsSummaryData(
+        revenue = "$111.00",
+        orders = "44",
+        visitors = "440",
+    )
+
+    private val weekStats = StatsSummaryData(
+        revenue = "$6,470.00",
+        orders = "440",
+        visitors = "440",
+    )
+
+    private val weekMiddleStats = StatsSummaryData(
+        revenue = "$620.00",
+        orders = "5",
+        visitors = "0",
+    )
+
+    private val yearStats = StatsSummaryData(
+        revenue = "$10,391.92",
+        orders = "6000",
+        visitors = "12000",
+    )
+
     @Test
     fun e2eStatsSummary() {
-        val todayStats = StatsSummaryData(
-            revenue = "$111.00",
-            orders = "44",
-            visitors = "440",
-        )
-
-        val weekStats = StatsSummaryData(
-            revenue = "$6,470.00",
-            orders = "440",
-            visitors = "440",
-        )
-
-        val yearStats = StatsSummaryData(
-            revenue = "$10,391.92",
-            orders = "6000",
-            visitors = "12000",
-        )
-
         MyStoreScreen()
             .stats.switchToStatsDashboardTodayTab()
             .assertStatsSummary(todayStats)
@@ -82,5 +88,14 @@ class StatsUITest : TestBase() {
         MyStoreScreen()
             .stats.switchToStatsDashboardTodayTab()
             .assertTopPerformers(topPerformersJSONArray)
+    }
+
+    @Test
+    fun e2eStatsTapChart() {
+        MyStoreScreen()
+            .stats.switchToStatsDashboardWeekTab()
+            .assertStatsSummary(weekStats)
+            .tapChartMiddle()
+            .assertStatsSummary(weekMiddleStats)
     }
 }

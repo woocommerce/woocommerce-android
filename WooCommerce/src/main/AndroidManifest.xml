@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+    <uses-permission android:name="android.permission.CAMERA"></uses-permission>
 
     <application
         android:name=".WooCommerce"
@@ -41,7 +42,8 @@
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Woo.Splash"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -221,7 +223,9 @@
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode" />
+            android:value="barcode_ui" />
+
+        <meta-data android:name="io.sentry.traces.activity.enable" android:value="false" />
     </application>
 
 </manifest>

@@ -166,6 +166,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_SEARCH = "search"
         const val KEY_SEARCH_FILTER = "filter"
+        const val KEY_SEARCH_TYPE = "search_filter"
+        const val VALUE_SEARCH_TYPE_ALL = "all"
+        const val VALUE_SEARCH_TYPE_SKU = "sku"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
@@ -198,6 +201,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TAP = "tap"
         const val KEY_FAILURE = "failure"
         const val KEY_IS_FREE_TRIAL = "is_free_trial"
+        const val KEY_SCANNING_SOURCE = "source"
+        const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
+        const val KEY_PRODUCT_ADDED_VIA = "added_via"
+        const val KEY_SCANNING_FAILURE_REASON = "reason"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -255,6 +262,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS = "milliseconds_since_order_add_new"
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
 
+        const val KEY_COUPONS_COUNT = "coupons_count"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
@@ -305,6 +314,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
+
+        const val KEY_STORE_TIMEZONE = "store_timezone"
+        const val KEY_LOCAL_TIMEZONE = "local_timezone"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -364,7 +376,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
         const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
-        private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+        const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Product details
+        const val VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM = "product_form"
+        const val VALUE_SHARE_BUTTON_SOURCE_MORE_MENU = "more_menu"
 
         // -- Product Variations
         const val KEY_VARIATIONS_COUNT = "variations_count"
@@ -470,6 +486,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
+        const val KEY_NEW_SITE_ID = "new_site_id"
+        const val KEY_INITIAL_DOMAIN = "initial_domain"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"
@@ -500,6 +518,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Free Trial
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
+        const val VALUE_NOTIFICATION = "notification"
 
         // -- Store Onboarding
         const val ONBOARDING_TASK_KEY = "task"
@@ -515,6 +534,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Product Selector
         const val VALUE_PRODUCT_SELECTOR = "product_selector"
         const val VALUE_VARIATION_SELECTOR = "variation_selector"
+
+        // -- Product sharing with AI
+        const val KEY_IS_RETRY = "is_retry"
+        const val KEY_WITH_MESSAGE = "with_message"
+
+        // -- Blaze
+        const val KEY_BLAZE_SOURCE = "source"
+        const val KEY_BLAZE_STEP = "step"
 
         var sendUsageStats: Boolean = true
             set(value) {

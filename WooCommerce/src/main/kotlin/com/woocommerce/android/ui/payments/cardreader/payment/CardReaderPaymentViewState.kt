@@ -344,11 +344,21 @@ sealed class PaymentFlowError(val message: UiString) {
         object InvalidAppSetup :
             BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid),
             ContactSupportError
+
+        object AppKilledWhileInBackground :
+            BuiltInReader(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground),
+            ContactSupportError
+
+        object PinRequired :
+            Declined(UiStringRes(R.string.card_reader_payment_failed_pin_required_tap_to_pay)),
+            PurchaseHardwareReaderError
     }
 
     interface NonRetryableError
 
     interface ContactSupportError
+
+    interface PurchaseHardwareReaderError
 }
 
 sealed class InteracRefundFlowError(val message: UiString) {

@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -25,14 +26,25 @@ class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val cardReaderManager: CardReaderManager,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState) {
+
+    private val savedPrivacySettingsOnDialogItem = ToggleableListItem(
+        icon = drawable.ic_more_screen_settings,
+        label = UiString.UiStringText("Saved privacy settings on dialog?"),
+        key = UiString.UiStringText(""),
+        isEnabled = true,
+        isChecked = appPrefsWrapper.savedPrivacyBannerSettings,
+        onToggled = { appPrefsWrapper.savedPrivacyBannerSettings = it }
+    )
+
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
                 getListItemsForSimulatedReader()
             } else {
                 getListItemsForHardwareReader()
-            }
+            } + savedPrivacySettingsOnDialogItem,
         )
     )
 

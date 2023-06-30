@@ -108,7 +108,8 @@ class OrderDetailViewModel @Inject constructor(
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
-    private val giftCardRepository: GiftCardRepository
+    private val giftCardRepository: GiftCardRepository,
+    private val orderProductMapper: OrderProductMapper
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -207,13 +208,15 @@ class OrderDetailViewModel @Inject constructor(
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
                 fetchSLCreationEligibilityAsync(),
-                fetchGiftCardsAsync()
             )
             isFetchingData = false
 
             if (hasOrder()) {
                 displayOrderDetails()
-                fetchOrderSubscriptionsAsync().await()
+                awaitAll(
+                    fetchOrderSubscriptionsAsync(),
+                    fetchGiftCardsAsync()
+                )
             }
 
             viewState = viewState.copy(
@@ -607,7 +610,7 @@ class OrderDetailViewModel @Inject constructor(
     ): ListInfo<OrderProduct> {
         val products = refunds.list.getNonRefundedProducts(order.items)
         checkAddonAvailability(products)
-        val orderProducts = products.toOrderProducts()
+        val orderProducts = orderProductMapper.toOrderProducts(_productList.value ?: emptyList(), products)
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
     }
     private fun checkAddonAvailability(products: List<Order.Item>) {

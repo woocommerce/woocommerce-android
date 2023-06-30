@@ -27,6 +27,7 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -51,6 +52,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -63,10 +65,9 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-    @Inject
-    lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -195,31 +196,18 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        if (isAddProductViaBarcodeScanningEnabled()) {
-            productsSection.setProductSectionButtons(
-                addProductsButton = AddButton(
-                    text = getString(R.string.order_creation_add_products),
-                    onClickListener = {
-                        viewModel.onAddProductClicked()
-                    }
-                ),
-                addProductsViaScanButton = AddButton(
-                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                    onClickListener = {
-                        viewModel.startScan()
-                    }
-                )
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
             )
-        } else {
-            productsSection.setProductSectionButtons(
-                addProductsButton = AddButton(
-                    text = getString(R.string.order_creation_add_products),
-                    onClickListener = {
-                        viewModel.onAddProductClicked()
-                    }
-                )
-            )
-        }
+        )
     }
 
     private fun FragmentOrderCreateEditFormBinding.initPaymentSection() {
@@ -259,13 +247,13 @@ class OrderCreateEditFormFragment :
             new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
                 createOrderMenuItem?.isEnabled = it
             }
-            new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                updateProgressBarsVisibility(binding, !enabled)
+            new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->
+                updateProgressBarsVisibility(binding, !idle)
                 if (new.isEditable) {
-                    binding.paymentSection.shippingButton.isEnabled = enabled
-                    binding.paymentSection.feeButton.isEnabled = enabled
-                    binding.paymentSection.couponButton.isEnabled = enabled
-                    binding.productsSection.isEachAddButtonEnabled = enabled
+                    binding.paymentSection.shippingButton.isEnabled = idle
+                    binding.paymentSection.feeButton.isEnabled = idle
+                    binding.paymentSection.couponButton.isEnabled = new.isCouponButtonEnabled && idle
+                    binding.productsSection.isEachAddButtonEnabled = idle
                 }
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
@@ -277,7 +265,7 @@ class OrderCreateEditFormFragment :
                 showOrHideErrorSnackBar(show)
             }
             new.isEditable.takeIfNotEqualTo(old?.isEditable) { isEditable ->
-                if (isEditable) showEditableControls(binding) else hideEditableControls(binding)
+                if (isEditable) binding.showEditableControls(new) else binding.hideEditableControls()
             }
             new.multipleLinesContext.takeIfNotEqualTo(old?.multipleLinesContext) { multipleLinesContext ->
                 when (multipleLinesContext) {
@@ -456,6 +444,9 @@ class OrderCreateEditFormFragment :
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
         }
+        handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
+        }
     }
 
     private fun handleViewModelEvents(event: Event) {
@@ -469,6 +460,29 @@ class OrderCreateEditFormFragment :
                     ).let { findNavController().navigateSafely(it) }
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             is ShowDialog -> event.showDialog()
+            is OnAddingProductViaScanningFailed -> {
+                uiMessageResolver.getRetrySnack(
+                    stringResId = event.message,
+                    isIndefinite = false,
+                    actionListener = event.retry
+                ).show()
+            }
+            is OpenBarcodeScanningFragment -> {
+                findNavController().navigateSafely(
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
+                )
+            }
+            is VMKilledWhenScanningInProgress -> {
+                ToastUtils.showToast(
+                    context,
+                    event.message
+                )
+            }
+            is OnCouponRejectedByBackend -> {
+                uiMessageResolver.getSnack(
+                    stringResId = event.message
+                ).show()
+            }
             is Exit -> findNavController().navigateUp()
         }
     }
@@ -521,29 +535,31 @@ class OrderCreateEditFormFragment :
         return false
     }
 
-    private fun showEditableControls(binding: FragmentOrderCreateEditFormBinding) {
-        binding.messageNoEditableFields.visibility = View.GONE
-        binding.productsSection.apply {
+    private fun FragmentOrderCreateEditFormBinding.showEditableControls(
+        state: OrderCreateEditViewModel.ViewState
+    ) {
+        messageNoEditableFields.visibility = View.GONE
+        productsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
             content.productsAdapter?.areProductsEditable = true
         }
-        binding.paymentSection.apply {
+        paymentSection.apply {
             feeButton.isEnabled = true
             shippingButton.isEnabled = true
             lockIcon.isVisible = false
-            couponButton.isEnabled = true
+            couponButton.isEnabled = state.isCouponButtonEnabled
         }
     }
 
-    private fun hideEditableControls(binding: FragmentOrderCreateEditFormBinding) {
-        binding.messageNoEditableFields.visibility = View.VISIBLE
-        binding.productsSection.apply {
+    private fun FragmentOrderCreateEditFormBinding.hideEditableControls() {
+        messageNoEditableFields.visibility = View.VISIBLE
+        productsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
             content.productsAdapter?.areProductsEditable = false
         }
-        binding.paymentSection.apply {
+        paymentSection.apply {
             feeButton.isEnabled = false
             shippingButton.isEnabled = false
             lockIcon.isVisible = true

@@ -1,0 +1,1 @@
+This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!

@@ -39,7 +39,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             currencyFormatter = mock(),
             parameters = mock(),
             addonRepository = addonRepo,
-            variationRepository = mock()
+            variationRepository = mock(),
+            isAIProductDescriptionEnabled = mock()
         )
     }
 

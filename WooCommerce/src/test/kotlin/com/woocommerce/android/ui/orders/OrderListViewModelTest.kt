@@ -18,17 +18,23 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.CodeScanner
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
+import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.IPPSurveyFeedbackBannerState
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
@@ -55,6 +61,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
@@ -66,7 +73,6 @@ import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
-import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -90,7 +96,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
-    private val orderFetcher: WCOrderFetcher = mock()
+    private val orderFetcher: FetchOrdersRepository = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
         mock()
@@ -100,7 +106,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs = mock<AppPrefs>()
     private val feedbackPrefs = mock<FeedbackPrefs>()
-    private val codeScanner = mock<CodeScanner>()
+    private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
 
     @Before
     fun setup() = testBlocking {
@@ -151,7 +157,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         analyticsTracker = analyticsTracker,
         appPrefs = appPrefs,
         feedbackPrefs = feedbackPrefs,
-        codeScanner = codeScanner,
+        barcodeScanningTracker = barcodeScanningTracker,
     )
 
     @Test
@@ -452,7 +458,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * which contains a search query and based on this UI is refreshed or not.
      *
      * ATM we'll just trigger [PagedListWrapper.fetchFirstPage]. It's not an issue as later
-     * in the flow we use [WCOrderFetcher] which filters out requests that duplicate requests
+     * in the flow we use [FetchOrdersRepository] which filters out requests that duplicate requests
      * of fetching order.
      */
     @Test
@@ -535,7 +541,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then when the order status change fails, the retry message is shown
         val resultEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(resultEvent is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack)
+        assertTrue(resultEvent is OrderListEvent.ShowRetryErrorSnack)
     }
 
     @Test
@@ -681,7 +687,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel.onDismissIPPFeedbackBannerClicked()
 
             // then
-            assertEquals(OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
+            assertEquals(OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
         }
 
     @Test
@@ -699,7 +705,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertEquals(
-            OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
+            OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
             viewModel.event.value
         )
     }
@@ -962,32 +968,156 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when code scanner succeeds, then trigger proper event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatQRCode
+        )
         viewModel = createViewModel()
-        viewModel.startScan()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
-        assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OnBarcodeScanned::class.java)
+    }
+
+    @Test
+    fun `when code scanner fails, then trigger proper event`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            OnAddingProductViaScanningFailed::class.java
+        )
+    }
+
+    @Test
+    fun `when code scanner fails, then trigger event proper message`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat(
+            (viewModel.event.value as OnAddingProductViaScanningFailed).message
+        ).isEqualTo(R.string.order_list_barcode_scanning_scanning_failed)
+    }
+
+    @Test
+    fun `given code scanner failure, when retry clicked, then scan restarted`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
     }
 
     @Test
     fun `when code scanner succeeds, then trigger event with proper sku`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
         viewModel = createViewModel()
-        viewModel.startScan()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
-        assertThat(viewModel.event.value).isEqualTo(OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345"))
+        assertThat(viewModel.event.value).isEqualTo(
+            OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
+        )
     }
 
+    @Test
+    fun `when scan clicked, then track proper analytics event`() {
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    @Test
+    fun `when scan clicked, then trigger openBarcodeScanningFragment event`() {
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
+    }
+
+    @Test
+    fun `when scan success, then track proper analytics event`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(any())
+    }
+
+    @Test
+    fun `when scan success, then track proper analytics event with proper source`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(ScanningSource.ORDER_LIST)
+    }
+
+    @Test
+    fun `when scan failure, then track analytics event`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(any(), any())
+    }
+
+    @Test
+    fun `when scan failure, then track analytics event with proper source`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(eq(ScanningSource.ORDER_LIST), any())
+    }
+
+    @Test
+    fun `when scan failure, then track analytics event with proper type`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+        )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(
+            any(),
+            eq(CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld)
+        )
+    }
     //endregion
 
     private companion object {

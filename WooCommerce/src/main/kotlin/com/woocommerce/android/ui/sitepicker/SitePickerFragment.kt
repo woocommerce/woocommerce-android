@@ -12,6 +12,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.NavGraphMainDirections
@@ -71,6 +72,7 @@ class SitePickerFragment :
     private val binding get() = _binding!!
 
     private val viewModel: SitePickerViewModel by viewModels()
+    private val navArgs by navArgs<SitePickerFragmentArgs>()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -80,7 +82,7 @@ class SitePickerFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
-            navigationIcon = if (viewModel.openedFromLogin) R.drawable.ic_back_24dp else null,
+            navigationIcon = if (!navArgs.openedFromLogin) R.drawable.ic_back_24dp else null,
             hasShadow = false,
             hasDivider = false,
         )

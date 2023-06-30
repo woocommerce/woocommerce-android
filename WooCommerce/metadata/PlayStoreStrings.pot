@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_137"
+msgctxt "release_note_142"
 msgid ""
-"13.7:\n"
-"Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!\n"
+"14.2:\n"
+"Did you know you can now add coupons when creating an order? Yes, you can! You can also manage your coupons by heading over to the menu tab and clicking on the Coupons feature. Lastly, we’ve made some improvements to the scanning functionality when searching for a product. But we’re not done. Keep an eye out for more enhancements in the future.\n"
 msgstr ""
 
-msgctxt "release_note_136"
+msgctxt "release_note_141"
 msgid ""
-"13.6:\n"
-"Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Try it out and share your feedback!\n"
+"14.1:\n"
+"This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

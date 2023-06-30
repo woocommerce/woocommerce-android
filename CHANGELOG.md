@@ -1,6 +1,21 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.2
+Did you know you can now add coupons when creating an order? Yes, you can! You can also manage your coupons by heading over to the menu tab and clicking on the Coupons feature. Lastly, we’ve made some improvements to the scanning functionality when searching for a product. But we’re not done. Keep an eye out for more enhancements in the future.
+
+## 14.1
+This release includes some bug fixes & performance enhancements to the orders and products sections of the app. Keep your feedback coming!
+
+## 14.0
+This release includes several bug fixes and improvements to help you get your business started and ensure a smooth experience. Stay tuned for more enhancements in the future.
+
+## 13.9
+We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!
+
+## 13.8
+Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening! 
+
 ## 13.7
 Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!
 

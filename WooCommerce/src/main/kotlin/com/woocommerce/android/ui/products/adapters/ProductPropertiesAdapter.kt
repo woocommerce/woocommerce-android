@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Button
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
@@ -12,6 +13,8 @@ import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import com.woocommerce.android.ui.products.models.ProductProperty.Switch
+import com.woocommerce.android.ui.products.models.ProductProperty.Type
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.BUTTON
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.COMPLEX_PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.DIVIDER
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.EDITABLE
@@ -23,6 +26,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.WARNING
 import com.woocommerce.android.ui.products.models.ProductProperty.Warning
+import com.woocommerce.android.ui.products.viewholders.ButtonViewHolder
 import com.woocommerce.android.ui.products.viewholders.ComplexPropertyViewHolder
 import com.woocommerce.android.ui.products.viewholders.DividerViewHolder
 import com.woocommerce.android.ui.products.viewholders.EditableViewHolder
@@ -51,7 +55,7 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductPropertyViewHolder {
-        return when (ProductProperty.Type.values()[viewType]) {
+        return when (Type.values()[viewType]) {
             DIVIDER -> DividerViewHolder(parent)
             PROPERTY -> PropertyViewHolder(parent)
             COMPLEX_PROPERTY -> ComplexPropertyViewHolder(parent)
@@ -62,6 +66,7 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             READ_MORE -> ReadMoreViewHolder(parent)
             SWITCH -> SwitchViewHolder(parent)
             WARNING -> WarningViewHolder(WCWarningBanner(parent.context))
+            BUTTON -> ButtonViewHolder(parent)
         }
     }
 
@@ -83,6 +88,7 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             is ReadMoreViewHolder -> holder.bind(item as ReadMore)
             is SwitchViewHolder -> holder.bind(item as Switch)
             is WarningViewHolder -> holder.bind(item as Warning)
+            is ButtonViewHolder -> holder.bind(item as Button)
         }
     }
 }

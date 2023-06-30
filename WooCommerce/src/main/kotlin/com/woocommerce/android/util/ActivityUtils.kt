@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build.VERSION.SDK_INT
+import android.os.Parcelable
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.intentActivities
@@ -139,4 +141,10 @@ object ActivityUtils {
         val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
+}
+
+@Suppress("MagicNumber")
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
 }

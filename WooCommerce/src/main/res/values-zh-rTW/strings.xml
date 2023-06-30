@@ -1,17 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 09:54:04+0000
+Translation-Revision-Date: 2023-06-21 11:54:25+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">無法產生分享訊息。 請再試一次！</string>
+    <string name="product_sharing_ai_info_label">深入瞭解我們的 AI 功能</string>
+    <string name="product_sharing_optional_message_label">新增選用訊息</string>
+    <string name="product_sharing_generating">正在產生…</string>
+    <string name="product_sharing_regenerate">重新產生</string>
+    <string name="product_sharing_write_with_ai">使用 AI 撰寫</string>
+    <string name="more_menu_button_blaze_description">使用 Blaze 宣傳產品</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI 內容產生器現已可供使用</string>
+    <string name="product_detail_menu_item_promote_with_blaze">使用 Blaze 進行宣傳</string>
+    <string name="share_product">分享產品</string>
+    <string name="first_product_celebration_body_message">恭喜！ 你離新商店正式開幕更近一步了。</string>
+    <string name="first_product_celebration_title">你建立了第一個產品 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
+    <string name="order_list_barcode_scanning_process_death">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
+    <string name="card_reader_payment_card_removed_too_early">太早移除這張卡片了</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s，你的商店已暫停運作，不過你可選擇最符合需求的方案，以繼續營運。</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我們的方案維持業務運作！</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">你的 Woo Express 免費試用將於明天 (%1$s) 結束。 掌握未來就趁現在：快挑選一個方案，準備迎接業務成長。</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 免費試用的機會就快消失！</string>
+    <string name="local_notification_without_free_trial_description">%1$s，你好！我們已為你備妥 %2$s！ 只要按一下即可開始免費試用 14 天 Woo Express，展開你的網路事業。  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ 你的商店蓄勢待發！</string>
+    <string name="local_notification_store_creation_complete_description">%1$s，你好！ 歡迎免費試用 14 天 Woo Express。建立及發展成功的網路事業，你所需的一切盡在這裡。 準備好開始探索了嗎？</string>
+    <string name="local_notification_store_creation_complete_title">🎉 你的商店已準備就緒！</string>
+    <string name="product_type_variation">商品款式</string>
+    <string name="settings_policies_cookie_policy_description">我們的 Cookie 政策說明我們和其他人使用 Cookie 的方式，以及你能使用的管理選項。</string>
+    <string name="settings_policies_cookie_policy">Cookie 政策</string>
+    <string name="settings_policies_privacy_policy_description">你的資訊可協助我們改善 WooCommerce 上的商品和行銷方式，並為你提供個人化體驗。</string>
+    <string name="settings_policies_privacy_policy">隱私權政策</string>
+    <string name="privacy_banner_error_save">儲存你的隱私權設定時發生錯誤。</string>
+    <string name="privacy_banner_save">儲存</string>
+    <string name="privacy_banner_settings">設定</string>
+    <string name="privacy_banner_analytics_description">允許我們收集使用者與行動應用程式互動的相關資訊，進而將效能最佳化。</string>
+    <string name="privacy_banner_analytics">分析</string>
+    <string name="privacy_banner_title">管理隱私權</string>
+    <string name="privacy_banner_description">你的隱私權對我們至關重要，自始至終都是如此。 我們會使用、儲存及處理你的個人資料，並以各種方式最佳化我們的應用程式 (和你的體驗)。 我們必須仰賴你的某些資料，讓一切能順利運作，其餘資料則可由你透過「設定」來自訂使用方式。</string>
+    <string name="settings_reports_report_crashes_description">為協助我們改善應用程式的效能並修正偶爾發生的錯誤，請啟用自動當機報告。</string>
+    <string name="settings_reports_report_crashes">回報當機狀況</string>
+    <string name="settings_reports_header">報告</string>
+    <string name="settings_privacy_cookies_polices_description">深入瞭解我們的隱私權和 Cookie 政策。</string>
+    <string name="settings_privacy_cookies_polices">隱私權和 Cookie 政策</string>
+    <string name="settings_privacy_header">隱私權</string>
+    <string name="settings_usage_tracking_description">深入瞭解我們針對你的商店收集了哪些資料，以及您可使用的資料分享控制選項。</string>
+    <string name="settings_usage_tracking">使用情況追蹤</string>
+    <string name="settings_web_options_description">woocommerce.com 為使用者提供更多隱私權選項。 如要瞭解詳情，請查看此處。</string>
+    <string name="settings_web_options">網頁選項</string>
+    <string name="settings_more_privacy_options_header">其他隱私權選項</string>
+    <string name="settings_tracking_analytics_error_update">更新你的隱私權設定時發生錯誤</string>
+    <string name="settings_tracking_analytics_error_fetch">擷取你的隱私權設定時發生錯誤</string>
+    <string name="settings_tracking_analytics_description">允許我們收集使用者與行動應用程式互動的相關資訊，進而將效能最佳化。</string>
+    <string name="settings_tracking_analytics">分析</string>
+    <string name="settings_tracking_header">追蹤中</string>
+    <string name="settings_privacy_statement">我們重視你的隱私權。 我們會使用你的個人資料來最佳化行動應用程式、改善安全性、執行分析作業，以及提升你的使用者體驗。</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">你無法直接新增商品款式。 請選取特定款式</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">找不到商品。 無法新增至新訂單</string>
+    <string name="order_list_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
+    <string name="scan_barcode">掃描條碼</string>
+    <string name="shipping_notice_banner_instructions_content">如需運送至遵循歐盟 (EU) 海關規定的國家/地區，現在必須清楚描述每件商品。 舉例來說，若要寄送衣服，你必須指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊。 否則貨件可能會在海關階段延誤或中斷。</string>
+    <string name="settings_close_account_dialog_contact_support_button">聯絡支援團隊</string>
+    <string name="settings_close_account_active_stores_error_description">當此帳號具有啟用中的商店時，則無法關閉。</string>
+    <string name="settings_close_account_generic_error_description">嘗試關閉帳號時發生錯誤。</string>
+    <string name="settings_close_account_error_dialog_title">無法關閉帳號</string>
+    <string name="settings_close_account_dialog_loading_title">正在關閉帳號…</string>
+    <string name="settings_close_account_dialog_confirm_button">永久關閉帳號</string>
+    <string name="settings_close_account_dialog_description">為進行確認，請在關閉前重新輸入你的使用者名稱</string>
+    <string name="settings_close_account_dialog_title">確認關閉帳號</string>
+    <string name="settings_close_account">關閉帳號</string>
+    <string name="scan_to_pay_title">掃瞄 QR 碼並按照指示操作</string>
+    <string name="card_reader_type_selection_scan_to_pay">掃瞄付款</string>
+    <string name="order_creation_remove_coupon">從訂單移除優惠券</string>
+    <string name="order_creation_coupon_codes">優惠券 (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">新增優惠券</string>
     <string name="product_stock_status_insufficient_stock">庫存不足</string>
     <string name="shipping_label_customs_item_description_too_short">你必須針對每件商品提供清楚明確的說明。</string>
     <string name="order_creation_add_product_via_barcode_scanning">透過掃瞄器新增商品</string>
     <string name="shipping_notice_dismiss">關閉</string>
     <string name="shipping_notice_learn_more">深入瞭解</string>
-    <string name="shipping_notice_banner_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
+    <string name="shipping_notice_banner_warning_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">保持最新狀態並提升商店安全性。 立即深入瞭解 Jetpack。</string>
     <string name="jetpack_benefits_bottom_banner_title">收到訂單通知等其他資訊</string>
     <string name="store_onboarding_setting_description">顯示或隱藏商店設定清單</string>

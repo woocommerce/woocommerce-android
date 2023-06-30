@@ -82,14 +82,18 @@ data class OrderData(
     val feeRaw: String = "",
     val id: Int = -1,
     val productName: String = "",
+    val productsTotalRaw: String = "",
     val shippingRaw: String = "",
+    val taxesRaw: String = "",
     val statusRaw: String = "",
     val totalRaw: String = "",
 ) {
     val customerNote = "\"$customerNoteRaw\""
+    val productsTotalAmount = "\$$productsTotalRaw"
     val feeAmount = "\$$feeRaw"
+    val taxesAmount = "\$$taxesRaw"
     val shippingAmount = "\$$shippingRaw"
-    val status = orderStatusMap[statusRaw]
+    val status = orderStatusMap.getOrDefault(statusRaw, statusRaw)
     val total = "\$$totalRaw"
 }
 
@@ -98,5 +102,8 @@ data class StatsSummaryData(
     val orders: String,
     val visitors: String,
 ) {
-    val conversion = ((orders.toDouble() / visitors.toDouble()) * 100).toInt().toString() + "%"
+    val conversion = if (visitors == "0")
+        "0%"
+    else
+        ((orders.toDouble() / visitors.toDouble()) * 100).toInt().toString() + "%"
 }

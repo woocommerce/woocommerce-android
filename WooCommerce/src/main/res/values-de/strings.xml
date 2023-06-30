@@ -1,17 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 09:54:04+0000
+Translation-Revision-Date: 2023-06-21 11:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">Nachricht zum Teilen kann nicht erstellt werden. Versuche es bitte noch einmal!</string>
+    <string name="product_sharing_ai_info_label">Erfahre mehr über unsere KI-Funktion</string>
+    <string name="product_sharing_optional_message_label">Optionale Nachricht hinzufügen</string>
+    <string name="product_sharing_generating">Generierung läuft …</string>
+    <string name="product_sharing_regenerate">Neu generieren</string>
+    <string name="product_sharing_write_with_ai">Mit KI schreiben</string>
+    <string name="more_menu_button_blaze_description">Produkte mit Blaze bewerben</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">KI-Inhaltsgenerator verfügbar</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Mit Blaze bewerben</string>
+    <string name="share_product">Produkt teilen</string>
+    <string name="first_product_celebration_body_message">Glückwunsch! Du bist einen Schritt weiter auf dem Weg zu deinem neuen Shop.</string>
+    <string name="first_product_celebration_title">Erstes Produkt erstellt 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
+    <string name="order_list_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
+    <string name="card_reader_payment_card_removed_too_early">Die Karte wurde zu früh entfernt</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, wir haben deinen Shop deaktiviert, aber du kannst ihn wieder aktivieren, indem du einen für dich passenden Tarif auswählst.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Halte dein Geschäft mit unserem Tarif am Laufen!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">Dein Gratis-Test von Woo Express läuft morgen (%1$s) ab. Jetzt ist es an der Zeit, deine Zukunft selbst zu gestalten – wähle einen Tarif und bereite dich darauf vor, zu wachsen.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Dein Gratis-Test läuft bald ab!</string>
+    <string name="local_notification_without_free_trial_description">Hi %1$s, %2$s ist bereit für dich! Starte deinen 14-tägigen Gratis-Test von Woo Express mit nur einem Klick, um dein Online-Geschäft aufzubauen.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ Dein Shop wartet!</string>
+    <string name="local_notification_store_creation_complete_description">Hi %1$s! Willkommen zu deinem 14-tägigen Gratis-Test von Woo Express – alles, was du brauchst, um ein erfolgreiches Online-Geschäft zu starten und auszubauen, an einem zentralen Ort. Bereit, mehr zu entdecken?</string>
+    <string name="local_notification_store_creation_complete_title">🎉 Dein Shop ist einsatzbereit!</string>
+    <string name="product_type_variation">Variantenprodukt</string>
+    <string name="settings_policies_cookie_policy_description">In unserer Cookie-Richtlinie erklären wir, wie wir und andere Cookies verwenden und wie du sie verwalten kannst.</string>
+    <string name="settings_policies_cookie_policy">Cookie-Richtlinie</string>
+    <string name="settings_policies_privacy_policy_description">Deine Informationen helfen uns, unsere Produkte und unser Marketing zu verbessern und dein Erlebnis mit WooCommerce zu personalisieren.</string>
+    <string name="settings_policies_privacy_policy">Datenschutzerklärung</string>
+    <string name="privacy_banner_error_save">Beim Speichern der Datenschutzeinstellungen ist ein Fehler aufgetreten.</string>
+    <string name="privacy_banner_save">Speichern</string>
+    <string name="privacy_banner_settings">Einstellungen</string>
+    <string name="privacy_banner_analytics_description">Mit deiner Zustimmung können wir die Performance optimieren, indem wir Informationen zur Interaktion von Benutzern mit unseren Mobil-Apps sammeln.</string>
+    <string name="privacy_banner_analytics">Statistiken</string>
+    <string name="privacy_banner_title">Datenschutzeinstellungen verwalten</string>
+    <string name="privacy_banner_description">Der Schutz deiner personenbezogenen Daten hat für uns seit jeher einen hohen Stellenwert. Wir verwenden, speichern und verarbeiten deine personenbezogenen Daten, um unsere App (und dein Erlebnis) auf vielfältige Weise zu optimieren. Einige dieser Verwendungszwecke deiner Daten sind absolut notwendig für die Funktionsweise, andere wiederum kannst du in deinen Einstellungen anpassen.</string>
+    <string name="settings_reports_report_crashes_description">Aktiviere automatische Absturzberichte, um uns zu helfen, die Performance der App zu verbessern und gelegentliche Fehler zu korrigieren.</string>
+    <string name="settings_reports_report_crashes">Abstürze melden</string>
+    <string name="settings_reports_header">Berichte</string>
+    <string name="settings_privacy_cookies_polices_description">Weitere Informationen über unsere Datenschutzerklärung und unsere Cookie-Richtlinien.</string>
+    <string name="settings_privacy_cookies_polices">Datenschutzerklärung und Cookie-Richtlinien</string>
+    <string name="settings_privacy_header">Datenschutz</string>
+    <string name="settings_usage_tracking_description">Weitere Informationen zu den Daten, die wir über deinen Shop erfassen, sowie deinen Optionen zum Kontrollieren dieser Datenfreigabe.</string>
+    <string name="settings_usage_tracking">Nutzungsaufzeichnung</string>
+    <string name="settings_web_options_description">Weitere Datenschutz-Optionen für woocommerce.com-Benutzer verfügbar. Hier erfährst du mehr.</string>
+    <string name="settings_web_options">Web-Optionen</string>
+    <string name="settings_more_privacy_options_header">Mehr Datenschutz-Optionen</string>
+    <string name="settings_tracking_analytics_error_update">Beim Aktualisieren deiner Privatsphäre-Einstellungen ist ein Fehler aufgetreten</string>
+    <string name="settings_tracking_analytics_error_fetch">Beim Abrufen deiner Privatsphäre-Einstellungen ist ein Fehler aufgetreten</string>
+    <string name="settings_tracking_analytics_description">Mit deiner Zustimmung können wir die Performance optimieren, indem wir Informationen zur Interaktion von Benutzern mit unseren Mobil-Apps sammeln.</string>
+    <string name="settings_tracking_analytics">Statistiken</string>
+    <string name="settings_tracking_header">Sendungsverfolgung</string>
+    <string name="settings_privacy_statement">Der Schutz deiner Daten ist uns wichtig. Deine personenbezogenen Daten werden verwendet, um unsere Mobil-Apps zu optimieren, die Sicherheit zu verbessern, Analysen durchzuführen und dein Benutzererlebnis zu verbessern.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kannst variable Produkte nicht direkt hinzufügen. Bitte gib eine bestimmte Variante an</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">Scannen fehlgeschlagen. Bitte versuche es später erneut</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkt nicht gefunden. Hinzufügen zu neuer Bestellung nicht möglich</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Scannen fehlgeschlagen. Bitte versuche es später erneut</string>
+    <string name="scan_barcode">Barcode scannen</string>
+    <string name="shipping_notice_banner_instructions_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union (EU) unterliegen, musst du jeden Artikel ab sofort klar und deutlich beschreiben. Beispiel: Wenn du Bekleidung versendest, musst du die Art der Bekleidung angeben (z. B. Shirts für Männer, Weste für Mädchen, Jacke für Jungen), damit die Beschreibung akzeptiert wird. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Support kontaktieren</string>
+    <string name="settings_close_account_active_stores_error_description">Dieses Konto kann nicht geschlossen werden, solange es aktive Shops hat.</string>
+    <string name="settings_close_account_generic_error_description">Beim Versuch, dein Konto zu schließen, ist ein Fehler aufgetreten.</string>
+    <string name="settings_close_account_error_dialog_title">Konto konnte nicht geschlossen werden</string>
+    <string name="settings_close_account_dialog_loading_title">Konto wird geschlossen …</string>
+    <string name="settings_close_account_dialog_confirm_button">Konto dauerhaft schließen</string>
+    <string name="settings_close_account_dialog_description">Bitte gib den Benutzernamen vor dem Schließen erneut an, um den Vorgang zu bestätigen</string>
+    <string name="settings_close_account_dialog_title">Bestätige das Schließen des Kontos</string>
+    <string name="settings_close_account">Konto schließen</string>
+    <string name="scan_to_pay_title">Scanne den QR-Code und befolge die Anweisungen</string>
+    <string name="card_reader_type_selection_scan_to_pay">Zum Bezahlen scannen</string>
+    <string name="order_creation_remove_coupon">Gutschein aus Bestellung entfernen</string>
+    <string name="order_creation_coupon_codes">Gutschein (%1$s)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">Gutschein hinzufügen</string>
     <string name="product_stock_status_insufficient_stock">Unzureichender Bestand</string>
     <string name="shipping_label_customs_item_description_too_short">Gib bitte eine klare, spezifische Beschreibung aller Artikel an.</string>
     <string name="order_creation_add_product_via_barcode_scanning">Produkte per Scanner hinzufügen</string>
     <string name="shipping_notice_dismiss">Schließen</string>
     <string name="shipping_notice_learn_more">Weitere Informationen</string>
-    <string name="shipping_notice_banner_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union unterliegen, musst du eine klare, spezifische Beschreibung aller Artikel angeben. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
+    <string name="shipping_notice_banner_warning_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union unterliegen, musst du eine klare, spezifische Beschreibung aller Artikel angeben. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">Bleibe auf dem neuesten Stand und erhöhe die Sicherheit deines Shops. Sieh dir Jetpack jetzt an.</string>
     <string name="jetpack_benefits_bottom_banner_title">Erhalte Bestellbenachrichtigungen und vieles mehr</string>
     <string name="store_onboarding_setting_description">Checkliste für die Store-Einrichtung ein- oder ausblenden</string>

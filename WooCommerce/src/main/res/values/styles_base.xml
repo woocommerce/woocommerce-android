@@ -478,6 +478,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--  Circular button filled with color  -->
     <style name="Woo.Button.Colored.Circle" parent="Widget.MaterialComponents.Button">
         <item name="cornerSize">50%</item>
+        <item name="android:textColor">@color/woo_white</item>
         <item name="android:insetTop">@dimen/minor_00</item>
         <item name="android:insetBottom">@dimen/minor_00</item>
         <item name="android:insetLeft">@dimen/minor_00</item>
@@ -494,6 +495,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Button.Colored.White">
         <item name="android:textColor">@color/color_on_secondary</item>
         <item name="backgroundTint">@color/button_colored_bg_white_selector</item>
+    </style>
+
+    <style name="Woo.Button.Colored.Gray">
+        <item name="android:textColor">@color/light_colored_button_text</item>
+        <item name="backgroundTint">@color/light_colored_button_background</item>
+        <item name="iconTint">@color/light_colored_button_text</item>
     </style>
 
     <style name="Woo.Button.TextButton.Toggle">

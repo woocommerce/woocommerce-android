@@ -60,6 +60,7 @@ fun WCOutlinedTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
     helperText: String? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -88,7 +89,7 @@ fun WCOutlinedTextField(
             },
             enabled = enabled,
             readOnly = readOnly,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = textFieldModifier.fillMaxWidth(),
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             isError = isError,
@@ -202,7 +203,7 @@ fun WCSearchField(
         value = value,
         onValueChange = onValueChange,
         textStyle = TextStyle(
-            color = colorResource(id = R.color.color_on_surface_medium),
+            color = colorResource(id = R.color.color_on_surface),
             textDirection = ContentOrLtr
         ),
         modifier = modifier
@@ -246,7 +247,7 @@ fun WCSearchField(
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = stringResource(id = R.string.clear),
-                            tint = colorResource(id = R.color.color_on_surface_medium)
+                            tint = colorResource(id = R.color.color_on_surface_high)
                         )
                     }
                 }

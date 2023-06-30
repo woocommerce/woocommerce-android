@@ -18,11 +18,12 @@ class CardReaderPaymentErrorMapper @Inject constructor(
     fun mapPaymentErrorToUiError(
         errorType: CardPaymentStatus.CardPaymentStatusErrorType,
         config: CardReaderConfigForSupportedCountry,
+        isTapToPayPayment: Boolean,
     ): PaymentFlowError =
         when (errorType) {
             CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NoNetwork
             is CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError ->
-                mapPaymentDeclinedErrorType(errorType, config)
+                mapPaymentDeclinedErrorType(errorType, config, isTapToPayPayment)
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
             CardPaymentStatus.CardPaymentStatusErrorType.Generic -> PaymentFlowError.Generic
             is CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
@@ -40,6 +41,7 @@ class CardReaderPaymentErrorMapper @Inject constructor(
     private fun mapPaymentDeclinedErrorType(
         cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError,
         config: CardReaderConfigForSupportedCountry,
+        isTapToPayPayment: Boolean,
     ) = when (cardPaymentStatusErrorType) {
         AmountTooSmall -> generateAmountToSmallErrorFor(config)
 
@@ -55,7 +57,13 @@ class CardReaderPaymentErrorMapper @Inject constructor(
         CardDeclined.InsufficientFunds -> PaymentFlowError.Declined.InsufficientFunds
         CardDeclined.InvalidAccount -> PaymentFlowError.Declined.InvalidAccount
         CardDeclined.InvalidAmount -> PaymentFlowError.Declined.InvalidAmount
-        CardDeclined.PinRequired -> PaymentFlowError.Declined.PinRequired
+        CardDeclined.PinRequired -> {
+            if (isTapToPayPayment) {
+                PaymentFlowError.BuiltInReader.PinRequired
+            } else {
+                PaymentFlowError.Declined.PinRequired
+            }
+        }
         CardDeclined.Temporary -> PaymentFlowError.Declined.Temporary
         CardDeclined.TestCard -> PaymentFlowError.Declined.TestCard
         CardDeclined.TestModeLiveCard -> PaymentFlowError.Declined.TestModeLiveCard

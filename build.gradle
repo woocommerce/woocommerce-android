@@ -22,10 +22,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-
-        if (project.hasProperty("stripe_repo_url")) {
-            maven { url project.property("stripe_repo_url") }
-        }
     }
 
     tasks.withType(KotlinCompile).all {
@@ -99,7 +95,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-bdf3cbb96b0db995fcd55237783deadef2f95b72'
+    fluxCVersion = '2.34.0'
     wooCommerceSharedVersion = '10-6886fc67d845235d28ca2bc492faddf0098ffbf8'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
@@ -122,7 +118,10 @@ ext {
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
-    stripeTerminalVersion = '2.19.0'
+    stripeTerminalVersion = '2.21.1'
+    mlkitVersion = '17.1.0'
+    androidxCameraVersion = '1.2.3'
+    guavaVersion = '31.0.1-android'
 
     // Apache
     commonsText = '1.10.0'
@@ -131,7 +130,7 @@ ext {
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeBOMVersion = "2022.12.00"
-    composeCompilerVersion = "1.4.4"
+    composeCompilerVersion = "1.4.7"
     composeAccompanistVersion = "0.23.1"
     composeThemeAdapterVersion = "1.1.17"
 

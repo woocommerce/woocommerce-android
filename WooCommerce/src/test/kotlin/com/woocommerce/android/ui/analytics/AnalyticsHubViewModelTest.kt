@@ -724,11 +724,29 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private fun configureSuccessfulStatsResponse() {
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(getRevenueStats())) }
-            onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(getOrdersStats())) }
-            onBlocking { productsState } doReturn flow { emit(ProductsState.Available(getProductsStats())) }
-            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(testSessionStat)) }
-            onBlocking { invoke(any(), any(), any()) } doReturn flow { emit(AnalyticsHubUpdateState.Finished) }
+            onBlocking { revenueState } doReturn flow {
+                emit(RevenueState.Available(RevenueStat.EMPTY))
+                emit(RevenueState.Loading)
+                emit(RevenueState.Available(getRevenueStats()))
+            }
+            onBlocking { ordersState } doReturn flow {
+                emit(OrdersState.Available(OrdersStat.EMPTY))
+                emit(OrdersState.Loading)
+                emit(OrdersState.Available(getOrdersStats()))
+            }
+            onBlocking { productsState } doReturn flow {
+                emit(ProductsState.Available(ProductsStat.EMPTY))
+                emit(ProductsState.Loading)
+                emit(ProductsState.Available(getProductsStats()))
+            }
+            onBlocking { sessionState } doReturn flow {
+                emit(SessionState.Available(SessionStat.EMPTY))
+                emit(SessionState.Loading)
+                emit(SessionState.Available(testSessionStat))
+            }
+            onBlocking { invoke(any(), any(), any()) } doReturn flow {
+                emit(AnalyticsHubUpdateState.Finished)
+            }
         }
     }
 

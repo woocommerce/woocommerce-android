@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.taptopay.summary
 
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
@@ -206,6 +207,54 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             val event = viewModel.event.value as TapToPaySummaryViewModel.ShowSuccessfulRefundNotification
             assertThat(event.actionLabel).isEqualTo(R.string.card_reader_tap_to_pay_successful_refund_action_label)
             assertThat(event.message).isEqualTo(R.string.card_reader_tap_to_pay_successful_refund_message)
+        }
+
+    @Test
+    fun `given try ttp payment flow and autorefund success, when vm created, then refund success event tracked`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                refundStore.createAmountRefund(
+                    selectedSite.get(),
+                    order.id,
+                    BigDecimal(0.5),
+                    "Test Tap To Pay payment auto refund",
+                    true,
+                )
+            ).thenReturn(WooResult(mock<WCRefundModel>()))
+
+            // WHEN
+            initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_SUCCESS
+            )
+        }
+
+    @Test
+    fun `given try ttp payment flow and autorefund failed, when vm created, then refund failed event tracked`() =
+        testBlocking {
+            // GIVEN
+            val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
+            whenever(
+                refundStore.createAmountRefund(
+                    selectedSite.get(),
+                    order.id,
+                    BigDecimal(0.5),
+                    "Test Tap To Pay payment auto refund",
+                    true,
+                )
+            ).thenReturn(WooResult(error))
+
+            // WHEN
+            initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_FAILED,
+                mapOf(AnalyticsTracker.KEY_ERROR_DESC to error.message)
+            )
         }
 
     @Test

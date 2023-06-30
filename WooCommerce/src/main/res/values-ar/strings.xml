@@ -1,17 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 16:54:04+0000
+Translation-Revision-Date: 2023-06-21 17:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">يتعذر إنشاء رسالة مشاركة. يرجى المحاولة مرة أخرى!</string>
+    <string name="product_sharing_ai_info_label">معرفة المزيد حول ميزة الذكاء الاصطناعي التي نطرحها</string>
+    <string name="product_sharing_optional_message_label">إضافة رسالة اختيارية</string>
+    <string name="product_sharing_generating">جاري الإنشاء…</string>
+    <string name="product_sharing_regenerate">إعادة الإنشاء</string>
+    <string name="product_sharing_write_with_ai">الكتابة باستخدام الذكاء الاصطناعي</string>
+    <string name="more_menu_button_blaze_description">ترويج المنتجات باستخدام Blaze</string>
+    <string name="more_menu_button_blaze">التوهج</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">يتوافر منشئ محتوى الذكاء الاصطناعي</string>
+    <string name="product_detail_menu_item_promote_with_blaze">الترويج باستخدام Blaze</string>
+    <string name="share_product">مشاركة المنتج</string>
+    <string name="first_product_celebration_body_message">تهانينا! لقد قمت بخطوة واحدة أقرب لجعل المتجر الجديد جاهزًا.</string>
+    <string name="first_product_celebration_title">تم إنشاء المنتج أولاً 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="order_list_barcode_scanning_process_death">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="card_reader_payment_card_removed_too_early">تمت إزالة البطاقة مبكرًا جدًا</string>
+    <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩لقد أوقفنا متجرك مؤقتًا، لكن يمكنك الاستمرار من خلال اختيار خطة تلائمك على أفضل نحو.</string>
+    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 واصل أعمالك مع خطتنا!</string>
+    <string name="local_notification_one_day_before_free_trial_expires_description">ينتهي الإصدار التجريبي المجاني الذي تستخدمه من Woo Express غدًا (⁦%1$s⁩). حان الوقت الآن لإيجاد مكانتك في المستقبل - اختر خطة واستعد للتطور.</string>
+    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ أوشك وقت الإصدار التجريبي المجاني على النفاد!</string>
+    <string name="local_notification_without_free_trial_description">مرحبًا يا ⁦%1$s⁩، أصبح ⁦%2$s⁩ جاهزًا من أجلك! ابدأ الإصدار التجريبي المجاني الذي تستخدمه من Woo Express الذي تصل مدته إلى 14 يومًا مباشرة بنقرة واحدة فقط لبدء عملك على الإنترنت.  </string>
+    <string name="local_notification_without_free_trial_title">🛍️ متجرك في الانتظار!</string>
+    <string name="local_notification_store_creation_complete_description">مرحبًا يا ⁦%1$s⁩! مرحبًا في الإصدار التجريبي المجاني من Woo Express الذي تصل مدته إلى 14 يومًا - حيث يوجد كل ما تحتاج إليه لبدء عمل ناجح على الإنترنت وتطويره، كل ذلك في مكان واحد. هل أنت مستعد للاستكشاف؟</string>
+    <string name="local_notification_store_creation_complete_title">🎉 أصبح متجرك جاهزًا!</string>
+    <string name="product_type_variation">منتج التباين</string>
+    <string name="settings_policies_cookie_policy_description">توضّح سياسة الكوكيز لدينا كيف نستخدم نحن والآخرون الكوكيز، وكيف يمكننا إدارتها.</string>
+    <string name="settings_policies_cookie_policy">سياسة الكوكيز</string>
+    <string name="settings_policies_privacy_policy_description">تساعدنا معلوماتك على تحسين منتجاتنا والتسويق وتخصيص تجربتك على WooCommerce.</string>
+    <string name="settings_policies_privacy_policy">سياسة الخصوصية</string>
+    <string name="privacy_banner_error_save">كان هناك خطأ في أثناء حفظ خيارات الخصوصية الخاصة بك.</string>
+    <string name="privacy_banner_save">حفظ</string>
+    <string name="privacy_banner_settings">الإعدادات</string>
+    <string name="privacy_banner_analytics_description">اسمح لنا بتحسين الأداء عن طريق جمع المعلومات حول كيفية تفاعل المستخدمين مع تطبيقاتنا للهواتف المحمولة.</string>
+    <string name="privacy_banner_analytics">التحليلات</string>
+    <string name="privacy_banner_title">إدارة الخصوصية</string>
+    <string name="privacy_banner_description">تُمثِّل خصوصيتك أهمية بالغة بالنسبة إلينا وكانت دومًا كذلك. إننا نستخدم بياناتك الشخصية ونخزّنها ونعالجها لتحسين تطبيقنا (وتجربتك) بطرق متنوعة. إننا بحاجة إلى بعض استخدامات بياناتك بشكل كلي لكي تسير الأمور على ما يرام، إلى جانب استخدامات أخرى يمكنك تحسينها من إعداداتك.</string>
+    <string name="settings_reports_report_crashes_description">لمساعدتنا على تحسين أداء التطبيق وإصلاح الأخطاء العرضية، قم بتمكين تقرير الأعطال التلقائية.</string>
+    <string name="settings_reports_report_crashes">الإبلاغ عن الأعطال</string>
+    <string name="settings_reports_header">التقارير</string>
+    <string name="settings_privacy_cookies_polices_description">تعرّف على المزيد حول سياستَي الخصوصية والكوكيز لدينا.</string>
+    <string name="settings_privacy_cookies_polices">سياستَا الخصوصية والكوكيز</string>
+    <string name="settings_privacy_header">الخصوصية</string>
+    <string name="settings_usage_tracking_description">تعرّف على المزيد حول البيانات التي نجمعها حول متجرك وخياراتك للتحكم في مشاركة البيانات هذه.</string>
+    <string name="settings_usage_tracking">تعقب الاستخدام</string>
+    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
+    <string name="settings_web_options">خيارات الويب</string>
+    <string name="settings_more_privacy_options_header">مزيد من خيارات الخصوصية</string>
+    <string name="settings_tracking_analytics_error_update">كان هناك خطأ في أثناء تحديث إعدادات الخصوصية لديك</string>
+    <string name="settings_tracking_analytics_error_fetch">كان هناك خطأ في أثناء إحضار إعدادات الخصوصية لديك</string>
+    <string name="settings_tracking_analytics_description">اسمح لنا بتحسين الأداء عن طريق جمع المعلومات حول كيفية تفاعل المستخدمين مع تطبيقاتنا للهواتف المحمولة.</string>
+    <string name="settings_tracking_analytics">التحليلات</string>
+    <string name="settings_tracking_header">التعقُّب</string>
+    <string name="settings_privacy_statement">نقدّر خصوصيتك. تُستخدم بياناتك الشخصية لتحسين تطبيقاتنا للهواتف المحمولة وتعزيز الأمان وإجراء التحليلات إلى جانب دعم تجربة المستخدمين لديك.</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">يتعذر عليك إضافة المنتج المتغير مباشرة. يرجى تحديد تباين محدد</string>
+    <string name="order_creation_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">المنتج غير موجود. تتعذر إضافة طلب جديد</string>
+    <string name="order_list_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
+    <string name="scan_barcode">مسح الرمز الشريطي ضوئيًا</string>
+    <string name="shipping_notice_banner_instructions_content">يتطلب منك الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي وصف كل عنصر الآن بوضوح. على سبيل المثال، إذا كنت ترسل ملابس، فيجب عليك تحديد نوع الملابس (مثل: قمصان الرجال وسترات النساء التحتية وسترات الأولاد) لكي يصبح الوصف مقبولاً. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="settings_close_account_dialog_contact_support_button">الاتصال بالدعم</string>
+    <string name="settings_close_account_active_stores_error_description">يتعذر إغلاق هذا الحساب بينما يحتوي على متاجر نشطة.</string>
+    <string name="settings_close_account_generic_error_description">حدث خطأ في أثناء إغلاق حسابك.</string>
+    <string name="settings_close_account_error_dialog_title">يتعذر إغلاق الحساب</string>
+    <string name="settings_close_account_dialog_loading_title">جارٍ إغلاق الحساب…</string>
+    <string name="settings_close_account_dialog_confirm_button">إغلاق الحساب نهائيًا</string>
+    <string name="settings_close_account_dialog_description">للتأكيد، ترجى إعادة إدخال اسم المستخدم الخاص بك قبل الإغلاق</string>
+    <string name="settings_close_account_dialog_title">تأكيد إغلاق الحساب</string>
+    <string name="settings_close_account">إغلاق الحساب</string>
+    <string name="scan_to_pay_title">مسح الاستجابة السريعة ضوئيًا واتباع التعليمات</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+    <string name="order_creation_remove_coupon">إزالة قسيمة من الطلب</string>
+    <string name="order_creation_coupon_codes">القسيمة (⁦%1$s⁩)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">إضافة قسيمة</string>
     <string name="product_stock_status_insufficient_stock">مخزون غير كافٍ</string>
     <string name="shipping_label_customs_item_description_too_short">يجب عليك توفير واضح ومحدد لكل عنصر.</string>
     <string name="order_creation_add_product_via_barcode_scanning">إضافة منتجات عبر الفاحص</string>
     <string name="shipping_notice_dismiss">تجاهل</string>
     <string name="shipping_notice_learn_more">التعرّف على المزيد</string>
-    <string name="shipping_notice_banner_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="shipping_notice_banner_warning_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">ابقَّ على اطلاع وعزز أمان المتجر. استكشف Jetpack الآن.</string>
     <string name="jetpack_benefits_bottom_banner_title">تلقي تنبيهات الطلبات والمزيد</string>
     <string name="store_onboarding_setting_description">إظهار قائمة إعداد المتجر أو إخفاؤها</string>
