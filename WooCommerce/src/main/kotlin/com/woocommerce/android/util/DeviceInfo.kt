@@ -30,9 +30,9 @@ object DeviceInfo {
 
 @Singleton
 class DeviceInfoWrapper @Inject constructor() {
-    val OS: String
+    val osName: String
         get() = DeviceInfo.OS
-    val OSCode: Int
+    val osVersionCode: Int
         get() = DeviceInfo.OSCode
     val name: String
         get() = DeviceInfo.name

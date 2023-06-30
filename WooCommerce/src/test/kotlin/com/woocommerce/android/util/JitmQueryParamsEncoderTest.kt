@@ -10,20 +10,35 @@ import java.net.URLEncoder
 
 class JitmQueryParamsEncoderTest {
     private val buildConfigWrapper: BuildConfigWrapper = mock()
-    private val queryParramsEncoder = JitmQueryParamsEncoder(buildConfigWrapper)
+    private val deviceInfo: DeviceInfoWrapper = mock()
+    private val deviceFeatures: DeviceFeatures = mock()
+    private val encoder = JitmQueryParamsEncoder(
+        buildConfigWrapper,
+        deviceInfo,
+        deviceFeatures,
+    )
 
     @Test
     fun `given debug build, when getEncodedQueryParams called, then proper encoded query params returned`() {
         // GIVEN
         whenever(buildConfigWrapper.debug).thenReturn(BuildConfig.DEBUG)
+        whenever(deviceInfo.osVersionCode).thenReturn(29)
+        whenever(deviceInfo.name).thenReturn("Pixel 3")
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceInfo.locale).thenReturn("en_US")
 
         // WHEN
-        val encoderQueryParams = queryParramsEncoder.getEncodedQueryParams()
+        val encoderQueryParams = encoder.getEncodedQueryParams()
 
         // THEN
         assertThat(encoderQueryParams).isEqualTo(
             URLEncoder.encode(
-                "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}",
+                "build_type=developer&" +
+                    "platform=android&version=${BuildConfig.VERSION_NAME}" +
+                    "&os_version=29" +
+                    "&device=Pixel_3" +
+                    "&nfc=true" +
+                    "&locale=en_US",
                 Charsets.UTF_8.name()
             )
         )
@@ -33,14 +48,23 @@ class JitmQueryParamsEncoderTest {
     fun `given release build, when getEncodedQueryParams called, then proper encoded query params returned`() {
         // GIVEN
         whenever(buildConfigWrapper.debug).thenReturn(false)
+        whenever(deviceInfo.osVersionCode).thenReturn(27)
+        whenever(deviceInfo.name).thenReturn("Pixel 2")
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(false)
+        whenever(deviceInfo.locale).thenReturn("ru_RU")
 
         // WHEN
-        val encoderQueryParams = queryParramsEncoder.getEncodedQueryParams()
+        val encoderQueryParams = encoder.getEncodedQueryParams()
 
         // THEN
         assertThat(encoderQueryParams).isEqualTo(
             URLEncoder.encode(
-                "platform=android&version=${BuildConfig.VERSION_NAME}",
+                "platform=android" +
+                    "&version=${BuildConfig.VERSION_NAME}" +
+                    "&os_version=27" +
+                    "&device=Pixel_2" +
+                    "&nfc=false" +
+                    "&locale=ru_RU",
                 Charsets.UTF_8.name()
             )
         )

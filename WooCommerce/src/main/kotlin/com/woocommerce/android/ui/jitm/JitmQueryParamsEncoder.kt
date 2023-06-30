@@ -17,12 +17,12 @@ class JitmQueryParamsEncoder @Inject constructor(
         val query = StringBuilder(init)
             .appendKeyValue("platform", "android")
             .appendKeyValue("version", BuildConfig.VERSION_NAME)
-            .appendKeyValue("os_version", deviceInfo.OSCode.toString())
+            .appendKeyValue("os_version", deviceInfo.osVersionCode.toString())
             .appendKeyValue("device", deviceInfo.name)
             .appendKeyValue("nfc", deviceFeatures.isNFCAvailable().toString())
             .appendKeyValue("locale", deviceInfo.locale ?: "unknown")
             .replace("\\s".toRegex(), "_")
-        print(query)
+            .removePrefix("&")
         return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
