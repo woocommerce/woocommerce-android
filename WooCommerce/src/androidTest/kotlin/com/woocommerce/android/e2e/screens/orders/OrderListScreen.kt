@@ -21,10 +21,6 @@ class OrderListScreen : Screen(LIST_VIEW) {
         const val CREATE_ORDER_BUTTON = R.id.createOrderButton
     }
 
-    init {
-        dismissPromoDialog()
-    }
-
     fun selectOrder(index: Int): SingleOrderScreen {
         val correctedIndex = index + 1 // account for the header
         selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
@@ -70,11 +66,6 @@ class OrderListScreen : Screen(LIST_VIEW) {
             Espresso.pressBack()
             Espresso.pressBack()
         }
-        return this
-    }
-
-    private fun dismissPromoDialog(): OrderListScreen {
-        dismissDialog()
         return this
     }
 
