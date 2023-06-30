@@ -188,12 +188,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
-    fun setActiveStatsGranularity(currentSiteId: Int, statsGranularity: String) {
-        AppPrefs.setActiveStatsGranularity(currentSiteId, statsGranularity)
+    fun setActiveStatsGranularity(statsGranularity: String) {
+        AppPrefs.setActiveStatsGranularity(statsGranularity)
     }
 
-    fun getActiveStatsGranularity(currentSiteId: Int) =
-        AppPrefs.getActiveStatsGranularity(currentSiteId)
+    fun getActiveStatsGranularity() =
+        AppPrefs.getActiveStatsGranularity()
 
     fun markAsNewSignUp(newSignUp: Boolean) {
         AppPrefs.markAsNewSignUp(newSignUp)

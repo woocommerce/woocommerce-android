@@ -868,13 +868,11 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
-    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
-        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    fun setActiveStatsGranularity(activeStatsGranularity: String) {
+        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, activeStatsGranularity)
     }
 
-    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
-        getActiveStatsGranularityFilterKey(currentSiteId)
-    )
+    fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
     fun markAsNewSignUp(newSignUp: Boolean) {
         setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
@@ -905,9 +903,6 @@ object AppPrefs {
     }
 
     fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
-
-    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
-        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Used for storing IPP feedback banner interaction data.
