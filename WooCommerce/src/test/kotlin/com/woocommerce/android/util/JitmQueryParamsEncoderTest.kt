@@ -1,16 +1,16 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.ui.jitm.QueryParamsEncoder
+import com.woocommerce.android.ui.jitm.JitmQueryParamsEncoder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.URLEncoder
 
-class QueryParamsEncoderTest {
+class JitmQueryParamsEncoderTest {
     private val buildConfigWrapper: BuildConfigWrapper = mock()
-    private val queryParramsEncoder = QueryParamsEncoder(buildConfigWrapper)
+    private val queryParramsEncoder = JitmQueryParamsEncoder(buildConfigWrapper)
 
     @Test
     fun `given debug build, when getEncodedQueryParams called, then proper encoded query params returned`() {

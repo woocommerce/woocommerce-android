@@ -5,7 +5,7 @@ import com.woocommerce.android.util.BuildConfigWrapper
 import java.net.URLEncoder
 import javax.inject.Inject
 
-class QueryParamsEncoder @Inject constructor(
+class JitmQueryParamsEncoder @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper
 ) {
     fun getEncodedQueryParams(): String {
