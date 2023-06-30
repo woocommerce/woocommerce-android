@@ -27,6 +27,8 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
@@ -237,7 +239,14 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
     @Test
     fun `when syncing stats data starts with ForceNew strategy, then store the expected timestamp`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
 
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(analyticsDataStore, times(1)).storeLastAnalyticsUpdate(testRangeSelection)
     }
 
     private fun configureSuccessResponseStub() {
