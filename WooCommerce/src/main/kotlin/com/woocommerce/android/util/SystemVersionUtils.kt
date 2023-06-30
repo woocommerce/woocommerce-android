@@ -4,6 +4,9 @@ import android.os.Build
 
 @Suppress("Unused", "TooManyFunctions")
 object SystemVersionUtils {
+    fun isAtLeastU() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    fun isAtMostU() = Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
     fun isAtLeastT() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     fun isAtMostT() = Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU
 
