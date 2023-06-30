@@ -3372,8 +3372,6 @@
     <string name="ai_product_description_note_dialog_heading">Great start!</string>
     <string name="ai_product_description_note_dialog_message">Please keep in mind that this product description was generated using our AI-powered tool. Please review and edit the content to ensure it aligns with your brand and messaging.</string>
     <string name="ai_product_description_note_dialog_confirmation">Got it</string>
-
-
-
+    <string name="ai_product_description_learn_more_link">Powered by AI. &lt;a href=\'\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
 
 </resources>
