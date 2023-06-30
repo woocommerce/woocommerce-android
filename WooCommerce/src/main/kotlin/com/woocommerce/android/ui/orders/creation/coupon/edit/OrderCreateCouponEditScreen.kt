@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.ERROR
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.IDLE
 
