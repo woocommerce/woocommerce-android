@@ -26,6 +26,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -247,6 +248,25 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
         // Then
         verify(analyticsDataStore, times(1)).storeLastAnalyticsUpdate(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats data stats with Stored strategy, then do not store the timestamp`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(analyticsDataStore, never()).storeLastAnalyticsUpdate(testRangeSelection)
     }
 
     private fun configureSuccessResponseStub() {
