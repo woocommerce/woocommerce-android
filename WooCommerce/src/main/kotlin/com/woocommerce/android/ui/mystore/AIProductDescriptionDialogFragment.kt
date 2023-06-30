@@ -7,8 +7,14 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R.style
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.mystore.AIProductDescriptionDialogViewModel.TryAIProductDescriptionGeneration
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 
@@ -18,6 +24,8 @@ class AIProductDescriptionDialogFragment : DialogFragment() {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
+
+    private val viewModel: AIProductDescriptionDialogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +42,25 @@ class AIProductDescriptionDialogFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    AIProductDescriptionDialog({}, {})
+                    AIProductDescriptionDialog(viewModel::onTryNowButtonClicked, viewModel::onDismissButtonClicked)
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is TryAIProductDescriptionGeneration -> openBlankProduct()
+                is Exit -> findNavController().navigateUp()
+            }
+        }
+    }
+
+    private fun openBlankProduct() {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+        )
     }
 
     override fun onStart() {
