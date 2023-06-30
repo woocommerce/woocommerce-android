@@ -146,11 +146,6 @@ open class Screen {
         clickOn(element)
     }
 
-    fun dismissDialog() {
-        val device = UiDevice.getInstance(getInstrumentation())
-        device.click(1, 1)
-    }
-
     fun scrollTo(elementID: Int) {
         // Need to use the NestedScrollViewExtension because Espresso doesn't natively support it:
         // https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
