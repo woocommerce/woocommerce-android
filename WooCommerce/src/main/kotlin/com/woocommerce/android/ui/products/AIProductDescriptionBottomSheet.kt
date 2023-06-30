@@ -49,51 +49,99 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Start
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.Celebration
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.Dismissed
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationFlow
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Celebration
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generated
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Regenerating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Start
 
 @Composable
 fun AIProductDescriptionBottomSheet(
     viewModel: AIProductDescriptionViewModel
 ) {
     viewModel.viewState.observeAsState().value?.let { state ->
-        when (state) {
-            Celebration -> {
-                CelebrationDialog(viewModel::onCelebrationConfirmClicked)
-            }
-            is GenerationFlow -> {
-                DescriptionGenerationForm(
-                    state = state,
-                    onFeaturesChanged = viewModel::onFeaturesChanged,
-                    onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
-                    onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
-                    onCopyButtonClicked = viewModel::onCopyButtonClicked,
-                    onApplyButtonClicked = viewModel::onApplyButtonClicked,
-                    onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived
-                )
-            }
-            Dismissed -> {
-            }
-        }
+        DescriptionGenerationForm(
+            state = state,
+            onFeaturesChanged = viewModel::onFeaturesChanged,
+            onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
+            onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
+            onCopyButtonClicked = viewModel::onCopyButtonClicked,
+            onApplyButtonClicked = viewModel::onApplyButtonClicked,
+            onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived,
+            onCelebrationButtonClicked = viewModel::onCelebrationButtonClicked
+        )
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DescriptionGenerationForm(
-    state: GenerationFlow,
+    state: ViewState,
     onFeaturesChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onRegenerateButtonClicked: () -> Unit,
     onCopyButtonClicked: () -> Unit,
     onApplyButtonClicked: () -> Unit,
     onDescriptionFeedbackReceived: (Boolean) -> Unit,
+    onCelebrationButtonClicked: () -> Unit,
 ) {
+    AnimatedContent(state.flowState) { flowState ->
+        when (flowState) {
+            Generated -> {
+                GenerationFlow(state, onFeaturesChanged) {
+                    GeneratedDescription(
+                        description = state.description,
+                        onRegenerateButtonClicked = onRegenerateButtonClicked,
+                        onApplyButtonClicked = onApplyButtonClicked,
+                        onCopyButtonClicked = onCopyButtonClicked,
+                        onDescriptionFeedbackReceived = onDescriptionFeedbackReceived
+                    )
+                }
+            }
+            FlowState.Generating -> {
+                GenerationFlow(state, onFeaturesChanged) {
+                    ProductDescriptionSkeletonView()
+
+                    WCColoredButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { },
+                        enabled = false
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(dimensionResource(id = dimen.major_100)),
+                            color = colorResource(id = color.color_on_surface_disabled)
+                        )
+                    }
+                }
+            }
+            Start -> {
+                GenerationFlow(state, onFeaturesChanged) {
+                    WCColoredButton(
+                        onClick = onGenerateButtonClicked,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = string.product_sharing_write_with_ai),
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = drawable.ic_ai),
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
+            Regenerating -> {
+                GenerationFlow(state, onFeaturesChanged) {
+                    RegenerationInProgress(onApplyButtonClicked)
+                }
+            }
+            Celebration -> CelebrationDialog(onCelebrationButtonClicked)
+        }
+    }
+}
+
+@Composable
+private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit, content: @Composable () -> Unit) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
@@ -117,71 +165,29 @@ fun DescriptionGenerationForm(
             color = colorResource(id = color.divider_color),
             thickness = dimensionResource(id = dimen.minor_10)
         )
-        AnimatedContent(state.generationState) { generationState ->
-            Column(
-                modifier = Modifier
-                    .padding(dimensionResource(id = dimen.major_100)),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
-            ) {
-                OutlinedTextField(
-                    value = state.features,
-                    modifier = Modifier.fillMaxWidth(),
-                    onValueChange = onFeaturesChanged,
-                    placeholder = {
-                        Text(stringResource(id = string.ai_product_description_hint))
-                    }
-                )
-
-                Text(
-                    text = stringResource(id = R.string.ai_product_description_example),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = color.color_on_surface_medium)
-                )
-
-                Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_75)))
-
-                when (generationState) {
-                    Generated -> {
-                        GeneratedDescription(
-                            description = state.description,
-                            onRegenerateButtonClicked = onRegenerateButtonClicked,
-                            onApplyButtonClicked = onApplyButtonClicked,
-                            onCopyButtonClicked = onCopyButtonClicked,
-                            onDescriptionFeedbackReceived = onDescriptionFeedbackReceived
-                        )
-                    }
-                    GenerationState.Generating -> {
-                        ProductDescriptionSkeletonView()
-
-                        WCColoredButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { },
-                            enabled = false
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(dimensionResource(id = dimen.major_100)),
-                                color = colorResource(id = color.color_on_surface_disabled)
-                            )
-                        }
-                    }
-                    Start -> {
-                        WCColoredButton(
-                            onClick = onGenerateButtonClicked,
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(id = string.product_sharing_write_with_ai),
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(id = drawable.ic_ai),
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                    Regenerating -> {
-                        RegenerationInProgress(onApplyButtonClicked)
-                    }
+        Column(
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
+        ) {
+            OutlinedTextField(
+                value = state.features,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = onFeaturesChanged,
+                placeholder = {
+                    Text(stringResource(id = string.ai_product_description_hint))
                 }
-            }
+            )
+
+            Text(
+                text = stringResource(id = R.string.ai_product_description_example),
+                style = MaterialTheme.typography.caption,
+                color = colorResource(id = color.color_on_surface_medium)
+            )
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_75)))
+
+            content()
         }
     }
 }
@@ -439,8 +445,8 @@ fun CelebrationDialog(
 @Composable
 fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
-        GenerationFlow(
-            generationState = Start,
+        ViewState(
+            flowState = Start,
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."
@@ -450,6 +456,7 @@ fun PreviewAIDescriptionGenerationForm() {
         onRegenerateButtonClicked = {},
         onCopyButtonClicked = {},
         onApplyButtonClicked = {},
-        onDescriptionFeedbackReceived = {}
+        onDescriptionFeedbackReceived = {},
+        onCelebrationButtonClicked = {}
     )
 }
