@@ -276,7 +276,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when selection type is CUSTOM, then follow the data store and request data with Stored strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+            onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn false
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
@@ -287,10 +287,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testCustomRangeSelection, this)
 
         // Then
-        verify(repository, times(1)).fetchRevenueData(testCustomRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchOrdersData(testCustomRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchVisitorsData(testCustomRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchProductsData(testCustomRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchRevenueData(testCustomRangeSelection, Saved)
+        verify(repository, times(1)).fetchOrdersData(testCustomRangeSelection, Saved)
+        verify(repository, times(1)).fetchVisitorsData(testCustomRangeSelection, Saved)
+        verify(repository, times(1)).fetchProductsData(testCustomRangeSelection, Saved)
     }
 
     @Test
