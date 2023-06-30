@@ -1074,7 +1074,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when create button tapped, send track event`() {
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
         sut.onCreateOrderClicked(defaultOrderValue)
@@ -1093,7 +1092,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when coupon added should track event`() {
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
         val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code")
@@ -1107,7 +1105,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when coupon removed should track event`() {
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
         val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc")

@@ -79,7 +79,8 @@ class OrderCreateCouponEditFragment : BaseFragment() {
                         mode = args.orderCreationMode,
                         couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode(
                             it.oldCode,
-                            it.newCode
+                            it.newCode,
+                            args.orderDraft
                         ),
                         sku = null,
                         barcodeFormat = null
@@ -89,7 +90,10 @@ class OrderCreateCouponEditFragment : BaseFragment() {
                 is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
                     val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
                         mode = args.orderCreationMode,
-                        couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon(it.couponCode),
+                        couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon(
+                            it.couponCode,
+                            args.orderDraft
+                        ),
                         sku = null,
                         barcodeFormat = null
                     )
@@ -98,8 +102,10 @@ class OrderCreateCouponEditFragment : BaseFragment() {
                 is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
                     val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
                         mode = args.orderCreationMode,
-                        couponEditResult =
-                        OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode(it.couponCode),
+                        couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode(
+                            it.couponCode,
+                            args.orderDraft
+                        ),
                         sku = null,
                         barcodeFormat = null
                     )

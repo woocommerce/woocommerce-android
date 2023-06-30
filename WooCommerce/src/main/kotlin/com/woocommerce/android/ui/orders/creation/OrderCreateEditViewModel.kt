@@ -133,6 +133,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        private const val KEY_ORDER_DRAFT = "key_order_draft"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -146,7 +147,12 @@ class OrderCreateEditViewModel @Inject constructor(
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
-    private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
+    private val _orderDraft = savedState.getStateFlow(
+        viewModelScope,
+        args.couponEditResult?.orderDraft ?: Order.EMPTY,
+        key = KEY_ORDER_DRAFT
+    )
+
     val orderDraft = _orderDraft
         .asLiveData()
 
@@ -689,14 +695,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCouponButtonClicked() {
         if (_orderDraft.value.couponLines.isEmpty()) {
-            triggerEvent(EditCoupon(mode))
+            triggerEvent(EditCoupon(orderCreationMode = mode, orderDraft = _orderDraft.value))
         } else {
-            triggerEvent(CouponList(mode, _orderDraft.value.couponLines))
+            triggerEvent(CouponList(mode, _orderDraft.value.couponLines, _orderDraft.value))
         }
     }
 
     fun onAddCouponButtonClicked() {
-        triggerEvent(EditCoupon(mode))
+        triggerEvent(EditCoupon(orderCreationMode = mode, orderDraft = _orderDraft.value))
     }
 
     fun onShippingButtonClicked() {
@@ -705,7 +711,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCreateOrderClicked(order: Order) {
         when (mode) {
-            Mode.Creation -> viewModelScope.launch {
+            is Mode.Creation -> viewModelScope.launch {
                 trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
                 orderCreateEditRepository.placeOrder(order).fold(

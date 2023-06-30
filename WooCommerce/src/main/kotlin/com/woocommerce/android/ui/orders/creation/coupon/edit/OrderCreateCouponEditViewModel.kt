@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -93,14 +94,20 @@ class OrderCreateCouponEditViewModel @Inject constructor(
     enum class ValidationState { IDLE, IN_PROGRESS, ERROR }
 
     @Parcelize
-    sealed class CouponEditResult : MultiLiveEvent.Event(), Parcelable {
+    sealed class CouponEditResult(
+        open val orderDraft: Order? = null
+    ) : MultiLiveEvent.Event(), Parcelable {
         @Parcelize
-        data class UpdateCouponCode(val oldCode: String, val newCode: String) : CouponEditResult()
+        data class UpdateCouponCode(
+            val oldCode: String,
+            val newCode: String,
+            override val orderDraft: Order? = null
+        ) : CouponEditResult()
 
         @Parcelize
-        data class AddNewCouponCode(val couponCode: String) : CouponEditResult()
+        data class AddNewCouponCode(val couponCode: String, override val orderDraft: Order? = null) : CouponEditResult()
 
         @Parcelize
-        data class RemoveCoupon(val couponCode: String) : CouponEditResult()
+        data class RemoveCoupon(val couponCode: String, override val orderDraft: Order? = null) : CouponEditResult()
     }
 }

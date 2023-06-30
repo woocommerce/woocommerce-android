@@ -46,14 +46,18 @@ class OrderCreateCouponListFragment : BaseFragment() {
                     findNavController().navigate(
                         actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment(
                             args.orderCreationMode,
-                            it.couponCode
+                            it.couponCode,
+                            args.orderDraft
                         )
                     )
                 }
 
                 is OrderCreateCouponListViewModel.AddCoupon -> {
                     findNavController().navigate(
-                        actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment(args.orderCreationMode)
+                        actionOrderCreationCouponListFragmentToOrderCreationCouponEditFragment(
+                            args.orderCreationMode,
+                            orderDraft = args.orderDraft
+                        )
                     )
                 }
 

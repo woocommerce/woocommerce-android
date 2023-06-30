@@ -24,11 +24,13 @@ sealed class OrderCreateEditNavigationTarget : Event() {
 
     data class EditCoupon(
         val orderCreationMode: OrderCreateEditViewModel.Mode,
-        val couponCode: String? = null
+        val couponCode: String? = null,
+        val orderDraft: Order? = null
     ) : OrderCreateEditNavigationTarget()
 
     data class CouponList(
         val orderCreationMode: OrderCreateEditViewModel.Mode,
-        val couponLines: Collection<Order.CouponLine>
+        val couponLines: Collection<Order.CouponLine>,
+        val orderDraft: Order? = null
     ) : OrderCreateEditNavigationTarget()
 }

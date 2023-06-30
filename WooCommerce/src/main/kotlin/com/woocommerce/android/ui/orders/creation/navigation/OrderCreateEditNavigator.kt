@@ -45,12 +45,14 @@ object OrderCreateEditNavigator {
             is EditCoupon ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditFragment(
                     orderCreationMode = target.orderCreationMode,
-                    couponCode = target.couponCode
+                    couponCode = target.couponCode,
+                    orderDraft = target.orderDraft
                 )
             is OrderCreateEditNavigationTarget.CouponList -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponListFragment(
                     orderCreationMode = target.orderCreationMode,
-                    couponLines = target.couponLines.toTypedArray()
+                    couponLines = target.couponLines.toTypedArray(),
+                    orderDraft = target.orderDraft
                 )
             }
         }

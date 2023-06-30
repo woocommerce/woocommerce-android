@@ -88,9 +88,6 @@
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
             app:popExitAnim="@anim/default_pop_exit_anim">
-            <argument
-                android:name="couponLines"
-                app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
         </action>
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditFragment"
@@ -101,11 +98,6 @@
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
             app:popExitAnim="@anim/default_pop_exit_anim">
-            <argument
-                android:name="couponCode"
-                app:argType="string"
-                app:nullable="true"
-                android:defaultValue="@null"/>
         </action>
         <argument
             android:name="mode"
@@ -220,6 +212,11 @@
         <argument
             android:name="orderCreationMode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <argument
+            android:name="orderDraft"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <action
             android:id="@+id/action_orderCreationCouponListFragment_to_orderCreationCouponEditFragment"
             app:destination="@id/orderCreationCouponEditFragment"
@@ -243,6 +240,11 @@
         <argument
             android:name="orderCreationMode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <argument
+            android:name="orderDraft"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <action
             android:id="@+id/action_orderCreationCouponEditFragment_to_orderCreationFragment"
             app:destination="@id/orderCreationFragment"

@@ -216,22 +216,23 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `given no coupon added to order when add new coupon clicked, then should redirect to coupon form`() {
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
         var latestEvent: Event? = null
         sut.event.observeForever {
             latestEvent = it
         }
-
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
         sut.onCouponButtonClicked()
 
-        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(sut.mode, null), latestEvent)
+        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(sut.mode, null, orderDraft), latestEvent)
     }
 
     @Test
     fun `given coupon line present in order, when coupon button clicked, then should redirect to coupon list screen`() {
         // given
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
         var latestEvent: Event? = null
         sut.event.observeForever {
@@ -247,7 +248,14 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.onCouponButtonClicked()
 
         // then
-        assertEquals(OrderCreateEditNavigationTarget.CouponList(sut.mode, orderDraft!!.couponLines), latestEvent)
+        assertEquals(
+            OrderCreateEditNavigationTarget.CouponList(
+                sut.mode,
+                orderDraft!!.couponLines,
+                sut.orderDraft.value
+            ),
+            latestEvent
+        )
     }
 
     @Test
