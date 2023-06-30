@@ -6,6 +6,7 @@ import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
@@ -236,6 +237,39 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         assertThat(sessionStatsUpdates[2]).isEqualTo(SessionState.Error)
 
         job.cancel()
+    }
+
+    @Test
+    fun `when data store allows new stats fetch, then request data with ForceNew strategy`() = testBlocking {
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(repository, times(1)).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchProductsData(testRangeSelection, ForceNew)
+    }
+
+    @Test
+    fun `when data store does NOT allows net stats fetch, then request data with Saved strategy`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(repository, times(1)).fetchRevenueData(testRangeSelection, Saved)
+        verify(repository, times(1)).fetchOrdersData(testRangeSelection, Saved)
+        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, Saved)
+        verify(repository, times(1)).fetchProductsData(testRangeSelection, Saved)
     }
 
     @Test
