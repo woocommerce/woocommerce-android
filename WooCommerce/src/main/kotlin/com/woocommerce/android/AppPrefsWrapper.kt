@@ -349,11 +349,5 @@ class AppPrefsWrapper @Inject constructor() {
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
-
-    fun wasAIProductDescriptionCelebrationShown() =
-        AppPrefs.wasAIProductDescriptionCelebrationShown()
-
-    fun setAIProductDescriptionCelebrationShown(wasShown: Boolean) {
-        AppPrefs.setAIProductDescriptionCelebrationShown(wasShown)
-    }
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 }

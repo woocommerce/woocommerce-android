@@ -60,11 +60,11 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onApplyButtonClicked() {
-        if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown()) {
+        if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown) {
             _viewState.update { Dismissed }
         } else {
             _viewState.update { Celebration }
-            appPrefsWrapper.setAIProductDescriptionCelebrationShown(true)
+            appPrefsWrapper.wasAIProductDescriptionCelebrationShown = true
         }
     }
 

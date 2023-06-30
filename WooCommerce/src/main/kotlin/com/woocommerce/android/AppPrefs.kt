@@ -769,13 +769,15 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
-    fun wasAIProductDescriptionCelebrationShown(): Boolean {
-        return getBoolean(DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN, false)
-    }
-
-    fun setAIProductDescriptionCelebrationShown(wasShown: Boolean) {
-        setBoolean(DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN, wasShown)
-    }
+    var wasAIProductDescriptionCelebrationShown: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            value = value
+        )
 
     fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) {
         setString(getOrderFilterKey(currentSiteId, filterCategory), filterValue)
