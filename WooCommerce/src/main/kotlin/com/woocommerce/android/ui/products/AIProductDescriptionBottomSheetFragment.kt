@@ -8,12 +8,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
-    private val viewModel: ProductAIDescriptionViewModel by viewModels()
+    private val viewModel: AIProductDescriptionViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -21,8 +22,22 @@ class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    ProductAIDescriptionScreen(viewModel = viewModel)
+                    AIProductDescriptionBottomSheet(viewModel = viewModel)
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        observeEvents()
+    }
+
+    private fun observeEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> dismiss()
             }
         }
     }

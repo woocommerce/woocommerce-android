@@ -119,6 +119,7 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
     }
 
     /**
@@ -768,6 +769,16 @@ object AppPrefs {
     fun setTrackingExtensionAvailable(isAvailable: Boolean) {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
+
+    var wasAIProductDescriptionCelebrationShown: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            value = value
+        )
 
     fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) {
         setString(getOrderFilterKey(currentSiteId, filterCategory), filterValue)
