@@ -13,11 +13,17 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Revenue
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult.VisitorsData
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import java.util.Calendar
 import java.util.Locale
 
 val testRangeSelection = TODAY.generateSelectionData(
+    calendar = Calendar.getInstance(),
+    locale = Locale.getDefault()
+)
+
+val testCustomRangeSelection = CUSTOM.generateSelectionData(
     calendar = Calendar.getInstance(),
     locale = Locale.getDefault()
 )
