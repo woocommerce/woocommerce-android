@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.coupon
+package com.woocommerce.android.ui.orders.creation.coupon.edit
 
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.CouponStore

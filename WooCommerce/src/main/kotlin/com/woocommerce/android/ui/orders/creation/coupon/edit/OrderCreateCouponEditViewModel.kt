@@ -1,5 +1,6 @@
-package com.woocommerce.android.ui.orders.creation.coupon
+package com.woocommerce.android.ui.orders.creation.coupon.edit
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,15 +12,16 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreateCouponEditionViewModel @Inject constructor(
+class OrderCreateCouponEditViewModel @Inject constructor(
     private val validator: CouponValidator,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val navArgs: OrderCreateCouponEditionFragmentArgs by savedState.navArgs()
+    private val navArgs: OrderCreateCouponEditFragmentArgs by savedState.navArgs()
     private val couponCode = savedState.getNullableStateFlow(
         viewModelScope,
         navArgs.couponCode,
@@ -53,7 +55,12 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
             validationState.update {
                 ValidationState.IDLE
             }
-            triggerEvent(UpdateCouponCode(couponCode))
+            val initialCouponCode = navArgs.couponCode
+            if (initialCouponCode.isNullOrEmpty()) {
+                triggerEvent(CouponEditResult.AddNewCouponCode(couponCode))
+            } else {
+                triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
+            }
         } else {
             validationState.update {
                 ValidationState.ERROR
@@ -71,10 +78,9 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
     }
 
     fun onCouponRemoved() {
-        couponCode.update {
-            ""
+        navArgs.couponCode?.let {
+            triggerEvent(CouponEditResult.RemoveCoupon(it))
         }
-        triggerEvent(UpdateCouponCode(couponCode.value))
     }
 
     data class ViewState(
@@ -86,5 +92,15 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
 
     enum class ValidationState { IDLE, IN_PROGRESS, ERROR }
 
-    data class UpdateCouponCode(val couponCode: String?) : MultiLiveEvent.Event()
+    @Parcelize
+    sealed class CouponEditResult : MultiLiveEvent.Event(), Parcelable {
+        @Parcelize
+        data class UpdateCouponCode(val oldCode: String, val newCode: String) : CouponEditResult()
+
+        @Parcelize
+        data class AddNewCouponCode(val couponCode: String) : CouponEditResult()
+
+        @Parcelize
+        data class RemoveCoupon(val couponCode: String) : CouponEditResult()
+    }
 }
