@@ -273,6 +273,27 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when selection type is CUSTOM, then ignore the data store and request data with ForceNew strategy`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testCustomRangeSelection, this)
+
+        // Then
+        verify(repository, times(1)).fetchRevenueData(testCustomRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchOrdersData(testCustomRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchVisitorsData(testCustomRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchProductsData(testCustomRangeSelection, ForceNew)
+    }
+
+    @Test
     fun `when syncing stats data starts with ForceNew strategy, then store the expected timestamp`() = testBlocking {
         // Given
         configureSuccessResponseStub()
