@@ -68,6 +68,13 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }
     }
 
+    private suspend fun generateFetchStrategy(rangeSelection: StatsTimeRangeSelection) =
+        if (analyticsUpdateDataStore.shouldUpdateAnalytics(rangeSelection)) {
+            FetchStrategy.ForceNew
+        } else {
+            FetchStrategy.Saved
+        }
+
     private fun combineFullUpdateState() =
         combine(_revenueState, _productsState, _ordersState, sessionState) { revenue, products, orders, session ->
             revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
@@ -123,11 +130,4 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
     }
-
-    private suspend fun generateFetchStrategy(rangeSelection: StatsTimeRangeSelection) =
-        if (analyticsUpdateDataStore.shouldUpdateAnalytics(rangeSelection)) {
-            FetchStrategy.ForceNew
-        } else {
-            FetchStrategy.Saved
-        }
 }
