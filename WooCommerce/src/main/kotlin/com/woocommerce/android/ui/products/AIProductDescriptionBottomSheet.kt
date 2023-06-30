@@ -50,11 +50,11 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Celebration
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Start
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Start
 
 @Composable
 fun AIProductDescriptionBottomSheet(
@@ -62,7 +62,7 @@ fun AIProductDescriptionBottomSheet(
 ) {
     viewModel.viewState.observeAsState().value?.let { state ->
         DescriptionGenerationForm(
-            state = state,
+            viewState = state,
             onFeaturesChanged = viewModel::onFeaturesChanged,
             onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
             onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
@@ -77,7 +77,7 @@ fun AIProductDescriptionBottomSheet(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DescriptionGenerationForm(
-    state: ViewState,
+    viewState: ViewState,
     onFeaturesChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onRegenerateButtonClicked: () -> Unit,
@@ -86,12 +86,12 @@ fun DescriptionGenerationForm(
     onDescriptionFeedbackReceived: (Boolean) -> Unit,
     onCelebrationButtonClicked: () -> Unit,
 ) {
-    AnimatedContent(state.flowState) { flowState ->
-        when (flowState) {
+    AnimatedContent(viewState.generationState) { generationState ->
+        when (generationState) {
             Generated -> {
-                GenerationFlow(state, onFeaturesChanged) {
+                GenerationFlow(viewState, onFeaturesChanged) {
                     GeneratedDescription(
-                        description = state.description,
+                        description = viewState.description,
                         onRegenerateButtonClicked = onRegenerateButtonClicked,
                         onApplyButtonClicked = onApplyButtonClicked,
                         onCopyButtonClicked = onCopyButtonClicked,
@@ -99,8 +99,8 @@ fun DescriptionGenerationForm(
                     )
                 }
             }
-            FlowState.Generating -> {
-                GenerationFlow(state, onFeaturesChanged) {
+            GenerationState.Generating -> {
+                GenerationFlow(viewState, onFeaturesChanged) {
                     ProductDescriptionSkeletonView()
 
                     WCColoredButton(
@@ -116,7 +116,7 @@ fun DescriptionGenerationForm(
                 }
             }
             Start -> {
-                GenerationFlow(state, onFeaturesChanged) {
+                GenerationFlow(viewState, onFeaturesChanged) {
                     WCColoredButton(
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
@@ -131,7 +131,7 @@ fun DescriptionGenerationForm(
                 }
             }
             Regenerating -> {
-                GenerationFlow(state, onFeaturesChanged) {
+                GenerationFlow(viewState, onFeaturesChanged) {
                     RegenerationInProgress(onApplyButtonClicked)
                 }
             }
@@ -446,7 +446,7 @@ fun CelebrationDialog(
 fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
         ViewState(
-            flowState = Start,
+            generationState = Start,
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."

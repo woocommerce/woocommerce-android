@@ -6,11 +6,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Celebration
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Start
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Start
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,20 +35,20 @@ class AIProductDescriptionViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onGenerateButtonClicked() {
-        _viewState.update { _viewState.value.copy(flowState = Generating) }
+        _viewState.update { _viewState.value.copy(generationState = Generating) }
 
         launch {
             delay(3000)
-            _viewState.update { _viewState.value.copy(flowState = Generated) }
+            _viewState.update { _viewState.value.copy(generationState = Generated) }
         }
     }
 
     fun onRegenerateButtonClicked() {
-        _viewState.update { _viewState.value.copy(flowState = Regenerating) }
+        _viewState.update { _viewState.value.copy(generationState = Regenerating) }
 
         launch {
             delay(3000)
-            _viewState.update { _viewState.value.copy(flowState = Generated) }
+            _viewState.update { _viewState.value.copy(generationState = Generated) }
         }
     }
 
@@ -60,7 +60,7 @@ class AIProductDescriptionViewModel @Inject constructor(
         if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown) {
             triggerEvent(Exit)
         } else {
-            _viewState.update { _viewState.value.copy(flowState = Celebration) }
+            _viewState.update { _viewState.value.copy(generationState = Celebration) }
             appPrefsWrapper.wasAIProductDescriptionCelebrationShown = true
         }
     }
@@ -81,14 +81,14 @@ class AIProductDescriptionViewModel @Inject constructor(
         val description: String = "This stylish and comfortable set is designed to enhance your performance and " +
             "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
             "make a statement with the \"Fit Fashionista\" activewear set.",
-        val flowState: FlowState = Start
+        val generationState: GenerationState = Start
     ) {
-        sealed class FlowState {
-            object Start : FlowState()
-            object Generating : FlowState()
-            object Generated : FlowState()
-            object Regenerating : FlowState()
-            object Celebration : FlowState()
+        sealed class GenerationState {
+            object Start : GenerationState()
+            object Generating : GenerationState()
+            object Generated : GenerationState()
+            object Regenerating : GenerationState()
+            object Celebration : GenerationState()
         }
     }
 }
