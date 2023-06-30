@@ -6,11 +6,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Start
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Celebration
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generated
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Regenerating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Start
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
