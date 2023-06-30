@@ -375,6 +375,7 @@ dependencies {
     implementation 'androidx.compose.animation:animation'
     implementation 'androidx.compose.ui:ui-tooling'
     implementation 'androidx.compose.runtime:runtime-livedata'
+    implementation "androidx.compose.material:material-icons-extended"
 
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'

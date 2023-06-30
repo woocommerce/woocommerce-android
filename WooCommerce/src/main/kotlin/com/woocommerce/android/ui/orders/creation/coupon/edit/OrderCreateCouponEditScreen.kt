@@ -22,12 +22,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionViewModel.ValidationState.ERROR
-import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionViewModel.ValidationState.IDLE
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.ERROR
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.IDLE
 
 @Composable
-fun OrderCreateCouponEditionScreen(
-    state: State<OrderCreateCouponEditionViewModel.ViewState?>,
+fun OrderCreateCouponEditScreen(
+    state: State<OrderCreateCouponEditViewModel.ViewState?>,
     onCouponCodeChanged: (String) -> Unit,
     onCouponRemoved: () -> Unit,
 ) {
@@ -45,6 +45,7 @@ fun OrderCreateCouponEditionScreen(
             onValueChange = { onCouponCodeChanged(it) },
             label = stringResource(id = R.string.coupon_edit_code_hint),
             isError = isError,
+            singleLine = true,
             trailingIcon = {
                 if (isError) {
                     Icon(
@@ -79,10 +80,10 @@ fun OrderCreateCouponEditionScreen(
 @Preview
 @Composable
 fun OrderCreateCouponEditionScreenPreview() {
-    OrderCreateCouponEditionScreen(
-        state = object : State<OrderCreateCouponEditionViewModel.ViewState?> {
-            override val value: OrderCreateCouponEditionViewModel.ViewState
-                get() = OrderCreateCouponEditionViewModel.ViewState(true, "code", true, IDLE)
+    OrderCreateCouponEditScreen(
+        state = object : State<OrderCreateCouponEditViewModel.ViewState?> {
+            override val value: OrderCreateCouponEditViewModel.ViewState
+                get() = OrderCreateCouponEditViewModel.ViewState(true, "code", true, IDLE)
         },
         onCouponCodeChanged = {},
         onCouponRemoved = {}

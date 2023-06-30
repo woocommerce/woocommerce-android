@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -1095,7 +1096,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("code")
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code")
+        sut.onCouponEditResult(couponEditResult)
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -1108,7 +1110,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("")
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc")
+        sut.onCouponEditResult(couponEditResult)
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,
@@ -1137,7 +1140,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        sut.onCouponEntered("ABC")
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("abc")
+        sut.onCouponEditResult(couponEditResult)
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend

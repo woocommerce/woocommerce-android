@@ -392,7 +392,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
         val sut = createViewModel(navArgs)
 
-        sut.onSearchTypeChanged(ProductListHandler.SearchType.SKU)
+        sut.onSearchTypeChanged(ProductListHandler.SearchType.SKU.labelResId)
         sut.onSearchQueryChanged("test")
 
         advanceTimeBy(SEARCH_TYPING_DELAY_MS + 1)
