@@ -6,12 +6,12 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.GenerationState.Start
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.Celebration
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.Dismissed
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationFlow
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generated
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Regenerating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Generating
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Start
+import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.FlowState.Celebration
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -31,39 +31,36 @@ class AIProductDescriptionViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs = AIProductDescriptionBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    private val _viewState = MutableStateFlow<ViewState>(GenerationFlow(productTitle = navArgs.productTitle))
+    private val _viewState = MutableStateFlow(ViewState(productTitle = navArgs.productTitle))
     val viewState = _viewState.asLiveData()
 
-    private val generationFlow
-        get() = _viewState.value as? GenerationFlow ?: GenerationFlow()
-
     fun onGenerateButtonClicked() {
-        _viewState.update { generationFlow.copy(generationState = GenerationState.Generating) }
+        _viewState.update { _viewState.value.copy(flowState = Generating) }
 
         launch {
             delay(3000)
-            _viewState.update { generationFlow.copy(generationState = Generated) }
+            _viewState.update { _viewState.value.copy(flowState = Generated) }
         }
     }
 
     fun onRegenerateButtonClicked() {
-        _viewState.update { generationFlow.copy(generationState = Regenerating) }
+        _viewState.update { _viewState.value.copy(flowState = Regenerating) }
 
         launch {
             delay(3000)
-            _viewState.update { generationFlow.copy(generationState = Generated) }
+            _viewState.update { _viewState.value.copy(flowState = Generated) }
         }
     }
 
     fun onFeaturesChanged(features: String) {
-        _viewState.update { generationFlow.copy(features = features) }
+        _viewState.update { _viewState.value.copy(features = features) }
     }
 
     fun onApplyButtonClicked() {
         if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown) {
-            _viewState.update { Dismissed }
+            triggerEvent(Exit)
         } else {
-            _viewState.update { Celebration }
+            _viewState.update { _viewState.value.copy(flowState = Celebration) }
             appPrefsWrapper.wasAIProductDescriptionCelebrationShown = true
         }
     }
@@ -71,32 +68,27 @@ class AIProductDescriptionViewModel @Inject constructor(
     fun onCopyButtonClicked() {
     }
 
-    fun onCelebrationConfirmClicked() {
-        _viewState.update { Dismissed }
+    fun onCelebrationButtonClicked() {
+        triggerEvent(Exit)
     }
 
     fun onDescriptionFeedbackReceived(isPositive: Boolean) {
     }
 
-    sealed class ViewState {
-        data class GenerationFlow(
-            val productTitle: String? = null,
-            val features: String = "",
-            val description: String = "This stylish and comfortable set is designed to enhance your performance and " +
-                "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
-                "make a statement with the \"Fit Fashionista\" activewear set.",
-            val generationState: GenerationState = Start
-        ) : ViewState()
-
-        object Celebration : ViewState()
-
-        object Dismissed : ViewState()
-    }
-
-    sealed class GenerationState {
-        object Start : GenerationState()
-        object Generating : GenerationState()
-        object Generated : GenerationState()
-        object Regenerating : GenerationState()
+    data class ViewState(
+        val productTitle: String? = null,
+        val features: String = "",
+        val description: String = "This stylish and comfortable set is designed to enhance your performance and " +
+            "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
+            "make a statement with the \"Fit Fashionista\" activewear set.",
+        val flowState: FlowState = Start
+    ) {
+        sealed class FlowState {
+            object Start : FlowState()
+            object Generating : FlowState()
+            object Generated : FlowState()
+            object Regenerating : FlowState()
+            object Celebration : FlowState()
+        }
     }
 }
