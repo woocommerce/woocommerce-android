@@ -110,6 +110,7 @@ object AppPrefs {
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
+        WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
     }
 
     /**
@@ -984,6 +985,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            value = value
+        )
+
+    var wasAIProductDescriptionPromoDialogShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
             value = value
         )
 

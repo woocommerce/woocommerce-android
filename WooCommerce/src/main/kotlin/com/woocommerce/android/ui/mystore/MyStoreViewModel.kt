@@ -154,8 +154,9 @@ class MyStoreViewModel @Inject constructor(
             }
         }
 
-        if (isAIProductDescriptionEnabled()) {
+        if (isAIProductDescriptionEnabled() && !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown) {
             triggerEvent(ShowAIProductDescriptionDialog)
+            appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }
 
         // A notification is only displayed when the store has never been opened before
