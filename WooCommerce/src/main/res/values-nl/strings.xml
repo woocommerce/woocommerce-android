@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-21 11:54:24+0000
+Translation-Revision-Date: 2023-06-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_sharing_regenerate">Nog een keer schrijven</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Ontvang een melding bij elke aankoop:&lt;/b&gt; Je mist nooit meer iets met de directe verkoopmeldingen. Ontvang een waarschuwing over elke nieuwe verkoop, zodat je je successen kan vieren en je op de hoogte blijft van de activiteit in je winkel.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Voeg producten toe en bewerk ze met een enkele tik:&lt;/b&gt; Voeg nieuwe producten toe, werk gegevens bij, upload afbeeldingen en beheer alle variaties, en dat allemaal in de app. Houd je inventaris moeiteloos up-to-date.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ontvang betalingen in hoogsteigen persoon:&lt;/b&gt; Breid je verkoopmogelijkheden uit door fysieke betalingen te accepteren. Gebruik de app om creditcardtransacties veilig te verwerken of koppel een compatibele kaartlezer voor nog eenvoudigere fysieke betalingen.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Maak bestellingen aan en beheer ze:&lt;/b&gt; Handel bestellingen eenvoudig af. Scrol door de bestelstatussen en zoek ze of wijzig ze. Maak ter plekke nieuwe bestellingen aan voor aankopen in de winkel of via de telefoon. Vereenvoudig je beheerproces voor bestellingen.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Volg verkoopcijfers en populaire producten:&lt;/b&gt; Blijf op de hoogte van de realtime prestaties van je winkel. Identificeer wat je bestverkopende producten zijn en maak weloverwogen beslissingen voor maximale winstgevendheid.</string>
+    <string name="store_creation_in_progress_description_1">Je krijgt een melding wanneer je winkel klaarstaat! Leun achterover, ontspan en laat ons het werk doen terwijl we wat handige tips met je delen. 🔮</string>
+    <string name="store_creation_in_progress_title_1">We zijn je winkel aan het aanmaken! Dit duurt maar een paar minuten</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Een pincode is vereist, maar Tap To Pay ondersteunt dit nog niet. Je kan een externe kaartlezer gebruiken</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Koop een kaartlezer</string>
+    <string name="order_sync_coupon_removed">Kortingsbon kon niet worden toegepast en is verwijderd uit de bestelling</string>
     <string name="product_sharing_ai_generating_failure">Kon deelbericht niet genereren Probeer het nog eens!</string>
     <string name="product_sharing_ai_info_label">Meer informatie over deze AI-functie</string>
     <string name="product_sharing_optional_message_label">Voeg een optioneel bericht toe</string>
-    <string name="product_sharing_generating">Bezig met genereren …</string>
-    <string name="product_sharing_regenerate">Regenereren</string>
+    <string name="product_sharing_generating">Schrijven…</string>
     <string name="product_sharing_write_with_ai">Schijf met AI</string>
     <string name="more_menu_button_blaze_description">Producten promoten met Blaze</string>
     <string name="more_menu_button_blaze">Blaze</string>
@@ -115,18 +125,11 @@ Language: nl
     <string name="store_creation_profiler_industry_home_furniture_garden">Huis, meubilair en tuin</string>
     <string name="store_creation_profiler_industry_food_drink">Eten en drinken</string>
     <string name="store_creation_profiler_industry_health_beauty">Gezondheid en schoonheid</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Onze lievelingskleur is paars. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Het team van Woo bestaat uit meer dan 350 getalenteerde personen, die over meer dan 30 landen zijn verspreid.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; Er worden wereldwijd meer dan 150 WooCommerce-evenementen georganiseerd! Deze zijn een geweldige manier om je collega-winkeleigenaren te ontmoeten.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Zit jij in team Kat of team Hond? Het Woo-team is gelijk verdeeld!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Wist je dat Woo is gesticht door twee Zuid-Afrikanen en een Noor? Hier zijn drie manieren om winkel te zeggen in die landen: winkel, ivenkile en butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Wist je dat Woo bijna 4 miljoen winkels wereldwijd mogelijk maakt? Je bent in goed gezelschap.</string>
     <string name="store_creation_in_progress_title_6">De deuren openen</string>
     <string name="store_creation_in_progress_title_5">De lichten aandoen</string>
     <string name="store_creation_in_progress_title_4">De laatste hand leggen</string>
     <string name="store_creation_in_progress_title_3">De voorraadkamer opruimen</string>
     <string name="store_creation_in_progress_title_2">De basis leggen</string>
-    <string name="store_creation_in_progress_title_1">Woo! We maken je winkel aan</string>
     <string name="notifications_permission_description">We hebben je toestemming nodig om je pushberichten te sturen voor nieuwe bestellingen, beoordelingen, enz. op je apparaat.</string>
     <string name="notifications_permission_title">Meldingen</string>
     <string name="product_type_composite">Samengesteld product</string>

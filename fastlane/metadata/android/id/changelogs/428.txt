@@ -1,2 +1,0 @@
-14.1:
-Rilis ini termasuk perbaikan bug & peningkatan performa untuk bagian pemesanan dan produk pada aplikasi. Terus kirimkan feedback Anda!

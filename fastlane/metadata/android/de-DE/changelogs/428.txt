@@ -1,2 +1,0 @@
-14.1:
-Diese Version enthält einige Fehlerkorrekturen und Verbesserungen der Performance der Bestell- und Produktabschnitte in der App. Sende uns weiterhin Feedback!

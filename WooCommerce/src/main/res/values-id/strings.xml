@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-21 15:54:04+0000
+Translation-Revision-Date: 2023-06-28 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_sharing_regenerate">Tulis lagi</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Dapatkan pemberitahuan untuk tiap penjualan:&lt;/b&gt; Jangan lewatkan kabar terbaru dengan pemberitahuan penjualan secara langsung. Dapatkan pemberitahuan untuk tiap penjualan baru agar Anda dapat terus menikmati keberhasilan dan memantau aktivitas toko.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Tambahkan dan sunting produk dengan sekali sentuh:&lt;/b&gt; Tambahkan produk baru, perbarui detail, unggah gambar, dan kelola variasi, semuanya dari aplikasi ini. Pantau dan perbarui inventaris Anda dengan mudah.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Terima pembayaran secara langsung:&lt;/b&gt; Perluas prospek penjualan dengan menerima pembayaran secara langsung. Gunakan aplikasi ini untuk secara aman memproses transaksi kartu kredit atau terhubung dengan pembaca kartu yang kompatibel untuk memudahkan pembayaran secara langsung.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Kelola dan buat pesanan:&lt;/b&gt; Tangani pesanan dengan mudah. Gulir, cari, dan ubah status pesanan. Buat pesanan baru dengan cepat untuk transaksi pembelian langsung di toko atau via telepon. Sederhanakan proses pengelolaan pesanan.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Lacak penjualan dan produk populer:&lt;/b&gt; Dapatkan informasi terbaru tentang performa real-time toko Anda. Cari tahu mana produk terlaris dan maksimalkan laba dengan memanfaatkan data dalam pengambilan keputusan.</string>
+    <string name="store_creation_in_progress_description_1">Anda akan menerima pemberitahuan segera setelah toko siap. Silakan bersantai dan biarkan kami memberikan keahlian terbaik kami sambil berbagi tips yang bermanfaat. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Membuat Toko Anda! Hanya perlu waktu beberapa menit</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Meski diperlukan, kode PIN belum dapat digunakan pada Ketuk untuk Bayar. Coba gunakan pembaca kartu eksternal</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Beli pembaca kartu</string>
+    <string name="order_sync_coupon_removed">Kupon tidak dapat digunakan dan telah dihapus dari pesanan</string>
     <string name="product_sharing_ai_generating_failure">Tidak dapat membuat pesan berbagi. Coba lagi!</string>
     <string name="product_sharing_ai_info_label">Baca selengkapnya tentang fitur AI</string>
     <string name="product_sharing_optional_message_label">Tambah pesan opsional</string>
-    <string name="product_sharing_generating">Membuat…</string>
-    <string name="product_sharing_regenerate">Buat Ulang</string>
+    <string name="product_sharing_generating">Menulis…</string>
     <string name="product_sharing_write_with_ai">Tulis dengan AI</string>
     <string name="more_menu_button_blaze_description">Promosikan produk dengan Blaze</string>
     <string name="more_menu_button_blaze">Blaze</string>
@@ -115,18 +125,11 @@ Language: id
     <string name="store_creation_profiler_industry_home_furniture_garden">Rumah, furnitur, dan taman</string>
     <string name="store_creation_profiler_industry_food_drink">Makanan dan minuman</string>
     <string name="store_creation_profiler_industry_health_beauty">Kesehatan dan kecantikan</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Warna favorit kami adalah ungu. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Tim Woo beranggotakan lebih dari 350 individu bertalenta yang tersebar di lebih dari 30 negara.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; Lebih dari 150 pertemuan WooCommerce telah diselenggarakan di seluruh dunia! Momen yang pas untuk bertemu sesama pemilik toko.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Anda Penggemar Kucing atau Penggemar Anjing? Tim Woo terbagi dua, sama rata!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Tahukah Anda bahwa Woo didirikan oleh dua orang asal Afrika Selatan dan satu orang asal Norwegia? Berikut adalah tiga istilah lain untuk \"toko\" di dua negara tersebut – Winkel, ivenkile, dan butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Tahukah Anda bahwa ada Woo di balik hampir 4 juta toko di seluruh dunia? Kami selalu ada untuk Anda.</string>
     <string name="store_creation_in_progress_title_6">Membuka pintu</string>
     <string name="store_creation_in_progress_title_5">Menyalakan lampu</string>
     <string name="store_creation_in_progress_title_4">Memberikan sentuhan akhir</string>
     <string name="store_creation_in_progress_title_3">Mengelola gudang stok</string>
     <string name="store_creation_in_progress_title_2">Membangun fondasi</string>
-    <string name="store_creation_in_progress_title_1">Yey! Kami sedang membuat toko Anda</string>
     <string name="notifications_permission_description">Kami membutuhkan izin Anda untuk mengirim pemberitahuan push mengenai pesanan dan ulasan baru, dsb. ke perangkat Anda.</string>
     <string name="notifications_permission_title">Pemberitahuan</string>
     <string name="product_type_composite">Produk gabungan</string>
