@@ -1,0 +1,2 @@
+14.2:
+Você sabia que agora é possível adicionar cupons ao criar um pedido? É isso mesmo! Para gerenciar seus cupons, vá até a guia do menu e clique na funcionalidade Cupons. Por fim, fizemos algumas melhorias na funcionalidade de verificação ao pesquisar um produto. E não para por aí. Fique de olho porque traremos mais melhorias.
