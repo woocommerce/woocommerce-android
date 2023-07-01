@@ -470,6 +470,8 @@
     <string name="order_list_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <string name="orderlist_parsing_error_title">We couldn\'t load your data.</string>
     <string name="orderlist_parsing_error_message">This could be related to a conflict with a plugin. Please try again later or reach out to us and we\'ll be happy to assist you!</string>
+    <string name="error_troubleshooting">Troubleshooting</string>
+
     <!--
          Simple Payments
     -->
