@@ -25,25 +25,36 @@ class ExpandableNoticeCard @JvmOverloads constructor(
         }
         get() = binding.noticeViewMore.isChecked
 
+    @Suppress("LongParameterList")
     fun initView(
         title: String,
         message: String,
-        onContactSupportClick: () -> Unit = {},
-        onTroubleShootingClick: () -> Unit = {}
+        mainActionText: String,
+        secondaryActionText: String,
+        isExpanded: Boolean = false,
+        mainActionClick: () -> Unit = {},
+        secondaryActionClick: () -> Unit = {}
     ) {
         binding.noticeViewMore.setOnCheckedChangeListener { _, isChecked ->
-            isExpanded = isChecked
+            this.isExpanded = isChecked
         }
 
-        isExpanded = false
+        this.isExpanded = isExpanded
 
-        binding.noticeViewMore.textOn = title
-        binding.noticeViewMore.textOff = title
-        binding.noticeViewMore.text = title
+        binding.noticeViewMore.run {
+            textOn = title
+            textOff = title
+            text = title
+        }
         binding.noticeMessage.text = message
 
-
-        binding.btnTroubleshooting.setOnClickListener { onTroubleShootingClick() }
-        binding.btnSupport.setOnClickListener { onContactSupportClick() }
+        binding.btnMainAction.run {
+            text = mainActionText
+            setOnClickListener { mainActionClick() }
+        }
+        binding.btnSecondaryAction.run {
+            text = secondaryActionText
+            setOnClickListener { secondaryActionClick() }
+        }
     }
 }
