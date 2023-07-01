@@ -444,7 +444,11 @@ class OrderListViewModel @Inject constructor(
             .filterNotNull()
             .observe(this) { error ->
                 if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
-                   viewState = viewState.copy(isErrorFetchingDataBannerVisible = true)
+                    viewState = viewState.copy(
+                        isErrorFetchingDataBannerVisible = true,
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
+                    )
                 } else {
                     triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
