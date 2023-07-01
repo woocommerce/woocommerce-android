@@ -117,6 +117,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+@Suppress("EmptyFunctionBlock")
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -141,7 +142,8 @@ class ProductDetailViewModel @Inject constructor(
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
-    private val isBlazeEnabled: IsBlazeEnabled
+    private val isBlazeEnabled: IsBlazeEnabled,
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -222,7 +224,15 @@ class ProductDetailViewModel @Inject constructor(
     private var hasTrackedProductDetailLoaded = false
 
     private val cardBuilder by lazy {
-        ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository, variationRepository)
+        ProductDetailCardBuilder(
+            this,
+            resources,
+            currencyFormatter,
+            parameters,
+            addonRepository,
+            variationRepository,
+            isAIProductDescriptionEnabled
+        )
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
@@ -417,6 +427,8 @@ class ProductDetailViewModel @Inject constructor(
             selectedSite.get().isSitePublic &&
             selectedSite.get().isWPComAtomic
     }
+
+    fun onWriteWithAIClicked() {}
 
     fun onBlazeClicked() {
         tracker.track(
@@ -2312,15 +2324,19 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product): Boolean {
-        val showBlaze = getProductVisibility() == PUBLIC &&
+    private suspend fun shouldShowBlaze(productDraft: Product) =
+        getProductVisibility() == PUBLIC &&
             productDraft.status != DRAFT &&
             isBlazeEnabled()
-        if (showBlaze) tracker.track(
-            stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-        )
-        return showBlaze
+
+    fun trackBlazeDisplayed() {
+        launch {
+            if (shouldShowBlaze(draftChanges.value!!))
+                tracker.track(
+                    stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                    properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+                )
+        }
     }
 
     /**

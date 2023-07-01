@@ -44,6 +44,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog.showDialog
@@ -53,6 +54,7 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -272,6 +274,12 @@ class OrderListFragment :
         }
     }
 
+    private fun openBarcodeScanningFragment() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToBarcodeScanningFragment()
+        )
+    }
+
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
         fabButton.setOnClickListener { openOrderCreationFragment() }
         pinFabAboveBottomNavigationBar(fabButton)
@@ -377,6 +385,9 @@ class OrderListFragment :
                         event.message
                     )
                 }
+                is OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment -> {
+                    openBarcodeScanningFragment()
+                }
                 else -> event.isHandled = false
             }
         }
@@ -479,6 +490,9 @@ class OrderListFragment :
     private fun initializeResultHandlers() {
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
+        }
+        handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
         }
     }
 

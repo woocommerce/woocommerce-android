@@ -9,8 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -20,7 +18,7 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.CodeScanner
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -108,7 +106,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs = mock<AppPrefs>()
     private val feedbackPrefs = mock<FeedbackPrefs>()
-    private val codeScanner = mock<CodeScanner>()
+    private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
 
     @Before
     fun setup() = testBlocking {
@@ -159,7 +157,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         analyticsTracker = analyticsTracker,
         appPrefs = appPrefs,
         feedbackPrefs = feedbackPrefs,
-        codeScanner = codeScanner,
+        barcodeScanningTracker = barcodeScanningTracker,
     )
 
     @Test
@@ -970,33 +968,24 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when code scanner succeeds, then trigger proper event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatQRCode
+        )
         viewModel = createViewModel()
-        viewModel.onScanClicked()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OnBarcodeScanned::class.java)
     }
 
     @Test
     fun `when code scanner fails, then trigger proper event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
         viewModel = createViewModel()
-        viewModel.onScanClicked()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat(viewModel.event.value).isInstanceOf(
             OnAddingProductViaScanningFailed::class.java
@@ -1005,19 +994,12 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when code scanner fails, then trigger event proper message`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
         viewModel = createViewModel()
-        viewModel.onScanClicked()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat(
             (viewModel.event.value as OnAddingProductViaScanningFailed).message
@@ -1026,34 +1008,25 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given code scanner failure, when retry clicked, then scan restarted`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
         viewModel = createViewModel()
-        viewModel.onScanClicked()
-        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
 
-        verify(codeScanner).startScan()
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
     }
 
     @Test
     fun `when code scanner succeeds, then trigger event with proper sku`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-            }
-        }
-
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
         viewModel = createViewModel()
-        viewModel.onScanClicked()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat(viewModel.event.value).isEqualTo(
             OrderListEvent.OnBarcodeScanned("12345", BarcodeFormat.FormatUPCA)
@@ -1070,192 +1043,79 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when scan success, then track proper analytics event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-            }
-        }
+    fun `when scan clicked, then trigger openBarcodeScanningFragment event`() {
         viewModel = createViewModel()
 
         viewModel.onScanClicked()
 
-        verify(analyticsTracker).track(
-            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
-            any()
-        )
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.OpenBarcodeScanningFragment::class.java)
     }
 
     @Test
-    fun `when scan success, then track analytics event with proper source`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA))
-            }
-        }
+    fun `when scan success, then track proper analytics event`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
+        )
         viewModel = createViewModel()
 
-        viewModel.onScanClicked()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
-            )
+        verify(barcodeScanningTracker).trackSuccess(any())
+    }
+
+    @Test
+    fun `when scan success, then track proper analytics event with proper source`() {
+        val scannedStatus = CodeScannerStatus.Success(
+            code = "12345",
+            format = BarcodeFormat.FormatUPCA
         )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackSuccess(ScanningSource.ORDER_LIST)
     }
 
     @Test
     fun `when scan failure, then track analytics event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
         viewModel = createViewModel()
 
-        viewModel.onScanClicked()
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
-        verify(analyticsTracker).track(
-            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
-            any()
-        )
+        verify(barcodeScanningTracker).trackScanFailure(any(), any())
     }
 
     @Test
     fun `when scan failure, then track analytics event with proper source`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
-            )
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
         )
+        viewModel = createViewModel()
+
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        verify(barcodeScanningTracker).trackScanFailure(eq(ScanningSource.ORDER_LIST), any())
     }
 
     @Test
-    fun `when scan failure, then track analytics event with proper reason`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
-                    )
-                )
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                KEY_SCANNING_FAILURE_REASON to
-                    CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld.toString()
-            )
+    fun `when scan failure, then track analytics event with proper type`() {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
         )
-    }
-
-    @Test
-    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event`() {
-        savedStateHandle["scanning_in_progress"] = true
         viewModel = createViewModel()
 
-        assertThat(viewModel.event.value).isInstanceOf(
-            OrderListEvent.VMKilledWhenScanningInProgress::class.java
-        )
-    }
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
 
-    @Test
-    fun `given scanning not in progress and vm got killed, when vm restarts, then do not trigger vm killed event`() {
-        savedStateHandle["scanning_in_progress"] = false
-        viewModel = createViewModel()
-
-        assertThat(viewModel.event.value).isNull()
-    }
-
-    @Test
-    fun `given scanning finished either successfully or unsuccessfully, then scanning in progress flag is set to false`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
-                    )
-                )
-            }
-        }
-
-        viewModel = createViewModel()
-        viewModel.onScanClicked()
-
-        assertFalse(savedStateHandle["scanning_in_progress"]!!)
-    }
-
-    @Test
-    fun `given scanning is in progress and vm is killed, when vm restarts, then scanning in progress flag is set to false`() {
-        savedStateHandle["scanning_in_progress"] = true
-        viewModel = createViewModel()
-
-        assertFalse(savedStateHandle["scanning_in_progress"]!!)
-    }
-
-    @Test
-    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event`() {
-        savedStateHandle["scanning_in_progress"] = true
-        viewModel = createViewModel()
-
-        verify(analyticsTracker).track(
-            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
-            any()
-        )
-    }
-
-    @Test
-    fun `given scanning in progress and vm got killed, when vm restarts, then track scanning failure event with correct properties`() {
-        savedStateHandle["scanning_in_progress"] = true
-        viewModel = createViewModel()
-
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
-            )
-        )
-    }
-
-    @Test
-    fun `given scanning in progress and vm got killed, when vm restarts, then trigger vm killed event with proper message`() {
-        savedStateHandle["scanning_in_progress"] = true
-
-        viewModel = createViewModel()
-
-        assertThat(viewModel.event.value).isEqualTo(
-            OrderListEvent.VMKilledWhenScanningInProgress(R.string.order_list_barcode_scanning_process_death)
+        verify(barcodeScanningTracker).trackScanFailure(
+            any(),
+            eq(CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld)
         )
     }
     //endregion

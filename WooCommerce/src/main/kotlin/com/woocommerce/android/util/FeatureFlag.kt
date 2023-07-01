@@ -30,7 +30,8 @@ enum class FeatureFlag {
     PRIVACY_CHOICES,
     SHARING_PRODUCT_AI,
     BLAZE,
-    PRODUCT_DESCRIPTION_AI_GENERATOR;
+    PRODUCT_DESCRIPTION_AI_GENERATOR,
+    CUSTOMER_LIST_SEARCH_2;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -61,7 +62,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            PRODUCT_DESCRIPTION_AI_GENERATOR -> PackageUtils.isDebugBuild()
+            PRODUCT_DESCRIPTION_AI_GENERATOR,
+            CUSTOMER_LIST_SEARCH_2 -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

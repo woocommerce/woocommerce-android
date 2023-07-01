@@ -27,6 +27,7 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -204,9 +205,7 @@ class OrderCreateEditFormFragment :
             ),
             addProductsViaScanButton = AddButton(
                 text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = {
-                    viewModel.onScanClicked()
-                }
+                onClickListener = { viewModel.onScanClicked() }
             )
         )
     }
@@ -445,6 +444,9 @@ class OrderCreateEditFormFragment :
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
         }
+        handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
+        }
     }
 
     private fun handleViewModelEvents(event: Event) {
@@ -464,6 +466,11 @@ class OrderCreateEditFormFragment :
                     isIndefinite = false,
                     actionListener = event.retry
                 ).show()
+            }
+            is OpenBarcodeScanningFragment -> {
+                findNavController().navigateSafely(
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
+                )
             }
             is VMKilledWhenScanningInProgress -> {
                 ToastUtils.showToast(

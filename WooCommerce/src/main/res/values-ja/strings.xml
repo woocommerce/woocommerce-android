@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-06-22 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_sharing_ai_generating_failure">共有メッセージを生成できません。 もう一度お試しください。</string>
+    <string name="product_sharing_ai_info_label">AI 機能について詳しく学ぶ</string>
+    <string name="product_sharing_optional_message_label">オプションメッセージを追加する</string>
+    <string name="product_sharing_generating">生成中…</string>
+    <string name="product_sharing_regenerate">再生成</string>
+    <string name="product_sharing_write_with_ai">AI で執筆</string>
+    <string name="more_menu_button_blaze_description">Blaze を使って商品を宣伝する</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI によるコンテンツ生成を利用できます</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Blaze を使って宣伝する</string>
     <string name="share_product">商品を共有する</string>
     <string name="first_product_celebration_body_message">おめでとうございます ! 新しいストアの準備完了にまた一歩近づいています。</string>
     <string name="first_product_celebration_title">最初の商品が作成されました 🎉</string>

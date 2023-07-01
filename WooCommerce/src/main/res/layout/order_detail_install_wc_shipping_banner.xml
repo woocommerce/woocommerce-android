@@ -51,7 +51,7 @@
             android:importantForAccessibility="no"
             android:maxWidth="@dimen/major_100"
             android:src="@drawable/img_shipping_labels_banner"
-            app:scaleType="fitTop" />
+            app:scalableType="fitTop" />
 
     </LinearLayout>
 

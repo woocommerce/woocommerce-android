@@ -37,6 +37,9 @@
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
             app:destination="@id/orderCreationCustomerFragment" />
         <action
+            android:id="@+id/action_orderCreationFragment_to_customerListFragment"
+            app:destination="@id/customerListFragmentNew" />
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
             app:destination="@id/orderCreationProductDetailsFragment"
             app:enterAnim="@anim/default_enter_anim"
@@ -103,7 +106,15 @@
             android:name="barcodeFormat"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
             app:nullable="true"/>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment"/>
     </fragment>
+    <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
         android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
@@ -203,8 +214,11 @@
     <fragment
         android:id="@+id/customerListFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
-        android:label="customerListFragment"
-        tools:layout="@layout/fragment_customer_list" />
+        android:label="customerListFragment" />
+    <fragment
+        android:id="@+id/customerListFragmentNew"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListFragment"
+        android:label="customerListFragment" />
 
     <include app:graph="@navigation/nav_graph_product_selector" />
 </navigation>
