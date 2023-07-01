@@ -40,6 +40,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
+import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -420,7 +422,7 @@ class OrderListFragment :
             ) {
                 displaySimplePaymentsWIPCard(it)
             }
-            new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible){
+            new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
             }
         }
@@ -711,7 +713,20 @@ class OrderListFragment :
         binding.errorParsingOrdersCard.isVisible = true
         binding.errorParsingOrdersCard.initView(
             getString(R.string.orderlist_parsing_error_title),
-            getString(R.string.orderlist_parsing_error_message)
+            getString(R.string.orderlist_parsing_error_message),
+            getString(R.string.error_troubleshooting),
+            getString(R.string.support_contact),
+            true,
+            { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            { openSupportRequestScreen() }
         )
+    }
+
+    private fun openSupportRequestScreen() {
+        SupportRequestFormActivity.createIntent(
+            context = requireContext(),
+            origin = HelpOrigin.ORDERS_LIST,
+            extraTags = ArrayList()
+        ).let { activity?.startActivity(it) }
     }
 }
