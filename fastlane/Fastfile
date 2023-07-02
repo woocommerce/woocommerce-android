@@ -116,6 +116,9 @@ platform :android do
       extracted_notes_file_path: RELEASE_NOTES_PATH
     )
     android_update_release_notes(new_version: new_version)
+
+    push_to_git_remote_with_confirmation
+
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
   end
