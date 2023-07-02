@@ -1,1 +1,4 @@
-Did you know you can now add coupons when creating an order? Yes, you can! You can also manage your coupons by heading over to the menu tab and clicking on the Coupons feature. Lastly, we’ve made some improvements to the scanning functionality when searching for a product. But we’re not done. Keep an eye out for more enhancements in the future.
+- [***] [Internal] Migrate the barcode scanning library from Google Code Scanner to Google's MLKit [https://github.com/woocommerce/woocommerce-android/pull/9298]
+- [*] Payments: Products are removed directly from an order when its count is below one, instead of opening an extra screen to remove it. [https://github.com/woocommerce/woocommerce-android/pull/9280]
+- [**] Added multiple coupons support in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9300]
+
