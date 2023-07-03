@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListViewState.CustomerList.Item.Loading.mapFromWCCustomer
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,6 +19,8 @@ class CustomerListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val _viewState = MutableLiveData<CustomerListViewState>()
     val viewState: LiveData<CustomerListViewState> = _viewState
+
+    private var paginationState = PaginationState(1, true)
 
     private var searchQuery: String
         get() = savedState.get<String>(SEARCH_QUERY_KEY) ?: ""
@@ -35,8 +38,10 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = CustomerListViewState(
                 searchQuery = searchQuery,
                 searchModes = selectSearchMode(selectedSearchMode.labelResId),
-                customers = CustomerListViewState.CustomerList.Loading
+                body = CustomerListViewState.CustomerList.Loading
             )
+
+            loadPage(1)
         }
     }
 
@@ -60,6 +65,57 @@ class CustomerListViewModel @Inject constructor(
     fun onNavigateBack() {
     }
 
+    fun onEndOfListReached() {
+        launch {
+            appendLoadingItemToList()
+            loadPage(paginationState.currentPage + 1)
+            removeLoadingItemFromList()
+        }
+    }
+
+    private suspend fun loadPage(page: Int) {
+        if (!paginationState.hasNextPage) return
+
+        val result = customerListRepository.searchCustomerListWithEmail(
+            searchQuery = searchQuery,
+            searchBy = selectedSearchMode.searchParam,
+            pageSize = PAGE_SIZE,
+            page = page
+        )
+
+        if (result.isFailure) {
+            paginationState = PaginationState(1, false)
+            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
+        } else {
+            val customers = result.getOrNull() ?: emptyList()
+
+            paginationState = PaginationState(page + 1, customers.size == PAGE_SIZE)
+
+            _viewState.value = _viewState.value!!.copy(
+                body = CustomerListViewState.CustomerList.Loaded(customers = customers.map { mapFromWCCustomer(it) })
+            )
+        }
+
+    }
+
+    private fun appendLoadingItemToList() {
+        val currentBody = _viewState.value!!.body as? CustomerListViewState.CustomerList.Loaded ?: return
+        _viewState.value = _viewState.value!!.copy(
+            body = currentBody.copy(
+                customers = currentBody.customers + CustomerListViewState.CustomerList.Item.Loading
+            )
+        )
+    }
+
+    private fun removeLoadingItemFromList() {
+        val currentBody = _viewState.value!!.body as? CustomerListViewState.CustomerList.Loaded ?: return
+        _viewState.value = _viewState.value!!.copy(
+            body = currentBody.copy(
+                customers = currentBody.customers.dropLast(1)
+            )
+        )
+    }
+
     private fun selectSearchMode(searchTypeId: Int) =
         supportedSearchModes.map {
             it.copy(isSelected = it.labelResId == searchTypeId)
@@ -68,6 +124,8 @@ class CustomerListViewModel @Inject constructor(
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
         private const val SEARCH_MODE_KEY = "search_mode"
+
+        private const val PAGE_SIZE = 30
 
         private val supportedSearchModes = listOf(
             SearchMode(
