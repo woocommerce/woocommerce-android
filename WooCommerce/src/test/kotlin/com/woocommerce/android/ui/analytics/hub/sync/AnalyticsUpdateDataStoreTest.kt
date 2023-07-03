@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.flow.single
 
 @ExperimentalCoroutinesApi
 class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
@@ -41,7 +42,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
             maxOutdatedTime = maxOutdatedTime
-        )
+        ).single()
 
         // Then
         assertThat(result).isTrue
@@ -60,7 +61,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
             maxOutdatedTime = maxOutdatedTime
-        )
+        ).single()
 
         // Then
         assertThat(result).isFalse
@@ -79,7 +80,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
             maxOutdatedTime = maxOutdatedTime
-        )
+        ).single()
 
         // Then
         assertThat(result).isTrue
