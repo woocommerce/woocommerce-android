@@ -407,7 +407,8 @@ class ProductDetailViewModel @Inject constructor(
             tracker.track(
                 AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_SOURCE to source
+                    AnalyticsTracker.KEY_SOURCE to source,
+                    AnalyticsTracker.KEY_IS_ATOMIC to selectedSite.get().isWPComAtomic
                 )
             )
 
