@@ -92,7 +92,11 @@ class CustomerListViewModel @Inject constructor(
                 paginationState = PaginationState(page, customers.size == PAGE_SIZE)
 
                 _viewState.value = _viewState.value!!.copy(
-                    body = CustomerListViewState.CustomerList.Loaded(customers = customers.map { mapFromWCCustomer(it) })
+                    body = CustomerListViewState.CustomerList.Loaded(
+                        customers = customers.map {
+                            mapFromWCCustomer(it)
+                        }
+                    )
                 )
             }
         }

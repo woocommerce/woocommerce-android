@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -144,6 +146,15 @@ fun CustomerListLoaded(
                         customer = customer,
                         onCustomerSelected = onCustomerSelected
                     )
+                    if (customer != body.customers.last()) {
+                        Divider(
+                            modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
+                            color = colorResource(id = R.color.divider_color),
+                            thickness = dimensionResource(id = R.dimen.minor_10)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(0.dp))
+                    }
                 }
 
                 CustomerListViewState.CustomerList.Item.Loading -> {
@@ -177,16 +188,19 @@ fun CustomerListItem(
                 role = Role.Button,
                 onClick = { onCustomerSelected(customer.remoteId) }
             )
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.minor_50)
+            )
     ) {
         Text(
             text = "${customer.firstName} ${customer.lastName}",
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.onSurface
         )
         Text(
             text = customer.email,
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.caption,
             color = MaterialTheme.colors.onSurface
         )
     }
@@ -229,7 +243,8 @@ fun CustomerListScreenPreview() {
                         firstName = "Andrei",
                         lastName = "K",
                         email = "blac@aaa.com",
-                    )
+                    ),
+                    CustomerListViewState.CustomerList.Item.Loading,
                 )
             ),
         ),

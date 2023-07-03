@@ -66,7 +66,7 @@ class CustomerListRepository @Inject constructor(
             filterEmpty = listOf(FILTER_EMPTY_PARAM)
         )
 
-        return if (result.isError ) {
+        return if (result.isError) {
             Result.failure(WooException(result.error))
         } else if (result.model == null) {
             Result.failure(IllegalStateException("empty model returned"))
