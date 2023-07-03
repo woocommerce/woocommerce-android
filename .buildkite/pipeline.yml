@@ -70,6 +70,7 @@ steps:
     #  - .buildkite/commands/set-analytics-token.sh
     #  - buildkite-agent artifact download '**/test_result_1.xml' .
     plugins:
+      - automattic/a8c-ci-toolkit#2.17.0
       - test-collector#v1.8.0:
           files: "test_result_1.xml"
           format: "junit"
