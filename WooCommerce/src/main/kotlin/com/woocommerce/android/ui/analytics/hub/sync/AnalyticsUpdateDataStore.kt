@@ -7,14 +7,10 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.singleOrNull
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapNotNull
 
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
