@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.products
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -11,7 +12,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,11 +32,9 @@ class OrderCreateEditProductDetailsFragment : BaseFragment(R.layout.fragment_ord
         )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentOrderCreateEditProductDetailsBinding.bind(view)
         val item = navArgs.item
-        val uiModel = sharedViewModel.getProductUIModelFromItem(item)
+        val uiModel: ProductUIModel = sharedViewModel.getProductUIModelFromItem(item)
 
         with(binding) {
             productItemView.bind(
@@ -45,6 +46,11 @@ class OrderCreateEditProductDetailsFragment : BaseFragment(R.layout.fragment_ord
             removeProductButton.setOnClickListener {
                 sharedViewModel.onRemoveProduct(item)
                 findNavController().navigateUp()
+            }
+
+            with(FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()) {
+                discountSection.isVisible = this
+                addDiscountButton.isVisible = this
             }
         }
     }
