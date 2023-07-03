@@ -1627,7 +1627,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given hub flow with ttp when ttp is not available, when view model initiated, then show toast emitted`() {
+    fun `given hub flow with ttp when ttp is not available, when view model initiated, then show toast emitted and tracked`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
@@ -1639,6 +1639,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isInstanceOf(ShowToast::class.java)
         assertThat((viewModel.event.value as ShowToast).message)
             .isEqualTo(R.string.card_reader_tap_to_pay_not_available_error)
+        verify(cardReaderTracker).trackTapToPayNotAvailableReason(
+            SystemVersionNotSupported,
+            "payments_menu",
+        )
     }
 
     @Test
