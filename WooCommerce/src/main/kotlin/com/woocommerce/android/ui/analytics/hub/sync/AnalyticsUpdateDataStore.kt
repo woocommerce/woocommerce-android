@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapNotNull
 
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
@@ -19,12 +23,14 @@ class AnalyticsUpdateDataStore @Inject constructor(
     suspend fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
         maxOutdatedTime: Long = defaultMaxOutdatedTime
-    ): Boolean {
-        rangeSelection.lastUpdateTimestamp.singleOrNull()
-            ?.let { currentTime - it }
-            ?.takeIf { it < maxOutdatedTime }
-            ?.let { return false }
-            ?: return true
+    ) = flow {
+        rangeSelection.lastUpdateTimestamp.collect { lastUpdateTimestamp ->
+            lastUpdateTimestamp
+                ?.let { currentTime - it }
+                ?.let { timeElapsedSinceLastUpdate ->
+                    emit(timeElapsedSinceLastUpdate > maxOutdatedTime)
+                } ?: emit(true)
+        }
     }
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
