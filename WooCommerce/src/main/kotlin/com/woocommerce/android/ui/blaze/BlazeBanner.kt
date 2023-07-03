@@ -33,8 +33,8 @@ fun BlazeBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(dimensionResource(id = R.dimen.major_100))
             .background(MaterialTheme.colors.surface)
+            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         IconButton(
             modifier = Modifier.align(Alignment.TopEnd),
@@ -74,9 +74,8 @@ fun BlazeBanner(
                 onClick = onTryBlazeClicked
             ) {
                 Text(
-                    text = stringResource(R.string.blaze_banner_button),
+                    text = stringResource(R.string.blaze_banner_button).uppercase(),
                     style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold,
                 )
             }
         }
@@ -94,4 +93,3 @@ private fun BlazeBannerPreview() {
         onTryBlazeClicked = {}
     )
 }
-
