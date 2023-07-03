@@ -1,2 +1,0 @@
-13.9:
-Wir haben eine neue Funktion eingeführt, mit der du im Produktauswahlbildschirm Produkte nach ihrer SKU suchen kannst. So ist es noch einfacher, das zu finden, was du suchst. Probiere es aus und teile uns dein Feedback mit!

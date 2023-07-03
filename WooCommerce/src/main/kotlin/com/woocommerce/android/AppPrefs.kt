@@ -110,6 +110,7 @@ object AppPrefs {
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
+        WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
     }
 
     /**
@@ -118,6 +119,7 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
     }
 
     /**
@@ -768,6 +770,16 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
+    var wasAIProductDescriptionCelebrationShown: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            value = value
+        )
+
     fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) {
         setString(getOrderFilterKey(currentSiteId, filterCategory), filterValue)
     }
@@ -859,13 +871,11 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
-    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
-        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    fun setActiveStatsGranularity(activeStatsGranularity: String) {
+        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, activeStatsGranularity)
     }
 
-    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
-        getActiveStatsGranularityFilterKey(currentSiteId)
-    )
+    fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
     fun markAsNewSignUp(newSignUp: Boolean) {
         setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
@@ -896,9 +906,6 @@ object AppPrefs {
     }
 
     fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
-
-    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
-        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Used for storing IPP feedback banner interaction data.
@@ -984,6 +991,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            value = value
+        )
+
+    var wasAIProductDescriptionPromoDialogShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
             value = value
         )
 

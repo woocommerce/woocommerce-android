@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-06 19:02:47+0000
+Translation-Revision-Date: 2023-06-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_sharing_regenerate">Skriv igen</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Bli meddelad om varje försäljning:&lt;/b&gt; Se till att du inte missar något med omedelbara försäljningsnotiser. Få meddelanden om varje ny försäljning, så att du kan fira din framgång och hålla koll på din butiksaktivitet.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Lägg till och redigera produkter med en beröring:&lt;/b&gt; Lägg till nya produkter, uppdatera information, ladda upp bilder och hantera variationer direkt i appen. Håll ditt lager uppdaterat utan ansträngning.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ta emot personliga betalningar:&lt;/b&gt; Utöka dina försäljningsmöjligheter genom att ta emot personliga betalningar. Använd appen för att på ett säkert sätt behandla kreditkortstransaktioner. Du kan till och med ansluta till kompatibla kortläsare för bekväma personliga betalningar.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Hantera och skapa beställningar:&lt;/b&gt; Hantera beställningar enkelt. Bläddra, sök och ändra beställningsstatus. Skapa nya beställningar i farten för köp i butik eller via telefon. Förenkla din beställningshanteringsprocess.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Spåra försäljning och populära produkter:&lt;/b&gt; Håll dig uppdaterad med butiksresultat i realtid. Identifiera dina bästsäljande produkter och fatta välgrundade beslut för maximal lönsamhet.</string>
+    <string name="store_creation_in_progress_description_1">Du kommer att få ett meddelande när butiken är klar. Luta dig tillbaka, slappna av och låt oss utöva vår magi samtidigt som vi delar med oss av användbara tips. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Skapar din butik! Det tar bara några minuter</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">En PIN-kod krävs, men Tryck för att betala stöder inte detta än. Överväg att använda en extern kortläsare</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Köp en kortläsare</string>
+    <string name="order_sync_coupon_removed">Rabattkod kunde inte tillämpas och togs bort från beställningen</string>
+    <string name="product_sharing_ai_generating_failure">Det gick inte att generera meddelandet för delning. Försök igen.</string>
+    <string name="product_sharing_ai_info_label">Lär dig mer om vår AI-funktion</string>
+    <string name="product_sharing_optional_message_label">Lägg till ett valfritt meddelande</string>
+    <string name="product_sharing_generating">Skriver …</string>
+    <string name="product_sharing_write_with_ai">Skriv med AI</string>
+    <string name="more_menu_button_blaze_description">Marknadsför produkter med Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI-innehållsgenerator tillgänglig</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Marknadsför med Blaze</string>
+    <string name="share_product">Dela produkt</string>
+    <string name="first_product_celebration_body_message">Grattis. Du är ett steg närmare att kunna lansera din nya butik.</string>
+    <string name="first_product_celebration_title">Den första produkten har skapats 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
+    <string name="order_list_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
     <string name="card_reader_payment_card_removed_too_early">Kortet togs bort för tidigt</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, vi har pausat din butik, men du kan fortsätta genom att välja ett paket som passar dig bäst.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
@@ -100,18 +125,11 @@ Language: sv_SE
     <string name="store_creation_profiler_industry_home_furniture_garden">Hem, möbler och trädgård</string>
     <string name="store_creation_profiler_industry_food_drink">Mat och dryck</string>
     <string name="store_creation_profiler_industry_health_beauty">Hälsa och skönhet</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Vår favoritfärg är lila. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo-teamet består av över 350 begåvade individer, fördelade på över 30 länder.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; Det hålls över 150 WooCommerce-träffar världen över. Ett bra sätt att träffa andra butiksägare.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Är du på katt- eller hundteamet? Woo-teamet är uppdelat 50/50.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Visste du att Woo grundades av två sydafrikaner och en norrman? Här är tre alternativa sätt att säga \"butik\" i dessa länder – Winkel, ivenkile och butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Visste du att Woo driver nästan 4 miljoner butiker världen över? Du är i gott sällskap.</string>
     <string name="store_creation_in_progress_title_6">Öppnar dörrarna</string>
     <string name="store_creation_in_progress_title_5">Slå på belysningen</string>
     <string name="store_creation_in_progress_title_4">Slutför den sista finputsningen</string>
     <string name="store_creation_in_progress_title_3">Organiserar lagerrummet</string>
     <string name="store_creation_in_progress_title_2">Bygger grunden</string>
-    <string name="store_creation_in_progress_title_1">Woo! Vi skapar din butik</string>
     <string name="notifications_permission_description">Vi behöver din tillåtelse för att skicka push-notiser för nya beställningar, recensioner med mera till din enhet.</string>
     <string name="notifications_permission_title">Aviseringar</string>
     <string name="product_type_composite">Sammansatt produkt</string>

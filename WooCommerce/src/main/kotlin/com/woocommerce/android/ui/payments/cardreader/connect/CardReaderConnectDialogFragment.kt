@@ -12,11 +12,9 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
@@ -29,6 +27,7 @@ import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -55,7 +54,7 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_connect_dialog) {
+class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_connect_dialog) {
     val viewModel: CardReaderConnectViewModel by viewModels()
 
     @Inject lateinit var locationUtils: LocationUtils
@@ -83,10 +82,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog?.let {
-            it.setCanceledOnTouchOutside(false)
-            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        }
+        dialog?.setCanceledOnTouchOutside(false)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

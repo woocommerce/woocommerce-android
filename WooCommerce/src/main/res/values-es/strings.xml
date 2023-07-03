@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-07 09:54:23+0000
+Translation-Revision-Date: 2023-06-28 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_sharing_regenerate">Volver a escribir</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Recibe notificaciones de todas las ventas:&lt;/b&gt; no te pierdas nada gracias a las notificaciones de venta instantáneas. Recibe alertas por cada nueva venta: así podrás celebrar tus logros y controlar la actividad de tu tienda.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Añade y edita productos en un clic:&lt;/b&gt; añade nuevos productos, actualiza los detalles, sube imágenes y gestiona las variaciones; todo ello desde la aplicación. Mantén tu inventario actualizado sin esfuerzo.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Acepta pagos en persona:&lt;/b&gt; aumenta tus oportunidades de venta aceptando pagos en persona. Usa la aplicación para procesar las transacciones con tarjeta de crédito de manera segura o incluso para conectarte con lectores de tarjetas compatibles y así aceptar pagos en persona cómodamente.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gestiona y crea pedidos:&lt;/b&gt; tramita pedidos con facilidad. Desplázate por la página, busca y cambia el estado de los pedidos. Crea nuevos pedidos sobre la marcha para compras en el establecimiento o por teléfono. Simplifica el proceso de gestión de pedidos.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Haz un seguimiento de las ventas y de los productos populares:&lt;/b&gt; mantente al día del rendimiento en tiempo real de tu tienda. Identifica cuáles son tus productos más vendidos y toma decisiones fundamentadas para conseguir la máxima rentabilidad.</string>
+    <string name="store_creation_in_progress_description_1">Te avisaremos cuando tu tienda esté lista. Relájate, disfruta y déjanos hacer nuestra magia a la vez que te ofrecemos útiles consejos.🔮</string>
+    <string name="store_creation_in_progress_title_1">Estamos creando tu tienda. El proceso solo durará unos minutos</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Se requiere un código PIN, pero Tap to Pay aún no lo admite. Puedes usar un lector de tarjetas externo</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Compra un lector de tarjetas</string>
+    <string name="order_sync_coupon_removed">No se ha podido aplicar el cupón y se ha eliminado del pedido</string>
+    <string name="product_sharing_ai_generating_failure">No se ha podido generar un mensaje de compartición. Inténtalo de nuevo.</string>
+    <string name="product_sharing_ai_info_label">Más información sobre esta función de IA</string>
+    <string name="product_sharing_optional_message_label">Añade un mensaje (opcional)</string>
+    <string name="product_sharing_generating">Escribiendo…</string>
+    <string name="product_sharing_write_with_ai">Escribir con IA</string>
+    <string name="more_menu_button_blaze_description">Promociona productos con Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Generador de contenidos de IA disponible</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promocionar con Blaze</string>
+    <string name="share_product">Compartir producto</string>
+    <string name="first_product_celebration_body_message">¡Enhorabuena! Ya estás un paso más cerca de que tu tienda esté lista.</string>
+    <string name="first_product_celebration_title">Has creado el primer producto 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">El sistema ha cerrado la aplicación de Woo mientras se ejecutaba en segundo plano. Puedes probar a usarla de nuevo.</string>
+    <string name="order_list_barcode_scanning_process_death">El sistema ha cerrado la aplicación de Woo mientras se ejecutaba en segundo plano. Puedes probar a usarla de nuevo.</string>
     <string name="card_reader_payment_card_removed_too_early">La tarjeta se ha retirado demasiado pronto</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, hemos puesto en pausa tu tienda, pero puedes continuar eligiendo el plan que más te convenga.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Mantén tu negocio en marcha con nuestro plan.</string>
@@ -100,18 +125,11 @@ Language: es
     <string name="store_creation_profiler_industry_home_furniture_garden">Hogar, muebles y jardín</string>
     <string name="store_creation_profiler_industry_food_drink">Alimentación y bebidas</string>
     <string name="store_creation_profiler_industry_health_beauty">Salud y belleza</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#CuriosidadesWoo:&lt;/b&gt; Nuestro color preferido es el lila. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#CuriosidadesWoo:&lt;/b&gt; Más de 350 personas distribuidas en más de 30 países aportan todo su talento al equipo de Woo.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#CuriosidadesWoo:&lt;/b&gt; Se celebran más de 150 encuentros de WooCommerce por todo el mundo. Una buena forma de conocer propietarios de tiendas semejantes.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#CuriosidadesWoo:&lt;/b&gt; ¿Eres más de gatos o de perros? ¡Nuestro equipo está dividido!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#CuriosidadesWoo:&lt;/b&gt; ¿Sabías que los fundadores de Woo son dos sudafricanos y un noruego? Estas son tres maneras de decir «tienda» en sus países: winkel, ivenkile y butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#CuriosidadesWoo:&lt;/b&gt; ¿Sabías que Woo se utiliza en casi 4 millones de tiendas por todo el mundo? Estás en buena compañía.</string>
     <string name="store_creation_in_progress_title_6">Abriendo las puertas</string>
     <string name="store_creation_in_progress_title_5">Encendiendo las luces</string>
     <string name="store_creation_in_progress_title_4">Dando los retoques finales</string>
     <string name="store_creation_in_progress_title_3">Organizando el almacén</string>
     <string name="store_creation_in_progress_title_2">Sentando las bases</string>
-    <string name="store_creation_in_progress_title_1">¡Bravo! Estamos creando tu tienda</string>
     <string name="notifications_permission_description">Necesitamos tu permiso para enviarte notificaciones push de nuevos pedidos, opiniones, etc. en tu dispositivo.</string>
     <string name="notifications_permission_title">Notificaciones</string>
     <string name="product_type_composite">Producto compuesto</string>

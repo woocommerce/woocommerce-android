@@ -9,13 +9,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
@@ -24,6 +24,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
@@ -41,7 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
+class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
 
     @Inject
@@ -51,10 +52,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
     lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog?.let {
-            it.setCanceledOnTouchOutside(false)
-            it.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        }
+        dialog?.setCanceledOnTouchOutside(false)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -95,6 +93,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 ).show()
                 is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
+                is PurchaseCardReader -> openPurchaseCardReaderScreen(event.url)
                 else -> event.isHandled = false
             }
         }
@@ -134,6 +133,12 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             }
         }
+    }
+
+    private fun openPurchaseCardReaderScreen(url: String) {
+        findNavController().navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = url)
+        )
     }
 
     private fun openSupportRequestScreen() {

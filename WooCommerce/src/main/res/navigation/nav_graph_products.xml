@@ -112,6 +112,12 @@
                 android:name="productName"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSharingFragment"
+            app:destination="@id/productSharingFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_AIProductDescriptionBottomSheetFragment"
+            app:destination="@id/AIProductDescriptionBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -714,5 +720,30 @@
         <argument
             android:name="productName"
             app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/productSharingFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSharingDialog"
+        android:label="ProductSharingFragment">
+        <argument
+            android:name="permalink"
+            app:argType="string" />
+        <argument
+            android:name="productName"
+            app:argType="string" />
+        <argument
+            android:name="productDescription"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/AIProductDescriptionBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment"
+        android:label="AIProductDescriptionBottomSheetFragment" >
+        <argument
+            android:name="productTitle"
+            app:argType="string"
+            app:nullable="true" />
     </dialog>
 </navigation>

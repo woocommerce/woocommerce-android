@@ -126,6 +126,15 @@
         <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
     </style>
 
+    <style name="Theme.Woo.Dialog.RoundedCorners" parent="Theme.Woo.Dialog">
+        <item name="dialogCornerRadius">8dp</item>
+    </style>
+
+    <style name="Theme.Woo.Dialog.RoundedCorners.NoMinWidth" parent="Theme.Woo.Dialog.RoundedCorners">
+        <item name="android:windowMinWidthMajor">0%</item>
+        <item name="android:windowMinWidthMinor">0%</item>
+    </style>
+
     <style name="Woo.Dialog"/>
     <style name="Woo.Dialog.ButtonBar">
         <item name="android:paddingStart">@dimen/minor_100</item>

@@ -1,1 +1,1 @@
-This release includes several bug fixes and improvements to help you get your business started and ensure a smooth experience. Stay tuned for more enhancements in the future.
+This release includes the option to add multiple coupons when creating an order. We've also made it super easy to search for a product by scanning the barcode or qr code. Check it out!

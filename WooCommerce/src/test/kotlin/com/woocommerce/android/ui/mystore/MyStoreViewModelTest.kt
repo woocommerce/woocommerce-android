@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -59,6 +60,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
     private val timezoneProvider: TimezoneProvider = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -220,32 +222,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
                 mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
             )
-        }
-
-    @Test
-    fun `given stats loaded, when stats granularity changes, then selected option is saved into prefs`() =
-        testBlocking {
-            whenViewModelIsCreated()
-            givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
-
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
-
-            verify(appPrefsWrapper).setActiveStatsGranularity(
-                0,
-                ANY_SELECTED_STATS_GRANULARITY.name
-            )
-        }
-
-    @Test
-    fun `given stats granularity previously selected, when view model is created, stats are retrieved from prefs`() =
-        testBlocking {
-            whenever(appPrefsWrapper.getActiveStatsGranularity(anyInt()))
-                .thenReturn(ANY_SELECTED_STATS_GRANULARITY.name)
-
-            whenViewModelIsCreated()
-
-            verify(appPrefsWrapper).getActiveStatsGranularity(anyInt())
         }
 
     @Test
@@ -423,34 +399,35 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the viewModel started, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
-        // Given
-        val testSite = SiteModel().apply {
-            timezone = "-3"
-        }
+    fun `given the viewModel started, when device and store timezones are different, then trigger expected analytics event`() =
+        testBlocking {
+            // Given
+            val testSite = SiteModel().apply {
+                timezone = "-3"
+            }
 
-        val deviceTimezone = mock<TimeZone> {
-            on { rawOffset } doReturn 0
-        }
+            val deviceTimezone = mock<TimeZone> {
+                on { rawOffset } doReturn 0
+            }
 
-        whenever(selectedSite.getIfExists()) doReturn testSite
-        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(
-            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
-        ) doReturn true
+            whenever(selectedSite.getIfExists()) doReturn testSite
+            whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+            whenever(
+                appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
+            ) doReturn true
 
-        // When
-        whenViewModelIsCreated()
+            // When
+            whenViewModelIsCreated()
 
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-            properties = mapOf(
-                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
-                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+                )
             )
-        )
-    }
+        }
 
     @Test
     fun `given the viewModel started, when device and store timezones are the same, then do nothing`() = testBlocking {
@@ -483,39 +460,40 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the viewModel started, when timezone track was NOT triggered before, then trigger expected analytics event`() = testBlocking {
-        // Given
-        val testSite = SiteModel().apply {
-            timezone = "-3"
-            siteId = 7777777
-        }
+    fun `given the viewModel started, when timezone track was NOT triggered before, then trigger expected analytics event`() =
+        testBlocking {
+            // Given
+            val testSite = SiteModel().apply {
+                timezone = "-3"
+                siteId = 7777777
+            }
 
-        val deviceTimezone = mock<TimeZone> {
-            on { rawOffset } doReturn 0
-        }
+            val deviceTimezone = mock<TimeZone> {
+                on { rawOffset } doReturn 0
+            }
 
-        whenever(selectedSite.getIfExists()) doReturn testSite
-        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(
-            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
-                siteId = 7777777,
-                localTimezone = "0",
-                storeTimezone = "-3"
+            whenever(selectedSite.getIfExists()) doReturn testSite
+            whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+            whenever(
+                appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+                    siteId = 7777777,
+                    localTimezone = "0",
+                    storeTimezone = "-3"
+                )
+            ) doReturn true
+
+            // When
+            whenViewModelIsCreated()
+
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+                )
             )
-        ) doReturn true
-
-        // When
-        whenViewModelIsCreated()
-
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-            properties = mapOf(
-                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
-                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
-            )
-        )
-    }
+        }
 
     @Test
     fun `given the viewModel started, when timezone track is triggered, then set appPrefs flag`() = testBlocking {
@@ -611,6 +589,32 @@ class MyStoreViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given the viewModel started, when the store timezone is null, then do nothing`() = testBlocking {
+        // Given
+        val testSite = SiteModel().apply {
+            timezone = null
+        }
+
+        val deviceTimezone = mock<TimeZone> {
+            on { rawOffset } doReturn 0
+        }
+
+        whenever(selectedSite.getIfExists()) doReturn testSite
+
+        // When
+        whenViewModelIsCreated()
+
+        // Then
+        verify(analyticsTrackerWrapper, never()).track(
+            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+            properties = mapOf(
+                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            )
+        )
+    }
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
@@ -665,8 +669,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             myStoreTransactionLauncher,
             timezoneProvider,
+            isAIProductDescriptionEnabled,
             localNotificationScheduler,
-            shouldShowPrivacyBanner,
+            shouldShowPrivacyBanner
         )
     }
 

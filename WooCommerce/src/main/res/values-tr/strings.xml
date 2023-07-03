@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-07 13:54:03+0000
+Translation-Revision-Date: 2023-06-29 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_sharing_regenerate">Yeniden yazın</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Her satışta bildirim alın:&lt;/b&gt; Anlık satış bildirimleri sayesinde hiçbir şeyi kaçırmayın. Her yeni satışta bildirim alarak başarınızın keyfini çıkarabilir ve mağazanızdaki hareketler hakkında güncel bilgi sahibi olabilirsiniz.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Bir dokunuşla ürünleri ekleyin ve düzenleyin:&lt;/b&gt; Yeni ürün ekleme, ayrıntıları güncelleme, görseller yükleme ve varyasyonları yönetme işlemlerinin tamamını uygulamadan gerçekleştirin. Envanterinizi zahmetsiz bir şekilde güncel tutun.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ödemeleri şahsen alın:&lt;/b&gt; Ödemeleri şahsen kabul ederek satış fırsatlarınızı genişletin. Kredi kartı işlemlerini güvenli bir şekilde işlemek veya şahsi ödemeleri kolaylıkla almak üzere uyumlu kart okuyuculara bağlanmak için uygulamayı kullanın.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Siparişleri yönetin ve oluşturun:&lt;/b&gt; Siparişleri kolaylıkla işleyin. Ekranı kaydırın, arama yapın ve sipariş durumunu değiştirin. Mağaza içi veya telefonla satın alma işlemleri için anında yeni siparişler oluşturun. Sipariş yönetimi sürecinizi basitleştirin.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Satışları ve popüler ürünleri takip edin:&lt;/b&gt; Mağazanızın gerçek zamanlı performansı hakkında güncel bilgi alın. En çok satan ürünlerinizi belirleyin ve maksimum kârlılık sağlamak için bilinçli kararlar verin.</string>
+    <string name="store_creation_in_progress_description_1">Mağaza hazır olduğunda bildirim alacaksınız! Arkanıza yaslanın, keyfinize bakın ve bir yandan faydalı ipuçlarını paylaşmaya devam ederken mağazanızı hazırlamamızı bekleyin. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Mağazanız Oluşturuluyor! Sadece birkaç dakika sürecek</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Bir PIN kodu gerekli, ancak Tap To Pay bunu henüz desteklemiyor. Harici bir kart okuyucu kullanmayı deneyin.</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Bir kart okuyucu satın alın</string>
+    <string name="order_sync_coupon_removed">Kupon uygulanamadı ve siparişten kaldırıldı</string>
+    <string name="product_sharing_ai_generating_failure">Paylaşım mesajı oluşturulamıyor Lütfen yeniden deneyin!</string>
+    <string name="product_sharing_ai_info_label">Yapay Zeka özelliği hakkında daha fazla bilgi edinin</string>
+    <string name="product_sharing_optional_message_label">İsteğe bağlı mesaj ekle</string>
+    <string name="product_sharing_generating">Yazıyor…</string>
+    <string name="product_sharing_write_with_ai">Yapay zeka ile yaz</string>
+    <string name="more_menu_button_blaze_description">Ürünleri Blaze ile tanıt</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Yapay zeka içerik üreticisi mevcut</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Blaze ile tanıt</string>
+    <string name="share_product">Ürün paylaşın</string>
+    <string name="first_product_celebration_body_message">Tebrikler! Yeni mağazayı hazır hale getirmeye bir adım daha yaklaştınız.</string>
+    <string name="first_product_celebration_title">İlk ürün oluşturuldu 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
+    <string name="order_list_barcode_scanning_process_death">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="card_reader_payment_card_removed_too_early">Kart çok erken kaldırıldı</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, mağazanızı duraklattık, ancak size en uygun paketi seçerek devam edebilirsiniz.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Paketimizle işletmenizin yoluna devam etmesini sağlayın!</string>
@@ -100,18 +125,11 @@ Language: tr
     <string name="store_creation_profiler_industry_home_furniture_garden">Ev, mobilya ve bahçe</string>
     <string name="store_creation_profiler_industry_food_drink">Yiyecek ve içecek</string>
     <string name="store_creation_profiler_industry_health_beauty">Sağlık ve güzellik</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Favori rengimiz mor. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo ekibi, 30\'dan fazla ülkeye dağılmış 350\'den fazla yetenekli kişiden oluşur.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; Tüm dünyada düzenlenen 150\'den fazla WooCommerce buluşması var! Diğer mağaza sahipleriyle tanışmak için harika bir yol.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Kedi İnsanı mısınız yoksa Köpek İnsanı mı? Woo ekibi 50/50 bölündü!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo\'nun iki Güney Afrikalı ve bir Norveçli tarafından kurulduğunu biliyor muydunuz? Bu ülkelerde \"mağaza\" demenin üç alternatif yolu: Winkel, ivenkile ve butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo\'nun dünya çapında 4 milyondan fazla mağazayı desteklediğini biliyor muydunuz? Yalnız değilsiniz.</string>
     <string name="store_creation_in_progress_title_6">Kapılar açılıyor</string>
     <string name="store_creation_in_progress_title_5">Işıklar açılıyor</string>
     <string name="store_creation_in_progress_title_4">Son dokunuşlar uygulanıyor</string>
     <string name="store_creation_in_progress_title_3">Stok odası düzenleniyor</string>
     <string name="store_creation_in_progress_title_2">Temelleri oluşturuluyor</string>
-    <string name="store_creation_in_progress_title_1">Woo! Mağazanızı oluşturuyoruz</string>
     <string name="notifications_permission_description">Size yeni siparişler, yorumlar vb. ile ilgili anlık bildirimler göndermek izninize ihtiyacımız var.</string>
     <string name="notifications_permission_title">Bildirimler</string>
     <string name="product_type_composite">Birleşik ürün</string>

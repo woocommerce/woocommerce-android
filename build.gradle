@@ -95,7 +95,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-466e0b8f67bfb134682e4d03a408f4f25b7d3693'
+    fluxCVersion = '2.34.0'
     wooCommerceSharedVersion = '10-6886fc67d845235d28ca2bc492faddf0098ffbf8'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
@@ -118,7 +118,10 @@ ext {
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
-    stripeTerminalVersion = '2.20.1'
+    stripeTerminalVersion = '2.21.1'
+    mlkitVersion = '17.1.0'
+    androidxCameraVersion = '1.2.3'
+    guavaVersion = '31.0.1-android'
 
     // Apache
     commonsText = '1.10.0'

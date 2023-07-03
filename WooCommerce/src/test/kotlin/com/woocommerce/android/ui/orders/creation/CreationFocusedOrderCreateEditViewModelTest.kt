@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -44,6 +46,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
@@ -193,14 +198,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when decreasing product quantity to zero, then call the full product view`() = testBlocking {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
+    fun `when decreasing product quantity to zero, then remove product from order`() = testBlocking {
+        var orderDraft: Order? = null
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
+            orderDraft = order
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
@@ -208,34 +210,29 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
-        assertThat(addedProductItem!!.quantity).isEqualTo(1F)
 
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.productId).isEqualTo(123)
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
-            } ?: fail("Last event should be of ShowProductDetails type")
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.productId == 123L && it.itemId == addedProductItemId }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
     }
 
     @Test
-    fun `when decreasing variation quantity to zero, then call the full product view`() {
+    fun `when decreasing variation quantity to zero, then remove product from order`() {
+        var orderDraft: Order? = null
         val variationOrderItem = createOrderItem().copy(productId = 0, variationId = 123)
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn variationOrderItem
         }
-        createSut()
 
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
+        createSut()
 
         var addedProductItem: Order.Item? = null
         sut.orderDraft.observeForever { order ->
+            orderDraft = order
             addedProductItem = order.items.find { it.variationId == 123L }
         }
 
@@ -246,13 +243,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? ShowProductDetails }
-            ?.let { showProductDetailsEvent ->
-                assertThat(showProductDetailsEvent.item.variationId).isEqualTo(123)
-                assertThat(showProductDetailsEvent.item.itemId).isEqualTo(addedProductItemId)
-            } ?: fail("Last event should be of ShowProductDetails type")
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.find { it.variationId == 123L && it.itemId == addedProductItemId }
+            ?.let { assertThat(it.quantity).isEqualTo(0f) }
+            ?: fail("Expected an item with productId 123 with quantity set as 0")
     }
 
     @Test
@@ -1101,7 +1096,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("code")
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code")
+        sut.onCouponEditResult(couponEditResult)
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -1114,12 +1110,42 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("")
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc")
+        sut.onCouponEditResult(couponEditResult)
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION)
         )
+    }
+
+    @Test
+    fun `given coupon code rejected by backend, then should display message`() {
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn
+                flowOf(
+                    Failed(
+                        WooException(
+                            WooError(
+                                WooErrorType.INVALID_COUPON,
+                                BaseRequest.GenericErrorType.UNKNOWN
+                            )
+                        )
+                    )
+                )
+        }
+        createSut()
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("abc")
+        sut.onCouponEditResult(couponEditResult)
+
+        with(lastReceivedEvent) {
+            this == OnCouponRejectedByBackend
+        }
     }
 
     @Test

@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
@@ -345,6 +346,11 @@ class MyStoreFragment :
                     )
 
                 is ShareStore -> ActivityUtils.shareStoreUrl(requireActivity(), event.storeUrl)
+
+                is ShowAIProductDescriptionDialog ->
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
+                    )
 
                 else -> event.isHandled = false
             }

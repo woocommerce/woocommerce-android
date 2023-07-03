@@ -412,6 +412,39 @@ class JitmViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given jitm displayed, when jitm cta clicked, then jitm click called from cache`() {
+        whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
+        testBlocking {
+            val jitmCtaLink = "https://woocommerce.com/products/hardware/US"
+            whenever(
+                jitmStoreInMemoryCache.getMessagesForPath(any())
+            ).thenReturn(
+                listOf(
+                    provideJitmApiResponse(
+                        jitmCta = provideJitmCta(
+                            link = jitmCtaLink
+                        )
+                    )
+                )
+            )
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn(jitmCtaLink)
+
+            whenViewModelIsCreated()
+            (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
+
+            verify(jitmStoreInMemoryCache).onCtaClicked("woomobile:my_store:admin_notices")
+        }
+    }
+
+    @Test
     fun `given jitm displayed, when jitm cta clicked, then proper url is passedto OpenJITM event`() {
         val jitmCtaLink = "https://woocommerce.com/products/hardware/US"
         val jitmCtaLinkWithUtmParams = "https://woocommerce.com/products/hardware/US?utm_campaign=compaign"

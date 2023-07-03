@@ -1,9 +1,35 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+14.4
+-----
+
+
+14.3
+-----
+- [***] [Internal] Migrate the barcode scanning library from Google Code Scanner to Google's MLKit [https://github.com/woocommerce/woocommerce-android/pull/9298]
+- [*] Payments: Products are removed directly from an order when its count is below one, instead of opening an extra screen to remove it. [https://github.com/woocommerce/woocommerce-android/pull/9280]
+- [**] Added multiple coupons support in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9300]
+
+14.3
+-----
+- [*] Fixed scenarios in which the app would lose state when it was relaunched [https://github.com/woocommerce/woocommerce-android/pull/9285]
+
+14.2
+-----
+- [*] [Internal] Center the text on the "more menu" screen buttons [https://github.com/woocommerce/woocommerce-android/pull/9241]
+- [*] [Internal] Stripe SDK updated to 2.21.0 [https://github.com/woocommerce/woocommerce-android/pull/9223]
+- [*] [Internal] Rounded corners to the payments dialogs [https://github.com/woocommerce/woocommerce-android/pull/9231]
+- [*] [Internal] Adding products via barcode scanning - Handle EAN-13, EAN-8 barcode formats [https://github.com/woocommerce/woocommerce-android/pull/9240]
+- [*] [Internal] Changes the endpoint use for customer search during order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9212]
+- [*] Store creation: improve messaging while waiting for the new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/9252]
+- [*] Handle case when backend rejects discount coupon while creating an order [https://github.com/woocommerce/woocommerce-android/pull/9263]
+
 14.1
 -----
-- [*][Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
+- [*] [Internal] Fixed database access race condition in Product Selector affecting local search performance and featured products selection [https://github.com/woocommerce/woocommerce-android/pull/9202]
 - [*] [Internal] Added caching mechanism for JITMs [https://github.com/woocommerce/woocommerce-android/pull/9158]
+- [***] Adds new entry point to promote product using Blaze [https://github.com/woocommerce/woocommerce-android/issues/9209]
 - [*] [Internal] Fixed coupon validation logic [https://github.com/woocommerce/woocommerce-android/pull/9210]
+- [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product sharing messages for you. [https://github.com/woocommerce/woocommerce-android/pull/9236]
 
 14.0
 -----

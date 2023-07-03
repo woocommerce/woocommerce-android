@@ -116,6 +116,9 @@ platform :android do
       extracted_notes_file_path: RELEASE_NOTES_PATH
     )
     android_update_release_notes(new_version: new_version)
+
+    push_to_git_remote_with_confirmation
+
     setbranchprotection(repository:GHHELPER_REPO, branch: "release/#{new_version}")
     setfrozentag(repository:GHHELPER_REPO, milestone: new_version)
   end
@@ -536,7 +539,7 @@ platform :android do
     android_create_xml_release_notes(
       download_path: download_path,
       build_number: options[:build_number].to_s,
-      locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
+      locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }.to_h
     )
     add_us_release_notes(
       release_notes_path: File.join(download_path, 'release_notes.xml'),

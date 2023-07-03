@@ -33,7 +33,9 @@ object WooLog {
         PLUGINS,
         IAP,
         ONBOARDING,
-        WOO_TRIAL
+        WOO_TRIAL,
+        AI,
+        BARCODE_SCANNER,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-07 15:54:03+0000
+Translation-Revision-Date: 2023-06-28 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_sharing_regenerate">לכתוב שוב</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#לקבל הודעות עם כל מכירה:&lt;/b&gt; הודעות מיידיות לגבי כל מכירה יבטיחו שתמיד יש לך את המידע המעודכן ביותר. ניתן לקבל התראות על כל מכירה חדשה, כדי לחגוג את ההצלחה ולהתעדכן בפעילות של החנות.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#להוסיף ולערוך מוצרים בהקשה פשוטה:&lt;/b&gt; ניתן להוסיף מוצרים חדשים, לעדכן פרטים, להעלות תמונות ולנהל סוגים – והכול אפשרי מתוך האפליקציה. כך אפשר לדאוג שהמלאי תמיד מעודכן ללא מאמץ.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#לקבל תשלומים באופן אישי:&lt;/b&gt; אפשר להגדיל את הזדמנויות המכירה על ידי קבלת תשלומים באופן אישי. ניתן להשתמש באפליקציה כדי לעבד בצורה מאובטחת עסקאות בכרטיסי אשראי, או אפילו כדי להתחבר לקוראי כרטיסים תואמים לגביית תשלומים באופן אישי בצורה נוחה.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#לנהל וליצור הזמנות:&lt;/b&gt; ניתן לטפל בהזמנות בקלות. אפשר לגלול, לחפש ולשנות סטטוס של הזמנה. ניתן ליצור הזמנות חדשות במהירות עבור הזמנות המבוצעות בחנות עצמה או דרך הטלפון. תהליך פשוט יותר לניהול ההזמנות.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#לעקוב אחרי מכירות ומוצרים פופולריים:&lt;/b&gt; באפשרותך לקבל עדכונים בזמן אמת לגבי הביצועים בחנות שלך. אפשר לזהות את המוצרים הנמכרים ביותר כדי לקבל החלטות מושכלות ולגרוף רווחים מקסימליים.</string>
+    <string name="store_creation_in_progress_description_1">אנחנו נשלח לך הודעה כאשר החנות מוכנה! אפשר לשבת בנוח ולהמתין, אנחנו נפעיל את הקסמים שלנו ונשתף כמה עצות שימושיות. 🔮</string>
+    <string name="store_creation_in_progress_title_1">יוצר את החנות שלך! כמה דקות, תכף נסיים</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">קוד PIN הוא חובה, אבל שירות Tap To Pay עדיין לא תומך בו. כדאי להשתמש בקורא כרטיסים חיצוני</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">לקנות קורא כרטיסים</string>
+    <string name="order_sync_coupon_removed">לא ניתן היה להחיל את הקופון, והוא הוסר מההזמנה</string>
+    <string name="product_sharing_ai_generating_failure">לא ניתן ליצור הודעה לשיתוף. יש לנסות שוב!</string>
+    <string name="product_sharing_ai_info_label">מידע נוסף על האפשרות שלנו לבינה מלאכותית</string>
+    <string name="product_sharing_optional_message_label">להוסיף הודעה אופציונלית</string>
+    <string name="product_sharing_generating">כותב…</string>
+    <string name="product_sharing_write_with_ai">לכתוב באמצעות בינה מלאכותית</string>
+    <string name="more_menu_button_blaze_description">לקדם מוצרים עם Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">יוצר תוכן של בינה מלאכותית זמין לשימוש</string>
+    <string name="product_detail_menu_item_promote_with_blaze">לקדם עם Blaze</string>
+    <string name="share_product">לשתף מוצר</string>
+    <string name="first_product_celebration_body_message">ברכותינו! התקדמת עוד שלב בהכנת החנות החדשה.</string>
+    <string name="first_product_celebration_title">המוצר הראשון נוצר 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
+    <string name="order_list_barcode_scanning_process_death">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
     <string name="card_reader_payment_card_removed_too_early">הכרטיס הוסר מהר מדי</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩, השהינו את החנות שלך, אבל באפשרותך להמשיך על ידי בחירת התוכנית שמתאימה לך.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 ניתן להמשיך לתפעל את העסק עם התוכנית שלנו!</string>
@@ -100,18 +125,11 @@ Language: he_IL
     <string name="store_creation_profiler_industry_home_furniture_garden">בית, ריהוט וגינה</string>
     <string name="store_creation_profiler_industry_food_drink">אוכל ומשקאות</string>
     <string name="store_creation_profiler_industry_health_beauty">בריאות וקוסמטיקה</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;‎#FunWooFact:&lt;/b&gt; הצבע האהוב עלינו הוא סגול. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;‎#FunWooFact:&lt;/b&gt; הצוות של WooCommerce בנוי מעד 350 אנשים מוכשרים שנמצאים במעל 30 ארצות.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;‎#FunWooFact:&lt;/b&gt; מעל 150 מפגשים של WooCommerce מתקיימים ברחבי העולם! דרך נהדרת לפגוש בעלי חנויות עמיתים.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;‎#FunWooFact:&lt;/b&gt; אתם אנשי חתולים או אנשי כלבים? חצי מהצוות של WooCommerce בצד של החתולים, וחצי בצד של הכלבים!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;‎#FunWooFact:&lt;/b&gt; הידעת? WooCommerce הוקמה על ידי שני דרום אפריקניים ונורווגי? אלו שלוש אפשרויות למילה \"חנות\" בארצות המוצא שלהם: Winkel, ‏ivenkile ו-butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;‎#FunWooFact:&lt;/b&gt; ידעת ש-WooCommerce מפעילה כמעט ארבע מיליון חנויות ברחבי העולם? הצטרפת לחברה טובה.</string>
     <string name="store_creation_in_progress_title_6">פתיחת שערים</string>
     <string name="store_creation_in_progress_title_5">מדליקים את האור</string>
     <string name="store_creation_in_progress_title_4">עושים ליטושים אחרונים</string>
     <string name="store_creation_in_progress_title_3">מסדרים את המדפים</string>
     <string name="store_creation_in_progress_title_2">מניחים את היסודות</string>
-    <string name="store_creation_in_progress_title_1">WooCommerce! אנחנו יוצרים את החנות שלך</string>
     <string name="notifications_permission_description">אנחנו זקוקים להרשאה שלך כדי לשלוח אליך הודעות דחיפה לגבי הזמנות חדשות, ביקורות וכו\' במכשיר שלך.</string>
     <string name="notifications_permission_title">הודעות</string>
     <string name="product_type_composite">מוצר בהרכב</string>

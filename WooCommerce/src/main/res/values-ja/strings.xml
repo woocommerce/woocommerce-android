@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-08 09:54:04+0000
+Translation-Revision-Date: 2023-06-28 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_sharing_regenerate">もう一度記入する</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#すべての販売に関する通知が届く:&lt;/b&gt; 即時の販売通知をお送りします。 新たな売上がある度に通知が届くことで、成功を祝い、常にストアのアクティビティを把握できるようになります。</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#ワンタッチで商品を追加および編集:&lt;/b&gt; 新しい商品の追加、詳細の更新、画像のアップロード、バリエーションの管理をすべてアプリから行います。在庫を簡単に最新の状態に保つことができます。</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#直接支払いを受け取る:&lt;/b&gt; 直接支払いを受けることで販売の機会を拡大します。 アプリを使用してクレジットカード取引を安全に処理したり、互換性のあるカードリーダーに接続して便利な直接支払いを行ったりすることもできます。</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#注文を管理し作成:&lt;/b&gt; 注文を簡単に処理します。 注文ステータスをスクロール、検索、変更します。 店頭または電話で購入する場合は、その場で新しい注文を作成します。 注文管理プロセスを簡素化します。</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#売上と人気の高い商品を追跡:&lt;/b&gt; ストアのリアルタイムパフォーマンスの最新情報を入手します。 最も売れている商品を特定し、情報に基づいた意思決定を行い最大限の収益性を得ます。</string>
+    <string name="store_creation_in_progress_description_1">ストアの準備が完了すると通知が届きます。 役立つヒントを共有しますので、腰をかけてリラックスしましょう。私たちがサポートいたします。🔮</string>
+    <string name="store_creation_in_progress_title_1">ストアを作成しています ! あと数分で完了します</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">PIN コードが必要ですが、Tap To Pay ではまだ対応していません。 外付けカードリーダーの使用を検討してください</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">カードリーダーを購入</string>
+    <string name="order_sync_coupon_removed">クーポンを適用できず、注文から削除されました。</string>
+    <string name="product_sharing_ai_generating_failure">共有メッセージを生成できません。 もう一度お試しください。</string>
+    <string name="product_sharing_ai_info_label">AI 機能について詳しく学ぶ</string>
+    <string name="product_sharing_optional_message_label">オプションメッセージを追加する</string>
+    <string name="product_sharing_generating">入力しています…</string>
+    <string name="product_sharing_write_with_ai">AI で執筆</string>
+    <string name="more_menu_button_blaze_description">Blaze を使って商品を宣伝する</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI によるコンテンツ生成を利用できます</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Blaze を使って宣伝する</string>
+    <string name="share_product">商品を共有する</string>
+    <string name="first_product_celebration_body_message">おめでとうございます ! 新しいストアの準備完了にまた一歩近づいています。</string>
+    <string name="first_product_celebration_title">最初の商品が作成されました 🎉</string>
+    <string name="order_creation_barcode_scanning_process_death">バックグラウンドで実行中の Woo アプリがシステムにより終了しました。 再度使用してみることができます。</string>
+    <string name="order_list_barcode_scanning_process_death">バックグラウンドで実行中の Woo アプリがシステムにより終了しました。 再度使用してみることができます。</string>
     <string name="card_reader_payment_card_removed_too_early">カードが早急に削除されました</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s さん、ストアは休止されていますが、最適なプランをお選びいただくと再開できます。</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 プランを利用してビジネスを順調に進めましょう !</string>
@@ -100,18 +125,11 @@ Language: ja_JP
     <string name="store_creation_profiler_industry_home_furniture_garden">住宅、家具、庭</string>
     <string name="store_creation_profiler_industry_food_drink">食品・飲料</string>
     <string name="store_creation_profiler_industry_health_beauty">健康・美容</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact (Woo のトリビア):&lt;/b&gt; 私たちの好きな色は紫色です。💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact (Woo のトリビア):&lt;/b&gt; Woo チームは30を超える国に分散する350人以上の優れた人材で構成されています。</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact (Woo のトリビア):&lt;/b&gt; 世界中で150以上の WooCommerce ミートアップが開催されています。 ストアオーナー仲間と出会うのに適した手段です。</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact (Woo のトリビア):&lt;/b&gt; あなたは猫派ですか ? それとも犬派ですか ? Woo チームでは半々です !</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact (Woo のトリビア):&lt;/b&gt; Woo が2人の南アフリカ人と1人のノルウェー人によって設立されたことをご存知でしたか ? この2つの国では「ストア」は、「Winkel (ウィンケル)」、「ivenkile (イベンキル)」、「butikk (ブティック)」といった3通りの言い方が他にあります。</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact (Woo のトリビア):&lt;/b&gt; Woo で動作しているストアは世界中で約400万あることをご存じでしたか ? 人気サイトになろう</string>
     <string name="store_creation_in_progress_title_6">扉を開いています</string>
     <string name="store_creation_in_progress_title_5">明かりを点けています</string>
     <string name="store_creation_in_progress_title_4">仕上げをしています</string>
     <string name="store_creation_in_progress_title_3">倉庫を整理しています</string>
     <string name="store_creation_in_progress_title_2">基礎を築いています</string>
-    <string name="store_creation_in_progress_title_1">お疲れ様でした ! ストアを作成しています</string>
     <string name="notifications_permission_description">お使いのデバイスに届く新しい注文やレビューなどのプッシュ通知を送信するには権限が必要です。</string>
     <string name="notifications_permission_title">通知</string>
     <string name="product_type_composite">混合商品</string>

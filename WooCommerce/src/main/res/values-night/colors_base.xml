@@ -73,6 +73,9 @@
     <color name="tagView_text">@color/color_on_primary_high</color>
     <color name="tag_bg_main">@color/color_primary_variant</color>
     <color name="tag_text_main">@color/white</color>
+    <color name="tag_task_label">@color/color_primary_variant</color>
+    <color name="tag_task_label_text">@color/white</color>
+    <color name="tag_icon">@color/white</color>
 
     <!--
         Warning colors
@@ -146,6 +149,12 @@
 
     <!-- Text colors -->
     <color name="link_text">@color/woo_blue_30</color>
+
+    <!--
+    Button colors
+    -->
+    <color name="light_colored_button_text">@color/color_primary_variant</color>
+    <color name="light_colored_button_background">@color/woo_black_80</color>
 
     <!--
     Analytics
