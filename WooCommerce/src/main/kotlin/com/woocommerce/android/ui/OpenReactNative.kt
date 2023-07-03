@@ -22,10 +22,10 @@ class OpenReactNative @Inject constructor(
         val intent = Intent(activity, ReactActivity::class.java).apply {
             putExtra(ReactActivity.PROPERTY_TOKEN, accessToken.get())
             putExtra(ReactActivity.PROPERTY_BLOG_ID, site.siteId.toString())
-            putExtra(ReactActivity.PROPERTY_SITE_URL, "enormous-humboldt.jurassic.ninja")
+            putExtra(ReactActivity.PROPERTY_SITE_URL, site.url.toString())
             putExtra(
                 ReactActivity.PROPERTY_APP_PASSWORD,
-                applicationPasswordsStore.getApplicationPasswordAuthOption(site)
+                applicationPasswordsStore.getApplicationPasswordAuthHeader(site).removePrefix("Basic ")
             )
         }
         activity.startActivity(intent)
