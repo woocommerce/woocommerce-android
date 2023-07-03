@@ -39,6 +39,10 @@ class CustomerListViewModel @Inject constructor(
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
+    fun onCustomerSelected(customerId: Long) {
+    }
+
     fun onSearchQueryChanged(query: String) {
         with(query) {
             searchQuery = this
