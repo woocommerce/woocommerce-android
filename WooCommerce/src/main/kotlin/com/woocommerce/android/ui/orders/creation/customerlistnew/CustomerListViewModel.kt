@@ -35,13 +35,7 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
-            _viewState.value = CustomerListViewState(
-                searchQuery = searchQuery,
-                searchModes = selectSearchMode(selectedSearchMode.labelResId),
-                body = CustomerListViewState.CustomerList.Loading
-            )
-
-            loadPage(1)
+            loadFirstPage()
         }
     }
 
@@ -50,6 +44,7 @@ class CustomerListViewModel @Inject constructor(
             searchQuery = this
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
+        loadFirstPage()
     }
 
     fun onSearchTypeChanged(searchTypeId: Int) {
@@ -60,42 +55,53 @@ class CustomerListViewModel @Inject constructor(
                 searchModes = selectSearchMode(this)
             )
         }
+
+        loadFirstPage()
     }
 
     fun onNavigateBack() {
     }
 
     fun onEndOfListReached() {
+        appendLoadingItemToList()
+        loadCustomers(paginationState.currentPage + 1)
+        removeLoadingItemFromList()
+    }
+
+    private fun loadCustomers(page: Int) {
+        if (!paginationState.hasNextPage) return
+
         launch {
-            appendLoadingItemToList()
-            loadPage(paginationState.currentPage + 1)
-            removeLoadingItemFromList()
+            val result = customerListRepository.searchCustomerListWithEmail(
+                searchQuery = searchQuery,
+                searchBy = selectedSearchMode.searchParam,
+                pageSize = PAGE_SIZE,
+                page = page
+            )
+
+            if (result.isFailure) {
+                paginationState = PaginationState(1, false)
+                _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
+            } else {
+                val customers = result.getOrNull() ?: emptyList()
+
+                paginationState = PaginationState(page, customers.size == PAGE_SIZE)
+
+                _viewState.value = _viewState.value!!.copy(
+                    body = CustomerListViewState.CustomerList.Loaded(customers = customers.map { mapFromWCCustomer(it) })
+                )
+            }
         }
     }
 
-    private suspend fun loadPage(page: Int) {
-        if (!paginationState.hasNextPage) return
-
-        val result = customerListRepository.searchCustomerListWithEmail(
+    private fun loadFirstPage() {
+        _viewState.value = CustomerListViewState(
             searchQuery = searchQuery,
-            searchBy = selectedSearchMode.searchParam,
-            pageSize = PAGE_SIZE,
-            page = page
+            searchModes = selectSearchMode(selectedSearchMode.labelResId),
+            body = CustomerListViewState.CustomerList.Loading
         )
 
-        if (result.isFailure) {
-            paginationState = PaginationState(1, false)
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
-        } else {
-            val customers = result.getOrNull() ?: emptyList()
-
-            paginationState = PaginationState(page + 1, customers.size == PAGE_SIZE)
-
-            _viewState.value = _viewState.value!!.copy(
-                body = CustomerListViewState.CustomerList.Loaded(customers = customers.map { mapFromWCCustomer(it) })
-            )
-        }
-
+        loadCustomers(1)
     }
 
     private fun appendLoadingItemToList() {
@@ -111,7 +117,7 @@ class CustomerListViewModel @Inject constructor(
         val currentBody = _viewState.value!!.body as? CustomerListViewState.CustomerList.Loaded ?: return
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
-                customers = currentBody.customers.dropLast(1)
+                customers = currentBody.customers.filterNot { it is CustomerListViewState.CustomerList.Item.Loading }
             )
         )
     }
