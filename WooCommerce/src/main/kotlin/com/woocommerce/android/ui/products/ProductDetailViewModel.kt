@@ -277,9 +277,14 @@ class ProductDetailViewModel @Inject constructor(
             val isProductPublished = productDraft.status == ProductStatus.PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == ProductStatus.PRIVATE
             val showPublishOption = !isProductPublishedOrPrivate || isProductUnderCreation
-            val showShareOption = !isProductUnderCreation
 
-            // Show as action with text if "Save" or "Publish" is not currently shown as action with text.
+            // Show sharing option only if the product isn't being created.
+            // Additionally, for WPCom atomic sites, ensure the site is public.
+            // (`isSitePublic` applies only to WordPress.com sites, not self-hosted ones).
+            val showShareOption = !isProductUnderCreation &&
+                (!selectedSite.get().isWPComAtomic || selectedSite.get().isSitePublic)
+
+            // Show "Share" as action with text only if "Save" or "Publish" is not currently shown as action with text.
             val showShareOptionAsActionWithText =
                 showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
 
@@ -424,7 +429,6 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun canSiteUseSharingWithAI(): Boolean {
         return FeatureFlag.SHARING_PRODUCT_AI.isEnabled() &&
-            selectedSite.get().isSitePublic &&
             selectedSite.get().isWPComAtomic
     }
 
