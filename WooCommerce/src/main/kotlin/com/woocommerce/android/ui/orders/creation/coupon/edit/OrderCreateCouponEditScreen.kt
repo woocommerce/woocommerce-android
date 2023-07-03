@@ -1,10 +1,13 @@
-package com.woocommerce.android.ui.orders.creation.coupon.edit
+package com.woocommerce.android.ui.orders.creation.coupon
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -12,12 +15,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.ERROR
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.IDLE
 
@@ -42,7 +47,23 @@ fun OrderCreateCouponEditScreen(
             label = stringResource(id = R.string.coupon_edit_code_hint),
             isError = isError,
             singleLine = true,
+            trailingIcon = {
+                if (isError) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.woo_red_50)
+                    )
+                }
+            },
         )
+        if (isError) {
+            Text(
+                text = stringResource(id = R.string.invalid_coupon_code),
+                color = colorResource(id = R.color.woo_red_50),
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+            )
+        }
         if (state.value?.isRemoveButtonVisible == true) {
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
