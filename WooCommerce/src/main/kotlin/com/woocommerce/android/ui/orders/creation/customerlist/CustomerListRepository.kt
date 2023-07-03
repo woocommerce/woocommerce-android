@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.customerlist
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -50,11 +51,39 @@ class CustomerListRepository @Inject constructor(
             page = 1,
         ).takeUnless { it.isError }?.model
 
+    suspend fun searchCustomerListWithEmail(
+        searchQuery: String,
+        searchBy: String,
+        pageSize: Int,
+        page: Int,
+    ): Result<List<WCCustomerModel>> {
+        val result = customerStore.fetchCustomersFromAnalytics(
+            site = selectedSite.get(),
+            searchQuery = searchQuery,
+            searchBy = searchBy,
+            pageSize = pageSize,
+            page = page,
+            filterEmpty = listOf(FILTER_EMPTY_PARAM)
+        )
+
+        return if (result.isError ) {
+            Result.failure(WooException(result.error))
+        } else if (result.model == null) {
+            Result.failure(IllegalStateException("empty model returned"))
+        } else {
+            Result.success(result.model!!)
+        }
+    }
+
     suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> {
         return customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
     }
 
     fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? {
         return customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
+    }
+
+    private companion object {
+        const val FILTER_EMPTY_PARAM = "email"
     }
 }
