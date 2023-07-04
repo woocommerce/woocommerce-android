@@ -65,12 +65,14 @@ steps:
   - wait
 
   - label: "🔍 Test Analytics"
-    #command: .buildkite/commands/set-analytics-token.sh  
-    commands: 
-      - .buildkite/commands/set-analytics-token.sh
-      - buildkite-agent artifact download '**/test_result_1.xml' .
+    command: buildkite-agent artifact download '**/test_result_1.xml' .
+    #command: .buildkite/commands/set-analytics-token.sh
+    #commands: 
+    #  - .buildkite/commands/set-analytics-token.sh
+    #  - buildkite-agent artifact download '**/test_result_1.xml' .
     plugins:
-      - automattic/a8c-ci-toolkit#2.17.0
+    #  - automattic/a8c-ci-toolkit#2.17.0
       - test-collector#v1.8.0:
-          files: "test_result_1.xml"
+          files: "**/test_result_1.xml"
           format: "junit"
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
