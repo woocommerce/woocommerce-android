@@ -40,6 +40,8 @@ fun OrderCreateCouponEditScreen(
     ) {
         val focusRequester = remember { FocusRequester() }
         val isError = state.value?.validationState == ERROR
+        val isNetworkError =
+            state.value?.validationState == OrderCreateCouponEditViewModel.ValidationState.NETWORK_ERROR
         WCOutlinedTextField(
             modifier = Modifier.focusRequester(focusRequester),
             value = state.value?.couponCode ?: "",
@@ -48,7 +50,7 @@ fun OrderCreateCouponEditScreen(
             isError = isError,
             singleLine = true,
             trailingIcon = {
-                if (isError) {
+                if (isError || isNetworkError) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
@@ -60,6 +62,12 @@ fun OrderCreateCouponEditScreen(
         if (isError) {
             Text(
                 text = stringResource(id = R.string.order_creation_coupon_invalid_code),
+                color = colorResource(id = R.color.woo_red_50),
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+            )
+        } else if (isNetworkError) {
+            Text(
+                text = stringResource(id = R.string.order_creation_coupon_network_error),
                 color = colorResource(id = R.color.woo_red_50),
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
             )
