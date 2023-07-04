@@ -51,7 +51,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
             ValidationState.IN_PROGRESS
         }
         val couponCode = couponCode.value
-        if (couponCode != null && validator.isCouponValid(couponCode)) {
+        if (couponCode != null && validator.isCouponValid(couponCode) == CouponValidator.CouponValidationResult.VALID) {
             validationState.update {
                 ValidationState.IDLE
             }
@@ -61,13 +61,19 @@ class OrderCreateCouponEditViewModel @Inject constructor(
             } else {
                 triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
             }
+        } else if (
+            couponCode != null && validator
+                .isCouponValid(couponCode) == CouponValidator.CouponValidationResult.NETWORK_ERROR
+        ) {
+            validationState.update {
+                ValidationState.NETWORK_ERROR
+            }
         } else {
             validationState.update {
                 ValidationState.ERROR
             }
         }
     }
-
     fun onCouponCodeChanged(newCode: String) {
         validationState.update {
             ValidationState.IDLE
@@ -90,7 +96,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
         val validationState: ValidationState = ValidationState.IDLE,
     )
 
-    enum class ValidationState { IDLE, IN_PROGRESS, ERROR }
+    enum class ValidationState { IDLE, IN_PROGRESS, ERROR, NETWORK_ERROR }
 
     @Parcelize
     sealed class CouponEditResult : MultiLiveEvent.Event(), Parcelable {
