@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.blaze
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -14,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeBannerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val isBlazeEnabled: IsBlazeEnabled
+    private val isBlazeEnabled: IsBlazeEnabled,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _isBlazeBannerVisible = MutableLiveData(false)
@@ -33,9 +36,13 @@ class BlazeBannerViewModel @Inject constructor(
     }
 
     fun onTryBlazeBannerClicked() {
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_BANNER.trackingName)
+        )
         triggerEvent(
             OpenBlazeEvent(
-                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
+                url = isBlazeEnabled.buildUrlForSite(MY_STORE_BANNER),
                 source = MY_STORE_BANNER
             )
         )
