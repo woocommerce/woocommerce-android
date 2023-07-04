@@ -21,8 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
-    private val userAgent: UserAgent,
+    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val userAgent: UserAgent,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
