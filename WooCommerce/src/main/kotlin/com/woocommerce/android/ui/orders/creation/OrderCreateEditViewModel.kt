@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -102,7 +103,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -173,10 +173,6 @@ class OrderCreateEditViewModel @Inject constructor(
             Mode.Creation -> autoSyncPriceModifier
             is Mode.Edit -> autoSyncOrder
         }
-
-    fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
-        mapItemToProductUiModel(item)
-    }
 
     val currentDraft
         get() = _orderDraft.value
@@ -669,7 +665,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onProductClicked(item: Order.Item) {
         // Don't show details if the product is not synced yet
         if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item))
+        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency))
     }
 
     fun onRetryPaymentsClicked() {
@@ -986,6 +982,21 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCouponUpdated() {
         tracker.track(ORDER_COUPON_UPDATE, mapOf(KEY_FLOW to flow))
+    }
+
+    fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
+        when (result) {
+            is ProductDetailsEditResult.ProductRemoved -> {
+                onRemoveProduct(result.item)
+            }
+            is ProductDetailsEditResult.ProductDetailsEdited -> {
+                _orderDraft.update { draft ->
+                    val oldItems = draft.items
+                    val updatedItems = oldItems.filter { it.itemId != result.changes.itemId } + result.changes
+                    draft.copy(items = updatedItems)
+                }
+            }
+        }
     }
 
     @Parcelize

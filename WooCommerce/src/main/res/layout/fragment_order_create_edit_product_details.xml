@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/order_creation_product_details_title"
+        app:navigationIcon="@drawable/ic_gridicons_cross_24dp"/>
+
     <com.woocommerce.android.widgets.WCElevatedConstraintLayout
         android:id="@+id/product_section"
         android:layout_width="match_parent"
