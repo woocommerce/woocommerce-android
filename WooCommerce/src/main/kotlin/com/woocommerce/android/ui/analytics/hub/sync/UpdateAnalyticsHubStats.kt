@@ -46,7 +46,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        updateStatsData(scope, rangeSelection, generateFetchStrategy(rangeSelection))
+        withFetchStrategyFrom(rangeSelection) { fetchStrategy ->
+            updateStatsData(scope, rangeSelection, fetchStrategy)
+        }
 
         return fullStatsRequestState
     }
@@ -68,12 +70,15 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }
     }
 
-    private suspend fun generateFetchStrategy(rangeSelection: StatsTimeRangeSelection) =
-        if (analyticsUpdateDataStore.shouldUpdateAnalytics(rangeSelection)) {
-            FetchStrategy.ForceNew
-        } else {
-            FetchStrategy.Saved
-        }
+    private suspend fun withFetchStrategyFrom(
+        rangeSelection: StatsTimeRangeSelection,
+        action: suspend (FetchStrategy) -> Unit
+    ) {
+        analyticsUpdateDataStore
+            .shouldUpdateAnalytics(rangeSelection)
+            .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
+            .collect { action(it) }
+    }
 
     private fun combineFullUpdateState() =
         combine(_revenueState, _productsState, _ordersState, sessionState) { revenue, products, orders, session ->

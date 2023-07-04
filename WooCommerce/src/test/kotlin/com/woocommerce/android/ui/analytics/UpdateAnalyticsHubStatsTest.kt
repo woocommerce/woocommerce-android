@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -42,7 +43,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     @Before
     fun setUp() {
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn true
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(true)
         }
         repository = mock()
         sut = UpdateAnalyticsHubStats(
@@ -255,7 +256,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when data store does NOT allows net stats fetch, then request data with Saved strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
@@ -276,7 +277,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when selection type is CUSTOM, then follow the data store and request data with Stored strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn false
+            onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn flowOf(false)
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
@@ -310,7 +311,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         // Given
         configureSuccessResponseStub()
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn false
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
