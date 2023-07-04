@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -20,7 +21,8 @@ class BlazeBannerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val productRepository: ProductListRepository
+    private val productRepository: ProductListRepository,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _isBlazeBannerVisible = MutableLiveData(false)
@@ -32,7 +34,10 @@ class BlazeBannerViewModel @Inject constructor(
         launch {
             val publishedProducts = productRepository.getProductList()
                 .filter { it.status == PUBLISH }
-            if (isBlazeEnabled() && publishedProducts.isNotEmpty()) {
+            if (isBlazeEnabled() &&
+                publishedProducts.isNotEmpty() &&
+                !appPrefsWrapper.shouldHideBlazeBanner
+            ) {
                 _isBlazeBannerVisible.value = true
             }
         }
@@ -43,6 +48,7 @@ class BlazeBannerViewModel @Inject constructor(
     }
 
     fun onBlazeBannerDismissed() {
+        appPrefsWrapper.shouldHideBlazeBanner = true
         triggerEvent(DismissBlazeBannerEvent)
     }
 

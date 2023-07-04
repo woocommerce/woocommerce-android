@@ -197,6 +197,9 @@ object AppPrefs {
         USER_SEEN_NEW_FEATURE_MORE_SCREEN,
 
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
+
+        // If users dismisses Blaze banner or creates a Blaze campaign successfully never show the banner again
+        BLAZE_BANNER_HIDDEN,
     }
 
     fun init(context: Context) {
@@ -260,6 +263,10 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
+
+    var shouldHideBlazeBanner: Boolean
+        get() = getBoolean(UndeletablePrefKey.BLAZE_BANNER_HIDDEN, false)
+        set(value) = setBoolean(UndeletablePrefKey.BLAZE_BANNER_HIDDEN, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
