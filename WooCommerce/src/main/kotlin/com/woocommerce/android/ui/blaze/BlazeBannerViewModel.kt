@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_BANNER_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -48,6 +49,10 @@ class BlazeBannerViewModel @Inject constructor(
     }
 
     fun onBlazeBannerDismissed() {
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_BANNER_DISMISSED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to blazeBannerSource.trackingName)
+        )
         appPrefsWrapper.shouldHideBlazeBanner = true
         triggerEvent(DismissBlazeBannerEvent)
     }
