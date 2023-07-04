@@ -19,15 +19,14 @@ class AnalyticsUpdateDataStore @Inject constructor(
     suspend fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
         maxOutdatedTime: Long = defaultMaxOutdatedTime
-    ) = flow {
-        rangeSelection.lastUpdateTimestamp.collect { lastUpdateTimestamp ->
+    ) = rangeSelection.lastUpdateTimestamp
+        .map { lastUpdateTimestamp ->
             lastUpdateTimestamp
                 ?.let { currentTime - it }
                 ?.let { timeElapsedSinceLastUpdate ->
-                    emit(timeElapsedSinceLastUpdate > maxOutdatedTime)
-                } ?: emit(true)
+                    timeElapsedSinceLastUpdate > maxOutdatedTime
+                } ?: true
         }
-    }
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
         dataStore.edit { preferences ->
