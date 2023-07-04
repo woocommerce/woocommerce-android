@@ -101,7 +101,8 @@ fun CustomerListScreen(
             state = SearchLayoutWithParamsState(
                 hint = R.string.order_creation_customer_filter_hint,
                 searchQuery = state.searchQuery,
-                isActive = true,
+                isSearchFocused = false,
+                areSearchTypesAlwaysVisible = true,
                 supportedSearchTypes = state.searchModes.map {
                     SearchLayoutWithParamsState.SearchType(
                         labelResId = it.labelResId,
