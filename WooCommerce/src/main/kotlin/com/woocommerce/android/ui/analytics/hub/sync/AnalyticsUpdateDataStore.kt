@@ -19,14 +19,9 @@ class AnalyticsUpdateDataStore @Inject constructor(
     fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
         maxOutdatedTime: Long = defaultMaxOutdatedTime
-    ) = rangeSelection.lastUpdateTimestamp
-        .map { lastUpdateTimestamp ->
-            lastUpdateTimestamp
-                ?.let { currentTime - it }
-                ?.let { timeElapsedSinceLastUpdate ->
-                    timeElapsedSinceLastUpdate > maxOutdatedTime
-                } ?: true
-        }
+    ) = dataStore.data
+        .map { prefs -> prefs[longPreferencesKey(rangeSelection.identifier)] }
+        .map { it?.let { (currentTime - it) > maxOutdatedTime } ?: true }
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
         dataStore.edit { preferences ->
@@ -34,11 +29,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
             preferences[longPreferencesKey(timestampKey)] = currentTime
         }
     }
-
-    private val StatsTimeRangeSelection.lastUpdateTimestamp
-        get() = dataStore.data.map { preferences ->
-            preferences[longPreferencesKey(identifier)]
-        }
 
     private val StatsTimeRangeSelection.identifier
         get() = if (selectionType == CUSTOM) {
