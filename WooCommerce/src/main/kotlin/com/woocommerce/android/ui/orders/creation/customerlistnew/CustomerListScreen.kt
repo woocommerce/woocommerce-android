@@ -16,13 +16,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -163,14 +161,7 @@ private fun CustomerListLoaded(
                     }
                 }
 
-                CustomerListViewState.CustomerList.Item.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth()
-                            .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                    )
-                }
+                CustomerListViewState.CustomerList.Item.Loading -> CustomerListLoadingItem()
             }.exhaustive
         }
     }
@@ -237,23 +228,7 @@ private fun CustomerListSkeleton() {
     ) {
         repeat(numberOfSkeletonRows) {
             item {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.major_100),
-                            vertical = dimensionResource(id = R.dimen.minor_100)
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        LoadingItem()
-                    }
-                }
+                CustomerListLoadingItem()
 
                 Divider(
                     modifier = Modifier
@@ -295,20 +270,30 @@ private fun CustomerListNoDataState(@StringRes text: Int, @DrawableRes image: In
 }
 
 @Composable
-private fun LoadingItem() {
-    SkeletonView(
-        modifier = Modifier
-            .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
-            .height(dimensionResource(id = R.dimen.skeleton_text_height_100))
-    )
-    SkeletonView(
+private fun CustomerListLoadingItem() {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(
-                top = dimensionResource(id = R.dimen.minor_50)
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.minor_100)
             )
-            .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
-            .height(dimensionResource(id = R.dimen.skeleton_text_height_75))
-    )
+    ) {
+        Column {
+            SkeletonView(
+                modifier = Modifier
+                    .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
+                    .height(dimensionResource(id = R.dimen.skeleton_text_height_100))
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_50)))
+            SkeletonView(
+                modifier = Modifier
+                    .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
+                    .height(dimensionResource(id = R.dimen.skeleton_text_height_75))
+            )
+        }
+    }
 }
 
 @Preview
