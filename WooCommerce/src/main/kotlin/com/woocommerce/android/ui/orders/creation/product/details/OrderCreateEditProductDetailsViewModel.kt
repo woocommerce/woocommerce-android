@@ -134,7 +134,6 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     @Parcelize
     sealed class ProductDetailsEditResult : Parcelable {
         data class ProductDetailsEdited(val changes: Order.Item) : Parcelable, ProductDetailsEditResult()
-
         data class ProductRemoved(val item: Order.Item) : Parcelable, ProductDetailsEditResult()
     }
 
@@ -142,7 +141,6 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
         data class Back(
             val productDetailsEditResult: ProductDetailsEditResult
         ) : MultiLiveEvent.Event()
-
         data class DiscountEdit(val discountAmount: BigDecimal) : MultiLiveEvent.Event()
         object DiscountCreate : MultiLiveEvent.Event()
     }
