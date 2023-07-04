@@ -295,6 +295,52 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when syncing stats data starts with forceUpdate true, then trigger update with ForceNew Strategy`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this, true)
+
+        // Then
+        verify(repository, times(1)).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository, times(1)).fetchProductsData(testRangeSelection, ForceNew)
+
+        verify(analyticsDataStore, never()).shouldUpdateAnalytics(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats data starts with forceUpdate false, then follow data store response`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this, false)
+
+        // Then
+        verify(repository, times(1)).fetchRevenueData(testRangeSelection, Saved)
+        verify(repository, times(1)).fetchOrdersData(testRangeSelection, Saved)
+        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, Saved)
+        verify(repository, times(1)).fetchProductsData(testRangeSelection, Saved)
+
+        verify(analyticsDataStore, times(1)).shouldUpdateAnalytics(testRangeSelection)
+    }
+
+    @Test
     fun `when syncing stats data starts with ForceNew strategy, then store the expected timestamp`() = testBlocking {
         // Given
         configureSuccessResponseStub()
