@@ -20,7 +20,7 @@ class BlazeBannerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val productRepository: ProductListRepository,
+    private val productRepository: ProductListRepository
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _isBlazeBannerVisible = MutableLiveData(false)
@@ -43,7 +43,7 @@ class BlazeBannerViewModel @Inject constructor(
     }
 
     fun onBlazeBannerDismissed() {
-        TODO()
+        triggerEvent(DismissBlazeBannerEvent)
     }
 
     fun onTryBlazeBannerClicked() {
@@ -60,4 +60,5 @@ class BlazeBannerViewModel @Inject constructor(
     }
 
     data class OpenBlazeEvent(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    object DismissBlazeBannerEvent : MultiLiveEvent.Event()
 }

@@ -33,11 +33,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -175,7 +176,7 @@ class ProductListFragment :
             if (!isVisible) binding.blazeBannerView.hide()
             else {
                 binding.blazeBannerView.apply {
-                    expand()
+                    show()
                     setContent {
                         WooThemeWithBackground {
                             BlazeBanner(
@@ -189,13 +190,16 @@ class ProductListFragment :
         }
 
         blazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            if (event is BlazeBannerViewModel.OpenBlazeEvent) {
-                findNavController().navigateSafely(
-                    NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
-                        urlToLoad = event.url,
-                        source = event.source
+            when (event) {
+                is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
+                is BlazeBannerViewModel.OpenBlazeEvent -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                            urlToLoad = event.url,
+                            source = event.source
+                        )
                     )
-                )
+                }
             }
         }
     }
