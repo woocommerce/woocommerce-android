@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 class CustomerListViewModelMapperTest {
     @Test
     fun `when mapFromWCCustomer, then return view model customer model`() {
-        // given
+        // GIVEN
         val wcCustomerModel: WCCustomerModel = mock {
             on { remoteCustomerId }.thenReturn(1)
             on { firstName }.thenReturn("firstName")
@@ -16,10 +16,10 @@ class CustomerListViewModelMapperTest {
             on { email }.thenReturn("email")
         }
 
-        // when
+        // WHEN
         val result = CustomerListViewModelMapper().mapFromWCCustomer(wcCustomerModel)
 
-        // then
+        // THEN
         assertThat(result.remoteId).isEqualTo(1)
         assertThat(result.firstName).isEqualTo("firstName")
         assertThat(result.lastName).isEqualTo("lastName")
