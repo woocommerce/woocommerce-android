@@ -39,6 +39,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
+        forceUpdate: Boolean,
         scope: CoroutineScope
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
@@ -46,7 +47,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        withFetchStrategyFrom(rangeSelection) { fetchStrategy ->
+        withFetchStrategyFrom(rangeSelection, forceUpdate) { fetchStrategy ->
             updateStatsData(scope, rangeSelection, fetchStrategy)
         }
 
@@ -72,8 +73,14 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     private suspend fun withFetchStrategyFrom(
         rangeSelection: StatsTimeRangeSelection,
+        forceUpdate: Boolean,
         action: suspend (FetchStrategy) -> Unit
     ) {
+        if (forceUpdate) {
+            action(FetchStrategy.ForceNew)
+            return
+        }
+
         analyticsUpdateDataStore
             .shouldUpdateAnalytics(rangeSelection)
             .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
