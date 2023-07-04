@@ -5,19 +5,25 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
-import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListViewState.CustomerList.Item.Loading.mapFromWCCustomer
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("UnusedPrivateMember", "EmptyFunctionBlock")
+@Suppress("EmptyFunctionBlock")
 class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val customerListRepository: CustomerListRepository
+    private val customerListRepository: CustomerListRepository,
+    private val customerListViewModelMapper: CustomerListViewModelMapper,
 ) : ScopedViewModel(savedState) {
-    private val _viewState = MutableLiveData<CustomerListViewState>()
+    private val _viewState = MutableLiveData(
+        CustomerListViewState(
+            searchQuery = searchQuery,
+            searchModes = selectSearchMode(selectedSearchMode.labelResId),
+            body = CustomerListViewState.CustomerList.Loading
+        )
+    )
     val viewState: LiveData<CustomerListViewState> = _viewState
 
     private var paginationState = PaginationState(1, true)
@@ -34,9 +40,7 @@ class CustomerListViewModel @Inject constructor(
         }
 
     init {
-        launch {
-            loadFirstPage()
-        }
+        launch { loadCustomers(1) }
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -48,21 +52,18 @@ class CustomerListViewModel @Inject constructor(
             searchQuery = this
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
-        loadFirstPage()
+        launch { loadCustomers(1) }
     }
 
     fun onSearchTypeChanged(searchTypeId: Int) {
-        if (searchQuery.isEmpty()) return
-
         with(searchTypeId) {
-            selectedSearchMode = supportedSearchModes.first { it.labelResId == this }
-                .copy(isSelected = true)
+            selectedSearchMode = supportedSearchModes.first { it.labelResId == this }.copy(isSelected = true)
             _viewState.value = _viewState.value!!.copy(
                 searchModes = selectSearchMode(this)
             )
         }
 
-        loadFirstPage()
+        if (searchQuery.isNotEmpty()) launch { loadCustomers(1) }
     }
 
     fun onNavigateBack() {
@@ -70,15 +71,6 @@ class CustomerListViewModel @Inject constructor(
 
     fun onEndOfListReached() {
         launch { loadCustomers(paginationState.currentPage + 1) }
-    }
-
-    private fun loadFirstPage() {
-        _viewState.value = CustomerListViewState(
-            searchQuery = searchQuery,
-            searchModes = selectSearchMode(selectedSearchMode.labelResId),
-            body = CustomerListViewState.CustomerList.Loading
-        )
-        launch { loadCustomers(1) }
     }
 
     private suspend fun loadCustomers(page: Int) {
@@ -107,7 +99,7 @@ class CustomerListViewModel @Inject constructor(
                 _viewState.value = _viewState.value!!.copy(
                     body = CustomerListViewState.CustomerList.Loaded(
                         customers = customers.map {
-                            mapFromWCCustomer(it)
+                            customerListViewModelMapper.mapFromWCCustomer(it)
                         }
                     )
                 )
@@ -116,7 +108,7 @@ class CustomerListViewModel @Inject constructor(
                 _viewState.value = _viewState.value!!.copy(
                     body = currentBody.copy(
                         customers = currentBody.customers + customers.map {
-                            mapFromWCCustomer(it)
+                            customerListViewModelMapper.mapFromWCCustomer(it)
                         }
                     )
                 )

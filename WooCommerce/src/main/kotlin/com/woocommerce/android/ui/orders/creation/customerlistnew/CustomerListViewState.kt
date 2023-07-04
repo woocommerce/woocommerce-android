@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 data class CustomerListViewState(
     val searchQuery: String = "",
@@ -25,14 +24,6 @@ data class CustomerListViewState(
             ) : Item()
 
             object Loading : Item()
-
-            fun mapFromWCCustomer(wcCustomerModel: WCCustomerModel) =
-                Customer(
-                    remoteId = wcCustomerModel.remoteCustomerId,
-                    firstName = wcCustomerModel.firstName,
-                    lastName = wcCustomerModel.lastName,
-                    email = wcCustomerModel.email,
-                )
         }
     }
 }
