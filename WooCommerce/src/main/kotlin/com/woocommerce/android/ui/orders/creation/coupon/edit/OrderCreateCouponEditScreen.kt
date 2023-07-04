@@ -59,7 +59,7 @@ fun OrderCreateCouponEditScreen(
         )
         if (isError) {
             Text(
-                text = stringResource(id = R.string.invalid_coupon_code),
+                text = stringResource(id = R.string.order_creation_coupon_invalid_code),
                 color = colorResource(id = R.color.woo_red_50),
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
             )
