@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
@@ -29,7 +28,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
@@ -47,7 +45,7 @@ class StatsRepository @Inject constructor(
 
         // Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
-        private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
+        // private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
         private const val AN_HOUR_IN_MILLIS = 3600000
     }
 
@@ -156,9 +154,7 @@ class StatsRepository @Inject constructor(
                 site = siteModel,
                 startDate = startDate,
                 endDate = endDate,
-                quantity = quantity,
-                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
-                forceRefresh = forceRefresh
+                quantity = quantity
             )
             when {
                 result.isError -> Result.failure(WooException(result.error))
@@ -192,12 +188,6 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(Exception(errorMessage)))
             }
         }
-    }
-
-    private fun supportsProductOnlyLeaderboardEndpoint(): Boolean {
-        val currentWooCoreVersion =
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: "0.0"
-        return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION) >= 0
     }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
