@@ -7,6 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
+import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +19,8 @@ import javax.inject.Inject
 class BlazeBannerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val productRepository: ProductListRepository,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _isBlazeBannerVisible = MutableLiveData(false)
@@ -27,7 +30,9 @@ class BlazeBannerViewModel @Inject constructor(
 
     init {
         launch {
-            if (isBlazeEnabled()) {
+            val publishedProducts = productRepository.getProductList()
+                .filter { it.status == PUBLISH }
+            if (isBlazeEnabled() && publishedProducts.isNotEmpty()) {
                 _isBlazeBannerVisible.value = true
             }
         }
