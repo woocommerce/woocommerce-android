@@ -2329,6 +2329,7 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun shouldShowBlaze(productDraft: Product) =
         getProductVisibility() == PUBLIC &&
             productDraft.status != DRAFT &&
+            !isProductUnderCreation &&
             isBlazeEnabled()
 
     fun trackBlazeDisplayed() {
