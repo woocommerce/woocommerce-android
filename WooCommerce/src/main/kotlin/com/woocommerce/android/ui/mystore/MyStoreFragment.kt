@@ -224,6 +224,21 @@ class MyStoreFragment :
                 }
             }
         }
+
+        blazeViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
+            }
+        }
+    }
+
+    private fun openBlazeWebView(event: BlazeBannerViewModel.OpenBlazeEvent) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                urlToLoad = event.url,
+                source = event.source
+            )
+        )
     }
 
     private fun setupOnboardingView() {

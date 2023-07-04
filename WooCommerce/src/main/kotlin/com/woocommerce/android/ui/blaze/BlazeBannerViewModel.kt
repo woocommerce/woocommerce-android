@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,9 +34,9 @@ class BlazeBannerViewModel @Inject constructor(
 
     fun onTryBlazeBannerClicked() {
         triggerEvent(
-            MoreMenuEvent.OpenBlazeEvent(
+            OpenBlazeEvent(
                 url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
-                source = MORE_MENU_ITEM
+                source = MY_STORE_BANNER
             )
         )
     }
