@@ -39,8 +39,8 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
-        forceUpdate: Boolean,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        forceUpdate: Boolean = false
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
         _revenueState.update { RevenueState.Loading }
