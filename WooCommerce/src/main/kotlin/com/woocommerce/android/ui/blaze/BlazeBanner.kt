@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,54 +29,49 @@ fun BlazeBanner(
     onClose: () -> Unit,
     onTryBlazeClicked: () -> Unit,
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight()
             .background(MaterialTheme.colors.surface)
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         IconButton(
-            modifier = Modifier.align(Alignment.TopEnd),
+            modifier = Modifier.align(Alignment.End),
             onClick = onClose
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_close),
+                painter = painterResource(R.drawable.ic_gridicons_cross_grey_24dp),
                 contentDescription = stringResource(R.string.blaze_banner_close_button_content_description),
             )
         }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Image(
+            painter = painterResource(R.drawable.ic_blaze_banner_flame),
+            contentDescription = ""
+        )
+        Text(
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
+            text = stringResource(id = R.string.blaze_banner_title),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
+            text = stringResource(id = R.string.blaze_banner_description),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.subtitle1,
+        )
+        WCTextButton(
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
+            onClick = onTryBlazeClicked
         ) {
-            Image(
-                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150)),
-                painter = painterResource(R.drawable.ic_blaze_banner_flame),
-                contentDescription = ""
-            )
             Text(
-                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(id = R.string.blaze_banner_title),
-                style = MaterialTheme.typography.h6,
-                textAlign = TextAlign.Center,
+                text = stringResource(R.string.blaze_banner_button).uppercase(),
+                style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold
             )
-            Text(
-                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
-                text = stringResource(id = R.string.blaze_banner_description),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.subtitle1,
-            )
-            WCTextButton(
-                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
-                onClick = onTryBlazeClicked
-            ) {
-                Text(
-                    text = stringResource(R.string.blaze_banner_button).uppercase(),
-                    style = MaterialTheme.typography.subtitle1,
-                )
-            }
         }
     }
 }
