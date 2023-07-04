@@ -151,11 +151,7 @@ private fun CustomerListLoaded(
                         onCustomerSelected = onCustomerSelected
                     )
                     if (customer != body.customers.last()) {
-                        Divider(
-                            modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
-                            color = colorResource(id = R.color.divider_color),
-                            thickness = dimensionResource(id = R.dimen.minor_10)
-                        )
+                        CustomerListDivider()
                     } else {
                         Spacer(modifier = Modifier.height(0.dp))
                     }
@@ -230,12 +226,11 @@ private fun CustomerListSkeleton() {
             item {
                 CustomerListLoadingItem()
 
-                Divider(
-                    modifier = Modifier
-                        .offset(x = dimensionResource(id = R.dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
-                )
+                if (it != numberOfSkeletonRows - 1) {
+                    CustomerListDivider()
+                } else {
+                    Spacer(modifier = Modifier.height(0.dp))
+                }
             }
         }
     }
@@ -294,6 +289,16 @@ private fun CustomerListLoadingItem() {
             )
         }
     }
+}
+
+@Composable
+private fun CustomerListDivider() {
+    Divider(
+        modifier = Modifier
+            .offset(x = dimensionResource(id = R.dimen.major_100)),
+        color = colorResource(id = R.color.divider_color),
+        thickness = dimensionResource(id = R.dimen.minor_10)
+    )
 }
 
 @Preview
