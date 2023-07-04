@@ -139,7 +139,9 @@ fun CustomerListLoaded(
     LazyColumn(
         state = listState,
     ) {
-        itemsIndexed(body.customers) { _, customer ->
+        itemsIndexed(
+            items = body.customers,
+        ) { _, customer ->
             when (customer) {
                 is CustomerListViewState.CustomerList.Item.Customer -> {
                     CustomerListItem(
@@ -198,6 +200,7 @@ fun CustomerListItem(
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.onSurface
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = customer.email,
             style = MaterialTheme.typography.caption,

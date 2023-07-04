@@ -52,6 +52,8 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onSearchTypeChanged(searchTypeId: Int) {
+        if (searchQuery.isEmpty()) return
+
         with(searchTypeId) {
             selectedSearchMode = supportedSearchModes.first { it.labelResId == this }
                 .copy(isSelected = true)
@@ -67,39 +69,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onEndOfListReached() {
-        appendLoadingItemToList()
-        loadCustomers(paginationState.currentPage + 1)
-        removeLoadingItemFromList()
-    }
-
-    private fun loadCustomers(page: Int) {
-        if (!paginationState.hasNextPage) return
-
-        launch {
-            val result = customerListRepository.searchCustomerListWithEmail(
-                searchQuery = searchQuery,
-                searchBy = selectedSearchMode.searchParam,
-                pageSize = PAGE_SIZE,
-                page = page
-            )
-
-            if (result.isFailure) {
-                paginationState = PaginationState(1, false)
-                _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
-            } else {
-                val customers = result.getOrNull() ?: emptyList()
-
-                paginationState = PaginationState(page, customers.size == PAGE_SIZE)
-
-                _viewState.value = _viewState.value!!.copy(
-                    body = CustomerListViewState.CustomerList.Loaded(
-                        customers = customers.map {
-                            mapFromWCCustomer(it)
-                        }
-                    )
-                )
-            }
-        }
+        launch { loadCustomers(paginationState.currentPage + 1) }
     }
 
     private fun loadFirstPage() {
@@ -108,8 +78,52 @@ class CustomerListViewModel @Inject constructor(
             searchModes = selectSearchMode(selectedSearchMode.labelResId),
             body = CustomerListViewState.CustomerList.Loading
         )
+        launch { loadCustomers(1) }
+    }
 
-        loadCustomers(1)
+    private suspend fun loadCustomers(page: Int) {
+        if (!paginationState.hasNextPage && page != 1) return
+
+        val result = customerListRepository.searchCustomerListWithEmail(
+            searchQuery = searchQuery,
+            searchBy = selectedSearchMode.searchParam,
+            pageSize = PAGE_SIZE,
+            page = page
+        )
+
+        if (result.isFailure) {
+            paginationState = PaginationState(1, false)
+            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
+        } else {
+            removeLoadingItemFromList()
+
+            val customers = result.getOrNull() ?: emptyList()
+
+            val hasNextPage = customers.size == PAGE_SIZE
+
+            paginationState = PaginationState(page, hasNextPage)
+
+            if (page == 1) {
+                _viewState.value = _viewState.value!!.copy(
+                    body = CustomerListViewState.CustomerList.Loaded(
+                        customers = customers.map {
+                            mapFromWCCustomer(it)
+                        }
+                    )
+                )
+            } else {
+                val currentBody = _viewState.value!!.body as CustomerListViewState.CustomerList.Loaded
+                _viewState.value = _viewState.value!!.copy(
+                    body = currentBody.copy(
+                        customers = currentBody.customers + customers.map {
+                            mapFromWCCustomer(it)
+                        }
+                    )
+                )
+            }
+
+            if (hasNextPage) appendLoadingItemToList()
+        }
     }
 
     private fun appendLoadingItemToList() {
@@ -123,6 +137,7 @@ class CustomerListViewModel @Inject constructor(
 
     private fun removeLoadingItemFromList() {
         val currentBody = _viewState.value!!.body as? CustomerListViewState.CustomerList.Loaded ?: return
+        if (currentBody.customers.none { it is CustomerListViewState.CustomerList.Item.Loading }) return
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
                 customers = currentBody.customers.filterNot { it is CustomerListViewState.CustomerList.Item.Loading }
