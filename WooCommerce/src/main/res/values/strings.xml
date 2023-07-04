@@ -51,6 +51,7 @@
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
+    <string name="maybe_later">Maybe later</string>
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -125,6 +126,7 @@
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
     <string name="more_options">More options</string>
+    <string name="more_settings">More settings</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
@@ -468,6 +470,10 @@
     <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
     <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
     <string name="order_list_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
+    <string name="orderlist_parsing_error_title">We couldn\'t load your data.</string>
+    <string name="orderlist_parsing_error_message">This could be related to a conflict with a plugin. Please try again later or reach out to us and we\'ll be happy to assist you!</string>
+    <string name="error_troubleshooting">Troubleshooting</string>
+
     <!--
          Simple Payments
     -->
@@ -520,6 +526,7 @@
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_coupons_title">Coupons applied</string>
     <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
@@ -549,11 +556,17 @@
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
+    <string name="order_creation_customer_filter_hint">Filter customers by</string>
+    <string name="order_creation_customer_search_everything">Everything</string>
+    <string name="order_creation_customer_search_email">Email</string>
+    <string name="order_creation_customer_search_name">Name</string>
+    <string name="order_creation_customer_search_username">Username</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
+    <string name="invalid_coupon_code">We couldn\'t find a coupon with that code. Please try again</string>
 
     <!--
          Barcode Scanning
@@ -3358,5 +3371,27 @@
     <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
     <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
 
+    <!--
+    AI Product description
+    -->
+    <string name="ai_product_description_title">Write a description</string>
+    <string name="ai_product_description_product_name">Enter your product name</string>
+    <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
+    <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
+    <string name="ai_product_description_survey">Is the generated description helpful?</string>
+    <string name="ai_product_description_regenerate_button">Regenerate</string>
+    <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
+    <string name="ai_product_description_note_dialog_heading">Great start!</string>
+    <string name="ai_product_description_note_dialog_message">Please keep in mind that this product description was generated using our AI-powered tool. Please review and edit the content to ensure it aligns with your brand and messaging.</string>
+    <string name="ai_product_description_note_dialog_confirmation">Got it</string>
+
+
+
+
+    <!--
+    AI product Description
+    -->
+    <string name="ai_product_description_dialog_title">Add product description with AI</string>
+    <string name="ai_product_description_dialog_message">Add descriptions in a snap with AI. Try our feature today!</string>
 
 </resources>

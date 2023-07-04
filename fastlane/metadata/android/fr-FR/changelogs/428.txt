@@ -1,2 +1,0 @@
-14.1:
-Dans cette version, des bogues ont été corrigés et les performances des sections Commandes et Produits de l’application ont été améliorées. Continuez à nous faire part de vos commentaires !

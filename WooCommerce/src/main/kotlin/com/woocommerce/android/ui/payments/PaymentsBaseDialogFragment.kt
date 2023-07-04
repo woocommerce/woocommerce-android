@@ -8,6 +8,6 @@ import com.woocommerce.android.R
 abstract class PaymentsBaseDialogFragment(@LayoutRes val contentLayoutId: Int) : DialogFragment(contentLayoutId) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
     }
 }

@@ -336,6 +336,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
+    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {
@@ -348,4 +350,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
+
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 }

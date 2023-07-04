@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsSta
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
@@ -317,10 +318,17 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
+                is ShowAIProductDescriptionBottomSheet -> showAIProductDescriptionBottomSheet(event.productTitle)
 
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun showAIProductDescriptionBottomSheet(title: String?) {
+        findNavController().navigateSafely(
+            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(title)
+        )
     }
 
     private fun openBlazeWebView(event: NavigateToBlazeWebView) {

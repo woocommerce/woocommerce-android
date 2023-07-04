@@ -428,7 +428,9 @@ class ProductDetailViewModel @Inject constructor(
             selectedSite.get().isWPComAtomic
     }
 
-    fun onWriteWithAIClicked() {}
+    fun onWriteWithAIClicked() {
+        triggerEvent(ShowAIProductDescriptionBottomSheet(viewState.productDraft?.name))
+    }
 
     fun onBlazeClicked() {
         tracker.track(
@@ -2330,13 +2332,11 @@ class ProductDetailViewModel @Inject constructor(
             isBlazeEnabled()
 
     fun trackBlazeDisplayed() {
-        launch {
-            if (shouldShowBlaze(draftChanges.value!!))
-                tracker.track(
-                    stat = BLAZE_ENTRY_POINT_DISPLAYED,
-                    properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-                )
-        }
+        if (menuButtonsState.value?.showPromoteWithBlaze == true)
+            tracker.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+            )
     }
 
     /**
@@ -2386,6 +2386,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductInProgress : Event()
 
     data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
+
+    data class ShowAIProductDescriptionBottomSheet(val productTitle: String?) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

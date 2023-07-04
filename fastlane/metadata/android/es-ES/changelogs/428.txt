@@ -1,2 +1,0 @@
-14.1:
-Esta versión incluye algunas correcciones de errores y mejoras de rendimiento en las secciones de pedidos y de productos de la aplicación. Sigue enviándonos tu opinión.
