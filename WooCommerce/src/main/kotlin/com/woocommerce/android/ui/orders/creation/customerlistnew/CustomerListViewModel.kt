@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepos
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -74,47 +75,63 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private suspend fun loadCustomers(page: Int) {
-        if (!paginationState.hasNextPage && page != 1) return
-
+        if (page != 1 && !paginationState.hasNextPage) return
+        if (page == 1) {
+            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+        }
         val result = customerListRepository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
             searchBy = selectedSearchMode.searchParam,
             pageSize = PAGE_SIZE,
             page = page
         )
-
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
             _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
         } else {
-            removeLoadingItemFromList()
-
             val customers = result.getOrNull() ?: emptyList()
-
             val hasNextPage = customers.size == PAGE_SIZE
-
             paginationState = PaginationState(page, hasNextPage)
+            handleSuccessfulResponse(customers, page == 1, hasNextPage)
+        }
+    }
 
-            if (page == 1) {
-                _viewState.value = _viewState.value!!.copy(
-                    body = CustomerListViewState.CustomerList.Loaded(
-                        customers = customers.map {
-                            customerListViewModelMapper.mapFromWCCustomer(it)
-                        }
-                    )
-                )
-            } else {
-                val currentBody = _viewState.value!!.body as CustomerListViewState.CustomerList.Loaded
-                _viewState.value = _viewState.value!!.copy(
-                    body = currentBody.copy(
-                        customers = currentBody.customers + customers.map {
-                            customerListViewModelMapper.mapFromWCCustomer(it)
-                        }
-                    )
-                )
-            }
+    private fun handleSuccessfulResponse(
+        customers: List<WCCustomerModel>,
+        firstPageLoaded: Boolean,
+        hasNextPage: Boolean
+    ) {
+        removeLoadingItemFromList()
+        if (firstPageLoaded) {
+            handleFirstPageLoaded(customers)
+        } else {
+            handleNextPageLoaded(customers)
+        }
+        if (hasNextPage) appendLoadingItemToList()
+    }
 
-            if (hasNextPage) appendLoadingItemToList()
+    private fun handleNextPageLoaded(customers: List<WCCustomerModel>) {
+        val currentBody = _viewState.value!!.body as CustomerListViewState.CustomerList.Loaded
+        _viewState.value = _viewState.value!!.copy(
+            body = currentBody.copy(
+                customers = currentBody.customers + customers.map {
+                    customerListViewModelMapper.mapFromWCCustomer(it)
+                }
+            )
+        )
+    }
+
+    private fun handleFirstPageLoaded(customers: List<WCCustomerModel>) {
+        if (customers.isEmpty()) {
+            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Empty)
+        } else {
+            _viewState.value = _viewState.value!!.copy(
+                body = CustomerListViewState.CustomerList.Loaded(
+                    customers = customers.map {
+                        customerListViewModelMapper.mapFromWCCustomer(it)
+                    }
+                )
+            )
         }
     }
 
@@ -155,13 +172,13 @@ class CustomerListViewModel @Inject constructor(
                 isSelected = false,
             ),
             SearchMode(
-                labelResId = R.string.order_creation_customer_search_email,
-                searchParam = "email",
+                labelResId = R.string.order_creation_customer_search_name,
+                searchParam = "name",
                 isSelected = false,
             ),
             SearchMode(
-                labelResId = R.string.order_creation_customer_search_name,
-                searchParam = "name",
+                labelResId = R.string.order_creation_customer_search_email,
+                searchParam = "email",
                 isSelected = false,
             ),
             SearchMode(
