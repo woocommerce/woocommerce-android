@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.customerlistnew
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -116,14 +118,9 @@ fun CustomerListScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         when (val body = state.body) {
-            CustomerListViewState.CustomerList.Empty -> EmptyCustomerList()
-
-            CustomerListViewState.CustomerList.Error -> {
-
-            }
-
+            CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
+            CustomerListViewState.CustomerList.Error -> CustomerListError()
             CustomerListViewState.CustomerList.Loading -> CustomerListSkeleton()
-
             is CustomerListViewState.CustomerList.Loaded -> {
                 CustomerListLoaded(
                     body,
@@ -217,31 +214,19 @@ private fun CustomerListItem(
 }
 
 @Composable
-private fun EmptyCustomerList() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(dimensionResource(id = R.dimen.major_200)),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Spacer(Modifier.weight(1f))
-        Text(
-            text = stringResource(id = R.string.order_creation_customer_search_empty),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
-            )
-        )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
-        Image(
-            painter = painterResource(id = R.drawable.img_empty_search),
-            contentDescription = null,
-        )
-        Spacer(Modifier.weight(1f))
-    }
+private fun CustomerListEmpty() {
+    CustomerListNoDataState(
+        text = R.string.order_creation_customer_search_empty,
+        image = R.drawable.img_empty_search
+    )
+}
+
+@Composable
+private fun CustomerListError() {
+    CustomerListNoDataState(
+        text = R.string.error_generic,
+        image = R.drawable.img_woo_generic_error
+    )
 }
 
 @Composable
@@ -278,6 +263,34 @@ private fun CustomerListSkeleton() {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun CustomerListNoDataState(@StringRes text: Int, @DrawableRes image: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(dimensionResource(id = R.dimen.major_200)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.weight(1f))
+        Text(
+            text = stringResource(id = text),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = null,
+        )
+        Spacer(Modifier.weight(1f))
     }
 }
 
