@@ -43,6 +43,30 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
+        // GIVEN
+        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+            .thenReturn(Result.failure(Throwable()))
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+
+        // THEN
+        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Error::class.java)
+    }
+
+    @Test
+    fun `given empty list from repo, when viewmodel init, then viewstate is updated with empty state`() = testBlocking {
+        // GIVEN
+        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+            .thenReturn(Result.success(emptyList()))
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+
+        // THEN
+        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Empty::class.java)
+    }
+
+    @Test
     fun `given search query, when onSearchQueryChanged is called, then update search query is updated`() =
         testBlocking {
             // GIVEN
