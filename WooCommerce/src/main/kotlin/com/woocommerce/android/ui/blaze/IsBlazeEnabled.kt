@@ -39,5 +39,6 @@ class IsBlazeEnabled @Inject constructor(
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
         MORE_MENU_ITEM("menu"),
         MY_STORE_BANNER("my_store_banner"),
+        PRODUCT_LIST_BANNER("product_list_banner"),
     }
 }

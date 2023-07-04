@@ -23,12 +23,18 @@ class BlazeBannerViewModel @Inject constructor(
     private val _isBlazeBannerVisible = MutableLiveData(false)
     val isBlazeBannerVisible = _isBlazeBannerVisible
 
+    private var blazeBannerSource: BlazeFlowSource = MY_STORE_BANNER
+
     init {
         launch {
             if (isBlazeEnabled()) {
                 _isBlazeBannerVisible.value = true
             }
         }
+    }
+
+    fun setBlazeBannerSource(source: BlazeFlowSource) {
+        blazeBannerSource = source
     }
 
     fun onBlazeBannerDismissed() {
@@ -38,12 +44,12 @@ class BlazeBannerViewModel @Inject constructor(
     fun onTryBlazeBannerClicked() {
         analyticsTrackerWrapper.track(
             stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_BANNER.trackingName)
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to blazeBannerSource.trackingName)
         )
         triggerEvent(
             OpenBlazeEvent(
                 url = isBlazeEnabled.buildUrlForSite(MY_STORE_BANNER),
-                source = MY_STORE_BANNER
+                source = blazeBannerSource
             )
         )
     }
