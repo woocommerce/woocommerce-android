@@ -141,7 +141,8 @@ class AnalyticsHubViewModel @Inject constructor(
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
-                scope = viewModelScope
+                scope = viewModelScope,
+                forceUpdate = true
             ).collect {
                 mutableState.update { viewState ->
                     viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
