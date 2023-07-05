@@ -568,6 +568,11 @@
     -->
     <string name="barcode_scanning_title">Scan Barcode</string>
     <string name="barcode_scanning_camera_permission_denied">Camera permission is required to scan the barcode.</string>
+    <string name="barcode_scanning_alert_dialog_title">Grant Camera Permission</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Camera permission is needed in order to scan the barcode</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">You have permanently denied Camera permission. It is needed in order to scan the barcode. Please enable it from the app settings</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <!--
         Domains
     -->
