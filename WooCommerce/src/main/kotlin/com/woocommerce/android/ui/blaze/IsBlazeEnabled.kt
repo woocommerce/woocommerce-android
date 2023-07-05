@@ -38,5 +38,6 @@ class IsBlazeEnabled @Inject constructor(
     enum class BlazeFlowSource(val trackingName: String) {
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
         MORE_MENU_ITEM("menu"),
+        MY_STORE_BANNER("my_store_banner"),
     }
 }
