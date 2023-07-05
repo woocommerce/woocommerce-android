@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -129,7 +130,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `when done button tapped, don't send the track event`() {
+    fun `when done button tapped, then don't send the track event`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
@@ -148,7 +149,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `when new non-empty coupon added then should update coupon lines in order draft`() {
+    fun `when new non-empty coupon added, then should update coupon lines in order draft`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
         var latestOrderDraft: Order? = null
@@ -156,7 +157,8 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        sut.onCouponEntered("new_code")
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code")
+        sut.onCouponEditResult(couponEditResult)
 
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
@@ -165,7 +167,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `given order with non-empty coupon when empty coupon added then should remove coupon lines from order draft`() {
+    fun `given order with non-empty coupon, when coupon removed, then should remove coupon from order`() {
         // given
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
@@ -173,14 +175,17 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             latestOrderDraft = it
         }
-        sut.onCouponEntered("new_code")
+
+        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code")
+        sut.onCouponEditResult(couponEditResult)
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
             assertEquals(1, size)
         }
 
         // when
-        sut.onCouponEntered("")
+        val couponRemoveResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code")
+        sut.onCouponEditResult(couponRemoveResult)
 
         // then
         latestOrderDraft!!.couponLines.apply {
@@ -189,7 +194,28 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `given no coupon added to order when add new coupon clicked should redirect to coupon form`() {
+    fun `given order with multiple coupons, when one coupon removed, then the other one should remain in the order`() {
+        // given
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var latestOrderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            latestOrderDraft = it
+        }
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code"))
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code2"))
+
+        // when
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code"))
+
+        // then
+        latestOrderDraft!!.couponLines.apply {
+            assertTrue(any { it.code == "new_code2" })
+        }
+    }
+
+    @Test
+    fun `given no coupon added to order when add new coupon clicked, then should redirect to coupon form`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
         var latestEvent: Event? = null
@@ -199,29 +225,33 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
         sut.onCouponButtonClicked()
 
-        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(null), latestEvent)
+        assertEquals(OrderCreateEditNavigationTarget.EditCoupon(sut.mode, null), latestEvent)
     }
 
     @Test
-    fun `given coupon line present in order when add new coupon clicked should redirect to coupon form with coupon code`() {
+    fun `given coupon line present in order, when coupon button clicked, then should redirect to coupon list screen`() {
         // given
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
-        sut.onCouponEntered("code")
         var latestEvent: Event? = null
         sut.event.observeForever {
             latestEvent = it
         }
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
 
         // when
         sut.onCouponButtonClicked()
 
         // then
-        assertEquals(OrderCreateEditNavigationTarget.EditCoupon("code"), latestEvent)
+        assertEquals(OrderCreateEditNavigationTarget.CouponList(sut.mode, orderDraft!!.couponLines), latestEvent)
     }
 
     @Test
-    fun `given no items in order then add coupon button should be hidden`() {
+    fun `given no items in order, then add coupon button should be hidden`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
         assertFalse(sut.viewStateData.liveData.value!!.isCouponButtonEnabled)
@@ -300,11 +330,11 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `when coupon added should track event`() {
+    fun `when coupon added, then should track event`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("code")
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -313,11 +343,11 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `when coupon removed should track event`() {
+    fun `when coupon removed, then should track event`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEntered("")
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc"))
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,

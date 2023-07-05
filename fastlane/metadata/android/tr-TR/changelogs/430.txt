@@ -1,0 +1,2 @@
+14.2:
+Artık sipariş oluştururken kupon ekleyebileceğinizi biliyor muydunuz? Evet, yapabilirsiniz. Ayrıca menü sekmesine gidip Kuponlar özelliğine tıklayarak da kuponlarınızı yönetebilirsiniz. Son olarak, ürün araması yaparken tarama işlevselliğiyle ilgili bazı iyileştirmeler yaptık. Ama işimiz daha bitmedi. Gelecekteki geliştirmelerimiz için bizi takip edin.

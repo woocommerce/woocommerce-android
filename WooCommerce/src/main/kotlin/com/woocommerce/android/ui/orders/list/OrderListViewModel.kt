@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -205,7 +206,10 @@ class OrderListViewModel @Inject constructor(
 
     fun loadOrders() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        viewState = viewState.copy(
+            filterCount = getSelectedOrderFiltersCount(),
+            isErrorFetchingDataBannerVisible = false
+        )
         activatePagedListWrapper(ordersPagedListWrapper!!)
         fetchOrdersAndOrderDependencies()
     }
@@ -243,13 +247,14 @@ class OrderListViewModel @Inject constructor(
      */
     fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
+            viewState = viewState.copy(isErrorFetchingDataBannerVisible = false)
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
-            viewState = viewState.copy(isRefreshPending = true)
+            viewState = viewState.copy(isRefreshPending = true, isErrorFetchingDataBannerVisible = false)
             showOfflineSnack()
         }
     }
@@ -386,11 +391,20 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.filter { error ->
-            !dismissListErrors && error != null
-        }.observe(this) {
-            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-        }
+        pagedListWrapper.listError
+            .filter { !dismissListErrors }
+            .filterNotNull()
+            .observe(this) { error ->
+                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
+                    viewState = viewState.copy(
+                        isErrorFetchingDataBannerVisible = true,
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
+                    )
+                } else {
+                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                }
+            }
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
@@ -781,6 +795,7 @@ class OrderListViewModel @Inject constructor(
         val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
+        val isErrorFetchingDataBannerVisible: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

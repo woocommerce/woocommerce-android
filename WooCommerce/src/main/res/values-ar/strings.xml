@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-21 17:54:03+0000
+Translation-Revision-Date: 2023-06-30 08:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_sharing_regenerate">الكتابة مجددًا</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#الحصول على تنبيه بكل عملية بيع:&lt;/b&gt; لا تفوّت شيئًا بفضل التنبيهات الفورية بعمليات البيع. استلم تنبيهات لكل عملية بيع جديدة، ما يسمح لك بالاحتفال بنجاحك والبقاء على اطلاع بكل نشاط في متجرك.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#أضف المنتجات وحررها بلمسة:&lt;/b&gt; أضف منتجات جديدة وحدِّث التفاصيل وارفع الصور وأدر التباينات، كل ذلك من التطبيق. حافظ على مخزونك محدَّثًا من دون عناء.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#إجراء الدفع شخصيًا:&lt;/b&gt; وسِّع فرص المبيعات الخاصة بك عن طريق قبول المدفوعات شخصيًا. استخدم التطبيق لمعالجة المعاملات عبر بطاقة الائتمان بأمان أو اتصل باستخدام قراء البطاقات المتوافقة لإجراء مدفوعات شخصية مريحة.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#إدارة الطلبات وإنشاؤها:&lt;/b&gt; عالج الطلبات بكل سهولة. يمكن التمرير والبحث وتغيير حالة الطلب. أنشئ طلبات جديدة في لمح البصر لإجراء عمليات الشراء داخل المتجر وعبر الهاتف. بسِّط عملية إدارة طلبك.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#تتبّع المبيعات والمنتجات الرائجة:&lt;/b&gt; كن مطلعًا على أداء متجرك في الوقت الفعلي. حدد أكثر منتجات مبيعًا واتخذ قرارات مستنيرة لتحقيق أقصى قدر من الربحية. </string>
+    <string name="store_creation_in_progress_description_1">ستُخطر بمجرد أن يصبح المتجر جاهزًا! اجلس واسترخِ ودعنا ننثر سحرنا في أثناء مشاركة النصائح المفيدة. 🔮</string>
+    <string name="store_creation_in_progress_title_1">إنشاء متجرك! سيستغرق الأمر بضع دقائق فقط</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">رمز PIN مطلوب، لكن لا تدعمه ميزة \"Tap To Pay\" حتى الآن. التفكير في استخدام قارئ البطاقات الخارجي</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">شراء قارئ البطاقات</string>
+    <string name="order_sync_coupon_removed">يتعذر تطبيق القسيمة وتمت إزالتها من الطلب</string>
     <string name="product_sharing_ai_generating_failure">يتعذر إنشاء رسالة مشاركة. يرجى المحاولة مرة أخرى!</string>
     <string name="product_sharing_ai_info_label">معرفة المزيد حول ميزة الذكاء الاصطناعي التي نطرحها</string>
     <string name="product_sharing_optional_message_label">إضافة رسالة اختيارية</string>
-    <string name="product_sharing_generating">جاري الإنشاء…</string>
-    <string name="product_sharing_regenerate">إعادة الإنشاء</string>
+    <string name="product_sharing_generating">كتابة…</string>
     <string name="product_sharing_write_with_ai">الكتابة باستخدام الذكاء الاصطناعي</string>
     <string name="more_menu_button_blaze_description">ترويج المنتجات باستخدام Blaze</string>
     <string name="more_menu_button_blaze">التوهج</string>
@@ -115,18 +125,11 @@ Language: ar
     <string name="store_creation_profiler_industry_home_furniture_garden">المنزل والأثاث والحديقة</string>
     <string name="store_creation_profiler_industry_food_drink">الطعام والشراب</string>
     <string name="store_creation_profiler_industry_health_beauty">الصحة والجمال</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; اللون المفضّل لنا هو البنفسجي. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; يتشكل فريق Woo من أكثر من 350 من الأفراد الموهوبين، ويتم توزيعهم عبر أكثر من 30 بلدًا.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; هناك أكثر من 150 اجتماع WooCommerce يُعقد في جميع أنحاء العالم! طريقة رائعة لمقابلة مالكي المتاجر الزملاء.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل أنت Team Cat أم Team Dog؟ ينقسم فريق Woo 50/50!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل كنت على دراية بتأسيس Woo على يد شخصين من جنوب إفريقيا وآخر من النرويج؟ في ما يأتي ثلاث طرق بديلة لقول \"متجر\" في تلك البلدان، وهي: Winkel وivenkile وbutikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل كنت على دراية بأن Woo يشغِّل 4 ملايين متجر تقريبًا على مستوى العالم؟ أنت تتعامل مع شركة رائدة.</string>
     <string name="store_creation_in_progress_title_6">فتح الأبواب</string>
     <string name="store_creation_in_progress_title_5">تشغيل المصابيح</string>
     <string name="store_creation_in_progress_title_4">تطبيق اللمسات النهائية</string>
     <string name="store_creation_in_progress_title_3">تنظيم غرفة التخزين</string>
     <string name="store_creation_in_progress_title_2">إنشاء الأساسات</string>
-    <string name="store_creation_in_progress_title_1">Woo! ننشئ متجرك</string>
     <string name="notifications_permission_description">نحتاج إلى صلاحية إرسال تنبيهات الدفع للطلبات والمراجعات الجديدة وغير ذلك، ويتم توصيلها إلى جهازك.</string>
     <string name="notifications_permission_title">التنبيهات</string>
     <string name="product_type_composite">المنتجات المركّبة</string>
