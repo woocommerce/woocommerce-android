@@ -10,13 +10,11 @@
         android:src="@drawable/highlights_tooltip_pointer"
         android:layout_gravity="start"
         android:layout_marginStart="16dp"
-        android:color="@color/color_on_surface_high"
         android:contentDescription="@null" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp"
         android:background="@drawable/highlights_tooltip_body"
         android:layout_marginTop="9dp">
@@ -26,24 +24,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ai_product_description_tooltip_title"
-            android:textColor="@color/color_surface"
-            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"/>
+            android:textColor="@color/highlights_tooltip_title"
+            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            android:layout_marginBottom="@dimen/minor_100"/>
 
         <TextView
             android:id="@+id/popup_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ai_product_description_tooltip_message"
-            android:textColor="@color/color_surface"
-            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"/>
+            android:textColor="@color/woo_purple_dark_secondary"
+            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            android:layout_below="@id/popup_title"/>
 
         <com.google.android.material.button.MaterialButton
             style="@style/Woo.Button.TextButton"
             android:id="@+id/dismiss_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ai_product_description_tooltip_dismiss"/>
-
-    </LinearLayout>
-
+            android:textColor="@color/woo_purple_40"
+            android:text="@string/ai_product_description_tooltip_dismiss"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/popup_message"/>
+    </RelativeLayout>
 </FrameLayout>
