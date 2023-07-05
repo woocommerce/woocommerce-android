@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -31,6 +32,8 @@ import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -88,7 +91,10 @@ fun DescriptionGenerationForm(
 ) {
     AnimatedContent(viewState.generationState) { generationState ->
         when (generationState) {
-            Generated -> {
+            is Generated -> {
+                if (generationState.showError) {
+                    Error()
+                }
                 GenerationFlow(viewState, onFeaturesChanged) {
                     GeneratedDescription(
                         description = viewState.description,
@@ -102,21 +108,14 @@ fun DescriptionGenerationForm(
             GenerationState.Generating -> {
                 GenerationFlow(viewState, onFeaturesChanged) {
                     ProductDescriptionSkeletonView()
-
-                    WCColoredButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { },
-                        enabled = false
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(dimensionResource(id = dimen.major_100)),
-                            color = colorResource(id = color.color_on_surface_disabled)
-                        )
-                    }
                 }
             }
-            Start -> {
+            is Start -> {
                 GenerationFlow(viewState, onFeaturesChanged) {
+                    if (generationState.showError) {
+                        Error()
+                    }
+
                     WCColoredButton(
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
@@ -124,7 +123,8 @@ fun DescriptionGenerationForm(
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(id = drawable.ic_ai),
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = colorResource(id = color.woo_white)
                             )
                         }
                     )
@@ -137,6 +137,27 @@ fun DescriptionGenerationForm(
             }
             Celebration -> CelebrationDialog(onCelebrationButtonClicked)
         }
+    }
+}
+
+@Composable
+private fun Error() {
+    Box(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colors.error,
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+            )
+            .fillMaxWidth()
+            .padding(dimensionResource(id = dimen.major_100))
+    ) {
+        Text(
+            text = stringResource(id = string.ai_product_description_error),
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.onError,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 
@@ -262,67 +283,76 @@ private fun GeneratedDescription(
             )
         }
 
-        ConstraintLayout(
-            modifier = Modifier
-                .background(
-                    color = colorResource(id = color.woo_black_alpha_008),
-                    shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
-                )
-                .fillMaxWidth()
-                .padding(
-                    start = dimensionResource(id = dimen.major_100),
-                    top = dimensionResource(id = dimen.minor_100),
-                    bottom = dimensionResource(id = dimen.minor_100)
-                )
-        ) {
-            val (text, like, dislike) = createRefs()
-
-            Text(
+        val isFeedbackVisible = remember { mutableStateOf(true) }
+        if (isFeedbackVisible.value) {
+            ConstraintLayout(
                 modifier = Modifier
-                    .constrainAs(text) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(like.start)
-                        width = Dimension.fillToConstraints
-                    },
-                text = stringResource(id = string.ai_product_description_feedback),
-                color = colorResource(id = color.color_on_surface_medium),
-                style = MaterialTheme.typography.caption
-            )
-
-            IconButton(
-                modifier = Modifier
-                    .constrainAs(like) {
-                        top.linkTo(parent.top)
-                        end.linkTo(dislike.start)
-                        bottom.linkTo(parent.bottom)
-                    },
-                onClick = { onDescriptionFeedbackReceived(true) }
+                    .background(
+                        color = colorResource(id = color.woo_black_alpha_008),
+                        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+                    )
+                    .fillMaxWidth()
+                    .padding(
+                        start = dimensionResource(id = dimen.major_100),
+                        top = dimensionResource(id = dimen.minor_100),
+                        bottom = dimensionResource(id = dimen.minor_100)
+                    )
             ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
-                    tint = colorResource(id = color.color_on_surface_medium)
-                )
-            }
+                val (text, like, dislike) = createRefs()
 
-            IconButton(
-                modifier = Modifier
-                    .constrainAs(dislike) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                    },
-                onClick = { onDescriptionFeedbackReceived(false) }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
-                    tint = colorResource(id = color.color_on_surface_medium)
+                Text(
+                    modifier = Modifier
+                        .constrainAs(text) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(like.start)
+                            width = Dimension.fillToConstraints
+                        },
+                    text = stringResource(id = string.ai_product_description_feedback),
+                    color = colorResource(id = color.color_on_surface_medium),
+                    style = MaterialTheme.typography.caption
                 )
+
+                IconButton(
+                    modifier = Modifier
+                        .constrainAs(like) {
+                            top.linkTo(parent.top)
+                            end.linkTo(dislike.start)
+                            bottom.linkTo(parent.bottom)
+                        },
+                    onClick = {
+                        onDescriptionFeedbackReceived(true)
+                        isFeedbackVisible.value = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ThumbUp,
+                        contentDescription = null,
+                        modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
+                        tint = colorResource(id = color.color_on_surface_medium)
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier
+                        .constrainAs(dislike) {
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom)
+                        },
+                    onClick = {
+                        onDescriptionFeedbackReceived(false)
+                        isFeedbackVisible.value = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ThumbDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
+                        tint = colorResource(id = color.color_on_surface_medium)
+                    )
+                }
             }
         }
     }
@@ -442,11 +472,12 @@ fun CelebrationDialog(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
         ViewState(
-            generationState = Start,
+            generationState = Start(true),
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."
