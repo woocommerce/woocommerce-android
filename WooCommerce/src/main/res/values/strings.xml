@@ -3390,7 +3390,7 @@
     <string name="ai_product_description_dialog_title">Add product description with AI</string>
     <string name="ai_product_description_dialog_message">Add descriptions in a snap with AI. Try our feature today!</string>
     <string name="ai_product_toolbar_button_tooltip">Generate a description using AI</string>
-    <string name="ai_product_description_tooltip_title">✨Write with AI</string>
+    <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
     <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
 
