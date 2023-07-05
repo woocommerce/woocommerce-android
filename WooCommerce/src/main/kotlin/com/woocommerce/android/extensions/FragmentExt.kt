@@ -1,5 +1,8 @@
 package com.woocommerce.android.extensions
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
@@ -187,4 +190,11 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
             extraSupportTags = null
         )
     )
+}
+
+fun Fragment.openAppSettings() {
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", activity?.packageName, null)
+    ).also(::startActivity)
 }
