@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.4
 -----
-
+- [*] [Internal] Fix for the crash on Payment Selection screen [https://github.com/woocommerce/woocommerce-android/pull/9370]
 
 14.3
 -----
