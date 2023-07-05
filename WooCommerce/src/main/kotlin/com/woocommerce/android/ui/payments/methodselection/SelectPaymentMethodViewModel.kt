@@ -82,24 +82,27 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private val _order = MutableStateFlow<Order?>(null)
     private val order = _order.filterNotNull()
-    private val cardReaderPaymentFlowParam: Payment
+    private val cardReaderPaymentFlowParam
+        get() = navArgs.cardReaderFlowParam as Payment
 
     init {
-        val cardReaderFlowParam = navArgs.cardReaderFlowParam
-        if (cardReaderFlowParam is Payment) cardReaderPaymentFlowParam = cardReaderFlowParam
-        launch {
-            checkStatus()
-        }
+        checkStatus()
     }
 
-    private suspend fun checkStatus() {
+    private fun checkStatus() {
         when (val param = navArgs.cardReaderFlowParam) {
             is CardReadersHub -> triggerEvent(NavigateToCardReaderHubFlow(param))
             is PaymentOrRefund -> {
                 when (param) {
                     is Payment -> {
-                        // stay on screen
-                        showPaymentState(param)
+                        launch {
+                            // stay on screen
+                            _order.value = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
+                                orderMapper.toAppModel(it)
+                            }
+                            showPaymentState()
+                        }
+                        Unit
                     }
 
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
@@ -108,10 +111,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private suspend fun showPaymentState(param: PaymentOrRefund) {
-        _order.value = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
-            orderMapper.toAppModel(it)
-        }
+    private suspend fun showPaymentState() {
         _viewState.value = buildSuccessState(
             order = order.first(),
             isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first()),
@@ -265,7 +265,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         } else {
                             triggerEvent(SharePaymentUrlViaQr(order.first().paymentUrl))
                         }
-                        showPaymentState(cardReaderPaymentFlowParam)
+                        showPaymentState()
                     }
 
                     is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
