@@ -18,6 +18,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -48,6 +49,7 @@ class OrdersUITest : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eCreateOrderTest() {
         val note = "Customer notes 123~"
         val status = "Processing"

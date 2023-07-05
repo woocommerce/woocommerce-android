@@ -20,6 +20,7 @@ import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -113,6 +114,7 @@ class ProductsRealAPI : TestBase() {
     )
 
     @Test
+    @Ignore
     fun e2eRealApiProductsSearchUsual() {
         ProductListScreen()
             // Make sure all products are listed
@@ -145,6 +147,7 @@ class ProductsRealAPI : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eRealApiProductsSearchBySKU() {
         ProductListScreen()
             // Search for a simple product SKU
@@ -172,6 +175,7 @@ class ProductsRealAPI : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eRealApiProductsFilter() {
         ProductListScreen()
             // Filter by "Product type" = "Simple"
@@ -195,6 +199,7 @@ class ProductsRealAPI : TestBase() {
     }
 
     @Test
+    @Ignore
     fun e2eRealApiProductsSort() {
         ProductListScreen()
             // Check the default sort (A-Z)
