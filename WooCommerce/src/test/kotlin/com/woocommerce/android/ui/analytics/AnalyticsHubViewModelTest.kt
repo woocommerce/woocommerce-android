@@ -615,7 +615,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
-            mapOf(AnalyticsTracker.KEY_OPTION to WEEK_TO_DATE.tracksIdentifier)
+            mapOf(AnalyticsTracker.KEY_OPTION to WEEK_TO_DATE.identifier)
         )
     }
 
@@ -630,7 +630,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
-            mapOf(AnalyticsTracker.KEY_OPTION to CUSTOM.tracksIdentifier)
+            mapOf(AnalyticsTracker.KEY_OPTION to CUSTOM.identifier)
         )
     }
 

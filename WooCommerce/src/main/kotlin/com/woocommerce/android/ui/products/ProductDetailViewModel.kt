@@ -10,17 +10,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_FORM
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -430,6 +434,17 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onWriteWithAIClicked() {
         triggerEvent(ShowAIProductDescriptionBottomSheet(viewState.productDraft?.name))
+
+        tracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED,
+            properties = mapOf(KEY_SOURCE to VALUE_PRODUCT_FORM)
+        )
+    }
+
+    fun onLearnMoreClicked() {
+        triggerEvent(
+            LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES)
+        )
     }
 
     fun onBlazeClicked() {
