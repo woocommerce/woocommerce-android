@@ -1761,8 +1761,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             appPrefs,
             feedbackRepository,
             cardReaderHubTapToPayUnavailableHandler,
-
-            )
+        )
         viewModel.onViewVisible()
     }
 }

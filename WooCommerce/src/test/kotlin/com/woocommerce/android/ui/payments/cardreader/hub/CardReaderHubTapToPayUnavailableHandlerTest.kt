@@ -78,7 +78,9 @@ class CardReaderHubTapToPayUnavailableHandlerTest {
         assertThat(captor.firstValue.messageId).isEqualTo(
             R.string.card_reader_tap_to_pay_not_available_error_country
         )
-        assertThat(captor.firstValue.positiveButtonId).isEqualTo(R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button)
+        assertThat(captor.firstValue.positiveButtonId).isEqualTo(
+            R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button
+        )
         assertThat(captor.firstValue.negativeButtonId).isEqualTo(R.string.close)
     }
 
