@@ -57,24 +57,18 @@ steps:
     plugins: *common_plugins
 
   - label: "Instrumented tests"
-    command: |
-      .buildkite/commands/run-instrumented-tests.sh
-      buildkite-agent artifact download '**/test_result_1.xml' .
-    plugins:
-      - automattic/a8c-ci-toolkit#2.17.0
+    key: "Instrumented_Tests"
+    command: .buildkite/commands/run-instrumented-tests.sh
+    plugins: *common_plugins
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
+
+  - label: "🔍 Test Analytics"
+    command: buildkite-agent artifact download '**/test_result_1.xml' .
+    depends_on:
+      - "Instrumented_Tests"
+    plugins:
       - test-collector#v1.8.0:
           files: "**/test_result_1.xml"
           format: "junit"
           api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-          
-#  - wait
-#
-#  - label: "🔍 Test Analytics"
-#    command: buildkite-agent artifact download '**/test_result_1.xml' .
-#    plugins:
-#      - test-collector#v1.8.0:
-#          files: "**/test_result_1.xml"
-#          format: "junit"
-#          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
