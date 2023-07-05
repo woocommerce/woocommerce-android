@@ -372,7 +372,7 @@ class AnalyticsHubViewModel @Inject constructor(
         onTrackableUIInteraction()
         tracker.track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
-            mapOf(AnalyticsTracker.KEY_OPTION to ranges.selectionType.tracksIdentifier)
+            mapOf(AnalyticsTracker.KEY_OPTION to ranges.selectionType.identifier)
         )
     }
 

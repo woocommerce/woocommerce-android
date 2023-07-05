@@ -1,0 +1,2 @@
+14.2:
+Visste du att du nu kan lägga till rabattkoder när du skapar en beställning? Ja, det kan du. Du kan också hantera rabattkoder genom att gå till menyfliken och klicka på funktionen Rabattkoder. Slutligen har vi även gjort några förbättringar av skanningsfunktionen när du söker efter en produkt. Men vi är inte klara. Håll utkik efter fler förbättringar framöver.

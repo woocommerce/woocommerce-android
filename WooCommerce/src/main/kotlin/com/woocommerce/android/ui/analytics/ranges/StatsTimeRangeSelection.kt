@@ -144,7 +144,7 @@ class StatsTimeRangeSelection private constructor(
             }
         }
 
-        val tracksIdentifier: String
+        val identifier: String
             get() = when (this) {
                 TODAY -> "Today"
                 YESTERDAY -> "Yesterday"

@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-22 14:54:03+0000
+Translation-Revision-Date: 2023-06-28 11:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_sharing_regenerate">Scrivi di nuovo</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Ricevi una notifica per ogni vendita:&lt;/b&gt; non perdere mai nessuna occasione grazie alle notifiche di vendita istantanee. Ricevi avvisi per ogni nuova vendita, così potrai celebrare il tuo successo e ricevere aggiornamenti sull\'attività del negozio.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Aggiungi e modifica i prodotti con un tocco:&lt;/b&gt; aggiungi nuovi prodotti, aggiorna i dettagli, carica le immagini e gestisci le varianti, tutto dall\'app. Mantieni aggiornato il tuo inventario senza sforzi.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Accetta pagamenti di persona:&lt;/b&gt; espandi le tue opportunità di vendita accettando pagamenti di persona. Usa l\'app per elaborare in modo sicuro le transazioni con carta di credito o persino connetterti ai lettori di carte compatibili per comodi pagamenti di persona.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gestisci e crea ordini:&lt;/b&gt; gestisci gli ordini con facilità. Scorri, cerca e modifica lo stato dell\'ordine. Crea nuovi ordini in tempo reale per acquisti in negozio o telefonici. Semplifica il processo di gestione degli ordini.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Traccia le vendite e i prodotti popolari:&lt;/b&gt; resta aggiornato sulle prestazioni in tempo reale del negozio. Identifica i prodotti più venduti e prendi decisioni informate per la massima redditività.</string>
+    <string name="store_creation_in_progress_description_1">Riceverai una notifica quando il negozio sarà pronto. Siediti, rilassati e lasciaci fare una magia condividendo suggerimenti utili. 🔮</string>
+    <string name="store_creation_in_progress_title_1">La creazione del tuo negozio è in corso. Sono necessari solo alcuni minuti</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">È richiesto un codice PIN, ma ancora non è supportato da Tocca per pagare.  Prendi in considerazione l\'uso di un lettore di carte esterno</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Acquista un lettore di carte</string>
+    <string name="order_sync_coupon_removed">Il codice promozionale non può essere applicato ed è stato rimosso dall\'ordine</string>
     <string name="product_sharing_ai_generating_failure">Impossibile generare il messaggio per la condivisione. Riprova.</string>
     <string name="product_sharing_ai_info_label">Scopri di più sulla funzionalità dell\'IA</string>
     <string name="product_sharing_optional_message_label">Aggiungi un messaggio opzionale</string>
-    <string name="product_sharing_generating">Generazione in corso…</string>
-    <string name="product_sharing_regenerate">Rigenera</string>
+    <string name="product_sharing_generating">Scrittura…</string>
     <string name="product_sharing_write_with_ai">Scrivi con l\'IA</string>
     <string name="more_menu_button_blaze_description">Promuovi i prodotti con Blaze</string>
     <string name="more_menu_button_blaze">Blaze</string>
@@ -115,18 +125,11 @@ Language: it
     <string name="store_creation_profiler_industry_home_furniture_garden">Casa, arredo e giardino</string>
     <string name="store_creation_profiler_industry_food_drink">Cibo e bevande</string>
     <string name="store_creation_profiler_industry_health_beauty">Salute e bellezza</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; il nostro colore preferito è il viola 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; il team di Woo è composto da oltre 350 persone di talento, distribuite in oltre 30 paesi.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; esistono più di 150 riunioni WooCommerce tenute in tutto il mondo. Un ottimo modo per incontrare altri proprietari di negozi.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; fai parte del Team gatto e del Team cane? Il team Woo si divide al 50/50.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; sapevi che Woo è stata fondata da due sudafricani e un norvegese? Ecco tre modi alternativi per dire \"negozio\" in quei paesi: winkel, ivenkile e butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; sapevi che Woo potenzia quasi 4 milioni di negozi in tutto il mondo? Sei in buona compagnia.</string>
     <string name="store_creation_in_progress_title_6">Aprertura delle porte</string>
     <string name="store_creation_in_progress_title_5">Accensione delle luci</string>
     <string name="store_creation_in_progress_title_4">Applicazione degli ultimi ritocchi</string>
     <string name="store_creation_in_progress_title_3">Organizzazione del magazzino</string>
     <string name="store_creation_in_progress_title_2">Costruzione delle fondamenta</string>
-    <string name="store_creation_in_progress_title_1">Wow! Stiamo creando il tuo negozio</string>
     <string name="notifications_permission_description">Abbiamo bisogno della tua autorizzazione per inviarti notifiche push per nuovi ordini, recensioni, ecc. inviate al tuo dispositivo.</string>
     <string name="notifications_permission_title">Notifiche</string>
     <string name="product_type_composite">Prodotto dell\'insieme</string>

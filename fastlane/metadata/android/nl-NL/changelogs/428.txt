@@ -1,2 +1,0 @@
-14.1:
-In deze uitgave hebben we wat problemen opgelost en prestaties verbeterd van de gedeeltes bestellingen en producten van de app. Blijf je feedback sturen!

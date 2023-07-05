@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -119,7 +121,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     private fun updateSearchResult(list: List<Product>, loadedProducts: List<Product>) =
         (list + loadedProducts).distinctBy { it.remoteId }
 
-    enum class SearchType {
-        DEFAULT, SKU
+    enum class SearchType(@StringRes val labelResId: Int) {
+        DEFAULT(R.string.product_search_all), SKU(R.string.product_search_sku);
+
+        companion object {
+            fun fromLabelResId(@StringRes labelResId: Int) = values().firstOrNull { it.labelResId == labelResId }
+        }
     }
 }
