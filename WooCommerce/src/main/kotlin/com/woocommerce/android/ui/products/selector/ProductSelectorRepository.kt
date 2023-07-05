@@ -19,11 +19,13 @@ class ProductSelectorRepository @Inject constructor(
         offset: Int,
         pageSize: Int,
         searchQuery: String,
+        skuSearchOptions: WCProductStore.SkuSearchOptions,
     ): List<Product> {
         return productStore.getProducts(
             selectedSite.get(),
             emptyMap(),
-            searchQuery = searchQuery
+            searchQuery = searchQuery,
+            skuSearchOptions = skuSearchOptions,
         ).let {
             val productList = it.map { product -> product.toAppModel() }
             if (offset >= productList.size) {
