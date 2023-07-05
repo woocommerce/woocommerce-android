@@ -5,6 +5,17 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_AI_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_COPY_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATE_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_RETRY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFUL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_DESCRIPTION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
@@ -36,6 +47,13 @@ class AIProductDescriptionViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onGenerateButtonClicked() {
+        tracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_GENERATE_BUTTON_TAPPED,
+            properties = mapOf(
+                KEY_IS_RETRY to false
+            )
+        )
+
         _viewState.update { _viewState.value.copy(generationState = Generating) }
 
         launch {
@@ -60,6 +78,8 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     private fun handleCompletionsSuccess(completions: String) {
+        tracker.track(PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS)
+
         _viewState.update {
             _viewState.value.copy(
                 description = completions,
@@ -69,6 +89,11 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     private fun handleCompletionsFailure(error: JetpackAICompletionsException) {
+        tracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_GENERATION_FAILED,
+            properties = mapOf(KEY_ERROR to error.message)
+        )
+
         // This is to return the previous state before generating.
         val previousState = if (_viewState.value.generationState == Generating) {
             Start(showError = true)
@@ -81,6 +106,13 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onRegenerateButtonClicked() {
+        tracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_GENERATE_BUTTON_TAPPED,
+            properties = mapOf(
+                KEY_IS_RETRY to true
+            )
+        )
+
         _viewState.update { _viewState.value.copy(generationState = Regenerating) }
 
         launch {
@@ -93,6 +125,8 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onApplyButtonClicked() {
+        tracker.track(PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED)
+
         if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown) {
             triggerEvent(ExitWithResult(_viewState.value.description))
         } else {
@@ -102,6 +136,8 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onCopyButtonClicked() {
+        tracker.track(PRODUCT_DESCRIPTION_AI_COPY_BUTTON_TAPPED)
+
         triggerEvent(CopyDescriptionToClipboard(_viewState.value.description))
     }
 
@@ -109,7 +145,14 @@ class AIProductDescriptionViewModel @Inject constructor(
         triggerEvent(ExitWithResult(_viewState.value.description))
     }
 
-    fun onDescriptionFeedbackReceived(isPositive: Boolean) {
+    fun onDescriptionFeedbackReceived(isUseful: Boolean) {
+        tracker.track(
+            stat = PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION,
+                KEY_IS_USEFUL to isUseful
+            )
+        )
     }
 
     data class ViewState(
