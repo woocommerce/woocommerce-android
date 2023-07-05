@@ -318,7 +318,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
+        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             CardReaderHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -414,10 +414,17 @@ class CardReaderHubViewModel @Inject constructor(
             is CardReadersHub -> {
                 when (params.openInHub) {
                     TAP_TO_PAY_SUMMARY -> {
-                        if (tapToPayAvailabilityStatus().isAvailable) {
-                            triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
-                        } else {
+                        val ttpAvailabilityStatus = tapToPayAvailabilityStatus()
+                        if (ttpAvailabilityStatus is TapToPayAvailabilityStatus.Result.NotAvailable) {
+                            cardReaderTracker.trackTapToPayNotAvailableReason(
+                                ttpAvailabilityStatus,
+                                SOURCE,
+                            )
                             triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
+                        } else {
+                            triggerEvent(
+                                CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
+                            )
                         }
                     }
                     NONE -> {
@@ -493,7 +500,7 @@ class CardReaderHubViewModel @Inject constructor(
     companion object {
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
-        const val LEARN_MORE_SOURCE = "payments_menu"
+        private const val SOURCE = "payments_menu"
 
         private const val SHOW_FEEDBACK_AFTER_USAGE_DAYS = 30
     }
