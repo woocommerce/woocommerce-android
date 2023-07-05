@@ -6,8 +6,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.shared.library.ReactActivity
 import dagger.hilt.android.scopes.ActivityScoped
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
-import javax.inject.Inject
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
+import javax.inject.Inject
 
 @ActivityScoped
 class OpenReactNative @Inject constructor(

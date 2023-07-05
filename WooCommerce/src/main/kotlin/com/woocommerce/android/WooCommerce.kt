@@ -1,6 +1,5 @@
 package com.woocommerce.android
 
-import com.woocommerce.shared.library.LibraryDependencyProvider
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
@@ -9,6 +8,7 @@ import com.woocommerce.android.analytics.TracksAnalyticsBridge
 import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.extensions.getCurrentProcessName
 import com.woocommerce.shared.library.AnalyticsBridge
+import com.woocommerce.shared.library.LibraryDependencyProvider
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
 import dagger.android.AndroidInjector
