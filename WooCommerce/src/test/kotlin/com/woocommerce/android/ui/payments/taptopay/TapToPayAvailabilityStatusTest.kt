@@ -17,7 +17,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class TapToPayAvailabilityStatusTest {
     private val systemVersionUtilsWrapper = mock<SystemVersionUtilsWrapper> {
-        on { isAtLeastP() }.thenReturn(true)
+        on { isAtLeastQ() }.thenReturn(true)
     }
     private val appPrefs: AppPrefs = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock {
@@ -39,7 +39,7 @@ class TapToPayAvailabilityStatusTest {
             whenever(it.isNFCAvailable()).thenReturn(false)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
         }
-        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
         val result = TapToPayAvailabilityStatus(
@@ -60,7 +60,7 @@ class TapToPayAvailabilityStatusTest {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(false)
         }
-        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
         val result = TapToPayAvailabilityStatus(
@@ -81,7 +81,7 @@ class TapToPayAvailabilityStatusTest {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
         }
-        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(false)
+        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(false)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
         val result = TapToPayAvailabilityStatus(
@@ -102,7 +102,7 @@ class TapToPayAvailabilityStatusTest {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
         }
-        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("RU")
 
@@ -124,7 +124,7 @@ class TapToPayAvailabilityStatusTest {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
         }
-        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(false)
 
         val result = TapToPayAvailabilityStatus(
@@ -145,7 +145,7 @@ class TapToPayAvailabilityStatusTest {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
         }
-        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
         val result = TapToPayAvailabilityStatus(

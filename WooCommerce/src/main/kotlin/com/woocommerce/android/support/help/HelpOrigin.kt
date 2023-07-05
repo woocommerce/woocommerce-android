@@ -28,7 +28,8 @@ enum class HelpOrigin(private val stringValue: String) {
     STORE_CREATION("origin:store-creation"),
     DOMAIN_CHANGE("origin:domain-change"),
     UPGRADES("origin:upgrades"),
-    ACCOUNT_DELETION("origin:account-deletion");
+    ACCOUNT_DELETION("origin:account-deletion"),
+    ORDERS_LIST("origin:orders-list");
 
     override fun toString(): String {
         return stringValue
