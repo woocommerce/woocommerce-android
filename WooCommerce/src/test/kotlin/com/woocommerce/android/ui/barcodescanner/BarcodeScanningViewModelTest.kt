@@ -33,4 +33,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
 
         assertThat(barcodeScanningViewModel.event.value).isInstanceOf(LaunchCameraPermission::class.java)
     }
+
+    @Test
+    fun `given permanently denied dialog shown, when user minimises and navigates back to our app without clicking the CTA, then do not launch the camera permission again`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = false
+        )
+
+        barcodeScanningViewModel.onResume()
+
+        assertThat(barcodeScanningViewModel.event.value).isNull()
+    }
 }
