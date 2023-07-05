@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -88,7 +89,10 @@ fun DescriptionGenerationForm(
 ) {
     AnimatedContent(viewState.generationState) { generationState ->
         when (generationState) {
-            Generated -> {
+            is Generated -> {
+                if (generationState.showError) {
+                    Error()
+                }
                 GenerationFlow(viewState, onFeaturesChanged) {
                     GeneratedDescription(
                         description = viewState.description,
@@ -115,8 +119,12 @@ fun DescriptionGenerationForm(
                     }
                 }
             }
-            Start -> {
+            is Start -> {
                 GenerationFlow(viewState, onFeaturesChanged) {
+                    if (generationState.showError) {
+                        Error()
+                    }
+
                     WCColoredButton(
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
@@ -124,7 +132,8 @@ fun DescriptionGenerationForm(
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(id = drawable.ic_ai),
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = colorResource(id = color.woo_white)
                             )
                         }
                     )
@@ -137,6 +146,27 @@ fun DescriptionGenerationForm(
             }
             Celebration -> CelebrationDialog(onCelebrationButtonClicked)
         }
+    }
+}
+
+@Composable
+private fun Error() {
+    Box(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colors.error,
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+            )
+            .fillMaxWidth()
+            .padding(dimensionResource(id = dimen.major_100))
+    ) {
+        Text(
+            text = stringResource(id = string.ai_product_description_error),
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.onError,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 
@@ -442,11 +472,12 @@ fun CelebrationDialog(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
         ViewState(
-            generationState = Start,
+            generationState = Start(true),
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."
