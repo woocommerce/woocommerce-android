@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.woocommerce.android.databinding.PopupLayoutBinding
+import com.woocommerce.android.databinding.HighlightsTooltipLayoutBinding
 import com.woocommerce.android.databinding.ProductPropertyButtonViewLayoutBinding
 
 class WCProductPropertyButtonView @JvmOverloads constructor(
@@ -28,11 +28,11 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
             setOnClickListener { onClick() }
         }
 
-        val popupBinding = PopupLayoutBinding.inflate(LayoutInflater.from(context), null, false)
+        val popupBinding = HighlightsTooltipLayoutBinding.inflate(LayoutInflater.from(context), null, false)
         showPopupWindow(popupBinding)
     }
 
-    private fun showPopupWindow(popupBinding: PopupLayoutBinding) {
+    private fun showPopupWindow(popupBinding: HighlightsTooltipLayoutBinding) {
         val popupWindow = PopupWindow(popupBinding.root, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         popupBinding.dismissButton.setOnClickListener { popupWindow.dismiss() }
 
@@ -62,7 +62,7 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
             setOnClickListener { onLinkClick() }
         }
 
-        val popupBinding = PopupLayoutBinding.inflate(LayoutInflater.from(context), null, false)
+        val popupBinding = HighlightsTooltipLayoutBinding.inflate(LayoutInflater.from(context), null, false)
         showPopupWindow(popupBinding)
     }
 }

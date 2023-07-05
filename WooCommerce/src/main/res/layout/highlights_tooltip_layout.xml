@@ -20,7 +20,7 @@
         android:layout_marginTop="9dp">
 
         <TextView
-            android:id="@+id/popup_title"
+            android:id="@+id/tooltip_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ai_product_description_tooltip_title"
@@ -29,13 +29,13 @@
             android:layout_marginBottom="@dimen/minor_100"/>
 
         <TextView
-            android:id="@+id/popup_message"
+            android:id="@+id/tooltip_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ai_product_description_tooltip_message"
             android:textColor="@color/woo_purple_dark_secondary"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
-            android:layout_below="@id/popup_title"/>
+            android:layout_below="@id/tooltip_title"/>
 
         <com.google.android.material.button.MaterialButton
             style="@style/Woo.Button.TextButton"
@@ -45,6 +45,6 @@
             android:textColor="@color/woo_purple_40"
             android:text="@string/ai_product_description_tooltip_dismiss"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/popup_message"/>
+            android:layout_below="@id/tooltip_message"/>
     </RelativeLayout>
 </FrameLayout>
