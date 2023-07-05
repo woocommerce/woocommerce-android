@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Button
+import com.woocommerce.android.ui.products.models.ProductProperty.Button.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -102,7 +103,11 @@ class ProductDetailCardBuilder(
             type = PRIMARY,
             properties = (
                 listOf(product.title()) +
-                    product.description(isAIProductDescriptionEnabled(), viewModel::onWriteWithAIClicked)
+                    product.description(
+                        isAIProductDescriptionEnabled(),
+                        viewModel::onWriteWithAIClicked,
+                        viewModel::onLearnMoreClicked
+                    )
                 ).filterNotEmpty()
         )
     }
@@ -577,7 +582,11 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.description(showAIButton: Boolean, onWriteWithAIClicked: () -> Unit): List<ProductProperty> {
+    private fun Product.description(
+        showAIButton: Boolean,
+        onWriteWithAIClicked: () -> Unit,
+        onLearnMoreClicked: () -> Unit
+    ): List<ProductProperty> {
         val productDescription = this.description
         val productTitle = this.name
         val showTitle = productDescription.isNotEmpty()
@@ -608,7 +617,11 @@ class ProductDetailCardBuilder(
                 Button(
                     string.product_sharing_write_with_ai,
                     drawable.ic_ai,
-                    onClick = onWriteWithAIClicked
+                    onClick = onWriteWithAIClicked,
+                    link = Link(
+                        string.ai_product_description_learn_more_link,
+                        onLearnMoreClicked
+                    )
                 )
             )
         }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.viewholders
 
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.WCProductPropertyButtonView
 import com.woocommerce.android.ui.products.models.ProductProperty.Button
@@ -20,6 +21,17 @@ class ButtonViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
 //        val tooltipText = button.tooltip?.text?.let { context.getString(it) }
 //        val tooltipIcon = button.tooltip?.icon?.let { AppCompatResources.getDrawable(context, it) }
 
-        buttonView.show(text, icon, button.onClick)
+        if (button.link != null) {
+            val linkText = HtmlCompat.fromHtml(context.getString(button.link.text), HtmlCompat.FROM_HTML_MODE_LEGACY)
+            buttonView.show(
+                text,
+                icon,
+                button.onClick,
+                linkText,
+                button.link.onClick
+            )
+        } else {
+            buttonView.show(text, icon, button.onClick)
+        }
     }
 }
