@@ -12,14 +12,14 @@ class CouponValidator @Inject constructor(
     private val context: Context,
 ) {
     suspend fun isCouponValid(code: String): CouponValidationResult {
-        val result = store.searchCoupons(selectedSite.get(), code).model
+        val networkAvailable = NetworkUtils.isNetworkAvailable(context)
+        val coupons = store.searchCoupons(selectedSite.get(), code).model?.coupons
+        val validCoupon = coupons?.find { it.coupon.code?.equals(code, ignoreCase = true) == true }
 
-        return if (!NetworkUtils.isNetworkAvailable(context)) {
-            CouponValidationResult.NETWORK_ERROR
-        } else if (result?.coupons?.find { code.lowercase() == it.coupon.code?.lowercase() } != null) {
-            CouponValidationResult.VALID
-        } else {
-            CouponValidationResult.INVALID
+        return when {
+            !networkAvailable -> CouponValidationResult.NETWORK_ERROR
+            validCoupon != null -> CouponValidationResult.VALID
+            else -> CouponValidationResult.INVALID
         }
     }
 
