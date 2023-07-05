@@ -45,4 +45,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
 
         assertThat(barcodeScanningViewModel.event.value).isNull()
     }
+
+    @Test
+    fun `given denied dialog shown, when user minimises and navigates back to our app, then do not launch the camera permission again`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        barcodeScanningViewModel.onResume()
+
+        assertThat(barcodeScanningViewModel.event.value).isNull()
+    }
 }
