@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.barcodescanner
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -9,6 +11,8 @@ import javax.inject.Inject
 class BarcodeScanningViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
+    private val _permissionState = MutableLiveData<PermissionState>()
+    val permissionState: LiveData<PermissionState> = _permissionState
 
     sealed class ScanningEvents : Event() {
         object LaunchCameraPermission : ScanningEvents()
