@@ -19,8 +19,9 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
+    private val couponValidationResult: CouponValidator.CouponValidationResult = mock()
     private val validator: CouponValidator = mock {
-        onBlocking { isCouponValid(anyString()) } doReturn true
+        onBlocking { isCouponValid(anyString()) } doReturn couponValidationResult
     }
     @Test
     fun `given non empty coupon, when passed to coupon edition screen, then should show remove button`() {
@@ -224,8 +225,9 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given invalid coupon, when coupon code modified, then should show done button`() = testBlocking {
+        val couponValidationResult = CouponValidator.CouponValidationResult.INVALID
         // given
-        whenever(validator.isCouponValid(anyString())).thenReturn(false)
+        whenever(validator.isCouponValid(anyString())).thenReturn(couponValidationResult)
         val navArgs =
             OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
         val sut = OrderCreateCouponEditViewModel(validator, navArgs)
