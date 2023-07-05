@@ -51,30 +51,9 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
     val cameraProviderFuture = remember {
         ProcessCameraProvider.getInstance(context)
     }
-    var hasCamPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted ->
-            hasCamPermission = granted
-        }
-    )
-
-    LaunchedEffect(key1 = true) {
-        launcher.launch(Manifest.permission.CAMERA)
-    }
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (hasCamPermission) {
             AndroidView(
                 factory = { context ->
                     val previewView = PreviewView(context)
@@ -119,22 +98,6 @@ fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeSc
                 },
                 modifier = Modifier.fillMaxSize()
             )
-        } else {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(
-                    text = stringResource(id = R.string.barcode_scanning_camera_permission_denied),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.major_150),
-                        end = dimensionResource(id = R.dimen.major_150)
-                    )
-                )
-            }
-        }
     }
 }
 
