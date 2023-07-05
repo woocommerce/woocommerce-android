@@ -10,6 +10,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
@@ -430,6 +431,12 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onWriteWithAIClicked() {
         triggerEvent(ShowAIProductDescriptionBottomSheet(viewState.productDraft?.name))
+    }
+
+    fun onLearnMoreClicked() {
+        triggerEvent(
+            LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES)
+        )
     }
 
     fun onBlazeClicked() {
