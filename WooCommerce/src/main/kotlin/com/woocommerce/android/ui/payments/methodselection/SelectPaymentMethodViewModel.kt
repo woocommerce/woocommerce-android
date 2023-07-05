@@ -82,9 +82,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private val _order = MutableStateFlow<Order?>(null)
     private val order = _order.filterNotNull()
-    private lateinit var cardReaderPaymentFlowParam: Payment
+    private val cardReaderPaymentFlowParam: Payment
 
     init {
+        val cardReaderFlowParam = navArgs.cardReaderFlowParam
+        if (cardReaderFlowParam is Payment) cardReaderPaymentFlowParam = cardReaderFlowParam
         launch {
             checkStatus()
         }
@@ -97,7 +99,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 when (param) {
                     is Payment -> {
                         // stay on screen
-                        cardReaderPaymentFlowParam = param
                         showPaymentState(param)
                     }
 
