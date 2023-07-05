@@ -17,6 +17,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
             TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable -> {
                 showDialog(
                     R.string.card_reader_tap_to_pay_not_available_error_android_version,
+                    R.string.card_reader_upsell_card_reader_banner_cta,
                     triggerEvent
                 ) { positiveButtonClick(ActionType.PURCHASE_READER) }
             }
@@ -24,6 +25,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
             TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported -> {
                 showDialog(
                     R.string.card_reader_tap_to_pay_not_available_error_android_version,
+                    R.string.card_reader_upsell_card_reader_banner_cta,
                     triggerEvent
                 ) { positiveButtonClick(ActionType.PURCHASE_READER) }
             }
@@ -31,6 +33,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
             TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable -> {
                 showDialog(
                     R.string.card_reader_tap_to_pay_not_available_error_gms,
+                    R.string.card_reader_upsell_card_reader_banner_cta,
                     triggerEvent
                 ) { positiveButtonClick(ActionType.PURCHASE_READER) }
             }
@@ -38,6 +41,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
             TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported -> {
                 showDialog(
                     R.string.card_reader_tap_to_pay_not_available_error_country,
+                    R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button,
                     triggerEvent
                 ) { positiveButtonClick(ActionType.TAP_TO_PAY_REQUIREMENTS) }
             }
@@ -54,6 +58,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
 
     private fun showDialog(
         @StringRes messageId: Int,
+        @StringRes positiveButtonId: Int,
         triggerEvent: (MultiLiveEvent.Event) -> Unit,
         positiveButtonClick: () -> Unit,
     ) {
@@ -61,7 +66,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
             MultiLiveEvent.Event.ShowDialog(
                 titleId = R.string.card_reader_tap_to_pay_not_available_error_title,
                 messageId = messageId,
-                positiveButtonId = R.string.card_reader_upsell_card_reader_banner_cta,
+                positiveButtonId = positiveButtonId,
                 negativeButtonId = R.string.close,
                 positiveBtnAction = { _, _ -> positiveButtonClick() }
             )

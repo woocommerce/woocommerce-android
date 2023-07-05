@@ -1195,11 +1195,12 @@
     <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
     <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
     <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
-    <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is currently unavailable. For more information, please check the Tap To Pay requirements.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
 
     <!--
            Card Reader Tap To Pay Explanation
