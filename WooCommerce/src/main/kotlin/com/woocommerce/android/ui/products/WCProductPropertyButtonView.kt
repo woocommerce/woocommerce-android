@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.text.Spanned
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.PopupWindow
@@ -41,5 +42,27 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
 
         // Show the PopupWindow below the button
         popupWindow.showAsDropDown(binding.productButton)
+    }
+
+    fun show(
+        text: String,
+        icon: Drawable?,
+        onClick: () -> Unit,
+        linkText: Spanned,
+        onLinkClick: () -> Unit,
+    ) {
+        with(binding.productButton) {
+            this.text = text
+            this.icon = icon
+            setOnClickListener { onClick() }
+        }
+
+        with(binding.link) {
+            this.text = linkText
+            setOnClickListener { onLinkClick() }
+        }
+
+        val popupBinding = PopupLayoutBinding.inflate(LayoutInflater.from(context), null, false)
+        showPopupWindow(popupBinding)
     }
 }

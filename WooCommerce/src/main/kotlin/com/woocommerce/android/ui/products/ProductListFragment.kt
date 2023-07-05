@@ -33,7 +33,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.showKeyboardWithDelay
@@ -42,6 +44,10 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.blaze.BlazeBanner
+import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_LIST_BANNER
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -60,6 +66,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class ProductListFragment :
     TopLevelFragment(R.layout.fragment_product_list),
@@ -92,7 +99,8 @@ class ProductListFragment :
     private var actionMode: ActionMode? = null
     private val selectionPredicate = MutableMultipleSelectionPredicate<Long>()
 
-    private val viewModel: ProductListViewModel by viewModels()
+    private val productListViewModel: ProductListViewModel by viewModels()
+    private val blazeViewModel: BlazeBannerViewModel by viewModels()
 
     private val skeletonView = SkeletonView()
 
@@ -119,7 +127,7 @@ class ProductListFragment :
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
-        setupObservers(viewModel)
+        setupObservers(productListViewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
         _productAdapter = ProductListAdapter(
@@ -141,7 +149,7 @@ class ProductListFragment :
         binding.productsRefreshLayout.apply {
             scrollUpChild = binding.productsRecycler
             setOnRefreshListener {
-                viewModel.onRefreshRequested()
+                productListViewModel.onRefreshRequested()
             }
         }
 
@@ -150,12 +158,44 @@ class ProductListFragment :
         addSelectionTracker()
 
         when {
-            viewModel.isSearching() -> {
+            productListViewModel.isSearching() -> {
                 binding.productsSearchTabView.isVisible = true
-                binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
+                binding.productsSearchTabView.show(this, productListViewModel.isSkuSearch())
             }
+
             else -> {
-                viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+                productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+            }
+        }
+    }
+
+    private fun setUpBlazeBanner() {
+        blazeViewModel.setBlazeBannerSource(PRODUCT_LIST_BANNER)
+        blazeViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
+            if (!isVisible) binding.blazeBannerView.hide()
+            else {
+                binding.blazeBannerView.apply {
+                    expand()
+                    setContent {
+                        WooThemeWithBackground {
+                            BlazeBanner(
+                                onClose = blazeViewModel::onBlazeBannerDismissed,
+                                onTryBlazeClicked = blazeViewModel::onTryBlazeBannerClicked
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        blazeViewModel.event.observe(viewLifecycleOwner) { event ->
+            if (event is BlazeBannerViewModel.OpenBlazeEvent) {
+                findNavController().navigateSafely(
+                    NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                        urlToLoad = event.url,
+                        source = event.source
+                    )
+                )
             }
         }
     }
@@ -176,7 +216,7 @@ class ProductListFragment :
             object : SelectionTracker.SelectionObserver<Long>() {
                 override fun onSelectionChanged() {
                     val selectionCount = tracker?.selection?.size() ?: 0
-                    viewModel.onSelectionChanged(selectionCount)
+                    productListViewModel.onSelectionChanged(selectionCount)
                     super.onSelectionChanged()
                 }
             })
@@ -188,7 +228,7 @@ class ProductListFragment :
 
     private fun initAddProductFab(fabButton: FloatingActionButton) {
         fabButton.setOnClickListener {
-            viewModel.onAddProductButtonClicked()
+            productListViewModel.onAddProductButtonClicked()
         }
 
         pinFabAboveBottomNavigationBar(fabButton)
@@ -226,7 +266,7 @@ class ProductListFragment :
         tracker?.run {
             onRestoreInstanceState(savedInstanceState)
             if (hasSelection()) {
-                viewModel.onRestoreSelection(selection.toList())
+                productListViewModel.onRestoreSelection(selection.toList())
             }
         }
 
@@ -262,14 +302,14 @@ class ProductListFragment :
         searchMenuItem?.let { menuItem ->
             if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
 
-            val isSearchActive = viewModel.viewStateLiveData.liveData.value?.isSearchActive == true
+            val isSearchActive = productListViewModel.viewStateLiveData.liveData.value?.isSearchActive == true
             if (menuItem.isActionViewExpanded != isSearchActive) {
                 if (isSearchActive) {
                     disableSearchListeners()
                     menuItem.expandActionView()
                     val queryHint = getSearchQueryHint()
                     searchView?.queryHint = queryHint
-                    searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
+                    searchView?.setQuery(productListViewModel.viewStateLiveData.liveData.value?.query, false)
                     enableSearchListeners()
                 }
             }
@@ -277,7 +317,7 @@ class ProductListFragment :
     }
 
     private fun getSearchQueryHint(): String {
-        return if (viewModel.viewStateLiveData.liveData.value?.isFilteringActive == true) {
+        return if (productListViewModel.viewStateLiveData.liveData.value?.isFilteringActive == true) {
             getString(R.string.product_search_hint_active_filters)
         } else {
             getString(R.string.product_search_hint)
@@ -299,6 +339,7 @@ class ProductListFragment :
                 enableSearchListeners()
                 true
             }
+
             else -> false
         }
     }
@@ -314,29 +355,29 @@ class ProductListFragment :
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        viewModel.onSearchRequested()
+        productListViewModel.onSearchRequested()
         org.wordpress.android.util.ActivityUtils.hideKeyboard(activity)
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        viewModel.onSearchQueryChanged(newText)
+        productListViewModel.onSearchQueryChanged(newText)
         return true
     }
 
     override fun onProductSearchTypeChanged(isSkuSearch: Boolean) {
-        viewModel.onSearchTypeChanged(isSkuSearch)
+        productListViewModel.onSearchTypeChanged(isSkuSearch)
     }
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-        viewModel.onSearchOpened()
+        productListViewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
         binding.productsSearchTabView.show(this)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-        viewModel.onSearchClosed()
+        productListViewModel.onSearchClosed()
         updateActivityTitle()
         onSearchViewActiveChanged(isActive = false)
         binding.productsSearchTabView.hide()
@@ -350,6 +391,7 @@ class ProductListFragment :
     @Suppress("LongMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown == false) { setUpBlazeBanner() }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -364,6 +406,7 @@ class ProductListFragment :
                                 searchQueryOrFilter = viewModel.getSearchQuery()
                             )
                         }
+
                         new.filterCount?.compareTo(0) == 1 -> binding.emptyView.show(EmptyViewType.FILTER_RESULTS)
                         else -> {
                             binding.emptyView.show(EmptyViewType.PRODUCT_LIST) {
@@ -418,6 +461,7 @@ class ProductListFragment :
                     event.productCategoryFilter,
                     event.selectedCategoryName
                 )
+
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
@@ -439,7 +483,10 @@ class ProductListFragment :
             .setTitle(getString(R.string.product_bulk_update_regular_price))
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                viewModel.onUpdatePriceConfirmed(productRemoteIdsToUpdate, dialogBinding.priceInputLayout.getText())
+                productListViewModel.onUpdatePriceConfirmed(
+                    productRemoteIdsToUpdate,
+                    dialogBinding.priceInputLayout.getText()
+                )
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -462,7 +509,7 @@ class ProductListFragment :
                 val checkedItemPosition = (dialog as AlertDialog).listView.checkedItemPosition
                 if (checkedItemPosition < statuses.size && checkedItemPosition >= 0) {
                     val newStatus = statuses[checkedItemPosition]
-                    viewModel.onUpdateStatusConfirmed(
+                    productListViewModel.onUpdateStatusConfirmed(
                         productRemoteIdsToUpdate,
                         newStatus
                     )
@@ -482,9 +529,10 @@ class ProductListFragment :
                 enableProductsRefresh(false)
                 enableProductSortAndFiltersCard(false)
             }
+
             ProductListViewModel.ProductListState.Browsing -> {
                 actionMode?.finish()
-                onListSelectionActiveChanged(isActive = false, expandToolbar = !viewModel.isSearching())
+                onListSelectionActiveChanged(isActive = false, expandToolbar = !productListViewModel.isSearching())
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
             }
@@ -508,7 +556,7 @@ class ProductListFragment :
             }
         }
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
-            viewModel.onFiltersChanged(
+            productListViewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
                 productStatus = result.productStatus,
                 productType = result.productType,
@@ -523,7 +571,7 @@ class ProductListFragment :
         pendingTrashProductId = remoteProductId
 
         // reload the product list without this product
-        viewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
+        productListViewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
 
         val actionListener = View.OnClickListener {
             trashProductCancelled = true
@@ -534,9 +582,9 @@ class ProductListFragment :
                 super.onDismissed(transientBottomBar, event)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
-                    viewModel.reloadProductsFromDb()
+                    productListViewModel.reloadProductsFromDb()
                 } else {
-                    viewModel.trashProduct(remoteProductId)
+                    productListViewModel.trashProduct(remoteProductId)
                 }
             }
         }
@@ -625,6 +673,7 @@ class ProductListFragment :
                 uiMessageResolver.anchorViewId = binding.addProductButton.id
                 binding.addProductButton.show()
             }
+
             else -> {
                 uiMessageResolver.anchorViewId = null
                 binding.addProductButton.hide()
@@ -636,7 +685,7 @@ class ProductListFragment :
     //  cause the product's onClick listener to gain focus over the selection tracker.
     //  This quick fix will prevent the app from entering an unexpected status when the app is in selection mode.
     private fun shouldPreventDetailNavigation(remoteProductId: Long): Boolean {
-        if (viewModel.isSelecting()) {
+        if (productListViewModel.isSelecting()) {
             tracker?.let { selectionTracker ->
                 if (selectionTracker.isSelected(remoteProductId)) selectionTracker.deselect(remoteProductId)
                 else selectionTracker.select(remoteProductId)
@@ -666,7 +715,7 @@ class ProductListFragment :
     }
 
     override fun onRequestLoadMore() {
-        viewModel.onLoadMoreRequested()
+        productListViewModel.onLoadMoreRequested()
     }
 
     private fun showProductFilterScreen(
@@ -686,7 +735,7 @@ class ProductListFragment :
     }
 
     override fun onFilterOptionSelected() {
-        viewModel.onFiltersButtonTapped()
+        productListViewModel.onFiltersButtonTapped()
     }
 
     private fun showProductSortingBottomSheet() {
@@ -695,7 +744,7 @@ class ProductListFragment :
     }
 
     override fun onSortOptionSelected() {
-        viewModel.onSortButtonTapped()
+        productListViewModel.onSortButtonTapped()
     }
 
     private fun onGiveFeedbackClicked() {
@@ -732,8 +781,8 @@ class ProductListFragment :
     }
 
     override fun shouldExpandToolbar(): Boolean {
-        val isNotSearching = !viewModel.isSearching()
-        val isNotSelecting = !viewModel.isSelecting()
+        val isNotSearching = !productListViewModel.isSearching()
+        val isNotSelecting = !productListViewModel.isSelecting()
         return binding.productsRecycler.computeVerticalScrollOffset() == 0 && isNotSearching && isNotSelecting
     }
 
@@ -748,17 +797,20 @@ class ProductListFragment :
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_update_status -> {
-                viewModel.onBulkUpdateStatusClicked(tracker?.selection?.toList().orEmpty())
+                productListViewModel.onBulkUpdateStatusClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
+
             R.id.menu_update_price -> {
-                viewModel.onBulkUpdatePriceClicked(tracker?.selection?.toList().orEmpty())
+                productListViewModel.onBulkUpdatePriceClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
+
             R.id.menu_select_all -> {
-                viewModel.onSelectAllProductsClicked()
+                productListViewModel.onSelectAllProductsClicked()
                 true
             }
+
             else -> false
         }
     }

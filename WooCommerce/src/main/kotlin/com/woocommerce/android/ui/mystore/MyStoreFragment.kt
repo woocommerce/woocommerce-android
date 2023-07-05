@@ -43,6 +43,9 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.blaze.BlazeBanner
+import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -96,6 +99,7 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
+    private val blazeViewModel: BlazeBannerViewModel by viewModels()
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -199,8 +203,44 @@ class MyStoreFragment :
 
         setupStateObservers()
         setupOnboardingView()
+        setUpBlazeBanner()
 
         initJitm(savedInstanceState)
+    }
+
+    private fun setUpBlazeBanner() {
+        blazeViewModel.setBlazeBannerSource(MY_STORE_BANNER)
+        blazeViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
+            if (!isVisible) binding.blazeBannerView.hide()
+            else {
+                binding.blazeBannerView.apply {
+                    show()
+                    setContent {
+                        WooThemeWithBackground {
+                            BlazeBanner(
+                                onClose = blazeViewModel::onBlazeBannerDismissed,
+                                onTryBlazeClicked = blazeViewModel::onTryBlazeBannerClicked
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        blazeViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
+            }
+        }
+    }
+
+    private fun openBlazeWebView(event: BlazeBannerViewModel.OpenBlazeEvent) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                urlToLoad = event.url,
+                source = event.source
+            )
+        )
     }
 
     private fun setupOnboardingView() {
