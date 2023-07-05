@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.ui.orders.creation.coupon.edit.CouponValidator.CouponValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -51,26 +52,29 @@ class OrderCreateCouponEditViewModel @Inject constructor(
             ValidationState.IN_PROGRESS
         }
         val couponCode = couponCode.value
-        if (couponCode != null && validator.isCouponValid(couponCode) == CouponValidator.CouponValidationResult.VALID) {
-            validationState.update {
-                ValidationState.IDLE
+        when {
+            couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.VALID -> {
+                validationState.update {
+                    ValidationState.IDLE
+                }
+                val initialCouponCode = navArgs.couponCode
+                if (initialCouponCode.isNullOrEmpty()) {
+                    triggerEvent(CouponEditResult.AddNewCouponCode(couponCode))
+                } else {
+                    triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
+                }
             }
-            val initialCouponCode = navArgs.couponCode
-            if (initialCouponCode.isNullOrEmpty()) {
-                triggerEvent(CouponEditResult.AddNewCouponCode(couponCode))
-            } else {
-                triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
+
+            couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.NETWORK_ERROR -> {
+                validationState.update {
+                    ValidationState.NETWORK_ERROR
+                }
             }
-        } else if (
-            couponCode != null && validator
-                .isCouponValid(couponCode) == CouponValidator.CouponValidationResult.NETWORK_ERROR
-        ) {
-            validationState.update {
-                ValidationState.NETWORK_ERROR
-            }
-        } else {
-            validationState.update {
-                ValidationState.ERROR
+
+            else -> {
+                validationState.update {
+                    ValidationState.ERROR
+                }
             }
         }
     }
