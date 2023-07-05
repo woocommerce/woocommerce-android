@@ -95,6 +95,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY)
         )
     }
+    private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
 
     @Before
     fun setUp() {
@@ -1757,6 +1758,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus,
             appPrefs,
             feedbackRepository,
+            cardReaderHubTapToPayUnavailableHandler,
+
         )
         viewModel.onViewVisible()
     }

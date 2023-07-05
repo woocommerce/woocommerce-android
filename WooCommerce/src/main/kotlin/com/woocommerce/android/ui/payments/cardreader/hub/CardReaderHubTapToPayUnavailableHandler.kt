@@ -16,7 +16,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
         when (status) {
             TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable -> {
                 showDialog(
-                    R.string.card_reader_tap_to_pay_not_available_error_android_version,
+                    R.string.card_reader_tap_to_pay_not_available_error_nfc,
                     R.string.card_reader_upsell_card_reader_banner_cta,
                     triggerEvent
                 ) { positiveButtonClick(ActionType.PURCHASE_READER) }
