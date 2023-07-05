@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-21 09:54:08+0000
+Translation-Revision-Date: 2023-06-28 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_sharing_regenerate">다시 쓰기</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#모든 판매에 대한 알림 받기:&lt;/b&gt; 즉시 판매 알림을 통해 한순간도 놓치지 않습니다. 새 판매마다 알림이 수신되어 성공을 자축하고 스토어의 활동을 파악할 수 있습니다.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#터치하여 상품 추가 및 편집:&lt;/b&gt; 앱에서 새 상품을 추가하고, 상세 정보를 업데이트하고, 이미지를 업로드하고, 변형을 관리하세요. 재고를 손쉽게 최신 상태로 유지하세요.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#직접 결제 이용:&lt;/b&gt; 직접 결제를 수락하여 판매 기회를 확장하세요. 앱을 사용하여 신용카드 거래를 안전하게 처리하거나 편리한 직접 결제를 위해 호환되는 카드 리더까지 연결하세요.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#주문 관리 및 생성:&lt;/b&gt; 주문을 쉽게 처리하세요. 주문 상태를 스크롤, 검색 및 변경하세요. 스토어 내 또는 전화 구매의 새 주문을 즉시 생성하세요. 주문 관리 프로세스를 간소화하세요.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#판매 및 인기 상품 추적:&lt;/b&gt; 스토어의 실시간 성과를 최신 상태로 유지하세요. 가장 많이 판매되는 제품을 식별하고 정보에 따라 결정하여 내려 수익성을 극대화하세요.</string>
+    <string name="store_creation_in_progress_description_1">스토어가 준비되면 알림이 표시됩니다. 유용한 팁을 공유하면서 마법을 발휘하는 동안 편안하게 쉬고 계세요. 🔮</string>
+    <string name="store_creation_in_progress_title_1">스토어를 생성하는 중입니다! 몇 분이면 됩니다.</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">PIN 코드가 필요하지만 Tap To Pay에서 아직 지원하지 않습니다. 외부 카드 리더 사용도 고려해 보세요.</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">카드 리더 구매</string>
+    <string name="order_sync_coupon_removed">쿠폰을 적용할 수 없으며 주문에서 제거되었습니다.</string>
     <string name="product_sharing_ai_generating_failure">공유 메시지를 생성할 수 없습니다. 다시 시도하세요.</string>
     <string name="product_sharing_ai_info_label">AI 기능 살펴보기</string>
     <string name="product_sharing_optional_message_label">선택적 메시지 추가</string>
-    <string name="product_sharing_generating">생성 중…</string>
-    <string name="product_sharing_regenerate">재생성</string>
+    <string name="product_sharing_generating">쓰기…</string>
     <string name="product_sharing_write_with_ai">AI로 쓰기</string>
     <string name="more_menu_button_blaze_description">Blaze로 제품 홍보</string>
     <string name="more_menu_button_blaze">Blaze</string>
@@ -115,18 +125,11 @@ Language: ko_KR
     <string name="store_creation_profiler_industry_home_furniture_garden">홈, 가구 및 정원</string>
     <string name="store_creation_profiler_industry_food_drink">음식 및 음료</string>
     <string name="store_creation_profiler_industry_health_beauty">건강 및 미용</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; 좋아하는 색상은 자주색입니다. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo 팀에서는 350명이 넘는 유능한 인재가 30개국 이상에서 근무하고 있습니다.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; 전 세계에서 열리는 우커머스 모임이 150개 넘게 있습니다. 동료 스토어 소유자를 만나는 훌륭한 방법입니다.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; 고양이나 강아지를 좋아하시나요? Woo 팀은 반반으로 나뉩니다!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; 남아프리카인 2명과 노르웨이인 1명이 Woo를 설립했다는 것을 알고 계셨나요? 해당 국가에는 Winkel, ivenkile, butikk라는 \"스토어\"를 칭하는 세 가지 다른 방법이 있습니다.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo가 전 세계 400만 스토어의 기반이 된다는 사실을 알고 계셨나요? 훌륭한 동반자가 여러분 곁에 있습니다.</string>
     <string name="store_creation_in_progress_title_6">문 열기</string>
     <string name="store_creation_in_progress_title_5">조명 켜기</string>
     <string name="store_creation_in_progress_title_4">마무리 손질하기</string>
     <string name="store_creation_in_progress_title_3">창고 정리하기</string>
     <string name="store_creation_in_progress_title_2">기초 다지기</string>
-    <string name="store_creation_in_progress_title_1">Woo! 스토어를 생성해 드림</string>
     <string name="notifications_permission_description">회원님의 기기로 전달되는 신규 주문, 리뷰 등에 대한 푸시 알림을 보내려면 회원님의 허락을 받아야 합니다.</string>
     <string name="notifications_permission_title">알림</string>
     <string name="product_type_composite">복합 상품</string>

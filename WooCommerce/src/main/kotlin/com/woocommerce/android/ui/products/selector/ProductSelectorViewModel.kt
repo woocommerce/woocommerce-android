@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -517,9 +518,9 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    fun onSearchTypeChanged(searchType: SearchType) {
+    fun onSearchTypeChanged(@StringRes searchType: Int) {
         this.searchState.update {
-            it.copy(searchType = searchType)
+            it.copy(searchType = SearchType.fromLabelResId(searchType)!!)
         }
     }
 

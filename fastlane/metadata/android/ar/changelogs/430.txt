@@ -1,0 +1,2 @@
+14.2:
+Did you know you can now add coupons when creating an order? نعم، يمكنك القيام بذلك! أصبح من الممكن الآن إضافة القسائم عند إنشاء طلب من التطبيق. يمكنك أيضًا إدارة القسائم عن طريق التوجه إلى علامة تبويب القائمة والنقر على ميزة القسائم. Lastly, we’ve made some improvements to the scanning functionality when searching for a product. لكننا لم ننتهِ بعد. ترقب المزيد من التحسينات في المستقبل.

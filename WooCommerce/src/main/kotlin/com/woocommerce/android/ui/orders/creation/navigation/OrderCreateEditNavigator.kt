@@ -49,9 +49,16 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
             is EditCoupon ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditionFragment(
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditFragment(
+                    orderCreationMode = target.orderCreationMode,
                     couponCode = target.couponCode
                 )
+            is OrderCreateEditNavigationTarget.CouponList -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponListFragment(
+                    orderCreationMode = target.orderCreationMode,
+                    couponLines = target.couponLines.toTypedArray()
+                )
+            }
         }
 
         navController.navigate(action)

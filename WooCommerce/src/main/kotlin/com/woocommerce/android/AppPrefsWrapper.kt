@@ -336,6 +336,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
+    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {

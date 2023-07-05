@@ -2347,13 +2347,11 @@ class ProductDetailViewModel @Inject constructor(
             isBlazeEnabled()
 
     fun trackBlazeDisplayed() {
-        launch {
-            if (shouldShowBlaze(draftChanges.value!!))
-                tracker.track(
-                    stat = BLAZE_ENTRY_POINT_DISPLAYED,
-                    properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-                )
-        }
+        if (menuButtonsState.value?.showPromoteWithBlaze == true)
+            tracker.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+            )
     }
 
     /**

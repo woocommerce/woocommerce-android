@@ -308,6 +308,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Order Coupon
     ORDER_COUPON_ADD,
     ORDER_COUPON_REMOVE,
+    ORDER_COUPON_UPDATE,
 
     // -- Shipping Labels
     SHIPPING_LABEL_API_REQUEST,
