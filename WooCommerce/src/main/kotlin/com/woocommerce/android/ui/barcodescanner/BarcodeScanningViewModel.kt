@@ -54,6 +54,11 @@ class BarcodeScanningViewModel @Inject constructor(
         }
     }
 
+    fun onResume() {
+        if (event.value is ScanningEvents.OpenAppSettings) {
+            triggerEvent(ScanningEvents.LaunchCameraPermission)
+        }
+    }
 
     sealed class ScanningEvents : Event() {
         object LaunchCameraPermission : ScanningEvents()
