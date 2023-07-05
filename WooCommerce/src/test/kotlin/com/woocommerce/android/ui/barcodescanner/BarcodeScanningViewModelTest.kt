@@ -22,7 +22,7 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user navigates back from the app settings, then launch the camera permission again`() {
+    fun `given permanently denied dialog shown, when user navigates back from the app settings, then launch the camera permission again`() {
         barcodeScanningViewModel.updatePermissionState(
             isPermissionGranted = false,
             shouldShowRequestPermissionRationale = false
