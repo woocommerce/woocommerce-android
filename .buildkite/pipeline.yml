@@ -38,7 +38,7 @@ steps:
     if: build.pull_request.id != null
     plugins: *common_plugins
 
-  - label: "Unit tests"
+  - label: "Umnit tests"
     key: "unit_tests"  
     command: .buildkite/commands/run-unit-tests.sh
     plugins: 
