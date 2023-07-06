@@ -42,7 +42,6 @@ class BarcodeScanningViewModel @Inject constructor(
                     message = R.string.barcode_scanning_alert_dialog_permanently_denied_message,
                     ctaLabel = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label,
                     ctaAction = {
-                        // Open settings
                         triggerEvent(ScanningEvents.OpenAppSettings)
                     }
                 )

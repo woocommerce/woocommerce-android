@@ -132,7 +132,7 @@ class BarcodeScanningFragment : BaseFragment() {
     @Composable
     private fun BarcodeScanner() {
         BarcodeScannerScreen(codeScanner) { codeScannerStatus ->
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                     codeScannerStatus.collect { status ->
                         navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
