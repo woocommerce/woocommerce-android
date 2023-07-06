@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -31,7 +32,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 
 ) : ScopedViewModel(savedState) {
-    private val args = OrderCreateEditProductDetailsFragmentArgs.fromSavedStateHandle(savedState)
+    private val args : OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
 
     private val currency = args.currency
 
