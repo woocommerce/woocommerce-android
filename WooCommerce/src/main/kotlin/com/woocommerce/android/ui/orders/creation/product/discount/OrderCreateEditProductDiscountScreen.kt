@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,6 +32,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -42,11 +44,12 @@ fun OrderCreateEditProductDiscountScreen(
     onRemoveDiscountClicked: () -> Unit,
     onDiscountAmountChange: (String) -> Unit,
 ) {
-    Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked) }) { padding ->
-        val state = viewState.collectAsState()
+    val state = viewState.collectAsState()
+    Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
         val focusRequester = remember { FocusRequester() }
         Box(modifier = Modifier.padding(padding)) {
             Column(Modifier.padding(dimensionResource(id = R.dimen.minor_100))) {
+                val discountValidationState = state.value.discountValidationState
                 WCOutlinedTextField(
                     modifier = Modifier.focusRequester(focusRequester),
                     value = state.value.discountAmount,
@@ -56,8 +59,24 @@ fun OrderCreateEditProductDiscountScreen(
                         state.value.currency
                     ),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = discountValidationState is Invalid,
+                    trailingIcon = {
+                        if (discountValidationState is Invalid) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = colorResource(id = R.color.woo_red_50)
+                            )
+                        }
+                    },
                 )
+                if (discountValidationState is Invalid) {
+                    Text(
+                        text  = discountValidationState.errorMessage,
+                        color = colorResource(id = R.color.woo_red_50),
+                    )
+                }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 WCColoredButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -74,7 +93,11 @@ fun OrderCreateEditProductDiscountScreen(
 }
 
 @Composable
-private fun Toolbar(onCloseClicked: () -> Unit, onDoneClicked: () -> Unit) {
+private fun Toolbar(
+    onCloseClicked: () -> Unit,
+    onDoneClicked: () -> Unit,
+    isDoneButtonEnabled: Boolean,
+) {
     TopAppBar(
         title = { Text(stringResource(id = R.string.discount)) },
         navigationIcon = {
@@ -88,14 +111,18 @@ private fun Toolbar(onCloseClicked: () -> Unit, onDoneClicked: () -> Unit) {
         backgroundColor = colorResource(id = R.color.color_toolbar),
         elevation = 0.dp,
         actions = {
-            WCTextButton(onClick = onDoneClicked, text = stringResource(id = R.string.done))
+            WCTextButton(
+                onClick = onDoneClicked,
+                enabled = isDoneButtonEnabled,
+                text = stringResource(id = R.string.done)
+            )
         },
     )
 }
 
 @Preview
 @Composable
-fun ToolbarPreview() = Toolbar({}, {})
+fun ToolbarPreview() = Toolbar({}, {}, true)
 
 @Preview
 @Composable

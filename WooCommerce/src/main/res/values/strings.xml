@@ -535,6 +535,8 @@
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
     <string name="order_creation_remove_discount">Remove discount</string>
+    <string name="order_creation_discount_too_big_error">Discount cannot be greater than the price</string>
+    <string name="order_creation_discount_invalid_number_error">Discount is not a valid number</string>
     <string name="order_creation_discount_amount_with_currency">Amount %1$s</string>
     <string name="order_creation_discount">Discount</string>
     <string name="order_creation_discount_amount_type">Amount (%1$s)</string>
