@@ -104,9 +104,10 @@ class ProductDetailCardBuilder(
             properties = (
                 listOf(product.title()) +
                     product.description(
-                        isAIProductDescriptionEnabled(),
-                        viewModel::onWriteWithAIClicked,
-                        viewModel::onLearnMoreClicked
+                        showAIButton = isAIProductDescriptionEnabled(),
+                        showTooltip = product.description.isEmpty(),
+                        onWriteWithAIClicked = viewModel::onWriteWithAIClicked,
+                        onLearnMoreClicked = viewModel::onLearnMoreClicked
                     )
                 ).filterNotEmpty()
         )
@@ -584,6 +585,7 @@ class ProductDetailCardBuilder(
 
     private fun Product.description(
         showAIButton: Boolean,
+        showTooltip: Boolean,
         onWriteWithAIClicked: () -> Unit,
         onLearnMoreClicked: () -> Unit
     ): List<ProductProperty> {
@@ -613,11 +615,21 @@ class ProductDetailCardBuilder(
         )
 
         if (showAIButton) {
+            val tooltip = if (showTooltip) {
+                Button.Tooltip(
+                    title = string.ai_product_description_tooltip_title,
+                    text = string.ai_product_description_tooltip_message,
+                    primaryButtonText = string.ai_product_description_tooltip_dismiss,
+                )
+            } else {
+                null
+            }
             properties.add(
                 Button(
                     string.product_sharing_write_with_ai,
                     drawable.ic_ai,
                     onClick = onWriteWithAIClicked,
+                    tooltip = tooltip,
                     link = Link(
                         string.ai_product_description_learn_more_link,
                         onLearnMoreClicked
