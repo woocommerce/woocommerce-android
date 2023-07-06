@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.barcodescanner
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Granted
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.PermanentlyDenied
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.ShouldShowRationale
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.ScanningEvents.LaunchCameraPermission
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -67,5 +68,15 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
         )
 
         assertThat(barcodeScanningViewModel.permissionState.value).isEqualTo(Granted)
+    }
+
+    @Test
+    fun `given camera permission not granted and should show rationale, then update the PermissionState accordingly`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        assertThat(barcodeScanningViewModel.permissionState.value).isInstanceOf(ShouldShowRationale::class.java)
     }
 }
