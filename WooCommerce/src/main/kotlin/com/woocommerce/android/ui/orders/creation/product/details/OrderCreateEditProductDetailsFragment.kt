@@ -123,7 +123,7 @@ class OrderCreateEditProductDetailsFragment :
     ) = with(discountSection) {
         isVisible =
             state.discountSectionState.isVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
-        // To be continued
+        amountValue.text = state.discountSectionState.discountAmountText
     }
 
     companion object {
