@@ -39,7 +39,6 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
 
     val viewState = item.map { item ->
         val uiModel: ProductUIModel = mapItemToProductUiModel(item)
-        uiModel.item.discount
         ViewState(
             productDetailsState = ProductDetailsState(
                 title = getProductTitle(uiModel.item.name),
@@ -67,8 +66,8 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
             } else {
                 append(item.getStockText(resourceProvider))
             }
-            append(" \u2022 ")
-            append(decimalFormatter(item.item.total).replace(" ", "\u00A0"))
+            append(BULLET_SEPARATOR_CHAR)
+            append(decimalFormatter(item.item.total).replace(" ", NON_BREAKING_SPACE))
         }
     }
 
@@ -143,5 +142,10 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     sealed class NavigationTarget : MultiLiveEvent.Event() {
         data class DiscountEdit(val discountAmount: BigDecimal) : MultiLiveEvent.Event()
         object DiscountCreate : MultiLiveEvent.Event()
+    }
+
+    private companion object {
+        private const val BULLET_SEPARATOR_CHAR = " \u2022 "
+        private const val NON_BREAKING_SPACE = "\u00A0"
     }
 }
