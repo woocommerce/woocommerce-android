@@ -25,7 +25,7 @@ class BarcodeScanningViewModel @Inject constructor(
                 _permissionState.value = PermissionState.Granted
             }
 
-            !isPermissionGranted && shouldShowRequestPermissionRationale -> {
+            shouldShowRequestPermissionRationale -> {
                 // Denied once, ask for camera permission again
                 _permissionState.value = PermissionState.ShouldShowRationale(
                     title = R.string.barcode_scanning_alert_dialog_title,
@@ -35,7 +35,7 @@ class BarcodeScanningViewModel @Inject constructor(
                 )
             }
 
-            !isPermissionGranted && !shouldShowRequestPermissionRationale -> {
+            !shouldShowRequestPermissionRationale -> {
                 // Permanently denied, ask to enable permission from the app settings
                 _permissionState.value = PermissionState.PermanentlyDenied(
                     title = R.string.barcode_scanning_alert_dialog_title,
