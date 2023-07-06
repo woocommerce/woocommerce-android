@@ -20,6 +20,7 @@ import javax.inject.Inject
 class OrderCreateEditProductDiscountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
+    private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
 ) : ScopedViewModel(savedStateHandle) {
     private val args =
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
@@ -32,7 +33,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     private val currency = Currency.getInstance(args.currency).symbol
 
     private fun getInitialDiscountString() = args.item.let {
-        val itemDiscount = (it.subtotal - it.total) / it.quantity.toBigDecimal()
+        val itemDiscount = calculateItemDiscountAmount(it)
         if (itemDiscount > BigDecimal.ZERO) itemDiscount.toString() else ""
     }
 
@@ -104,3 +105,4 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     data class ReturnDiscountResult(val item: Order.Item) : MultiLiveEvent.Event()
 }
+

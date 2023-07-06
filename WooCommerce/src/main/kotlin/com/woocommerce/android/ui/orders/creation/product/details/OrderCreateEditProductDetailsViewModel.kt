@@ -8,6 +8,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
 import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
+import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getStockText
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,9 +32,10 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
-
-) : ScopedViewModel(savedState) {
+    private val currencyFormatter: CurrencyFormatter,
+    private val getItemDiscountAmountText: GetItemDiscountAmountText,
+    private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
+    ) : ScopedViewModel(savedState) {
     private val args: OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
 
     private val currency = args.currency
@@ -50,15 +53,12 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
             ),
             discountSectionState = DiscountSectionState(
                 isVisible = item.isDiscounted(),
-                discountAmountText = getDiscountAmountText(uiModel.item),
+                discountAmountText = getItemDiscountAmountText(calculateItemDiscountAmount(uiModel.item), currency),
             )
         )
     }.asLiveData()
 
-    private fun getDiscountAmountText(item: Order.Item): String =
-        currencyFormatter.formatCurrency(item.discount, currency)
-
-    private fun Order.Item.isDiscounted(): Boolean = discount > BigDecimal.ZERO
+    private fun Order.Item.isDiscounted(): Boolean = calculateItemDiscountAmount(this) > BigDecimal.ZERO
 
     private fun getStockPriceSubtitle(item: ProductUIModel): String {
         val decimalFormatter = getDecimalFormatter(currencyFormatter, args.currency)
