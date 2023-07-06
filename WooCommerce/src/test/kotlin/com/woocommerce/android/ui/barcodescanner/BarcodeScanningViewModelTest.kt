@@ -104,4 +104,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).message
         ).isEqualTo(R.string.barcode_scanning_alert_dialog_rationale_message)
     }
+
+    @Test
+    fun `given camera permission not granted and should show rationale, then cta label is correct`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        assertThat(
+            (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).ctaLabel
+        ).isEqualTo(R.string.barcode_scanning_alert_dialog_rationale_cta_label)
+    }
 }
