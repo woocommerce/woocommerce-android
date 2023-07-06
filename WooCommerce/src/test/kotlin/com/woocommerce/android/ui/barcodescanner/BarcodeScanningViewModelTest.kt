@@ -92,4 +92,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).title
         ).isEqualTo(R.string.barcode_scanning_alert_dialog_title)
     }
+
+    @Test
+    fun `given camera permission not granted and should show rationale, then dialog message is correct`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        assertThat(
+            (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).message
+        ).isEqualTo(R.string.barcode_scanning_alert_dialog_rationale_message)
+    }
 }
