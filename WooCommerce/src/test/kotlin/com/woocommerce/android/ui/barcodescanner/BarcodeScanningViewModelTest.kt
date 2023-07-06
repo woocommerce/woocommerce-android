@@ -128,4 +128,14 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
 
         assertThat(barcodeScanningViewModel.event.value).isInstanceOf(LaunchCameraPermission::class.java)
     }
+
+    @Test
+    fun `given camera permission not granted and should not show rationale, then update the PermissionState accordingly`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = false
+        )
+
+        assertThat(barcodeScanningViewModel.permissionState.value).isInstanceOf(PermanentlyDenied::class.java)
+    }
 }
