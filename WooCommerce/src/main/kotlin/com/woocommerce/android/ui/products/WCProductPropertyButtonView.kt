@@ -34,7 +34,7 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
 
     private fun showPopupWindow(popupBinding: HighlightsTooltipLayoutBinding) {
         val popupWindow = PopupWindow(popupBinding.root, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        popupBinding.dismissButton.setOnClickListener { popupWindow.dismiss() }
+        popupBinding.tooltipDismissButton.setOnClickListener { popupWindow.dismiss() }
 
         // Make the popupWindow dismissible by clicking outside of it.
         popupWindow.isOutsideTouchable = true
