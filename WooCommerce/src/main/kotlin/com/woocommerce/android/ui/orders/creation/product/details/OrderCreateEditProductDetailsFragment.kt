@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation.product.details
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -12,9 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditProductDetailsBinding
 import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,14 +57,8 @@ class OrderCreateEditProductDetailsFragment :
         when (event) {
             is OrderCreateEditProductDetailsViewModel.NavigationTarget.DiscountCreate -> {}
             is OrderCreateEditProductDetailsViewModel.NavigationTarget.DiscountEdit -> {}
-            is OrderCreateEditProductDetailsViewModel.NavigationTarget.Back -> {
-                setFragmentResult(
-                    KEY_PRODUCT_DETAILS,
-                    Bundle().apply {
-                        putParcelable(KEY_PRODUCT_DETAILS_EDIT_RESULT, event.productDetailsEditResult)
-                    }
-                )
-                findNavController().popBackStack()
+            is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                navigateBackWithResult(KEY_PRODUCT_DETAILS_EDIT_RESULT, event.data as ProductDetailsEditResult)
             }
             is MultiLiveEvent.Event.Exit -> {
                 findNavController().navigateUp()
@@ -108,7 +103,6 @@ class OrderCreateEditProductDetailsFragment :
     }
 
     companion object {
-        const val KEY_PRODUCT_DETAILS = "key_product_details"
         const val KEY_PRODUCT_DETAILS_EDIT_RESULT = "key_product_details_edit_result"
     }
 }

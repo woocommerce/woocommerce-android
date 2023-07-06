@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -10,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResultListener
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -42,7 +39,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
@@ -100,27 +96,6 @@ class OrderCreateEditFormFragment :
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditProductsAdapter }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        listenForProductDetailsEditResult()
-    }
-
-    private fun listenForProductDetailsEditResult() {
-        setFragmentResultListener(KEY_PRODUCT_DETAILS) { _, bundle ->
-            if (Build.VERSION.SDK_INT < TIRAMISU) {
-                @Suppress("DEPRECATION")
-                bundle.getParcelable(KEY_PRODUCT_DETAILS_EDIT_RESULT)
-            } else {
-                bundle.getParcelable(
-                    KEY_PRODUCT_DETAILS_EDIT_RESULT,
-                    ProductDetailsEditResult::class.java
-                )
-            }?.let { result ->
-                viewModel.onProductDetailsEditResult(result)
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
@@ -129,6 +104,13 @@ class OrderCreateEditFormFragment :
             initView()
         }
         handleCouponEditResult()
+        listenForProductDetailsEditResult()
+    }
+
+    private fun listenForProductDetailsEditResult() {
+        handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
+            viewModel.onProductDetailsEditResult(it)
+        }
     }
 
     private fun handleCouponEditResult() {

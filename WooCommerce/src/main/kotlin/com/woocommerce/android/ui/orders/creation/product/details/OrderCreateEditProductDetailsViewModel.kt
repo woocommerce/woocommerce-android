@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getStockText
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -103,14 +104,14 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
 
     fun onCloseClicked() {
         if (args.item != this.item.value) {
-            triggerEvent(NavigationTarget.Back(ProductDetailsEditResult.ProductDetailsEdited(this.item.value)))
+            triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductDetailsEdited(this.item.value)))
         } else {
             triggerEvent(MultiLiveEvent.Event.Exit)
         }
     }
 
     fun onProductRemoved() {
-        triggerEvent(NavigationTarget.Back(ProductDetailsEditResult.ProductRemoved(this.item.value)))
+        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.item.value)))
     }
 
     data class ViewState(
@@ -140,9 +141,6 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     }
 
     sealed class NavigationTarget : MultiLiveEvent.Event() {
-        data class Back(
-            val productDetailsEditResult: ProductDetailsEditResult
-        ) : MultiLiveEvent.Event()
         data class DiscountEdit(val discountAmount: BigDecimal) : MultiLiveEvent.Event()
         object DiscountCreate : MultiLiveEvent.Event()
     }
