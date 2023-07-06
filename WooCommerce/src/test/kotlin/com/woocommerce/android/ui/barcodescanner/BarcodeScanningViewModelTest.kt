@@ -116,4 +116,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).ctaLabel
         ).isEqualTo(R.string.barcode_scanning_alert_dialog_rationale_cta_label)
     }
+
+    @Test
+    fun `given camera permission not granted and should show rationale, when the CTA is clicked, then trigger proper event`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).ctaAction.invoke()
+
+        assertThat(barcodeScanningViewModel.event.value).isInstanceOf(LaunchCameraPermission::class.java)
+    }
 }
