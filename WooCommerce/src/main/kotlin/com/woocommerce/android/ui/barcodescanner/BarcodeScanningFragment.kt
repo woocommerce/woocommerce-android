@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.barcodescanner
 
 import android.Manifest
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -171,6 +173,20 @@ class BarcodeScanningFragment : BaseFragment() {
                 }
             },
         )
+    }
+
+    @Preview(name = "Light mode")
+    @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+    @Composable
+    fun DeniedOnceAlertDialog() {
+        WooThemeWithBackground {
+            DisplayAlertDialog(
+                title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
+                message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
+                ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_cta_label),
+                ctaAction = {}
+            )
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.barcode_scanning_title)
