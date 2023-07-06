@@ -32,7 +32,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 
 ) : ScopedViewModel(savedState) {
-    private val args : OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
+    private val args: OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
 
     private val currency = args.currency
 
