@@ -69,6 +69,7 @@ class OrderCreateEditProductDetailsFragment :
     private fun ProductItemViewBinding.renderProductItemView(
         state: OrderCreateEditProductDetailsViewModel.ViewState
     ) {
+        divider.isVisible = false
         renderProductImage(state.productDetailsState.imageUrl)
         productName.text = state.productDetailsState.title
         productSku.text = state.productDetailsState.skuSubtitle
