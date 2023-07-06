@@ -138,4 +138,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
 
         assertThat(barcodeScanningViewModel.permissionState.value).isInstanceOf(PermanentlyDenied::class.java)
     }
+
+    @Test
+    fun `given camera permission not granted and should not show rationale, then dialog title is correct`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = false
+        )
+
+        assertThat(
+            (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).title
+        ).isEqualTo(R.string.barcode_scanning_alert_dialog_title)
+    }
 }
