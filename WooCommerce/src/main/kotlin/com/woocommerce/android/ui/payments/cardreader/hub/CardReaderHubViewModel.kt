@@ -8,6 +8,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -71,6 +72,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs,
     private val feedbackRepository: FeedbackRepository,
+    private val tapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -420,7 +422,12 @@ class CardReaderHubViewModel @Inject constructor(
                                 ttpAvailabilityStatus,
                                 SOURCE,
                             )
-                            triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
+                            tapToPayUnavailableHandler.handleTTPUnavailable(
+                                ttpAvailabilityStatus,
+                                ::triggerEvent
+                            ) { actionType ->
+                                handlePositiveButtonClickTTPUnavailable(actionType)
+                            }
                         } else {
                             triggerEvent(
                                 CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
@@ -436,6 +443,22 @@ class CardReaderHubViewModel @Inject constructor(
                 // no-op
             }
         }.exhaustive
+    }
+
+    private fun handlePositiveButtonClickTTPUnavailable(
+        actionType: CardReaderHubTapToPayUnavailableHandler.ActionType
+    ) = when (actionType) {
+        CardReaderHubTapToPayUnavailableHandler.ActionType.PURCHASE_READER -> {
+            onPurchaseCardReaderClicked()
+        }
+
+        CardReaderHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS -> {
+            triggerEvent(
+                CardReaderHubEvents.OpenGenericWebView(
+                    STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
+                )
+            )
+        }
     }
 
     private fun trackEvent(event: AnalyticsEvent) {

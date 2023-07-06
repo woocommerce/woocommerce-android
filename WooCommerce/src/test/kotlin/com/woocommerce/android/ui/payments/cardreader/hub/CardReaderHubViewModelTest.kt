@@ -50,9 +50,9 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -95,6 +95,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY)
         )
     }
+    private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
 
     @Before
     fun setUp() {
@@ -1627,7 +1628,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given hub flow with ttp when ttp is not available, when view model initiated, then show toast emitted and tracked`() {
+    fun `given hub flow with ttp when ttp is not available, when view model initiated, then handled by ttp availability handler`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
@@ -1636,9 +1637,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(ShowToast::class.java)
-        assertThat((viewModel.event.value as ShowToast).message)
-            .isEqualTo(R.string.card_reader_tap_to_pay_not_available_error)
+        verify(cardReaderHubTapToPayUnavailableHandler).handleTTPUnavailable(
+            eq(SystemVersionNotSupported),
+            any(),
+            any(),
+        )
         verify(cardReaderTracker).trackTapToPayNotAvailableReason(
             SystemVersionNotSupported,
             "payments_menu",
@@ -1757,6 +1760,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus,
             appPrefs,
             feedbackRepository,
+            cardReaderHubTapToPayUnavailableHandler,
         )
         viewModel.onViewVisible()
     }
