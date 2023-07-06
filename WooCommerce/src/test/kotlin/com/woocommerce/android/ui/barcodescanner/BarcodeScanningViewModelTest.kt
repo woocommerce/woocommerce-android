@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.Permis
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.PermanentlyDenied
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.ShouldShowRationale
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.ScanningEvents.LaunchCameraPermission
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.ScanningEvents.OpenAppSettings
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -173,5 +174,17 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
         assertThat(
             (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaLabel
         ).isEqualTo(R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label)
+    }
+
+    @Test
+    fun `given camera permission not granted and should show not rationale, when the CTA is clicked, then trigger proper event`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = false
+        )
+
+        (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaAction.invoke()
+
+        assertThat(barcodeScanningViewModel.event.value).isInstanceOf(OpenAppSettings::class.java)
     }
 }
