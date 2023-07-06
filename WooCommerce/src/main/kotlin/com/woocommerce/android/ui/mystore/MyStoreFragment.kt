@@ -232,6 +232,7 @@ class MyStoreFragment :
             when (event) {
                 is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
                 is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
+                is ShowDialog -> event.showDialog()
             }
         }
     }

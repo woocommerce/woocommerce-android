@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -200,6 +201,8 @@ class ProductListFragment :
                         )
                     )
                 }
+
+                is ShowDialog -> event.showDialog()
             }
         }
     }
