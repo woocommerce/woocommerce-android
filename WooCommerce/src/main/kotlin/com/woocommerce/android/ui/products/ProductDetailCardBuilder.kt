@@ -101,13 +101,14 @@ class ProductDetailCardBuilder(
     }
 
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
+        val showTooltip = product.description.isEmpty() && !appPrefsWrapper.isAIProductDescriptionTooltipDismissed
         return ProductPropertyCard(
             type = PRIMARY,
             properties = (
                 listOf(product.title()) +
                     product.description(
                         showAIButton = isAIProductDescriptionEnabled(),
-                        showTooltip = product.description.isEmpty(),
+                        showTooltip = showTooltip,
                         onWriteWithAIClicked = viewModel::onWriteWithAIClicked,
                         onLearnMoreClicked = viewModel::onLearnMoreClicked
                     )
