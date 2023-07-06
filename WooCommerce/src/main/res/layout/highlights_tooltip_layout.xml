@@ -24,7 +24,7 @@
             android:id="@+id/tooltip_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ai_product_description_tooltip_title"
+            android:text="@string/highlights_tooltip_title_hint"
             android:textColor="@color/highlights_tooltip_title"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
             android:layout_marginBottom="@dimen/minor_100"/>
@@ -33,7 +33,7 @@
             android:id="@+id/tooltip_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ai_product_description_tooltip_message"
+            android:text="@string/highlights_tooltip_message_hint"
             android:textColor="@color/woo_purple_dark_secondary"
             android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
             android:layout_below="@id/tooltip_title"/>
@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/woo_purple_40"
-            android:text="@string/ai_product_description_tooltip_dismiss"
+            android:text="@string/highlights_tooltip_button_hint"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/tooltip_message"/>
     </RelativeLayout>
