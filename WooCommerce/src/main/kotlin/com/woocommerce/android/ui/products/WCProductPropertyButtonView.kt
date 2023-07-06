@@ -65,7 +65,6 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
                 tooltip.onDismiss?.invoke()
                 popupWindow.dismiss()
             }
-
         }
 
         // Make the popupWindow dismissible by clicking outside of it.

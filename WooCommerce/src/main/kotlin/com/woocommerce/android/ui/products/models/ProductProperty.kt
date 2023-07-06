@@ -136,7 +136,6 @@ sealed class ProductProperty(val type: Type) {
             val onDismiss: (() -> Unit)? = null
         )
 
-
         data class Link(
             @StringRes val text: Int,
             val onClick: () -> Unit,

@@ -79,6 +79,10 @@ class ProductDetailCardBuilder(
 ) {
     private lateinit var originalSku: String
 
+    companion object {
+        const val MAXIMUM_TIMES_TO_SHOW_TOOLTIP = 3
+    }
+
     suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
 
         this.originalSku = originalSku
@@ -101,7 +105,9 @@ class ProductDetailCardBuilder(
     }
 
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
-        val showTooltip = product.description.isEmpty() && !appPrefsWrapper.isAIProductDescriptionTooltipDismissed
+        val showTooltip = product.description.isEmpty() &&
+            !appPrefsWrapper.isAIProductDescriptionTooltipDismissed &&
+            appPrefsWrapper.getAIDescriptionTooltipShownNumber() < MAXIMUM_TIMES_TO_SHOW_TOOLTIP
         return ProductPropertyCard(
             type = PRIMARY,
             properties = (
@@ -619,6 +625,8 @@ class ProductDetailCardBuilder(
 
         if (showAIButton) {
             val tooltip = if (showTooltip) {
+                appPrefsWrapper.recordAIDescriptionTooltipShown()
+
                 Button.Tooltip(
                     title = string.ai_product_description_tooltip_title,
                     text = string.ai_product_description_tooltip_message,

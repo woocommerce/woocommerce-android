@@ -340,6 +340,9 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
 
+    fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
+    fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {
