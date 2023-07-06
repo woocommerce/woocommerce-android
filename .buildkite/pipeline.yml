@@ -41,19 +41,14 @@ steps:
   - label: "Unit tests"
     key: "unit_tests"  
     command: .buildkite/commands/run-unit-tests.sh
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/test-results/*/*.xml"
-
-  - label: "🔍 Unit Tests Analytics"
-    command: buildkite-agent artifact download '**/*Test*.xml' . --step "unit_tests"
-    depends_on:
-      - "unit_tests"
-    plugins:
+    plugins: 
+      - automattic/a8c-ci-toolkit#2.17.0
       - test-collector#v1.8.0:
-          files: "**/*Test*.xml"
+          files: "**/build/test-results/*/*.xml"
           format: "junit"
           api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
+    artifact_paths:
+      - "**/build/test-results/*/*.xml"
 
   - label: "Ensure Screenshot Tests Build"
     command: |
