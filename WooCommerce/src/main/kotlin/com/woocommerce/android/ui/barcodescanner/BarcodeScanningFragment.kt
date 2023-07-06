@@ -189,6 +189,20 @@ class BarcodeScanningFragment : BaseFragment() {
         }
     }
 
+    @Preview(name = "Light mode")
+    @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+    @Composable
+    fun DeniedPermanentlyAlertDialog() {
+        WooThemeWithBackground {
+            DisplayAlertDialog(
+                title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
+                message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
+                ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),
+                ctaAction = {}
+            )
+        }
+    }
+
     override fun getFragmentTitle() = getString(R.string.barcode_scanning_title)
 
     companion object {
