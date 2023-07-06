@@ -338,6 +338,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
 
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {

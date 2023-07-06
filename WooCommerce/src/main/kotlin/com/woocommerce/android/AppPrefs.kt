@@ -111,6 +111,7 @@ object AppPrefs {
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
         WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+        IS_AI_DESCRIPTION_TOOLTIP_DISMISSED
     }
 
     /**
@@ -1001,6 +1002,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+            value = value
+        )
+
+    var isAIProductDescriptionTooltipDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
             value = value
         )
 
