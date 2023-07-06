@@ -75,6 +75,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
                 validationState.update {
                     ValidationState.ERROR
                 }
+                viewState.value?.isDoneButtonEnabled = false
             }
         }
     }
@@ -94,7 +95,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val isDoneButtonEnabled: Boolean = false,
+        var isDoneButtonEnabled: Boolean = false,
         val couponCode: String = "",
         val isRemoveButtonVisible: Boolean = false,
         val validationState: ValidationState = ValidationState.IDLE,
