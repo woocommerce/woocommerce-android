@@ -124,11 +124,14 @@ sealed class ProductProperty(val type: Type) {
         val link: Link? = null,
         val onClick: (() -> Unit)
     ) : ProductProperty(BUTTON) {
+        /**
+         * @param onPrimaryButtonClick Set as null for tooltip dismiss action.
+         */
         data class Tooltip(
             @StringRes val title: Int,
             @StringRes val text: Int,
-            @DrawableRes val primaryButtonText: Int,
-            val onPrimaryButtonClick: () -> Unit,
+            @StringRes val primaryButtonText: Int,
+            val onPrimaryButtonClick: (() -> Unit)? = null,
         )
 
         data class Link(
