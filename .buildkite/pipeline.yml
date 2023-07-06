@@ -39,21 +39,15 @@ steps:
     plugins: *common_plugins
 
   - label: "Unit tests"
-    key: "unit_tests"  
     command: .buildkite/commands/run-unit-tests.sh
-    plugins: *common_plugins
+    plugins: 
+      - automattic/a8c-ci-toolkit#2.17.0
+      - test-collector#v1.8.0:
+          files: "**/build/test-results/*/*.xml"
+          format: "junit"
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"      
     artifact_paths:
       - "**/build/test-results/*/*.xml"
-
-  - label: "🔍 Unit Tests Analytics"
-    command: buildkite-agent artifact download '**/*Test*.xml' . --step "unit_tests"
-    depends_on:
-      - "unit_tests"
-    plugins:
-      - test-collector#v1.8.0:
-          files: "**/*Test*.xml"
-          format: "junit"
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
 
   - label: "Ensure Screenshot Tests Build"
     command: |
@@ -68,18 +62,12 @@ steps:
     plugins: *common_plugins
 
   - label: "Instrumented tests"
-    key: "instrumented_tests"
     command: .buildkite/commands/run-instrumented-tests.sh
-    plugins: *common_plugins
+    plugins: 
+      - automattic/a8c-ci-toolkit#2.17.0
+      - test-collector#v1.8.0:
+          files: "build/instrumented-tests/**/test_result_1.xml"
+          format: "junit"
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"    
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
-
-  - label: "🔍 Instrumented Tests Analytics"
-    command: buildkite-agent artifact download '**/test_result_1.xml' . --step "instrumented_tests"
-    depends_on:
-      - "instrumented_tests"
-    plugins:
-      - test-collector#v1.8.0:
-          files: "**/test_result_1.xml"
-          format: "junit"
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
