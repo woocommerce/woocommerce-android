@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -73,7 +74,8 @@ class ProductDetailCardBuilder(
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
     private val variationRepository: VariationRepository,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
     private lateinit var originalSku: String
 
@@ -620,6 +622,7 @@ class ProductDetailCardBuilder(
                     title = string.ai_product_description_tooltip_title,
                     text = string.ai_product_description_tooltip_message,
                     primaryButtonText = string.ai_product_description_tooltip_dismiss,
+                    onDismiss = { onTooltipDismiss() }
                 )
             } else {
                 null
@@ -638,6 +641,10 @@ class ProductDetailCardBuilder(
             )
         }
         return properties
+    }
+
+    private fun onTooltipDismiss() {
+        appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true
     }
 
     // show product variations only if product type is variable and if there are variations for the product
