@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.barcodescanner
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Granted
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.PermanentlyDenied
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.ShouldShowRationale
@@ -78,5 +79,17 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
         )
 
         assertThat(barcodeScanningViewModel.permissionState.value).isInstanceOf(ShouldShowRationale::class.java)
+    }
+
+    @Test
+    fun `given camera permission not granted and should show rationale, then dialog title is correct`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        assertThat(
+            (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).title
+        ).isEqualTo(R.string.barcode_scanning_alert_dialog_title)
     }
 }
