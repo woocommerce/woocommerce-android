@@ -47,7 +47,6 @@ class BarcodeScanningViewModel @Inject constructor(
                     }
                 )
             }
-
             else -> {
                 _permissionState.value = PermissionState.Unknown
             }
