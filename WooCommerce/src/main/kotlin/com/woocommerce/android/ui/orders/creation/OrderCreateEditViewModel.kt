@@ -991,9 +991,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             is ProductDetailsEditResult.ProductDetailsEdited -> {
                 _orderDraft.update { draft ->
-                    val oldItems = draft.items
-                    val updatedItems = oldItems.filter { it.itemId != result.changes.itemId } + result.changes
-                    draft.copy(items = updatedItems)
+                    draft.updateItem(result.changes)
                 }
             }
         }

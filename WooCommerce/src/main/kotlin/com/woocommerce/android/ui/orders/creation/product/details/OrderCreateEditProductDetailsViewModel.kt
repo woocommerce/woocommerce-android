@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.HtmlUtils
 import java.math.BigDecimal
@@ -95,23 +96,25 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
         }
 
     fun onAddDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountCreate)
+        triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
     }
 
     fun onEditDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountEdit(item.value.discount))
+        triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
     }
 
     fun onCloseClicked() {
-        if (args.item != this.item.value) {
-            triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductDetailsEdited(this.item.value)))
-        } else {
-            triggerEvent(MultiLiveEvent.Event.Exit)
-        }
+        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductDetailsEdited(this.item.value)))
     }
 
-    fun onProductRemoved() {
+    fun onRemoveProductClicked() {
         triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.item.value)))
+    }
+
+    fun onDiscountEditResult(updatedOrderItem: Order.Item) {
+        item.update {
+            updatedOrderItem
+        }
     }
 
     data class ViewState(
@@ -141,8 +144,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     }
 
     sealed class NavigationTarget : MultiLiveEvent.Event() {
-        data class DiscountEdit(val discountAmount: BigDecimal) : MultiLiveEvent.Event()
-        object DiscountCreate : MultiLiveEvent.Event()
+        data class DiscountEdit(val item: Order.Item, val currency: String) : MultiLiveEvent.Event()
     }
 
     private companion object {
