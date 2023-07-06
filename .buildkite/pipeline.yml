@@ -39,10 +39,21 @@ steps:
     plugins: *common_plugins
 
   - label: "Unit tests"
+    key: "unit_tests"  
     command: .buildkite/commands/run-unit-tests.sh
     plugins: *common_plugins
     artifact_paths:
       - "**/build/test-results/*/*.xml"
+
+  - label: "🔍 Unit Tests Analytics"
+    command: buildkite-agent artifact download '**/*Test*.xml' . --step "unit_tests"
+    depends_on:
+      - "unit_tests"
+    plugins:
+      - test-collector#v1.8.0:
+          files: "**/*Test*.xml"
+          format: "junit"
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
 
   - label: "Ensure Screenshot Tests Build"
     command: |
@@ -63,8 +74,8 @@ steps:
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
 
-  - label: "🔍 Test Analytics"
-    command: buildkite-agent artifact download '**/test_result_1.xml' .
+  - label: "🔍 Instrumented Tests Analytics"
+    command: buildkite-agent artifact download '**/test_result_1.xml' . --step "instrumented_tests"
     depends_on:
       - "instrumented_tests"
     plugins:
