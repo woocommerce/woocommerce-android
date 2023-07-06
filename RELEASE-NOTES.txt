@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.4
 -----
-
+- [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product description for you. [https://github.com/woocommerce/woocommerce-android/issues/9214]
 
 14.3
 -----
