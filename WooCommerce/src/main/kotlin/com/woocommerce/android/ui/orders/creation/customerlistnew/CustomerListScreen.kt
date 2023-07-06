@@ -34,7 +34,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
@@ -124,7 +123,7 @@ fun CustomerListScreen(
                     onEndOfListReached,
                 )
             }
-        }.exhaustive
+        }
     }
 }
 
@@ -167,7 +166,7 @@ fun CustomerListLoaded(
                             .padding(vertical = dimensionResource(id = R.dimen.minor_100))
                     )
                 }
-            }.exhaustive
+            }
         }
     }
 
