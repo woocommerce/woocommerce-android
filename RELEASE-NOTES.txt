@@ -1,6 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.4
 -----
+- [*] Blaze: New Blaze banners added to My Store tab and product list tab. [https://github.com/woocommerce/woocommerce-android/issues/9332]
 
 
 14.3
