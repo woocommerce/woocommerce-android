@@ -15,8 +15,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -40,9 +44,11 @@ fun OrderCreateEditProductDiscountScreen(
 ) {
     Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked) }) { padding ->
         val state = viewState.collectAsState()
+        val focusRequester = remember { FocusRequester() }
         Box(modifier = Modifier.padding(padding)) {
             Column(Modifier.padding(dimensionResource(id = R.dimen.minor_100))) {
                 WCOutlinedTextField(
+                    modifier = Modifier.focusRequester(focusRequester),
                     value = state.value.discountAmount,
                     onValueChange = onDiscountAmountChange,
                     label = stringResource(
@@ -58,6 +64,9 @@ fun OrderCreateEditProductDiscountScreen(
                     onClick = onRemoveDiscountClicked
                 ) {
                     Text(stringResource(id = R.string.order_creation_remove_discount))
+                }
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
                 }
             }
         }
