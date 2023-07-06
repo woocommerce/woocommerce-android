@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
@@ -45,6 +46,7 @@ class AztecEditorFragment :
     }
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
+    @Inject lateinit var isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
 
     private lateinit var aztec: Aztec
 
@@ -69,6 +71,7 @@ class AztecEditorFragment :
         }
 
         with(binding.aiButton) {
+            visibility = if (isAIProductDescriptionEnabled()) View.VISIBLE else View.GONE
             setOnClickListener {
                 onAIButtonClicked()
             }
