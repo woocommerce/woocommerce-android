@@ -51,7 +51,7 @@ class BarcodeScanningFragment : BaseFragment() {
                 WooThemeWithBackground {
                     val (permissionState, cameraPermissionLauncher) = observeCameraPermissionState()
                     LaunchedEffect(key1 = Unit) {
-                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        cameraPermissionLauncher.launch(KEY_CAMERA_PERMISSION)
                     }
                     HandleCameraPermissionState(permissionState)
                     ObserveViewModelEvents(cameraPermissionLauncher)
@@ -75,7 +75,7 @@ class BarcodeScanningFragment : BaseFragment() {
             onResult = { granted ->
                 viewModel.updatePermissionState(
                     granted,
-                    shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
+                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
                 )
             }
         )
@@ -120,7 +120,7 @@ class BarcodeScanningFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 BarcodeScanningViewModel.ScanningEvents.LaunchCameraPermission -> {
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    cameraPermissionLauncher.launch(KEY_CAMERA_PERMISSION)
                 }
                 BarcodeScanningViewModel.ScanningEvents.OpenAppSettings -> {
                     openAppSettings()
@@ -177,5 +177,6 @@ class BarcodeScanningFragment : BaseFragment() {
 
     companion object {
         const val KEY_BARCODE_SCANNING_SCAN_STATUS = "barcode_scanning_scan_status"
+        const val KEY_CAMERA_PERMISSION = Manifest.permission.CAMERA
     }
 }
