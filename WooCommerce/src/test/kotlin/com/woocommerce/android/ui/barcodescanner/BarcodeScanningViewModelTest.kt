@@ -162,4 +162,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).message
         ).isEqualTo(R.string.barcode_scanning_alert_dialog_permanently_denied_message)
     }
+
+    @Test
+    fun `given camera permission not granted and should not show rationale, then dialog cta label is correct`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = false
+        )
+
+        assertThat(
+            (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaLabel
+        ).isEqualTo(R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label)
+    }
 }
