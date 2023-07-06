@@ -83,6 +83,9 @@ class ProductDetailCardBuilder(
         const val MAXIMUM_TIMES_TO_SHOW_TOOLTIP = 3
     }
 
+    private val onTooltipDismiss = { appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true }
+
+
     suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
 
         this.originalSku = originalSku
@@ -631,7 +634,7 @@ class ProductDetailCardBuilder(
                     title = string.ai_product_description_tooltip_title,
                     text = string.ai_product_description_tooltip_message,
                     dismissButtonText = string.ai_product_description_tooltip_dismiss,
-                    onDismiss = { onTooltipDismiss() }
+                    onDismiss = onTooltipDismiss
                 )
             } else {
                 null
@@ -650,10 +653,6 @@ class ProductDetailCardBuilder(
             )
         }
         return properties
-    }
-
-    private fun onTooltipDismiss() {
-        appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true
     }
 
     // show product variations only if product type is variable and if there are variations for the product
