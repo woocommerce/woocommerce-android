@@ -62,6 +62,9 @@ open class Screen {
 
         // hide the promo dialog because it breaks the tests
         AppPrefs.wasAIProductDescriptionPromoDialogShown = true
+
+        // also hide AI description tooltip to make test more simple
+        AppPrefs.isAIProductDescriptionTooltipDismissed = true
     }
 
     open fun recover() = Unit
@@ -392,23 +395,6 @@ open class Screen {
                 atLeastOneElementIsDisplayed(elementId)
             }
         )
-    }
-
-    fun waitForAnyElementToBeDisplayed(vararg elementIds: Int): Int? {
-        var displayedElementId: Int? = null
-        waitForConditionToBeTrue(
-            Supplier {
-                elementIds.any { id ->
-                    if (isElementDisplayed(id)) {
-                        displayedElementId = id
-                        true
-                    } else {
-                        false
-                    }
-                }
-            }
-        )
-        return displayedElementId
     }
 
     // MATCHERS
