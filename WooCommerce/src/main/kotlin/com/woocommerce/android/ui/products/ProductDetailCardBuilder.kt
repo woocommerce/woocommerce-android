@@ -630,7 +630,7 @@ class ProductDetailCardBuilder(
                 Button.Tooltip(
                     title = string.ai_product_description_tooltip_title,
                     text = string.ai_product_description_tooltip_message,
-                    primaryButtonText = string.ai_product_description_tooltip_dismiss,
+                    dismissButtonText = string.ai_product_description_tooltip_dismiss,
                     onDismiss = { onTooltipDismiss() }
                 )
             } else {
