@@ -394,12 +394,21 @@ open class Screen {
         )
     }
 
-    fun waitForAnyElementToBeDisplayed(vararg elementIDs: Int) {
+    fun waitForAnyElementToBeDisplayed(vararg elementIds: Int): Int? {
+        var displayedElementId: Int? = null
         waitForConditionToBeTrue(
             Supplier {
-                elementIDs.any { isElementDisplayed(it) }
+                elementIds.any { id ->
+                    if (isElementDisplayed(id)) {
+                        displayedElementId = id
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
         )
+        return displayedElementId
     }
 
     // MATCHERS

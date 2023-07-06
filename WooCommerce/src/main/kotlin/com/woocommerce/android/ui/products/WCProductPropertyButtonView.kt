@@ -56,12 +56,12 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
 
         popupBinding.tooltipTitle.text = context.getString(tooltip.title)
         popupBinding.tooltipMessage.text = context.getString(tooltip.text)
-        popupBinding.tooltipDismissButton.text = context.getString(tooltip.primaryButtonText)
+        popupBinding.tooltipPrimaryButton.text = context.getString(tooltip.primaryButtonText)
 
         tooltip.onPrimaryButtonClick?.let {
-            popupBinding.tooltipDismissButton.setOnClickListener { it() }
+            popupBinding.tooltipPrimaryButton.setOnClickListener { it() }
         } ?: run {
-            popupBinding.tooltipDismissButton.setOnClickListener { popupWindow.dismiss() }
+            popupBinding.tooltipPrimaryButton.setOnClickListener { popupWindow.dismiss() }
         }
 
         // Make the popupWindow dismissible by clicking outside of it.

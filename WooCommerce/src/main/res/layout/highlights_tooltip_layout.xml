@@ -40,7 +40,7 @@
 
         <com.google.android.material.button.MaterialButton
             style="@style/Woo.Button.TextButton"
-            android:id="@+id/tooltip_dismiss_button"
+            android:id="@+id/tooltip_primary_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/woo_purple_40"

@@ -27,7 +27,12 @@ class ProductListScreen : Screen {
 
     fun selectProductByName(productName: String): SingleProductScreen {
         selectListItem(productName, LIST_VIEW)
-        waitForAnyElementToBeDisplayed(R.id.highlights_tooltip_root, R.id.productDetail_root)
+        val displayedElement = waitForAnyElementToBeDisplayed(R.id.highlights_tooltip_root, R.id.productDetail_root)
+        displayedElement?.let {
+            if (it == R.id.highlights_tooltip_root) {
+                clickOn(R.id.tooltip_primary_button)
+            }
+        }
         return SingleProductScreen()
     }
 
