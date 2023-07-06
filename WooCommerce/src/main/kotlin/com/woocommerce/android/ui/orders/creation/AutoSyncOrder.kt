@@ -19,7 +19,8 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
                 // TODO M3: we need probably to compare the totals too, to account for discounts
                 this.productId == newItem.productId &&
                     this.variationId == newItem.variationId &&
-                    this.quantity == newItem.quantity
+                    this.quantity == newItem.quantity &&
+                    this.total == newItem.total
             }
 
         val hasSameShippingLines = old.shippingLines
