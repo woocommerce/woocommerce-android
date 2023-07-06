@@ -1018,7 +1018,7 @@ object AppPrefs {
 
     fun incrementAIDescriptionTooltipShownNumber() {
         val currentTotal = getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
-        return setInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, currentTotal + 1)
+        setInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, currentTotal + 1)
     }
 
     fun getAIDescriptionTooltipShownNumber() =
