@@ -20,7 +20,11 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val args = OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val orderItem = savedStateHandle.getStateFlow(scope = this, initialValue = args.item, key = "key_item")
-    private val discount = savedStateHandle.getStateFlow(scope = this, initialValue = getInitialDiscountString(), key = "key_discount")
+    private val discount = savedStateHandle.getStateFlow(
+        scope = this,
+        initialValue = getInitialDiscountString(),
+        key = "key_discount"
+    )
 
     private val currency = Currency.getInstance(args.currency).symbol
 
@@ -69,5 +73,5 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountAmount: String,
     )
 
-    data class ReturnDiscountResult(val item: Order.Item): MultiLiveEvent.Event()
+    data class ReturnDiscountResult(val item: Order.Item) : MultiLiveEvent.Event()
 }
