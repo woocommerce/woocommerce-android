@@ -395,7 +395,6 @@ class ProductListFragment :
     @Suppress("LongMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown == false) { setUpBlazeBanner() }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -451,6 +450,9 @@ class ProductListFragment :
 
         viewModel.productList.observe(viewLifecycleOwner) {
             showProductList(it)
+            if (it.isNotEmpty()) {
+                setUpBlazeBanner()
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
