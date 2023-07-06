@@ -27,9 +27,7 @@ class ProductListScreen : Screen {
 
     fun selectProductByName(productName: String): SingleProductScreen {
         selectListItem(productName, LIST_VIEW)
-        waitForElementToBeDisplayed(R.id.highlights_tooltip_root)
-        clickOn(R.id.tooltip_dismiss_button)
-        waitForElementToBeDisplayed(R.id.productDetail_root)
+        waitForAnyElementToBeDisplayed(R.id.highlights_tooltip_root, R.id.productDetail_root)
         return SingleProductScreen()
     }
 

@@ -394,6 +394,14 @@ open class Screen {
         )
     }
 
+    fun waitForAnyElementToBeDisplayed(vararg elementIDs: Int) {
+        waitForConditionToBeTrue(
+            Supplier {
+                elementIDs.any { isElementDisplayed(it) }
+            }
+        )
+    }
+
     // MATCHERS
     private fun first(): FirstMatcher {
         return FirstMatcher()
