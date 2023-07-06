@@ -1628,7 +1628,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given hub flow with ttp when ttp is not available, when view model initiated, then handled by ttp availibility handler`() {
+    fun `given hub flow with ttp when ttp is not available, when view model initiated, then handled by ttp availability handler`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
