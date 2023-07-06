@@ -9,12 +9,16 @@ import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.woocommerce.android.databinding.HighlightsTooltipLayoutBinding
 import com.woocommerce.android.databinding.ProductPropertyButtonViewLayoutBinding
+import org.wordpress.android.util.DisplayUtils
 
 class WCProductPropertyButtonView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
+    companion object {
+        const val TOOLTIP_VERTICAL_OFFSET = -8
+    }
     private val binding = ProductPropertyButtonViewLayoutBinding.inflate(LayoutInflater.from(context), this)
 
     fun show(
@@ -41,7 +45,11 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
         popupWindow.isFocusable = true
 
         // Show the PopupWindow below the button
-        popupWindow.showAsDropDown(binding.productButton)
+        popupWindow.showAsDropDown(
+            binding.productButton,
+            0,
+            DisplayUtils.dpToPx(context, TOOLTIP_VERTICAL_OFFSET)
+        )
     }
 
     fun show(
@@ -66,3 +74,4 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
         showPopupWindow(popupBinding)
     }
 }
+
