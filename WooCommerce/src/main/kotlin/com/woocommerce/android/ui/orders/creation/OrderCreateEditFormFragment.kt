@@ -104,10 +104,10 @@ class OrderCreateEditFormFragment :
             initView()
         }
         handleCouponEditResult()
-        listenForProductDetailsEditResult()
+        handleProductDetailsEditResult()
     }
 
-    private fun listenForProductDetailsEditResult() {
+    private fun handleProductDetailsEditResult() {
         handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
             viewModel.onProductDetailsEditResult(it)
         }
