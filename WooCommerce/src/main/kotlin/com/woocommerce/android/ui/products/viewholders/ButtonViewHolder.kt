@@ -17,9 +17,6 @@ class ButtonViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
 
         val text = context.getString(button.text)
         val icon = button.icon?.let { AppCompatResources.getDrawable(context, it) }
-//        val tooltipTitle = button.tooltip?.title?.let { context.getString(it) }
-//        val tooltipText = button.tooltip?.text?.let { context.getString(it) }
-//        val tooltipIcon = button.tooltip?.icon?.let { AppCompatResources.getDrawable(context, it) }
 
         if (button.link != null) {
             val linkText = HtmlCompat.fromHtml(context.getString(button.link.text), HtmlCompat.FROM_HTML_MODE_LEGACY)
