@@ -251,6 +251,6 @@
     <!--
     Highlight tooltip
     -->
-    <color name="highlights_tooltip_background">#2C2C2E</color>
+    <color name="highlights_tooltip_background">@color/woo_gray_80</color>
     <color name="highlights_tooltip_title">@color/woo_white</color>
 </resources>
