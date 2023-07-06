@@ -110,7 +110,7 @@ class ProductDetailCardBuilder(
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
         val showTooltip = product.description.isEmpty() &&
             !appPrefsWrapper.isAIProductDescriptionTooltipDismissed &&
-            appPrefsWrapper.getAIDescriptionTooltipShownNumber() < MAXIMUM_TIMES_TO_SHOW_TOOLTIP
+            appPrefsWrapper.getAIDescriptionTooltipShownNumber() <= MAXIMUM_TIMES_TO_SHOW_TOOLTIP
         return ProductPropertyCard(
             type = PRIMARY,
             properties = (
