@@ -18,7 +18,6 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -108,7 +107,6 @@ class OrderListViewModel @Inject constructor(
     private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
     private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val appPrefs: AppPrefs,
     private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
@@ -429,7 +427,7 @@ class OrderListViewModel @Inject constructor(
                 !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
                     viewState = viewState.copy(
                         ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-                        jitmEnabled = appPrefs.isTapToPayEnabled
+                        jitmEnabled = true
                     )
                 }
             }

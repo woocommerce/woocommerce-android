@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.taptopay
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.connection.ReaderType
@@ -12,7 +11,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class TapToPayAvailabilityStatus @Inject constructor(
-    private val appPrefs: AppPrefs = AppPrefs,
     private val selectedSite: SelectedSite,
     private val deviceFeatures: DeviceFeatures,
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
@@ -21,7 +19,6 @@ class TapToPayAvailabilityStatus @Inject constructor(
 ) {
     operator fun invoke() =
         when {
-            !appPrefs.isTapToPayEnabled -> Result.NotAvailable.TapToPayDisabled
             !systemVersionUtilsWrapper.isAtLeastQ() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
@@ -40,7 +37,6 @@ class TapToPayAvailabilityStatus @Inject constructor(
     sealed class Result {
         object Available : Result()
         sealed class NotAvailable : Result() {
-            object TapToPayDisabled : NotAvailable()
             object SystemVersionNotSupported : NotAvailable()
             object GooglePlayServicesNotAvailable : NotAvailable()
             object NfcNotAvailable : NotAvailable()

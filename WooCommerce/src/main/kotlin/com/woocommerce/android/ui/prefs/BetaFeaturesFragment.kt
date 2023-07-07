@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.prefs
 import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -36,7 +35,6 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         with(FragmentSettingsBetaBinding.bind(view)) {
             bindProductAddonsToggle()
-            bindTapToPayToggle()
         }
     }
 
@@ -53,19 +51,6 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
             settingsListener?.onProductAddonsOptionChanged(isChecked)
                 ?: handleToggleChangeFailure(switch, isChecked)
-        }
-    }
-
-    private fun FragmentSettingsBetaBinding.bindTapToPayToggle() {
-        if (tapToPayEnabled()) {
-            switchTapToPayToggle.isVisible = true
-            switchTapToPayToggle.isChecked = AppPrefs.isTapToPayEnabled
-            switchTapToPayToggle.setOnCheckedChangeListener { switch, isChecked ->
-                settingsListener?.onTapToPayOptionChanged(isChecked)
-                    ?: handleToggleChangeFailure(switch, isChecked)
-            }
-        } else {
-            switchTapToPayToggle.isVisible = false
         }
     }
 
