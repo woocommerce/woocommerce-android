@@ -31,7 +31,6 @@ repositories {
         url 'https://a8c-libs.s3.amazonaws.com/android'
         content {
             includeGroup "org.wordpress"
-            includeGroup "org.wordpress.aztec"
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
             includeGroup "org.wordpress.wellsql"
@@ -251,8 +250,17 @@ dependencies {
         exclude group: "org.wordpress", module: "fluxc"
     }
 
-    api "org.wordpress:aztec:$aztecVersion"
-    implementation "org.wordpress.aztec:glide-loader:$aztecVersion"
+    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:$aztecVersion") {
+        exclude group: "com.android.volley"
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+
+    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:glide-loader:$aztecVersion") {
+        exclude group: "com.android.volley"
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
 
     implementation project(":libs:cardreader")
     implementation project(":libs:iap")
