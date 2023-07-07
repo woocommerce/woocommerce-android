@@ -11,17 +11,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_BETA_FEATURES_SWITCH_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsBetaBinding
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayEnabled
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
-    @Inject
-    lateinit var tapToPayEnabled: IsTapToPayEnabled
-
     companion object {
         const val TAG = "beta-features"
     }
