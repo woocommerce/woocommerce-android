@@ -111,6 +111,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -126,6 +127,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
+    private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -990,9 +992,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 onRemoveProduct(result.item)
             }
             is ProductDetailsEditResult.ProductDetailsEdited -> {
-                _orderDraft.update { draft ->
-                    draft.updateItem(result.changes)
+                if (calculateItemDiscountAmount(result.modifiedItem) > BigDecimal.ZERO && _orderDraft.value.couponLines.isNotEmpty()) {
+                    triggerEvent(ShowSnackbar(string.order_creation_discount_with_coupon_error))
                 }
+                _orderDraft.value = _orderDraft.value.updateItem(result.modifiedItem)
             }
         }
     }

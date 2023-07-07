@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -77,7 +77,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             val total = subtotal - (discount.value.toBigDecimal() * it.quantity.toBigDecimal())
             it.copy(total = total)
         }.also {
-            triggerEvent(ReturnDiscountResult(item = it))
+            triggerEvent(ExitWithResult(data = it))
         }
     }
 
@@ -85,7 +85,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         orderItem.updateAndGet {
             it.copy(total = it.subtotal)
         }.also {
-            triggerEvent(ReturnDiscountResult(item = it))
+            triggerEvent(ExitWithResult(data = it))
         }
     }
 
@@ -107,6 +107,4 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         object Valid : DiscountAmountValidationState()
         data class Invalid(val errorMessage: String) : DiscountAmountValidationState()
     }
-
-    data class ReturnDiscountResult(val item: Order.Item) : MultiLiveEvent.Event()
 }

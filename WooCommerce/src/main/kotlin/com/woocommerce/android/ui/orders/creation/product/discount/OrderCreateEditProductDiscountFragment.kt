@@ -12,7 +12,8 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,11 +44,11 @@ class OrderCreateEditProductDiscountFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is OrderCreateEditProductDiscountViewModel.ReturnDiscountResult -> {
-                    navigateBackWithResult(KEY_PRODUCT_DISCOUNT_RESULT, it.item)
+                is ExitWithResult<*> -> {
+                    navigateBackWithResult(KEY_PRODUCT_DISCOUNT_RESULT, it.data)
                 }
 
-                is MultiLiveEvent.Event.Exit -> {
+                is Exit -> {
                     findNavController().popBackStack()
                 }
             }
