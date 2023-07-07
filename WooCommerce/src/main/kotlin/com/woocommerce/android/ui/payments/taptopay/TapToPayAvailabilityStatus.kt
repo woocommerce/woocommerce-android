@@ -22,17 +22,19 @@ class TapToPayAvailabilityStatus @Inject constructor(
             !systemVersionUtilsWrapper.isAtLeastQ() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
-            !isTppSupportedInCountry(wooStore.getStoreCountryCode(selectedSite.get())) ->
-                Result.NotAvailable.CountryNotSupported
+            !isTppSupportedInCountry() -> Result.NotAvailable.CountryNotSupported
 
             else -> Result.Available
         }
 
-    private fun isTppSupportedInCountry(countryCode: String?) =
-        when (val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)) {
+    private fun isTppSupportedInCountry(): Boolean {
+        val selectedSite = selectedSite.getIfExists() ?: return false
+        val countryCode = wooStore.getStoreCountryCode(selectedSite)
+        return when (val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)) {
             is CardReaderConfigForSupportedCountry -> config.supportedReaders.any { it is ReaderType.BuildInReader }
             CardReaderConfigForUnsupportedCountry -> false
         }
+    }
 
     sealed class Result {
         object Available : Result()

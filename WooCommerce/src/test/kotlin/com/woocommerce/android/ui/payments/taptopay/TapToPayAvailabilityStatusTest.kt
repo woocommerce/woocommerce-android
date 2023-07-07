@@ -25,7 +25,7 @@ class TapToPayAvailabilityStatusTest {
     }
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
-        on { get() }.thenReturn(siteModel)
+        on { getIfExists() }.thenReturn(siteModel)
     }
     private val wooStore: WooCommerceStore = mock {
         on { getStoreCountryCode(siteModel) }.thenReturn("US")
