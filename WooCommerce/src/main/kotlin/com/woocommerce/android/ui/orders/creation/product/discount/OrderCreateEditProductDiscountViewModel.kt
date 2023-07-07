@@ -32,16 +32,19 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     private val currency = Currency.getInstance(args.currency).symbol
 
-    private fun getInitialDiscountString() = args.item.let {
-        val itemDiscount = calculateItemDiscountAmount(it)
-        if (itemDiscount > BigDecimal.ZERO) itemDiscount.toString() else ""
+    private fun getInitialDiscountString(): String {
+        val itemDiscount = getInitialDiscountAmount()
+        return if (itemDiscount > BigDecimal.ZERO) itemDiscount.toString() else ""
     }
+
+    private fun getInitialDiscountAmount() = calculateItemDiscountAmount(args.item)
 
     val viewState: StateFlow<ViewState> = discount.map {
         ViewState(
             currency = currency,
             discountAmount = it,
-            discountValidationState = checkDiscountValidationState(it)
+            discountValidationState = checkDiscountValidationState(it),
+            isRemoveButtonVisible = getInitialDiscountAmount() > BigDecimal.ZERO
         )
     }.toStateFlow(ViewState("", ""))
 
@@ -96,6 +99,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountAmount: String,
         val discountValidationState: DiscountAmountValidationState = DiscountAmountValidationState.Valid,
         val isDoneButtonEnabled: Boolean = discountValidationState is DiscountAmountValidationState.Valid,
+        val isRemoveButtonVisible: Boolean = false,
     )
 
     sealed class DiscountAmountValidationState {
