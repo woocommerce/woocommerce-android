@@ -138,7 +138,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     @Parcelize
     sealed class ProductDetailsEditResult : Parcelable {
         @Parcelize
-        data class ProductDetailsEdited(val changes: Order.Item) : Parcelable, ProductDetailsEditResult()
+        data class ProductDetailsEdited(val modifiedItem: Order.Item) : Parcelable, ProductDetailsEditResult()
         @Parcelize
         data class ProductRemoved(val item: Order.Item) : Parcelable, ProductDetailsEditResult()
     }
