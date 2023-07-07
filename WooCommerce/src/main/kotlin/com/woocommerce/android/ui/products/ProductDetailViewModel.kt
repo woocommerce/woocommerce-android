@@ -235,7 +235,8 @@ class ProductDetailViewModel @Inject constructor(
             parameters,
             addonRepository,
             variationRepository,
-            isAIProductDescriptionEnabled
+            isAIProductDescriptionEnabled,
+            appPrefsWrapper
         )
     }
 

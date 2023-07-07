@@ -111,6 +111,8 @@ object AppPrefs {
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
         WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+        IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+        NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
     }
 
     /**
@@ -1003,6 +1005,24 @@ object AppPrefs {
             key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
             value = value
         )
+
+    var isAIProductDescriptionTooltipDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+            value = value
+        )
+
+    fun incrementAIDescriptionTooltipShownNumber() {
+        val currentTotal = getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
+        setInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, currentTotal + 1)
+    }
+
+    fun getAIDescriptionTooltipShownNumber() =
+        getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
         setString(
