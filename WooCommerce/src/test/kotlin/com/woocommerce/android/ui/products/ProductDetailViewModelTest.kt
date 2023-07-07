@@ -54,6 +54,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -80,7 +81,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productTagsRepository: ProductTagsRepository = mock()
     private val mediaFilesRepository: MediaFilesRepository = mock()
     private val variationRepository: VariationRepository = mock()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel()
+    }
+
     private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
