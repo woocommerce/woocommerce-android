@@ -138,7 +138,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun isTapToPayAvailable(): Boolean {
         val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
-            cardReaderTracker.trackTapToPayNotAvailableReason(result)
+            cardReaderTracker.trackTapToPayNotAvailableReason(result, SOURCE)
             false
         } else {
             true
@@ -371,7 +371,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
+        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -386,6 +386,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         const val UTM_CAMPAIGN = "feature_announcement_card"
         const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
-        const val LEARN_MORE_SOURCE = "payment_methods"
+        private const val SOURCE = "payment_methods"
     }
 }

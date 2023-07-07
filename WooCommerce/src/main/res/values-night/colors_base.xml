@@ -178,4 +178,10 @@
     <color name="free_trial_component_text">@color/woo_purple_40</color>
     <color name="free_trial_banner_content">@color/color_on_surface</color>
 
+    <!--
+    Highlight tooltip
+    -->
+    <color name="highlights_tooltip_background">@color/color_surface_elevated</color>
+    <color name="highlights_tooltip_title">@color/color_on_surface</color>
+
 </resources>
