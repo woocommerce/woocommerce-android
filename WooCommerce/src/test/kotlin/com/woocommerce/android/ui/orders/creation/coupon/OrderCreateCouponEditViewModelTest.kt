@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.coupon
 
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -184,7 +185,12 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
 
         sut.onDoneClicked()
 
-        assertEquals(OrderCreateCouponEditViewModel.ValidationState.ERROR, latestViewState?.validationState)
+        assertEquals(
+            OrderCreateCouponEditViewModel.ValidationState.Error(
+                R.string.order_creation_coupon_invalid_code
+            ),
+            latestViewState?.validationState
+        )
     }
 
     @Test
@@ -214,13 +220,18 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
             latestViewState = it
         }
         sut.onDoneClicked()
-        assertEquals(OrderCreateCouponEditViewModel.ValidationState.ERROR, latestViewState?.validationState)
+        assertEquals(
+            OrderCreateCouponEditViewModel.ValidationState.Error(
+                message = R.string.order_creation_coupon_invalid_code
+            ),
+            latestViewState?.validationState
+        )
 
         // when
         sut.onCouponCodeChanged("new code")
 
         // then
-        assertEquals(OrderCreateCouponEditViewModel.ValidationState.IDLE, latestViewState?.validationState)
+        assertEquals(OrderCreateCouponEditViewModel.ValidationState.Idle, latestViewState?.validationState)
     }
 
     @Test
