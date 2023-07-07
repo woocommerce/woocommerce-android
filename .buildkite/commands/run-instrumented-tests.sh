@@ -27,4 +27,9 @@ else
     annotate_test_failures "$results_file"
 fi
 
+echo "--- 🧪 Copying test logs for test collector"
+mkdir WooCommerce/build/buildkite-test-analytics && cp **/Pixel2.arm-30-en-portrait/test_result_1.xml WooCommerce/build/buildkite-test-analytics
+
+# build/instrumented-tests/2023-07-10_13:38:07.827714_TrzM/Pixel2.arm-30-en-portrait/test_result_1.xml
+
 exit $TESTS_EXIT_STATUS
