@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.android.volley.VolleyLog
-import com.woocommerce.android.analytics.TracksAnalyticsBridge
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.extensions.getCurrentProcessName
 import com.woocommerce.shared.library.AnalyticsBridge
@@ -61,9 +61,11 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
         private const val TAP_TO_PAY_STRIPE_PROCESS_NAME = "com.stripe.cots.aidlservice"
     }
 
-    @Inject lateinit var tracksAnalyticsBridge: TracksAnalyticsBridge
-
     override fun provideAnalyticsBridge(): AnalyticsBridge {
-        return tracksAnalyticsBridge
+        return object : AnalyticsBridge {
+            override fun sendEvent(event: String) {
+                AnalyticsTracker.track(event)
+            }
+        }
     }
 }
