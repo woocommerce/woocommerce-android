@@ -58,39 +58,20 @@ class AnalyticsTracker private constructor(private val context: Context) {
         return uuid
     }
 
-    private fun track(eventName: String, properties: Map<String, *>) {
-        if (tracksClient == null) {
-            return
-        }
-
-        val user = username ?: getAnonID() ?: generateNewAnonID()
-
-        val userType = if (username != null) {
-            TracksClient.NosaraUserType.WPCOM
-        } else {
-            TracksClient.NosaraUserType.ANON
-        }
-
-        val finalProperties = properties.toMutableMap()
-
-        finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-
-        val propertiesJson = JSONObject(finalProperties)
-        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
-
-        if (propertiesJson.length() > 0) {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
-        } else {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
-        }
+    private fun track(stat: String) {
+        track(stat, false, emptyMap<String, String>())
     }
 
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
+        track(stat.name, stat.siteless, properties)
+    }
+
+    private fun track(statName: String, isSiteless: Boolean, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
 
-        val eventName = stat.name.lowercase(Locale.getDefault())
+        val eventName = statName.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -102,7 +83,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val finalProperties = properties.toMutableMap()
 
-        if (!stat.siteless) {
+        if (!isSiteless) {
             site?.let {
                 finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
@@ -597,7 +578,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         fun track(stat: String) {
             if (sendUsageStats) {
-                instance?.track(stat, emptyMap<String, String>())
+                instance?.track(stat)
             }
         }
 
