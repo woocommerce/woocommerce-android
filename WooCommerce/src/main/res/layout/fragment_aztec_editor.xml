@@ -6,19 +6,37 @@
     android:layout_height="match_parent"
     android:background="@color/color_surface">
 
-    <org.wordpress.aztec.toolbar.AztecToolbar
-        android:id="@+id/aztecToolbar"
+    <LinearLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/min_tap_target"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/aiButton"
+            style="@style/FormatBarButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/box_button_bg"
+            android:padding="@dimen/minor_100"
+            android:contentDescription="@string/ai_product_toolbar_button_tooltip"
+            android:src="@drawable/ic_ai" />
+
+        <org.wordpress.aztec.toolbar.AztecToolbar
+            android:id="@+id/aztecToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/min_tap_target" />
+
+    </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/aztecToolbar"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

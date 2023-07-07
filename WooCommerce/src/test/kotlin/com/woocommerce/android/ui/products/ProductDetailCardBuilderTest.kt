@@ -40,7 +40,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             parameters = mock(),
             addonRepository = addonRepo,
             variationRepository = mock(),
-            isAIProductDescriptionEnabled = mock()
+            isAIProductDescriptionEnabled = mock(),
+            appPrefsWrapper = mock(),
         )
     }
 
