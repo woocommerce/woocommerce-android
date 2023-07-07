@@ -106,24 +106,4 @@ class CardReaderHubTapToPayUnavailableHandlerTest {
         assertThat(captor.firstValue.positiveButtonId).isEqualTo(R.string.card_reader_upsell_card_reader_banner_cta)
         assertThat(captor.firstValue.negativeButtonId).isEqualTo(R.string.close)
     }
-
-    @Test
-    fun `given TapToPayNotEnabled, when handleTTPUnavailable, then triggers showtoast event`() {
-        // GIVEN
-        val status = TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
-
-        // WHEN
-        handler.handleTTPUnavailable(
-            status = status,
-            triggerEvent = triggerEvent,
-            positiveButtonClick = positiveButtonClick
-        )
-
-        // THEN
-        verify(triggerEvent).invoke(
-            CardReaderHubViewModel.CardReaderHubEvents.ShowToast(
-                R.string.card_reader_tap_to_pay_not_available_error
-            )
-        )
-    }
 }

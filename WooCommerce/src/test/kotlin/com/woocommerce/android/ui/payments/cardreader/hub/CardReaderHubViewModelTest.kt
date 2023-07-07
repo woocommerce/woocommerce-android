@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -1472,21 +1471,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
             assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         }
-
-    @Test
-    fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
-        // GIVEN
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayDisabled)
-
-        // WHEN
-        initViewModel()
-
-        // THEN
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
-        }
-    }
 
     @Test
     fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
