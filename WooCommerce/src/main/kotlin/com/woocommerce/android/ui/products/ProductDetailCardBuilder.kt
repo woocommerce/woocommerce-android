@@ -85,7 +85,6 @@ class ProductDetailCardBuilder(
 
     private val onTooltipDismiss = { appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true }
 
-
     suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
 
         this.originalSku = originalSku
