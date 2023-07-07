@@ -29,12 +29,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+
+private val decimalTextProcessor = BigDecimalTextFieldValueMapper(false)
 
 @Composable
 fun OrderCreateEditProductDiscountScreen(
@@ -53,7 +56,13 @@ fun OrderCreateEditProductDiscountScreen(
                 WCOutlinedTextField(
                     modifier = Modifier.focusRequester(focusRequester),
                     value = state.value.discountAmount,
-                    onValueChange = onDiscountAmountChange,
+                    onValueChange = {
+                        if (it.isNotEmpty()) {
+                            onDiscountAmountChange(decimalTextProcessor.transformText(state.value.discountAmount, it))
+                        } else {
+                            onDiscountAmountChange(it)
+                        }
+                    },
                     label = stringResource(
                         R.string.order_creation_discount_amount_with_currency,
                         state.value.currency
@@ -73,7 +82,7 @@ fun OrderCreateEditProductDiscountScreen(
                 )
                 if (discountValidationState is Invalid) {
                     Text(
-                        text  = discountValidationState.errorMessage,
+                        text = discountValidationState.errorMessage,
                         color = colorResource(id = R.color.woo_red_50),
                     )
                 }

@@ -35,7 +35,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val getItemDiscountAmountText: GetItemDiscountAmountText,
     private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
-    ) : ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
     private val args: OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
 
     private val currency = args.currency

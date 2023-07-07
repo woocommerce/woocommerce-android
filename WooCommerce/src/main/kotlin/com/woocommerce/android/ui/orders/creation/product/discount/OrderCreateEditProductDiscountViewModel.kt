@@ -48,6 +48,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         )
     }.toStateFlow(ViewState("", ""))
 
+    @Suppress("ReturnCount")
     private fun checkDiscountValidationState(discount: String): DiscountAmountValidationState {
         if (discount.isEmpty()) return DiscountAmountValidationState.Valid
 
@@ -109,4 +110,3 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     data class ReturnDiscountResult(val item: Order.Item) : MultiLiveEvent.Event()
 }
-
