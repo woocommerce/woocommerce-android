@@ -27,17 +27,15 @@ class CouponValidatorTest : BaseUnitTest() {
     }
     private val store: CouponStore = mock()
 
-
     @Test
     fun `given entered code, when coupon is found in store, then validator should mark coupon as valid`() =
         testBlocking {
-            val couponValidationResult = CouponValidator.CouponValidationResult.VALID
             whenever(store.searchCoupons(any(), any(), any(), any()))
                 .thenReturn(WooResult(generateSampleCouponSearchResponse("abc")))
 
             val sut = CouponValidator(selectedSite, store)
 
-            assertThat(sut.isCouponValid("abc")).isEqualTo(couponValidationResult)
+            assertThat(sut.isCouponValid("abc")).isEqualTo(CouponValidator.CouponValidationResult.VALID)
         }
 
     @Test
