@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_BANNER_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -57,6 +58,14 @@ class BlazeBannerViewModel @Inject constructor(
         )
         appPrefsWrapper.shouldHideBlazeBanner = true
         triggerEvent(DismissBlazeBannerEvent)
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                titleId = R.string.blaze_banner_dismiss_dialog_title,
+                messageId = R.string.blaze_banner_dismiss_dialog_description,
+                positiveButtonId = R.string.blaze_banner_dismiss_dialog_button,
+                positiveBtnAction = { dialog, _ -> dialog.dismiss() },
+            )
+        )
     }
 
     fun onTryBlazeBannerClicked() {
