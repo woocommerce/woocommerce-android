@@ -248,4 +248,9 @@
     -->
     <color name="creating_store_linear_progress_background">@color/woo_purple_0</color>
 
+    <!--
+    Highlight tooltip
+    -->
+    <color name="highlights_tooltip_background">@color/woo_gray_80</color>
+    <color name="highlights_tooltip_title">@color/woo_white</color>
 </resources>
