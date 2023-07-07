@@ -78,11 +78,13 @@ fun OrderCreateEditProductDiscountScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-                WCColoredButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onRemoveDiscountClicked
-                ) {
-                    Text(stringResource(id = R.string.order_creation_remove_discount))
+                if (state.value.isRemoveButtonVisible) {
+                    WCColoredButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onRemoveDiscountClicked
+                    ) {
+                        Text(stringResource(id = R.string.order_creation_remove_discount))
+                    }
                 }
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
