@@ -77,6 +77,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -111,7 +112,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -991,8 +991,11 @@ class OrderCreateEditViewModel @Inject constructor(
             is ProductDetailsEditResult.ProductRemoved -> {
                 onRemoveProduct(result.item)
             }
+
             is ProductDetailsEditResult.ProductDetailsEdited -> {
-                if (calculateItemDiscountAmount(result.modifiedItem) > BigDecimal.ZERO && _orderDraft.value.couponLines.isNotEmpty()) {
+                if (calculateItemDiscountAmount(result.modifiedItem) > BigDecimal.ZERO &&
+                    _orderDraft.value.couponLines.isNotEmpty()
+                ) {
                     triggerEvent(ShowSnackbar(string.order_creation_discount_with_coupon_error))
                 }
                 _orderDraft.value = _orderDraft.value.updateItem(result.modifiedItem)
@@ -1011,7 +1014,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean =
+            !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
 
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
