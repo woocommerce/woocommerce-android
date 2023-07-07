@@ -33,11 +33,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -60,6 +61,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -175,7 +177,7 @@ class ProductListFragment :
             if (!isVisible) binding.blazeBannerView.hide()
             else {
                 binding.blazeBannerView.apply {
-                    expand()
+                    show()
                     setContent {
                         WooThemeWithBackground {
                             BlazeBanner(
@@ -189,13 +191,18 @@ class ProductListFragment :
         }
 
         blazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            if (event is BlazeBannerViewModel.OpenBlazeEvent) {
-                findNavController().navigateSafely(
-                    NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
-                        urlToLoad = event.url,
-                        source = event.source
+            when (event) {
+                is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
+                is BlazeBannerViewModel.OpenBlazeEvent -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                            urlToLoad = event.url,
+                            source = event.source
+                        )
                     )
-                )
+                }
+
+                is ShowDialog -> event.showDialog()
             }
         }
     }
@@ -391,7 +398,6 @@ class ProductListFragment :
     @Suppress("LongMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown == false) { setUpBlazeBanner() }
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
@@ -447,6 +453,9 @@ class ProductListFragment :
 
         viewModel.productList.observe(viewLifecycleOwner) {
             showProductList(it)
+            if (it.isNotEmpty()) {
+                setUpBlazeBanner()
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->

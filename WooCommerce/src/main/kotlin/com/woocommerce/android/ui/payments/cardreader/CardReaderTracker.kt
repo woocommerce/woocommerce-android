@@ -469,10 +469,16 @@ class CardReaderTracker @Inject constructor(
         track(MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER)
     }
 
-    fun trackTapToPayNotAvailableReason(reason: NotAvailable) {
+    fun trackTapToPayNotAvailableReason(
+        reason: NotAvailable,
+        source: String,
+    ) {
         track(
             CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
-            properties = mutableMapOf(AnalyticsTracker.KEY_REASON to reason::class.java.simpleName)
+            properties = mutableMapOf(
+                AnalyticsTracker.KEY_REASON to reason::class.java.simpleName,
+                AnalyticsTracker.KEY_SOURCE to source,
+            )
         )
     }
 

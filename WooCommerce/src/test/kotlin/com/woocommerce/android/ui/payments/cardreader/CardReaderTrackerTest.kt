@@ -1117,8 +1117,9 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given TapToPayDisabled reason, when tracking tpp not available, then property TapToPayDisabled is recorded`() =
         testBlocking {
             val reason = NotAvailable.TapToPayDisabled
+            val source = "payment_method"
 
-            cardReaderTracker.trackTapToPayNotAvailableReason(reason)
+            cardReaderTracker.trackTapToPayNotAvailableReason(reason, source)
 
             val captor = argumentCaptor<Map<String, Any>>()
             verify(trackerWrapper).track(
@@ -1126,6 +1127,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 captor.capture(),
             )
             assertThat(captor.firstValue["reason"]).isEqualTo("TapToPayDisabled")
+            assertThat(captor.firstValue["source"]).isEqualTo(source)
         }
 
     @Test

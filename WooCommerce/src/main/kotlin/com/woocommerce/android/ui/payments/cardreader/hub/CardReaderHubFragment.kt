@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
@@ -117,6 +118,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                         .apply {
                             findNavController().navigateSafely(this)
                         }
+                }
+                is MultiLiveEvent.Event.ShowDialog -> {
+                    event.showDialog()
                 }
                 else -> event.isHandled = false
             }
