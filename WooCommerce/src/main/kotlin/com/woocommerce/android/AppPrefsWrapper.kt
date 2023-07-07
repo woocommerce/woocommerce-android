@@ -357,4 +357,6 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    var shouldHideBlazeBanner by AppPrefs::shouldHideBlazeBanner
 }
