@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.orders.creation.coupon.edit.CouponValidator.CouponValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -32,13 +33,13 @@ class OrderCreateCouponEditViewModel @Inject constructor(
 
     private val validationState = savedState.getNullableStateFlow(
         viewModelScope,
-        ValidationState.IDLE,
+        ValidationState.Idle,
         ValidationState::class.java,
         "key_validation_state"
     )
 
     val viewState = combine(couponCode, validationState) { code, validation ->
-        val isDoneButtonEnabled = code?.isNotNullOrEmpty() == true && validation == ValidationState.IDLE
+        val isDoneButtonEnabled = code?.isNotNullOrEmpty() == true && validation == ValidationState.Idle
         ViewState(
             isDoneButtonEnabled = isDoneButtonEnabled,
             couponCode = code ?: "",
@@ -49,13 +50,13 @@ class OrderCreateCouponEditViewModel @Inject constructor(
 
     suspend fun onDoneClicked() {
         validationState.update {
-            ValidationState.IN_PROGRESS
+            ValidationState.InProgress
         }
         val couponCode = couponCode.value
         when {
             couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.VALID -> {
                 validationState.update {
-                    ValidationState.IDLE
+                    ValidationState.Idle
                 }
                 val initialCouponCode = navArgs.couponCode
                 if (initialCouponCode.isNullOrEmpty()) {
@@ -67,21 +68,22 @@ class OrderCreateCouponEditViewModel @Inject constructor(
 
             couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.NETWORK_ERROR -> {
                 validationState.update {
-                    ValidationState.NETWORK_ERROR
+                    ValidationState.Error(R.string.order_creation_coupon_network_error)
                 }
             }
 
             else -> {
                 validationState.update {
-                    ValidationState.ERROR
+                    ValidationState.Error(R.string.order_creation_coupon_invalid_code)
                 }
                 viewState.value?.isDoneButtonEnabled = false
             }
         }
     }
+
     fun onCouponCodeChanged(newCode: String) {
         validationState.update {
-            ValidationState.IDLE
+            ValidationState.Idle
         }
         couponCode.update {
             newCode
@@ -98,10 +100,17 @@ class OrderCreateCouponEditViewModel @Inject constructor(
         var isDoneButtonEnabled: Boolean = false,
         val couponCode: String = "",
         val isRemoveButtonVisible: Boolean = false,
-        val validationState: ValidationState = ValidationState.IDLE,
+        val validationState: ValidationState = ValidationState.Idle,
     )
 
-    enum class ValidationState { IDLE, IN_PROGRESS, ERROR, NETWORK_ERROR }
+    @Parcelize
+    sealed class ValidationState : Parcelable {
+        object Idle : ValidationState()
+        object InProgress : ValidationState()
+        data class Error(
+            val message: Int,
+        ) : ValidationState()
+    }
 
     @Parcelize
     sealed class CouponEditResult : MultiLiveEvent.Event(), Parcelable {
