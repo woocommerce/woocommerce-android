@@ -854,7 +854,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayDisabled)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayDisabled, "payment_methods")
         }
 
     @Test
@@ -870,7 +870,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported, "payment_methods")
         }
 
     @Test
@@ -886,7 +886,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported, "payment_methods")
         }
 
     @Test
@@ -902,7 +902,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable, "payment_methods")
         }
 
     @Test
@@ -918,7 +918,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable, "payment_methods")
         }
 
     @Test
