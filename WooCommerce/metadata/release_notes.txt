@@ -1,1 +1,3 @@
-This release includes the option to add multiple coupons when creating an order. We've also made it super easy to search for a product by scanning the barcode or qr code. Check it out!
+- [*] Blaze: New Blaze banners added to My Store tab and product list tab. [https://github.com/woocommerce/woocommerce-android/issues/9332]
+- [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product description for you. [https://github.com/woocommerce/woocommerce-android/issues/9214]
+
