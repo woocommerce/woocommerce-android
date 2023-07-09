@@ -30,7 +30,6 @@ class CardReaderInteracRefundableCheckerTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-//        doReturn(false).whenever(repository).hasSubscriptionProducts(any())
         testBlocking {
             whenever(cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(any())).thenReturn(true)
         }

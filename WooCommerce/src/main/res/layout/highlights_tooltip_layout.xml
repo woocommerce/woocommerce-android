@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:id="@+id/highlights_tooltip_root">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/highlights_tooltip_pointer"
+        android:layout_gravity="start"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@null" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="@drawable/highlights_tooltip_body"
+        android:layout_marginTop="9dp">
+
+        <TextView
+            android:id="@+id/tooltip_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/highlights_tooltip_title_hint"
+            android:textColor="@color/highlights_tooltip_title"
+            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            android:layout_marginBottom="@dimen/minor_100"/>
+
+        <TextView
+            android:id="@+id/tooltip_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/highlights_tooltip_message_hint"
+            android:textColor="@color/woo_purple_dark_secondary"
+            android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+            android:layout_below="@id/tooltip_title"/>
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Woo.Button.TextButton"
+            android:id="@+id/tooltip_dismiss_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/woo_purple_40"
+            android:text="@string/highlights_tooltip_button_hint"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/tooltip_message"/>
+    </RelativeLayout>
+</FrameLayout>
