@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 09:54:03+0000
+Translation-Revision-Date: 2023-07-04 09:54:24+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">AI で簡単に説明を追加します。 今すぐこの機能をお試しください。</string>
+    <string name="ai_product_description_dialog_title">AI で商品説明を追加する</string>
+    <string name="ai_product_description_note_dialog_confirmation">OK</string>
+    <string name="ai_product_description_note_dialog_message">この商品説明は AI を活用したツールを使用して生成されています。 コンテンツを確認して編集し、ブランドやメッセージと合っていることを確認してください。</string>
+    <string name="ai_product_description_note_dialog_heading">良い出だしです !</string>
+    <string name="ai_product_description_feedback">が生成されました\n説明は役立つものですか ?</string>
+    <string name="ai_product_description_regenerate_button">再生成</string>
+    <string name="ai_product_description_survey">生成された説明は役立つものですか ?</string>
+    <string name="ai_product_description_hint">カスタマイズされた説明のキーワードを使用して商品の独自の機能と対象ユーザーを強調します。</string>
+    <string name="ai_product_description_example">例: 鉢植え、サボテン、植物、観賞用、お手入れ簡単</string>
+    <string name="ai_product_description_product_name">商品名を入力</string>
+    <string name="ai_product_description_title">説明を入力してください</string>
+    <string name="barcode_scanning_camera_permission_denied">バーコードをスキャンするにはカメラの権限が必要です。</string>
+    <string name="barcode_scanning_title">バーコードをスキャンする</string>
+    <string name="order_creation_customer_search_username">ユーザー名</string>
+    <string name="order_creation_customer_search_name">名前</string>
+    <string name="order_creation_customer_search_email">メールアドレス</string>
+    <string name="order_creation_customer_search_everything">すべて</string>
+    <string name="order_creation_customer_filter_hint">次の条件で顧客を絞り込む</string>
+    <string name="order_creation_coupons_title">適用されるクーポン</string>
+    <string name="more_settings">その他の設定</string>
+    <string name="maybe_later">後で確認する</string>
     <string name="product_sharing_regenerate">もう一度記入する</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#すべての販売に関する通知が届く:&lt;/b&gt; 即時の販売通知をお送りします。 新たな売上がある度に通知が届くことで、成功を祝い、常にストアのアクティビティを把握できるようになります。</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#ワンタッチで商品を追加および編集:&lt;/b&gt; 新しい商品の追加、詳細の更新、画像のアップロード、バリエーションの管理をすべてアプリから行います。在庫を簡単に最新の状態に保つことができます。</string>
