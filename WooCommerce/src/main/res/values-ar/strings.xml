@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-30 08:54:04+0000
+Translation-Revision-Date: 2023-07-03 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">أضف أوصاف في لمح البصر باستخدام الذكاء الاصطناعي. جرّب الميزة التي نطرحها الآن!</string>
+    <string name="ai_product_description_dialog_title">إضافة وصف المنتج باستخدام الذكاء الاصطناعي</string>
+    <string name="ai_product_description_note_dialog_confirmation">فهمت</string>
+    <string name="ai_product_description_note_dialog_message">ترجى مراعاة أن وصف هذا المنتج تم إنشاؤه باستخدام أداة لدينا مدعومة من الذكاء الاصطناعي. ترجى مراجعة المحتوى وتحريره لضمان محاذاته مع علامتك التجارية ورسائلك.</string>
+    <string name="ai_product_description_note_dialog_heading">بداية رائعة!</string>
+    <string name="ai_product_description_feedback">هل الوصف المنشأ\nمفيد؟</string>
+    <string name="ai_product_description_regenerate_button">إعادة الإنشاء</string>
+    <string name="ai_product_description_survey">هل الوصف المنشأ مفيد؟</string>
+    <string name="ai_product_description_hint">سلّط الضوء على ميزات منتجك الفريدة وجمهورك باستخدام الكلمات المفتاحية للحصول على وصف مخصص.</string>
+    <string name="ai_product_description_example">مثال: أصيص، صبار، نبات، تزييني، سهل العناية</string>
+    <string name="ai_product_description_product_name">إدخال اسم منتجك</string>
+    <string name="ai_product_description_title">كتابة وصف</string>
+    <string name="barcode_scanning_camera_permission_denied">تلزم صلاحية الكاميرا لمسح الرمز الشريطي.</string>
+    <string name="barcode_scanning_title">مسح الرمز الشريطي ضوئيًا</string>
+    <string name="order_creation_customer_search_username">اسم المستخدم</string>
+    <string name="order_creation_customer_search_name">الاسم</string>
+    <string name="order_creation_customer_search_email">البريد الإلكتروني</string>
+    <string name="order_creation_customer_search_everything">كل شيء</string>
+    <string name="order_creation_customer_filter_hint">تصفية العملاء حسب</string>
+    <string name="order_creation_coupons_title">تم تطبيق القسائم</string>
+    <string name="more_settings">مزيد من الإعدادات</string>
+    <string name="maybe_later">ربما لاحقًا</string>
     <string name="product_sharing_regenerate">الكتابة مجددًا</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#الحصول على تنبيه بكل عملية بيع:&lt;/b&gt; لا تفوّت شيئًا بفضل التنبيهات الفورية بعمليات البيع. استلم تنبيهات لكل عملية بيع جديدة، ما يسمح لك بالاحتفال بنجاحك والبقاء على اطلاع بكل نشاط في متجرك.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#أضف المنتجات وحررها بلمسة:&lt;/b&gt; أضف منتجات جديدة وحدِّث التفاصيل وارفع الصور وأدر التباينات، كل ذلك من التطبيق. حافظ على مخزونك محدَّثًا من دون عناء.</string>
