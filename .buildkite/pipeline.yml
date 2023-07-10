@@ -3,6 +3,11 @@ common_params:
   # Common plugin settings to use with the `plugins` key.
   - &common_plugins
     - automattic/a8c-ci-toolkit#2.17.0
+  - &common_plugins_with_test_collector
+    - automattic/a8c-ci-toolkit#2.17.0
+    - test-collector#v1.8.0:
+        files: "WooCommerce/build/buildkite-test-analytics/*.xml"
+        format: "junit"
 
 steps:
   - label: "Gradle Wrapper Validation"
@@ -40,12 +45,9 @@ steps:
 
   - label: "Unit tests"
     command: .buildkite/commands/run-unit-tests.sh
-    plugins: 
-      - automattic/a8c-ci-toolkit#2.17.0
-      - test-collector#v1.8.0:
-          files: "**/build/test-results/*/*.xml"
-          format: "junit"
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"      
+    plugins: *common_plugins_with_test_collector
+    env:
+      BUILDKITE_ANALYTICS_TOKEN: $BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS
     artifact_paths:
       - "**/build/test-results/*/*.xml"
 
@@ -63,11 +65,8 @@ steps:
 
   - label: "Instrumented tests"
     command: .buildkite/commands/run-instrumented-tests.sh
-    plugins: 
-      - automattic/a8c-ci-toolkit#2.17.0
-      - test-collector#v1.8.0:
-          files: "build/instrumented-tests/**/test_result_1.xml"
-          format: "junit"
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"    
+    plugins: *common_plugins_with_test_collector
+    env:
+      BUILDKITE_ANALYTICS_TOKEN: $BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS  
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
