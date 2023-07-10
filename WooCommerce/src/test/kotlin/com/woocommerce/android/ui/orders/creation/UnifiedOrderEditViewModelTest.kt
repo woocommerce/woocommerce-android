@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -69,6 +70,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     lateinit var productListRepository: ProductListRepository
+
+    private val calculateItemDiscountAmount = CalculateItemDiscountAmount()
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -1686,7 +1689,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             tracker = tracker,
             barcodeScanningTracker = barcodeScanningTracker,
             productRepository = productListRepository,
-            checkDigitRemoverFactory = checkDigitRemoverFactory
+            checkDigitRemoverFactory = checkDigitRemoverFactory,
+            calculateItemDiscountAmount = calculateItemDiscountAmount,
         )
     }
 

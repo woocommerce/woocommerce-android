@@ -10,10 +10,8 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import java.math.BigDecimal
-import java.util.Currency
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +19,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
+    currencySymbolFinder: CurrencySymbolFinder,
 ) : ScopedViewModel(savedStateHandle) {
     private val args =
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
@@ -29,8 +28,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     private val discount = savedStateHandle.getStateFlow(
         scope = this, initialValue = getInitialDiscountString(), key = "key_discount"
     )
-
-    private val currency = Currency.getInstance(args.currency).symbol
+    private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
 
     private fun getInitialDiscountString(): String {
         val itemDiscount = getInitialDiscountAmount()
@@ -90,9 +88,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     fun onDiscountAmountChange(newDiscount: String) {
-        discount.update { _ ->
-            newDiscount
-        }
+        discount.value = newDiscount
     }
 
     data class ViewState(
