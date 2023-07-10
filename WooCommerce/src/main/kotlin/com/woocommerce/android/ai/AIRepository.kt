@@ -38,7 +38,7 @@ class AIRepository @Inject constructor(
             productName,
             features
         )
-        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE)
+        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
     }
 
     private suspend fun fetchJetpackAICompletionsForSite(

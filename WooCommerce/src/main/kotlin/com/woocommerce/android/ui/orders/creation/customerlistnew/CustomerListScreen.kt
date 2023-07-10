@@ -45,9 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.exhaustive
-import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 
@@ -128,7 +127,7 @@ fun CustomerListScreen(
                     onEndOfListReached,
                 )
             }
-        }.exhaustive
+        }
     }
 }
 
@@ -145,6 +144,12 @@ private fun CustomerListLoaded(
     ) {
         itemsIndexed(
             items = body.customers,
+            key = { _, customer ->
+                when (customer) {
+                    is CustomerListViewState.CustomerList.Item.Customer -> customer.remoteId
+                    CustomerListViewState.CustomerList.Item.Loading -> -1L
+                }
+            },
         ) { _, customer ->
             when (customer) {
                 is CustomerListViewState.CustomerList.Item.Customer -> {
@@ -160,7 +165,7 @@ private fun CustomerListLoaded(
                 }
 
                 CustomerListViewState.CustomerList.Item.Loading -> CustomerListLoadingItem()
-            }.exhaustive
+            }
         }
     }
 

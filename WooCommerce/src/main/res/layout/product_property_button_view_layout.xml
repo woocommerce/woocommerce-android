@@ -12,10 +12,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
-        android:layout_marginBottom="@dimen/major_100"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
+        android:layout_marginBottom="@dimen/minor_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_100"
+        android:textSize="@dimen/text_minor_80"
+        app:layout_constraintTop_toBottomOf="@id/productButton"
+        app:layout_constraintStart_toStartOf="@id/productButton"
+        app:layout_constraintBottom_toTopOf="@+id/divider"/>
 
     <View
         android:id="@+id/divider"
