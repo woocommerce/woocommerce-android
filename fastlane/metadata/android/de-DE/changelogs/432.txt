@@ -1,0 +1,2 @@
+14.3:
+Diese Version enthält die Option zum Hinzufügen mehrere Gutscheine beim Erstellen einer Bestellung. Außerdem ist es jetzt ganz einfach, durch Scannen des Barcodes oder QR-Codes nach einem Produkt zu suchen. Sieh dir alles genau an!

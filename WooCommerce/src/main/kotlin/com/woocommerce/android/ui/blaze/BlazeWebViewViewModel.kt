@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
@@ -22,7 +23,8 @@ class BlazeWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
-    val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeWebViewFragmentArgs by savedStateHandle.navArgs()
 
@@ -54,6 +56,7 @@ class BlazeWebViewViewModel @Inject constructor(
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
+            appPrefsWrapper.shouldHideBlazeBanner = true
         }
     }
 

@@ -534,6 +534,8 @@
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_discount">Discount</string>
+    <string name="order_creation_discount_amount_type">Amount (%1$s)</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_payment">Payment</string>
@@ -3404,6 +3406,9 @@
     <string name="blaze_banner_description">Turn your products into ads that run across millions of sites on WordPress.com and Tumblr.</string>
     <string name="blaze_banner_button">Try Blaze now</string>
     <string name="blaze_banner_close_button_content_description">Close Blaze banner button</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
+    <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
+    <string name="blaze_banner_dismiss_dialog_button">Got it</string>
 
     <!--
     Highlights tooltip

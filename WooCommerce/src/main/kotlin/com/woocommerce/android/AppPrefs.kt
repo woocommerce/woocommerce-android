@@ -110,6 +110,7 @@ object AppPrefs {
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
         WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+        BLAZE_BANNER_HIDDEN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
     }
@@ -257,6 +258,10 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
+
+    var shouldHideBlazeBanner: Boolean
+        get() = getBoolean(DeletablePrefKey.BLAZE_BANNER_HIDDEN, false)
+        set(value) = setBoolean(DeletablePrefKey.BLAZE_BANNER_HIDDEN, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

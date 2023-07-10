@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 13:54:04+0000
+Translation-Revision-Date: 2023-07-04 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">להוסיף תיאורים במהירות בעזרת בינה מלאכותית. כדאי לנסות את האפשרות כבר היום!</string>
+    <string name="ai_product_description_dialog_title">להוסיף תיאור מוצר בעזרת בינה מלאכותית</string>
+    <string name="ai_product_description_note_dialog_confirmation">הבנתי</string>
+    <string name="ai_product_description_note_dialog_message">חשוב לשים לב שתיאור המוצר נוצר דרך כלי שאנחנו מפעילים באמצעות בינה מלאכותית. יש לבדוק ולערוך את התוכן כדי לוודא שהוא מתאים למותג ולמסר שלך.</string>
+    <string name="ai_product_description_note_dialog_heading">התחלה נהדרת!</string>
+    <string name="ai_product_description_feedback">האם התיאור שנוצר\nמועיל לך?</string>
+    <string name="ai_product_description_regenerate_button">ליצור מחדש</string>
+    <string name="ai_product_description_survey">האם התיאור שנוצר מועיל לך?</string>
+    <string name="ai_product_description_hint">כדאי להדגיש את המאפיינים הייחודיים ואת הקהל של המוצר עם מילות מפתח כדי ליצור תיאור מותאם.</string>
+    <string name="ai_product_description_example">לדוגמה: שתיל, קקטוס, צמח, קישוט, קל לטפל</string>
+    <string name="ai_product_description_product_name">יש להזין את שם המוצר שלך</string>
+    <string name="ai_product_description_title">לכתוב תיאור</string>
+    <string name="barcode_scanning_camera_permission_denied">נדרשת הרשאה למצלמה כדי לסרוק את הברקוד.</string>
+    <string name="barcode_scanning_title">לסרוק את הברקוד</string>
+    <string name="order_creation_customer_search_username">שם משתמש</string>
+    <string name="order_creation_customer_search_name">שם</string>
+    <string name="order_creation_customer_search_email">אימייל</string>
+    <string name="order_creation_customer_search_everything">הכול</string>
+    <string name="order_creation_customer_filter_hint">לסנן לקוחות לפי</string>
+    <string name="order_creation_coupons_title">קופונים שהוחלו</string>
+    <string name="more_settings">הגדרות נוספות</string>
+    <string name="maybe_later">אולי מאוחר יותר</string>
     <string name="product_sharing_regenerate">לכתוב שוב</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#לקבל הודעות עם כל מכירה:&lt;/b&gt; הודעות מיידיות לגבי כל מכירה יבטיחו שתמיד יש לך את המידע המעודכן ביותר. ניתן לקבל התראות על כל מכירה חדשה, כדי לחגוג את ההצלחה ולהתעדכן בפעילות של החנות.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#להוסיף ולערוך מוצרים בהקשה פשוטה:&lt;/b&gt; ניתן להוסיף מוצרים חדשים, לעדכן פרטים, להעלות תמונות ולנהל סוגים – והכול אפשרי מתוך האפליקציה. כך אפשר לדאוג שהמלאי תמיד מעודכן ללא מאמץ.</string>

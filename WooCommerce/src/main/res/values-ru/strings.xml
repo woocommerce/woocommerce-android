@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 15:54:04+0000
+Translation-Revision-Date: 2023-07-04 23:54:26+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Используйте искусственный интеллект, чтобы быстро создавать описания. Попробуйте эту функцию уже сегодня!</string>
+    <string name="ai_product_description_dialog_title">Создание описания товара с помощью ИИ</string>
+    <string name="ai_product_description_note_dialog_confirmation">Понятно</string>
+    <string name="ai_product_description_note_dialog_message">Помните, что это описание товара было создано с помощью искусственного интеллекта. Проверьте и отредактируйте содержимое, чтобы оно точно соответствовало вашему бренду и концепции.</string>
+    <string name="ai_product_description_note_dialog_heading">Превосходное начало!</string>
+    <string name="ai_product_description_feedback">Оказалось ли созданное\nописание полезным?</string>
+    <string name="ai_product_description_regenerate_button">Повторно создать</string>
+    <string name="ai_product_description_survey">Оказалось ли созданное описание полезным?</string>
+    <string name="ai_product_description_hint">С помощью ключевых слов опишите уникальные характеристики и покупателей товара, чтобы создать его описание.</string>
+    <string name="ai_product_description_example">Пример: комнатный, кактус, растение, декоративный, простой уход</string>
+    <string name="ai_product_description_product_name">Введите название товара</string>
+    <string name="ai_product_description_title">Добавьте описание</string>
+    <string name="barcode_scanning_camera_permission_denied">Разрешите доступ к камере, чтобы сканировать штрихкод.</string>
+    <string name="barcode_scanning_title">Сканировать штрихкод</string>
+    <string name="order_creation_customer_search_username">Имя пользователя</string>
+    <string name="order_creation_customer_search_name">Имя</string>
+    <string name="order_creation_customer_search_email">Эл. почта</string>
+    <string name="order_creation_customer_search_everything">Всё</string>
+    <string name="order_creation_customer_filter_hint">Фильтрация клиентов</string>
+    <string name="order_creation_coupons_title">Использованы купоны</string>
+    <string name="more_settings">Другие настройки</string>
+    <string name="maybe_later">Возможно, позже</string>
     <string name="product_sharing_regenerate">Написать снова</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Получайте уведомление о каждой продаже.&lt;/b&gt; Благодаря уведомлениям вы ничего не пропустите. Получайте уведомления о каждой новой продаже: следите за происходящим в магазине и радуйтесь своим успехам.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Добавляйте и редактируйте товары одним касанием.&lt;/b&gt; Добавляйте новые товары, обновляйте информацию, загружайте изображения и управляйте вариантами — всё в одном приложении. Обновляйте информацию о наличии товаров без лишних усилий.</string>

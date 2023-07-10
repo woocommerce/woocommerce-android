@@ -4,6 +4,7 @@
 
 14.4
 -----
+- [*] Blaze: New Blaze banners added to My Store tab and product list tab. [https://github.com/woocommerce/woocommerce-android/issues/9332]
 - [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product description for you. [https://github.com/woocommerce/woocommerce-android/issues/9214]
 
 14.3
