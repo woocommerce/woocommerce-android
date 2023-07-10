@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepos
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -33,7 +35,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when viewmodel init, then viewstate is updated with customers`() {
+    fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
         // GIVEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
@@ -91,6 +93,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // WHEN
             viewModel.onSearchQueryChanged(searchQuery)
+            advanceUntilIdle()
 
             // THEN
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
@@ -139,7 +142,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given search type and search is not empty, when onSearchTypeChanged is called, then new customers are loaded`() =
+    fun `given search type and search is not empty, when onSearchTypeChanged is called, then job cancled and new customers are loaded`() =
         testBlocking {
             // GIVEN
             val searchTypeId = R.string.order_creation_customer_search_email
@@ -150,9 +153,10 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // WHEN
             viewModel.onSearchQueryChanged("customer")
             viewModel.onSearchTypeChanged(searchTypeId)
+            advanceUntilIdle()
 
             // THEN
-            verify(customerListRepository, times(3)).searchCustomerListWithEmail(
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(
                 any(),
                 any(),
                 any(),
@@ -217,9 +221,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 .isInstanceOf(CustomerListViewState.CustomerList.Item.Loading::class.java)
         }
 
-    private fun initViewModel() = CustomerListViewModel(
+    private fun TestScope.initViewModel() = CustomerListViewModel(
         savedState,
         customerListRepository,
         customerListViewModelMapper,
-    )
+    ).also { advanceUntilIdle() }
 }
