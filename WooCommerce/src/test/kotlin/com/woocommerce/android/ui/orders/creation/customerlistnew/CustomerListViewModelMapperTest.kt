@@ -17,7 +17,7 @@ class CustomerListViewModelMapperTest {
         }
 
         // WHEN
-        val result = CustomerListViewModelMapper().mapFromWCCustomer(wcCustomerModel)
+        val result = CustomerListViewModelMapper().mapFromWCCustomerToItem(wcCustomerModel)
 
         // THEN
         assertThat(result.remoteId).isEqualTo(1)

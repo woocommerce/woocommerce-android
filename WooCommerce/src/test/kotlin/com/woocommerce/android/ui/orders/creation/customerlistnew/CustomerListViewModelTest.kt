@@ -31,7 +31,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val mockCustomer: CustomerListViewState.CustomerList.Item.Customer = mock()
     private val customerListViewModelMapper: CustomerListViewModelMapper = mock {
-        on { mapFromWCCustomer(any()) }.thenReturn(mockCustomer)
+        on { mapFromWCCustomerToItem(any()) }.thenReturn(mockCustomer)
     }
 
     @Test
