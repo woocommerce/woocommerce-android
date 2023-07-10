@@ -27,4 +27,13 @@ object AIPrompts {
         val descriptionPart = if (description.isNotEmpty()) "- Product description: \"$description\"" else ""
         return String.format(PRODUCT_SHARING_PROMPT, name, descriptionPart, url)
     }
+
+    private const val LANGUAGE_IDENTIFICATION_PROMPT = "What is the ISO language code of the language used in the " +
+        "below text? Do not include any explanations and only provide the ISO language code in your response. \n" +
+        "Text: ```(%1\$s)```"
+
+    fun generateLanguageIdentificationPrompt(text: String): String {
+        return String.format(LANGUAGE_IDENTIFICATION_PROMPT, text)
+    }
+
 }
