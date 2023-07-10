@@ -1,2 +1,0 @@
-14.2 :
-Saviez-vous que vous pouvez désormais ajouter des codes promo lors de la création d’une commande ? Oui, c’est possible ! Vous pouvez également gérer vos codes promo en vous rendant dans l’onglet menu et en cliquant sur la fonctionnalité de codes promo. Enfin, nous avons apporté des modifications à la fonctionnalité d’analyse lors de la recherche d’un produit. Mais nous n’allons pas nous arrêter là. Restez à l’affut des futures améliorations.
