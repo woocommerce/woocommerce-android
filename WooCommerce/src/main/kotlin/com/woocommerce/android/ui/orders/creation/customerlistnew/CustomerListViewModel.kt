@@ -10,6 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
@@ -43,6 +45,7 @@ class CustomerListViewModel @Inject constructor(
         }
 
     private var loadingFirstPageJob: Job? = null
+    private val mutex = Mutex()
 
     init {
         launch { loadCustomers(1) }
@@ -74,9 +77,7 @@ class CustomerListViewModel @Inject constructor(
 
     private fun loadAfterSearchChanged() {
         loadingFirstPageJob?.cancel()
-        loadingFirstPageJob = launch {
-            loadCustomers(1)
-        }
+        loadingFirstPageJob = launch { loadCustomers(1) }
     }
 
     fun onNavigateBack() {
@@ -86,7 +87,7 @@ class CustomerListViewModel @Inject constructor(
         launch { loadCustomers(paginationState.currentPage + 1) }
     }
 
-    private suspend fun loadCustomers(page: Int) {
+    private suspend fun loadCustomers(page: Int) = mutex.withLock {
         if (page != 1 && !paginationState.hasNextPage) return
         if (page == 1) {
             _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
