@@ -996,6 +996,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 if (calculateItemDiscountAmount(result.modifiedItem) > BigDecimal.ZERO &&
                     _orderDraft.value.couponLines.isNotEmpty()
                 ) {
+                    // As for 10 Jul 2023 order update endpoint doesn't allow having both coupon and discounts.
+                    // In case the coupon was added before the discount, the discount is ignored by the backend.
                     triggerEvent(ShowSnackbar(string.order_creation_discount_with_coupon_error))
                 }
                 _orderDraft.value = _orderDraft.value.updateItem(result.modifiedItem)
