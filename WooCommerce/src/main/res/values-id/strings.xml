@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 15:54:04+0000
+Translation-Revision-Date: 2023-07-04 09:54:23+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Tambahkan deskripsi secara cepat dengan AI. Coba fitur kami sekarang juga!</string>
+    <string name="ai_product_description_dialog_title">Tambahkan deskripsi produk dengan AI</string>
+    <string name="ai_product_description_note_dialog_confirmation">Saya mengerti</string>
+    <string name="ai_product_description_note_dialog_message">Harap perhatikan bahwa deskripsi produk ini dibuat dengan alat berbasis teknologi AI. Harap periksa dan edit isinya agar sesuai dengan citra dan pesan yang ingin Anda sampaikan.</string>
+    <string name="ai_product_description_note_dialog_heading">Mantap!</string>
+    <string name="ai_product_description_feedback">Apakah deskripsi\nyang dibuat bermanfaat?</string>
+    <string name="ai_product_description_regenerate_button">Buat Ulang</string>
+    <string name="ai_product_description_survey">Apakah deskripsi yang dibuat bermanfaat?</string>
+    <string name="ai_product_description_hint">Soroti fitur unik dan audiens produk Anda dengan kata kunci untuk menghasilkan deskripsi yang pas dan khas.</string>
+    <string name="ai_product_description_example">Contoh: Dalam Pot, Kaktus, Tanaman, Dekoratif, Mudah Dirawat</string>
+    <string name="ai_product_description_product_name">Masukkan nama produk Anda</string>
+    <string name="ai_product_description_title">Tulis deskripsi</string>
+    <string name="barcode_scanning_camera_permission_denied">Izin kamera diperlukan untuk memindai barcode.</string>
+    <string name="barcode_scanning_title">Pindai Barcode</string>
+    <string name="order_creation_customer_search_username">Nama Pengguna:</string>
+    <string name="order_creation_customer_search_name">Nama</string>
+    <string name="order_creation_customer_search_email">Email</string>
+    <string name="order_creation_customer_search_everything">Semuanya</string>
+    <string name="order_creation_customer_filter_hint">Saring pelanggan berdasarkan</string>
+    <string name="order_creation_coupons_title">Kupon diterapkan</string>
+    <string name="more_settings">Pengaturan selengkapnya</string>
+    <string name="maybe_later">Mungkin nanti</string>
     <string name="product_sharing_regenerate">Tulis lagi</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Dapatkan pemberitahuan untuk tiap penjualan:&lt;/b&gt; Jangan lewatkan kabar terbaru dengan pemberitahuan penjualan secara langsung. Dapatkan pemberitahuan untuk tiap penjualan baru agar Anda dapat terus menikmati keberhasilan dan memantau aktivitas toko.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Tambahkan dan sunting produk dengan sekali sentuh:&lt;/b&gt; Tambahkan produk baru, perbarui detail, unggah gambar, dan kelola variasi, semuanya dari aplikasi ini. Pantau dan perbarui inventaris Anda dengan mudah.</string>
