@@ -45,6 +45,20 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given success returned from repo, when viewmodel init, then viewstate is updated with customers and first page true`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success((1..30).map { mock() }))
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
+
+            // THEN
+            assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).firstPageLoaded).isTrue()
+        }
+
+    @Test
     fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
         // GIVEN
         whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
@@ -219,6 +233,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers.last())
                 .isInstanceOf(CustomerListViewState.CustomerList.Item.Loading::class.java)
+            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).firstPageLoaded).isFalse()
         }
 
     private fun TestScope.initViewModel() = CustomerListViewModel(
