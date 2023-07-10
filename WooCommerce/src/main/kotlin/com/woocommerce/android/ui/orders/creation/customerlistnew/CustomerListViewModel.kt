@@ -131,7 +131,8 @@ class CustomerListViewModel @Inject constructor(
             body = currentBody.copy(
                 customers = currentBody.customers + customers.map {
                     customerListViewModelMapper.mapFromWCCustomer(it)
-                }
+                },
+                firstPageLoaded = false,
             )
         )
     }
@@ -144,7 +145,8 @@ class CustomerListViewModel @Inject constructor(
                 body = CustomerListViewState.CustomerList.Loaded(
                     customers = customers.map {
                         customerListViewModelMapper.mapFromWCCustomer(it)
-                    }
+                    },
+                    firstPageLoaded = true,
                 )
             )
         }
