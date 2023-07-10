@@ -7,6 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
@@ -40,6 +42,8 @@ class CustomerListViewModel @Inject constructor(
             savedState[SEARCH_MODE_KEY] = value
         }
 
+    private var loadingFirstPageJob: Job? = null
+
     init {
         launch { loadCustomers(1) }
     }
@@ -53,7 +57,8 @@ class CustomerListViewModel @Inject constructor(
             searchQuery = this
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
-        launch { loadCustomers(1) }
+
+        loadAfterSearchChanged()
     }
 
     fun onSearchTypeChanged(searchTypeId: Int) {
@@ -64,7 +69,14 @@ class CustomerListViewModel @Inject constructor(
             )
         }
 
-        if (searchQuery.isNotEmpty()) launch { loadCustomers(1) }
+        if (searchQuery.isNotEmpty()) loadAfterSearchChanged()
+    }
+
+    private fun loadAfterSearchChanged() {
+        loadingFirstPageJob?.cancel()
+        loadingFirstPageJob = launch {
+            loadCustomers(1)
+        }
     }
 
     fun onNavigateBack() {
@@ -78,6 +90,8 @@ class CustomerListViewModel @Inject constructor(
         if (page != 1 && !paginationState.hasNextPage) return
         if (page == 1) {
             _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+            // Add a delay to avoid multiple requests when the user types fast or switches search types
+            delay(SEARCH_DELAY_MS)
         }
         val result = customerListRepository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
@@ -162,6 +176,8 @@ class CustomerListViewModel @Inject constructor(
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
         private const val SEARCH_MODE_KEY = "search_mode"
+
+        private const val SEARCH_DELAY_MS = 500L
 
         private const val PAGE_SIZE = 30
 
