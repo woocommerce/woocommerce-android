@@ -28,7 +28,10 @@ import kotlinx.coroutines.flow.flowOf
 import androidx.camera.core.Preview as CameraPreview
 
 @Composable
-fun BarcodeScannerScreen(codeScanner: CodeScanner, onScannedResult: (Flow<CodeScannerStatus>) -> Unit) {
+fun BarcodeScannerScreen(
+    codeScanner: CodeScanner,
+    onScannedResult: (Flow<CodeScannerStatus>) -> Unit
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraProviderFuture = remember {

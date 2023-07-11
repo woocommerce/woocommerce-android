@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.barcodescanner
 
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,10 @@ class BarcodeScanningViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val _permissionState = MutableLiveData<PermissionState>()
     val permissionState: LiveData<PermissionState> = _permissionState
+
+    init {
+        _permissionState.value = PermissionState.Unknown
+    }
 
     fun updatePermissionState(
         isPermissionGranted: Boolean,
@@ -31,7 +36,7 @@ class BarcodeScanningViewModel @Inject constructor(
                     title = R.string.barcode_scanning_alert_dialog_title,
                     message = R.string.barcode_scanning_alert_dialog_rationale_message,
                     ctaLabel = R.string.barcode_scanning_alert_dialog_rationale_cta_label,
-                    ctaAction = { triggerEvent(ScanningEvents.LaunchCameraPermission) }
+                    ctaAction = { triggerEvent(ScanningEvents.LaunchCameraPermission(it)) }
                 )
             }
 
@@ -42,10 +47,11 @@ class BarcodeScanningViewModel @Inject constructor(
                     message = R.string.barcode_scanning_alert_dialog_permanently_denied_message,
                     ctaLabel = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label,
                     ctaAction = {
-                        triggerEvent(ScanningEvents.OpenAppSettings)
+                        triggerEvent(ScanningEvents.OpenAppSettings(it))
                     }
                 )
             }
+
             else -> {
                 _permissionState.value = PermissionState.Unknown
             }
@@ -54,13 +60,22 @@ class BarcodeScanningViewModel @Inject constructor(
 
     fun onResume() {
         if (event.value is ScanningEvents.OpenAppSettings) {
-            triggerEvent(ScanningEvents.LaunchCameraPermission)
+            triggerEvent(
+                ScanningEvents.LaunchCameraPermission(
+                    (event.value as ScanningEvents.OpenAppSettings).cameraLauncher
+                )
+            )
         }
     }
 
     sealed class ScanningEvents : Event() {
-        object LaunchCameraPermission : ScanningEvents()
-        object OpenAppSettings : ScanningEvents()
+        data class LaunchCameraPermission(
+            val cameraLauncher: ManagedActivityResultLauncher<String, Boolean>
+        ) : ScanningEvents()
+
+        data class OpenAppSettings(
+            val cameraLauncher: ManagedActivityResultLauncher<String, Boolean>
+        ) : ScanningEvents()
     }
 
     sealed class PermissionState {
@@ -70,14 +85,14 @@ class BarcodeScanningViewModel @Inject constructor(
             @StringRes val title: Int,
             @StringRes val message: Int,
             @StringRes val ctaLabel: Int,
-            val ctaAction: () -> Unit
+            val ctaAction: (ManagedActivityResultLauncher<String, Boolean>) -> Unit
         ) : PermissionState()
 
         data class PermanentlyDenied(
             @StringRes val title: Int,
             @StringRes val message: Int,
             @StringRes val ctaLabel: Int,
-            val ctaAction: () -> Unit
+            val ctaAction: (ManagedActivityResultLauncher<String, Boolean>) -> Unit
         ) : PermissionState()
 
         object Unknown : PermissionState()

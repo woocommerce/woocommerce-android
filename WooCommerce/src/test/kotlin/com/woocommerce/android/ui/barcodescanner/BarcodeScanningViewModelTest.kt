@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.barcodescanner
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.Granted
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.PermanentlyDenied
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState.ShouldShowRationale
@@ -26,12 +27,17 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when view model init, then permission state is unknown`() {
+        assertThat(barcodeScanningViewModel.permissionState.value).isEqualTo(PermissionState.Unknown)
+    }
+
+    @Test
     fun `given permanently denied dialog shown, when user navigates back from the app settings, then launch the camera permission again`() {
         barcodeScanningViewModel.updatePermissionState(
             isPermissionGranted = false,
             shouldShowRequestPermissionRationale = false
         )
-        (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaAction.invoke()
+        (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaAction.invoke(mock())
 
         barcodeScanningViewModel.onResume()
 
@@ -125,7 +131,7 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             shouldShowRequestPermissionRationale = true
         )
 
-        (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).ctaAction.invoke()
+        (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).ctaAction.invoke(mock())
 
         assertThat(barcodeScanningViewModel.event.value).isInstanceOf(LaunchCameraPermission::class.java)
     }
@@ -183,7 +189,7 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
             shouldShowRequestPermissionRationale = false
         )
 
-        (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaAction.invoke()
+        (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaAction.invoke(mock())
 
         assertThat(barcodeScanningViewModel.event.value).isInstanceOf(OpenAppSettings::class.java)
     }

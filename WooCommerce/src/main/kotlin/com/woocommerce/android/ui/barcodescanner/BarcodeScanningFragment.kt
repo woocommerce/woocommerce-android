@@ -1,29 +1,12 @@
 package com.woocommerce.android.ui.barcodescanner
 
 import android.Manifest
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -32,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.openAppSettings
-import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel.PermissionState
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
@@ -46,17 +28,43 @@ class BarcodeScanningFragment : BaseFragment() {
 
     @Inject
     lateinit var codeScanner: GoogleMLKitCodeScanner
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext())
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view as ComposeView
+        view.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        observeCameraPermissionState(view)
+        observeViewModelEvents()
+    }
+
+    private fun observeCameraPermissionState(view: ComposeView) {
+        viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
+            view.setContent {
                 WooThemeWithBackground {
-                    val (permissionState, cameraPermissionLauncher) = observeCameraPermissionState()
-                    LaunchedEffect(key1 = Unit) {
-                        cameraPermissionLauncher.launch(KEY_CAMERA_PERMISSION)
-                    }
-                    HandleCameraPermissionState(permissionState)
-                    ObserveViewModelEvents(cameraPermissionLauncher)
+                    BarcodeScanner(
+                        codeScanner = codeScanner,
+                        permissionState = permissionState,
+                        onResult = { granted ->
+                            viewModel.updatePermissionState(
+                                granted,
+                                shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
+                            )
+                        },
+                        onScannedResult = { codeScannerStatus ->
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                                    codeScannerStatus.collect { status ->
+                                        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
+                                    }
+                                }
+                            }
+                        },
+                        onPermissionAlertDialogDismiss = {
+                            findNavController().navigateUp()
+                        }
+                    )
                 }
             }
         }
@@ -66,143 +74,20 @@ class BarcodeScanningFragment : BaseFragment() {
         super.onResume()
         viewModel.onResume()
     }
-    @Composable
-    private fun observeCameraPermissionState():
-        Pair<PermissionState, ManagedActivityResultLauncher<String, Boolean>> {
-        val permissionState: PermissionState by viewModel.permissionState.observeAsState(
-            PermissionState.Unknown
-        )
-        val cameraPermissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = { granted ->
-                viewModel.updatePermissionState(
-                    granted,
-                    shouldShowRequestPermissionRationale(KEY_CAMERA_PERMISSION)
-                )
-            }
-        )
-        return Pair(permissionState, cameraPermissionLauncher)
-    }
 
-    @Composable
-    private fun HandleCameraPermissionState(
-        permissionState: PermissionState,
-    ) {
-        when (permissionState) {
-            PermissionState.Granted -> {
-                BarcodeScanner()
-            }
-
-            is PermissionState.ShouldShowRationale -> {
-                DisplayAlertDialog(
-                    title = stringResource(id = permissionState.title),
-                    message = stringResource(id = permissionState.message),
-                    ctaLabel = stringResource(id = permissionState.ctaLabel),
-                    ctaAction = { permissionState.ctaAction.invoke() }
-                )
-            }
-
-            is PermissionState.PermanentlyDenied -> {
-                DisplayAlertDialog(
-                    title = stringResource(id = permissionState.title),
-                    message = stringResource(id = permissionState.message),
-                    ctaLabel = stringResource(id = permissionState.ctaLabel),
-                    ctaAction = { permissionState.ctaAction.invoke() }
-                )
-            }
-
-            PermissionState.Unknown -> {
-                // no-op
-            }
-        }
-    }
-
-    @Composable
-    private fun ObserveViewModelEvents(cameraPermissionLauncher: ManagedActivityResultLauncher<String, Boolean>) {
+    private fun observeViewModelEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                BarcodeScanningViewModel.ScanningEvents.LaunchCameraPermission -> {
-                    cameraPermissionLauncher.launch(KEY_CAMERA_PERMISSION)
+                is BarcodeScanningViewModel.ScanningEvents.LaunchCameraPermission -> {
+                    event.cameraLauncher.launch(KEY_CAMERA_PERMISSION)
                 }
-                BarcodeScanningViewModel.ScanningEvents.OpenAppSettings -> {
+
+                is BarcodeScanningViewModel.ScanningEvents.OpenAppSettings -> {
                     openAppSettings()
                 }
             }
         }
     }
-
-    @Composable
-    private fun BarcodeScanner() {
-        BarcodeScannerScreen(codeScanner) { codeScannerStatus ->
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                    codeScannerStatus.collect { status ->
-                        navigateBackWithResult(KEY_BARCODE_SCANNING_SCAN_STATUS, status)
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun DisplayAlertDialog(
-        title: String,
-        message: String,
-        ctaLabel: String,
-        ctaAction: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = { findNavController().navigateUp() },
-            title = {
-                Text(title)
-            },
-            text = {
-                Text(message)
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        ctaAction()
-                    }
-                ) {
-                    Text(
-                        ctaLabel,
-                        color = MaterialTheme.colors.secondary,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            },
-        )
-    }
-
-    @Preview(name = "Light mode")
-    @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-    @Composable
-    fun DeniedOnceAlertDialog() {
-        WooThemeWithBackground {
-            DisplayAlertDialog(
-                title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
-                message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
-                ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_cta_label),
-                ctaAction = {}
-            )
-        }
-    }
-
-    @Preview(name = "Light mode")
-    @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-    @Composable
-    fun DeniedPermanentlyAlertDialog() {
-        WooThemeWithBackground {
-            DisplayAlertDialog(
-                title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
-                message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
-                ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),
-                ctaAction = {}
-            )
-        }
-    }
-
     override fun getFragmentTitle() = getString(R.string.barcode_scanning_title)
 
     companion object {
