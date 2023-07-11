@@ -218,4 +218,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
 
         assertThat(barcodeScanningViewModel.event.value).isInstanceOf(Exit::class.java)
     }
+
+    @Test
+    fun `given camera permission is permanently denied, when alert dialog shown, then dismiss CTA label is correct`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = false
+        )
+
+        assertThat(
+            (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).dismissCtaLabel
+        ).isEqualTo(R.string.barcode_scanning_alert_dialog_dismiss_label)
+    }
 }
