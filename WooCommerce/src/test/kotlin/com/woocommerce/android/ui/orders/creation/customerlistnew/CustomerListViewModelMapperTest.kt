@@ -163,6 +163,5 @@ class CustomerListViewModelMapperTest {
         assertThat(result.country).isEqualTo("country")
         assertThat(result.state).isEqualTo("state")
         assertThat(result.email).isEqualTo("email")
-
     }
 }

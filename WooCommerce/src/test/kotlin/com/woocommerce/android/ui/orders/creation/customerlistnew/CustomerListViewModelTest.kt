@@ -273,7 +273,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 .thenReturn(shippingAddress)
 
             val state: Location = mock()
-                whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
+            whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
 
             val country: Location = mock()
             whenever(customerListRepository.getCountry("US")).thenReturn(country)
