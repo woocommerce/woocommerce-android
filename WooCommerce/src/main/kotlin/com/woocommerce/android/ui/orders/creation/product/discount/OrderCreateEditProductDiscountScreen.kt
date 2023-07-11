@@ -90,7 +90,7 @@ fun OrderCreateEditProductDiscountScreen(
                     },
                     label = stringResource(
                         R.string.order_creation_discount_amount_with_currency,
-                        state.value.currency
+                        state.value.discountType.symbol
                     ),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
