@@ -206,4 +206,16 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
 
         assertThat(barcodeScanningViewModel.event.value).isInstanceOf(Exit::class.java)
     }
+
+    @Test
+    fun `given camera permission is denied once, when the cancel is clicked, then trigger proper event`() {
+        barcodeScanningViewModel.updatePermissionState(
+            isPermissionGranted = false,
+            shouldShowRequestPermissionRationale = true
+        )
+
+        (barcodeScanningViewModel.permissionState.value as ShouldShowRationale).dismissCtaAction.invoke()
+
+        assertThat(barcodeScanningViewModel.event.value).isInstanceOf(Exit::class.java)
+    }
 }
