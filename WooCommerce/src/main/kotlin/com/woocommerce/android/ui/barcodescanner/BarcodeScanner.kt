@@ -45,7 +45,7 @@ fun BarcodeScanner(
             )
         }
         is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {
-            DisplayAlertDialog(
+            AlertDialog(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
@@ -54,7 +54,7 @@ fun BarcodeScanner(
             )
         }
         is BarcodeScanningViewModel.PermissionState.PermanentlyDenied -> {
-            DisplayAlertDialog(
+            AlertDialog(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
@@ -69,7 +69,7 @@ fun BarcodeScanner(
 }
 
 @Composable
-private fun DisplayAlertDialog(
+private fun AlertDialog(
     title: String,
     message: String,
     ctaLabel: String,
@@ -105,7 +105,7 @@ private fun DisplayAlertDialog(
 @Composable
 fun DeniedOnceAlertDialog() {
     WooThemeWithBackground {
-        DisplayAlertDialog(
+        AlertDialog(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_cta_label),
@@ -120,7 +120,7 @@ fun DeniedOnceAlertDialog() {
 @Composable
 fun DeniedPermanentlyAlertDialog() {
     WooThemeWithBackground {
-        DisplayAlertDialog(
+        AlertDialog(
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),
