@@ -108,11 +108,13 @@ class OrderCreateCouponEditViewModel @Inject constructor(
     sealed class ValidationState : Parcelable {
         @Parcelize
         object Idle : ValidationState()
+
         @Parcelize
         object InProgress : ValidationState()
+
         @Parcelize
         data class Error(
-          @StringRes  val message: Int,
+            @StringRes val message: Int,
         ) : ValidationState()
     }
 
