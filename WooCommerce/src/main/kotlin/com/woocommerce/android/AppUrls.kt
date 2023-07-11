@@ -28,6 +28,8 @@ object AppUrls {
         "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
     const val PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING =
         "https://docs.woocommerce.com/document/troubleshooting-image-upload-issues-in-the-woo-mobile-apps/"
+    const val ORDERS_TROUBLESHOOTING =
+        "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
 
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
@@ -59,6 +61,8 @@ object AppUrls {
         "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/"
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://docs.woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/"
+    const val STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS =
+        "https://stripe.com/docs/terminal/payments/setup-reader/tap-to-pay?platform=android#supported-devices"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
         "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
@@ -91,4 +95,6 @@ object AppUrls {
     )
 
     const val EU_SHIPPING_CUSTOMS_REQUIREMENTS = "https://www.usps.com/international/new-eu-customs-rules.htm"
+
+    const val WOOCOMMERCE_PLUGIN_CONFLICTS = "https://woocommerce.com/document/how-to-test-for-conflicts/"
 }

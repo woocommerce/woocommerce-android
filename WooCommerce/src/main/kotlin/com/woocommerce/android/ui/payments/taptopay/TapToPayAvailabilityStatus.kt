@@ -22,7 +22,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
     operator fun invoke() =
         when {
             !appPrefs.isTapToPayEnabled -> Result.NotAvailable.TapToPayDisabled
-            !systemVersionUtilsWrapper.isAtLeastP() -> Result.NotAvailable.SystemVersionNotSupported
+            !systemVersionUtilsWrapper.isAtLeastQ() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry(wooStore.getStoreCountryCode(selectedSite.get())) ->

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 13:54:04+0000
+Translation-Revision-Date: 2023-07-04 09:54:24+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">使用 AI 快速添加描述。 立即试用我们的功能！</string>
+    <string name="ai_product_description_dialog_title">使用 AI 添加产品描述</string>
+    <string name="ai_product_description_note_dialog_confirmation">知道了</string>
+    <string name="ai_product_description_note_dialog_message">请注意，此产品描述是使用我们的 AI 赋能工具生成的。 请检查和编辑内容以确保相关内容与您的品牌和消息相契合。</string>
+    <string name="ai_product_description_note_dialog_heading">不错的开局！</string>
+    <string name="ai_product_description_feedback">生成的描述\n对您是否有用？</string>
+    <string name="ai_product_description_regenerate_button">重新生成</string>
+    <string name="ai_product_description_survey">生成的描述对您是否有用？</string>
+    <string name="ai_product_description_hint">通过关键字突出显示产品的独特特点和受众，以便生成量身定制的描述。</string>
+    <string name="ai_product_description_example">示例：盆栽、仙人掌、植物、装饰、易打理</string>
+    <string name="ai_product_description_product_name">输入产品名称</string>
+    <string name="ai_product_description_title">撰写描述</string>
+    <string name="barcode_scanning_camera_permission_denied">需要相机权限才能扫描条形码。</string>
+    <string name="barcode_scanning_title">扫描条形码</string>
+    <string name="order_creation_customer_search_username">用户名</string>
+    <string name="order_creation_customer_search_name">名称</string>
+    <string name="order_creation_customer_search_email">电子邮件</string>
+    <string name="order_creation_customer_search_everything">所有内容</string>
+    <string name="order_creation_customer_filter_hint">按以下方式筛选客户</string>
+    <string name="order_creation_coupons_title">已应用优惠券</string>
+    <string name="more_settings">更多设置</string>
+    <string name="maybe_later">稍后再说</string>
     <string name="product_sharing_regenerate">再写一遍</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#接收每一笔销售的通知：&lt;/b&gt;通过即时的销售通知，不会错过任何内容。 接收每一笔新销售的提醒，以便您能够庆祝成功并保持对商店活动的掌控。</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#只需轻触即可添加和编辑产品：&lt;/b&gt;通过应用添加新产品，更新详细信息，上传图片，并管理不同的变量。轻松保持库存的最新状态。</string>

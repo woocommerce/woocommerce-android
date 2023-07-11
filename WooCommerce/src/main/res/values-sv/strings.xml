@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 11:54:04+0000
+Translation-Revision-Date: 2023-07-04 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Lägg till beskrivningar på nolltid med AI. Prova vår funktion idag.</string>
+    <string name="ai_product_description_dialog_title">Lägg till produktbeskrivning med AI</string>
+    <string name="ai_product_description_note_dialog_confirmation">Jag förstår</string>
+    <string name="ai_product_description_note_dialog_message">Tänk på att den här produktbeskrivningen har genererats med vårt AI-drivna verktyg. Granska och redigera innehållet för att säkerställa att det överensstämmer med ditt varumärke och ditt budskap.</string>
+    <string name="ai_product_description_note_dialog_heading">Bra start!</string>
+    <string name="ai_product_description_feedback">Är den genererade\nbeskrivningen beskrivning användbar?</string>
+    <string name="ai_product_description_regenerate_button">Generera igen</string>
+    <string name="ai_product_description_survey">Är den genererade beskrivningen användbar?</string>
+    <string name="ai_product_description_hint">Framhäv din produkts unika funktioner och målgrupp med nyckelord för en skräddarsydd beskrivning.</string>
+    <string name="ai_product_description_example">Exempel: krukväxt, kaktus, växt, dekorativ, lättskött</string>
+    <string name="ai_product_description_product_name">Ange ditt produktnamn</string>
+    <string name="ai_product_description_title">Skriv en beskrivning</string>
+    <string name="barcode_scanning_camera_permission_denied">Kameraåtkomst krävs för streckkodsskanning.</string>
+    <string name="barcode_scanning_title">Skanna streckkod</string>
+    <string name="order_creation_customer_search_username">Användarnamn</string>
+    <string name="order_creation_customer_search_name">Namn</string>
+    <string name="order_creation_customer_search_email">E-post</string>
+    <string name="order_creation_customer_search_everything">Allt</string>
+    <string name="order_creation_customer_filter_hint">Filtrera kunder efter</string>
+    <string name="order_creation_coupons_title">Tillämpade rabattkoder</string>
+    <string name="more_settings">Fler inställningar</string>
+    <string name="maybe_later">Kanske senare</string>
     <string name="product_sharing_regenerate">Skriv igen</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Bli meddelad om varje försäljning:&lt;/b&gt; Se till att du inte missar något med omedelbara försäljningsnotiser. Få meddelanden om varje ny försäljning, så att du kan fira din framgång och hålla koll på din butiksaktivitet.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Lägg till och redigera produkter med en beröring:&lt;/b&gt; Lägg till nya produkter, uppdatera information, ladda upp bilder och hantera variationer direkt i appen. Håll ditt lager uppdaterat utan ansträngning.</string>

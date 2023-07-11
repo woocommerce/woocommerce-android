@@ -39,6 +39,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
@@ -102,6 +104,13 @@ class OrderCreateEditFormFragment :
             initView()
         }
         handleCouponEditResult()
+        handleProductDetailsEditResult()
+    }
+
+    private fun handleProductDetailsEditResult() {
+        handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
+            viewModel.onProductDetailsEditResult(it)
+        }
     }
 
     private fun handleCouponEditResult() {

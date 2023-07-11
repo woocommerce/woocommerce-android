@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class CustomerListViewState(
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
-    val customers: CustomerList = CustomerList.Loading,
+    val body: CustomerList = CustomerList.Loading,
 ) {
     sealed class CustomerList {
         object Loading : CustomerList()
@@ -15,12 +15,16 @@ data class CustomerListViewState(
         object Error : CustomerList()
         data class Loaded(val customers: List<Item>) : CustomerList()
 
-        data class Item(
-            val remoteId: Long,
-            val firstName: String,
-            val lastName: String,
-            val email: String,
-        )
+        sealed class Item {
+            data class Customer(
+                val remoteId: Long,
+                val firstName: String,
+                val lastName: String,
+                val email: String,
+            ) : Item()
+
+            object Loading : Item()
+        }
     }
 }
 
@@ -30,3 +34,8 @@ data class SearchMode(
     val searchParam: String,
     val isSelected: Boolean,
 ) : Parcelable
+
+data class PaginationState(
+    val currentPage: Int,
+    val hasNextPage: Boolean,
+)
