@@ -99,7 +99,6 @@ class CustomerListViewModel @Inject constructor(
 
     private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
         launch {
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
             val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId)
             if (result.isError || result.model == null) {
                 // just use what we have
