@@ -77,7 +77,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
-import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -127,7 +126,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
-    private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -993,13 +991,6 @@ class OrderCreateEditViewModel @Inject constructor(
             }
 
             is ProductDetailsEditResult.ProductDetailsEdited -> {
-                if (calculateItemDiscountAmount(result.modifiedItem) > BigDecimal.ZERO &&
-                    _orderDraft.value.couponLines.isNotEmpty()
-                ) {
-                    // As for 10 Jul 2023 order update endpoint doesn't allow having both coupon and discounts.
-                    // In case the coupon was added before the discount, the discount is ignored by the backend.
-                    triggerEvent(ShowSnackbar(string.order_creation_discount_with_coupon_error))
-                }
                 _orderDraft.value = _orderDraft.value.updateItem(result.modifiedItem)
             }
         }
