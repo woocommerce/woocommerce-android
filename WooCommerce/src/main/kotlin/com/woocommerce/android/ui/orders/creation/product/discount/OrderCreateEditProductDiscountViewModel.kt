@@ -117,11 +117,11 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val previousDiscountType = discountType.value
         if (previousDiscountType == DiscountType.Percentage) return
 
-        val discountAmount = discountAmountText.value.toBigDecimal().setScale(2, RoundingMode.CEILING)
+        val discountAmount = discountAmountText.value.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
 
         val pricePreDiscount = orderItem.value.pricePreDiscount
-        val discountPercentage = (BigDecimal(1) - (pricePreDiscount - discountAmount) / pricePreDiscount) * BigDecimal(100)
-        discountAmountText.value = discountPercentage.setScale(2, RoundingMode.CEILING).toString()
+        val discountPercentage = (PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(pricePreDiscount, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP) * PERCENTAGE_BASE)
+        discountAmountText.value = discountPercentage.stripTrailingZeros().toPlainString()
         discountType.value = DiscountType.Percentage
     }
 
@@ -131,8 +131,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
         val discountPercentage = discountAmountText.value.toBigDecimal()
         val pricePreDiscount = orderItem.value.pricePreDiscount
-        val discountAmount = pricePreDiscount * (discountPercentage / 100.toBigDecimal())
-        discountAmountText.value = discountAmount.setScale(2, RoundingMode.CEILING).toString()
+        val discountAmount = pricePreDiscount * (discountPercentage.divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP))
+        discountAmountText.value = discountAmount.setScale(PRICE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
         discountType.value = DiscountType.Amount(currency)
     }
 
@@ -172,5 +172,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     private companion object {
         const val PERCENTAGE_SYMBOL = "%"
+        val PERCENTAGE_BASE = BigDecimal(100)
+        const val PERCENTAGE_DIVISION_QUOTIENT_SCALE = 10
+        const val PRICE_DIVISION_QUOTIENT_SCALE = 2
     }
 }
