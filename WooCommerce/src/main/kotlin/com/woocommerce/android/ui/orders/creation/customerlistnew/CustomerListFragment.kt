@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,6 +53,9 @@ class CustomerListFragment : BaseFragment() {
                         CustomerListFragmentDirections
                             .actionCustomerListFragmentToOrderCreationCustomerFragment()
                     )
+                }
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().navigateUp()
                 }
             }
         }
