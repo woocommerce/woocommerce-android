@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.orders.creation.product.discount
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -32,8 +37,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCSelectableChip
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -41,24 +50,40 @@ private val decimalTextProcessor = BigDecimalTextFieldValueMapper(false)
 
 @Composable
 fun OrderCreateEditProductDiscountScreen(
-    viewState: StateFlow<OrderCreateEditProductDiscountViewModel.ViewState>,
+    viewState: StateFlow<ViewState>,
     onCloseClicked: () -> Unit,
     onDoneClicked: () -> Unit,
     onRemoveDiscountClicked: () -> Unit,
     onDiscountAmountChange: (String) -> Unit,
+    onPercentageDiscountSelected: () -> Unit,
+    onAmountDiscountSelected: () -> Unit,
 ) {
     val state = viewState.collectAsState()
-    Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
+    Scaffold(topBar = {
+        Toolbar(
+            onCloseClicked,
+            onDoneClicked,
+            state.value.isDoneButtonEnabled
+        )
+    }) { padding ->
         val focusRequester = remember { FocusRequester() }
-        Box(modifier = Modifier.padding(padding)) {
-            Column(Modifier.padding(dimensionResource(id = R.dimen.minor_100))) {
+        Box(modifier = Modifier
+            .padding(padding)
+            .background(MaterialTheme.colors.surface)) {
+            Column(Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
+                Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
                 val discountValidationState = state.value.discountValidationState
                 WCOutlinedTextField(
                     modifier = Modifier.focusRequester(focusRequester),
                     value = state.value.discountAmount,
                     onValueChange = {
                         if (it.isNotEmpty()) {
-                            onDiscountAmountChange(decimalTextProcessor.transformText(state.value.discountAmount, it))
+                            onDiscountAmountChange(
+                                decimalTextProcessor.transformText(
+                                    state.value.discountAmount,
+                                    it
+                                )
+                            )
                         } else {
                             onDiscountAmountChange(it)
                         }
@@ -89,7 +114,9 @@ fun OrderCreateEditProductDiscountScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 if (state.value.isRemoveButtonVisible) {
                     WCColoredButton(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = dimensionResource(R.dimen.minor_100)),
                         onClick = onRemoveDiscountClicked
                     ) {
                         Text(stringResource(id = R.string.order_creation_remove_discount))
@@ -131,6 +158,32 @@ private fun Toolbar(
     )
 }
 
+@Composable
+private fun Switch(
+    state: ViewState,
+    onPercentageDiscountClicked: () -> Unit,
+    onManualDiscountClicked: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = dimensionResource(id = R.dimen.minor_100)),
+        horizontalArrangement = Arrangement.Absolute.Center
+    ) {
+        WCSelectableChip(
+            modifier = Modifier.weight(1f),
+            onClick = onPercentageDiscountClicked,
+            text = "%",
+            isSelected = state.discountType is Percentage
+        )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+        WCSelectableChip(
+            modifier = Modifier.weight(1f),
+            onClick = onManualDiscountClicked,
+            text = state.currency,
+            isSelected = state.discountType is Amount
+        )
+    }
+}
+
 @Preview
 @Composable
 fun ToolbarPreview() = Toolbar({}, {}, true)
@@ -139,9 +192,11 @@ fun ToolbarPreview() = Toolbar({}, {}, true)
 @Composable
 fun OrderCreateEditProductDiscountScreenPreview() =
     OrderCreateEditProductDiscountScreen(
-        MutableStateFlow(OrderCreateEditProductDiscountViewModel.ViewState("$", "0")),
+        MutableStateFlow(ViewState("$", "0", isRemoveButtonVisible = true)),
         {},
         {},
         {},
-        { _ -> }
+        { _ -> },
+        {},
+        {},
     )
