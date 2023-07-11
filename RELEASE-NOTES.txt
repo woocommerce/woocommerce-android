@@ -1,10 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.5
 - [*] [Internal] Fix for the crash on Payment Selection screen [https://github.com/woocommerce/woocommerce-android/pull/9370]
+- [**] [Internal] Improve the camera permission handling flow in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/9376]
 
 14.4
 -----
-- [**] [Internal] Improve the camera permission handling flow in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/9376]
 - [*] Blaze: New Blaze banners added to My Store tab and product list tab. [https://github.com/woocommerce/woocommerce-android/issues/9332]
 - [***] AI: WordPress.com-hosted sites now has access to an experimental AI feature that generates product description for you. [https://github.com/woocommerce/woocommerce-android/issues/9214]
 
