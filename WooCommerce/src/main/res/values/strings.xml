@@ -579,6 +579,7 @@
     <string name="barcode_scanning_alert_dialog_rationale_message">Camera permission is required in order to scan the barcode</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_message">You have permanently denied Camera permission. It is required in order to scan the barcode. Please enable it from the app settings</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <!--
         Domains

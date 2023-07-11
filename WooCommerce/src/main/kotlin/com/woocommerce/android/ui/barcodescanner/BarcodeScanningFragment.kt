@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -61,9 +63,6 @@ class BarcodeScanningFragment : BaseFragment() {
                                 }
                             }
                         },
-                        onPermissionAlertDialogDismiss = {
-                            findNavController().navigateUp()
-                        }
                     )
                 }
             }
@@ -84,6 +83,10 @@ class BarcodeScanningFragment : BaseFragment() {
 
                 is BarcodeScanningViewModel.ScanningEvents.OpenAppSettings -> {
                     WooPermissionUtils.showAppSettings(requireContext(), false)
+                }
+
+                is Exit -> {
+                    findNavController().navigateUp()
                 }
             }
         }

@@ -26,7 +26,6 @@ fun BarcodeScanner(
     permissionState: BarcodeScanningViewModel.PermissionState,
     onResult: (Boolean) -> Unit,
     onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
-    onPermissionAlertDialogDismiss: () -> Unit,
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -49,8 +48,9 @@ fun BarcodeScanner(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
+                dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
                 ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
-                onDismiss = onPermissionAlertDialogDismiss
+                dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
             )
         }
         is BarcodeScanningViewModel.PermissionState.PermanentlyDenied -> {
@@ -58,8 +58,9 @@ fun BarcodeScanner(
                 title = stringResource(id = permissionState.title),
                 message = stringResource(id = permissionState.message),
                 ctaLabel = stringResource(id = permissionState.ctaLabel),
+                dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
                 ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
-                onDismiss = onPermissionAlertDialogDismiss
+                dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
             )
         }
         BarcodeScanningViewModel.PermissionState.Unknown -> {
@@ -73,11 +74,12 @@ private fun AlertDialog(
     title: String,
     message: String,
     ctaLabel: String,
+    dismissCtaLabel: String,
     ctaAction: () -> Unit,
-    onDismiss: () -> Unit,
+    dismissCtaAction: () -> Unit,
 ) {
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = { dismissCtaAction() },
         title = {
             Text(title)
         },
@@ -97,6 +99,19 @@ private fun AlertDialog(
                 )
             }
         },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    dismissCtaAction()
+                }
+            ) {
+                Text(
+                    dismissCtaLabel,
+                    color = MaterialTheme.colors.secondary,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        },
     )
 }
 
@@ -109,8 +124,9 @@ fun DeniedOnceAlertDialog() {
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_cta_label),
+            dismissCtaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_dismiss_label),
             ctaAction = {},
-            onDismiss = {},
+            dismissCtaAction = {},
         )
     }
 }
@@ -124,8 +140,9 @@ fun DeniedPermanentlyAlertDialog() {
             title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
             message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
             ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),
+            dismissCtaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_dismiss_label),
             ctaAction = {},
-            onDismiss = {},
+            dismissCtaAction = {},
         )
     }
 }

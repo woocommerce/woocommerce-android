@@ -36,7 +36,11 @@ class BarcodeScanningViewModel @Inject constructor(
                     title = R.string.barcode_scanning_alert_dialog_title,
                     message = R.string.barcode_scanning_alert_dialog_rationale_message,
                     ctaLabel = R.string.barcode_scanning_alert_dialog_rationale_cta_label,
-                    ctaAction = { triggerEvent(ScanningEvents.LaunchCameraPermission(it)) }
+                    dismissCtaLabel = R.string.barcode_scanning_alert_dialog_dismiss_label,
+                    ctaAction = { triggerEvent(ScanningEvents.LaunchCameraPermission(it)) },
+                    dismissCtaAction = {
+                        triggerEvent(Event.Exit)
+                    }
                 )
             }
 
@@ -46,8 +50,12 @@ class BarcodeScanningViewModel @Inject constructor(
                     title = R.string.barcode_scanning_alert_dialog_title,
                     message = R.string.barcode_scanning_alert_dialog_permanently_denied_message,
                     ctaLabel = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label,
+                    dismissCtaLabel = R.string.barcode_scanning_alert_dialog_dismiss_label,
                     ctaAction = {
                         triggerEvent(ScanningEvents.OpenAppSettings(it))
+                    },
+                    dismissCtaAction = {
+                        triggerEvent(Event.Exit)
                     }
                 )
             }
@@ -85,14 +93,18 @@ class BarcodeScanningViewModel @Inject constructor(
             @StringRes val title: Int,
             @StringRes val message: Int,
             @StringRes val ctaLabel: Int,
-            val ctaAction: (ManagedActivityResultLauncher<String, Boolean>) -> Unit
+            @StringRes val dismissCtaLabel: Int,
+            val ctaAction: (ManagedActivityResultLauncher<String, Boolean>) -> Unit,
+            val dismissCtaAction: () -> Unit,
         ) : PermissionState()
 
         data class PermanentlyDenied(
             @StringRes val title: Int,
             @StringRes val message: Int,
             @StringRes val ctaLabel: Int,
-            val ctaAction: (ManagedActivityResultLauncher<String, Boolean>) -> Unit
+            @StringRes val dismissCtaLabel: Int,
+            val ctaAction: (ManagedActivityResultLauncher<String, Boolean>) -> Unit,
+            val dismissCtaAction: () -> Unit,
         ) : PermissionState()
 
         object Unknown : PermissionState()
