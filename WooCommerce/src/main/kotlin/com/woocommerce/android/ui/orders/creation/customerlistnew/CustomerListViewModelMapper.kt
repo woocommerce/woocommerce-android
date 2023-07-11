@@ -22,25 +22,23 @@ class CustomerListViewModelMapper @Inject constructor() {
         address: OrderAddress,
         country: Location,
         state: Location
-    ): Address {
-        return Address(
-            company = address.company,
-            lastName = address.lastName,
-            firstName = address.firstName,
-            address1 = address.address1,
-            address2 = address.address2,
-            email = if (address is OrderAddress.Billing) {
-                address.email
-            } else {
-                ""
-            },
-            postcode = address.postcode,
-            phone = address.phone,
-            country = country,
-            state = AmbiguousLocation.Defined(state),
-            city = address.city
-        )
-    }
+    ) = Address(
+        company = address.company,
+        lastName = address.lastName,
+        firstName = address.firstName,
+        address1 = address.address1,
+        address2 = address.address2,
+        email = if (address is OrderAddress.Billing) {
+            address.email
+        } else {
+            ""
+        },
+        postcode = address.postcode,
+        phone = address.phone,
+        country = country,
+        state = AmbiguousLocation.Defined(state),
+        city = address.city
+    )
 
     fun mapFromCustomerModelToShippingAddress(wcCustomer: WCCustomerModel) =
         OrderAddress.Shipping(

@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -11,10 +13,15 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.model.order.OrderAddress
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
 class CustomerListViewModelTest : BaseUnitTest() {
@@ -234,6 +241,156 @@ class CustomerListViewModelTest : BaseUnitTest() {
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers.last())
                 .isInstanceOf(CustomerListViewState.CustomerList.Item.Loading::class.java)
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).firstPageLoaded).isFalse()
+        }
+
+    @Test
+    fun `given customer with remote id and fetching success, when onCustomerSelected, then customer fetched by id and passed`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel()
+            val wcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(1L)
+            }
+
+            val returnedWcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(2L)
+            }
+            whenever(customerListRepository.fetchCustomerByRemoteId(any()))
+                .thenReturn(WooResult(returnedWcCustomer))
+
+            val billingAddress: OrderAddress.Billing = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+            val shippingAddress: OrderAddress.Shipping = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+
+            whenever(customerListViewModelMapper.mapFromCustomerModelToBillingAddress(any()))
+                .thenReturn(billingAddress)
+            whenever(customerListViewModelMapper.mapFromCustomerModelToShippingAddress(any()))
+                .thenReturn(shippingAddress)
+
+            val state: Location = mock()
+                whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
+
+            val country: Location = mock()
+            whenever(customerListRepository.getCountry("US")).thenReturn(country)
+
+            val address: Address = mock()
+            whenever(customerListViewModelMapper.mapFromOrderAddressToAddress(any(), eq(country), eq(state)))
+                .thenReturn(address)
+
+            // WHEN
+            viewModel.onCustomerSelected(wcCustomer)
+
+            // THEN
+            verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
+            assertThat(viewModel.event.value).isEqualTo(
+                CustomerSelected(
+                    customerId = 2L,
+                    billingAddress = address,
+                    shippingAddress = address,
+                )
+            )
+        }
+
+    @Test
+    fun `given customer with remote id and fetching error, when onCustomerSelected, then existing customer passed`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel()
+            val wcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(1L)
+            }
+
+            whenever(customerListRepository.fetchCustomerByRemoteId(any()))
+                .thenReturn(WooResult(null))
+
+            val billingAddress: OrderAddress.Billing = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+            val shippingAddress: OrderAddress.Shipping = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+
+            whenever(customerListViewModelMapper.mapFromCustomerModelToBillingAddress(wcCustomer))
+                .thenReturn(billingAddress)
+            whenever(customerListViewModelMapper.mapFromCustomerModelToShippingAddress(wcCustomer))
+                .thenReturn(shippingAddress)
+
+            val state: Location = mock()
+            whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
+
+            val country: Location = mock()
+            whenever(customerListRepository.getCountry("US")).thenReturn(country)
+
+            val address: Address = mock()
+            whenever(customerListViewModelMapper.mapFromOrderAddressToAddress(any(), eq(country), eq(state)))
+                .thenReturn(address)
+
+            // WHEN
+            viewModel.onCustomerSelected(wcCustomer)
+
+            // THEN
+            verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
+            assertThat(viewModel.event.value).isEqualTo(
+                CustomerSelected(
+                    customerId = 1L,
+                    billingAddress = address,
+                    shippingAddress = address,
+                )
+            )
+        }
+
+    @Test
+    fun `given customer without remote id, when onCustomerSelected, then existing customer passed`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel()
+            val wcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(0L)
+            }
+
+            val billingAddress: OrderAddress.Billing = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+            val shippingAddress: OrderAddress.Shipping = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+
+            whenever(customerListViewModelMapper.mapFromCustomerModelToBillingAddress(wcCustomer))
+                .thenReturn(billingAddress)
+            whenever(customerListViewModelMapper.mapFromCustomerModelToShippingAddress(wcCustomer))
+                .thenReturn(shippingAddress)
+
+            val state: Location = mock()
+            whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
+
+            val country: Location = mock()
+            whenever(customerListRepository.getCountry("US")).thenReturn(country)
+
+            val address: Address = mock()
+            whenever(customerListViewModelMapper.mapFromOrderAddressToAddress(any(), eq(country), eq(state)))
+                .thenReturn(address)
+
+            // WHEN
+            viewModel.onCustomerSelected(wcCustomer)
+
+            // THEN
+            verify(customerListRepository, never()).fetchCustomerByRemoteId(any())
+            assertThat(viewModel.event.value).isEqualTo(
+                CustomerSelected(
+                    customerId = 0L,
+                    billingAddress = address,
+                    shippingAddress = address,
+                )
+            )
         }
 
     private fun TestScope.initViewModel() = CustomerListViewModel(
