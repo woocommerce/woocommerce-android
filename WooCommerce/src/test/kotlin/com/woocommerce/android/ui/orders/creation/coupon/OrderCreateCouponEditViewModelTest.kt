@@ -24,6 +24,7 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
     private val validator: CouponValidator = mock {
         onBlocking { isCouponValid(anyString()) } doReturn couponValidationResult
     }
+
     @Test
     fun `given non empty coupon, when passed to coupon edition screen, then should show remove button`() {
         val navArgs = OrderCreateCouponEditFragmentArgs(
@@ -170,6 +171,56 @@ class OrderCreateCouponEditViewModelTest : BaseUnitTest() {
         sut.event.observeForever {
             assertEquals(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("coupon_code"), it)
         }
+    }
+
+    @Test
+    fun `given network error, when done button clicked, then network error is displayed`() = testBlocking {
+        // given
+        whenever(validator.isCouponValid(anyString())).thenReturn(CouponValidator.CouponValidationResult.NETWORK_ERROR)
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
+        val sut = OrderCreateCouponEditViewModel(validator, navArgs)
+        var latestViewState: OrderCreateCouponEditViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            latestViewState = it
+        }
+        sut.onCouponCodeChanged("coupon_code")
+
+        // when
+        sut.onDoneClicked()
+
+        // then
+        assertEquals(
+            OrderCreateCouponEditViewModel.ValidationState.Error(
+                message = R.string.order_creation_coupon_network_error
+            ),
+            latestViewState?.validationState
+        )
+    }
+
+    @Test
+    fun `given invalid coupon code, when done button clicked, then invalid code error is displayed`() = testBlocking {
+        // given
+        whenever(validator.isCouponValid(anyString())).thenReturn(CouponValidator.CouponValidationResult.INVALID)
+        val navArgs =
+            OrderCreateCouponEditFragmentArgs(OrderCreateEditViewModel.Mode.Edit(1L)).initSavedStateHandle()
+        val sut = OrderCreateCouponEditViewModel(validator, navArgs)
+        var latestViewState: OrderCreateCouponEditViewModel.ViewState? = null
+        sut.viewState.observeForever {
+            latestViewState = it
+        }
+        sut.onCouponCodeChanged("invalid_code")
+
+        // when
+        sut.onDoneClicked()
+
+        // then
+        assertEquals(
+            OrderCreateCouponEditViewModel.ValidationState.Error(
+                message = R.string.order_creation_coupon_invalid_code
+            ),
+            latestViewState?.validationState
+        )
     }
 
     @Test
