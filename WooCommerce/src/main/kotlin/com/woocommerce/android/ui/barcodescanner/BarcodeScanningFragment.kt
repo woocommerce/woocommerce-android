@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.openAppSettings
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.GoogleMLKitCodeScanner
+import com.woocommerce.android.util.WooPermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -83,7 +84,7 @@ class BarcodeScanningFragment : BaseFragment() {
                 }
 
                 is BarcodeScanningViewModel.ScanningEvents.OpenAppSettings -> {
-                    openAppSettings()
+                    WooPermissionUtils.showAppSettings(requireContext(), false)
                 }
             }
         }

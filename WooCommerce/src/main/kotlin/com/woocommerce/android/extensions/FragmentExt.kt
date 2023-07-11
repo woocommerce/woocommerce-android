@@ -191,10 +191,3 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
         )
     )
 }
-
-fun Fragment.openAppSettings() {
-    Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", activity?.packageName, null)
-    ).also(::startActivity)
-}
