@@ -1,8 +1,5 @@
 package com.woocommerce.android.extensions
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
