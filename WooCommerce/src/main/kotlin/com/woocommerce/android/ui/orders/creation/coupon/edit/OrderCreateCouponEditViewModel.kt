@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.coupon.edit
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -111,7 +112,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
         object InProgress : ValidationState()
         @Parcelize
         data class Error(
-            val message: Int,
+          @StringRes  val message: Int,
         ) : ValidationState()
     }
 
