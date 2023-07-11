@@ -67,9 +67,11 @@ fun OrderCreateEditProductDiscountScreen(
         )
     }) { padding ->
         val focusRequester = remember { FocusRequester() }
-        Box(modifier = Modifier
-            .padding(padding)
-            .background(MaterialTheme.colors.surface)) {
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .background(MaterialTheme.colors.surface)
+        ) {
             Column(Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
                 Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
                 val discountValidationState = state.value.discountValidationState

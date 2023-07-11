@@ -70,7 +70,11 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         }.run {
             when (discountType.value) {
                 DiscountType.Percentage -> {
-                    orderItem.value.pricePreDiscount * this / 100.toBigDecimal()
+                    (orderItem.value.pricePreDiscount * this).divide(
+                        PERCENTAGE_BASE,
+                        PERCENTAGE_DIVISION_QUOTIENT_SCALE,
+                        RoundingMode.HALF_UP
+                    )
                 }
                 is DiscountType.Amount -> {
                     this
@@ -120,8 +124,15 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountAmount = discountAmountText.value.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
 
         val pricePreDiscount = orderItem.value.pricePreDiscount
-        val discountPercentage = (PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(pricePreDiscount, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP) * PERCENTAGE_BASE)
+        val discountPercentage =
+            PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
+                pricePreDiscount,
+                PERCENTAGE_DIVISION_QUOTIENT_SCALE,
+                RoundingMode.HALF_UP
+            ) * PERCENTAGE_BASE
+
         discountAmountText.value = discountPercentage.stripTrailingZeros().toPlainString()
+
         discountType.value = DiscountType.Percentage
     }
 
@@ -131,8 +142,18 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
         val discountPercentage = discountAmountText.value.toBigDecimal()
         val pricePreDiscount = orderItem.value.pricePreDiscount
-        val discountAmount = pricePreDiscount * (discountPercentage.divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP))
-        discountAmountText.value = discountAmount.setScale(PRICE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
+        val discountAmount =
+            pricePreDiscount *
+                discountPercentage.divide(
+                    PERCENTAGE_BASE,
+                    PERCENTAGE_DIVISION_QUOTIENT_SCALE,
+                    RoundingMode.HALF_UP
+                )
+
+        discountAmountText.value =
+            discountAmount.setScale(PRICE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
+                .stripTrailingZeros().toPlainString()
+
         discountType.value = DiscountType.Amount(currency)
     }
 
