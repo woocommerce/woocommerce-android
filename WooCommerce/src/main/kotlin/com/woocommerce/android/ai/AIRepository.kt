@@ -41,6 +41,11 @@ class AIRepository @Inject constructor(
         return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
     }
 
+    suspend fun identifyISOLanguageCode(site: SiteModel, text: String): Result<String> {
+        val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
+        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
+    }
+
     private suspend fun fetchJetpackAICompletionsForSite(
         site: SiteModel,
         prompt: String,
