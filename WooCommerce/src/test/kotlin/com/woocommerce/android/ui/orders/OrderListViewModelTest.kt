@@ -1139,6 +1139,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel = createViewModel()
 
             // then
+            assertThat(viewModel.viewState.ippFeedbackBannerState).isEqualTo(IPPSurveyFeedbackBannerState.Hidden)
             assertThat(viewModel.viewState.jitmEnabled).isEqualTo(true)
         }
 
