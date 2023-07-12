@@ -297,6 +297,55 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given customer with remote id, when onCustomerSelected, then partialLoading state emitted`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel()
+            val wcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(1L)
+            }
+
+            val returnedWcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(2L)
+            }
+            whenever(customerListRepository.fetchCustomerByRemoteId(any()))
+                .thenReturn(WooResult(returnedWcCustomer))
+
+            val billingAddress: OrderAddress.Billing = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+            val shippingAddress: OrderAddress.Shipping = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+
+            whenever(customerListViewModelMapper.mapFromCustomerModelToBillingAddress(any()))
+                .thenReturn(billingAddress)
+            whenever(customerListViewModelMapper.mapFromCustomerModelToShippingAddress(any()))
+                .thenReturn(shippingAddress)
+
+            val state: Location = mock()
+            whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
+
+            val country: Location = mock()
+            whenever(customerListRepository.getCountry("US")).thenReturn(country)
+
+            val address: Address = mock()
+            whenever(customerListViewModelMapper.mapFromOrderAddressToAddress(any(), eq(country), eq(state)))
+                .thenReturn(address)
+
+            val states = viewModel.viewState.captureValues()
+
+            // WHEN
+            viewModel.onCustomerSelected(wcCustomer)
+
+            // THEN
+            assertThat(states[0].partialLoading).isFalse()
+            assertThat(states[1].partialLoading).isTrue()
+        }
+
+    @Test
     fun `given customer with remote id and fetching error, when onCustomerSelected, then existing customer passed`() =
         testBlocking {
             // GIVEN
