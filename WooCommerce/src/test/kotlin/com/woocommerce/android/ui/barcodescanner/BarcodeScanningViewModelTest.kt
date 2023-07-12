@@ -33,43 +33,6 @@ class BarcodeScanningViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given permanently denied dialog shown, when user navigates back from the app settings, then launch the camera permission again`() {
-        barcodeScanningViewModel.updatePermissionState(
-            isPermissionGranted = false,
-            shouldShowRequestPermissionRationale = false
-        )
-        (barcodeScanningViewModel.permissionState.value as PermanentlyDenied).ctaAction.invoke(mock())
-
-        barcodeScanningViewModel.onResume()
-
-        assertThat(barcodeScanningViewModel.event.value).isInstanceOf(LaunchCameraPermission::class.java)
-    }
-
-    @Test
-    fun `given permanently denied dialog shown, when user minimises and navigates back to our app without clicking the CTA, then do not launch the camera permission again`() {
-        barcodeScanningViewModel.updatePermissionState(
-            isPermissionGranted = false,
-            shouldShowRequestPermissionRationale = false
-        )
-
-        barcodeScanningViewModel.onResume()
-
-        assertThat(barcodeScanningViewModel.event.value).isNull()
-    }
-
-    @Test
-    fun `given denied dialog shown, when user minimises and navigates back to our app, then do not launch the camera permission again`() {
-        barcodeScanningViewModel.updatePermissionState(
-            isPermissionGranted = false,
-            shouldShowRequestPermissionRationale = true
-        )
-
-        barcodeScanningViewModel.onResume()
-
-        assertThat(barcodeScanningViewModel.event.value).isNull()
-    }
-
-    @Test
     fun `given camera permission granted, then update the PermissionState accordingly`() {
         barcodeScanningViewModel.updatePermissionState(
             isPermissionGranted = true,

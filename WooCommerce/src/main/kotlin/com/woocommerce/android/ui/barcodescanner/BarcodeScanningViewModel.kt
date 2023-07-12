@@ -66,16 +66,6 @@ class BarcodeScanningViewModel @Inject constructor(
         }
     }
 
-    fun onResume() {
-        if (event.value is ScanningEvents.OpenAppSettings) {
-            triggerEvent(
-                ScanningEvents.LaunchCameraPermission(
-                    (event.value as ScanningEvents.OpenAppSettings).cameraLauncher
-                )
-            )
-        }
-    }
-
     sealed class ScanningEvents : Event() {
         data class LaunchCameraPermission(
             val cameraLauncher: ManagedActivityResultLauncher<String, Boolean>

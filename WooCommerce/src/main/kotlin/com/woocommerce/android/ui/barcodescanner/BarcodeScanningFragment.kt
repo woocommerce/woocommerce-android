@@ -67,12 +67,6 @@ class BarcodeScanningFragment : BaseFragment() {
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
-    }
-
     private fun observeViewModelEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
