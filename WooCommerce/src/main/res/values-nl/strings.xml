@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 13:54:03+0000
+Translation-Revision-Date: 2023-07-04 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Voeg in mum van tijd beschrijvingen toe met behulp van AI. Bekijk deze functie vandaag nog!</string>
+    <string name="ai_product_description_dialog_title">AI-productbeschrijving toevoegen</string>
+    <string name="ai_product_description_note_dialog_confirmation">Duidelijk</string>
+    <string name="ai_product_description_note_dialog_message">Onthoud dat deze productbeschrijving is gegenereerd met ons AI-hulpmiddel. Bekijk en bewerk de content om er zeker van te zijn dat deze bij je merk en boodschap past.</string>
+    <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>
+    <string name="ai_product_description_feedback">Is de gegenereerde\nbeschrijving nuttig?</string>
+    <string name="ai_product_description_regenerate_button">Opnieuw genereren</string>
+    <string name="ai_product_description_survey">Is de gegenereerde beschrijving nuttig?</string>
+    <string name="ai_product_description_hint">Licht de unieke eigenschappen en doelgroep van de product uit met trefwoorden voor een op maat gemaakte beschrijving.</string>
+    <string name="ai_product_description_example">Voorbeeld: in pot, cactus, plant, decoratief, makkelijke verzorging</string>
+    <string name="ai_product_description_product_name">Voer je productnaam in</string>
+    <string name="ai_product_description_title">Stel een beschrijving op</string>
+    <string name="barcode_scanning_camera_permission_denied">De cameramachtiging is vereist om de streepjescode te scannen.</string>
+    <string name="barcode_scanning_title">Streepjescode scannen</string>
+    <string name="order_creation_customer_search_username">Gebruikersnaam</string>
+    <string name="order_creation_customer_search_name">Naam</string>
+    <string name="order_creation_customer_search_email">E-mail</string>
+    <string name="order_creation_customer_search_everything">Alles</string>
+    <string name="order_creation_customer_filter_hint">Klanten filteren op</string>
+    <string name="order_creation_coupons_title">Kortingsbonnen toegepast</string>
+    <string name="more_settings">Meer instellingen</string>
+    <string name="maybe_later">Misschien later</string>
     <string name="product_sharing_regenerate">Nog een keer schrijven</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Ontvang een melding bij elke aankoop:&lt;/b&gt; Je mist nooit meer iets met de directe verkoopmeldingen. Ontvang een waarschuwing over elke nieuwe verkoop, zodat je je successen kan vieren en je op de hoogte blijft van de activiteit in je winkel.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Voeg producten toe en bewerk ze met een enkele tik:&lt;/b&gt; Voeg nieuwe producten toe, werk gegevens bij, upload afbeeldingen en beheer alle variaties, en dat allemaal in de app. Houd je inventaris moeiteloos up-to-date.</string>

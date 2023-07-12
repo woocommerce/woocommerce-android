@@ -1118,6 +1118,31 @@ class OrderListViewModelTest : BaseUnitTest() {
             eq(CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld)
         )
     }
+
+    @Test
+    fun `given should show feedback banner but the banner data is null, when ViewModel init, then JITM shown instead`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getIPPFeedbackBannerData()).thenReturn(null)
+            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
+                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+            }
+            whenever(
+                feedbackPrefs.getFeatureFeedbackSettings(
+                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
+                )
+            ).thenReturn(featureFeedbackSettings)
+            whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            assertThat(viewModel.viewState.ippFeedbackBannerState).isEqualTo(IPPSurveyFeedbackBannerState.Hidden)
+            assertThat(viewModel.viewState.jitmEnabled).isEqualTo(true)
+        }
+
     //endregion
 
     private companion object {
