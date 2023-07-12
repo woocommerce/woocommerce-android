@@ -120,7 +120,7 @@ private fun Toolbar(
             }
         },
         backgroundColor = colorResource(id = R.color.color_toolbar),
-        elevation = 0.dp,
+        elevation = dimensionResource(id = R.dimen.appbar_elevation),
         actions = {
             WCTextButton(
                 onClick = onDoneClicked,
