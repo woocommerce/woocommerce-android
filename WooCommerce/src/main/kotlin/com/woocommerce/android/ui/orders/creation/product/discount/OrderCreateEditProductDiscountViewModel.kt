@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -47,15 +48,16 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     private fun getInitialDiscountAmount() = calculateItemDiscountAmount(args.item)
 
-    val viewState: StateFlow<ViewState> = combine(discountAmountText, discountType) { discount, type ->
-        ViewState(
-            currency = currency,
-            discountAmount = discount,
-            discountValidationState = checkDiscountValidationState(discount),
-            isRemoveButtonVisible = getInitialDiscountAmount() > BigDecimal.ZERO,
-            discountType = type
-        )
-    }.toStateFlow(ViewState("", ""))
+    val viewState: StateFlow<ViewState> =
+        combine(discountAmountText, discountType) { discount, type ->
+            ViewState(
+                currency = currency,
+                discountAmount = discount,
+                discountValidationState = checkDiscountValidationState(discount),
+                isRemoveButtonVisible = getInitialDiscountAmount() > BigDecimal.ZERO,
+                discountType = type
+            )
+        }.toStateFlow(ViewState("", ""))
 
     @Suppress("ReturnCount")
     private fun checkDiscountValidationState(discount: String): DiscountAmountValidationState {
@@ -76,6 +78,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                         RoundingMode.HALF_UP
                     )
                 }
+
                 is DiscountType.Amount -> {
                     this
                 }
@@ -105,12 +108,17 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         }
     }
 
+    private fun getDiscountInputValue() = with(discountAmountText.value) {
+        if (isNotNullOrEmpty()) toBigDecimal() else BigDecimal.ZERO
+    }
+
     private fun getDiscountAmount(): BigDecimal {
-        val discountAmount = discountAmountText.value.toBigDecimal()
+        val discountAmount = getDiscountInputValue()
         return when (discountType.value) {
             DiscountType.Percentage -> {
-                orderItem.value.pricePreDiscount * discountAmount / 100.toBigDecimal()
+                orderItem.value.pricePreDiscount * discountAmount / PERCENTAGE_BASE
             }
+
             is DiscountType.Amount -> {
                 discountAmount
             }
@@ -121,18 +129,24 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val previousDiscountType = discountType.value
         if (previousDiscountType == DiscountType.Percentage) return
 
-        val discountAmount = discountAmountText.value.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+        if (discountAmountText.value.isNotNullOrEmpty()) {
+            val discountAmount = with(discountAmountText.value) {
+                if (isNotNullOrEmpty()) {
+                    toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+                } else {
+                    BigDecimal.ZERO
+                }
+            }
+            val pricePreDiscount = orderItem.value.pricePreDiscount
+            val discountPercentage =
+                PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
+                    pricePreDiscount,
+                    PERCENTAGE_DIVISION_QUOTIENT_SCALE,
+                    RoundingMode.HALF_UP
+                ) * PERCENTAGE_BASE
 
-        val pricePreDiscount = orderItem.value.pricePreDiscount
-        val discountPercentage =
-            PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
-                pricePreDiscount,
-                PERCENTAGE_DIVISION_QUOTIENT_SCALE,
-                RoundingMode.HALF_UP
-            ) * PERCENTAGE_BASE
-
-        discountAmountText.value = discountPercentage.stripTrailingZeros().toPlainString()
-
+            discountAmountText.value = discountPercentage.stripTrailingZeros().toPlainString()
+        }
         discountType.value = DiscountType.Percentage
     }
 
@@ -140,20 +154,18 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val previousDiscountType = discountType.value
         if (previousDiscountType == DiscountType.Amount(currency)) return
 
-        val discountPercentage = discountAmountText.value.toBigDecimal()
-        val pricePreDiscount = orderItem.value.pricePreDiscount
-        val discountAmount =
-            pricePreDiscount *
-                discountPercentage.divide(
-                    PERCENTAGE_BASE,
-                    PERCENTAGE_DIVISION_QUOTIENT_SCALE,
-                    RoundingMode.HALF_UP
-                )
+        if (discountAmountText.value.isNotNullOrEmpty()) {
+            val discountPercentage = getDiscountInputValue()
+            val pricePreDiscount = orderItem.value.pricePreDiscount
+            val discountAmount = pricePreDiscount
+                .times(discountPercentage)
+                .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
 
-        discountAmountText.value =
-            discountAmount.setScale(PRICE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
-                .stripTrailingZeros().toPlainString()
-
+            discountAmountText.value = discountAmount
+                .setScale(PRICE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
+                .stripTrailingZeros()
+                .toPlainString()
+        }
         discountType.value = DiscountType.Amount(currency)
     }
 
@@ -182,6 +194,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     sealed class DiscountType(open val symbol: String) : Parcelable {
         @Parcelize
         object Percentage : DiscountType(PERCENTAGE_SYMBOL)
+
         @Parcelize
         data class Amount(override val symbol: String) : DiscountType(symbol)
     }
