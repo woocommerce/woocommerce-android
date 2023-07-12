@@ -56,7 +56,8 @@ fun QRCode(
                 color = colorResource(id = R.color.woo_white),
             )
             .padding(4.dp)
-            .background(color = colorResource(id = R.color.woo_white)
+            .background(
+                color = colorResource(id = R.color.woo_white)
             ),
         painter = rememberQrBitmapPainter(
             content,
