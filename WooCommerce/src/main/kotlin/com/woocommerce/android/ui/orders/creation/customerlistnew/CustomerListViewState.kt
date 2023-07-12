@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 data class CustomerListViewState(
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
+    val partialLoading: Boolean = false,
     val body: CustomerList = CustomerList.Loading,
 ) {
     sealed class CustomerList {

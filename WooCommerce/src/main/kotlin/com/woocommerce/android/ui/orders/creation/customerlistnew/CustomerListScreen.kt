@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -117,7 +118,16 @@ fun CustomerListScreen(
             onSearchTypeSelected = onSearchTypeChanged,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        if (state.partialLoading) {
+            Spacer(modifier = Modifier.height(6.dp))
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+            )
+        } else {
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         when (val body = state.body) {
             CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
@@ -332,6 +342,7 @@ fun CustomerListScreenPreview() {
                     isSelected = false,
                 ),
             ),
+            partialLoading = true,
             body = CustomerListViewState.CustomerList.Loaded(
                 customers = listOf(
                     CustomerListViewState.CustomerList.Item.Customer(
