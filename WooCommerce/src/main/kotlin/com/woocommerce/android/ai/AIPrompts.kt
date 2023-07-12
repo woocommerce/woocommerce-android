@@ -44,5 +44,4 @@ object AIPrompts {
     fun generateLanguageIdentificationPrompt(text: String): String {
         return String.format(LANGUAGE_IDENTIFICATION_PROMPT, text)
     }
-
 }

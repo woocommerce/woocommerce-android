@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember", "UNUSED_PARAMETER")
+@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember")
 @HiltViewModel
 class AIProductDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
@@ -62,14 +62,25 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     private suspend fun generateDescription() {
-        val result = aiRepository.generateProductDescription(
+        aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
-            productName = navArgs.productTitle ?: "",
-            features = _viewState.value.features
-        )
-        result.fold(
-            onSuccess = { completions ->
-                handleCompletionsSuccess(completions)
+            text = "${navArgs.productTitle} ${_viewState.value.features}"
+        ).fold(
+            onSuccess = { languageISOCode ->
+                val result = aiRepository.generateProductDescription(
+                    site = selectedSite.get(),
+                    productName = navArgs.productTitle ?: "",
+                    features = _viewState.value.features,
+                    languageISOCode = languageISOCode
+                )
+                result.fold(
+                    onSuccess = { completions ->
+                        handleCompletionsSuccess(completions)
+                    },
+                    onFailure = { exception ->
+                        handleCompletionsFailure(exception as JetpackAICompletionsException)
+                    }
+                )
             },
             onFailure = { exception ->
                 handleCompletionsFailure(exception as JetpackAICompletionsException)
