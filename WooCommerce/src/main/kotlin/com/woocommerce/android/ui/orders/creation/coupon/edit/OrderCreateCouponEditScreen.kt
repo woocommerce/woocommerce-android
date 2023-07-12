@@ -38,11 +38,7 @@ fun OrderCreateCouponEditScreen(
             .fillMaxWidth()
     ) {
         val focusRequester = remember { FocusRequester() }
-        val errorMessage: OrderCreateCouponEditViewModel.ValidationState.Error =
-            state.value?.validationState as? OrderCreateCouponEditViewModel.ValidationState.Error
-                ?: OrderCreateCouponEditViewModel.ValidationState.Error(R.string.order_creation_coupon_network_error)
-        val isError = state.value?.validationState == OrderCreateCouponEditViewModel.ValidationState
-            .Error(errorMessage.message)
+        val isError = state.value?.validationState is OrderCreateCouponEditViewModel.ValidationState.Error
 
         WCOutlinedTextField(
             modifier = Modifier.focusRequester(focusRequester),
@@ -62,8 +58,11 @@ fun OrderCreateCouponEditScreen(
             },
         )
         if (isError) {
+            val errorMessage: Int? = (
+                state.value?.validationState as? OrderCreateCouponEditViewModel.ValidationState.Error
+                )?.message
             Text(
-                text = stringResource(id = errorMessage.message),
+                text = errorMessage?.let { stringResource(id = it) }.toString(),
                 color = colorResource(id = R.color.woo_red_50),
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
             )
