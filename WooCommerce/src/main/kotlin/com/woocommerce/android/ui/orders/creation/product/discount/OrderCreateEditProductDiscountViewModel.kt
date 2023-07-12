@@ -38,7 +38,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     )
     private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
 
-    private val currencyFormattingParameters = siteParamsRepo.getParameters("key_site_params", savedStateHandle).currencyFormattingParameters
+    private val currencyFormattingParameters =
+        siteParamsRepo.getParameters("key_site_params", savedStateHandle).currencyFormattingParameters
     private val decimalSeparator = currencyFormattingParameters?.currencyDecimalSeparator
         ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
     private val numberOfDecimals = currencyFormattingParameters?.currencyDecimalNumber
