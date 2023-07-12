@@ -44,7 +44,7 @@ class BarcodeScanningFragment : BaseFragment() {
         viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
             view.setContent {
                 WooThemeWithBackground {
-                    BarcodeScanner(
+                    BarcodeScannerScreen(
                         codeScanner = codeScanner,
                         permissionState = permissionState,
                         onResult = { granted ->

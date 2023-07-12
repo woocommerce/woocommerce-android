@@ -1,148 +1,103 @@
 package com.woocommerce.android.ui.barcodescanner
 
 import android.content.res.Configuration
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import android.util.Size
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+import androidx.camera.core.ImageProxy
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import androidx.camera.core.Preview as CameraPreview
 
 @Composable
 fun BarcodeScanner(
     codeScanner: CodeScanner,
-    permissionState: BarcodeScanningViewModel.PermissionState,
-    onResult: (Boolean) -> Unit,
-    onScannedResult: (Flow<CodeScannerStatus>) -> Unit,
+    onScannedResult: (Flow<CodeScannerStatus>) -> Unit
 ) {
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted ->
-            onResult(granted)
-        },
-    )
-    LaunchedEffect(key1 = Unit) {
-        cameraPermissionLauncher.launch(BarcodeScanningFragment.KEY_CAMERA_PERMISSION)
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraProviderFuture = remember {
+        ProcessCameraProvider.getInstance(context)
     }
-    when (permissionState) {
-        BarcodeScanningViewModel.PermissionState.Granted -> {
-            BarcodeScannerScreen(
-                codeScanner = codeScanner,
-                onScannedResult = onScannedResult
-            )
-        }
-        is BarcodeScanningViewModel.PermissionState.ShouldShowRationale -> {
-            AlertDialog(
-                title = stringResource(id = permissionState.title),
-                message = stringResource(id = permissionState.message),
-                ctaLabel = stringResource(id = permissionState.ctaLabel),
-                dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
-                ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
-                dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
-            )
-        }
-        is BarcodeScanningViewModel.PermissionState.PermanentlyDenied -> {
-            AlertDialog(
-                title = stringResource(id = permissionState.title),
-                message = stringResource(id = permissionState.message),
-                ctaLabel = stringResource(id = permissionState.ctaLabel),
-                dismissCtaLabel = stringResource(id = permissionState.dismissCtaLabel),
-                ctaAction = { permissionState.ctaAction.invoke(cameraPermissionLauncher) },
-                dismissCtaAction = { permissionState.dismissCtaAction.invoke() }
-            )
-        }
-        BarcodeScanningViewModel.PermissionState.Unknown -> {
-            // no-op
-        }
-    }
-}
-
-@Composable
-private fun AlertDialog(
-    title: String,
-    message: String,
-    ctaLabel: String,
-    dismissCtaLabel: String,
-    ctaAction: () -> Unit,
-    dismissCtaAction: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = { dismissCtaAction() },
-        title = {
-            Text(title)
-        },
-        text = {
-            Text(message)
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    ctaAction()
-                }
-            ) {
-                Text(
-                    ctaLabel,
-                    color = MaterialTheme.colors.secondary,
-                    modifier = Modifier.padding(8.dp)
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AndroidView(
+            factory = { context ->
+                val previewView = PreviewView(context)
+                val preview = CameraPreview.Builder().build()
+                preview.setSurfaceProvider(previewView.surfaceProvider)
+                val selector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+                val imageAnalysis = ImageAnalysis.Builder().setTargetResolution(
+                    Size(
+                        previewView.width,
+                        previewView.height
+                    )
                 )
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    dismissCtaAction()
+                    .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy ->
+                    onScannedResult(codeScanner.startScan(imageProxy))
                 }
-            ) {
-                Text(
-                    dismissCtaLabel,
-                    color = MaterialTheme.colors.secondary,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-        },
-    )
-}
-
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun DeniedOnceAlertDialog() {
-    WooThemeWithBackground {
-        AlertDialog(
-            title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
-            message = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_message),
-            ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_rationale_cta_label),
-            dismissCtaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_dismiss_label),
-            ctaAction = {},
-            dismissCtaAction = {},
+                try {
+                    cameraProviderFuture.get().bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
+                } catch (e: IllegalStateException) {
+                    onScannedResult(
+                        flowOf(
+                            CodeScannerStatus.Failure(
+                                e.message
+                                    ?: "Illegal state exception while binding camera provider to lifecycle",
+                                CodeScanningErrorType.Other(e)
+                            )
+                        )
+                    )
+                } catch (e: IllegalArgumentException) {
+                    onScannedResult(
+                        flowOf(
+                            CodeScannerStatus.Failure(
+                                e.message
+                                    ?: "Illegal argument exception while binding camera provider to lifecycle",
+                                CodeScanningErrorType.Other(e)
+                            )
+                        )
+                    )
+                }
+                previewView
+            },
+            modifier = Modifier.fillMaxSize()
         )
+    }
+}
+
+class DummyCodeScanner : CodeScanner {
+    override fun startScan(imageProxy: ImageProxy): Flow<CodeScannerStatus> {
+        return flowOf(CodeScannerStatus.Success("", BarcodeFormat.FormatUPCA))
     }
 }
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun DeniedPermanentlyAlertDialog() {
+private fun BarcodeScannerScreenPreview() {
     WooThemeWithBackground {
-        AlertDialog(
-            title = stringResource(id = R.string.barcode_scanning_alert_dialog_title),
-            message = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_message),
-            ctaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_permanently_denied_cta_label),
-            dismissCtaLabel = stringResource(id = R.string.barcode_scanning_alert_dialog_dismiss_label),
-            ctaAction = {},
-            dismissCtaAction = {},
-        )
+        BarcodeScanner(codeScanner = DummyCodeScanner(), onScannedResult = {})
     }
 }
