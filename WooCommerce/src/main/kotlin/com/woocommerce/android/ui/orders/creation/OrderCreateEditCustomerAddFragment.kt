@@ -125,7 +125,12 @@ class OrderCreateEditCustomerAddFragment :
                         billingAddress = event.addresses.getValue(BILLING),
                         shippingAddress = event.addresses.getValue(SHIPPING)
                     )
-                    findNavController().navigateUp()
+
+                    if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
+                        findNavController().popBackStack(R.id.orderCreationFragment, false)
+                    } else {
+                        findNavController().navigateUp()
+                    }
                 }
                 is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
             }
