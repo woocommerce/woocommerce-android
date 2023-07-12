@@ -8,6 +8,6 @@ class GetItemDiscountAmountText @Inject constructor(
     private val formatter: CurrencyFormatter
 ) {
     operator fun invoke(discountAmount: BigDecimal, currency: String): String {
-        return "-${formatter.formatCurrency(discountAmount, currency)}"
+        return formatter.formatCurrency(discountAmount, currency)
     }
 }
