@@ -7,6 +7,9 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Valid
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -14,16 +17,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(R.string.order_creation_discount_invalid_number_error) } doReturn
-            "Discount is not a valid number"
         on { getString(R.string.order_creation_discount_too_big_error) } doReturn
             "Discount cannot be greater than the price"
     }
@@ -31,19 +34,24 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         on { findCurrencySymbol(anyString()) } doReturn "$"
     }
 
-    @Test
-    fun `given invalid format of discount, when done clicked, then should return Invalid state`() =
-        testBlocking {
-            val sut = createSut()
+    private val savedState = OrderCreateEditProductDiscountFragmentArgs(
+        item,
+        "usd"
+    ).initSavedStateHandle()
 
-            sut.onDiscountAmountChange("Aaaa")
-
-            sut.viewState.test {
-                val validationState = awaitItem().discountValidationState
-                assertIs<Invalid>(validationState)
-                assertThat(validationState.errorMessage).isEqualTo("Discount is not a valid number")
-            }
-        }
+    private val siteParams = SiteParameters(
+        currencyCode = "USD",
+        currencySymbol = "$",
+        currencyFormattingParameters = CurrencyFormattingParameters(
+            "", "", 2, WCSettingsModel.CurrencyPosition.LEFT
+        ),
+        weightUnit = "kg",
+        dimensionUnit = "cm",
+        gmtOffset = 0f
+    )
+    private val parameterRepository: ParameterRepository = mock {
+        on(it.getParameters(any(), any())).thenReturn(siteParams)
+    }
 
     @Test
     fun `given discount bigger than item's price, when done clicked, then should return Invalid state`() =
@@ -60,7 +68,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
 
             val sut = createSut(savedStateHandle)
 
-            sut.onDiscountAmountChange("60.0")
+            sut.onDiscountAmountChange(60.toBigDecimal())
 
             sut.viewState.test {
                 val validationState = awaitItem().discountValidationState
@@ -84,7 +92,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
 
             val sut = createSut(savedStateHandle)
 
-            sut.onDiscountAmountChange("40.0")
+            sut.onDiscountAmountChange(40.toBigDecimal())
 
             sut.viewState.test {
                 assertIs<Valid>(awaitItem().discountValidationState)
@@ -106,7 +114,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
 
             val sut = createSut(savedStateHandle)
 
-            sut.onDiscountAmountChange("50.0")
+            sut.onDiscountAmountChange(50.toBigDecimal())
 
             sut.viewState.test {
                 assertIs<Valid>(awaitItem().discountValidationState)
@@ -129,7 +137,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         sut.event.observeForever {
             lastEvent = it
         }
-        sut.onDiscountAmountChange("1.00")
+        sut.onDiscountAmountChange(1.toBigDecimal())
         sut.onDoneClicked()
         with(lastEvent) {
             assertThat(this).isNotNull
@@ -140,15 +148,13 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     }
 
     private fun createSut(
-        savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
-            "usd"
-        ).initSavedStateHandle()
+        savedStateHandle: SavedStateHandle = savedState
     ): OrderCreateEditProductDiscountViewModel {
         return OrderCreateEditProductDiscountViewModel(
             savedStateHandle,
             resourceProvider,
             CalculateItemDiscountAmount(),
+            parameterRepository,
             currencySymbolFinder
         )
     }
