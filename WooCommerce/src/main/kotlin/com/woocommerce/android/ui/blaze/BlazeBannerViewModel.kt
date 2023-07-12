@@ -36,16 +36,13 @@ class BlazeBannerViewModel @Inject constructor(
 
     private var blazeBannerSource: BlazeFlowSource = MY_STORE_BANNER
 
-    init {
+    fun updateBlazeBannerStatus() {
         launch {
             val publishedProducts = productRepository.getProductList()
                 .filter { it.status == PUBLISH }
-            if (isBlazeEnabled() &&
+            _isBlazeBannerVisible.value = !appPrefsWrapper.isBlazeBannerHidden(selectedSite.getSelectedSiteId()) &&
                 publishedProducts.isNotEmpty() &&
-                !appPrefsWrapper.isBlazeBannerHidden(selectedSite.getSelectedSiteId())
-            ) {
-                _isBlazeBannerVisible.value = true
-            }
+                isBlazeEnabled()
         }
     }
 

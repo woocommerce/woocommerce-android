@@ -459,7 +459,7 @@ class MyStoreFragment :
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-
+        blazeViewModel.updateBlazeBannerStatus()
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
             usageTracksEventEmitter.interacted()

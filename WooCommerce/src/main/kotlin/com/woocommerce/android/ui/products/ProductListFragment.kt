@@ -158,6 +158,7 @@ class ProductListFragment :
         initAddProductFab(binding.addProductButton)
 
         addSelectionTracker()
+        setUpBlazeBanner()
 
         when {
             productListViewModel.isSearching() -> {
@@ -453,9 +454,7 @@ class ProductListFragment :
 
         viewModel.productList.observe(viewLifecycleOwner) {
             showProductList(it)
-            if (it.isNotEmpty()) {
-                setUpBlazeBanner()
-            }
+            blazeViewModel.updateBlazeBannerStatus()
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
