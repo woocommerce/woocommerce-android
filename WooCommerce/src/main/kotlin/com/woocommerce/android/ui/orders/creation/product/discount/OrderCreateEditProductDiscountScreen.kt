@@ -143,5 +143,5 @@ fun OrderCreateEditProductDiscountScreenPreview() =
         {},
         {},
         {},
-        { _ -> }
+        {}
     )
