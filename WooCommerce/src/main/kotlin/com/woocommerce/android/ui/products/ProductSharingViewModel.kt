@@ -65,15 +65,26 @@ class ProductSharingViewModel @Inject constructor(
         }
 
         launch {
-            val result = aiRepository.generateProductSharingText(
+            aiRepository.identifyISOLanguageCode(
                 site = selectedSite.get(),
-                navArgs.productName,
-                navArgs.permalink,
-                navArgs.productDescription.orEmpty()
-            )
-            result.fold(
-                onSuccess = { completions ->
-                    handleCompletionsSuccess(completions)
+                text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}"
+            ).fold(
+                onSuccess = { languageISOCode ->
+                    val result = aiRepository.generateProductSharingText(
+                        site = selectedSite.get(),
+                        navArgs.productName,
+                        navArgs.permalink,
+                        navArgs.productDescription.orEmpty(),
+                        languageISOCode
+                    )
+                    result.fold(
+                        onSuccess = { completions ->
+                            handleCompletionsSuccess(completions)
+                        },
+                        onFailure = { exception ->
+                            handleCompletionsFailure(exception as JetpackAICompletionsException)
+                        }
+                    )
                 },
                 onFailure = { exception ->
                     handleCompletionsFailure(exception as JetpackAICompletionsException)
@@ -95,14 +106,7 @@ class ProductSharingViewModel @Inject constructor(
     }
 
     private fun handleCompletionsFailure(error: JetpackAICompletionsException) {
-        tracker.track(
-            AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
-            mapOf(
-                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                AnalyticsTracker.KEY_ERROR_TYPE to error.errorType,
-                AnalyticsTracker.KEY_ERROR_DESC to error.errorMessage
-            )
-        )
+        trackCompletionFailure(error)
 
         _viewState.update {
             // This is to return the previous button's state before generating.
@@ -118,6 +122,17 @@ class ProductSharingViewModel @Inject constructor(
                 isGenerating = false
             )
         }
+    }
+
+    private fun trackCompletionFailure(error: JetpackAICompletionsException) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                AnalyticsTracker.KEY_ERROR_TYPE to error.errorType,
+                AnalyticsTracker.KEY_ERROR_DESC to error.errorMessage
+            )
+        )
     }
 
     fun onShareMessageEdited(message: String) {
