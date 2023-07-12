@@ -37,6 +37,7 @@ class OrderCreateEditProductDiscountFragment : BaseFragment() {
                         onDiscountAmountChange = viewModel::onDiscountAmountChange,
                         onAmountDiscountSelected = viewModel::onAmountDiscountSelected,
                         onPercentageDiscountSelected = viewModel::onPercentageDiscountSelected,
+                        discountInputFieldConfig = viewModel.discountInputFieldConfig,
                     )
                 }
             }
