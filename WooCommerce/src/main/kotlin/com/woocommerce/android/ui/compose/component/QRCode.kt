@@ -8,6 +8,9 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +49,15 @@ fun QRCode(
     @DrawableRes overlayId: Int? = null,
 ) {
     Image(
+        modifier = Modifier
+            .size(size)
+            .border(
+                width = 5.dp,
+                color = colorResource(id = R.color.woo_white),
+            )
+            .padding(4.dp)
+            .background(color = colorResource(id = R.color.woo_white)
+            ),
         painter = rememberQrBitmapPainter(
             content,
             size = size,
@@ -53,7 +65,6 @@ fun QRCode(
         ),
         contentDescription = "QR Code",
         contentScale = ContentScale.FillBounds,
-        modifier = Modifier.size(size),
     )
 }
 
@@ -68,7 +79,7 @@ private fun rememberQrBitmapPainter(
 
     var bitmap by remember(content) { mutableStateOf<Bitmap?>(null) }
 
-    val pixelColor = colorResource(id = R.color.color_on_surface_medium).toArgb()
+    val pixelColor = colorResource(id = R.color.woo_black_90).toArgb()
 
     LaunchedEffect(bitmap) {
         if (bitmap != null) return@LaunchedEffect
