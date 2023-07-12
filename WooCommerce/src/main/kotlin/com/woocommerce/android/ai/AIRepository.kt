@@ -58,7 +58,7 @@ class AIRepository @Inject constructor(
         site: SiteModel,
         prompt: String,
         feature: String,
-        skipCache: Boolean = false
+        skipCache: Boolean = true
     ): Result<String> = withContext(Dispatchers.IO) {
         jetpackAIStore.fetchJetpackAICompletionsForSite(site, prompt, feature, skipCache).run {
             when (this) {
