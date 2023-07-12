@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_BANNER_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -26,7 +27,8 @@ class BlazeBannerViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _isBlazeBannerVisible = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = false)
@@ -40,7 +42,7 @@ class BlazeBannerViewModel @Inject constructor(
                 .filter { it.status == PUBLISH }
             if (isBlazeEnabled() &&
                 publishedProducts.isNotEmpty() &&
-                !appPrefsWrapper.shouldHideBlazeBanner
+                !appPrefsWrapper.isBlazeBannerHidden(selectedSite.getSelectedSiteId())
             ) {
                 _isBlazeBannerVisible.value = true
             }
@@ -56,7 +58,7 @@ class BlazeBannerViewModel @Inject constructor(
             stat = BLAZE_BANNER_DISMISSED,
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to blazeBannerSource.trackingName)
         )
-        appPrefsWrapper.shouldHideBlazeBanner = true
+        appPrefsWrapper.setBlazeBannerHidden(selectedSite.getSelectedSiteId(), hide = true)
         triggerEvent(DismissBlazeBannerEvent)
         triggerEvent(
             MultiLiveEvent.Event.ShowDialog(
