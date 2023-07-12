@@ -154,7 +154,8 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         sut.onPercentageDiscountSelected()
         sut.viewState.test {
             val viewState = awaitItem()
-            assertThat(viewState.discountType).isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Percentage::class.java)
+            assertThat(viewState.discountType)
+                .isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Percentage::class.java)
             assertThat(viewState.discountAmount).isEqualTo("9.90990991")
         }
     }
@@ -175,7 +176,8 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         sut.onAmountDiscountSelected()
         sut.viewState.test {
             val viewState = awaitItem()
-            assertThat(viewState.discountType).isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Amount::class.java)
+            assertThat(viewState.discountType)
+                .isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Amount::class.java)
             assertThat(viewState.discountAmount).isEqualTo("4.29")
         }
     }
