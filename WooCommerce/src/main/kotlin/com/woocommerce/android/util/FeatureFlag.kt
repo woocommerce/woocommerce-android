@@ -12,7 +12,6 @@ enum class FeatureFlag {
     COUPONS_M2,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
-    ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
     IAP_FOR_STORE_CREATION,
     IPP_TAP_TO_PAY,
@@ -41,7 +40,6 @@ enum class FeatureFlag {
 
             COUPONS_M2,
             JETPACK_CP,
-            ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING,
             NATIVE_STORE_CREATION_FLOW,
             FREE_TRIAL_M2,

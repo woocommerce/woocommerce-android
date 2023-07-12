@@ -266,7 +266,7 @@ class OrderCreateEditCustomerAddFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
 
-        if (FeatureFlag.ORDER_CREATION_CUSTOMER_SEARCH.isEnabled()) {
+        if (!FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
             menu.add(
                 Menu.NONE,
                 SEARCH_ID,
