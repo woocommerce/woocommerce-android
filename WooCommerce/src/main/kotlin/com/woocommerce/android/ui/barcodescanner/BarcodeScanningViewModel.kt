@@ -44,7 +44,7 @@ class BarcodeScanningViewModel @Inject constructor(
                 )
             }
 
-            !shouldShowRequestPermissionRationale -> {
+            else -> {
                 // Permanently denied, ask to enable permission from the app settings
                 _permissionState.value = PermissionState.PermanentlyDenied(
                     title = R.string.barcode_scanning_alert_dialog_title,
@@ -58,10 +58,6 @@ class BarcodeScanningViewModel @Inject constructor(
                         triggerEvent(Event.Exit)
                     }
                 )
-            }
-
-            else -> {
-                _permissionState.value = PermissionState.Unknown
             }
         }
     }
