@@ -135,16 +135,6 @@ class ProductSharingViewModel @Inject constructor(
     }
 
     private fun handleIdentificationFailure(error: JetpackAICompletionsException) {
-        trackIdentificationFailure(error)
-        resetButtonStateAfterFailure()
-    }
-
-    private fun handleCompletionsFailure(error: JetpackAICompletionsException) {
-        trackCompletionFailure(error)
-        resetButtonStateAfterFailure()
-    }
-
-    private fun trackIdentificationFailure(error: JetpackAICompletionsException) {
         tracker.track(
             AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
             mapOf(
@@ -154,8 +144,11 @@ class ProductSharingViewModel @Inject constructor(
                 AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SHARING
             )
         )
+
+        resetButtonStateAfterFailure()
     }
-    private fun trackCompletionFailure(error: JetpackAICompletionsException) {
+
+    private fun handleCompletionsFailure(error: JetpackAICompletionsException) {
         tracker.track(
             AnalyticsEvent.PRODUCT_SHARING_AI_MESSAGE_GENERATION_FAILED,
             mapOf(
@@ -164,6 +157,8 @@ class ProductSharingViewModel @Inject constructor(
                 AnalyticsTracker.KEY_ERROR_DESC to error.errorMessage
             )
         )
+
+        resetButtonStateAfterFailure()
     }
 
     private fun resetButtonStateAfterFailure() {
