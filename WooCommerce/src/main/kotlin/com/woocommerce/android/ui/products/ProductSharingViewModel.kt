@@ -200,6 +200,7 @@ class ProductSharingViewModel @Inject constructor(
             )
         )
 
+        // If the user says the description is not useful, we should try identifying language again.
         _viewState.update {
             _viewState.value.copy(
                 identifiedLanguageISOCode = if (!isUseful) null else _viewState.value.identifiedLanguageISOCode,
