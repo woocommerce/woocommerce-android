@@ -229,7 +229,8 @@ class ProductSharingViewModel @Inject constructor(
         _viewState.update {
             _viewState.value.copy(
                 identifiedLanguageISOCode = if (!isUseful) null else _viewState.value.identifiedLanguageISOCode,
-                isFeedbackReceived = true
+                isFeedbackReceived = true,
+                shouldShowFeedbackForm = false
             )
         }
     }
