@@ -179,6 +179,10 @@ fun ToolbarPreview() = Toolbar({}, {}, true)
 
 @Preview
 @Composable
+fun SwitchPreview() = Switch(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true), {}, {})
+
+@Preview
+@Composable
 fun OrderCreateEditProductDiscountScreenPreview() =
     OrderCreateEditProductDiscountScreen(
         MutableStateFlow(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true)),
