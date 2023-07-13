@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_AI_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_COPY_BUTTON_TAPPED
@@ -12,6 +13,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_G
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_RETRY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFUL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -69,17 +73,42 @@ class AIProductDescriptionViewModel @Inject constructor(
             text = "${navArgs.productTitle} ${_viewState.value.features}"
         ).fold(
             onSuccess = { languageISOCode ->
-                _viewState.update {
-                    _viewState.value.copy(
-                        identifiedLanguageISOCode = languageISOCode
-                    )
-                }
+                handleIdentificationSuccess(languageISOCode)
                 generateProductDescriptionText(languageISOCode = languageISOCode)
             },
             onFailure = { exception ->
-                handleCompletionsFailure(exception as JetpackAICompletionsException)
+                handleIdentificationFailure(exception as JetpackAICompletionsException)
             }
         )
+    }
+
+    private fun handleIdentificationSuccess(languageISOCode: String) {
+        _viewState.update {
+            _viewState.value.copy(
+                identifiedLanguageISOCode = languageISOCode
+            )
+        }
+
+        tracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS,
+            properties = mapOf(
+                KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION
+            )
+        )
+    }
+
+    private fun handleIdentificationFailure(error: JetpackAICompletionsException) {
+        tracker.track(
+            AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
+            mapOf(
+                KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                KEY_ERROR_TYPE to error.errorType,
+                KEY_ERROR_DESC to error.errorMessage,
+                KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION
+            )
+        )
+
+        resetGenerationState()
     }
 
     private suspend fun generateProductDescriptionText(languageISOCode: String) {
@@ -116,6 +145,10 @@ class AIProductDescriptionViewModel @Inject constructor(
             properties = mapOf(KEY_ERROR to error.message)
         )
 
+        resetGenerationState()
+    }
+
+    private fun resetGenerationState() {
         // This is to return the previous state before generating.
         val previousState = if (_viewState.value.generationState == Generating) {
             Start(showError = true)
