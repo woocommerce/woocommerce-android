@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -22,16 +21,9 @@ class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
+    private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
 ) : ScopedViewModel(savedState) {
-    private val _viewState = MutableLiveData(
-        CustomerListViewState(
-            searchQuery = searchQuery,
-            searchModes = selectSearchMode(selectedSearchMode.labelResId),
-            body = CustomerListViewState.CustomerList.Loading
-        )
-    )
-    val viewState: LiveData<CustomerListViewState> = _viewState
-
+    @Volatile
     private var paginationState = PaginationState(1, true)
 
     private var searchQuery: String
@@ -39,11 +31,14 @@ class CustomerListViewModel @Inject constructor(
         set(value) {
             savedState[SEARCH_QUERY_KEY] = value
         }
-    private var selectedSearchMode: SearchMode
-        get() = savedState.get<SearchMode>(SEARCH_MODE_KEY) ?: supportedSearchModes.first()
+    private var selectedSearchModeId: Int?
+        get() = savedState.get<Int>(SEARCH_MODE_KEY)
         set(value) {
             savedState[SEARCH_MODE_KEY] = value
         }
+
+    private val _viewState = MutableLiveData<CustomerListViewState>()
+    val viewState: LiveData<CustomerListViewState> = _viewState
 
     private var loadingFirstPageJob: Job? = null
     private var loadingMoreInfoAboutCustomerJob: Job? = null
@@ -51,6 +46,12 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
+            val supportedSearchModes = getSupportedSearchModes()
+            _viewState.value = CustomerListViewState(
+                searchQuery = searchQuery,
+                searchModes = supportedSearchModes.selectSearchMode(selectedSearchModeId),
+                body = CustomerListViewState.CustomerList.Loading
+            )
             repository.loadCountries()
             loadCustomers(1)
         }
@@ -74,11 +75,12 @@ class CustomerListViewModel @Inject constructor(
         loadAfterSearchChanged()
     }
 
-    fun onSearchTypeChanged(searchTypeId: Int) {
-        with(searchTypeId) {
-            selectedSearchMode = supportedSearchModes.first { it.labelResId == this }.copy(isSelected = true)
+    fun onSearchTypeChanged(searchModeId: Int) {
+        with(searchModeId) {
+            selectedSearchModeId = this
+            val supportedSearchModes = _viewState.value!!.searchModes
             _viewState.value = _viewState.value!!.copy(
-                searchModes = selectSearchMode(this)
+                searchModes = supportedSearchModes.selectSearchMode(this)
             )
         }
 
@@ -120,9 +122,10 @@ class CustomerListViewModel @Inject constructor(
             // Add a delay to avoid multiple requests when the user types fast or switches search types
             delay(SEARCH_DELAY_MS)
         }
+        val supportedSearchModes = _viewState.value!!.searchModes
         val result = repository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
-            searchBy = selectedSearchMode.searchParam,
+            searchBy = supportedSearchModes.first { it.isSelected }.searchParam,
             pageSize = PAGE_SIZE,
             page = page
         )
@@ -216,9 +219,11 @@ class CustomerListViewModel @Inject constructor(
         )
     }
 
-    private fun selectSearchMode(searchTypeId: Int) =
-        supportedSearchModes.map {
-            it.copy(isSelected = it.labelResId == searchTypeId)
+    private fun List<SearchMode>.selectSearchMode(searchTypeId: Int?) =
+        when {
+            isEmpty() -> emptyList()
+            searchTypeId == null -> listOf(first().copy(isSelected = true)) + drop(1)
+            else -> map { it.copy(isSelected = it.labelResId == searchTypeId) }
         }
 
     private companion object {
@@ -228,28 +233,5 @@ class CustomerListViewModel @Inject constructor(
         private const val SEARCH_DELAY_MS = 500L
 
         private const val PAGE_SIZE = 30
-
-        private val supportedSearchModes = listOf(
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_everything,
-                searchParam = "all",
-                isSelected = false,
-            ),
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_name,
-                searchParam = "name",
-                isSelected = false,
-            ),
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_email,
-                searchParam = "email",
-                isSelected = false,
-            ),
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_username,
-                searchParam = "username",
-                isSelected = false,
-            ),
-        )
     }
 }
