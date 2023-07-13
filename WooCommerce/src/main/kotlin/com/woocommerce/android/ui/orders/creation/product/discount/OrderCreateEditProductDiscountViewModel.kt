@@ -64,10 +64,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         numberOfDecimals = numberOfDecimals
     )
 
-    private fun getInitialDiscountAmount(): BigDecimal? = with(calculateItemDiscountAmount(args.item)) {
-        if (this > BigDecimal.ZERO) this else null
-    }
-
     val viewState: StateFlow<ViewState> =
         combine(discount, discountType) { discount, type ->
             ViewState(
@@ -81,6 +77,10 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     private fun getRemoveButtonVisibility() = with(getInitialDiscountAmount()) {
         this != null && this > BigDecimal.ZERO
+    }
+
+    private fun getInitialDiscountAmount(): BigDecimal? = with(calculateItemDiscountAmount(args.item)) {
+        if (this > BigDecimal.ZERO) this else null
     }
 
     @Suppress("ReturnCount")

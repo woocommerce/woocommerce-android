@@ -23,21 +23,34 @@ class AIRepository @Inject constructor(
         site: SiteModel,
         productName: String,
         permalink: String,
-        productDescription: String?
+        productDescription: String?,
+        languageISOCode: String = "en"
     ): Result<String> {
         val prompt = AIPrompts.generateProductSharingPrompt(
             productName,
             permalink,
-            productDescription.orEmpty()
+            productDescription.orEmpty(),
+            languageISOCode
         )
         return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_SHARING_FEATURE)
     }
 
-    suspend fun generateProductDescription(site: SiteModel, productName: String, features: String): Result<String> {
+    suspend fun generateProductDescription(
+        site: SiteModel,
+        productName: String,
+        features: String,
+        languageISOCode: String = "en"
+    ): Result<String> {
         val prompt = AIPrompts.generateProductDescriptionPrompt(
             productName,
-            features
+            features,
+            languageISOCode
         )
+        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
+    }
+
+    suspend fun identifyISOLanguageCode(site: SiteModel, text: String): Result<String> {
+        val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
         return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
     }
 
@@ -45,7 +58,7 @@ class AIRepository @Inject constructor(
         site: SiteModel,
         prompt: String,
         feature: String,
-        skipCache: Boolean = false
+        skipCache: Boolean = true
     ): Result<String> = withContext(Dispatchers.IO) {
         jetpackAIStore.fetchJetpackAICompletionsForSite(site, prompt, feature, skipCache).run {
             when (this) {
