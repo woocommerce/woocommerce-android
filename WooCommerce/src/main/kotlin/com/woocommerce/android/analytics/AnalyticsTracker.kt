@@ -548,6 +548,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCT_DESCRIPTION = "product_description"
         const val KEY_IS_USEFUL = "is_useful"
 
+        // -- AI Language detection
+        const val KEY_DETECTED_LANGUAGE = "language"
+
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
