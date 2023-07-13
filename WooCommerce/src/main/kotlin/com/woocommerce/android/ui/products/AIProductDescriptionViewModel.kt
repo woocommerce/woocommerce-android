@@ -177,6 +177,11 @@ class AIProductDescriptionViewModel @Inject constructor(
                 KEY_IS_USEFUL to isUseful
             )
         )
+
+        // If the user says the description is not useful, we should try identifying language again.
+        if (!isUseful) {
+            _viewState.update { _viewState.value.copy(identifiedLanguageISOCode = null) }
+        }
     }
 
     data class ViewState(
