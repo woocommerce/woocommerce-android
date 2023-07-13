@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -104,7 +103,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
-    private val appPrefs = mock<AppPrefs>()
     private val feedbackPrefs = mock<FeedbackPrefs>()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
 
@@ -155,7 +153,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         markFeedbackBannerAsDismissedForever = mock(),
         markFeedbackBannerAsCompleted = mock(),
         analyticsTracker = analyticsTracker,
-        appPrefs = appPrefs,
         feedbackPrefs = feedbackPrefs,
         barcodeScanningTracker = barcodeScanningTracker,
     )
@@ -570,35 +567,12 @@ class OrderListViewModelTest : BaseUnitTest() {
                     FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
                 )
             ).thenReturn(featureFeedbackSettings)
-            whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
             // when
             viewModel = createViewModel()
 
             // then
             assertThat(viewModel.viewState.jitmEnabled).isEqualTo(true)
-        }
-
-    @Test
-    fun `given IPP not shown and SP and Orders dismissed and TTP disabled, when ViewModel init, then JITM is not shown`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
-                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-            }
-            whenever(
-                feedbackPrefs.getFeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-                )
-            ).thenReturn(featureFeedbackSettings)
-            whenever(appPrefs.isTapToPayEnabled).thenReturn(false)
-
-            // when
-            viewModel = createViewModel()
-
-            // then
-            assertThat(viewModel.viewState.jitmEnabled).isEqualTo(false)
         }
 
     @Test
@@ -1133,7 +1107,6 @@ class OrderListViewModelTest : BaseUnitTest() {
                     FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
                 )
             ).thenReturn(featureFeedbackSettings)
-            whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
             // when
             viewModel = createViewModel()
