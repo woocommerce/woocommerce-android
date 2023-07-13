@@ -190,6 +190,42 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given initial discount greater than 0, then remove discount button should be visible`() = testBlocking {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            subtotal = 33.toBigDecimal(),
+            total = 30.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.viewState.test {
+            val viewState = awaitItem()
+            assertThat(viewState.isRemoveButtonVisible).isTrue()
+        }
+    }
+
+    @Test
+    fun `given initial discount eq to 0, then remove discount button should not be visible`() = testBlocking {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            subtotal = 33.toBigDecimal(),
+            total = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.viewState.test {
+            val viewState = awaitItem()
+            assertThat(viewState.isRemoveButtonVisible).isFalse()
+        }
+    }
+
     private fun createSut(
         savedStateHandle: SavedStateHandle = savedState
     ): OrderCreateEditProductDiscountViewModel {
