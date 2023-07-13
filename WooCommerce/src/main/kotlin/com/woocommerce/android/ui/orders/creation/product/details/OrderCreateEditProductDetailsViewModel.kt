@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
 import com.woocommerce.android.ui.orders.creation.ProductUIModel
@@ -34,6 +36,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val getItemDiscountAmountText: GetItemDiscountAmountText,
     private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
+    private val tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val args: OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
 
@@ -97,10 +100,12 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
 
     fun onAddDiscountClicked() {
         triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
+        tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED)
     }
 
     fun onEditDiscountClicked() {
         triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
+        tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED)
     }
 
     fun onCloseClicked() {
