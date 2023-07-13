@@ -1,14 +1,19 @@
 package com.woocommerce.android.ui.orders.creation.product.discount
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -31,26 +36,33 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
+import com.woocommerce.android.ui.compose.component.WCSelectableChip
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.math.BigDecimal
 
 @Composable
 fun OrderCreateEditProductDiscountScreen(
-    viewState: StateFlow<OrderCreateEditProductDiscountViewModel.ViewState>,
+    viewState: StateFlow<ViewState>,
     onCloseClicked: () -> Unit,
     onDoneClicked: () -> Unit,
     onRemoveDiscountClicked: () -> Unit,
     onDiscountAmountChange: (BigDecimal?) -> Unit,
+    onPercentageDiscountSelected: () -> Unit,
+    onAmountDiscountSelected: () -> Unit,
     discountInputFieldConfig: DiscountInputFieldConfig,
 ) {
     val state = viewState.collectAsState()
     Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
         val focusRequester = remember { FocusRequester() }
-        Box(modifier = Modifier.padding(padding)) {
+        Box(modifier = Modifier.padding(padding).background(MaterialTheme.colors.surface)) {
             Column(Modifier.padding(dimensionResource(id = R.dimen.minor_100))) {
+                Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
                 val discountValidationState = state.value.discountValidationState
                 WCOutlinedTypedTextField(
                     modifier = Modifier.focusRequester(focusRequester),
@@ -62,7 +74,7 @@ fun OrderCreateEditProductDiscountScreen(
                     onValueChange = onDiscountAmountChange,
                     label = stringResource(
                         R.string.order_creation_discount_amount_with_currency,
-                        state.value.currency
+                        state.value.discountType.symbol
                     ),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -86,7 +98,9 @@ fun OrderCreateEditProductDiscountScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 if (state.value.isRemoveButtonVisible) {
                     WCColoredButton(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = dimensionResource(R.dimen.minor_100)),
                         onClick = onRemoveDiscountClicked
                     ) {
                         Text(stringResource(id = R.string.order_creation_remove_discount))
@@ -128,6 +142,32 @@ private fun Toolbar(
     )
 }
 
+@Composable
+private fun Switch(
+    state: ViewState,
+    onPercentageDiscountClicked: () -> Unit,
+    onManualDiscountClicked: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = dimensionResource(id = R.dimen.minor_100)),
+        horizontalArrangement = Arrangement.Absolute.Center
+    ) {
+        WCSelectableChip(
+            modifier = Modifier.weight(1f),
+            onClick = onPercentageDiscountClicked,
+            text = "%",
+            isSelected = state.discountType is Percentage
+        )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+        WCSelectableChip(
+            modifier = Modifier.weight(1f),
+            onClick = onManualDiscountClicked,
+            text = state.currency,
+            isSelected = state.discountType is Amount
+        )
+    }
+}
+
 data class DiscountInputFieldConfig(
     val decimalSeparator: String,
     val numberOfDecimals: Int,
@@ -139,9 +179,15 @@ fun ToolbarPreview() = Toolbar({}, {}, true)
 
 @Preview
 @Composable
+fun SwitchPreview() = Switch(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true), {}, {})
+
+@Preview
+@Composable
 fun OrderCreateEditProductDiscountScreenPreview() =
     OrderCreateEditProductDiscountScreen(
-        MutableStateFlow(OrderCreateEditProductDiscountViewModel.ViewState("$", BigDecimal.ZERO)),
+        MutableStateFlow(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true)),
+        {},
+        {},
         {},
         {},
         {},
