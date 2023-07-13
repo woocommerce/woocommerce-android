@@ -344,6 +344,14 @@ class OrderCreateEditFormFragment :
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
+        val hasDiscount = newOrderData.discountTotal.isNotEqualTo(BigDecimal.ZERO)
+        paymentSection.discountLayout.isVisible = hasDiscount
+        if (hasDiscount) {
+            paymentSection.discountValue.text = getString(
+                R.string.order_creation_discounts_total_value,
+                bigDecimalFormatter(newOrderData.discountTotal)
+            )
+        }
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
     }
 
