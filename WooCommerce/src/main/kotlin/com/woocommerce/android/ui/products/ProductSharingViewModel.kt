@@ -65,32 +65,48 @@ class ProductSharingViewModel @Inject constructor(
         }
 
         launch {
-            aiRepository.identifyISOLanguageCode(
-                site = selectedSite.get(),
-                text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}"
-            ).fold(
-                onSuccess = { languageISOCode ->
-                    val result = aiRepository.generateProductSharingText(
-                        site = selectedSite.get(),
-                        navArgs.productName,
-                        navArgs.permalink,
-                        navArgs.productDescription.orEmpty(),
-                        languageISOCode
-                    )
-                    result.fold(
-                        onSuccess = { completions ->
-                            handleCompletionsSuccess(completions)
-                        },
-                        onFailure = { exception ->
-                            handleCompletionsFailure(exception as JetpackAICompletionsException)
-                        }
-                    )
-                },
-                onFailure = { exception ->
-                    handleCompletionsFailure(exception as JetpackAICompletionsException)
-                }
-            )
+            _viewState.value.identifiedLanguageISOCode?.let {
+                generateProductSharingText(languageISOCode = it)
+            } ?: identifyLanguageAndGenerateProductSharingText()
         }
+    }
+
+    private suspend fun identifyLanguageAndGenerateProductSharingText() {
+        aiRepository.identifyISOLanguageCode(
+            site = selectedSite.get(),
+            text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}"
+        ).fold(
+            onSuccess = { languageISOCode ->
+                _viewState.update {
+                    it.copy(
+                        identifiedLanguageISOCode = languageISOCode
+                    )
+                }
+
+                generateProductSharingText(languageISOCode)
+            },
+            onFailure = { exception ->
+                handleCompletionsFailure(exception as JetpackAICompletionsException)
+            }
+        )
+    }
+
+    private suspend fun generateProductSharingText(languageISOCode: String) {
+        val result = aiRepository.generateProductSharingText(
+            site = selectedSite.get(),
+            navArgs.productName,
+            navArgs.permalink,
+            navArgs.productDescription.orEmpty(),
+            languageISOCode
+        )
+        result.fold(
+            onSuccess = { completions ->
+                handleCompletionsSuccess(completions)
+            },
+            onFailure = { exception ->
+                handleCompletionsFailure(exception as JetpackAICompletionsException)
+            }
+        )
     }
 
     private fun handleCompletionsSuccess(completions: String) {
@@ -178,7 +194,8 @@ class ProductSharingViewModel @Inject constructor(
         val shareMessage: String = "",
         val buttonState: AIButtonState,
         val isGenerating: Boolean = false,
-        val errorMessage: String = ""
+        val errorMessage: String = "",
+        val identifiedLanguageISOCode: String? = null
     )
 
     sealed class AIButtonState(val label: String) {
