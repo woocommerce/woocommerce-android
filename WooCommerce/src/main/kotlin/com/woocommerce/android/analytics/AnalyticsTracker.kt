@@ -539,6 +539,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Product sharing with AI
         const val KEY_IS_RETRY = "is_retry"
         const val KEY_WITH_MESSAGE = "with_message"
+        const val VALUE_PRODUCT_SHARING = "product_sharing"
         const val VALUE_PRODUCT_SHARING_MESSAGE = "product_sharing_message"
 
         // -- AI product description

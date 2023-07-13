@@ -15,8 +15,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -28,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -49,7 +55,8 @@ fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
             onGenerateButtonClick = viewModel::onGenerateButtonClicked,
             onShareMessageEdit = viewModel::onShareMessageEdited,
             onSharingButtonClick = viewModel::onShareButtonClicked,
-            onInfoButtonClick = viewModel::onInfoButtonClicked
+            onInfoButtonClick = viewModel::onInfoButtonClicked,
+            onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived
         )
     }
 }
@@ -60,7 +67,8 @@ fun ProductShareWithAI(
     onGenerateButtonClick: () -> Unit = {},
     onShareMessageEdit: (String) -> Unit = {},
     onSharingButtonClick: () -> Unit = {},
-    onInfoButtonClick: () -> Unit = {}
+    onInfoButtonClick: () -> Unit = {},
+    onDescriptionFeedbackReceived: (Boolean) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -93,6 +101,10 @@ fun ProductShareWithAI(
                     helperText = if (isError) viewState.errorMessage else null,
                     textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.product_sharing_message_height))
                 )
+
+                if (viewState.shouldShowFeedbackForm) {
+                    FeedbackForm(onDescriptionFeedbackReceived)
+                }
             }
 
             Row(
@@ -134,6 +146,80 @@ fun ProductShareWithAI(
                 enabled = !viewState.isGenerating
             ) {
                 Text(text = stringResource(id = R.string.share))
+            }
+        }
+    }
+}
+
+@Composable
+fun FeedbackForm(onDescriptionFeedbackReceived: (Boolean) -> Unit) {
+    Column {
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        ConstraintLayout(
+            modifier = Modifier
+                .background(
+                    color = colorResource(id = R.color.woo_black_alpha_008),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
+                )
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.minor_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100)
+                )
+        ) {
+            val (text, like, dislike) = createRefs()
+
+            Text(
+                modifier = Modifier
+                    .constrainAs(text) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(like.start)
+                        width = Dimension.fillToConstraints
+                    },
+                text = stringResource(id = R.string.ai_product_description_feedback),
+                color = colorResource(id = R.color.color_on_surface_medium),
+                style = MaterialTheme.typography.caption
+            )
+
+            IconButton(
+                modifier = Modifier
+                    .constrainAs(like) {
+                        top.linkTo(parent.top)
+                        end.linkTo(dislike.start)
+                        bottom.linkTo(parent.bottom)
+                    },
+                onClick = {
+                    onDescriptionFeedbackReceived(true)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ThumbUp,
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
+                    tint = colorResource(id = R.color.color_on_surface_medium)
+                )
+            }
+
+            IconButton(
+                modifier = Modifier
+                    .constrainAs(dislike) {
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    },
+                onClick = {
+                    onDescriptionFeedbackReceived(false)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ThumbDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
+                    tint = colorResource(id = R.color.color_on_surface_medium)
+                )
             }
         }
     }
@@ -256,6 +342,25 @@ fun DefaultUIWithRegenerateButton() {
                 productTitle = "Music Album",
                 shareMessage = shareMessage,
                 buttonState = Regenerate(stringResource(id = R.string.product_sharing_regenerate))
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun DefaultUIWithRegenerateButtonAndFeedbackForm() {
+    val shareMessage =
+        "Hey! 🎵 I just listened to the new album \"Album Title\" by Artist Name, and it's fantastic! Check it out " +
+            "now on your favorite music platform and join the conversation using #AlbumTitleByArtistName. Let's " +
+            "spread the love for this amazing music! 🎧💕 #NewMusicAlert"
+    WooThemeWithBackground {
+        ProductShareWithAI(
+            viewState = ProductSharingViewState(
+                productTitle = "Music Album",
+                shareMessage = shareMessage,
+                buttonState = Regenerate(stringResource(id = R.string.product_sharing_regenerate)),
+                shouldShowFeedbackForm = true
             )
         )
     }

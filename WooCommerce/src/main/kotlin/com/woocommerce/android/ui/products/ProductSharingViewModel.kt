@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class ProductSharingViewModel @Inject constructor(
     private val aiRepository: AIRepository,
@@ -116,7 +117,8 @@ class ProductSharingViewModel @Inject constructor(
             it.copy(
                 buttonState = AIButtonState.Regenerate(labelForRegenerate),
                 shareMessage = completions,
-                isGenerating = false
+                isGenerating = false,
+                shouldShowFeedbackForm = !it.isFeedbackReceived
             )
         }
     }
@@ -189,13 +191,34 @@ class ProductSharingViewModel @Inject constructor(
         tracker.track(AnalyticsEvent.PRODUCT_SHARING_AI_DISMISSED)
     }
 
+    fun onDescriptionFeedbackReceived(isUseful: Boolean) {
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SHARING,
+                AnalyticsTracker.KEY_IS_USEFUL to isUseful
+            )
+        )
+
+        _viewState.update { _viewState.value.copy(isFeedbackReceived = true) }
+
+        _viewState.update {
+            _viewState.value.copy(
+                identifiedLanguageISOCode = if (!isUseful) null else _viewState.value.identifiedLanguageISOCode,
+                isFeedbackReceived = true
+            )
+        }
+    }
+
     data class ProductSharingViewState(
         val productTitle: String,
         val shareMessage: String = "",
         val buttonState: AIButtonState,
         val isGenerating: Boolean = false,
         val errorMessage: String = "",
-        val identifiedLanguageISOCode: String? = null
+        val identifiedLanguageISOCode: String? = null,
+        val shouldShowFeedbackForm: Boolean = false,
+        val isFeedbackReceived: Boolean = false
     )
 
     sealed class AIButtonState(val label: String) {
