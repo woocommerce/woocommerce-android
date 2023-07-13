@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember")
+@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember", "TooManyFunctions")
 @HiltViewModel
 class AIProductDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
@@ -57,30 +57,41 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(generationState = Generating) }
 
         launch {
-            generateDescription()
+            _viewState.value.identifiedLanguageISOCode?.let {
+                generateProductDescriptionText(languageISOCode = it)
+            } ?: identifyLanguageAndGenerateProductDescriptionText()
         }
     }
 
-    private suspend fun generateDescription() {
+    private suspend fun identifyLanguageAndGenerateProductDescriptionText() {
         aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
             text = "${navArgs.productTitle} ${_viewState.value.features}"
         ).fold(
             onSuccess = { languageISOCode ->
-                val result = aiRepository.generateProductDescription(
-                    site = selectedSite.get(),
-                    productName = navArgs.productTitle ?: "",
-                    features = _viewState.value.features,
-                    languageISOCode = languageISOCode
-                )
-                result.fold(
-                    onSuccess = { completions ->
-                        handleCompletionsSuccess(completions)
-                    },
-                    onFailure = { exception ->
-                        handleCompletionsFailure(exception as JetpackAICompletionsException)
-                    }
-                )
+                _viewState.update {
+                    _viewState.value.copy(
+                        identifiedLanguageISOCode = languageISOCode
+                    )
+                }
+                generateProductDescriptionText(languageISOCode = languageISOCode)
+            },
+            onFailure = { exception ->
+                handleCompletionsFailure(exception as JetpackAICompletionsException)
+            }
+        )
+    }
+
+    private suspend fun generateProductDescriptionText(languageISOCode: String) {
+        val result = aiRepository.generateProductDescription(
+            site = selectedSite.get(),
+            productName = navArgs.productTitle ?: "",
+            features = _viewState.value.features,
+            languageISOCode = languageISOCode
+        )
+        result.fold(
+            onSuccess = { completions ->
+                handleCompletionsSuccess(completions)
             },
             onFailure = { exception ->
                 handleCompletionsFailure(exception as JetpackAICompletionsException)
@@ -127,7 +138,9 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(generationState = Regenerating) }
 
         launch {
-            generateDescription()
+            _viewState.value.identifiedLanguageISOCode?.let {
+                generateProductDescriptionText(languageISOCode = it)
+            } ?: identifyLanguageAndGenerateProductDescriptionText()
         }
     }
 
@@ -170,6 +183,7 @@ class AIProductDescriptionViewModel @Inject constructor(
         val productTitle: String? = null,
         val features: String = "",
         val description: String = "",
+        val identifiedLanguageISOCode: String? = null,
         val generationState: GenerationState = Start()
     ) {
         sealed class GenerationState {
