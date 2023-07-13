@@ -23,8 +23,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.ERROR
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.IDLE
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel.ValidationState.Idle
 
 @Composable
 fun OrderCreateCouponEditScreen(
@@ -39,7 +38,8 @@ fun OrderCreateCouponEditScreen(
             .fillMaxWidth()
     ) {
         val focusRequester = remember { FocusRequester() }
-        val isError = state.value?.validationState == ERROR
+        val isError = state.value?.validationState is OrderCreateCouponEditViewModel.ValidationState.Error
+
         WCOutlinedTextField(
             modifier = Modifier.focusRequester(focusRequester),
             value = state.value?.couponCode ?: "",
@@ -58,8 +58,11 @@ fun OrderCreateCouponEditScreen(
             },
         )
         if (isError) {
+            val errorMessage: Int? = (
+                state.value?.validationState as? OrderCreateCouponEditViewModel.ValidationState.Error
+                )?.message
             Text(
-                text = stringResource(id = R.string.invalid_coupon_code),
+                text = errorMessage?.let { stringResource(id = it) }.toString(),
                 color = colorResource(id = R.color.woo_red_50),
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
             )
@@ -84,7 +87,10 @@ fun OrderCreateCouponEditionScreenPreview() {
     OrderCreateCouponEditScreen(
         state = object : State<OrderCreateCouponEditViewModel.ViewState?> {
             override val value: OrderCreateCouponEditViewModel.ViewState
-                get() = OrderCreateCouponEditViewModel.ViewState(true, "code", true, IDLE)
+                get() = OrderCreateCouponEditViewModel.ViewState(
+                    true, "code",
+                    true, Idle
+                )
         },
         onCouponCodeChanged = {},
         onCouponRemoved = {}
