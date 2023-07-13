@@ -1107,7 +1107,6 @@ class OrderListViewModelTest : BaseUnitTest() {
                     FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
                 )
             ).thenReturn(featureFeedbackSettings)
-            whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
             // when
             viewModel = createViewModel()
