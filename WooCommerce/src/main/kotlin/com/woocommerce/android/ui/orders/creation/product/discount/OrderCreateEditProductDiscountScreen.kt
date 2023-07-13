@@ -168,7 +168,6 @@ private fun Switch(
     }
 }
 
-
 data class DiscountInputFieldConfig(
     val decimalSeparator: String,
     val numberOfDecimals: Int,
