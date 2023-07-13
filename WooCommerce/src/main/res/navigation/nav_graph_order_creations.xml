@@ -191,6 +191,21 @@
         <argument
             android:name="currency"
             app:argType="string" />
+        <action
+            android:id="@+id/action_orderCreationProductDetailsFragment_to_orderCreationProductDiscountFragment"
+            app:destination="@id/orderCreationProductDiscountFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationProductDiscountFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment"
+        android:label="OrderCreateEditProductDiscountFragment">
+        <argument
+            android:name="item"
+            app:argType="com.woocommerce.android.model.Order$Item" />
+        <argument
+            android:name="currency"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/orderCreationShippingFragment"

@@ -989,12 +989,9 @@ class OrderCreateEditViewModel @Inject constructor(
             is ProductDetailsEditResult.ProductRemoved -> {
                 onRemoveProduct(result.item)
             }
+
             is ProductDetailsEditResult.ProductDetailsEdited -> {
-                _orderDraft.update { draft ->
-                    val oldItems = draft.items
-                    val updatedItems = oldItems.filter { it.itemId != result.changes.itemId } + result.changes
-                    draft.copy(items = updatedItems)
-                }
+                _orderDraft.value = _orderDraft.value.updateItem(result.modifiedItem)
             }
         }
     }
@@ -1010,7 +1007,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean =
+            !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
 
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
