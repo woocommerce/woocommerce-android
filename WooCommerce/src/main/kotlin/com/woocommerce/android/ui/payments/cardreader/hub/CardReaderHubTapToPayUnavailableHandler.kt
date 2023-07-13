@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import javax.inject.Inject
@@ -45,15 +44,7 @@ class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
                     triggerEvent
                 ) { positiveButtonClick(ActionType.TAP_TO_PAY_REQUIREMENTS) }
             }
-
-            TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled -> {
-                triggerEvent(
-                    CardReaderHubViewModel.CardReaderHubEvents.ShowToast(
-                        R.string.card_reader_tap_to_pay_not_available_error
-                    )
-                )
-            }
-        }.exhaustive
+        }
     }
 
     private fun showDialog(
