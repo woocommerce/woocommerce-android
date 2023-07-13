@@ -45,6 +45,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     val viewState = item.map { item ->
         val uiModel: ProductUIModel = mapItemToProductUiModel(item)
         ViewState(
+            discountEditButtonsEnabled = args.discountEditEnabled,
             productDetailsState = ProductDetailsState(
                 title = getProductTitle(uiModel.item.name),
                 stockPriceSubtitle = getStockPriceSubtitle(uiModel),
@@ -120,7 +121,8 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     data class ViewState(
         val productDetailsState: ProductDetailsState,
         val discountSectionState: DiscountSectionState,
-        val addDiscountButtonVisible: Boolean = !discountSectionState.isVisible
+        val addDiscountButtonVisible: Boolean = !discountSectionState.isVisible,
+        val discountEditButtonsEnabled: Boolean
     )
 
     data class ProductDetailsState(

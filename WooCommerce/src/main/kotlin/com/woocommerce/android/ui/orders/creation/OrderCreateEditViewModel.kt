@@ -665,7 +665,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onProductClicked(item: Order.Item) {
         // Don't show details if the product is not synced yet
         if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency))
+        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
     }
 
     fun onRetryPaymentsClicked() {

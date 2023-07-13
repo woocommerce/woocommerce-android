@@ -116,6 +116,7 @@ class OrderCreateEditProductDetailsFragment :
     ) {
         addDiscountButton.isVisible =
             state.addDiscountButtonVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
+        addDiscountButton.isEnabled = state.discountEditButtonsEnabled
     }
 
     private fun FragmentOrderCreateEditProductDetailsBinding.renderDiscountSection(
@@ -124,6 +125,7 @@ class OrderCreateEditProductDetailsFragment :
         isVisible =
             state.discountSectionState.isVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
         amountValue.text = state.discountSectionState.discountAmountText
+        discountEditButton.isEnabled = state.discountEditButtonsEnabled
     }
 
     companion object {
