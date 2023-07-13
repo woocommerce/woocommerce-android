@@ -21,7 +21,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.HtmlUtils
 import java.math.BigDecimal
@@ -105,17 +104,11 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     }
 
     fun onCloseClicked() {
-        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductDetailsEdited(this.item.value)))
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     fun onRemoveProductClicked() {
         triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.item.value)))
-    }
-
-    fun onDiscountEditResult(updatedOrderItem: Order.Item) {
-        item.update {
-            updatedOrderItem
-        }
     }
 
     data class ViewState(
@@ -139,8 +132,6 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
 
     @Parcelize
     sealed class ProductDetailsEditResult : Parcelable {
-        @Parcelize
-        data class ProductDetailsEdited(val modifiedItem: Order.Item) : Parcelable, ProductDetailsEditResult()
         @Parcelize
         data class ProductRemoved(val item: Order.Item) : Parcelable, ProductDetailsEditResult()
     }

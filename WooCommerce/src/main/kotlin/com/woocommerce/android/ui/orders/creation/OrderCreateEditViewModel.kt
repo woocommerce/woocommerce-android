@@ -989,11 +989,11 @@ class OrderCreateEditViewModel @Inject constructor(
             is ProductDetailsEditResult.ProductRemoved -> {
                 onRemoveProduct(result.item)
             }
-
-            is ProductDetailsEditResult.ProductDetailsEdited -> {
-                _orderDraft.value = _orderDraft.value.updateItem(result.modifiedItem)
-            }
         }
+    }
+
+    fun onProductDiscountEditResult(modifiedItem: Order.Item) {
+        _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
     }
 
     @Parcelize

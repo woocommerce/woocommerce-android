@@ -63,14 +63,14 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     val viewState: StateFlow<ViewState> =
         combine(discount, discountType) { discount, type ->
-        ViewState(
-            currency = currency,
-            discountAmount = discount,
-            discountValidationState = checkDiscountValidationState(discount, type),
-            isRemoveButtonVisible = getRemoveButtonVisibility(),
-            discountType = type
-        )
-    }.toStateFlow(ViewState(currency, null))
+            ViewState(
+                currency = currency,
+                discountAmount = discount,
+                discountValidationState = checkDiscountValidationState(discount, type),
+                isRemoveButtonVisible = getRemoveButtonVisibility(),
+                discountType = type
+            )
+        }.toStateFlow(ViewState(currency, null))
 
     private fun getRemoveButtonVisibility() = with(getInitialDiscountAmount()) {
         this != null && this > BigDecimal.ZERO
