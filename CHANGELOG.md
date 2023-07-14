@@ -1,6 +1,14 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+
+## 14.5
+We're thrilled to bring you our new In-Person Payments feature, Tap To Pay, on Android. This exciting update makes completing transactions as simple as a tap, offering you a faster and more convenient shopping experience. 
+
+In addition, managing discounts on your products has never been easier. With our latest feature, you can apply direct product discounts right within the order creation or editing process. This not only saves you time but also makes managing your store more efficient. 
+
+At WooCommerce, we're constantly striving to improve and provide you with the best possible experience. So, make sure to keep your updates turned on to enjoy all the latest features and enhancements!
+
 ## 14.4
 We added the option for you to automatically generate conversion-friendly & SEO-optimized product descriptions for your WooCommerce products using the help of AI. Do try it out and share your feedback!
 
