@@ -1,5 +1,8 @@
 #!/bin/bash -eu
 
+#echo '--- :test-analytics: Configuring Test Analytics'
+#export BUILDKITE_ANALYTICS_TOKEN=$BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS
+
 echo "--- 🧪 Testing"
 set +e
 cp gradle.properties-example gradle.properties
