@@ -98,6 +98,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 .thenReturn(Result.success((1..30).map { mock() }))
             val viewModel = initViewModel()
             val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
 
             // THEN
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
