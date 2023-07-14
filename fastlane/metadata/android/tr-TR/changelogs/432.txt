@@ -1,2 +1,0 @@
-14.3:
-Bu sürüm, bir sipariş oluştururken birden fazla kupon ekleme seçeneğini içerir. Ayrıca, barkodu veya qr kodunu okutarak ürün aramayı son derece kolaylaştırdık. İnceleyin!

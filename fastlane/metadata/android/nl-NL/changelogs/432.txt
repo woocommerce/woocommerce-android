@@ -1,2 +1,0 @@
-14.3:
-Deze release bevat de optie om meerdere kortingsbonnen toe te voegen bij het aanmaken van een bestelling. We hebben het heel eenvoudig gemaakt om een product te zoeken met behulp van de streepjes- of QR-code. Bekijk het eens zelf!
