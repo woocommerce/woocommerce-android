@@ -842,22 +842,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flow and not connected and ttp disabled, when vm init, then tracks tap to pay not available`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = Payment(orderId = orderId, paymentType = ORDER)
-            val tapToPayDisabled = TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
-            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayDisabled)
-
-            // WHEN
-            initViewModel(param)
-
-            // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayDisabled)
-        }
-
-    @Test
     fun `given payment flow and not connected and ttp system not supported, when vm init, then tracks ttp system`() =
         testBlocking {
             // GIVEN
@@ -870,7 +854,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported, "payment_methods")
         }
 
     @Test
@@ -886,7 +870,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported, "payment_methods")
         }
 
     @Test
@@ -902,7 +886,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable, "payment_methods")
         }
 
     @Test
@@ -918,7 +902,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable, "payment_methods")
         }
 
     @Test

@@ -1,0 +1,2 @@
+14.3:
+Esta versão inclui a opção de adicionar vários cupons ao criar um pedido. Também facilitamos bastante a pesquisa de produtos com a leitura de código de barras e QR code. Confira!

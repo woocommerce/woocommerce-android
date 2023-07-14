@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.orders.creation.coupon.edit
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.ui.orders.creation.coupon.edit.CouponValidator.CouponValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -31,13 +34,13 @@ class OrderCreateCouponEditViewModel @Inject constructor(
 
     private val validationState = savedState.getNullableStateFlow(
         viewModelScope,
-        ValidationState.IDLE,
+        ValidationState.Idle,
         ValidationState::class.java,
         "key_validation_state"
     )
 
     val viewState = combine(couponCode, validationState) { code, validation ->
-        val isDoneButtonEnabled = code?.isNotNullOrEmpty() == true && validation == ValidationState.IDLE
+        val isDoneButtonEnabled = code?.isNotNullOrEmpty() == true && validation == ValidationState.Idle
         ViewState(
             isDoneButtonEnabled = isDoneButtonEnabled,
             couponCode = code ?: "",
@@ -48,29 +51,40 @@ class OrderCreateCouponEditViewModel @Inject constructor(
 
     suspend fun onDoneClicked() {
         validationState.update {
-            ValidationState.IN_PROGRESS
+            ValidationState.InProgress
         }
         val couponCode = couponCode.value
-        if (couponCode != null && validator.isCouponValid(couponCode)) {
-            validationState.update {
-                ValidationState.IDLE
+        when {
+            couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.VALID -> {
+                validationState.update {
+                    ValidationState.Idle
+                }
+                val initialCouponCode = navArgs.couponCode
+                if (initialCouponCode.isNullOrEmpty()) {
+                    triggerEvent(CouponEditResult.AddNewCouponCode(couponCode))
+                } else {
+                    triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
+                }
             }
-            val initialCouponCode = navArgs.couponCode
-            if (initialCouponCode.isNullOrEmpty()) {
-                triggerEvent(CouponEditResult.AddNewCouponCode(couponCode))
-            } else {
-                triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
+
+            couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.NETWORK_ERROR -> {
+                validationState.update {
+                    ValidationState.Error(R.string.order_creation_coupon_network_error)
+                }
             }
-        } else {
-            validationState.update {
-                ValidationState.ERROR
+
+            else -> {
+                validationState.update {
+                    ValidationState.Error(R.string.order_creation_coupon_invalid_code)
+                }
+                viewState.value?.isDoneButtonEnabled = false
             }
         }
     }
 
     fun onCouponCodeChanged(newCode: String) {
         validationState.update {
-            ValidationState.IDLE
+            ValidationState.Idle
         }
         couponCode.update {
             newCode
@@ -84,13 +98,25 @@ class OrderCreateCouponEditViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val isDoneButtonEnabled: Boolean = false,
+        var isDoneButtonEnabled: Boolean = false,
         val couponCode: String = "",
         val isRemoveButtonVisible: Boolean = false,
-        val validationState: ValidationState = ValidationState.IDLE,
+        val validationState: ValidationState = ValidationState.Idle,
     )
 
-    enum class ValidationState { IDLE, IN_PROGRESS, ERROR }
+    @Parcelize
+    sealed class ValidationState : Parcelable {
+        @Parcelize
+        object Idle : ValidationState()
+
+        @Parcelize
+        object InProgress : ValidationState()
+
+        @Parcelize
+        data class Error(
+            @StringRes val message: Int,
+        ) : ValidationState()
+    }
 
     @Parcelize
     sealed class CouponEditResult : MultiLiveEvent.Event(), Parcelable {

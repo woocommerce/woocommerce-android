@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?colorControlHighlight"> <!-- default ripple color -->
+    <item android:left="-1dp" android:bottom="-1dp">
+        <!-- the background shape when it's not being clicked -->
+        <shape android:id="@+id/background_shape">
+            <stroke
+                android:width="@dimen/minor_10"
+                android:color="@color/divider_color" />
+            <solid android:color="@color/color_surface" />
+        </shape>
+    </item>
+</ripple>

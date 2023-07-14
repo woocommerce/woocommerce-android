@@ -1,0 +1,2 @@
+14.3:
+Rilis ini menghadirkan pilihan untuk menambahkan beberapa kupon ketika membuat pesanan. Kami juga mempermudah pencarian produk dengan pemindaian barcode atau kode QR. Pelajari caranya.

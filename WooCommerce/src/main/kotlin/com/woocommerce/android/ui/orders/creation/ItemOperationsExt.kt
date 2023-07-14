@@ -22,3 +22,7 @@ fun Order.updateItems(items: List<Order.Item>): Order = copy(
     productsTotal = productsTotal,
     total = total
 )
+
+fun Order.updateItem(item: Order.Item): Order = copy(
+    items = items.map { if (it.itemId == item.itemId) item else it },
+)
