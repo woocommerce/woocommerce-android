@@ -113,7 +113,7 @@ class ProductSharingViewModel @Inject constructor(
                 buttonState = AIButtonState.Regenerate(labelForRegenerate),
                 shareMessage = completions,
                 isGenerating = false,
-                shouldShowFeedbackForm = !it.isFeedbackReceived
+                shouldShowFeedbackForm = true
             )
         }
     }
@@ -229,7 +229,6 @@ class ProductSharingViewModel @Inject constructor(
         _viewState.update {
             _viewState.value.copy(
                 identifiedLanguageISOCode = if (!isUseful) null else _viewState.value.identifiedLanguageISOCode,
-                isFeedbackReceived = true,
                 shouldShowFeedbackForm = false
             )
         }
@@ -242,8 +241,7 @@ class ProductSharingViewModel @Inject constructor(
         val isGenerating: Boolean = false,
         val errorMessage: String = "",
         val identifiedLanguageISOCode: String? = null,
-        val shouldShowFeedbackForm: Boolean = false,
-        val isFeedbackReceived: Boolean = false
+        val shouldShowFeedbackForm: Boolean = false
     )
 
     sealed class AIButtonState(val label: String) {
