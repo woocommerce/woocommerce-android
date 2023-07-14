@@ -62,7 +62,7 @@ class OrderCreateEditProductsAdapter(
 
         fun bind(productModel: ProductUIModel) {
             binding.root.isEnabled = productModel.item.isSynced() && areProductsEditable
-            binding.productItemView.bind(productModel, currencyFormatter, currencyCode)
+            binding.productItemView.bind(productModel, currencyFormatter, currencyCode, showDiscount = true)
 
             binding.stepperView.isMinusButtonEnabled = areProductsEditable
             binding.stepperView.isPlusButtonEnabled = areProductsEditable

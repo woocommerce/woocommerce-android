@@ -139,6 +139,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ALREADY_READ = "already_read"
         const val KEY_BLOG_ID = "blog_id"
         const val KEY_CONTEXT = "context"
+        const val KEY_ERROR = "error"
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
@@ -252,6 +253,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
+
+        const val KEY_ORDER_DISCOUNT_TYPE = "type"
+        const val VALUE_ORDER_DISCOUNT_TYPE_FIXED = "fixed_amount"
+        const val VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE = "percentage"
 
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
@@ -538,6 +543,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Product sharing with AI
         const val KEY_IS_RETRY = "is_retry"
         const val KEY_WITH_MESSAGE = "with_message"
+        const val VALUE_PRODUCT_SHARING_MESSAGE = "product_sharing_message"
+
+        // -- AI product description
+        const val VALUE_AZTEC_EDITOR = "aztec_editor"
+        const val VALUE_PRODUCT_FORM = "product_form"
+        const val VALUE_PRODUCT_DESCRIPTION = "product_description"
+        const val KEY_IS_USEFUL = "is_useful"
 
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"

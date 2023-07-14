@@ -121,13 +121,19 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val isDividerVisible: Boolean = true,
         val tooltip: Tooltip? = null,
+        val link: Link? = null,
         val onClick: (() -> Unit)
     ) : ProductProperty(BUTTON) {
         data class Tooltip(
             @StringRes val title: Int,
             @StringRes val text: Int,
-            @DrawableRes val icon: Int,
-            val onButtonClick: () -> Unit,
+            @StringRes val dismissButtonText: Int,
+            val onDismiss: (() -> Unit)
+        )
+
+        data class Link(
+            @StringRes val text: Int,
+            val onClick: () -> Unit,
         )
     }
 
