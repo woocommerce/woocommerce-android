@@ -32,8 +32,6 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
         private const val JETPACK_INSTALL_URL = "plugin-install.php?tab=plugin-information&plugin=jetpack"
         private const val JETPACK_ACTIVATE_URL = "plugins.php"
-        private const val ICON_NOT_DONE = R.drawable.ic_progress_circle_start
-        private const val ICON_DONE = R.drawable.ic_progress_circle_complete
         private const val STATE_KEY_IS_RETURNING_FROM_WPADMIN = "is_from_wpadmin"
     }
 
@@ -113,7 +111,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Installing -> {
                 setViewVisibility(View.INVISIBLE, binding.icon1, binding.progress2, binding.progress3)
                 setViewVisibility(View.VISIBLE, binding.progress1, binding.icon2, binding.icon3, binding.icon4)
-                setViewImage(ICON_NOT_DONE, binding.icon2, binding.icon3, binding.icon4)
+                setViewImage(R.drawable.ic_progress_circle_start, binding.icon2, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1)
                 setTextWeight(Typeface.NORMAL, binding.message2, binding.message3, binding.message4)
 
@@ -122,8 +120,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Activating -> {
                 setViewVisibility(View.INVISIBLE, binding.progress1, binding.icon2, binding.progress3)
                 setViewVisibility(View.VISIBLE, binding.icon1, binding.progress2, binding.icon3, binding.icon4)
-                setViewImage(ICON_DONE, binding.icon1)
-                setViewImage(ICON_NOT_DONE, binding.icon3, binding.icon4)
+                setViewImage(R.drawable.ic_progress_circle_complete, binding.icon1)
+                setViewImage(R.drawable.ic_progress_circle_start, binding.icon3, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2)
                 setTextWeight(Typeface.NORMAL, binding.message3, binding.message4)
 
@@ -132,8 +130,8 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Connecting -> {
                 setViewVisibility(View.INVISIBLE, binding.progress1, binding.progress2, binding.icon3)
                 setViewVisibility(View.VISIBLE, binding.icon1, binding.icon2, binding.progress3, binding.icon4)
-                setViewImage(ICON_DONE, binding.icon1, binding.icon2)
-                setViewImage(ICON_NOT_DONE, binding.icon4)
+                setViewImage(R.drawable.ic_progress_circle_complete, binding.icon1, binding.icon2)
+                setViewImage(R.drawable.ic_progress_circle_start, binding.icon4)
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3)
                 setTextWeight(Typeface.NORMAL, binding.message4)
 
@@ -149,7 +147,13 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
             is Finished -> {
                 setViewVisibility(View.INVISIBLE, binding.progress1, binding.progress2, binding.progress3)
                 setViewVisibility(View.VISIBLE, binding.icon1, binding.icon2, binding.icon3, binding.icon4)
-                setViewImage(ICON_DONE, binding.icon1, binding.icon2, binding.icon3, binding.icon4)
+                setViewImage(
+                    R.drawable.ic_progress_circle_complete,
+                    binding.icon1,
+                    binding.icon2,
+                    binding.icon3,
+                    binding.icon4
+                )
                 setTextWeight(Typeface.BOLD, binding.message1, binding.message2, binding.message3, binding.message4)
 
                 binding.jetpackProgressActionButton.show()

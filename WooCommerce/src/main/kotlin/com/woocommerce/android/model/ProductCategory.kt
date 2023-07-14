@@ -1,7 +1,6 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import androidx.annotation.DimenRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -17,10 +16,6 @@ data class ProductCategory(
     val slug: String = "",
     val parentId: Long = 0L
 ) : Parcelable {
-    companion object {
-        @DimenRes const val DEFAULT_PRODUCT_CATEGORY_MARGIN = R.dimen.major_125
-    }
-
     fun toProductCategory(): ProductCategory {
         return ProductCategory(
             this.remoteCategoryId,
@@ -41,10 +36,10 @@ data class ProductCategory(
         resourceProvider: ResourceProvider,
         hierarchy: Map<Long, Long>
     ): Int {
-        var margin = resourceProvider.getDimensionPixelSize(DEFAULT_PRODUCT_CATEGORY_MARGIN)
+        var margin = resourceProvider.getDimensionPixelSize(R.dimen.major_125)
         var parent = this.parentId
         while (parent != 0L) {
-            margin += resourceProvider.getDimensionPixelSize(DEFAULT_PRODUCT_CATEGORY_MARGIN)
+            margin += resourceProvider.getDimensionPixelSize(R.dimen.major_125)
             parent = hierarchy[parent] ?: 0L
         }
         return margin
