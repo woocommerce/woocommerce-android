@@ -16,10 +16,13 @@ class ButtonViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
 
         val text = context.getString(button.text)
         val icon = button.icon?.let { AppCompatResources.getDrawable(context, it) }
-//        val tooltipTitle = button.tooltip?.title?.let { context.getString(it) }
-//        val tooltipText = button.tooltip?.text?.let { context.getString(it) }
-//        val tooltipIcon = button.tooltip?.icon?.let { AppCompatResources.getDrawable(context, it) }
 
-        buttonView.show(text, icon, button.onClick)
+        buttonView.show(
+            text = text,
+            icon = icon,
+            onClick = button.onClick,
+            link = button.link,
+            tooltip = button.tooltip
+        )
     }
 }

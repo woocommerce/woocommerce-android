@@ -1,2 +1,0 @@
-14.2:
-Sai che ora puoi aggiungere i codici promozionali durante la creazione di un ordine? Sì, puoi! Puoi anche gestire i tuoi codici promozionali andando alla scheda del menu e facendo clic sulla funzionalità Codici promozionali. Infine, abbiamo apportato alcuni miglioramenti alla funzionalità di scansione durante la ricerca di un prodotto. Ma non è tutto. Introdurremo altre ottimizzazioni in futuro.

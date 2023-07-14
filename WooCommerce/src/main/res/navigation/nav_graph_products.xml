@@ -327,6 +327,9 @@
             android:name="productTitle"
             android:defaultValue='""'
             app:argType="string" />
+        <action
+            android:id="@+id/action_aztecEditorFragment_to_AIProductDescriptionBottomSheetFragment"
+            app:destination="@id/AIProductDescriptionBottomSheetFragment" />
 
     </fragment>
     <fragment

@@ -1149,6 +1149,37 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given products and coupon applied, when going to product details, then should disable discount editing`() {
+        createSut()
+        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        sut.onProductClicked(sut.currentDraft.items.first())
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+        with(lastReceivedEvent) {
+            assertThat(this).isInstanceOf(ShowProductDetails::class.java)
+            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse()
+        }
+    }
+
+    @Test
+    fun `given products and no coupons applied, when going to product details, then should enable discount editing`() {
+        createSut()
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        sut.onProductClicked(sut.currentDraft.items.first())
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+        with(lastReceivedEvent) {
+            assertThat(this).isInstanceOf(ShowProductDetails::class.java)
+            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue()
+        }
+    }
+
+    @Test
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.4
+We added the option for you to automatically generate conversion-friendly & SEO-optimized product descriptions for your WooCommerce products using the help of AI. Do try it out and share your feedback!
+
 ## 14.3
 This release includes the option to add multiple coupons when creating an order. We've also made it super easy to search for a product by scanning the barcode or qr code. Check it out!
 

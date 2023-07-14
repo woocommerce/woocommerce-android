@@ -27,7 +27,7 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
     }
     private var pathsProvider: JitmMessagePathsProvider = mock()
     private val jitmStore: JitmStoreWrapper = mock()
-    private val queryParamsEncoder: QueryParamsEncoder = mock {
+    private val jitmQueryParamsEncoder: JitmQueryParamsEncoder = mock {
         on { getEncodedQueryParams() }.thenReturn("")
     }
     private val jitmTracker: JitmTracker = mock()
@@ -36,7 +36,7 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
         selectedSite,
         pathsProvider,
         jitmStore,
-        queryParamsEncoder,
+        jitmQueryParamsEncoder,
         jitmTracker,
         CoroutineScope(UnconfinedTestDispatcher()),
     )

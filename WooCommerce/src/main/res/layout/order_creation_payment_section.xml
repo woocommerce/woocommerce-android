@@ -201,6 +201,33 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/discount_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/discount_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/order_creation_discounts_total"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/discount_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="$0.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
