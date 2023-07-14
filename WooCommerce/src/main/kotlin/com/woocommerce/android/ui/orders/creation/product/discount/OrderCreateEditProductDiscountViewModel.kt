@@ -3,6 +3,12 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_REMOVE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_FIXED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -28,6 +34,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
+    private val tracker: AnalyticsTrackerWrapper,
     siteParamsRepo: ParameterRepository,
     currencySymbolFinder: CurrencySymbolFinder,
 ) : ScopedViewModel(savedStateHandle) {
@@ -113,6 +120,15 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             it.copy(total = total)
         }.also {
             triggerEvent(ExitWithResult(data = it))
+            tracker.track(
+                AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD,
+                mapOf(
+                    KEY_ORDER_DISCOUNT_TYPE to when (discountType.value) {
+                        DiscountType.Percentage -> VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE
+                        is DiscountType.Amount -> VALUE_ORDER_DISCOUNT_TYPE_FIXED
+                    }
+                )
+            )
         }
     }
 
@@ -171,6 +187,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             it.copy(total = it.subtotal)
         }.also {
             triggerEvent(ExitWithResult(data = it))
+            tracker.track(ORDER_PRODUCT_DISCOUNT_REMOVE)
         }
     }
 

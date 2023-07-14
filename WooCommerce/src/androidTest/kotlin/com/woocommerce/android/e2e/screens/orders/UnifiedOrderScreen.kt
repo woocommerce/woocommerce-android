@@ -95,6 +95,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         Espresso.onView(withText("Add note"))
             .perform(click())
 
+        waitForElementToBeDisplayed(CUSTOMER_NOTE_EDITOR)
         Espresso.onView(withId(CUSTOMER_NOTE_EDITOR))
             .perform((ViewActions.replaceText(note)))
 

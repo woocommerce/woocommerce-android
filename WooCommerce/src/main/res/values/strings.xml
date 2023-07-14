@@ -540,6 +540,9 @@
     <string name="order_creation_discount_with_coupon_error">Manual discount could not be applied. Remove coupons first</string>
     <string name="order_creation_discount_amount_with_currency">Amount (%1$s)</string>
     <string name="order_creation_discount">Discount</string>
+    <string name="order_creation_discounts_total">Discounts Total</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discount_value">Discount %1$s</string>
     <string name="order_creation_discount_amount_type">Amount (%1$s)</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
@@ -1208,7 +1211,6 @@
     <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
     <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
     <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
     <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
@@ -1228,8 +1230,6 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
     <string name="card_reader_tap_to_pay_explanation_refund_failed">The refund failed. Try to refund manually</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
     <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>

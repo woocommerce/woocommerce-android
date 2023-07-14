@@ -105,7 +105,6 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
-        IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
@@ -244,10 +243,6 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
-    var isTapToPayEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, value)
-
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
@@ -264,9 +259,15 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
-    var shouldHideBlazeBanner: Boolean
-        get() = getBoolean(DeletablePrefKey.BLAZE_BANNER_HIDDEN, false)
-        set(value) = setBoolean(DeletablePrefKey.BLAZE_BANNER_HIDDEN, value)
+    fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
+        setBoolean(getBlazeBannerKey(currentSiteId), hidden)
+    }
+
+    fun isBlazeBannerHidden(currentSiteId: Int) =
+        getBoolean(getBlazeBannerKey(currentSiteId), default = false)
+
+    private fun getBlazeBannerKey(currentSiteId: Int) =
+        PrefKeyString("${DeletablePrefKey.BLAZE_BANNER_HIDDEN}:$currentSiteId")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

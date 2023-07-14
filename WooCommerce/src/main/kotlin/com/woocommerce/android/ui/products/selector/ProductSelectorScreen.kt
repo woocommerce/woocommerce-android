@@ -132,7 +132,8 @@ fun ProductSelectorScreen(
                 state = SearchLayoutWithParamsState(
                     hint = string.product_selector_search_hint,
                     searchQuery = state.searchState.searchQuery,
-                    isActive = state.searchState.isActive,
+                    isSearchFocused = state.searchState.isActive,
+                    areSearchTypesAlwaysVisible = false,
                     supportedSearchTypes = listOf(
                         SearchLayoutWithParamsState.SearchType(
                             labelResId = string.product_search_all,

@@ -15,7 +15,6 @@ enum class FeatureFlag {
     ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
     IAP_FOR_STORE_CREATION,
-    IPP_TAP_TO_PAY,
     IPP_UK,
     STORE_CREATION_ONBOARDING,
     FREE_TRIAL_M2,
@@ -59,13 +58,12 @@ enum class FeatureFlag {
             PRIVACY_CHOICES,
             BLAZE,
             SHARING_PRODUCT_AI,
-            PRODUCT_DESCRIPTION_AI_GENERATOR -> true
+            PRODUCT_DESCRIPTION_AI_GENERATOR,
+            ORDER_CREATION_PRODUCT_DISCOUNTS -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IPP_TAP_TO_PAY,
-            CUSTOMER_LIST_SEARCH_2,
-            ORDER_CREATION_PRODUCT_DISCOUNTS -> PackageUtils.isDebugBuild()
+            CUSTOMER_LIST_SEARCH_2 -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
