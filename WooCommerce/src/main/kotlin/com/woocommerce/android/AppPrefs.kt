@@ -259,9 +259,15 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
-    var shouldHideBlazeBanner: Boolean
-        get() = getBoolean(DeletablePrefKey.BLAZE_BANNER_HIDDEN, false)
-        set(value) = setBoolean(DeletablePrefKey.BLAZE_BANNER_HIDDEN, value)
+    fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
+        setBoolean(getBlazeBannerKey(currentSiteId), hidden)
+    }
+
+    fun isBlazeBannerHidden(currentSiteId: Int) =
+        getBoolean(getBlazeBannerKey(currentSiteId), default = false)
+
+    private fun getBlazeBannerKey(currentSiteId: Int) =
+        PrefKeyString("${DeletablePrefKey.BLAZE_BANNER_HIDDEN}:$currentSiteId")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
