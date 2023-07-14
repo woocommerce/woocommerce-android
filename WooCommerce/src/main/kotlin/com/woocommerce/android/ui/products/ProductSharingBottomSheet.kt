@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.products
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.woocommerce.android.AppConstants.FADE_ANIMATION_DELAY_MS
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -102,7 +107,11 @@ fun ProductShareWithAI(
                     textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.product_sharing_message_height))
                 )
 
-                if (viewState.shouldShowFeedbackForm) {
+                AnimatedVisibility(
+                    visible = viewState.shouldShowFeedbackForm,
+                    enter = fadeIn(animationSpec = tween(FADE_ANIMATION_DELAY_MS)),
+                    exit = fadeOut(animationSpec = tween(FADE_ANIMATION_DELAY_MS))
+                ) {
                     FeedbackForm(onDescriptionFeedbackReceived)
                 }
             }
