@@ -78,6 +78,15 @@
             tools:text="Out of stock this is a really long version to see what happens when we move o" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productDiscount"
+            style="@style/Woo.ListItem.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/minor_00"
+            android:visibility="gone"
+            tools:text="Discount $5.40" />
+
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/productSku"
             style="@style/Woo.ListItem.Body"
             android:layout_width="match_parent"

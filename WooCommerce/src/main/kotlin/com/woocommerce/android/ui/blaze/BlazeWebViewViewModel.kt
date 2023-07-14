@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.blaze
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.Companion.BLAZEPRESS_WIDGET
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
@@ -22,7 +24,9 @@ class BlazeWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
-    val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeWebViewFragmentArgs by savedStateHandle.navArgs()
 
@@ -54,6 +58,7 @@ class BlazeWebViewViewModel @Inject constructor(
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
+            appPrefsWrapper.setBlazeBannerHidden(selectedSite.getSelectedSiteId(), hide = true)
         }
     }
 
