@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-29 14:54:04+0000
+Translation-Revision-Date: 2023-07-04 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Yapay zekayla açıklamaları anında ekleyin. Özelliğimizi bugün deneyin!</string>
+    <string name="ai_product_description_dialog_title">Yapay zekayla ürün açıklaması ekleyin</string>
+    <string name="ai_product_description_note_dialog_confirmation">Anladım</string>
+    <string name="ai_product_description_note_dialog_message">Bu ürün açıklamasının yapay zeka destekli aracımız kullanılarak oluşturulduğunu lütfen unutmayın. Lütfen markanız ve vermek istediğiniz mesajla uyumlu olduğundan emin olmak için bu açıklamayı inceleyip düzenleyin.</string>
+    <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>
+    <string name="ai_product_description_feedback">Oluşturulan\naçıklama faydalı oldu mu?</string>
+    <string name="ai_product_description_regenerate_button">Yeniden oluştur</string>
+    <string name="ai_product_description_survey">Oluşturulan açıklama faydalı oldu mu?</string>
+    <string name="ai_product_description_hint">Özelleştirilmiş bir açıklama için ürününüzün benzersiz özelliklerini ve hedef kitlenizi anahtar sözcüklerle vurgulayın.</string>
+    <string name="ai_product_description_example">Örneğin: Saksıda Yetişir, Kaktüs, Bitki, Dekoratif, Bakımı kolay</string>
+    <string name="ai_product_description_product_name">Ürün adınızı girin</string>
+    <string name="ai_product_description_title">Bir açıklama yazın</string>
+    <string name="barcode_scanning_camera_permission_denied">Barkodun taranması için kamera izni gereklidir.</string>
+    <string name="barcode_scanning_title">Barkodu Tarayın</string>
+    <string name="order_creation_customer_search_username">Kullanıcı adı</string>
+    <string name="order_creation_customer_search_name">Ad</string>
+    <string name="order_creation_customer_search_email">E-posta</string>
+    <string name="order_creation_customer_search_everything">Her şey</string>
+    <string name="order_creation_customer_filter_hint">Müşterileri filtreleme kriteri</string>
+    <string name="order_creation_coupons_title">Kupon uygulandı</string>
+    <string name="more_settings">Diğer ayarlar</string>
+    <string name="maybe_later">Belki daha sonra</string>
     <string name="product_sharing_regenerate">Yeniden yazın</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Her satışta bildirim alın:&lt;/b&gt; Anlık satış bildirimleri sayesinde hiçbir şeyi kaçırmayın. Her yeni satışta bildirim alarak başarınızın keyfini çıkarabilir ve mağazanızdaki hareketler hakkında güncel bilgi sahibi olabilirsiniz.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Bir dokunuşla ürünleri ekleyin ve düzenleyin:&lt;/b&gt; Yeni ürün ekleme, ayrıntıları güncelleme, görseller yükleme ve varyasyonları yönetme işlemlerinin tamamını uygulamadan gerçekleştirin. Envanterinizi zahmetsiz bir şekilde güncel tutun.</string>

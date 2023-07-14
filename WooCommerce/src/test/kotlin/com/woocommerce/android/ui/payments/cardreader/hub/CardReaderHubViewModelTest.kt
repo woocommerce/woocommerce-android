@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -50,9 +49,9 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -95,6 +94,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY)
         )
     }
+    private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
 
     @Before
     fun setUp() {
@@ -1473,21 +1473,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
-        // GIVEN
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayDisabled)
-
-        // WHEN
-        initViewModel()
-
-        // THEN
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
-        }
-    }
-
-    @Test
     fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -1627,7 +1612,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given hub flow with ttp when ttp is not available, when view model initiated, then show toast emitted`() {
+    fun `given hub flow with ttp when ttp is not available, when view model initiated, then handled by ttp availability handler`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
@@ -1636,9 +1621,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(ShowToast::class.java)
-        assertThat((viewModel.event.value as ShowToast).message)
-            .isEqualTo(R.string.card_reader_tap_to_pay_not_available_error)
+        verify(cardReaderHubTapToPayUnavailableHandler).handleTTPUnavailable(
+            eq(SystemVersionNotSupported),
+            any(),
+            any(),
+        )
+        verify(cardReaderTracker).trackTapToPayNotAvailableReason(
+            SystemVersionNotSupported,
+            "payments_menu",
+        )
     }
 
     @Test
@@ -1753,6 +1744,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus,
             appPrefs,
             feedbackRepository,
+            cardReaderHubTapToPayUnavailableHandler,
         )
         viewModel.onViewVisible()
     }

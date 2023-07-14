@@ -189,6 +189,7 @@ class ProductDetailFragment :
         setupResultHandlers(viewModel)
     }
 
+    @Suppress("LongMethod")
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
             viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
@@ -250,6 +251,10 @@ class ProductDetailFragment :
 
         handleNotice(ProductReviewsFragment.PRODUCT_REVIEWS_MODIFIED) {
             viewModel.refreshProduct()
+        }
+
+        handleResult<String>(AIProductDescriptionBottomSheetFragment.KEY_AI_GENERATED_DESCRIPTION_RESULT) { desc ->
+            viewModel.updateProductDraft(description = desc)
         }
     }
 

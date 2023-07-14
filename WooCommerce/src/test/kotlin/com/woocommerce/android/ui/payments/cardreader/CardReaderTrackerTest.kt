@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_READER_DISCOVERED
@@ -40,7 +39,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -1111,21 +1109,6 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq(CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED),
                 any()
             )
-        }
-
-    @Test
-    fun `given TapToPayDisabled reason, when tracking tpp not available, then property TapToPayDisabled is recorded`() =
-        testBlocking {
-            val reason = NotAvailable.TapToPayDisabled
-
-            cardReaderTracker.trackTapToPayNotAvailableReason(reason)
-
-            val captor = argumentCaptor<Map<String, Any>>()
-            verify(trackerWrapper).track(
-                eq(CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE),
-                captor.capture(),
-            )
-            assertThat(captor.firstValue["reason"]).isEqualTo("TapToPayDisabled")
         }
 
     @Test

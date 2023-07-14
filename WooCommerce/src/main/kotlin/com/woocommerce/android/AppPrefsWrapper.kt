@@ -338,6 +338,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
 
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
+    fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
+    fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {
@@ -352,4 +357,10 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    fun isBlazeBannerHidden(siteId: Int): Boolean = AppPrefs.isBlazeBannerHidden(siteId)
+
+    fun setBlazeBannerHidden(siteId: Int, hide: Boolean) {
+        AppPrefs.setBlazeBannerHidden(siteId, hide)
+    }
 }
