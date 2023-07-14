@@ -6,6 +6,7 @@ pluginManagement {
     gradle.ext.kotlinVersion = '1.8.21'
     gradle.ext.navigationVersion = '2.5.3'
     gradle.ext.sentryVersion = '3.5.0'
+    gradle.ext.violationCommentsVersion = '1.69.0'
     gradle.ext.wziebaTracksVersion = '1.0.0'
 
     repositories {
@@ -35,7 +36,7 @@ pluginManagement {
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
-        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
+        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version gradle.ext.violationCommentsVersion
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
     }
 }
