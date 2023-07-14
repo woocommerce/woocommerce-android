@@ -3,6 +3,12 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_REMOVE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_FIXED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
@@ -20,6 +26,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -49,9 +56,12 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         dimensionUnit = "cm",
         gmtOffset = 0f
     )
+
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
+
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `given discount bigger than item's price, when done clicked, then should return Invalid state`() =
@@ -226,6 +236,59 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given percentage discount, when done clicked, then should track event`() {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            subtotal = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.onPercentageDiscountSelected()
+        sut.onDoneClicked()
+        verify(tracker).track(
+            ORDER_PRODUCT_DISCOUNT_ADD,
+            mapOf(KEY_ORDER_DISCOUNT_TYPE to VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE)
+        )
+    }
+
+    @Test
+    fun `given fixed amount discount, when done clicked, then should track event`() {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            subtotal = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.onAmountDiscountSelected()
+        sut.onDoneClicked()
+        verify(tracker).track(
+            ORDER_PRODUCT_DISCOUNT_ADD,
+            mapOf(KEY_ORDER_DISCOUNT_TYPE to VALUE_ORDER_DISCOUNT_TYPE_FIXED)
+        )
+    }
+
+    @Test
+    fun `when remove discount clicked, then should track event`() {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            subtotal = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.onDiscountRemoveClicked()
+        verify(tracker).track(ORDER_PRODUCT_DISCOUNT_REMOVE)
+    }
+
     private fun createSut(
         savedStateHandle: SavedStateHandle = savedState
     ): OrderCreateEditProductDiscountViewModel {
@@ -233,6 +296,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             savedStateHandle,
             resourceProvider,
             CalculateItemDiscountAmount(),
+            tracker,
             parameterRepository,
             currencySymbolFinder
         )

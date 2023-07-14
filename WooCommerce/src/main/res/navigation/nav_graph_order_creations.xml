@@ -191,6 +191,9 @@
         <argument
             android:name="currency"
             app:argType="string" />
+        <argument
+            android:name="discountEditEnabled"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_orderCreationProductDetailsFragment_to_orderCreationProductDiscountFragment"
             app:destination="@id/orderCreationProductDiscountFragment"

@@ -540,6 +540,9 @@
     <string name="order_creation_discount_with_coupon_error">Manual discount could not be applied. Remove coupons first</string>
     <string name="order_creation_discount_amount_with_currency">Amount (%1$s)</string>
     <string name="order_creation_discount">Discount</string>
+    <string name="order_creation_discounts_total">Discounts Total</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discount_value">Discount %1$s</string>
     <string name="order_creation_discount_amount_type">Amount (%1$s)</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>

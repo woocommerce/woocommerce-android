@@ -11,14 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditProductDetailsBinding
 import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
-import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,13 +53,6 @@ class OrderCreateEditProductDetailsFragment :
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleNavEvent)
-        handleProductDiscountEditResult()
-    }
-
-    private fun handleProductDiscountEditResult() {
-        handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
-            viewModel.onDiscountEditResult(it)
-        }
     }
 
     private fun handleNavEvent(event: MultiLiveEvent.Event) {
@@ -116,6 +106,7 @@ class OrderCreateEditProductDetailsFragment :
     ) {
         addDiscountButton.isVisible =
             state.addDiscountButtonVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
+        addDiscountButton.isEnabled = state.discountEditButtonsEnabled
     }
 
     private fun FragmentOrderCreateEditProductDetailsBinding.renderDiscountSection(
@@ -124,6 +115,7 @@ class OrderCreateEditProductDetailsFragment :
         isVisible =
             state.discountSectionState.isVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
         amountValue.text = state.discountSectionState.discountAmountText
+        discountEditButton.isEnabled = state.discountEditButtonsEnabled
     }
 
     companion object {
