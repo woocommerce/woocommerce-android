@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepos
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -33,13 +34,50 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when viewmodel init, then viewstate is updated with customers`() {
+    fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+    }
+
+    @Test
+    fun `given page number 1, when viewmodel init, then viewstate is updated to Loading state`() = testBlocking {
         // GIVEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
 
         // THEN
-        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
+        assertThat(states.first().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+    }
+
+    @Test
+    fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
+        // GIVEN
+        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+            .thenReturn(Result.failure(Throwable()))
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Error::class.java)
+    }
+
+    @Test
+    fun `given empty list from repo, when viewmodel init, then viewstate is updated with empty state`() = testBlocking {
+        // GIVEN
+        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+            .thenReturn(Result.success(emptyList()))
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Empty::class.java)
     }
 
     @Test
@@ -67,6 +105,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // WHEN
             viewModel.onSearchQueryChanged(searchQuery)
+            advanceUntilIdle()
 
             // THEN
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
@@ -103,6 +142,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // WHEN
             viewModel.onSearchTypeChanged(searchTypeId)
+            advanceUntilIdle()
 
             // THEN
             verify(customerListRepository, times(1)).searchCustomerListWithEmail(
@@ -115,7 +155,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given search type and search is not empty, when onSearchTypeChanged is called, then new customers are loaded`() =
+    fun `given search type and search is not empty, when onSearchTypeChanged is called, then job cancled and new customers are loaded`() =
         testBlocking {
             // GIVEN
             val searchTypeId = R.string.order_creation_customer_search_email
@@ -126,9 +166,10 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // WHEN
             viewModel.onSearchQueryChanged("customer")
             viewModel.onSearchTypeChanged(searchTypeId)
+            advanceUntilIdle()
 
             // THEN
-            verify(customerListRepository, times(3)).searchCustomerListWithEmail(
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(
                 any(),
                 any(),
                 any(),
@@ -145,6 +186,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // WHEN
             viewModel.onEndOfListReached()
+            advanceUntilIdle()
 
             // THEN
             verify(customerListRepository, times(1)).searchCustomerListWithEmail(
@@ -165,6 +207,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // WHEN
             viewModel.onEndOfListReached()
+            advanceUntilIdle()
 
             // THEN
             verify(customerListRepository, times(2)).searchCustomerListWithEmail(
@@ -184,6 +227,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel()
 
             val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
 
             // WHEN
             viewModel.onEndOfListReached()

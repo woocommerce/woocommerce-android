@@ -7,6 +7,7 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
@@ -14,6 +15,8 @@ import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
+import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getStockText
 import org.wordpress.android.util.HtmlUtils
@@ -52,12 +55,23 @@ class ProductItemView @JvmOverloads constructor(
     fun bind(
         productUIModel: ProductUIModel,
         currencyFormatter: CurrencyFormatter,
-        currencyCode: String? = null
+        currencyCode: String? = null,
+        showDiscount: Boolean = false,
     ) {
         showProductName(productUIModel.item.name)
         showProductSku(productUIModel.item.sku)
         showProductImage(productUIModel.imageUrl)
-        val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
+        val discountAmount = CalculateItemDiscountAmount()(productUIModel.item)
+        if (showDiscount && currencyCode != null && discountAmount > BigDecimal.ZERO) {
+            binding.productDiscount.isVisible = true
+            binding.productDiscount.text =
+                context.getString(
+                    R.string.order_creation_discount_value,
+                    GetItemDiscountAmountText(currencyFormatter)(discountAmount, currencyCode)
+                )
+        } else {
+            binding.productDiscount.isVisible = false
+        }
 
         binding.productStockAndStatus.text = buildString {
             if (productUIModel.item.isVariation && productUIModel.item.attributesDescription.isNotEmpty()) {
@@ -66,6 +80,7 @@ class ProductItemView @JvmOverloads constructor(
                 append(productUIModel.getStockText(context))
             }
             append(" $bullet ")
+            val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
             append(decimalFormatter(productUIModel.item.total).replace(" ", "\u00A0"))
         }
     }

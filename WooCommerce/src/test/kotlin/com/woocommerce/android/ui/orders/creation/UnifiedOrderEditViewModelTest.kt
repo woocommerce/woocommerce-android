@@ -1686,7 +1686,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             tracker = tracker,
             barcodeScanningTracker = barcodeScanningTracker,
             productRepository = productListRepository,
-            checkDigitRemoverFactory = checkDigitRemoverFactory
+            checkDigitRemoverFactory = checkDigitRemoverFactory,
         )
     }
 
