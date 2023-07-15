@@ -1,2 +1,0 @@
-14.3:
-En esta versión, encontrarás la opción de añadir varios cupones al crear un pedido. También hemos facilitado la búsqueda de un producto mediante el escaneo del código de barras o el código QR. ¡Échale un vistazo!
