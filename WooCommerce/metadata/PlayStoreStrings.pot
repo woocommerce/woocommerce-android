@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_145"
+msgid ""
+"14.5:\n"
+"Introducing our new In-Person Payments feature, Tap To Pay, on Android for quicker transactions and a smoother shopping experience. Also, managing discounts is now easier with our latest feature that allows you to apply direct product discounts during the order process, saving time and increasing efficiency. Keep your updates on to enjoy WooCommerce's continuous improvements and latest features!\n"
+msgstr ""
+
 msgctxt "release_note_144"
 msgid ""
 "14.4:\n"
 "We added the option for you to automatically generate conversion-friendly & SEO-optimized product descriptions for your WooCommerce products using the help of AI. Do try it out and share your feedback!\n"
-msgstr ""
-
-msgctxt "release_note_143"
-msgid ""
-"14.3:\n"
-"This release includes the option to add multiple coupons when creating an order. We've also made it super easy to search for a product by scanning the barcode or qr code. Check it out!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
