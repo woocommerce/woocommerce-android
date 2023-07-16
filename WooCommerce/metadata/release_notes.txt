@@ -1,4 +1,1 @@
-- [*] [Internal] Fix for the crash on Payment Selection screen [https://github.com/woocommerce/woocommerce-android/pull/9370]
-- [**] [Internal] Improve the camera permission handling flow in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/9376]
-- [**] Added direct product discounts in order create/edit flow [https://github.com/woocommerce/woocommerce-android/pull/9411]
-
+Introducing our new In-Person Payments feature, Tap To Pay, on Android for quicker transactions and a smoother shopping experience. Also, managing discounts is now easier with our latest feature that allows you to apply direct product discounts during the order process, saving time and increasing efficiency. Keep your updates on to enjoy WooCommerce's continuous improvements and latest features!
