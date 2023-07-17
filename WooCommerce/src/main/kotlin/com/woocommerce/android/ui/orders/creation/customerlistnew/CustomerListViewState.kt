@@ -13,7 +13,10 @@ data class CustomerListViewState(
         object Loading : CustomerList()
         object Empty : CustomerList()
         object Error : CustomerList()
-        data class Loaded(val customers: List<Item>) : CustomerList()
+        data class Loaded(
+            val customers: List<Item>,
+            val shouldResetScrollPosition: Boolean,
+        ) : CustomerList()
 
         sealed class Item {
             data class Customer(

@@ -31,6 +31,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -138,6 +139,10 @@ private fun CustomerListLoaded(
     onEndOfListReached: () -> Unit,
 ) {
     val listState = rememberLazyListState()
+
+    LaunchedEffect(key1 = body) {
+        if (body.shouldResetScrollPosition) listState.scrollToItem(0)
+    }
 
     LazyColumn(
         state = listState,
@@ -346,7 +351,8 @@ fun CustomerListScreenPreview() {
                         email = "blac@aaa.com",
                     ),
                     CustomerListViewState.CustomerList.Item.Loading,
-                )
+                ),
+                shouldResetScrollPosition = true,
             ),
         ),
         {},
