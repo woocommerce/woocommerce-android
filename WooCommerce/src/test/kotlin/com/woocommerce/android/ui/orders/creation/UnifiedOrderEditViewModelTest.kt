@@ -492,6 +492,39 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when SKU search succeeds for a product with price 0, then do not add that product`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        customStatus = ProductStatus.PUBLISH.name,
+                        amount = "0"
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isFalse()
+        }
+    }
+
+    @Test
     fun `when SKU search succeeds for a not published product, then trigger proper event`() {
         testBlocking {
             createSut()
