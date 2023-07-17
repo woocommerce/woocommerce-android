@@ -168,16 +168,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 )
             )
             if (isPaymentCollectableWithCardReader) {
-                add(
-                    Success.Row.Double(
-                        label = R.string.card_reader_type_selection_bluetooth_reader,
-                        description = R.string.card_reader_type_selection_bluetooth_reader_description,
-                        icon = R.drawable.ic_gridicons_credit_card,
-                        isEnabled = !isTapToPayTestingInProgress,
-                        onClick = ::onBtReaderClicked
-                    )
-                )
-
                 if (isPaymentCollectableWithTapToPay) {
                     add(
                         Success.Row.Double(
@@ -189,6 +179,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         )
                     )
                 }
+                add(
+                    Success.Row.Double(
+                        label = R.string.card_reader_type_selection_bluetooth_reader,
+                        description = R.string.card_reader_type_selection_bluetooth_reader_description,
+                        icon = R.drawable.ic_gridicons_credit_card,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onBtReaderClicked
+                    )
+                )
             }
             if (order.paymentUrl.isNotNullOrEmpty()) {
                 add(
