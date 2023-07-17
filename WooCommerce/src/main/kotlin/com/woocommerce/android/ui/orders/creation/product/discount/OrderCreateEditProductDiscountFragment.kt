@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -48,7 +49,11 @@ class OrderCreateEditProductDiscountFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(KEY_PRODUCT_DISCOUNT_RESULT, it.data)
+                    navigateBackWithResult(
+                        KEY_PRODUCT_DISCOUNT_RESULT,
+                        it.data,
+                        R.id.orderCreationFragment
+                    )
                 }
 
                 is Exit -> {

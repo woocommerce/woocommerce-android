@@ -1,8 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+14.6
+-----
+
+
 14.5
 - [***] In-Person Payments: Tap To Pay On Android. [https://github.com/woocommerce/woocommerce-android/pull/9385]
 - [*] [Internal] Fix for the crash on Payment Selection screen [https://github.com/woocommerce/woocommerce-android/pull/9370]
 - [**] [Internal] Improve the camera permission handling flow in the barcode scanning screen [https://github.com/woocommerce/woocommerce-android/pull/9376]
+- [**] Added direct product discounts in order create/edit flow [https://github.com/woocommerce/woocommerce-android/pull/9411]
 
 14.4
 -----

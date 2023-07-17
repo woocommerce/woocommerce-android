@@ -358,5 +358,9 @@ class AppPrefsWrapper @Inject constructor() {
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
-    var shouldHideBlazeBanner by AppPrefs::shouldHideBlazeBanner
+    fun isBlazeBannerHidden(siteId: Int): Boolean = AppPrefs.isBlazeBannerHidden(siteId)
+
+    fun setBlazeBannerHidden(siteId: Int, hide: Boolean) {
+        AppPrefs.setBlazeBannerHidden(siteId, hide)
+    }
 }
