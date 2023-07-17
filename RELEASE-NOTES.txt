@@ -1,6 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.6
 -----
+- [*] [Internal] In-Person Payments: learn more link to the Tap To Pay Summary screen. [https://github.com/woocommerce/woocommerce-android/pull/9426]
 
 
 14.5
