@@ -80,6 +80,7 @@ import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEdi
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
@@ -515,7 +516,17 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (product.isVariable()) {
+        if (product.isRestricted()) {
+            sendAddingProductsViaScanningFailedEvent(
+                message = string.order_creation_barcode_scanning_unable_to_add_draft_product
+            )
+            trackProductSearchViaSKUFailureEvent(
+                source,
+                barcodeFormat,
+                "Failed to add a product that is not published"
+            )
+            return
+        } else if (product.isVariable()) {
             if (product.parentId == 0L) {
                 sendAddingProductsViaScanningFailedEvent(
                     message = string.order_creation_barcode_scanning_unable_to_add_variable_product
@@ -1078,5 +1089,7 @@ private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
+
+private fun ModelProduct.isRestricted() = status != ProductStatus.PUBLISH
 
 fun Order.Item.isSynced() = this.itemId != 0L
