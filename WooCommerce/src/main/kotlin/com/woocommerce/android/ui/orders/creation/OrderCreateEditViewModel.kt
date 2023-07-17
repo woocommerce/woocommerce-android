@@ -1091,6 +1091,6 @@ private fun ModelProduct.isVariable() =
         productType == ProductType.VARIATION
 
 private fun ModelProduct.isRestricted() = status != ProductStatus.PUBLISH ||
-    (price?.compareTo(BigDecimal.ZERO) == 0 || price != null)
+    (price?.compareTo(BigDecimal.ZERO) == 0 || price == null)
 
 fun Order.Item.isSynced() = this.itemId != 0L
