@@ -816,7 +816,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
+        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
@@ -833,7 +833,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
+        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(

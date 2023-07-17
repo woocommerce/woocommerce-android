@@ -129,7 +129,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
         isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
         isScanToPayAvailable = order.paymentUrl.isNotEmpty(),
-        learMoreIpp = SelectPaymentMethodViewState.LearMoreIpp(
+        learnMoreIpp = SelectPaymentMethodViewState.LearnMoreIpp(
             label = UiStringRes(
                 R.string.card_reader_connect_learn_more,
                 containsHtml = true

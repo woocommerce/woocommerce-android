@@ -10,10 +10,10 @@ sealed class SelectPaymentMethodViewState {
         val isPaymentCollectableWithExternalCardReader: Boolean,
         val isPaymentCollectableWithTapToPay: Boolean,
         val isScanToPayAvailable: Boolean,
-        val learMoreIpp: LearMoreIpp,
+        val learnMoreIpp: LearnMoreIpp,
     ) : SelectPaymentMethodViewState()
 
-    data class LearMoreIpp(
+    data class LearnMoreIpp(
         val label: UiString,
         val onClick: () -> Unit,
     )
