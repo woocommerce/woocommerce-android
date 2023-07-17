@@ -43,7 +43,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -238,10 +237,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.value as Success).rows
-            assertThat(rows.none {
-                it is Success.Row.Double &&
-                    it.label == R.string.card_reader_type_selection_tap_to_pay
-            }).isTrue()
+            assertThat(
+                rows.none {
+                    it is Success.Row.Double &&
+                        it.label == R.string.card_reader_type_selection_tap_to_pay
+                }
+            ).isTrue()
         }
 
     @Test
@@ -259,10 +260,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.value as Success).rows
-            assertTrue(rows.none {
-                it is Success.Row.Double &&
-                    it.label == R.string.card_reader_type_selection_tap_to_pay
-            })
+            assertThat(
+                rows.none {
+                    it is Success.Row.Double &&
+                        it.label == R.string.card_reader_type_selection_tap_to_pay
+                }
+            ).isTrue()
         }
 
     @Test
@@ -996,10 +999,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.value as Success).rows
-            assertThat(rows.firstOrNull {
-                it is Success.Row.Single &&
-                    it.label == R.string.card_reader_type_selection_scan_to_pay
-            }).isNotNull()
+            assertThat(
+                rows.firstOrNull {
+                    it is Success.Row.Single &&
+                        it.label == R.string.card_reader_type_selection_scan_to_pay
+                }
+            ).isNotNull()
         }
 
     @Test
@@ -1015,10 +1020,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.value as Success).rows
-            assertThat(rows.firstOrNull {
-                it is Success.Row.Single &&
-                    it.label == R.string.card_reader_type_selection_scan_to_pay
-            }).isNull()
+            assertThat(
+                rows.firstOrNull {
+                    it is Success.Row.Single &&
+                        it.label == R.string.card_reader_type_selection_scan_to_pay
+                }
+            ).isNull()
         }
 
     @Test
