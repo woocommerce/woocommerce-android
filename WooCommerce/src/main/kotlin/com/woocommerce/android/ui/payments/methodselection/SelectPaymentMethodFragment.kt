@@ -80,6 +80,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
     private fun renderLoadingState(binding: FragmentSelectPaymentMethodBinding) {
         binding.container.isVisible = false
+        binding.tvSelectPaymentTitle.isVisible = false
         binding.pbLoading.isVisible = true
         binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = false
     }
@@ -89,10 +90,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         state: Success
     ) {
         binding.container.isVisible = true
+        binding.tvSelectPaymentTitle.isVisible = true
         binding.pbLoading.isVisible = false
 
         requireActivity().title = getString(R.string.simple_payments_take_payment_button, state.orderTotal)
 
+        binding.container.removeAllViews()
         state.rows.forEach { row ->
             binding.container.addView(
                 when (row) {
@@ -119,10 +122,10 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
-                    isVisible = !isEnabled
+                    isVisible = !this@buildSingleRowView.isEnabled
                 }
 
-                if (isEnabled) setOnClickListener { onClick() }
+                if (this@buildSingleRowView.isEnabled) setOnClickListener { onClick() }
             }
 
     private fun Success.Row.Double.buildDoubleRow() =
@@ -141,10 +144,10 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
-                    isVisible = !isEnabled
+                    isVisible = !this@buildDoubleRow.isEnabled
                 }
 
-                if (isEnabled) setOnClickListener { onClick() }
+                if (this@buildDoubleRow.isEnabled) setOnClickListener { onClick() }
             }
 
     @Suppress("LongMethod", "ComplexMethod")
