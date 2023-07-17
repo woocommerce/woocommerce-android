@@ -7,9 +7,6 @@ import com.woocommerce.android.e2e.screens.TabNavComponent
 
 class WelcomeScreen : Screen {
     companion object {
-        const val LOGIN_BUTTON = R.id.button_login_store
-        const val WPCOM_LOGIN_BUTTON = R.id.button_login_wpcom
-
         fun logoutIfNeeded(composeTestRule: ComposeContentTestRule): WelcomeScreen {
             if (isElementDisplayed(R.id.dashboard)) {
                 TabNavComponent()
@@ -32,15 +29,15 @@ class WelcomeScreen : Screen {
         }
     }
 
-    constructor() : super(LOGIN_BUTTON)
+    constructor() : super(R.id.button_login_store)
 
     fun selectLogin(): SiteAddressScreen {
-        clickOn(LOGIN_BUTTON)
+        clickOn(R.id.button_login_store)
         return SiteAddressScreen()
     }
 
     fun selectWPCOMLogin(): EmailAddressScreen {
-        clickOn(WPCOM_LOGIN_BUTTON)
+        clickOn(R.id.button_login_wpcom)
         return EmailAddressScreen()
     }
 }

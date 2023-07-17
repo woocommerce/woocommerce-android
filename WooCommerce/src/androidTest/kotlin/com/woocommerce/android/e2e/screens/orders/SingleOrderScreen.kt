@@ -15,20 +15,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers
 
 class SingleOrderScreen : Screen {
-    companion object {
-        const val AMOUNT_PRODUCTS_TOTAL = R.id.paymentInfo_productsTotal
-        const val AMOUNT_FEE = R.id.paymentInfo_Fees
-        const val AMOUNT_SHIPPING = R.id.paymentInfo_shippingTotal
-        const val AMOUNT_TAXES = R.id.paymentInfo_taxesTotal
-        const val AMOUNT_TOTAL = R.id.paymentInfo_total
-        const val COLLECT_PAYMENT_BUTTON = R.id.paymentInfo_collectCardPresentPaymentButton
-        const val CUSTOMER_NOTE = R.id.customerInfo_customerNote
-        const val ORDER_STATUS_CUSTOMER = R.id.orderStatus_header
-        const val ORDER_STATUS_TAG = R.id.orderStatus_orderTags
-        const val TOOLBAR = R.id.toolbar
-    }
-
-    constructor() : super(TOOLBAR)
+    constructor() : super(R.id.toolbar)
 
     fun goBackToOrdersScreen(): OrderListScreen {
         if (isElementDisplayed(R.id.orderDetail_container)) {
@@ -47,17 +34,17 @@ class SingleOrderScreen : Screen {
     }
 
     fun assertOrderStatus(orderStatus: String): SingleOrderScreen {
-        assertIdAndTextDisplayed(ORDER_STATUS_TAG, orderStatus)
+        assertIdAndTextDisplayed(R.id.orderStatus_orderTags, orderStatus)
         return this
     }
 
     fun assertCustomerName(customerName: String): SingleOrderScreen {
-        assertIdAndTextDisplayed(ORDER_STATUS_CUSTOMER, customerName)
+        assertIdAndTextDisplayed(R.id.orderStatus_header, customerName)
         return this
     }
 
     fun assertOrderId(orderId: Int): SingleOrderScreen {
-        Espresso.onView(withId(TOOLBAR))
+        Espresso.onView(withId(R.id.toolbar))
             .check(ViewAssertions.matches(hasDescendant(withText("Order #$orderId"))))
             .check(ViewAssertions.matches(isDisplayed()))
         return this
@@ -66,7 +53,7 @@ class SingleOrderScreen : Screen {
     fun assertCustomerNote(customerNote: String): SingleOrderScreen {
         Espresso.onView(
             Matchers.allOf(
-                ViewMatchers.isDescendantOfA(withId(CUSTOMER_NOTE)),
+                ViewMatchers.isDescendantOfA(withId(R.id.customerInfo_customerNote)),
                 Matchers.allOf(
                     withId(R.id.notEmptyLabel),
                     withText(customerNote)
@@ -80,28 +67,28 @@ class SingleOrderScreen : Screen {
     }
 
     fun assertPayments(order: OrderData): SingleOrderScreen {
-        Espresso.onView(withId(AMOUNT_TOTAL))
+        Espresso.onView(withId(R.id.paymentInfo_total))
             .perform(NestedScrollViewExtension())
 
         with(order) {
             if (productsTotalRaw.isNotBlank()) {
-                assertIdAndTextDisplayed(AMOUNT_PRODUCTS_TOTAL, productsTotalAmount)
+                assertIdAndTextDisplayed(R.id.paymentInfo_productsTotal, productsTotalAmount)
             }
 
             if (shippingRaw.isNotBlank()) {
-                assertIdAndTextDisplayed(AMOUNT_SHIPPING, shippingAmount)
+                assertIdAndTextDisplayed(R.id.paymentInfo_shippingTotal, shippingAmount)
             }
 
             if (feeRaw.isNotBlank()) {
-                assertIdAndTextDisplayed(AMOUNT_FEE, feeAmount)
+                assertIdAndTextDisplayed(R.id.paymentInfo_Fees, feeAmount)
             }
 
             if (taxesRaw.isNotBlank()) {
-                assertIdAndTextDisplayed(AMOUNT_TAXES, taxesAmount)
+                assertIdAndTextDisplayed(R.id.paymentInfo_taxesTotal, taxesAmount)
             }
         }
 
-        assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
+        assertIdAndTextDisplayed(R.id.paymentInfo_total, order.total)
         return this
     }
 
@@ -150,7 +137,7 @@ class SingleOrderScreen : Screen {
     }
 
     fun tapOnCollectPayment(): PaymentSelectionScreen {
-        clickOn(COLLECT_PAYMENT_BUTTON)
+        clickOn(R.id.paymentInfo_collectCardPresentPaymentButton)
         return PaymentSelectionScreen()
     }
 }

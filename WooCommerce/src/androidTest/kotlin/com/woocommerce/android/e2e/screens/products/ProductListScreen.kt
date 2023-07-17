@@ -14,19 +14,15 @@ import org.hamcrest.Matchers
 import org.hamcrest.Matchers.instanceOf
 
 class ProductListScreen : Screen {
-    companion object {
-        const val LIST_VIEW = R.id.productsRecycler
-    }
-
-    constructor() : super(LIST_VIEW)
+    constructor() : super(R.id.productsRecycler)
 
     fun scrollToProduct(productTitle: String): ProductListScreen {
-        scrollToListItem(productTitle, LIST_VIEW)
+        scrollToListItem(productTitle, R.id.productsRecycler)
         return ProductListScreen()
     }
 
     fun selectProductByName(productName: String): SingleProductScreen {
-        selectListItem(productName, LIST_VIEW)
+        selectListItem(productName, R.id.productsRecycler)
         waitForElementToBeDisplayed(R.id.productDetail_root)
         return SingleProductScreen()
     }
@@ -89,7 +85,7 @@ class ProductListScreen : Screen {
 
     fun assertProductIsAtPosition(productName: String, position: Int): ProductListScreen {
         Espresso.onView(
-            withRecyclerView(LIST_VIEW).atPositionOnView(position, R.id.productName)
+            withRecyclerView(R.id.productsRecycler).atPositionOnView(position, R.id.productName)
         )
             .check(matches(ViewMatchers.withText(productName)))
 

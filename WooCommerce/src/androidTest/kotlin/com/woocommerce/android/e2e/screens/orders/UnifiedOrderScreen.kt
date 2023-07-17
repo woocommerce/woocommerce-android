@@ -18,32 +18,15 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.CoreMatchers.endsWith
 import org.hamcrest.core.AllOf.allOf
 
-class UnifiedOrderScreen : Screen(ORDER_CREATION) {
-    companion object {
-        const val CREATE_BUTTON = R.id.menu_create
-        const val CUSTOMER_NOTE_EDITOR = R.id.customerOrderNote_editor
-        const val CUSTOMER_SECTION = R.id.customer_section
-        const val DONE_BUTTON = R.id.menu_done
-        const val EDIT_STATUS_BUTTON = R.id.orderStatus_editButton
-        const val FEE_BUTTON = R.id.fee_button
-        const val NOTES_SECTION = R.id.notes_section
-        const val ORDER_CREATION = R.id.order_creation_root
-        const val PAYMENT_SECTION = R.id.payment_section
-        const val PRODUCTS_SECTION = R.id.products_section
-        const val SHIPPING_BUTTON = R.id.shipping_button
-        const val SHIPPING_AMOUNT_INPUT = R.id.amountEditText
-        const val TOOLBAR = R.id.collapsing_toolbar
-        const val UPDATE_STATUS_LIST_VIEW = androidx.appcompat.R.id.select_dialog_listview
-    }
-
+class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     fun createOrder(): SingleOrderScreen {
-        clickOn(CREATE_BUTTON)
+        clickOn(R.id.menu_create)
         return SingleOrderScreen()
     }
 
     fun updateOrderStatus(newOrderStatus: String): UnifiedOrderScreen {
-        clickOn(EDIT_STATUS_BUTTON)
-        waitForElementToBeDisplayed(UPDATE_STATUS_LIST_VIEW)
+        clickOn(R.id.orderStatus_editButton)
+        waitForElementToBeDisplayed(androidx.appcompat.R.id.select_dialog_listview)
         Espresso.onView(withText(newOrderStatus))
             .perform(click())
         Espresso.onView(withText("Apply"))
@@ -52,8 +35,8 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
-        waitForElementToBeDisplayed(PAYMENT_SECTION)
-        Espresso.onView(withId(CUSTOMER_SECTION))
+        waitForElementToBeDisplayed(R.id.payment_section)
+        Espresso.onView(withId(R.id.customer_section))
             .perform(NestedScrollViewExtension())
         Espresso.onView(withText("Add customer details"))
             .perform(click())
@@ -62,22 +45,22 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun addShipping(): UnifiedOrderScreen {
-        waitForElementToBeDisplayed(PAYMENT_SECTION)
-        clickOn(SHIPPING_BUTTON)
-        waitForElementToBeDisplayed(SHIPPING_AMOUNT_INPUT)
+        waitForElementToBeDisplayed(R.id.payment_section)
+        clickOn(R.id.shipping_button)
+        waitForElementToBeDisplayed(R.id.amountEditText)
         Espresso.onView(
             allOf(
-                isDescendantOfA(withId(SHIPPING_AMOUNT_INPUT)),
+                isDescendantOfA(withId(R.id.amountEditText)),
                 withClassName(endsWith("EditText"))
             )
         ).perform(ViewActions.replaceText("3.30"))
-        clickOn(DONE_BUTTON)
+        clickOn(R.id.menu_done)
         return this
     }
 
     fun addFee(): UnifiedOrderScreen {
-        waitForElementToBeDisplayed(PAYMENT_SECTION)
-        clickOn(FEE_BUTTON)
+        waitForElementToBeDisplayed(R.id.payment_section)
+        clickOn(R.id.fee_button)
 
         // Clearing first before re-adding because of the mock file, this is prepopulated at this point
         Espresso.onView((allOf(withText("2.25"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
@@ -85,32 +68,32 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         Espresso.onView((allOf(withText("0"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
             .perform(ViewActions.replaceText("2.25"))
 
-        clickOn(DONE_BUTTON)
+        clickOn(R.id.menu_done)
         return this
     }
 
     fun addCustomerNotes(note: String): UnifiedOrderScreen {
-        Espresso.onView(withId(NOTES_SECTION))
+        Espresso.onView(withId(R.id.notes_section))
             .perform(NestedScrollViewExtension())
 
         clickOn(Espresso.onView(withText("Add note")))
-        typeTextInto(CUSTOMER_NOTE_EDITOR, note)
-        clickOn(DONE_BUTTON)
+        typeTextInto(R.id.customerOrderNote_editor, note)
+        clickOn(R.id.menu_done)
         return this
     }
 
     fun addProductTap(): ProductSelectorScreen {
-        waitForElementToBeDisplayed(PRODUCTS_SECTION)
+        waitForElementToBeDisplayed(R.id.products_section)
         Espresso.onView(withText(R.string.order_creation_add_products)).perform(click())
         return ProductSelectorScreen()
     }
 
     fun assertNewOrderScreen(): UnifiedOrderScreen {
-        Espresso.onView(withId(TOOLBAR))
+        Espresso.onView(withId(R.id.collapsing_toolbar))
             .check(matches(hasDescendant(withText(R.string.order_creation_fragment_title))))
             .check(matches(isDisplayed()))
-        Espresso.onView(withId(ORDER_CREATION)).check(matches(isDisplayed()))
-        Espresso.onView(withId(CREATE_BUTTON)).check(matches(isDisplayed()))
+        Espresso.onView(withId(R.id.order_creation_root)).check(matches(isDisplayed()))
+        Espresso.onView(withId(R.id.menu_create)).check(matches(isDisplayed()))
         return this
     }
 

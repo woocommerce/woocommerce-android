@@ -10,11 +10,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers
 
 class SingleReviewScreen : Screen {
-    companion object {
-        const val PRODUCT_NAME_LABEL = R.id.review_product_name
-    }
-
-    constructor() : super(PRODUCT_NAME_LABEL)
+    constructor() : super(R.id.review_product_name)
 
     fun goBackToReviewsScreen(): ReviewsListScreen {
         pressBack()

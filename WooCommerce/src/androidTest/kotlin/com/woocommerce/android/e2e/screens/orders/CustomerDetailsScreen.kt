@@ -13,22 +13,18 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers.not
 import org.hamcrest.core.AllOf.allOf
 
-class CustomerDetailsScreen : Screen(TOOLBAR) {
+class CustomerDetailsScreen : Screen(R.id.addressSwitch) {
     companion object {
-        const val ADDRESS_SWITCH = R.id.addressSwitch
-        const val FIRST_NAME_INPUT = R.id.first_name
-        const val TOOLBAR = R.id.toolbar
-        const val PROGRESS_BAR = R.id.progress_indicator
         const val FIRST_NAME_INPUT_HINT_TEXT = "First name"
     }
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
-        waitForElementToDisappear(PROGRESS_BAR)
+        waitForElementToDisappear(R.id.progress_indicator)
 
         // Enter First Name
         Espresso.onView(
             allOf(
-                ViewMatchers.isDescendantOfA(ViewMatchers.withId(FIRST_NAME_INPUT)),
+                ViewMatchers.isDescendantOfA(ViewMatchers.withId(R.id.first_name)),
                 ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
                 ViewMatchers.isCompletelyDisplayed()
             )
@@ -40,14 +36,14 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
         )
 
         // Scroll to the switch to enter shipping details
-        Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
+        Espresso.onView(allOf(ViewMatchers.withId(R.id.addressSwitch)))
             .perform(scrollTo())
 
         try {
             // Tap the switch if it's not already enabled
             Espresso.onView(
                 allOf(
-                    ViewMatchers.withId(ADDRESS_SWITCH),
+                    ViewMatchers.withId(R.id.addressSwitch),
                     ViewMatchers.isNotChecked()
                 )
             ).perform(click())
@@ -58,7 +54,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
         // Enter First Name used for Shipping
         Espresso.onView(
             allOf(
-                ViewMatchers.isDescendantOfA(ViewMatchers.withId(FIRST_NAME_INPUT)),
+                ViewMatchers.isDescendantOfA(ViewMatchers.withId(R.id.first_name)),
                 ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
                 ViewMatchers.withText(not(customerFirstName))
             )

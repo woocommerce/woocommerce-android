@@ -5,16 +5,11 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
 
 class PasswordScreen : Screen {
-    companion object {
-        const val PASSWORD_FIELD = org.wordpress.android.login.R.id.input
-        const val NEXT_BUTTON = R.id.bottom_button
-    }
-
-    constructor() : super(PASSWORD_FIELD)
+    constructor() : super(org.wordpress.android.login.R.id.input)
 
     fun proceedWith(password: String): MyStoreScreen {
-        typeTextInto(PASSWORD_FIELD, password)
-        clickOn(NEXT_BUTTON)
+        typeTextInto(org.wordpress.android.login.R.id.input, password)
+        clickOn(R.id.bottom_button)
 
         return MyStoreScreen()
     }

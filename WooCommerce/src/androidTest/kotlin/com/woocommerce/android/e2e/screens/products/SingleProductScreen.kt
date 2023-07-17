@@ -11,11 +11,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers
 
 class SingleProductScreen : Screen {
-    companion object {
-        const val PRODUCT_DETAIL_CONTAINER = R.id.productDetail_root
-    }
-
-    constructor() : super(PRODUCT_DETAIL_CONTAINER)
+    constructor() : super(R.id.productDetail_root)
 
     fun goBackToProductsScreen(): ProductListScreen {
         pressBack()

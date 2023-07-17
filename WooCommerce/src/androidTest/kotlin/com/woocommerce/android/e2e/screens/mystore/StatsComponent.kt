@@ -3,11 +3,7 @@ package com.woocommerce.android.e2e.screens.mystore
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
-class StatsComponent : Screen(STATS_DASHBOARD) {
-    companion object {
-        const val STATS_DASHBOARD = R.id.dashboardStats_root
-    }
-
+class StatsComponent : Screen(R.id.dashboardStats_root) {
     override fun recover() {
         super.recover()
         clickOn(R.id.dashboard)

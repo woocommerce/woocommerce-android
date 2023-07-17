@@ -7,31 +7,24 @@ import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
 
-class TabNavComponent : Screen(MY_STORE_BUTTON) {
-    companion object {
-        const val MY_STORE_BUTTON = R.id.dashboard
-        const val ORDERS_BUTTON = R.id.orders
-        const val PRODUCTS_BUTTON = R.id.products
-        const val MORE_MENU_BUTTON = R.id.moreMenu
-    }
-
+class TabNavComponent : Screen(R.id.dashboard) {
     fun gotoMyStoreScreen(): MyStoreScreen {
-        clickOn(MY_STORE_BUTTON)
+        clickOn(R.id.dashboard)
         return MyStoreScreen()
     }
 
     fun gotoOrdersScreen(): OrderListScreen {
-        clickOn(ORDERS_BUTTON)
+        clickOn(R.id.orders)
         return OrderListScreen()
     }
 
     fun gotoProductsScreen(): ProductListScreen {
-        clickOn(PRODUCTS_BUTTON)
+        clickOn(R.id.products)
         return ProductListScreen()
     }
 
     fun gotoMoreMenuScreen(): MoreMenuScreen {
-        clickOn(MORE_MENU_BUTTON)
+        clickOn(R.id.moreMenu)
         return MoreMenuScreen()
     }
 }
