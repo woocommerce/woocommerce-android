@@ -83,7 +83,9 @@ class TapToPaySummaryFragment : BaseFragment() {
                     )
                 }
                 is NavigateToUrlInGenericWebView ->
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url,
+                    ChromeCustomTabUtils.launchUrl(
+                        requireContext(),
+                        event.url,
                         ChromeCustomTabUtils.Height.Partial.ThreeQuarters
                     )
                 else -> event.isHandled = false

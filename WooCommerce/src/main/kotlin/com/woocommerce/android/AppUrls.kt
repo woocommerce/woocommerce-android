@@ -63,7 +63,8 @@ object AppUrls {
         "https://docs.woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/"
     const val STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS =
         "https://stripe.com/docs/terminal/payments/setup-reader/tap-to-pay?platform=android#supported-devices"
-    const val LEARN_MORE_ABOUT_TAP_TO_PAY = "https://woocommerce.com/document/woocommerce-payments/in-person-payments/tap-to-pay-android/"
+    const val LEARN_MORE_ABOUT_TAP_TO_PAY =
+        "https://woocommerce.com/document/woocommerce-payments/in-person-payments/tap-to-pay-android/"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
         "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
