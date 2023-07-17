@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -137,6 +138,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             )
 
             binding.container.addView(MaterialDivider(requireContext()))
+        }
+
+        with(binding.learnMoreIppPaymentMethodsTv) {
+            learnMore.setOnClickListener { state.learnMoreIpp.onClick.invoke() }
+            UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learnMoreIpp.label)
         }
     }
 

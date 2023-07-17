@@ -10,25 +10,29 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true">
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvSelectPaymentTitle"
+            style="@style/TextAppearance.Woo.Subtitle2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/default_window_background"
+            android:padding="@dimen/major_100"
+            android:text="@string/simple_payments_choose_method"
+            android:textAllCaps="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <LinearLayout
             android:id="@+id/container"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/color_surface"
             android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" >
+            app:layout_constraintTop_toBottomOf="@+id/tvSelectPaymentTitle" />
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Woo.Subtitle1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/default_window_background"
-                android:padding="@dimen/major_100"
-                android:text="@string/simple_payments_choose_method" />
-        </LinearLayout>
-
-        <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
         <include
             android:id="@+id/learn_more_ipp_payment_methods_tv"
             layout="@layout/card_reader_learn_more_section"
