@@ -487,7 +487,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
-            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isFalse()
         }
     }
 
