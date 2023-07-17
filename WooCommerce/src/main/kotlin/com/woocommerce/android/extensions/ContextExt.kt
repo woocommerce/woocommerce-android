@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.Application
 import android.content.ClipData
@@ -29,6 +30,7 @@ fun Context.getCurrentProcessName() =
 
 @Suppress("DEPRECATION")
 val Context.physicalScreenHeightInPx: Int
+    @SuppressLint("NewApi")
     get() = run {
         val windowManager = applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         if (SystemVersionUtils.isAtLeastR()) {
