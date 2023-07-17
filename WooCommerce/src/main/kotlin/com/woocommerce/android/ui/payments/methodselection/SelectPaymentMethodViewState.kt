@@ -1,20 +1,36 @@
 package com.woocommerce.android.ui.payments.methodselection
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.model.UiString
 
 sealed class SelectPaymentMethodViewState {
     object Loading : SelectPaymentMethodViewState()
     data class Success(
-        val paymentUrl: String,
         val orderTotal: String,
-        val isPaymentCollectableWithExternalCardReader: Boolean,
-        val isPaymentCollectableWithTapToPay: Boolean,
-        val isScanToPayAvailable: Boolean,
+        val rows: List<Row>,
         val learnMoreIpp: LearnMoreIpp,
-    ) : SelectPaymentMethodViewState()
+    ) : SelectPaymentMethodViewState() {
+        sealed class Row {
+            data class Single(
+                @StringRes val label: Int,
+                @DrawableRes val icon: Int,
+                val isEnabled: Boolean,
+                val onClick: () -> Unit,
+            ) : Row()
 
-    data class LearnMoreIpp(
-        val label: UiString,
-        val onClick: () -> Unit,
-    )
+            data class Double(
+                @StringRes val label: Int,
+                @StringRes val description: Int,
+                @DrawableRes val icon: Int,
+                val isEnabled: Boolean,
+                val onClick: () -> Unit,
+            ) : Row()
+        }
+
+        data class LearnMoreIpp(
+            val label: UiString,
+            val onClick: () -> Unit,
+        )
+    }
 }

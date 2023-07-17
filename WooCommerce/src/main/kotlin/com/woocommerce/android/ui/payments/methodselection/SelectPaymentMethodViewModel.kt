@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -121,7 +122,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         _viewState.value = buildSuccessState(
             order = order.first(),
             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-            isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay
+            isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay,
+            isTapToPayTestingInProgress = isTapToPayTestingState,
         )
     }
 
@@ -129,20 +131,70 @@ class SelectPaymentMethodViewModel @Inject constructor(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
-    ) = Success(
-        paymentUrl = order.paymentUrl,
-        orderTotal = formatOrderTotal(order.total),
-        isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
-        isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
-        isScanToPayAvailable = order.paymentUrl.isNotEmpty(),
-        learnMoreIpp = SelectPaymentMethodViewState.LearnMoreIpp(
-            label = UiStringRes(
-                R.string.card_reader_connect_learn_more,
-                containsHtml = true
-            ),
-            onClick = ::onLearnMoreIppClicked
+        isTapToPayTestingInProgress: Boolean,
+    ): Success {
+        val rows = mutableListOf<Success.Row>().apply {
+            add(
+                Success.Row.Single(
+                    label = R.string.cash,
+                    icon = R.drawable.ic_gridicons_money_on_surface,
+                    isEnabled = !isTapToPayTestingInProgress,
+                    onClick = ::onCashPaymentClicked
+                )
+            )
+            if (isPaymentCollectableWithTapToPay) {
+                add(
+                    Success.Row.Double(
+                        label = R.string.card_reader_type_selection_tap_to_pay,
+                        description = R.string.card_reader_type_selection_tap_to_pay_description,
+                        icon = R.drawable.ic_baseline_contactless,
+                        isEnabled = true,
+                        onClick = ::onTapToPayClicked
+                    )
+                )
+            }
+            if (isPaymentCollectableWithCardReader) {
+                add(
+                    Success.Row.Double(
+                        label = R.string.card_reader_type_selection_bluetooth_reader,
+                        description = R.string.card_reader_type_selection_bluetooth_reader_description,
+                        icon = R.drawable.ic_gridicons_credit_card,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onBtReaderClicked
+                    )
+                )
+            }
+            if (order.paymentUrl.isNotNullOrEmpty()) {
+                add(
+                    Success.Row.Single(
+                        label = R.string.simple_payments_share_payment_link,
+                        icon = R.drawable.ic_gridicons_link_on_surface,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onSharePaymentUrlClicked
+                    )
+                )
+                add(
+                    Success.Row.Single(
+                        label = R.string.card_reader_type_selection_scan_to_pay,
+                        icon = R.drawable.ic_baseline_qr_code_scanner,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onScanToPayClicked
+                    )
+                )
+            }
+        }
+        return Success(
+            orderTotal = formatOrderTotal(order.total),
+            rows = rows,
+            learnMoreIpp = Success.LearnMoreIpp(
+                label = UiStringRes(
+                    R.string.card_reader_connect_learn_more,
+                    containsHtml = true
+                ),
+                onClick = ::onLearnMoreIppClicked
+            )
         )
-    )
+    }
 
     private fun isTapToPayAvailable(): Boolean {
         val result = tapToPayAvailabilityStatus()
