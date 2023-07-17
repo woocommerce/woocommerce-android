@@ -66,7 +66,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
-            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition).isTrue()
+            assertThat(
+                (states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition
+            ).isTrue()
         }
 
     @Test
@@ -250,7 +252,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers.last())
                 .isInstanceOf(CustomerListViewState.CustomerList.Item.Loading::class.java)
-            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition).isFalse()
+            assertThat(
+                (states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition
+            ).isFalse()
         }
 
     private fun initViewModel() = CustomerListViewModel(
