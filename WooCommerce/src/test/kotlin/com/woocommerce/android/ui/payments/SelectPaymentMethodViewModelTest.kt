@@ -266,6 +266,30 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given try tap to pay, when view model init, then all disabled except ttp row`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+            val orderId = 1L
+
+            // WHEN
+            val viewModel = initViewModel(Payment(orderId, TRY_TAP_TO_PAY))
+
+            // THEN
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(rows).hasSize(5)
+            val enabledRows = rows.filter {
+                (it is Success.Row.Double && it.isEnabled) ||
+                    (it is Success.Row.Single && it.isEnabled)
+            }
+            assertThat(enabledRows).hasSize(1)
+            assertThat((enabledRows[0] as Success.Row.Double).label).isEqualTo(
+                R.string.card_reader_type_selection_tap_to_pay
+            )
+        }
+
+    @Test
     fun `given refund flow, when view model init, then navigate to refund flow emitted`() = testBlocking {
         // GIVEN & WHEN
         val orderId = 1L
