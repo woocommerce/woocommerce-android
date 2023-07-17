@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.sitepicker
 
 import androidx.lifecycle.SavedStateHandle
-import com.google.gson.Gson
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -660,12 +659,13 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given woo installation finishes, when fetching site fails, then retry`() = testBlocking {
         val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSiteClone = SitePickerTestUtils.generateStores()[1].apply { hasWooCommerce = true }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
         whenever(repository.fetchWooCommerceSite(expectedSite))
             .thenReturn(Result.failure(Exception()))
-            .thenReturn(Result.success(expectedSite.clone().apply { hasWooCommerce = true }))
+            .thenReturn(Result.success(expectedSiteClone))
 
         whenViewModelIsCreated()
         viewModel.onWooInstalled()
@@ -677,12 +677,14 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given woo installation finishes, when fetched site doesn't have woo, then retry`() = testBlocking {
         val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSiteCloneOne = SitePickerTestUtils.generateStores()[1].apply { hasWooCommerce = false }
+        val expectedSiteCloneTwo = SitePickerTestUtils.generateStores()[1].apply { hasWooCommerce = true }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
         whenever(repository.fetchWooCommerceSite(expectedSite))
-            .thenReturn(Result.success(expectedSite.clone()))
-            .thenReturn(Result.success(expectedSite.clone().apply { hasWooCommerce = true }))
+            .thenReturn(Result.success(expectedSiteCloneOne))
+            .thenReturn(Result.success(expectedSiteCloneTwo))
 
         whenViewModelIsCreated()
         viewModel.onWooInstalled()
@@ -739,11 +741,4 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(state.noStoresLabelText).isEqualTo(resourceProvider.getString(R.string.login_simple_wpcom_site))
             assertThat(state.isNoStoresBtnVisible).isFalse
         }
-
-    private fun SiteModel.clone(): SiteModel {
-        // A quick way for supporting cloning SiteModel without changing SiteModel class itself
-        val gson = Gson()
-        val json = gson.toJson(this)
-        return gson.fromJson(json, SiteModel::class.java)
-    }
 }
