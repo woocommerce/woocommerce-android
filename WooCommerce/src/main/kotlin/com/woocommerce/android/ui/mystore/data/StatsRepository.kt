@@ -152,7 +152,7 @@ class StatsRepository @Inject constructor(
         )
         return if (forceRefresh || cachedTopPerformers.isEmpty() || cachedTopPerformers.expired()) {
             val supportOnlyLegacyEndpoint = supportsProductOnlyLeaderboardAndReportEndpoint().not()
-            val result = if(supportOnlyLegacyEndpoint){
+            val result = if (supportOnlyLegacyEndpoint) {
                 wcLeaderboardsStore.fetchTopPerformerProductsLegacy(
                     site = siteModel,
                     startDate = startDate,
