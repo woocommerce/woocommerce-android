@@ -133,6 +133,31 @@ class SelectPaymentMethodViewModel @Inject constructor(
         isPaymentCollectableWithTapToPay: Boolean,
         isTapToPayTestingInProgress: Boolean,
     ): Success {
+        val rows = buildRows(
+            order,
+            isPaymentCollectableWithCardReader,
+            isPaymentCollectableWithTapToPay,
+            isTapToPayTestingInProgress
+        )
+        return Success(
+            orderTotal = formatOrderTotal(order.total),
+            rows = rows,
+            learnMoreIpp = Success.LearnMoreIpp(
+                label = UiStringRes(
+                    R.string.card_reader_connect_learn_more,
+                    containsHtml = true
+                ),
+                onClick = ::onLearnMoreIppClicked
+            )
+        )
+    }
+
+    private fun buildRows(
+        order: Order,
+        isPaymentCollectableWithCardReader: Boolean,
+        isPaymentCollectableWithTapToPay: Boolean,
+        isTapToPayTestingInProgress: Boolean,
+    ): MutableList<Success.Row> {
         val rows = mutableListOf<Success.Row>().apply {
             add(
                 Success.Row.Single(
@@ -183,17 +208,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 )
             }
         }
-        return Success(
-            orderTotal = formatOrderTotal(order.total),
-            rows = rows,
-            learnMoreIpp = Success.LearnMoreIpp(
-                label = UiStringRes(
-                    R.string.card_reader_connect_learn_more,
-                    containsHtml = true
-                ),
-                onClick = ::onLearnMoreIppClicked
-            )
-        )
+        return rows
     }
 
     private fun isTapToPayAvailable(): Boolean {

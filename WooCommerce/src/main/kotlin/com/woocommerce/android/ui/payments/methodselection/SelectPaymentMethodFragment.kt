@@ -96,44 +96,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         state.rows.forEach { row ->
             binding.container.addView(
                 when (row) {
-                    is Success.Row.Single -> {
-                        layoutInflater.inflate(R.layout.item_select_payment_method_single_row, null)
-                            .apply {
-                                with(findViewById<TextView>(R.id.tvSelectPaymentRowHeader)) {
-                                    text = getString(row.label)
-                                    setCompoundDrawablesWithIntrinsicBounds(row.icon, 0, 0, 0)
-                                }
-
-                                with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
-                                    isVisible = !row.isEnabled
-                                }
-
-                                if (row.isEnabled) setOnClickListener { row.onClick() }
-                            }
-                    }
-
-                    is Success.Row.Double -> {
-                        layoutInflater.inflate(R.layout.item_select_payment_method_double_row, null)
-                            .apply {
-                                with(findViewById<TextView>(R.id.tvSelectPaymentRowHeader)) {
-                                    text = getString(row.label)
-                                }
-
-                                with(findViewById<TextView>(R.id.tvSelectPaymentRowDescription)) {
-                                    text = getString(row.description)
-                                }
-
-                                with(findViewById<ImageView>(R.id.ivSelectPaymentRowIcon)) {
-                                    setImageResource(row.icon)
-                                }
-
-                                with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
-                                    isVisible = !row.isEnabled
-                                }
-
-                                if (row.isEnabled) setOnClickListener { row.onClick() }
-                            }
-                    }
+                    is Success.Row.Single -> row.buildSingleRowView()
+                    is Success.Row.Double -> row.buildDoubleRow()
                 }
             )
 
@@ -145,6 +109,43 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learnMoreIpp.label)
         }
     }
+
+    private fun Success.Row.Single.buildSingleRowView() =
+        layoutInflater.inflate(R.layout.item_select_payment_method_single_row, null)
+            .apply {
+                with(findViewById<TextView>(R.id.tvSelectPaymentRowHeader)) {
+                    text = getString(label)
+                    setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+                }
+
+                with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
+                    isVisible = !isEnabled
+                }
+
+                if (isEnabled) setOnClickListener { onClick() }
+            }
+
+    private fun Success.Row.Double.buildDoubleRow() =
+        layoutInflater.inflate(R.layout.item_select_payment_method_double_row, null)
+            .apply {
+                with(findViewById<TextView>(R.id.tvSelectPaymentRowHeader)) {
+                    text = getString(label)
+                }
+
+                with(findViewById<TextView>(R.id.tvSelectPaymentRowDescription)) {
+                    text = getString(description)
+                }
+
+                with(findViewById<ImageView>(R.id.ivSelectPaymentRowIcon)) {
+                    setImageResource(icon)
+                }
+
+                with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
+                    isVisible = !isEnabled
+                }
+
+                if (isEnabled) setOnClickListener { onClick() }
+            }
 
     @Suppress("LongMethod", "ComplexMethod")
     private fun handleEvents(binding: FragmentSelectPaymentMethodBinding) {
