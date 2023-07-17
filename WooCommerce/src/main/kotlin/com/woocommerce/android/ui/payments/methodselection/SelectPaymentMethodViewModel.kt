@@ -112,10 +112,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private suspend fun showPaymentState() {
+        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
+        val isPaymentCollectableWithTapToPay = isTapToPayAvailable()
+        val isTapToPayTestingState = cardReaderPaymentFlowParam.paymentType == TRY_TAP_TO_PAY &&
+            isPaymentCollectableWithCardReader &&
+            isPaymentCollectableWithTapToPay
+
         _viewState.value = buildSuccessState(
             order = order.first(),
-            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first()),
-            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
+            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+            isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay
         )
     }
 
@@ -152,8 +158,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
         launch {
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
             val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-                SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
+                SIMPLE -> R.string.simple_payments_cash_dlg_message
                 ORDER -> R.string.existing_order_cash_dlg_message
+                TRY_TAP_TO_PAY -> error(
+                    "Unsupported payment type: ${cardReaderPaymentFlowParam.paymentType}"
+                )
             }
             triggerEvent(
                 MultiLiveEvent.Event.ShowDialog(
