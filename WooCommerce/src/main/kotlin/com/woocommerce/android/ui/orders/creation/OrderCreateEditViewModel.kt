@@ -1090,6 +1090,7 @@ private fun ModelProduct.isVariable() =
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
 
-private fun ModelProduct.isRestricted() = status != ProductStatus.PUBLISH
+private fun ModelProduct.isRestricted() = status != ProductStatus.PUBLISH ||
+    (price?.compareTo(BigDecimal.ZERO) == 0 || price != null)
 
 fun Order.Item.isSynced() = this.itemId != 0L
