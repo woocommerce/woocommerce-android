@@ -167,17 +167,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     onClick = ::onCashPaymentClicked
                 )
             )
-            if (isPaymentCollectableWithTapToPay) {
-                add(
-                    Success.Row.Double(
-                        label = R.string.card_reader_type_selection_tap_to_pay,
-                        description = R.string.card_reader_type_selection_tap_to_pay_description,
-                        icon = R.drawable.ic_baseline_contactless,
-                        isEnabled = true,
-                        onClick = ::onTapToPayClicked
-                    )
-                )
-            }
             if (isPaymentCollectableWithCardReader) {
                 add(
                     Success.Row.Double(
@@ -188,6 +177,18 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         onClick = ::onBtReaderClicked
                     )
                 )
+
+                if (isPaymentCollectableWithTapToPay) {
+                    add(
+                        Success.Row.Double(
+                            label = R.string.card_reader_type_selection_tap_to_pay,
+                            description = R.string.card_reader_type_selection_tap_to_pay_description,
+                            icon = R.drawable.ic_baseline_contactless,
+                            isEnabled = true,
+                            onClick = ::onTapToPayClicked
+                        )
+                    )
+                }
             }
             if (order.paymentUrl.isNotNullOrEmpty()) {
                 add(
@@ -225,11 +226,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         launch {
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
             val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-                SIMPLE -> R.string.simple_payments_cash_dlg_message
+                SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
                 ORDER -> R.string.existing_order_cash_dlg_message
-                TRY_TAP_TO_PAY -> error(
-                    "Unsupported payment type: ${cardReaderPaymentFlowParam.paymentType}"
-                )
             }
             triggerEvent(
                 MultiLiveEvent.Event.ShowDialog(
