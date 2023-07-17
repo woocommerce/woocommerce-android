@@ -141,7 +141,7 @@ private fun CustomerListLoaded(
     val listState = rememberLazyListState()
 
     LaunchedEffect(key1 = body) {
-        if (body.firstPageLoaded) listState.scrollToItem(0)
+        if (body.shouldResetScrollPosition) listState.scrollToItem(0)
     }
 
     LazyColumn(
@@ -352,7 +352,7 @@ fun CustomerListScreenPreview() {
                     ),
                     CustomerListViewState.CustomerList.Item.Loading,
                 ),
-                firstPageLoaded = true,
+                shouldResetScrollPosition = true,
             ),
         ),
         {},

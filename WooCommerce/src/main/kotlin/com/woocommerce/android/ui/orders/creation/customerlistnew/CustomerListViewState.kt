@@ -15,7 +15,7 @@ data class CustomerListViewState(
         object Error : CustomerList()
         data class Loaded(
             val customers: List<Item>,
-            val firstPageLoaded: Boolean,
+            val shouldResetScrollPosition: Boolean,
         ) : CustomerList()
 
         sealed class Item {

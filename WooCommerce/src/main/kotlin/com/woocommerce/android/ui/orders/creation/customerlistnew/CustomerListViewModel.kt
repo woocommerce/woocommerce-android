@@ -132,7 +132,7 @@ class CustomerListViewModel @Inject constructor(
                 customers = currentBody.customers + customers.map {
                     customerListViewModelMapper.mapFromWCCustomer(it)
                 },
-                firstPageLoaded = false,
+                shouldResetScrollPosition = false,
             )
         )
     }
@@ -146,7 +146,7 @@ class CustomerListViewModel @Inject constructor(
                     customers = customers.map {
                         customerListViewModelMapper.mapFromWCCustomer(it)
                     },
-                    firstPageLoaded = true,
+                    shouldResetScrollPosition = true,
                 )
             )
         }
