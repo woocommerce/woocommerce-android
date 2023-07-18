@@ -440,7 +440,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onWriteWithAIClicked() {
         val chosenDescription =
             viewState.productDraft?.description.takeIf { it?.isNotEmpty() == true }
-            ?: viewState.productDraft?.shortDescription.takeIf { it?.isNotEmpty() == true }
+                ?: viewState.productDraft?.shortDescription.takeIf { it?.isNotEmpty() == true }
 
         triggerEvent(
             ShowAIProductDescriptionBottomSheet(
