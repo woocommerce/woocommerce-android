@@ -226,6 +226,10 @@ class CustomerListViewModel @Inject constructor(
             else -> map { it.copy(isSelected = it.labelResId == searchTypeId) }
         }
 
+    fun onAddCustomerClicked() {
+        TODO("Not yet implemented")
+    }
+
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
         private const val SEARCH_MODE_KEY = "search_mode"
