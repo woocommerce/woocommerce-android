@@ -43,7 +43,12 @@ class AIProductDescriptionViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs = AIProductDescriptionBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    private val _viewState = MutableStateFlow(ViewState(productTitle = navArgs.productTitle))
+    private val _viewState = MutableStateFlow(
+        ViewState(
+            productTitle = navArgs.productTitle,
+            features = navArgs.productDescription ?: ""
+        )
+    )
     val viewState = _viewState.asLiveData()
 
     fun onGenerateButtonClicked() {
