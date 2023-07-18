@@ -92,6 +92,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -126,6 +127,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
+    private val resourceProvider: ResourceProvider,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -398,7 +400,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     type = status.type
                 )
                 sendAddingProductsViaScanningFailedEvent(
-                    R.string.order_creation_barcode_scanning_scanning_failed
+                    string.order_creation_barcode_scanning_scanning_failed.toString()
                 )
             }
             is CodeScannerStatus.Success -> {
@@ -481,7 +483,9 @@ class OrderCreateEditViewModel @Inject constructor(
             message,
         )
         sendAddingProductsViaScanningFailedEvent(
-            string.order_creation_barcode_scanning_unable_to_add_product
+            resourceProvider.getString(
+                string.order_creation_barcode_scanning_unable_to_add_product, barcodeOptions.sku
+            )
         )
     }
 
@@ -518,7 +522,7 @@ class OrderCreateEditViewModel @Inject constructor(
         if (product.isVariable()) {
             if (product.parentId == 0L) {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product.toString()
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
@@ -590,7 +594,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun sendAddingProductsViaScanningFailedEvent(
-        @StringRes message: Int
+        message: String
     ) {
         triggerEvent(
             OnAddingProductViaScanningFailed(message) {
@@ -1035,7 +1039,7 @@ class OrderCreateEditViewModel @Inject constructor(
 }
 
 data class OnAddingProductViaScanningFailed(
-    val message: Int,
+    val message: String,
     val retry: View.OnClickListener,
 ) : Event()
 
