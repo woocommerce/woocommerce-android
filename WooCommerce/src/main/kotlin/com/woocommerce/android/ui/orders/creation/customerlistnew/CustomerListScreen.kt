@@ -118,16 +118,7 @@ fun CustomerListScreen(
             onSearchTypeSelected = onSearchTypeChanged,
         )
 
-        if (state.partialLoading) {
-            Spacer(modifier = Modifier.height(6.dp))
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.dp)
-            )
-        } else {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+        PartialLoadingIndicator(state)
 
         when (val body = state.body) {
             CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
@@ -141,6 +132,22 @@ fun CustomerListScreen(
                 )
             }
         }.exhaustive
+    }
+}
+
+@Composable
+private fun PartialLoadingIndicator(state: CustomerListViewState) {
+    val spacerHeightWithLoading = 8.dp
+    val spacerHeightWithoutLoading = 6.dp
+    if (state.partialLoading) {
+        Spacer(modifier = Modifier.height(spacerHeightWithLoading))
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(spacerHeightWithoutLoading - spacerHeightWithLoading)
+        )
+    } else {
+        Spacer(modifier = Modifier.height(spacerHeightWithoutLoading))
     }
 }
 
