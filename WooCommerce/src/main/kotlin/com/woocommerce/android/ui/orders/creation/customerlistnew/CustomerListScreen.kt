@@ -177,12 +177,6 @@ private fun CustomerListLoaded(
     ) {
         itemsIndexed(
             items = body.customers,
-            key = { _, customer ->
-                when (customer) {
-                    is CustomerListViewState.CustomerList.Item.Customer -> customer.remoteId
-                    CustomerListViewState.CustomerList.Item.Loading -> -1L
-                }
-            },
         ) { _, customer ->
             when (customer) {
                 is CustomerListViewState.CustomerList.Item.Customer -> {
