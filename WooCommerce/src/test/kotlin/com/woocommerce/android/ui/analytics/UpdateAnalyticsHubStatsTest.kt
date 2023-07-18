@@ -308,10 +308,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this, true)
 
         // Then
-        verify(repository, times(1)).fetchRevenueData(testRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchOrdersData(testRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchProductsData(testRangeSelection, ForceNew)
+        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
 
         verify(analyticsDataStore, never()).shouldUpdateAnalytics(testRangeSelection)
     }
@@ -331,12 +331,12 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this, false)
 
         // Then
-        verify(repository, times(1)).fetchRevenueData(testRangeSelection, Saved)
-        verify(repository, times(1)).fetchOrdersData(testRangeSelection, Saved)
-        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, Saved)
-        verify(repository, times(1)).fetchProductsData(testRangeSelection, Saved)
+        verify(repository).fetchRevenueData(testRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testRangeSelection, Saved)
+        verify(repository).fetchProductsData(testRangeSelection, Saved)
 
-        verify(analyticsDataStore, times(1)).shouldUpdateAnalytics(testRangeSelection)
+        verify(analyticsDataStore).shouldUpdateAnalytics(testRangeSelection)
     }
 
     @Test
