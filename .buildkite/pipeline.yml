@@ -5,6 +5,9 @@ common_params:
     automattic/a8c-ci-toolkit#2.17.0
   - &test_collector
     test-collector#v1.8.0
+  - &test_collector_common_params
+      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
+      format: "junit"
 
 steps:
   - label: "Gradle Wrapper Validation"
@@ -45,8 +48,7 @@ steps:
     plugins: 
       - *ci_toolkit
       - *test_collector :
-          files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-          format: "junit"
+          <<: *test_collector_common_params
           api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
     artifact_paths:
       - "**/build/test-results/*/*.xml"
@@ -68,8 +70,7 @@ steps:
     plugins: 
       - *ci_toolkit
       - *test_collector :
-          files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-          format: "junit"
+          <<: *test_collector_common_params
           api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
