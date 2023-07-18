@@ -27,4 +27,7 @@ else
     annotate_test_failures "$results_file"
 fi
 
+echo "--- 🧪 Copying test logs for test collector"
+mkdir WooCommerce/build/buildkite-test-analytics && cp build/instrumented-tests/*/*/*.xml WooCommerce/build/buildkite-test-analytics
+
 exit $TESTS_EXIT_STATUS
