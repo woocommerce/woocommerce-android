@@ -46,6 +46,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         get() = currentTimeProvider.currentDate().time
 
     companion object {
-        const val defaultMaxOutdatedTime = 1000 * 30L // 30 seconds
+        const val defaultMaxOutdatedTime = 1000 * 60 * 30L // 30 minutes
     }
 }

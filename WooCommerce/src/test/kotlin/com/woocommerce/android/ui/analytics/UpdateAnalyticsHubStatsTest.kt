@@ -30,7 +30,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
@@ -246,10 +245,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this)
 
         // Then
-        verify(repository, times(1)).fetchRevenueData(testRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchOrdersData(testRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, ForceNew)
-        verify(repository, times(1)).fetchProductsData(testRangeSelection, ForceNew)
+        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
     }
 
     @Test
@@ -267,10 +266,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this)
 
         // Then
-        verify(repository, times(1)).fetchRevenueData(testRangeSelection, Saved)
-        verify(repository, times(1)).fetchOrdersData(testRangeSelection, Saved)
-        verify(repository, times(1)).fetchVisitorsData(testRangeSelection, Saved)
-        verify(repository, times(1)).fetchProductsData(testRangeSelection, Saved)
+        verify(repository).fetchRevenueData(testRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testRangeSelection, Saved)
+        verify(repository).fetchProductsData(testRangeSelection, Saved)
     }
 
     @Test
@@ -288,10 +287,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testCustomRangeSelection, this)
 
         // Then
-        verify(repository, times(1)).fetchRevenueData(testCustomRangeSelection, Saved)
-        verify(repository, times(1)).fetchOrdersData(testCustomRangeSelection, Saved)
-        verify(repository, times(1)).fetchVisitorsData(testCustomRangeSelection, Saved)
-        verify(repository, times(1)).fetchProductsData(testCustomRangeSelection, Saved)
+        verify(repository).fetchRevenueData(testCustomRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testCustomRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testCustomRangeSelection, Saved)
+        verify(repository).fetchProductsData(testCustomRangeSelection, Saved)
     }
 
     @Test
@@ -303,7 +302,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this)
 
         // Then
-        verify(analyticsDataStore, times(1)).storeLastAnalyticsUpdate(testRangeSelection)
+        verify(analyticsDataStore).storeLastAnalyticsUpdate(testRangeSelection)
     }
 
     @Test
