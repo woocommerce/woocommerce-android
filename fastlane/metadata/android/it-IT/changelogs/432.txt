@@ -1,0 +1,2 @@
+14.3:
+Questa versione include l'opzione per aggiungere più codici promozionali durante la creazione di un ordine. Abbiamo anche semplificato la ricerca di un prodotto mediante la scansione del codice a barre o del codice QR. Dai un'occhiata

@@ -41,7 +41,11 @@ object OrderCreateEditNavigator {
                 )
             is ShowProductDetails ->
                 OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
+                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(
+                        target.item,
+                        target.currency,
+                        target.discountEditEnabled
+                    )
             is ShowCreatedOrder ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
