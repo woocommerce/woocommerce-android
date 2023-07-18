@@ -11,6 +11,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -48,6 +49,17 @@ class CustomerListFragment : BaseFragment() {
                         customerId = event.customerId,
                         billingAddress = event.billingAddress,
                         shippingAddress = event.shippingAddress
+                    )
+                    findNavController().navigateSafely(
+                        CustomerListFragmentDirections
+                            .actionCustomerListFragmentToOrderCreationCustomerFragment()
+                    )
+                }
+                is AddCustomer -> {
+                    addressViewModel.onAddressesChanged(
+                        customerId = 0,
+                        billingAddress = Address.EMPTY,
+                        shippingAddress = Address.EMPTY,
                     )
                     findNavController().navigateSafely(
                         CustomerListFragmentDirections

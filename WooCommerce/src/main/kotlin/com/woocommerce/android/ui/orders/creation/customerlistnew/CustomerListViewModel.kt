@@ -91,6 +91,10 @@ class CustomerListViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onAddCustomerClicked() {
+        triggerEvent(AddCustomer)
+    }
+
     fun onEndOfListReached() {
         launch { loadCustomers(paginationState.currentPage + 1) }
     }
@@ -225,10 +229,6 @@ class CustomerListViewModel @Inject constructor(
             searchTypeId == null -> listOf(first().copy(isSelected = true)) + drop(1)
             else -> map { it.copy(isSelected = it.labelResId == searchTypeId) }
         }
-
-    fun onAddCustomerClicked() {
-        TODO("Not yet implemented")
-    }
 
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
