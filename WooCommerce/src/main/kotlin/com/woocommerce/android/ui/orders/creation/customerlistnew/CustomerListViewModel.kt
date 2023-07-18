@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders.creation.customerlistnew
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -10,6 +10,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -23,14 +24,14 @@ class CustomerListViewModel @Inject constructor(
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
 ) : ScopedViewModel(savedState) {
-    private val _viewState = MutableLiveData(
+    private val _viewState = MutableStateFlow(
         CustomerListViewState(
             searchQuery = searchQuery,
             searchModes = selectSearchMode(selectedSearchMode.labelResId),
             body = CustomerListViewState.CustomerList.Loading
         )
     )
-    val viewState: LiveData<CustomerListViewState> = _viewState
+    val viewState: LiveData<CustomerListViewState> = _viewState.asLiveData()
 
     private var paginationState = PaginationState(1, true)
 
@@ -68,7 +69,7 @@ class CustomerListViewModel @Inject constructor(
     fun onSearchQueryChanged(query: String) {
         with(query) {
             searchQuery = this
-            _viewState.value = _viewState.value!!.copy(searchQuery = this)
+            _viewState.value = _viewState.value.copy(searchQuery = this)
         }
 
         loadAfterSearchChanged()
@@ -77,7 +78,7 @@ class CustomerListViewModel @Inject constructor(
     fun onSearchTypeChanged(searchTypeId: Int) {
         with(searchTypeId) {
             selectedSearchMode = supportedSearchModes.first { it.labelResId == this }.copy(isSelected = true)
-            _viewState.value = _viewState.value!!.copy(
+            _viewState.value = _viewState.value.copy(
                 searchModes = selectSearchMode(this)
             )
         }
@@ -101,9 +102,9 @@ class CustomerListViewModel @Inject constructor(
     private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
         loadingMoreInfoAboutCustomerJob?.cancel()
         loadingMoreInfoAboutCustomerJob = launch {
-            _viewState.value = _viewState.value!!.copy(partialLoading = true)
+            _viewState.value = _viewState.value.copy(partialLoading = true)
             val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId)
-            _viewState.value = _viewState.value!!.copy(partialLoading = false)
+            _viewState.value = _viewState.value.copy(partialLoading = false)
             if (result.isError || result.model == null) {
                 // just use what we have
                 openCustomerDetails(customerModel)
@@ -116,7 +117,7 @@ class CustomerListViewModel @Inject constructor(
     private suspend fun loadCustomers(page: Int) = mutex.withLock {
         if (page != 1 && !paginationState.hasNextPage) return
         if (page == 1) {
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+            _viewState.value = _viewState.value.copy(body = CustomerListViewState.CustomerList.Loading)
             // Add a delay to avoid multiple requests when the user types fast or switches search types
             delay(SEARCH_DELAY_MS)
         }
@@ -128,7 +129,7 @@ class CustomerListViewModel @Inject constructor(
         )
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
+            _viewState.value = _viewState.value.copy(body = CustomerListViewState.CustomerList.Error)
         } else {
             val customers = result.getOrNull() ?: emptyList()
             val hasNextPage = customers.size == PAGE_SIZE
@@ -152,8 +153,8 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private fun handleNextPageLoaded(customers: List<WCCustomerModel>) {
-        val currentBody = _viewState.value!!.body as CustomerListViewState.CustomerList.Loaded
-        _viewState.value = _viewState.value!!.copy(
+        val currentBody = _viewState.value.body as CustomerListViewState.CustomerList.Loaded
+        _viewState.value = _viewState.value.copy(
             body = currentBody.copy(
                 customers = currentBody.customers + customers.map {
                     mapper.mapFromWCCustomerToItem(it)
@@ -165,9 +166,9 @@ class CustomerListViewModel @Inject constructor(
 
     private fun handleFirstPageLoaded(customers: List<WCCustomerModel>) {
         if (customers.isEmpty()) {
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Empty)
+            _viewState.value = _viewState.value.copy(body = CustomerListViewState.CustomerList.Empty)
         } else {
-            _viewState.value = _viewState.value!!.copy(
+            _viewState.value = _viewState.value.copy(
                 body = CustomerListViewState.CustomerList.Loaded(
                     customers = customers.map {
                         mapper.mapFromWCCustomerToItem(it)
@@ -179,8 +180,8 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private fun appendLoadingItemToList() {
-        val currentBody = _viewState.value!!.body as? CustomerListViewState.CustomerList.Loaded ?: return
-        _viewState.value = _viewState.value!!.copy(
+        val currentBody = _viewState.value.body as? CustomerListViewState.CustomerList.Loaded ?: return
+        _viewState.value = _viewState.value.copy(
             body = currentBody.copy(
                 customers = currentBody.customers + CustomerListViewState.CustomerList.Item.Loading
             )
@@ -188,9 +189,9 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private fun removeLoadingItemFromList() {
-        val currentBody = _viewState.value!!.body as? CustomerListViewState.CustomerList.Loaded ?: return
+        val currentBody = _viewState.value.body as? CustomerListViewState.CustomerList.Loaded ?: return
         if (currentBody.customers.none { it is CustomerListViewState.CustomerList.Item.Loading }) return
-        _viewState.value = _viewState.value!!.copy(
+        _viewState.value = _viewState.value.copy(
             body = currentBody.copy(
                 customers = currentBody.customers.filterNot { it is CustomerListViewState.CustomerList.Item.Loading }
             )
