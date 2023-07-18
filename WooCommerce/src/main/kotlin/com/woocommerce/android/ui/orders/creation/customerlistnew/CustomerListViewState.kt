@@ -55,4 +55,4 @@ data class CustomerSelected(
     val shippingAddress: Address
 ) : MultiLiveEvent.Event()
 
-object AddCustomer: MultiLiveEvent.Event()
+object AddCustomer : MultiLiveEvent.Event()

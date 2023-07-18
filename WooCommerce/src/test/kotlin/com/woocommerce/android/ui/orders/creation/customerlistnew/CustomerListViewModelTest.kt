@@ -498,6 +498,18 @@ class CustomerListViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when onAddCustomerClicked, then AddCustomer event triggered`() {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onAddCustomerClicked()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(AddCustomer)
+    }
+
     private fun initViewModel() = CustomerListViewModel(
         savedState,
         customerListRepository,
