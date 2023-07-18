@@ -337,7 +337,7 @@ class ProductDetailFragment :
         findNavController().navigateSafely(
             ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(
                 title,
-                description
+                description?.fastStripHtml()
             )
         )
     }
