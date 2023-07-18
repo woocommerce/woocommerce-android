@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -16,7 +15,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SimplePaymentsDialogViewModelTest: BaseUnitTest() {
+class SimplePaymentsDialogViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
@@ -45,8 +44,6 @@ class SimplePaymentsDialogViewModelTest: BaseUnitTest() {
         // given
         viewModel.viewState = viewModel.viewState.copy(currentPrice = 23.toBigDecimal())
         whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(viewModel.viewState.currentPrice))
-            .thenReturn(Result.success(Order.EMPTY.copy(total = 23.toBigDecimal())))
 
         // when
         viewModel.onDoneButtonClicked()
