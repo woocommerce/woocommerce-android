@@ -572,7 +572,7 @@
     <string name="order_creation_customer_search_name">Name</string>
     <string name="order_creation_customer_search_username">Username</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to new order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
