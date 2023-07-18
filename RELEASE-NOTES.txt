@@ -2,6 +2,7 @@
 14.6
 -----
 - [*] [Internal] All payment methods are disabled during Tap To Pay testing except TTP itself [https://github.com/woocommerce/woocommerce-android/pull/9428]
+- [*] [Internal] In-Person Payments: learn more link to the Tap To Pay Summary screen. [https://github.com/woocommerce/woocommerce-android/pull/9426]
 
 
 14.5
