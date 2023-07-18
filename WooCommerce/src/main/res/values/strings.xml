@@ -1233,6 +1233,7 @@
     <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with Tap To Pay on Android</string>
 
     <!--
             Card Reader Type Selection
