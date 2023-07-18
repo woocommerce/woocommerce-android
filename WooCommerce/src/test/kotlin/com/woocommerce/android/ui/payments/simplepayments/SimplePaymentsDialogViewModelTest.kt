@@ -16,7 +16,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SimplePaymentsDialogViewModelTest: BaseUnitTest() {
+class SimplePaymentsDialogViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
