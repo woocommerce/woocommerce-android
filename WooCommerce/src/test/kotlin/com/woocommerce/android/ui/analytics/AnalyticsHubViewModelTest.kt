@@ -644,6 +644,15 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
     }
 
+    @Test
+    fun `when onRefreshRequested is called, then trigger expected analytics event`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onRefreshRequested()
+
+        verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
