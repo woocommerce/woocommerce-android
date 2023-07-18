@@ -646,6 +646,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onRefreshRequested is called, then trigger expected analytics event`() = testBlocking {
+        configureSuccessfulStatsResponse()
         sut = givenAViewModel()
 
         sut.onRefreshRequested()
