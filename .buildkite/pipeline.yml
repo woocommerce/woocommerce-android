@@ -46,8 +46,8 @@ steps:
     key: "unit_tests"
     command: .buildkite/commands/run-unit-tests.sh
     plugins: [*ci_toolkit, *test_collector]
-#    env:
-#       BUILDKITE_ANALYTICS_TOKEN: $BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS
+    env:
+       BUILDKITE_ANALYTICS_TOKEN: $BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS
     artifact_paths:
       - "**/build/test-results/*/*.xml"
 
