@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import kotlinx.coroutines.flow.firstOrNull
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
@@ -77,7 +78,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
         analyticsUpdateDataStore
             .shouldUpdateAnalytics(rangeSelection)
             .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
-            .collect { action(it) }
+            .firstOrNull()
+            ?.let { action(it) }
+            ?: action(FetchStrategy.ForceNew)
     }
 
     private fun combineFullUpdateState() =
