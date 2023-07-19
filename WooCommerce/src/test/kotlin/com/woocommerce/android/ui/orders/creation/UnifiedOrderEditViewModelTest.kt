@@ -754,6 +754,35 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `when SKU search succeeds for a not published product, then do not track product search event`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        customStatus = ProductStatus.PUBLISH.name,
+                        amount = ""
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker, never()).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
+                any()
+            )
+        }
+    }
     @Test
     fun `when parent variable product is scanned, then trigger proper event`() {
         testBlocking {
