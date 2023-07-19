@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.notifications.local.LocalNotification.FreeTrialExpiredNotification
 import com.woocommerce.android.notifications.local.LocalNotification.FreeTrialExpiringNotification
+import com.woocommerce.android.notifications.local.LocalNotification.UpgradeToPaidPlanNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -168,6 +169,8 @@ class StoreInstallationViewModel @Inject constructor(
                     FreeTrialExpiredNotification(name, selectedSite.get().siteId)
                 )
             }
+
+            localNotificationScheduler.scheduleNotification(UpgradeToPaidPlanNotification)
         }
     }
 
