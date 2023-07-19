@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlinx.coroutines.flow.firstOrNull
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
