@@ -194,6 +194,10 @@ private fun CustomerListLoaded(
                 CustomerListViewState.CustomerList.Item.Loading -> CustomerListLoadingItem()
             }
         }
+
+        item {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        }
     }
 
     InfiniteListHandler(listState = listState, buffer = 3) {
