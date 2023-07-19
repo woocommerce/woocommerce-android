@@ -54,3 +54,5 @@ data class CustomerSelected(
     val billingAddress: Address,
     val shippingAddress: Address
 ) : MultiLiveEvent.Event()
+
+object AddCustomer : MultiLiveEvent.Event()

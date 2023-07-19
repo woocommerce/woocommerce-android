@@ -261,6 +261,15 @@ class AddressViewModel @Inject constructor(
         )
     }
 
+    fun clearSelectedAddress() {
+        hasStarted = true
+        this.initialState = mapOf(
+            AddressType.BILLING to Address.EMPTY,
+            AddressType.SHIPPING to Address.EMPTY,
+        )
+        initialize(initialState)
+    }
+
     @Parcelize
     data class ViewState(
         val customerId: Long? = null,

@@ -54,6 +54,13 @@ class CustomerListFragment : BaseFragment() {
                             .actionCustomerListFragmentToOrderCreationCustomerFragment()
                     )
                 }
+                is AddCustomer -> {
+                    addressViewModel.clearSelectedAddress()
+                    findNavController().navigateSafely(
+                        CustomerListFragmentDirections
+                            .actionCustomerListFragmentToOrderCreationCustomerFragment()
+                    )
+                }
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

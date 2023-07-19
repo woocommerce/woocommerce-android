@@ -91,6 +91,10 @@ class CustomerListViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onAddCustomerClicked() {
+        triggerEvent(AddCustomer)
+    }
+
     fun onEndOfListReached() {
         launch { loadCustomers(paginationState.currentPage + 1) }
     }

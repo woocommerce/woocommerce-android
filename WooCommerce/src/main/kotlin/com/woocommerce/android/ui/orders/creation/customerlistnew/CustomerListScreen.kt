@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -30,6 +31,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,21 +60,26 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
     val state by viewModel.viewState.observeAsState()
 
     state?.let {
-        Scaffold(topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.order_creation_fragment_title)) },
-                navigationIcon = {
-                    IconButton(viewModel::onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
-            )
-        }) { padding ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(id = R.string.order_creation_fragment_title)) },
+                    navigationIcon = {
+                        IconButton(viewModel::onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                    elevation = 0.dp,
+                )
+            },
+            floatingActionButton = {
+                CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
+            }
+        ) { padding ->
             CustomerListScreen(
                 modifier = Modifier.padding(padding),
                 state = it,
@@ -151,6 +158,19 @@ private fun PartialLoadingIndicator(state: CustomerListViewState) {
 }
 
 @Composable
+private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        backgroundColor = colorResource(id = R.color.color_primary),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = stringResource(id = R.string.order_creation_add_customer_content_description)
+        )
+    }
+}
+
+@Composable
 private fun CustomerListLoaded(
     body: CustomerListViewState.CustomerList.Loaded,
     onCustomerSelected: (WCCustomerModel) -> Unit,
@@ -167,12 +187,6 @@ private fun CustomerListLoaded(
     ) {
         itemsIndexed(
             items = body.customers,
-            key = { _, customer ->
-                when (customer) {
-                    is CustomerListViewState.CustomerList.Item.Customer -> customer.remoteId
-                    CustomerListViewState.CustomerList.Item.Loading -> -1L
-                }
-            },
         ) { _, customer ->
             when (customer) {
                 is CustomerListViewState.CustomerList.Item.Customer -> {
@@ -207,7 +221,6 @@ private fun CustomerListItem(
             .fillMaxWidth()
             .clickable(
                 enabled = true,
-                onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
                 onClick = { onCustomerSelected(customer.payload) }
             )
