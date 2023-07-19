@@ -1153,7 +1153,7 @@ class MainActivity :
      */
     override fun showAppUpdateFailedSnack(actionListener: View.OnClickListener) {
         uiMessageResolver.getRetrySnack(
-            R.string.update_failed.toString(),
+            R.string.update_failed,
             actionListener = actionListener
         )
             .show()
