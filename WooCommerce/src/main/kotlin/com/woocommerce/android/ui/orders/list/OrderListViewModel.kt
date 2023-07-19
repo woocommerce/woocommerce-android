@@ -305,7 +305,7 @@ class OrderListViewModel @Inject constructor(
                 )
                 triggerEvent(
                     OrderListEvent.OnAddingProductViaScanningFailed(
-                        R.string.order_list_barcode_scanning_scanning_failed.toString()
+                        R.string.order_list_barcode_scanning_scanning_failed
                     ) {
                         triggerEvent(OrderListEvent.OpenBarcodeScanningFragment)
                     }
@@ -776,7 +776,7 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class OnAddingProductViaScanningFailed(
-            val message: String,
+            val message: Int,
             val retry: View.OnClickListener,
         ) : Event()
 
