@@ -163,7 +163,10 @@ private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
         onClick = onClick,
         backgroundColor = colorResource(id = R.color.color_primary),
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add coupon")
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = stringResource(id = R.string.order_creation_add_customer_content_description)
+        )
     }
 }
 
@@ -218,7 +221,6 @@ private fun CustomerListItem(
             .fillMaxWidth()
             .clickable(
                 enabled = true,
-                onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
                 onClick = { onCustomerSelected(customer.payload) }
             )
