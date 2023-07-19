@@ -1107,6 +1107,6 @@ private fun ModelProduct.isVariable() =
 
 private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
 
-private fun ModelProduct.hasNoPrice() = price?.compareTo(BigDecimal.ZERO) == 0 || price == null
+private fun ModelProduct.hasNoPrice() = price == null
 
 fun Order.Item.isSynced() = this.itemId != 0L

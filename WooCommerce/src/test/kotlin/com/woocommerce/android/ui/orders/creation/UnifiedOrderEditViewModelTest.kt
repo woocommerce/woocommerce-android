@@ -492,7 +492,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when SKU search succeeds for a product with price 0, then do not add that product`() {
+    fun `when SKU search succeeds for a product with price 0, then add that product`() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
@@ -520,7 +520,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
-            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isFalse()
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
     }
 
