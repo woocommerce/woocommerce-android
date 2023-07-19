@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -69,6 +70,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     lateinit var productListRepository: ProductListRepository
+    private lateinit var resourceProvider: ResourceProvider
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -132,6 +134,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         barcodeScanningTracker = mock()
         checkDigitRemoverFactory = mock()
         productListRepository = mock()
+        resourceProvider = mock {
+            on { getString(any()) } doReturn ""
+        }
     }
 
     protected abstract val tracksFlow: String
@@ -510,7 +515,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+            ).isEqualTo(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product))
         }
     }
 
@@ -626,7 +631,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+            ).isEqualTo(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product))
         }
     }
 
@@ -724,7 +729,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
+            ).isEqualTo(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_product, "534678"))
         }
     }
 
@@ -1687,6 +1692,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             barcodeScanningTracker = barcodeScanningTracker,
             productRepository = productListRepository,
             checkDigitRemoverFactory = checkDigitRemoverFactory,
+            resourceProvider = resourceProvider,
         )
     }
 
