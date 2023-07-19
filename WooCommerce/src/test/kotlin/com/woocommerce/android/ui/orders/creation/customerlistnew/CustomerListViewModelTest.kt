@@ -72,16 +72,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given page number 1, when viewmodel init, then viewstate is updated to Loading state`() = testBlocking {
-        // GIVEN
-        val viewModel = initViewModel()
-        val states = viewModel.viewState.captureValues()
-
-        // THEN
-        assertThat(states.first().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
-    }
-
-    @Test
     fun `when viewmodel init, then viewstate is updated with search modes`() = testBlocking {
         // GIVEN
         val viewModel = initViewModel()
@@ -120,6 +110,16 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 (states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition
             ).isTrue()
         }
+
+    @Test
+    fun `given page number 1, when viewmodel init, then viewstate is updated to Loading state`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+
+        // THEN
+        assertThat(states.first().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+    }
 
     @Test
     fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
