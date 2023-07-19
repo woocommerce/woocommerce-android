@@ -43,6 +43,22 @@ class CustomerListViewModelTest : BaseUnitTest() {
     private val customerListViewModelMapper: CustomerListViewModelMapper = mock {
         on { mapFromWCCustomerToItem(any()) }.thenReturn(mockCustomer)
     }
+    private val getSupportedSearchModes: CustomerListGetSupportedSearchModes = mock {
+        onBlocking { invoke() }.thenReturn(
+            listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = false,
+                ),
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_email,
+                    searchParam = "email",
+                    isSelected = false,
+                )
+            )
+        )
+    }
 
     @Test
     fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
@@ -56,13 +72,26 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given page number 1, when viewmodel init, then viewstate is updated to Loading state`() = testBlocking {
+    fun `when viewmodel init, then viewstate is updated with search modes`() = testBlocking {
         // GIVEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
 
         // THEN
-        assertThat(states.first().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+        assertThat(states.last().searchModes[0]).isEqualTo(
+            SearchMode(
+                labelResId = R.string.order_creation_customer_search_name,
+                searchParam = "name",
+                isSelected = true,
+            )
+        )
+        assertThat(states.last().searchModes[1]).isEqualTo(
+            SearchMode(
+                labelResId = R.string.order_creation_customer_search_email,
+                searchParam = "email",
+                isSelected = false,
+            )
+        )
     }
 
     @Test
@@ -81,6 +110,16 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 (states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition
             ).isTrue()
         }
+
+    @Test
+    fun `given page number 1, when viewmodel init, then viewstate is updated to Loading state`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+
+        // THEN
+        assertThat(states.first().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+    }
 
     @Test
     fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
@@ -183,7 +222,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given search type and search is not empty, when onSearchTypeChanged is called, then job cancled and new customers are loaded`() =
+    fun `given search type and search is not empty, when onSearchTypeChanged is called, then job canceled and new customers are loaded`() =
         testBlocking {
             // GIVEN
             val searchTypeId = R.string.order_creation_customer_search_email
@@ -540,5 +579,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
         savedState,
         customerListRepository,
         customerListViewModelMapper,
+        getSupportedSearchModes,
     )
 }
