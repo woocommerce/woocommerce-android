@@ -3376,6 +3376,8 @@
     <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
     <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Keep your business going!</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Discover advanced features and personalized recommendations for your store! Tap to pick a plan that suits you best.</string>
 
     <!--
     First product published congratulatory feature
