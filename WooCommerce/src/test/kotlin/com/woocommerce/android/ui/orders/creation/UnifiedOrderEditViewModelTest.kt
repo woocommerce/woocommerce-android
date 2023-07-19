@@ -667,6 +667,34 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `when SKU search succeeds for a published product whose price is not specified, then trigger event with proper message`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        customStatus = ProductStatus.PUBLISH.name,
+                        amount = ""
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price)
+        }
+    }
     @Test
     fun `when parent variable product is scanned, then trigger proper event`() {
         testBlocking {

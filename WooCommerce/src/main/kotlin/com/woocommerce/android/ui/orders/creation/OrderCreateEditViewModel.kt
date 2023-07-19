@@ -530,12 +530,12 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             product.hasNoPrice() -> {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = string.order_creation_barcode_scanning_unable_to_add_draft_product
+                    message = string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
                     barcodeFormat,
-                    "Failed to add a product that is not published"
+                    "Failed to add a product whose price is not specified"
                 )
                 return
             }
