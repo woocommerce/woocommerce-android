@@ -46,6 +46,7 @@ class CustomerListViewModel @Inject constructor(
         }
 
     private var loadingFirstPageJob: Job? = null
+    private var loadingMoreInfoAboutCustomerJob: Job? = null
     private val mutex = Mutex()
 
     init {
@@ -98,8 +99,11 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
-        launch {
+        loadingMoreInfoAboutCustomerJob?.cancel()
+        loadingMoreInfoAboutCustomerJob = launch {
+            _viewState.value = _viewState.value!!.copy(partialLoading = true)
             val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId)
+            _viewState.value = _viewState.value!!.copy(partialLoading = false)
             if (result.isError || result.model == null) {
                 // just use what we have
                 openCustomerDetails(customerModel)
