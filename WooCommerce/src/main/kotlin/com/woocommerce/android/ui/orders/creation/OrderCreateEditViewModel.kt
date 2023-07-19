@@ -516,49 +516,64 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (product.isRestricted()) {
-            sendAddingProductsViaScanningFailedEvent(
-                message = string.order_creation_barcode_scanning_unable_to_add_draft_product
-            )
-            trackProductSearchViaSKUFailureEvent(
-                source,
-                barcodeFormat,
-                "Failed to add a product that is not published"
-            )
-            return
-        } else if (product.isVariable()) {
-            if (product.parentId == 0L) {
+        when {
+            product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    message = string.order_creation_barcode_scanning_unable_to_add_draft_product
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
                     barcodeFormat,
-                    "Instead of specific variations, user tried to add parent variable product."
+                    "Failed to add a product that is not published"
                 )
                 return
-            } else {
-                when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+            }
+            product.hasNoPrice() -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = string.order_creation_barcode_scanning_unable_to_add_draft_product
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a product that is not published"
+                )
+                return
+            }
+            product.isVariable() -> {
+                if (product.parentId == 0L) {
+                    sendAddingProductsViaScanningFailedEvent(
+                        message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    )
+                    trackProductSearchViaSKUFailureEvent(
+                        source,
+                        barcodeFormat,
+                        "Instead of specific variations, user tried to add parent variable product."
+                    )
+                    return
+                } else {
+                    when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                        null -> onProductsSelected(
+                            selectedItems = selectedItems +
+                                SelectedItem.ProductVariation(
+                                    productId = product.parentId,
+                                    variationId = product.remoteId
+                                ),
+                            source = source,
+                            addedVia = ProductAddedVia.SCANNING,
+                        )
+                        else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                    }
+                }
+            }
+            else -> {
+                when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                     null -> onProductsSelected(
-                        selectedItems = selectedItems +
-                            SelectedItem.ProductVariation(
-                                productId = product.parentId,
-                                variationId = product.remoteId
-                            ),
+                        selectedItems = selectedItems + Product(productId = product.remoteId),
                         source = source,
                         addedVia = ProductAddedVia.SCANNING,
                     )
                     else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                 }
-            }
-        } else {
-            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                null -> onProductsSelected(
-                    selectedItems = selectedItems + Product(productId = product.remoteId),
-                    source = source,
-                    addedVia = ProductAddedVia.SCANNING,
-                )
-                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
         trackProductSearchViaSKUSuccessEvent(source)
@@ -1092,5 +1107,9 @@ private fun ModelProduct.isVariable() =
 
 private fun ModelProduct.isRestricted() = status != ProductStatus.PUBLISH ||
     (price?.compareTo(BigDecimal.ZERO) == 0 || price == null)
+
+private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
+
+private fun ModelProduct.hasNoPrice() = price?.compareTo(BigDecimal.ZERO) == 0 || price == null
 
 fun Order.Item.isSynced() = this.itemId != 0L
