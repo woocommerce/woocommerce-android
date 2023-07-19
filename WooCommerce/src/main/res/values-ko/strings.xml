@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 09:54:03+0000
+Translation-Revision-Date: 2023-07-04 09:54:31+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">AI로 곧장 설명을 추가하세요. 지금 기능을 사용해 보세요!</string>
+    <string name="ai_product_description_dialog_title">AI로 상품 설명 추가</string>
+    <string name="ai_product_description_note_dialog_confirmation">알겠습니다.</string>
+    <string name="ai_product_description_note_dialog_message">이 상품 설명은 AI 기반 도구로 생성되었다는 점을 유념하시기를 바랍니다. 콘텐츠를 검토하고 브랜드 및 메시지 내용과 부합하도록 편집하시기를 바랍니다.</string>
+    <string name="ai_product_description_note_dialog_heading">시작이 좋습니다!</string>
+    <string name="ai_product_description_feedback">생성한\n설명이 유용한가요?</string>
+    <string name="ai_product_description_regenerate_button">재생성</string>
+    <string name="ai_product_description_survey">생성한 설명이 유용한가요?</string>
+    <string name="ai_product_description_hint">맞춤형 설명에 대한 키워드로 상품의 고유한 기능과 잠재 고객을 강조 표시하세요.</string>
+    <string name="ai_product_description_example">예: 화분, 선인장, 식물, 장식용, 손쉬운 관리</string>
+    <string name="ai_product_description_product_name">상품 이름 입력</string>
+    <string name="ai_product_description_title">설명 작성</string>
+    <string name="barcode_scanning_camera_permission_denied">바코드를 스캔하려면 카메라 권한이 필요합니다.</string>
+    <string name="barcode_scanning_title">바코드 스캔</string>
+    <string name="order_creation_customer_search_username">사용자명</string>
+    <string name="order_creation_customer_search_name">이름</string>
+    <string name="order_creation_customer_search_email">이메일 주소</string>
+    <string name="order_creation_customer_search_everything">모든 것</string>
+    <string name="order_creation_customer_filter_hint">고객 필터링 기준</string>
+    <string name="order_creation_coupons_title">적용된 쿠폰</string>
+    <string name="more_settings">추가 설정</string>
+    <string name="maybe_later">나중에 시작</string>
     <string name="product_sharing_regenerate">다시 쓰기</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#모든 판매에 대한 알림 받기:&lt;/b&gt; 즉시 판매 알림을 통해 한순간도 놓치지 않습니다. 새 판매마다 알림이 수신되어 성공을 자축하고 스토어의 활동을 파악할 수 있습니다.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#터치하여 상품 추가 및 편집:&lt;/b&gt; 앱에서 새 상품을 추가하고, 상세 정보를 업데이트하고, 이미지를 업로드하고, 변형을 관리하세요. 재고를 손쉽게 최신 상태로 유지하세요.</string>

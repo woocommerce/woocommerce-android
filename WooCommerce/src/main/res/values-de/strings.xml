@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 09:54:04+0000
+Translation-Revision-Date: 2023-07-03 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Füge mit KI im Handumdrehen Beschreibungen hinzu. Probiere die Funktion noch heute aus!</string>
+    <string name="ai_product_description_dialog_title">Produktbeschreibung mit KI hinzufügen</string>
+    <string name="ai_product_description_note_dialog_confirmation">Verstanden</string>
+    <string name="ai_product_description_note_dialog_message">Beachte bitte, dass diese Produktbeschreibung mit unserem KI-gestützten Tool erstellt wurde. Überprüfe und bearbeite den Inhalt entsprechend, damit er deiner Marke und Botschaft entspricht.</string>
+    <string name="ai_product_description_note_dialog_heading">Guter Start!</string>
+    <string name="ai_product_description_feedback">Ist die generierte\nBeschreibung hilfreich?</string>
+    <string name="ai_product_description_regenerate_button">Neu generieren</string>
+    <string name="ai_product_description_survey">Ist die generierte Beschreibung hilfreich?</string>
+    <string name="ai_product_description_hint">Hebe die besonderen Funktionen deines Produkts und die Zielgruppe mit Stichwörtern für eine spezielle Beschreibung hervor.</string>
+    <string name="ai_product_description_example">Beispiel: eingetopft, Kaktus, Pflanze, dekorativ, pflegeleicht</string>
+    <string name="ai_product_description_product_name">Gib deinen Produktnamen ein</string>
+    <string name="ai_product_description_title">Verfasse eine Beschreibung</string>
+    <string name="barcode_scanning_camera_permission_denied">Zum Scannen des Barcodes ist die Berechtigung zum Zugriff auf deine Kamera erforderlich.</string>
+    <string name="barcode_scanning_title">Barcode scannen</string>
+    <string name="order_creation_customer_search_username">Benutzername</string>
+    <string name="order_creation_customer_search_name">Name</string>
+    <string name="order_creation_customer_search_email">E-Mail</string>
+    <string name="order_creation_customer_search_everything">Alles</string>
+    <string name="order_creation_customer_filter_hint">Kunden filtern nach</string>
+    <string name="order_creation_coupons_title">Gutscheine angewendet</string>
+    <string name="more_settings">Weitere Einstellungen</string>
+    <string name="maybe_later">Vielleicht später</string>
     <string name="product_sharing_regenerate">Erneut schreiben</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Erhalte Benachrichtigungen zu jedem Verkauf:&lt;/b&gt; Mit sofortigen Verkaufsbenachrichtigungen bleibst du immer auf dem Laufenden. Du erhältst eine Benachrichtigung zu jedem neuen Verkauf. So kannst du deine Erfolge feiern und bleibst bei deiner Shop-Aktivität immer auf dem neuesten Stand.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Füge Produkte hinzu und bearbeite sie mit nur einer Berührung:&lt;/b&gt; Füge neue Produkte hinzu, aktualisiere Details, lade Bilder hoch und verwalte Varianten – alles in der App. Halte deinen Bestand ganz mühelos aktuell.</string>
