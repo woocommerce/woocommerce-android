@@ -1105,9 +1105,6 @@ private fun ModelProduct.isVariable() =
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
 
-private fun ModelProduct.isRestricted() = status != ProductStatus.PUBLISH ||
-    (price?.compareTo(BigDecimal.ZERO) == 0 || price == null)
-
 private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
 
 private fun ModelProduct.hasNoPrice() = price?.compareTo(BigDecimal.ZERO) == 0 || price == null
