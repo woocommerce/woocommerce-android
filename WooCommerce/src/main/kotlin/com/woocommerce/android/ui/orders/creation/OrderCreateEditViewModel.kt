@@ -203,6 +203,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                 handleCouponEditResult()
             }
+
             is Mode.Edit -> {
                 viewModelScope.launch {
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
@@ -402,6 +403,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     resourceProvider.getString(string.order_creation_barcode_scanning_scanning_failed)
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
                 viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -519,7 +521,9 @@ class OrderCreateEditViewModel @Inject constructor(
         if (product.isVariable()) {
             if (product.parentId == 0L) {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = resourceProvider.getString(string.order_creation_barcode_scanning_unable_to_add_variable_product)
+                    message = resourceProvider.getString(
+                        string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    )
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
@@ -538,6 +542,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         source = source,
                         addedVia = ProductAddedVia.SCANNING,
                     )
+
                     else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                 }
             }
@@ -548,6 +553,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     source = source,
                     addedVia = ProductAddedVia.SCANNING,
                 )
+
                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
@@ -591,7 +597,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun sendAddingProductsViaScanningFailedEvent(
-         message: String
+        message: String
     ) {
         triggerEvent(
             OnAddingProductViaScanningFailed(message) {
@@ -718,6 +724,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 )
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -756,6 +763,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -781,8 +789,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     when (updateStatus) {
                         OrderUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
+
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
@@ -792,6 +802,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
+
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
