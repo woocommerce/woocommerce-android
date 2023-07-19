@@ -510,6 +510,7 @@ class OrderCreateEditViewModel @Inject constructor(
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
             barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
+    @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
