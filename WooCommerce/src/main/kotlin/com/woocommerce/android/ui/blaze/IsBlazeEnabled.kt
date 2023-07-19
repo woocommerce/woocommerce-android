@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze
 
+import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
@@ -23,6 +24,7 @@ class IsBlazeEnabled @Inject constructor(
     suspend operator fun invoke(): Boolean = FeatureFlag.BLAZE.isEnabled() &&
         selectedSite.getIfExists()?.isAdmin ?: false &&
         selectedSite.getIfExists()?.canBlaze ?: false &&
+        selectedSite.getIfExists()?.isSitePublic ?: false &&
         isRemoteFeatureFlagEnabled(WOO_BLAZE)
 
     fun buildUrlForSite(source: BlazeFlowSource): String {
@@ -38,5 +40,7 @@ class IsBlazeEnabled @Inject constructor(
     enum class BlazeFlowSource(val trackingName: String) {
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
         MORE_MENU_ITEM("menu"),
+        MY_STORE_BANNER("my_store_banner"),
+        PRODUCT_LIST_BANNER("product_list_banner"),
     }
 }

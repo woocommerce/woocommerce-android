@@ -246,7 +246,9 @@ class ReviewDetailFragment :
         if (isStateSaved) {
             runOnStartFunc = { findNavController().popBackStack() }
         } else {
-            findNavController().popBackStack()
+            findNavController().navigateSafely(
+                ReviewDetailFragmentDirections.actionReviewDetailFromNotificationToReviewListFragment()
+            )
         }
     }
 

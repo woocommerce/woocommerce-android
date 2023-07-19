@@ -46,6 +46,18 @@ fun ProductUIModel.getStockText(context: Context): String {
     }
 }
 
+fun ProductUIModel.getStockText(resourceProvider: ResourceProvider): String {
+    return getStockText(
+        this.stockStatus,
+        null,
+        this.stockQuantity
+    ) { resId: Int, param: Any? ->
+        param?.let {
+            resourceProvider.getString(resId, it)
+        } ?: resourceProvider.getString(resId)
+    }
+}
+
 private fun getStockText(
     stockStatus: ProductStockStatus,
     productType: ProductType?,

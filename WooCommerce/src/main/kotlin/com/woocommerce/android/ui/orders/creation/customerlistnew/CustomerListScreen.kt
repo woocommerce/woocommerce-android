@@ -47,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
@@ -118,16 +117,7 @@ fun CustomerListScreen(
             onSearchTypeSelected = onSearchTypeChanged,
         )
 
-        if (state.partialLoading) {
-            Spacer(modifier = Modifier.height(6.dp))
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.dp)
-            )
-        } else {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+        PartialLoadingIndicator(state)
 
         when (val body = state.body) {
             CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
@@ -140,7 +130,23 @@ fun CustomerListScreen(
                     onEndOfListReached,
                 )
             }
-        }.exhaustive
+        }
+    }
+}
+
+@Composable
+private fun PartialLoadingIndicator(state: CustomerListViewState) {
+    val spacerHeightWithLoading = 8.dp
+    val spacerHeightWithoutLoading = 6.dp
+    if (state.partialLoading) {
+        Spacer(modifier = Modifier.height(spacerHeightWithLoading))
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(spacerHeightWithoutLoading - spacerHeightWithLoading)
+        )
+    } else {
+        Spacer(modifier = Modifier.height(spacerHeightWithoutLoading))
     }
 }
 
@@ -153,7 +159,7 @@ private fun CustomerListLoaded(
     val listState = rememberLazyListState()
 
     LaunchedEffect(key1 = body) {
-        if (body.firstPageLoaded) listState.scrollToItem(0)
+        if (body.shouldResetScrollPosition) listState.scrollToItem(0)
     }
 
     LazyColumn(
@@ -161,6 +167,12 @@ private fun CustomerListLoaded(
     ) {
         itemsIndexed(
             items = body.customers,
+            key = { _, customer ->
+                when (customer) {
+                    is CustomerListViewState.CustomerList.Item.Customer -> customer.remoteId
+                    CustomerListViewState.CustomerList.Item.Loading -> -1L
+                }
+            },
         ) { _, customer ->
             when (customer) {
                 is CustomerListViewState.CustomerList.Item.Customer -> {
@@ -176,7 +188,7 @@ private fun CustomerListLoaded(
                 }
 
                 CustomerListViewState.CustomerList.Item.Loading -> CustomerListLoadingItem()
-            }.exhaustive
+            }
         }
     }
 
@@ -363,7 +375,7 @@ fun CustomerListScreenPreview() {
                     ),
                     CustomerListViewState.CustomerList.Item.Loading,
                 ),
-                firstPageLoaded = true,
+                shouldResetScrollPosition = true,
             ),
         ),
         {},

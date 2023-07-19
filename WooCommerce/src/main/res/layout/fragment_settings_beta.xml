@@ -14,13 +14,6 @@
         app:toggleOptionDesc="@string/settings_enable_product_addons_teaser_message"
         app:toggleOptionTitle="@string/settings_enable_product_addons_teaser_title" />
 
-    <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-        android:id="@+id/switchTapToPayToggle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:toggleOptionDesc="@string/card_reader_tap_to_pay_beta_features_subheading"
-        app:toggleOptionTitle="@string/card_reader_tap_to_pay_beta_features_heading" />
-
     <View style="@style/Woo.Divider" />
 
 </LinearLayout>

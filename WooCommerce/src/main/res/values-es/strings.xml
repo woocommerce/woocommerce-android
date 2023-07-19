@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 15:54:03+0000
+Translation-Revision-Date: 2023-07-04 09:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Añade las descripciones rápidamente con la IA. ¡Prueba nuestra función hoy mismo!</string>
+    <string name="ai_product_description_dialog_title">Añadir la descripción del producto usando la IA</string>
+    <string name="ai_product_description_note_dialog_confirmation">De acuerdo</string>
+    <string name="ai_product_description_note_dialog_message">Ten en cuenta que esta descripción de producto se ha generado con nuestra herramienta con tecnología de IA. Revisa y edita el contenido para asegurarte de que esté en línea con tu marca y tu mensaje.</string>
+    <string name="ai_product_description_note_dialog_heading">¡Gran comienzo!</string>
+    <string name="ai_product_description_feedback">¿Es útil\nla descripción generada?</string>
+    <string name="ai_product_description_regenerate_button">Regenerar</string>
+    <string name="ai_product_description_survey">¿Es útil la descripción generada?</string>
+    <string name="ai_product_description_hint">Destaca las funciones únicas y el público de tu producto mediante palabras clave, así conseguirás una descripción personalizada.</string>
+    <string name="ai_product_description_example">Ejemplo: en maceta, cactus, planta, decorativa, de fácil cuidado</string>
+    <string name="ai_product_description_product_name">Introduce el nombre de tu producto</string>
+    <string name="ai_product_description_title">Escribe una descripción</string>
+    <string name="barcode_scanning_camera_permission_denied">Se necesita el permiso de la cámara para escanear el código de barras.</string>
+    <string name="barcode_scanning_title">Escanear código de barras</string>
+    <string name="order_creation_customer_search_username">Nombre de usuario</string>
+    <string name="order_creation_customer_search_name">Nombre</string>
+    <string name="order_creation_customer_search_email">Correo electrónico</string>
+    <string name="order_creation_customer_search_everything">Todo</string>
+    <string name="order_creation_customer_filter_hint">Filtrar clientes según</string>
+    <string name="order_creation_coupons_title">Cupones aplicados</string>
+    <string name="more_settings">Más ajustes</string>
+    <string name="maybe_later">Quizá más tarde</string>
     <string name="product_sharing_regenerate">Volver a escribir</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Recibe notificaciones de todas las ventas:&lt;/b&gt; no te pierdas nada gracias a las notificaciones de venta instantáneas. Recibe alertas por cada nueva venta: así podrás celebrar tus logros y controlar la actividad de tu tienda.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Añade y edita productos en un clic:&lt;/b&gt; añade nuevos productos, actualiza los detalles, sube imágenes y gestiona las variaciones; todo ello desde la aplicación. Mantén tu inventario actualizado sin esfuerzo.</string>

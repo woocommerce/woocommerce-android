@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Button
+import com.woocommerce.android.ui.products.models.ProductProperty.Button.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
@@ -72,9 +74,16 @@ class ProductDetailCardBuilder(
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
     private val variationRepository: VariationRepository,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
     private lateinit var originalSku: String
+
+    companion object {
+        const val MAXIMUM_TIMES_TO_SHOW_TOOLTIP = 3
+    }
+
+    private val onTooltipDismiss = { appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true }
 
     suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
 
@@ -98,11 +107,19 @@ class ProductDetailCardBuilder(
     }
 
     private fun getPrimaryCard(product: Product): ProductPropertyCard {
+        val showTooltip = product.description.isEmpty() &&
+            !appPrefsWrapper.isAIProductDescriptionTooltipDismissed &&
+            appPrefsWrapper.getAIDescriptionTooltipShownNumber() <= MAXIMUM_TIMES_TO_SHOW_TOOLTIP
         return ProductPropertyCard(
             type = PRIMARY,
             properties = (
                 listOf(product.title()) +
-                    product.description(isAIProductDescriptionEnabled(), viewModel::onWriteWithAIClicked)
+                    product.description(
+                        showAIButton = isAIProductDescriptionEnabled(),
+                        showTooltip = showTooltip,
+                        onWriteWithAIClicked = viewModel::onWriteWithAIClicked,
+                        onLearnMoreClicked = viewModel::onLearnMoreClicked
+                    )
                 ).filterNotEmpty()
         )
     }
@@ -577,7 +594,12 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.description(showAIButton: Boolean, onWriteWithAIClicked: () -> Unit): List<ProductProperty> {
+    private fun Product.description(
+        showAIButton: Boolean,
+        showTooltip: Boolean,
+        onWriteWithAIClicked: () -> Unit,
+        onLearnMoreClicked: () -> Unit
+    ): List<ProductProperty> {
         val productDescription = this.description
         val productTitle = this.name
         val showTitle = productDescription.isNotEmpty()
@@ -604,11 +626,28 @@ class ProductDetailCardBuilder(
         )
 
         if (showAIButton) {
+            val tooltip = if (showTooltip) {
+                appPrefsWrapper.recordAIDescriptionTooltipShown()
+
+                Button.Tooltip(
+                    title = string.ai_product_description_tooltip_title,
+                    text = string.ai_product_description_tooltip_message,
+                    dismissButtonText = string.ai_product_description_tooltip_dismiss,
+                    onDismiss = onTooltipDismiss
+                )
+            } else {
+                null
+            }
             properties.add(
                 Button(
                     string.product_sharing_write_with_ai,
                     drawable.ic_ai,
-                    onClick = onWriteWithAIClicked
+                    onClick = onWriteWithAIClicked,
+                    tooltip = tooltip,
+                    link = Link(
+                        string.ai_product_description_learn_more_link,
+                        onLearnMoreClicked
+                    )
                 )
             )
         }
