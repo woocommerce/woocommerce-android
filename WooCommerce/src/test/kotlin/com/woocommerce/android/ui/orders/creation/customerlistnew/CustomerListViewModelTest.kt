@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -20,6 +21,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
@@ -102,7 +106,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
-            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).firstPageLoaded).isTrue()
+            assertThat(
+                (states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition
+            ).isTrue()
         }
 
     @Test
@@ -296,7 +302,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers.last())
                 .isInstanceOf(CustomerListViewState.CustomerList.Item.Loading::class.java)
-            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).firstPageLoaded).isFalse()
+            assertThat(
+                (states.last().body as CustomerListViewState.CustomerList.Loaded).shouldResetScrollPosition
+            ).isFalse()
         }
 
     @Test
@@ -402,7 +410,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given customer with remote id and fetching error, when onCustomerSelected, then existing customer passed`() =
+    fun `given customer with remote id and fetching null, when onCustomerSelected, then existing customer passed`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel()
@@ -412,6 +420,63 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             whenever(customerListRepository.fetchCustomerByRemoteId(any()))
                 .thenReturn(WooResult(null))
+
+            val billingAddress: OrderAddress.Billing = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+            val shippingAddress: OrderAddress.Shipping = mock {
+                on { country }.thenReturn("US")
+                on { state }.thenReturn("CA")
+            }
+
+            whenever(customerListViewModelMapper.mapFromCustomerModelToBillingAddress(wcCustomer))
+                .thenReturn(billingAddress)
+            whenever(customerListViewModelMapper.mapFromCustomerModelToShippingAddress(wcCustomer))
+                .thenReturn(shippingAddress)
+
+            val state: Location = mock()
+            whenever(customerListRepository.getState("US", "CA")).thenReturn(state)
+
+            val country: Location = mock()
+            whenever(customerListRepository.getCountry("US")).thenReturn(country)
+
+            val address: Address = mock()
+            whenever(customerListViewModelMapper.mapFromOrderAddressToAddress(any(), eq(country), eq(state)))
+                .thenReturn(address)
+
+            // WHEN
+            viewModel.onCustomerSelected(wcCustomer)
+
+            // THEN
+            verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
+            assertThat(viewModel.event.value).isEqualTo(
+                CustomerSelected(
+                    customerId = 1L,
+                    billingAddress = address,
+                    shippingAddress = address,
+                )
+            )
+        }
+
+    @Test
+    fun `given customer with remote id and fetching error, when onCustomerSelected, then existing customer passed`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel()
+            val wcCustomer = mock<WCCustomerModel> {
+                on { remoteCustomerId }.thenReturn(1L)
+            }
+
+            whenever(customerListRepository.fetchCustomerByRemoteId(any()))
+                .thenReturn(
+                    WooResult(
+                        WooError(
+                            WooErrorType.GENERIC_ERROR,
+                            BaseRequest.GenericErrorType.NETWORK_ERROR
+                        )
+                    )
+                )
 
             val billingAddress: OrderAddress.Billing = mock {
                 on { country }.thenReturn("US")
@@ -508,6 +573,18 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(AddCustomer)
+    }
+
+    @Test
+    fun `when onNavigateBack, then exit emitted`() {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onNavigateBack()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
     private fun initViewModel() = CustomerListViewModel(

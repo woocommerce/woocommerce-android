@@ -92,12 +92,9 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     fun addCustomerNotes(note: String): UnifiedOrderScreen {
         Espresso.onView(withId(NOTES_SECTION))
             .perform(NestedScrollViewExtension())
-        Espresso.onView(withText("Add note"))
-            .perform(click())
 
-        Espresso.onView(withId(CUSTOMER_NOTE_EDITOR))
-            .perform((ViewActions.replaceText(note)))
-
+        clickOn(Espresso.onView(withText("Add note")))
+        typeTextInto(CUSTOMER_NOTE_EDITOR, note)
         clickOn(DONE_BUTTON)
         return this
     }

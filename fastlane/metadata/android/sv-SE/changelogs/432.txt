@@ -1,2 +1,0 @@
-14.3:
-Den här versionen inkluderar möjligheten att lägga till flera rabattkoder vid skapande av en beställning. Vi har också gjort det superenkelt att söka efter en produkt genom att skanna produktens streckkod eller QR-kod. Kolla in det.

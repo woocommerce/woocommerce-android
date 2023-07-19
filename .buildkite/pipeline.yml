@@ -1,14 +1,19 @@
 # Nodes with values to reuse in the pipeline.
 common_params:
   # Common plugin settings to use with the `plugins` key.
-  - &common_plugins
-    - automattic/a8c-ci-toolkit#2.17.0
+  - &ci_toolkit
+    automattic/a8c-ci-toolkit#2.17.0
+  - &test_collector
+    test-collector#v1.8.0
+  - &test_collector_common_params
+      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
+      format: "junit"
 
 steps:
   - label: "Gradle Wrapper Validation"
     command: |
       validate_gradle_wrapper
-    plugins: *common_plugins
+    plugins: [*ci_toolkit]
 
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
@@ -18,7 +23,7 @@ steps:
       echo "--- 🧹 Linting"
       cp gradle.properties-example gradle.properties
       ./gradlew detektAll
-    plugins: *common_plugins
+    plugins: [*ci_toolkit]
     artifact_paths:
       - "**/build/reports/detekt/detekt.html"
 
@@ -27,7 +32,7 @@ steps:
       echo "--- 🧹 Linting"
       cp gradle.properties-example gradle.properties
       ./gradlew lintJalapenoDebug
-    plugins: *common_plugins
+    plugins: [*ci_toolkit]
     artifact_paths:
       - "**/build/reports/lint-results*.*"
 
@@ -36,11 +41,15 @@ steps:
       cp gradle.properties-example gradle.properties
       .buildkite/commands/dependency-tree-diff.sh
     if: build.pull_request.id != null
-    plugins: *common_plugins
+    plugins: [*ci_toolkit]
 
   - label: "Unit tests"
     command: .buildkite/commands/run-unit-tests.sh
-    plugins: *common_plugins
+    plugins: 
+      - *ci_toolkit
+      - *test_collector :
+          <<: *test_collector_common_params
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
     artifact_paths:
       - "**/build/test-results/*/*.xml"
 
@@ -49,26 +58,19 @@ steps:
       echo "--- ⚒️ Building"
       cp gradle.properties-example gradle.properties
       ./gradlew assembleJalapenoDebugAndroidTest
-    plugins: *common_plugins
+    plugins: [*ci_toolkit]
 
   - label: "🛠 Installable Build"
     command: ".buildkite/commands/installable-build.sh"
     if: build.pull_request.id != null
-    plugins: *common_plugins
+    plugins: [*ci_toolkit]
 
   - label: "Instrumented tests"
-    key: "instrumented_tests"
     command: .buildkite/commands/run-instrumented-tests.sh
-    plugins: *common_plugins
+    plugins: 
+      - *ci_toolkit
+      - *test_collector :
+          <<: *test_collector_common_params
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
     artifact_paths:
       - "**/build/instrumented-tests/**/*"
-
-  - label: "🔍 Test Analytics"
-    command: buildkite-agent artifact download '**/test_result_1.xml' .
-    depends_on:
-      - "instrumented_tests"
-    plugins:
-      - test-collector#v1.8.0:
-          files: "**/test_result_1.xml"
-          format: "junit"
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"

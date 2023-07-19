@@ -1,2 +1,0 @@
-14.3 :
-Cette version intègre la possibilité d’ajouter plusieurs codes promo lors de la création d’une commande. Nous avons également simplifié la recherche d’un produit en scannant le code-barres ou le code QR. Découvrir

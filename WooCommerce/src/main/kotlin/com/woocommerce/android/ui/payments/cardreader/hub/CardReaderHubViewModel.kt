@@ -154,7 +154,7 @@ class CardReaderHubViewModel @Inject constructor(
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_gridicons_money_on_surface,
-            label = UiStringRes(R.string.card_reader_collect_payment),
+            label = UiStringRes(R.string.card_reader_hub_collect_payment),
             index = 1,
             onClick = ::onCollectPaymentClicked
         ),
