@@ -18,8 +18,10 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.NavigateToOrderDetails
+import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.ShowSuccessfulRefundNotification
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.StartTryPaymentFlow
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,6 +82,12 @@ class TapToPaySummaryFragment : BaseFragment() {
                         )
                     )
                 }
+                is NavigateToUrlInGenericWebView ->
+                    ChromeCustomTabUtils.launchUrl(
+                        requireContext(),
+                        event.url,
+                        ChromeCustomTabUtils.Height.Partial.ThreeQuarters
+                    )
                 else -> event.isHandled = false
             }
         }
