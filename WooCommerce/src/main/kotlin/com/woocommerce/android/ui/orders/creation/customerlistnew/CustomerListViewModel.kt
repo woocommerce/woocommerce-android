@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -19,8 +20,8 @@ import javax.inject.Inject
 @Suppress("EmptyFunctionBlock")
 class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val customerListRepository: CustomerListRepository,
-    private val customerListViewModelMapper: CustomerListViewModelMapper,
+    private val repository: CustomerListRepository,
+    private val mapper: CustomerListViewModelMapper,
 ) : ScopedViewModel(savedState) {
     private val _viewState = MutableLiveData(
         CustomerListViewState(
@@ -48,11 +49,19 @@ class CustomerListViewModel @Inject constructor(
     private val mutex = Mutex()
 
     init {
-        launch { loadCustomers(1) }
+        launch {
+            repository.loadCountries()
+            loadCustomers(1)
+        }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onCustomerSelected(customerId: Long) {
+    fun onCustomerSelected(customerModel: WCCustomerModel) {
+        if (customerModel.remoteCustomerId > 0L) {
+            // this customer is registered, so we may have more info on them
+            tryLoadMoreInfo(customerModel)
+        } else {
+            openCustomerDetails(customerModel)
+        }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -75,16 +84,29 @@ class CustomerListViewModel @Inject constructor(
         if (searchQuery.isNotEmpty()) loadAfterSearchChanged()
     }
 
+    fun onNavigateBack() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onEndOfListReached() {
+        launch { loadCustomers(paginationState.currentPage + 1) }
+    }
+
     private fun loadAfterSearchChanged() {
         loadingFirstPageJob?.cancel()
         loadingFirstPageJob = launch { loadCustomers(1) }
     }
 
-    fun onNavigateBack() {
-    }
-
-    fun onEndOfListReached() {
-        launch { loadCustomers(paginationState.currentPage + 1) }
+    private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
+        launch {
+            val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId)
+            if (result.isError || result.model == null) {
+                // just use what we have
+                openCustomerDetails(customerModel)
+            } else {
+                openCustomerDetails(result.model!!)
+            }
+        }
     }
 
     private suspend fun loadCustomers(page: Int) = mutex.withLock {
@@ -94,7 +116,7 @@ class CustomerListViewModel @Inject constructor(
             // Add a delay to avoid multiple requests when the user types fast or switches search types
             delay(SEARCH_DELAY_MS)
         }
-        val result = customerListRepository.searchCustomerListWithEmail(
+        val result = repository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
             searchBy = selectedSearchMode.searchParam,
             pageSize = PAGE_SIZE,
@@ -130,7 +152,7 @@ class CustomerListViewModel @Inject constructor(
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
                 customers = currentBody.customers + customers.map {
-                    customerListViewModelMapper.mapFromWCCustomer(it)
+                    mapper.mapFromWCCustomerToItem(it)
                 },
                 shouldResetScrollPosition = false,
             )
@@ -144,7 +166,7 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Loaded(
                     customers = customers.map {
-                        customerListViewModelMapper.mapFromWCCustomer(it)
+                        mapper.mapFromWCCustomerToItem(it)
                     },
                     shouldResetScrollPosition = true,
                 )
@@ -167,6 +189,25 @@ class CustomerListViewModel @Inject constructor(
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
                 customers = currentBody.customers.filterNot { it is CustomerListViewState.CustomerList.Item.Loading }
+            )
+        )
+    }
+
+    private fun openCustomerDetails(wcCustomer: WCCustomerModel) {
+        val billingAddress = mapper.mapFromCustomerModelToBillingAddress(wcCustomer)
+        val shippingAddress = mapper.mapFromCustomerModelToShippingAddress(wcCustomer)
+
+        val shippingCountry = repository.getCountry(shippingAddress.country)
+        val shippingState = repository.getState(shippingAddress.country, shippingAddress.state)
+
+        val billingCountry = repository.getCountry(billingAddress.country)
+        val billingState = repository.getState(billingAddress.country, billingAddress.state)
+
+        triggerEvent(
+            CustomerSelected(
+                customerId = wcCustomer.remoteCustomerId,
+                billingAddress = mapper.mapFromOrderAddressToAddress(billingAddress, billingCountry, billingState),
+                shippingAddress = mapper.mapFromOrderAddressToAddress(shippingAddress, shippingCountry, shippingState),
             )
         )
     }

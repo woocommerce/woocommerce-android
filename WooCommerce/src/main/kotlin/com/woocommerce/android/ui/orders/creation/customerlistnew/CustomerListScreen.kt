@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Composable
 fun CustomerListScreen(viewModel: CustomerListViewModel) {
@@ -87,7 +88,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
 fun CustomerListScreen(
     modifier: Modifier = Modifier,
     state: CustomerListViewState,
-    onCustomerSelected: (Long) -> Unit,
+    onCustomerSelected: (WCCustomerModel) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
@@ -135,7 +136,7 @@ fun CustomerListScreen(
 @Composable
 private fun CustomerListLoaded(
     body: CustomerListViewState.CustomerList.Loaded,
-    onCustomerSelected: (Long) -> Unit,
+    onCustomerSelected: (WCCustomerModel) -> Unit,
     onEndOfListReached: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -182,7 +183,7 @@ private fun CustomerListLoaded(
 @Composable
 private fun CustomerListItem(
     customer: CustomerListViewState.CustomerList.Item.Customer,
-    onCustomerSelected: (Long) -> Unit,
+    onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -191,7 +192,7 @@ private fun CustomerListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCustomerSelected(customer.remoteId) }
+                onClick = { onCustomerSelected(customer.payload) }
             )
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
@@ -343,12 +344,16 @@ fun CustomerListScreenPreview() {
                         firstName = "John",
                         lastName = "Doe",
                         email = "John@gmail.com",
+
+                        payload = WCCustomerModel(),
                     ),
                     CustomerListViewState.CustomerList.Item.Customer(
                         remoteId = 2,
                         firstName = "Andrei",
                         lastName = "K",
                         email = "blac@aaa.com",
+
+                        payload = WCCustomerModel(),
                     ),
                     CustomerListViewState.CustomerList.Item.Loading,
                 ),

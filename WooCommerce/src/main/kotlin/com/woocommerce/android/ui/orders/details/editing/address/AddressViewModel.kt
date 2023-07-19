@@ -245,6 +245,7 @@ class AddressViewModel @Inject constructor(
         billingAddress: Address,
         shippingAddress: Address
     ) {
+        hasStarted = true
         viewState = viewState.copy(
             customerId = customerId,
             addressSelectionStates = mapOf(
