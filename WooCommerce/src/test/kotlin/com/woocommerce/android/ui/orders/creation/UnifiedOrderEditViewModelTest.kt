@@ -721,6 +721,39 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             verify(tracker).track(eq(PRODUCT_SEARCH_VIA_SKU_FAILURE), any())
         }
     }
+
+    @Test
+    fun `when SKU search succeeds for a published product whose price is not specified, then track event with proper properties`() {
+        testBlocking {
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        customStatus = ProductStatus.PUBLISH.name,
+                        amount = ""
+                    )
+                )
+            )
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Failed to add a product whose price is not specified"
+                )
+            )
+        }
+    }
     @Test
     fun `when parent variable product is scanned, then trigger proper event`() {
         testBlocking {
