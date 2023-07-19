@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -191,12 +193,25 @@ private fun CustomerListLoaded(
                     }
                 }
 
-                CustomerListViewState.CustomerList.Item.Loading -> CustomerListLoadingItem()
+                CustomerListViewState.CustomerList.Item.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        if (body.customers.lastOrNull() !is CustomerListViewState.CustomerList.Item.Loading) {
+            item {
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            }
         }
     }
 
