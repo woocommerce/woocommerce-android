@@ -29,7 +29,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
@@ -47,7 +46,7 @@ class StatsRepository @Inject constructor(
 
         // Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
-        private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
+        private const val PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION = "6.7.0"
         private const val AN_HOUR_IN_MILLIS = 3600000
     }
 
@@ -152,14 +151,22 @@ class StatsRepository @Inject constructor(
             datePeriod = datePeriod
         )
         return if (forceRefresh || cachedTopPerformers.isEmpty() || cachedTopPerformers.expired()) {
-            val result = wcLeaderboardsStore.fetchTopPerformerProducts(
-                site = siteModel,
-                startDate = startDate,
-                endDate = endDate,
-                quantity = quantity,
-                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
-                forceRefresh = forceRefresh
-            )
+            val supportOnlyLegacyEndpoint = supportsProductOnlyLeaderboardAndReportEndpoint().not()
+            val result = if (supportOnlyLegacyEndpoint) {
+                wcLeaderboardsStore.fetchTopPerformerProductsLegacy(
+                    site = siteModel,
+                    startDate = startDate,
+                    endDate = endDate,
+                    quantity = quantity
+                )
+            } else {
+                wcLeaderboardsStore.fetchTopPerformerProducts(
+                    site = siteModel,
+                    startDate = startDate,
+                    endDate = endDate,
+                    quantity = quantity
+                )
+            }
             when {
                 result.isError -> Result.failure(WooException(result.error))
                 else -> Result.success(Unit)
@@ -192,12 +199,6 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(Exception(errorMessage)))
             }
         }
-    }
-
-    private fun supportsProductOnlyLeaderboardEndpoint(): Boolean {
-        val currentWooCoreVersion =
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: "0.0"
-        return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION) >= 0
     }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
@@ -311,6 +312,12 @@ class StatsRepository @Inject constructor(
                 )
             )
         }
+    }
+
+    private fun supportsProductOnlyLeaderboardAndReportEndpoint(): Boolean {
+        val currentWooCoreVersion =
+            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version ?: "0.0"
+        return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION) >= 0
     }
 
     private fun OrderStatsError?.toWooError(): WooError {
