@@ -144,7 +144,7 @@ interface UIMessageResolver {
      * @param [actionListener] Listener to handle the retry button click event
      */
     fun getRetrySnack(
-        stringResId: String,
+        @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
         isIndefinite: Boolean = true,
         actionListener: View.OnClickListener
@@ -152,7 +152,7 @@ interface UIMessageResolver {
         if (isIndefinite) {
             return getIndefiniteSnackbarWithAction(
                 snackbarRoot,
-                String.format(stringResId, *stringArgs),
+                snackbarRoot.context.getString(stringResId, *stringArgs),
                 snackbarRoot.context.getString(R.string.retry),
                 actionListener,
                 anchorViewId
@@ -160,7 +160,7 @@ interface UIMessageResolver {
         } else {
             return getDefiniteSnackbarWithAction(
                 snackbarRoot,
-                String.format(stringResId, *stringArgs),
+                snackbarRoot.context.getString(stringResId, *stringArgs),
                 snackbarRoot.context.getString(R.string.retry),
                 actionListener,
                 anchorViewId
