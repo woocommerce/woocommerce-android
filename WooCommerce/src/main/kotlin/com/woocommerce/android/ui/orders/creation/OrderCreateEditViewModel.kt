@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -635,7 +636,11 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomerClicked() {
+    fun onAddCustomerClicked() {
+        triggerEvent(AddCustomer)
+    }
+
+    fun onEditCustomerClicked() {
         triggerEvent(EditCustomer)
     }
 
