@@ -327,7 +327,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
     @Test
     fun `when syncing stats with empty DataStore flow response, then use ForceNew strategy`() = testBlocking {
-        //Given
+        // Given
         configureSuccessResponseStub()
         analyticsDataStore = mock {
             onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn emptyFlow()
