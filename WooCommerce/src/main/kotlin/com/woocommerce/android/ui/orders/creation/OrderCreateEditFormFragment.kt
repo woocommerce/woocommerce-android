@@ -204,13 +204,13 @@ class OrderCreateEditFormFragment :
                 AddButton(
                     text = getString(R.string.order_creation_add_customer),
                     onClickListener = {
-                        viewModel.onAddCustomerClicked()
+                        viewModel.onCustomerClicked()
                     }
                 )
             )
         )
         customerSection.setOnEditButtonClicked {
-            viewModel.onEditCustomerClicked()
+            viewModel.onCustomerClicked()
         }
         customerSection.setEditButtonContentDescription(
             contentDescription = getString(R.string.order_creation_customer_edit_content_description)

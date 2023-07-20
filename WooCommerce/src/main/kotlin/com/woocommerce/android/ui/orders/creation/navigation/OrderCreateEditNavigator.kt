@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
@@ -20,18 +19,13 @@ object OrderCreateEditNavigator {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            is EditCustomer ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
-                    editingOfAddedCustomer = true
-                )
-            is AddCustomer ->
+            is EditCustomer -> {
                 if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
                     OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
                 } else {
-                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
-                        editingOfAddedCustomer = false
-                    )
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
                 }
+            }
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is SelectItems ->

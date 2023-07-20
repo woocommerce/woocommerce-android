@@ -8,7 +8,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.math.BigDecimal
 
 sealed class OrderCreateEditNavigationTarget : Event() {
-    object AddCustomer : OrderCreateEditNavigationTarget()
     object EditCustomer : OrderCreateEditNavigationTarget()
     object EditCustomerNote : OrderCreateEditNavigationTarget()
     data class SelectItems(
