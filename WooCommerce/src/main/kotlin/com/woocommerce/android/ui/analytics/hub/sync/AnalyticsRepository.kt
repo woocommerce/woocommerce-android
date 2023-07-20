@@ -47,10 +47,10 @@ class AnalyticsRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val getCurrentRevenueMutex = Mutex()
-    private var currentRevenueStats: AnalyticsStatsResultWrapper? = null
+    private var currentRevenueStats: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
 
     private val getPreviousRevenueMutex = Mutex()
-    private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
+    private var previousRevenueStats: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
 
     suspend fun fetchRevenueData(
         rangeSelection: StatsTimeRangeSelection,
