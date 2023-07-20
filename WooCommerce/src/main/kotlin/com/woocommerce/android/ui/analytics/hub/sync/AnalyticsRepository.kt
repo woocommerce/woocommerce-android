@@ -9,7 +9,6 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
@@ -361,8 +360,13 @@ class AnalyticsRepository @Inject constructor(
         val startDate: String,
         val endDate: String,
         val result: Deferred<Result<WCRevenueStatsModel?>>
+    )
+
+    private data class AnalyticsStatsResultIdentifier(
+        private val startDate: String,
+        private val endDate: String
     ) {
-        val id: Int
+        val key: Int
             get() = "$startDate$endDate".hashCode()
     }
 }
