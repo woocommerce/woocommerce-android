@@ -94,7 +94,6 @@ Language: id
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Anda tidak dapat menambahkan produk bervariasi secara langsung. Pilih sebuah variasi secara spesifik.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Produk tidak ditemukan. Tidak dapat menambahkan ke pesanan baru</string>
     <string name="order_list_barcode_scanning_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
     <string name="scan_barcode">Pindai Barcode</string>
     <string name="shipping_notice_banner_instructions_content">Sekarang, pengiriman ke negara yang memberlakukan aturan bea cukai Uni Eropa (UE) mewajibkan Anda menguraikan setiap item. Contohnya, jika Anda mengirim pakaian, Anda harus menerangkan jenis pakaiannya (seperti, baju pria, rompi wanita, jaket pria) dalam deskripsinya untuk dapat diterima.  Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>

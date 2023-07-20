@@ -94,7 +94,6 @@ Language: it
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Il sistema ha terminato l\'app Woo mentre era in esecuzione in background. Puoi provare a usarla di nuovo.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Non è possibile aggiungere direttamente il prodotto variabile. Seleziona una variante specifica</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Prodotto non trovato. Impossibile aggiungere al nuovo ordine</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
     <string name="scan_barcode">Scansiona codice a barre</string>
     <string name="shipping_notice_banner_instructions_content">La spedizione in Paesi che seguono le regole doganali dell\'Unione europea (UE) ora richiede la descrizione chiara di ogni elemento. Ad esempio, se stai inviando capi di vestiario, devi indicare il tipo di abbigliamento (come camicie da uomo, gilet da ragazza, giacca da ragazzo) affinché la descrizione sia accettabile. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>

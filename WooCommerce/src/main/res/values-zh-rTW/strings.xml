@@ -94,7 +94,6 @@ Language: zh_TW
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">你無法直接新增商品款式。 請選取特定款式</string>
     <string name="order_creation_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">找不到商品。 無法新增至新訂單</string>
     <string name="order_list_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
     <string name="scan_barcode">掃描條碼</string>
     <string name="shipping_notice_banner_instructions_content">如需運送至遵循歐盟 (EU) 海關規定的國家/地區，現在必須清楚描述每件商品。 舉例來說，若要寄送衣服，你必須指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊。 否則貨件可能會在海關階段延誤或中斷。</string>

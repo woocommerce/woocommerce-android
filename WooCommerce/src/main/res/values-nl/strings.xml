@@ -94,7 +94,6 @@ Language: nl
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Het systeem heeft de Woo-app afgesloten terwijl deze in de achtergrond bezig was. Je kan proberen deze opnieuw te gebruiken.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Je kan een variabel product niet rechtstreeks toevoegen. Selecteer een bepaalde variatie.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scan mislukt. Probeer het later opnieuw</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Product niet gevonden. Kon nieuwe bestelling niet toevoegen</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scan mislukt Probeer het later opnieuw</string>
     <string name="scan_barcode">Streepjescode scannen</string>
     <string name="shipping_notice_banner_instructions_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je elk artikel duidelijk beschrijven. Bijvoorbeeld, als je kleding verzendt moet je in de beschrijving duidelijk aangeven wat voor soort kleding het is (bijv. herenshirt, damesvest, kinderjas). Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
