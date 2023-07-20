@@ -36,6 +36,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -135,7 +136,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         checkDigitRemoverFactory = mock()
         productListRepository = mock()
         resourceProvider = mock {
-            on { getString(any()) } doReturn ""
+            on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+            on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         }
     }
 
@@ -659,7 +661,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
-            R.string.order_creation_barcode_scanning_scanning_failed
+            resourceProvider.getString(R.string.order_creation_barcode_scanning_scanning_failed)
         )
     }
 
