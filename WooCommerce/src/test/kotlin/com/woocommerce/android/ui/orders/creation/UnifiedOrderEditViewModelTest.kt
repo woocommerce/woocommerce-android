@@ -517,7 +517,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product))
+            ).isEqualTo(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            )
         }
     }
 
@@ -633,7 +637,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product))
+            ).isEqualTo(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            )
         }
     }
 
@@ -731,7 +739,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_product, "534678"))
+            ).isEqualTo(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product, "534678"
+                )
+            )
         }
     }
 
