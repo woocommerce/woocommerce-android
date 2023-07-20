@@ -36,7 +36,6 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -136,8 +135,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         checkDigitRemoverFactory = mock()
         productListRepository = mock()
         resourceProvider = mock {
-            on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
-            on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+            on { getString(R.string.order_creation_barcode_scanning_scanning_failed) } doReturn "Scanning failed. Please try again later"
         }
     }
 
@@ -617,6 +615,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
         testBlocking {
+            whenever(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product))
+                .thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -633,15 +633,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     )
                 )
             )
+            R.string.order_creation_barcode_scanning_unable_to_add_variable_product.toString() //
             sut.handleBarcodeScannedStatus(scannedStatus)
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(
-                resourceProvider.getString(
-                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
-                )
-            )
+            ).isEqualTo("You cannot add variable product directly. Please select a specific variation")
         }
     }
 
@@ -726,11 +723,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when product search by SKU fails, then proper message is displayed`() {
         testBlocking {
+            val skuCode = "12345"
+            whenever(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_product, skuCode))
+                .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
-            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
             whenever(
                 productListRepository.searchProductList(
-                    "12345",
+                    skuCode,
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
             ).thenReturn(null)
@@ -739,22 +739,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(
-                resourceProvider.getString(
-                    R.string.order_creation_barcode_scanning_unable_to_add_product, "534678"
-                )
-            )
+            ).isEqualTo("Product with SKU $skuCode not found. Unable to add to the order")
         }
     }
 
     @Test
     fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
         testBlocking {
+            val skuCode = "12345"
+            whenever(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_product, skuCode))
+                .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
-            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
             whenever(
                 productListRepository.searchProductList(
-                    "12345",
+                    skuCode,
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
             ).thenReturn(null)
