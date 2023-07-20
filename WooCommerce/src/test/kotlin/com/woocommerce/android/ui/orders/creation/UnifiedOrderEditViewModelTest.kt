@@ -135,7 +135,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         checkDigitRemoverFactory = mock()
         productListRepository = mock()
         resourceProvider = mock {
-            on { getString(R.string.order_creation_barcode_scanning_scanning_failed) } doReturn "Scanning failed. Please try again later"
+            on {
+                getString(R.string.order_creation_barcode_scanning_scanning_failed)
+            } doReturn "Scanning failed. Please try again later"
         }
     }
 
@@ -466,6 +468,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when parent variable product is scanned, then trigger proper event`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+            ).thenReturn(
+                "You cannot add variable product directly. Please select a specific variation"
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -494,6 +501,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when parent variable product is scanned, then trigger event with proper message`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            ).thenReturn(
+                "You cannot add variable product directly. Please select a specific variation"
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -590,6 +604,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            )
+                .thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -615,7 +635,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
         testBlocking {
-            whenever(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_variable_product))
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            )
                 .thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
@@ -685,28 +709,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when product search by SKU fails, then trigger proper event`() {
-        testBlocking {
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
-        }
-    }
-
-    @Test
     fun `when product search by SKU succeeds but has empty result, then trigger proper event`() {
         testBlocking {
+            val skuCode = "12345"
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product,
+                    skuCode
+                )
+            )
+                .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
-            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode)
+            val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatQRCode)
             whenever(
                 productListRepository.searchProductList(
                     "12345",
@@ -724,7 +738,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     fun `when product search by SKU fails, then proper message is displayed`() {
         testBlocking {
             val skuCode = "12345"
-            whenever(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_product, skuCode))
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product,
+                    skuCode
+                )
+            )
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
@@ -747,7 +766,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
         testBlocking {
             val skuCode = "12345"
-            whenever(resourceProvider.getString(R.string.order_creation_barcode_scanning_unable_to_add_product, skuCode))
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product,
+                    skuCode
+                )
+            )
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
@@ -1058,6 +1082,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given product search via sku fails when trying to add parent variable product, then track event with proper reason`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            ).thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
