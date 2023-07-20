@@ -10,6 +10,11 @@ import androidx.work.WorkerParameters
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DATA
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
+import com.woocommerce.android.notifications.local.LocalNotificationType.UPGRADE_TO_PAID_PLAN
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
@@ -25,18 +30,17 @@ class PreconditionCheckWorker @AssistedInject constructor(
     private val selectedSite: SelectedSite
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
-        val type = inputData.getString(LOCAL_NOTIFICATION_TYPE)
+        if (!canDisplayNotifications) cancelWork("Notifications permission not granted. Cancelling work.")
+
+        val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
-        return when {
-            !canDisplayNotifications -> cancelWork("Notifications permission not granted. Cancelling work.")
-            type == null -> cancelWork("Notification check data is invalid")
-            type == LocalNotificationType.STORE_CREATION_FINISHED.value -> Result.success()
-            type == LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> Result.success()
-            type == LocalNotificationType.FREE_TRIAL_EXPIRING.value -> proceedIfFreeMatchingSite(data?.toLongOrNull())
-            type == LocalNotificationType.FREE_TRIAL_EXPIRED.value -> proceedIfFreeMatchingSite(data?.toLongOrNull())
-            else -> {
-                cancelWork("Unknown notification $type. Cancelling work.")
-            }
+        return when (type) {
+            STORE_CREATION_FINISHED -> Result.success()
+            STORE_CREATION_INCOMPLETE -> Result.success()
+            FREE_TRIAL_EXPIRING -> proceedIfFreeMatchingSite(data?.toLongOrNull())
+            FREE_TRIAL_EXPIRED -> proceedIfFreeMatchingSite(data?.toLongOrNull())
+            UPGRADE_TO_PAID_PLAN -> Result.success()
+            null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
 

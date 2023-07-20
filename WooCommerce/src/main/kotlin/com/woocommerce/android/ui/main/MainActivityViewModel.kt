@@ -17,6 +17,11 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.local.LocalNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
+import com.woocommerce.android.notifications.local.LocalNotificationType.UPGRADE_TO_PAID_PLAN
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -262,16 +267,14 @@ class MainActivityViewModel @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
+        LocalNotificationType.fromString(notification.tag)?.let {
+            when (it) {
+                STORE_CREATION_INCOMPLETE -> triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+                FREE_TRIAL_EXPIRED,
+                FREE_TRIAL_EXPIRING,
+                UPGRADE_TO_PAID_PLAN -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
 
-        when (notification.tag) {
-            LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
-                triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
-            }
-
-            LocalNotificationType.FREE_TRIAL_EXPIRED.value,
-            LocalNotificationType.FREE_TRIAL_EXPIRING.value,
-            LocalNotificationType.UPGRADE_TO_PAID_PLAN.value -> {
-                triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+                STORE_CREATION_FINISHED -> {}
             }
         }
     }
