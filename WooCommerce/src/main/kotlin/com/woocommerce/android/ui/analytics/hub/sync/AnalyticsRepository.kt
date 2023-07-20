@@ -207,18 +207,19 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriod = rangeSelection.currentRange
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+        val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
 
         getCurrentRevenueMutex.withLock {
-            if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == ForceNew)) {
-                currentRevenueStats =
-                    AnalyticsStatsResultWrapper(
-                        startDate = startDate,
-                        endDate = endDate,
-                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    )
+            if (shouldUpdateCurrentStats(statsIdentifier, fetchStrategy == ForceNew)) {
+                val newResults = AnalyticsStatsResultWrapper(
+                    startDate = startDate,
+                    endDate = endDate,
+                    result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                )
+                currentRevenueStats[statsIdentifier.key] = newResults
             }
         }
-        return@coroutineScope currentRevenueStats!!.result.await()
+        return@coroutineScope currentRevenueStats[statsIdentifier.key]!!.result.await()
     }
 
     private suspend fun getPreviousPeriodStats(
@@ -229,22 +230,19 @@ class AnalyticsRepository @Inject constructor(
         val previousPeriod = rangeSelection.previousRange
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+        val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
 
-        if (fetchStrategy == Saved && previousRevenueStats != null) {
-            return@coroutineScope previousRevenueStats!!.result.await()
-        } else {
-            getPreviousRevenueMutex.withLock {
-                if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == ForceNew)) {
-                    previousRevenueStats =
-                        AnalyticsStatsResultWrapper(
-                            startDate = startDate,
-                            endDate = endDate,
-                            result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                        )
-                }
+        getPreviousRevenueMutex.withLock {
+            if (shouldUpdatePreviousStats(statsIdentifier, fetchStrategy == ForceNew)) {
+                val newResults = AnalyticsStatsResultWrapper(
+                    startDate = startDate,
+                    endDate = endDate,
+                    result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                )
+                previousRevenueStats[statsIdentifier.key] = newResults
             }
-            return@coroutineScope previousRevenueStats!!.result.await()
         }
+        return@coroutineScope previousRevenueStats[statsIdentifier.key]!!.result.await()
     }
 
     private suspend fun getProductStats(
