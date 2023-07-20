@@ -66,23 +66,26 @@ class ProductSharingViewModel @Inject constructor(
         }
 
         launch {
-            _viewState.value.identifiedLanguageISOCode?.let {
-                generateProductSharingText(languageISOCode = it)
-            } ?: identifyLanguageAndGenerateProductSharingText()
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode
+                ?: identifyLanguage().getOrNull()
+            if (languageISOCode != null) {
+                generateProductSharingText(languageISOCode = languageISOCode)
+            }
         }
     }
 
-    private suspend fun identifyLanguageAndGenerateProductSharingText() {
-        aiRepository.identifyISOLanguageCode(
+    private suspend fun identifyLanguage(): Result<String> {
+        return aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
             text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}"
         ).fold(
             onSuccess = { languageISOCode ->
                 handleIdentificationSuccess(languageISOCode)
-                generateProductSharingText(languageISOCode)
+                Result.success(languageISOCode)
             },
             onFailure = { exception ->
                 handleIdentificationFailure(exception as JetpackAICompletionsException)
+                Result.failure(exception)
             }
         )
     }
