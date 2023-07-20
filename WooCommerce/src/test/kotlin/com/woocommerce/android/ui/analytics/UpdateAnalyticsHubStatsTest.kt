@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -368,6 +369,28 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
         // Then
         verify(analyticsDataStore, never()).storeLastAnalyticsUpdate(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats with empty DataStore flow response, then use ForceNew strategy`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn emptyFlow()
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
     }
 
     private fun configureSuccessResponseStub() {
