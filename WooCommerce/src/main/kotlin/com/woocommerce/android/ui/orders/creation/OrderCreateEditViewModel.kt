@@ -621,6 +621,16 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCustomerAddressDeleted() {
+        _orderDraft.update { order ->
+            order.copy(
+                customerId = null,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY
+            )
+        }
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository

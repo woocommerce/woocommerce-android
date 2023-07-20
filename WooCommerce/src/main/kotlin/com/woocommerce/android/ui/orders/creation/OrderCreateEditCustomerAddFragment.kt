@@ -137,6 +137,10 @@ class OrderCreateEditCustomerAddFragment :
                         findNavController().navigateUp()
                     }
                 }
+                is AddressViewModel.DeleteCustomer -> {
+                    sharedViewModel.onCustomerAddressDeleted()
+                    findNavController().navigateUp()
+                }
                 is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
             }
         }
@@ -313,6 +317,10 @@ class OrderCreateEditCustomerAddFragment :
             }
             MENU_ITEM_SEARCH_ID -> {
                 addressViewModel.onCustomerSearchClicked()
+                true
+            }
+            MENU_ITEM_DELETE_ID -> {
+                addressViewModel.onDeleteCustomerClicked()
                 true
             }
             else -> false
