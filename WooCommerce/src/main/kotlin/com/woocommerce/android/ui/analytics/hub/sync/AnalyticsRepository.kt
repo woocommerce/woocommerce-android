@@ -208,15 +208,15 @@ class AnalyticsRepository @Inject constructor(
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
         val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
+        val cachedRevenueStat = currentRevenueStats[statsIdentifier.key]
 
         getCurrentRevenueMutex.withLock {
-            if (statsIdentifier.shouldBeUpdated(currentRevenueStats, fetchStrategy)) {
-                val newResults = AnalyticsStatsResultWrapper(
+            if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
+                AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
                     result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                )
-                currentRevenueStats[statsIdentifier.key] = newResults
+                ).let { currentRevenueStats[statsIdentifier.key] = it }
             }
         }
         return@coroutineScope currentRevenueStats[statsIdentifier.key]!!.result.await()
@@ -231,15 +231,15 @@ class AnalyticsRepository @Inject constructor(
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
         val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
+        val cachedRevenueStat = previousRevenueStats[statsIdentifier.key]
 
         getPreviousRevenueMutex.withLock {
-            if (statsIdentifier.shouldBeUpdated(previousRevenueStats, fetchStrategy)) {
-                val newResults = AnalyticsStatsResultWrapper(
+            if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
+                AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
                     result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                )
-                previousRevenueStats[statsIdentifier.key] = newResults
+                ).let { previousRevenueStats[statsIdentifier.key] = it }
             }
         }
         return@coroutineScope previousRevenueStats[statsIdentifier.key]!!.result.await()
@@ -293,12 +293,8 @@ class AnalyticsRepository @Inject constructor(
             .let { DeltaPercentage.Value(it.toInt()) }
     }
 
-    private fun AnalyticsStatsResultIdentifier.shouldBeUpdated(
-        revenueStatsCache: Map<Int, AnalyticsStatsResultWrapper>,
-        fetchStrategy: FetchStrategy
-    ) = revenueStatsCache[key]
-            ?.let { fetchStrategy == ForceNew && it.result.isCompleted }
-            ?: true
+    private fun AnalyticsStatsResultWrapper?.shouldBeUpdated(fetchStrategy: FetchStrategy) =
+        this?.let { fetchStrategy == ForceNew && it.result.isCompleted } ?: true
 
     private suspend fun fetchNetworkStats(
         startDate: String,
