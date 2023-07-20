@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerAddressBinding
 import com.woocommerce.android.databinding.LayoutAddressFormBinding
@@ -52,13 +53,16 @@ class OrderCreateEditCustomerAddFragment :
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
 
+    private val editingOfAddedCustomer: OrderCreateEditCustomerAddFragmentArgs by navArgs()
+
     private var fragmentViewBinding: FragmentOrderCreateEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
     private var billingBinding: LayoutAddressFormBinding? = null
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
     private var doneMenuItem: MenuItem? = null
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -132,6 +136,7 @@ class OrderCreateEditCustomerAddFragment :
                         findNavController().navigateUp()
                     }
                 }
+
                 is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
             }
         }
@@ -271,7 +276,7 @@ class OrderCreateEditCustomerAddFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
 
-        if (!FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
+        if (!FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled() || editingOfAddedCustomer.editingOfAddedCustomer) {
             menu.add(
                 Menu.NONE,
                 SEARCH_ID,
@@ -297,10 +302,12 @@ class OrderCreateEditCustomerAddFragment :
                 )
                 true
             }
+
             SEARCH_ID -> {
                 addressViewModel.onCustomerSearchClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -316,8 +323,14 @@ class OrderCreateEditCustomerAddFragment :
     }
 
     private fun showCustomerSearchScreen() {
-        findNavController().navigateSafely(
-            OrderCreateEditCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
-        )
+        if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
+            val action =
+                OrderCreateEditCustomerAddFragmentDirections.actionOrderCreationCustomerFragmentToCustomerListFragment()
+            findNavController().navigateSafely(action)
+        } else {
+            findNavController().navigateSafely(
+                OrderCreateEditCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
+            )
+        }
     }
 }
