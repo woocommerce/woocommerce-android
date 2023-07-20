@@ -210,7 +210,7 @@ class AnalyticsRepository @Inject constructor(
         val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
 
         getCurrentRevenueMutex.withLock {
-            if (shouldUpdateCurrentStats(statsIdentifier, fetchStrategy == ForceNew)) {
+            if (statsIdentifier.shouldBeUpdated(currentRevenueStats, fetchStrategy)) {
                 val newResults = AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
@@ -233,7 +233,7 @@ class AnalyticsRepository @Inject constructor(
         val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
 
         getPreviousRevenueMutex.withLock {
-            if (shouldUpdatePreviousStats(statsIdentifier, fetchStrategy == ForceNew)) {
+            if (statsIdentifier.shouldBeUpdated(previousRevenueStats, fetchStrategy)) {
                 val newResults = AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
@@ -293,15 +293,11 @@ class AnalyticsRepository @Inject constructor(
             .let { DeltaPercentage.Value(it.toInt()) }
     }
 
-    private fun shouldUpdatePreviousStats(identifier: AnalyticsStatsResultIdentifier, forceUpdate: Boolean) =
-        previousRevenueStats[identifier.key]
-            ?.let { forceUpdate && it.result.isCompleted }
-            ?: true
-
-
-    private fun shouldUpdateCurrentStats(identifier: AnalyticsStatsResultIdentifier, forceUpdate: Boolean) =
-        currentRevenueStats[identifier.key]
-            ?.let { forceUpdate && it.result.isCompleted }
+    private fun AnalyticsStatsResultIdentifier.shouldBeUpdated(
+        revenueStatsCache: Map<Int, AnalyticsStatsResultWrapper>,
+        fetchStrategy: FetchStrategy
+    ) = revenueStatsCache[key]
+            ?.let { fetchStrategy == ForceNew && it.result.isCompleted }
             ?: true
 
     private suspend fun fetchNetworkStats(
