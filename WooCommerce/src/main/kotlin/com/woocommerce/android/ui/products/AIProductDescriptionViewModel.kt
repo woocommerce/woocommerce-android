@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_AI_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_COPY_BUTTON_TAPPED
@@ -12,6 +13,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_G
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_RETRY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFUL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -32,7 +36,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember")
+@Suppress("EmptyFunctionBlock", "MagicNumber", "UnusedPrivateMember", "TooManyFunctions")
 @HiltViewModel
 class AIProductDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
@@ -57,30 +61,69 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(generationState = Generating) }
 
         launch {
-            generateDescription()
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode
+                ?: identifyLanguage().getOrNull()
+            if (languageISOCode != null) {
+                generateProductDescriptionText(languageISOCode = languageISOCode)
+            }
         }
     }
 
-    private suspend fun generateDescription() {
-        aiRepository.identifyISOLanguageCode(
+    private suspend fun identifyLanguage(): Result<String> {
+        return aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
             text = "${navArgs.productTitle} ${_viewState.value.features}"
         ).fold(
             onSuccess = { languageISOCode ->
-                val result = aiRepository.generateProductDescription(
-                    site = selectedSite.get(),
-                    productName = navArgs.productTitle ?: "",
-                    features = _viewState.value.features,
-                    languageISOCode = languageISOCode
-                )
-                result.fold(
-                    onSuccess = { completions ->
-                        handleCompletionsSuccess(completions)
-                    },
-                    onFailure = { exception ->
-                        handleCompletionsFailure(exception as JetpackAICompletionsException)
-                    }
-                )
+                handleIdentificationSuccess(languageISOCode)
+                Result.success(languageISOCode)
+            },
+            onFailure = { exception ->
+                handleIdentificationFailure(exception as JetpackAICompletionsException)
+                Result.failure(exception)
+            }
+        )
+    }
+
+    private fun handleIdentificationSuccess(languageISOCode: String) {
+        _viewState.update {
+            _viewState.value.copy(
+                identifiedLanguageISOCode = languageISOCode
+            )
+        }
+
+        tracker.track(
+            stat = PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS,
+            properties = mapOf(
+                KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION
+            )
+        )
+    }
+
+    private fun handleIdentificationFailure(error: JetpackAICompletionsException) {
+        tracker.track(
+            AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
+            mapOf(
+                KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                KEY_ERROR_TYPE to error.errorType,
+                KEY_ERROR_DESC to error.errorMessage,
+                KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION
+            )
+        )
+
+        resetGenerationState()
+    }
+
+    private suspend fun generateProductDescriptionText(languageISOCode: String) {
+        val result = aiRepository.generateProductDescription(
+            site = selectedSite.get(),
+            productName = navArgs.productTitle ?: "",
+            features = _viewState.value.features,
+            languageISOCode = languageISOCode
+        )
+        result.fold(
+            onSuccess = { completions ->
+                handleCompletionsSuccess(completions)
             },
             onFailure = { exception ->
                 handleCompletionsFailure(exception as JetpackAICompletionsException)
@@ -105,6 +148,10 @@ class AIProductDescriptionViewModel @Inject constructor(
             properties = mapOf(KEY_ERROR to error.message)
         )
 
+        resetGenerationState()
+    }
+
+    private fun resetGenerationState() {
         // This is to return the previous state before generating.
         val previousState = if (_viewState.value.generationState == Generating) {
             Start(showError = true)
@@ -127,7 +174,11 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(generationState = Regenerating) }
 
         launch {
-            generateDescription()
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode
+                ?: identifyLanguage().getOrNull()
+            if (languageISOCode != null) {
+                generateProductDescriptionText(languageISOCode = languageISOCode)
+            }
         }
     }
 
@@ -164,12 +215,18 @@ class AIProductDescriptionViewModel @Inject constructor(
                 KEY_IS_USEFUL to isUseful
             )
         )
+
+        // If the user says the description is not useful, we should try identifying language again.
+        if (!isUseful) {
+            _viewState.update { _viewState.value.copy(identifiedLanguageISOCode = null) }
+        }
     }
 
     data class ViewState(
         val productTitle: String? = null,
         val features: String = "",
         val description: String = "",
+        val identifiedLanguageISOCode: String? = null,
         val generationState: GenerationState = Start()
     ) {
         sealed class GenerationState {
