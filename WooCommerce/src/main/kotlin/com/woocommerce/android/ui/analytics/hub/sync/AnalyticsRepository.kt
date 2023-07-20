@@ -295,13 +295,16 @@ class AnalyticsRepository @Inject constructor(
             .let { DeltaPercentage.Value(it.toInt()) }
     }
 
-    private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
-        previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate ||
-            (forceUpdate && previousRevenueStats?.result?.isCompleted == true)
+    private fun shouldUpdatePreviousStats(identifier: AnalyticsStatsResultIdentifier, forceUpdate: Boolean) =
+        previousRevenueStats[identifier.key]
+            ?.let { forceUpdate && it.result.isCompleted }
+            ?: true
 
-    private fun shouldUpdateCurrentStats(startDate: String, endDate: String, forceUpdate: Boolean) =
-        currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate ||
-            (forceUpdate && currentRevenueStats?.result?.isCompleted == true)
+
+    private fun shouldUpdateCurrentStats(identifier: AnalyticsStatsResultIdentifier, forceUpdate: Boolean) =
+        currentRevenueStats[identifier.key]
+            ?.let { forceUpdate && it.result.isCompleted }
+            ?: true
 
     private suspend fun fetchNetworkStats(
         startDate: String,
