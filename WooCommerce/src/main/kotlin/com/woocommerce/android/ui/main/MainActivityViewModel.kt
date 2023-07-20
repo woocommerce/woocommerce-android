@@ -92,6 +92,7 @@ class MainActivityViewModel @Inject constructor(
                 )
                 triggerEvent(ShortcutOpenPayments)
             }
+
             SHORTCUT_OPEN_ORDER_CREATION -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
@@ -131,21 +132,27 @@ class MainActivityViewModel @Inject constructor(
             is ResolveAppLink.Action.ChangeSiteAndRestart -> {
                 changeSiteAndRestart(event.siteId, RestartActivityForAppLink(event.uri))
             }
+
             is ResolveAppLink.Action.ViewOrderDetail -> {
                 triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
             }
+
             ResolveAppLink.Action.ViewStats -> {
                 triggerEvent(ViewMyStoreStats)
             }
+
             ResolveAppLink.Action.ViewPayments -> {
                 triggerEvent(ViewPayments)
             }
+
             ResolveAppLink.Action.ViewTapToPay -> {
                 triggerEvent(ViewTapToPay)
             }
+
             is ResolveAppLink.Action.ViewUrlInWebView -> {
                 triggerEvent(ViewUrlInWebView(event.url))
             }
+
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
@@ -260,8 +267,10 @@ class MainActivityViewModel @Inject constructor(
             LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
                 triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
             }
+
             LocalNotificationType.FREE_TRIAL_EXPIRED.value,
-            LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
+            LocalNotificationType.FREE_TRIAL_EXPIRING.value,
+            LocalNotificationType.UPGRADE_TO_PAID_PLAN.value -> {
                 triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
             }
         }
