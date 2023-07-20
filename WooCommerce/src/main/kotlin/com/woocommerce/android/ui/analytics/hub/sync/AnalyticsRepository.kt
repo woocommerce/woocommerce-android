@@ -8,6 +8,8 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
@@ -208,7 +210,7 @@ class AnalyticsRepository @Inject constructor(
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
 
         getCurrentRevenueMutex.withLock {
-            if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
+            if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == ForceNew)) {
                 currentRevenueStats =
                     AnalyticsStatsResultWrapper(
                         startDate = startDate,
@@ -229,17 +231,21 @@ class AnalyticsRepository @Inject constructor(
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
 
-        getPreviousRevenueMutex.withLock {
-            if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
-                previousRevenueStats =
-                    AnalyticsStatsResultWrapper(
-                        startDate = startDate,
-                        endDate = endDate,
-                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    )
+        if (fetchStrategy == Saved && previousRevenueStats != null) {
+            return@coroutineScope previousRevenueStats!!.result.await()
+        } else {
+            getPreviousRevenueMutex.withLock {
+                if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == ForceNew)) {
+                    previousRevenueStats =
+                        AnalyticsStatsResultWrapper(
+                            startDate = startDate,
+                            endDate = endDate,
+                            result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                        )
+                }
             }
+            return@coroutineScope previousRevenueStats!!.result.await()
         }
-        return@coroutineScope previousRevenueStats!!.result.await()
     }
 
     private suspend fun getProductStats(
@@ -252,7 +258,7 @@ class AnalyticsRepository @Inject constructor(
         val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
 
         return statsRepository.fetchTopPerformerProducts(
-            forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
+            forceRefresh = fetchStrategy is ForceNew,
             startDate = startDate,
             endDate = endDate,
             quantity = quantity
@@ -267,7 +273,7 @@ class AnalyticsRepository @Inject constructor(
     ): Result<Map<String, Int>> = coroutineScope {
         statsRepository.fetchVisitorStats(
             getGranularity(rangeSelection.selectionType),
-            fetchStrategy is FetchStrategy.ForceNew,
+            fetchStrategy is ForceNew,
             rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
             rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
         ).single()
@@ -306,7 +312,7 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> =
         statsRepository.fetchRevenueStats(
             granularity,
-            fetchStrategy is FetchStrategy.ForceNew,
+            fetchStrategy is ForceNew,
             startDate,
             endDate
         ).flowOn(dispatchers.io).single().mapCatching { it }
