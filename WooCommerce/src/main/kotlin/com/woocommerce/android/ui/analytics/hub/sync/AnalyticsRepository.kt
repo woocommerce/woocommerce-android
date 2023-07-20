@@ -39,6 +39,8 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
 
+typealias RevenueStatId = Pair<String, String>
+
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -207,8 +209,8 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriod = rangeSelection.currentRange
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
-        val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
-        val cachedRevenueStat = currentRevenueStats[statsIdentifier.key]
+        val statsIdentifier = RevenueStatId(startDate, endDate).hashCode()
+        val cachedRevenueStat = currentRevenueStats[statsIdentifier]
 
         getCurrentRevenueMutex.withLock {
             if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
@@ -216,10 +218,10 @@ class AnalyticsRepository @Inject constructor(
                     startDate = startDate,
                     endDate = endDate,
                     result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                ).let { currentRevenueStats[statsIdentifier.key] = it }
+                ).let { currentRevenueStats[statsIdentifier.hashCode()] = it }
             }
         }
-        return@coroutineScope currentRevenueStats[statsIdentifier.key]!!.result.await()
+        return@coroutineScope currentRevenueStats[statsIdentifier]!!.result.await()
     }
 
     private suspend fun getPreviousPeriodStats(
@@ -230,8 +232,8 @@ class AnalyticsRepository @Inject constructor(
         val previousPeriod = rangeSelection.previousRange
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
-        val statsIdentifier = AnalyticsStatsResultIdentifier(startDate, endDate)
-        val cachedRevenueStat = previousRevenueStats[statsIdentifier.key]
+        val statsIdentifier = RevenueStatId(startDate, endDate).hashCode()
+        val cachedRevenueStat = previousRevenueStats[statsIdentifier]
 
         getPreviousRevenueMutex.withLock {
             if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
@@ -239,10 +241,10 @@ class AnalyticsRepository @Inject constructor(
                     startDate = startDate,
                     endDate = endDate,
                     result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                ).let { previousRevenueStats[statsIdentifier.key] = it }
+                ).let { previousRevenueStats[statsIdentifier] = it }
             }
         }
-        return@coroutineScope previousRevenueStats[statsIdentifier.key]!!.result.await()
+        return@coroutineScope previousRevenueStats[statsIdentifier]!!.result.await()
     }
 
     private suspend fun getProductStats(
@@ -354,12 +356,4 @@ class AnalyticsRepository @Inject constructor(
         val endDate: String,
         val result: Deferred<Result<WCRevenueStatsModel?>>
     )
-
-    private data class AnalyticsStatsResultIdentifier(
-        private val startDate: String,
-        private val endDate: String
-    ) {
-        val key: Int
-            get() = "$startDate$endDate".hashCode()
-    }
 }
