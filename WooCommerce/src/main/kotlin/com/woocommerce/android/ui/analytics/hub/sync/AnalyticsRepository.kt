@@ -361,5 +361,8 @@ class AnalyticsRepository @Inject constructor(
         val startDate: String,
         val endDate: String,
         val result: Deferred<Result<WCRevenueStatsModel?>>
-    )
+    ) {
+        val id: Int
+            get() = "$startDate$endDate".hashCode()
+    }
 }
