@@ -61,23 +61,26 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(generationState = Generating) }
 
         launch {
-            _viewState.value.identifiedLanguageISOCode?.let {
-                generateProductDescriptionText(languageISOCode = it)
-            } ?: identifyLanguageAndGenerateProductDescriptionText()
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode
+                ?: identifyLanguage().getOrNull()
+            if (languageISOCode != null) {
+                generateProductDescriptionText(languageISOCode = languageISOCode)
+            }
         }
     }
 
-    private suspend fun identifyLanguageAndGenerateProductDescriptionText() {
-        aiRepository.identifyISOLanguageCode(
+    private suspend fun identifyLanguage(): Result<String> {
+        return aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
             text = "${navArgs.productTitle} ${_viewState.value.features}"
         ).fold(
             onSuccess = { languageISOCode ->
                 handleIdentificationSuccess(languageISOCode)
-                generateProductDescriptionText(languageISOCode = languageISOCode)
+                Result.success(languageISOCode)
             },
             onFailure = { exception ->
                 handleIdentificationFailure(exception as JetpackAICompletionsException)
+                Result.failure(exception)
             }
         )
     }
@@ -171,9 +174,11 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(generationState = Regenerating) }
 
         launch {
-            _viewState.value.identifiedLanguageISOCode?.let {
-                generateProductDescriptionText(languageISOCode = it)
-            } ?: identifyLanguageAndGenerateProductDescriptionText()
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode
+                ?: identifyLanguage().getOrNull()
+            if (languageISOCode != null) {
+                generateProductDescriptionText(languageISOCode = languageISOCode)
+            }
         }
     }
 
