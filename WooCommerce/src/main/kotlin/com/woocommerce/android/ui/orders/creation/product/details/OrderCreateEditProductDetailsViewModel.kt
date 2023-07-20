@@ -5,9 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
 import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
+import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getStockText
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -29,8 +33,10 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
-
+    private val currencyFormatter: CurrencyFormatter,
+    private val getItemDiscountAmountText: GetItemDiscountAmountText,
+    private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
+    private val tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val args: OrderCreateEditProductDetailsFragmentArgs by savedState.navArgs()
 
@@ -41,6 +47,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     val viewState = item.map { item ->
         val uiModel: ProductUIModel = mapItemToProductUiModel(item)
         ViewState(
+            discountEditButtonsEnabled = args.discountEditEnabled,
             productDetailsState = ProductDetailsState(
                 title = getProductTitle(uiModel.item.name),
                 stockPriceSubtitle = getStockPriceSubtitle(uiModel),
@@ -49,15 +56,12 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
             ),
             discountSectionState = DiscountSectionState(
                 isVisible = item.isDiscounted(),
-                discountAmountText = getDiscountAmountText(uiModel.item),
+                discountAmountText = getItemDiscountAmountText(calculateItemDiscountAmount(uiModel.item), currency),
             )
         )
     }.asLiveData()
 
-    private fun getDiscountAmountText(item: Order.Item): String =
-        currencyFormatter.formatCurrency(item.discount, currency)
-
-    private fun Order.Item.isDiscounted(): Boolean = discount > BigDecimal.ZERO
+    private fun Order.Item.isDiscounted(): Boolean = calculateItemDiscountAmount(this) > BigDecimal.ZERO
 
     private fun getStockPriceSubtitle(item: ProductUIModel): String {
         val decimalFormatter = getDecimalFormatter(currencyFormatter, args.currency)
@@ -95,29 +99,28 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
         }
 
     fun onAddDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountCreate)
+        triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
+        tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED)
     }
 
     fun onEditDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountEdit(item.value.discount))
+        triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
+        tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED)
     }
 
     fun onCloseClicked() {
-        if (args.item != this.item.value) {
-            triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductDetailsEdited(this.item.value)))
-        } else {
-            triggerEvent(MultiLiveEvent.Event.Exit)
-        }
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onProductRemoved() {
+    fun onRemoveProductClicked() {
         triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.item.value)))
     }
 
     data class ViewState(
         val productDetailsState: ProductDetailsState,
         val discountSectionState: DiscountSectionState,
-        val addDiscountButtonVisible: Boolean = !discountSectionState.isVisible
+        val addDiscountButtonVisible: Boolean = !discountSectionState.isVisible,
+        val discountEditButtonsEnabled: Boolean
     )
 
     data class ProductDetailsState(
@@ -135,14 +138,11 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     @Parcelize
     sealed class ProductDetailsEditResult : Parcelable {
         @Parcelize
-        data class ProductDetailsEdited(val changes: Order.Item) : Parcelable, ProductDetailsEditResult()
-        @Parcelize
         data class ProductRemoved(val item: Order.Item) : Parcelable, ProductDetailsEditResult()
     }
 
     sealed class NavigationTarget : MultiLiveEvent.Event() {
-        data class DiscountEdit(val discountAmount: BigDecimal) : MultiLiveEvent.Event()
-        object DiscountCreate : MultiLiveEvent.Event()
+        data class DiscountEdit(val item: Order.Item, val currency: String) : MultiLiveEvent.Event()
     }
 
     private companion object {

@@ -16,7 +16,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
     data class ShowProductDetails(
         val item: Order.Item,
-        val currency: String
+        val currency: String,
+        val discountEditEnabled: Boolean,
     ) : OrderCreateEditNavigationTarget()
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreateEditNavigationTarget()

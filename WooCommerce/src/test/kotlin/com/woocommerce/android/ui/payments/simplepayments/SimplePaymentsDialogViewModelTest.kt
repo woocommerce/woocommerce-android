@@ -6,11 +6,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
-class SimplePaymentsDialogViewModelTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class SimplePaymentsDialogViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
@@ -32,5 +37,20 @@ class SimplePaymentsDialogViewModelTest {
             AnalyticsEvent.PAYMENTS_FLOW_CANCELED,
             mapOf(AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW)
         )
+    }
+
+    @Test
+    fun `given network available, when done clicked, then should create order`() = testBlocking {
+        // given
+        viewModel.viewState = viewModel.viewState.copy(currentPrice = 23.toBigDecimal())
+        whenever(networkStatus.isConnected()).thenReturn(true)
+
+        // when
+        viewModel.onDoneButtonClicked()
+
+        val latestViewState = viewModel.viewStateLiveData.liveData.value
+
+        // then
+        assertThat(latestViewState).isNotNull()
     }
 }

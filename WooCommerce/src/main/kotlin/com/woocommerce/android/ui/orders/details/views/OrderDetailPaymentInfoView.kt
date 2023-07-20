@@ -12,6 +12,7 @@ import com.woocommerce.android.databinding.OrderDetailPaymentInfoBinding
 import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -98,11 +99,14 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
                 R.string.negative_currency,
                 formatCurrencyForDisplay(order.discountTotal)
             )
-            binding.paymentInfoDiscountItems.text = context.getString(
-                R.string.orderdetail_discount_items,
-                order.discountCodes
-            )
+            binding.paymentInfoDiscountItems.text = getDiscountItemsLabel(order)
         }
+    }
+
+    private fun getDiscountItemsLabel(order: Order) = if (order.discountCodes.isNotNullOrEmpty()) {
+        context.getString(R.string.orderdetail_discount_items, order.discountCodes)
+    } else {
+        ""
     }
 
     fun updateGiftCardSection(

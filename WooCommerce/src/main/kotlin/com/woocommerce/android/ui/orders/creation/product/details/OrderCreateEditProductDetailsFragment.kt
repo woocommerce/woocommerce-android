@@ -37,11 +37,13 @@ class OrderCreateEditProductDetailsFragment :
 
         with(binding) {
             removeProductButton.setOnClickListener {
-                viewModel.onProductRemoved()
+                viewModel.onRemoveProductClicked()
             }
             toolbar.setNavigationOnClickListener {
                 viewModel.onCloseClicked()
             }
+            addDiscountButton.setOnClickListener { viewModel.onAddDiscountClicked() }
+            discountEditButton.setOnClickListener { viewModel.onEditDiscountClicked() }
         }
 
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
@@ -55,11 +57,22 @@ class OrderCreateEditProductDetailsFragment :
 
     private fun handleNavEvent(event: MultiLiveEvent.Event) {
         when (event) {
-            is OrderCreateEditProductDetailsViewModel.NavigationTarget.DiscountCreate -> {}
-            is OrderCreateEditProductDetailsViewModel.NavigationTarget.DiscountEdit -> {}
             is MultiLiveEvent.Event.ExitWithResult<*> -> {
-                navigateBackWithResult(KEY_PRODUCT_DETAILS_EDIT_RESULT, event.data as ProductDetailsEditResult)
+                navigateBackWithResult(
+                    KEY_PRODUCT_DETAILS_EDIT_RESULT,
+                    event.data as ProductDetailsEditResult
+                )
             }
+            is OrderCreateEditProductDetailsViewModel.NavigationTarget.DiscountEdit -> {
+                findNavController().navigate(
+                    OrderCreateEditProductDetailsFragmentDirections
+                        .actionOrderCreationProductDetailsFragmentToOrderCreationProductDiscountFragment(
+                            event.item,
+                            event.currency
+                        )
+                )
+            }
+
             is MultiLiveEvent.Event.Exit -> {
                 findNavController().navigateUp()
             }
@@ -93,6 +106,7 @@ class OrderCreateEditProductDetailsFragment :
     ) {
         addDiscountButton.isVisible =
             state.addDiscountButtonVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
+        addDiscountButton.isEnabled = state.discountEditButtonsEnabled
     }
 
     private fun FragmentOrderCreateEditProductDetailsBinding.renderDiscountSection(
@@ -100,7 +114,8 @@ class OrderCreateEditProductDetailsFragment :
     ) = with(discountSection) {
         isVisible =
             state.discountSectionState.isVisible && FeatureFlag.ORDER_CREATION_PRODUCT_DISCOUNTS.isEnabled()
-        // To be continued
+        amountValue.text = state.discountSectionState.discountAmountText
+        discountEditButton.isEnabled = state.discountEditButtonsEnabled
     }
 
     companion object {
