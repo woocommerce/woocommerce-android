@@ -274,7 +274,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when selection type is CUSTOM, then ignore the data store and request data with ForceNew strategy`() = testBlocking {
+    fun `when selection type is CUSTOM, then follow the data store and request data with Stored strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
             onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn flowOf(false)
@@ -288,10 +288,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testCustomRangeSelection, this)
 
         // Then
-        verify(repository).fetchRevenueData(testCustomRangeSelection, ForceNew)
-        verify(repository).fetchOrdersData(testCustomRangeSelection, ForceNew)
-        verify(repository).fetchVisitorsData(testCustomRangeSelection, ForceNew)
-        verify(repository).fetchProductsData(testCustomRangeSelection, ForceNew)
+        verify(repository).fetchRevenueData(testCustomRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testCustomRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testCustomRangeSelection, Saved)
+        verify(repository).fetchProductsData(testCustomRangeSelection, Saved)
     }
 
     @Test

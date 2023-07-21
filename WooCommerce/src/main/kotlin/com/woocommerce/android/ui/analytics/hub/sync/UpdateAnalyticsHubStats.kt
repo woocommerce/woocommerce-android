@@ -75,10 +75,6 @@ class UpdateAnalyticsHubStats @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         action: suspend (FetchStrategy) -> Unit
     ) {
-        if (rangeSelection.selectionType == StatsTimeRangeSelection.SelectionType.CUSTOM) {
-            action(FetchStrategy.ForceNew)
-        }
-
         analyticsUpdateDataStore
             .shouldUpdateAnalytics(rangeSelection)
             .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
