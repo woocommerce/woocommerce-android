@@ -19,13 +19,30 @@ class AnalyticsUpdateDataStore @Inject constructor(
     fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
         maxOutdatedTime: Long = defaultMaxOutdatedTime
+    ) = shouldUpdateAnalytics(rangeSelection.identifier, maxOutdatedTime)
+
+    suspend fun storeLastAnalyticsUpdate(
+        rangeSelection: StatsTimeRangeSelection
+    ) = storeLastAnalyticsUpdate(rangeSelection.identifier)
+
+    fun shouldUpdateAnalytics(
+        selectionType: StatsTimeRangeSelection.SelectionType,
+        maxOutdatedTime: Long = defaultMaxOutdatedTime
+    ) = shouldUpdateAnalytics(selectionType.identifier, maxOutdatedTime)
+
+    suspend fun storeLastAnalyticsUpdate(
+        selectionType: StatsTimeRangeSelection.SelectionType
+    ) = storeLastAnalyticsUpdate(selectionType.identifier)
+
+    private fun shouldUpdateAnalytics(
+        timestampKey: String,
+        maxOutdatedTime: Long = defaultMaxOutdatedTime
     ) = dataStore.data
-        .map { prefs -> prefs[longPreferencesKey(rangeSelection.identifier)] }
+        .map { prefs -> prefs[longPreferencesKey(timestampKey)] }
         .map { lastUpdateTime -> isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) }
 
-    suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
+    private suspend fun storeLastAnalyticsUpdate(timestampKey: String) {
         dataStore.edit { preferences ->
-            val timestampKey = rangeSelection.identifier
             preferences[longPreferencesKey(timestampKey)] = currentTime
         }
     }
