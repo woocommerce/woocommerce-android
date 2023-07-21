@@ -39,7 +39,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
             STORE_CREATION_INCOMPLETE -> Result.success()
             FREE_TRIAL_EXPIRING -> proceedIfFreeMatchingSite(data?.toLongOrNull())
             FREE_TRIAL_EXPIRED -> proceedIfFreeMatchingSite(data?.toLongOrNull())
-            UPGRADE_TO_PAID_PLAN -> Result.success()
+            UPGRADE_TO_PAID_PLAN -> proceedIfFreeMatchingSite(data?.toLongOrNull())
             null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
