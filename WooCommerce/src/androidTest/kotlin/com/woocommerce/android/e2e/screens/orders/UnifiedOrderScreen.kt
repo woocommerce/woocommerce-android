@@ -89,10 +89,9 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         return this
     }
 
-    fun addCustomerNotes(note: String): UnifiedOrderScreen {
-        Espresso.onView(withId(NOTES_SECTION))
-            .perform(NestedScrollViewExtension())
-
+    fun addCustomerNote(note: String): UnifiedOrderScreen {
+        waitForElementToBeDisplayedWithoutFailure(NOTES_SECTION)
+        scrollTo(NOTES_SECTION)
         clickOn(Espresso.onView(withText("Add note")))
         typeTextInto(CUSTOMER_NOTE_EDITOR, note)
         clickOn(DONE_BUTTON)
