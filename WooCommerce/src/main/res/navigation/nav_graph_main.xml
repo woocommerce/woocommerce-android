@@ -14,6 +14,7 @@
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
     <include app:graph="@navigation/nav_graph_site_picker" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -557,7 +558,6 @@
         android:id="@+id/aboutYourStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
-    <include app:graph="@navigation/nav_graph_domain_change" />
     <fragment
         android:id="@+id/planUpgradeStartFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment"
