@@ -796,7 +796,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+            whenever(statsRepository.getRevenueStats(any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
