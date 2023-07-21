@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -535,7 +534,9 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             product.hasNoPrice() -> {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                    message = resourceProvider.getString(
+                        string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                    )
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
@@ -547,7 +548,9 @@ class OrderCreateEditViewModel @Inject constructor(
             product.isVariable() -> {
                 if (product.parentId == 0L) {
                     sendAddingProductsViaScanningFailedEvent(
-                        message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                        message = resourceProvider.getString(
+                            string.order_creation_barcode_scanning_unable_to_add_variable_product
+                        )
                     )
                     trackProductSearchViaSKUFailureEvent(
                         source,
