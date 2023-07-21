@@ -6,18 +6,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
 class BarcodeScanningViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
+    private val productDetailRepository: ProductDetailRepository,
 ) : ScopedViewModel(savedState) {
 
     private val scannedProductItems: MutableList<ProductSelectorViewModel.SelectedItem> = mutableListOf()
@@ -32,6 +35,16 @@ class BarcodeScanningViewModel @Inject constructor(
         )
     }
 
+    fun updateProduct(stockQuantity: Int) {
+        viewModelScope.launch {
+            val product = _viewState.value?.currentScannedProduct!!.copy(
+                stockQuantity = stockQuantity.toDouble()
+            )
+
+            productDetailRepository.updateProduct(product)
+        }
+    }
+
     fun fetchProductBySKU(sku: String) {
         if (sku !in scannedProductSKU && _viewState.value?.isScanningInProgress == false) {
             _viewState.value = _viewState.value!!.copy(
@@ -41,12 +54,12 @@ class BarcodeScanningViewModel @Inject constructor(
             viewModelScope.launch {
                 productRepository.searchProductList(
                     searchQuery = sku,
-                    isSkuSearch = true,
+                    skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
                 )?.let { products ->
                     _viewState.value = _viewState.value!!.copy(
                         isScanningInProgress = false
                     )
-                    scannedProductSKU.clear()
+//                    scannedProductSKU.clear()
                     scannedProductSKU.add(sku)
                     products.firstOrNull()?.let { product ->
                         Log.d("ABCD", "Scanned Product: ${product.name}")

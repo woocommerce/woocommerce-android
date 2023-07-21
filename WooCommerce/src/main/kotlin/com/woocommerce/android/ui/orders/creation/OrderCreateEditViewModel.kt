@@ -123,6 +123,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
+    private val codeScanner: CodeScanner,
+    private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -333,10 +335,8 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun startScan() {
-        scanningJob = viewModelScope.launch {
-            isScanningInProgress = true
+        viewModelScope.launch {
             codeScanner.startScan().collect { status ->
-                isScanningInProgress = false
                 when (status) {
                     is CodeScannerStatus.Failure -> {
                         tracker.track(
@@ -483,8 +483,6 @@ class OrderCreateEditViewModel @Inject constructor(
                                 productId = product.parentId,
                                 variationId = product.remoteId
                             ),
-                        source = source,
-                        addedVia = ProductAddedVia.SCANNING,
                     )
                     else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                 }
@@ -493,8 +491,6 @@ class OrderCreateEditViewModel @Inject constructor(
             when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                 null -> onProductsSelected(
                     selectedItems = selectedItems + Product(productId = product.remoteId),
-                    source = source,
-                    addedVia = ProductAddedVia.SCANNING,
                 )
                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
@@ -622,7 +618,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             productRepository.searchProductList(
                 searchQuery = sku,
-                isSkuSearch = true,
+                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
             )?.let { products ->
                 products.firstOrNull()?.let { product ->
                     if (product.type.equals("variation", ignoreCase = true)) {

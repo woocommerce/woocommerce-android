@@ -18,22 +18,37 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -52,6 +67,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning) {
@@ -59,8 +75,13 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext())
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     private fun barcodeScannerView() {
+        val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Expanded)
+//        val scope = rememberCoroutineScope()
+//        var showBottomSheet by remember { mutableStateOf(false) }
+
         var code: MutableState<String> = remember {
             mutableStateOf("")
         }
@@ -87,9 +108,9 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
             launcher.launch(Manifest.permission.CAMERA)
         }
 
-        val isAddToCartBtnEnabled: MutableState<Boolean> = remember {
-            mutableStateOf(false)
-        }
+//        val isAddToCartBtnEnabled: MutableState<Boolean> = remember {
+//            mutableStateOf(false)
+//        }
 
         Column(
             modifier = Modifier.fillMaxSize()
@@ -136,52 +157,129 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                     },
                     modifier = Modifier.weight(1f)
                 )
-                (viewModel.viewState.value as ViewState).currentScannedProduct?.name?.let {
-                    isAddToCartBtnEnabled.value = true
-                } ?: run {
-                    isAddToCartBtnEnabled.value = false
-                }
-                Text(
-                    text = (viewModel.viewState.value as ViewState).currentScannedProduct?.name ?: "invalid SKU",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp)
-                )
-                Row(
-                    modifier =Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            viewModel.addToCartClick()
-                        },
-                        enabled = isAddToCartBtnEnabled.value
-                    ) {
-                        Text(
-                            text = "Add to cart",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(8.dp),
-                        )
-                    }
 
-                    Button(
-                        onClick = {
-                            viewModel.onDoneClick()
-                        }
-                    ) {
-                        Text(
-                            text = "Done",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(8.dp)
-                        )
+
+                if ((viewModel.viewState.value as ViewState).currentScannedProduct?.name != null) {
+                    var stockQuantity = remember {
+                        mutableStateOf(0)
                     }
+                    ModalBottomSheetLayout(
+                        sheetState = sheetState,
+                        sheetContent = {
+                            Box(Modifier.defaultMinSize(minHeight = 1.dp))
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .defaultMinSize(minHeight = 100.dp)
+                            ) {
+
+                                Text(
+                                    text = "${(viewModel.viewState.value as ViewState).currentScannedProduct?.name}",
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .padding(16.dp)
+                                )
+
+                                Row(
+                                    modifier = Modifier.padding(48.dp)
+                                ) {
+                                    Button(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
+                                            .padding(16.dp),
+                                        onClick = { stockQuantity.value++ }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Add",
+                                        )
+                                    }
+
+                                    Text(
+                                        text = "" + stockQuantity.value,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+
+                                    Button(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
+                                            .padding(16.dp),
+                                        onClick = { stockQuantity.value-- }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Minus",
+                                        )
+                                    }
+                                }
+
+                                Button(
+                                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally),
+                                    onClick = {
+                                    viewModel.updateProduct(stockQuantity.value)
+                                }
+                                ) {
+                                    Text("Submit")
+                                }
+                            }
+                        },
+                        content = {
+                            Column {
+                                Text("Hello")
+                            }
+                        },
+                    )
                 }
+
+
+
+
+//                (viewModel.viewState.value as ViewState).currentScannedProduct?.name?.let {
+//                    isAddToCartBtnEnabled.value = true
+//                } ?: run {
+//                    isAddToCartBtnEnabled.value = false
+//                }
+//                Text(
+//                    text = (viewModel.viewState.value as ViewState).currentScannedProduct?.name ?: "invalid SKU",
+//                    fontSize = 20.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(32.dp)
+//                )
+//                Row(
+//                    modifier =Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+//                ) {
+//                    Button(
+//                        onClick = {
+//                            viewModel.addToCartClick()
+//                        },
+//                        enabled = true//isAddToCartBtnEnabled.value
+//                    ) {
+//                        Text(
+//                            text = "Add to cart",
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            modifier = Modifier
+//                                .padding(8.dp),
+//                        )
+//                    }
+//
+//                    Button(
+//                        onClick = {
+//                            viewModel.onDoneClick()
+//                        }
+//                    ) {
+//                        Text(
+//                            text = "Done",
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            modifier = Modifier
+//                                .padding(8.dp)
+//                        )
+//                    }
+//                }
             }
         }
     }
