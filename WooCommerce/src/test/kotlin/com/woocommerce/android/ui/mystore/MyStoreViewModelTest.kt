@@ -104,7 +104,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = false)
             whenViewModelIsCreated()
 
-
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
             assertTrue(sut.refreshTopPerformerStats[ANY_SELECTED_STATS_GRANULARITY.ordinal])
@@ -116,7 +115,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = false)
             whenViewModelIsCreated()
-
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 

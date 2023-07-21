@@ -198,7 +198,7 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
-        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(),any()))
+        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any()))
             .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 

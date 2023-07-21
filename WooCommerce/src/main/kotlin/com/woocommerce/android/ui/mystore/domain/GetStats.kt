@@ -46,7 +46,6 @@ class GetStats @Inject constructor(
             .flowOn(coroutineDispatchers.computation)
     }
 
-
     private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
             .transform {

@@ -467,7 +467,7 @@ class MyStoreViewModel @Inject constructor(
          */
         var isForcedRefresh: Boolean = isForced
             private set
-            get() : Boolean {
+            get(): Boolean {
                 val result = field
                 if (field) {
                     field = false
