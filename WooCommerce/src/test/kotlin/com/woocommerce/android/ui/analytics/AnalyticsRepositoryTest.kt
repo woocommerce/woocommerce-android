@@ -778,15 +778,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
-            sut.fetchRevenueData(
-                testSelectionData,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
+            sut.fetchRevenueData(testSelectionData, ForceNew)
 
-            sut.fetchProductsData(
-                testSelectionData,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
+            sut.fetchProductsData(testSelectionData, ForceNew)
 
             // Then
             verify(statsRepository, times(1)).fetchRevenueStats(
