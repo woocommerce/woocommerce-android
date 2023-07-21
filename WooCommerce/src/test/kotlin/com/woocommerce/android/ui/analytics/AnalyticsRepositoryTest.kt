@@ -759,7 +759,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when get revenue and products data at same time, then stats repository is used once per period`() =
+    fun `when get revenue and products data at same time with ForceNew fetch strategy, then stats repository is used once per period`() =
         runTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
@@ -779,12 +779,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             // When
             sut.fetchRevenueData(
                 testSelectionData,
-                AnalyticsRepository.FetchStrategy.Saved
+                AnalyticsRepository.FetchStrategy.ForceNew
             )
 
             sut.fetchProductsData(
                 testSelectionData,
-                AnalyticsRepository.FetchStrategy.Saved
+                AnalyticsRepository.FetchStrategy.ForceNew
             )
 
             // Then
