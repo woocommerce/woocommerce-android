@@ -78,7 +78,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
-            //verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+            verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 granularity = DEFAULT_STATS_GRANULARITY,
                 forceRefresh = true,
