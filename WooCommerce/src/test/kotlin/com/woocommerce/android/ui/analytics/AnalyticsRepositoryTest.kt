@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Compani
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Companion.ANALYTICS_PRODUCTS_PATH
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Companion.ANALYTICS_REVENUE_PATH
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsData
@@ -793,6 +794,38 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
             verify(statsRepository, times(1)).fetchRevenueStats(
                 any(), any(), eq(currentStart), eq(currentEnd)
+            )
+        }
+
+    @Test
+    fun `when get revenue and products data at same time with Saved fetch strategy, then stats repository is used once per period`() =
+        runTest {
+            // Given
+            val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+                .thenReturn(listOf(Result.success(revenue)).asFlow())
+
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
+            // When
+            sut.fetchRevenueData(testSelectionData, Saved)
+
+            sut.fetchProductsData(testSelectionData, Saved)
+
+            // Then
+            verify(statsRepository, times(1)).getRevenueStats(
+                any(), eq(previousStart), eq(previousEnd)
+            )
+            verify(statsRepository, times(1)).getRevenueStats(
+                any(), eq(currentStart), eq(currentEnd)
             )
         }
 
