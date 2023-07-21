@@ -47,12 +47,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -107,13 +106,10 @@ class MyStoreViewModel @Inject constructor(
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
-    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val refreshTrigger = MutableStateFlow(RefreshEvent())
 
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
-
-    @VisibleForTesting
-    val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
 
     @VisibleForTesting
     val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
@@ -128,13 +124,13 @@ class MyStoreViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
-                refreshTrigger.onStart { emit(Unit) }
-            ) { granularity, _ ->
-                granularity
-            }.collectLatest { granularity ->
+                refreshTrigger
+            ) { granularity, refreshEvent ->
+                Pair(granularity, refreshEvent)
+            }.collectLatest { pair ->
                 coroutineScope {
-                    launch { loadStoreStats(granularity) }
-                    launch { loadTopPerformersStats(granularity) }
+                    launch { loadStoreStats(pair.first, pair.second.isForcedRefresh) }
+                    launch { loadTopPerformersStats(pair.first) }
                 }
             }
         }
@@ -169,9 +165,7 @@ class MyStoreViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            if (refreshStoreStats.any { it } || refreshTopPerformerStats.any { it }) {
-                refreshTrigger.tryEmit(Unit)
-            }
+            refreshTrigger.tryEmit(RefreshEvent())
         }
     }
 
@@ -186,8 +180,7 @@ class MyStoreViewModel @Inject constructor(
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
-        resetForceRefresh()
-        refreshTrigger.tryEmit(Unit)
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     fun getSelectedSiteName(): String =
@@ -215,17 +208,11 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadStoreStats(granularity: StatsGranularity) {
+    private suspend fun loadStoreStats(granularity: StatsGranularity, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
-            refreshStoreStats[granularity.ordinal] = true
             _revenueStatsState.value = RevenueStatsViewState.Content(null, granularity)
             _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
             return
-        }
-
-        val forceRefresh = refreshStoreStats[granularity.ordinal]
-        if (forceRefresh) {
-            refreshStoreStats[granularity.ordinal] = false
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
         getStats(forceRefresh, granularity)
@@ -287,7 +274,7 @@ class MyStoreViewModel @Inject constructor(
                 .filter { it?.connectionType == SiteConnectionType.Jetpack }
                 .take(1)
                 .collect {
-                    loadStoreStats(_activeStatsGranularity.value)
+                    loadStoreStats(_activeStatsGranularity.value, false)
                 }
         }
     }
@@ -321,7 +308,9 @@ class MyStoreViewModel @Inject constructor(
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
             _activeStatsGranularity
-                .flatMapLatest { granularity -> getTopPerformers.observeTopPerformers(granularity) }
+                .flatMapLatest { granularity ->
+                    getTopPerformers.observeTopPerformers(granularity)
+                }
                 .collectLatest {
                     _topPerformersState.value = _topPerformersState.value?.copy(
                         topPerformers = it.toTopPerformersUiList(),
@@ -397,15 +386,6 @@ class MyStoreViewModel @Inject constructor(
             onClick = ::onTopPerformerSelected
         )
 
-    private fun resetForceRefresh() {
-        refreshTopPerformerStats.forEachIndexed { index, _ ->
-            refreshTopPerformerStats[index] = true
-        }
-        refreshStoreStats.forEachIndexed { index, _ ->
-            refreshStoreStats[index] = true
-        }
-    }
-
     private fun getTotalSpendFormatted(totalSpend: BigDecimal, currency: String) =
         currencyFormatter.formatCurrency(
             totalSpend,
@@ -478,5 +458,21 @@ class MyStoreViewModel @Inject constructor(
         object ShowPrivacyBanner : MyStoreEvent()
 
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
+    }
+
+    data class RefreshEvent(private val isForced: Boolean = false) {
+        /**
+         * [isForcedRefresh] will be true only the first time the refresh event is consulted and when
+         * isForced is initialized on true. Once the event is handled the property will change its value to false
+         */
+        var isForcedRefresh: Boolean = isForced
+            private set
+            get() : Boolean {
+                val result = field
+                if (field) {
+                    field = false
+                }
+                return result
+            }
     }
 }

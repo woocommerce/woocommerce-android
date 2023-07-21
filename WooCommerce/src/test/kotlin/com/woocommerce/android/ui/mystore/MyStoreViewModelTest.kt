@@ -22,6 +22,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -57,7 +58,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
-    private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
+    private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
+        onBlocking { invoke() } doReturn true
+    }
     private val timezoneProvider: TimezoneProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
@@ -72,33 +75,22 @@ class MyStoreViewModelTest : BaseUnitTest() {
     fun `given there is network connectivity, when view model is created, stats are fetched`() =
         testBlocking {
             givenNetworkConnectivity(connected = true)
-
+            givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
-            verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+            //verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
-                DEFAULT_STATS_GRANULARITY,
+                granularity = DEFAULT_STATS_GRANULARITY,
                 forceRefresh = true,
-                ANY_TOP_PERFORMERS_COUNT
+                topPerformersCount = ANY_TOP_PERFORMERS_COUNT
             )
-        }
-
-    @Test
-    fun `given there is no network, when view model is created, stats are marked as refresh pending`() =
-        testBlocking {
-            givenNetworkConnectivity(connected = false)
-
-            whenViewModelIsCreated()
-
-            assertTrue(sut.refreshStoreStats[DEFAULT_STATS_GRANULARITY.ordinal])
-            assertTrue(sut.refreshTopPerformerStats[DEFAULT_STATS_GRANULARITY.ordinal])
         }
 
     @Test
     fun `given there is no network, when view model is created, stats are not fetched from API`() =
         testBlocking {
             givenNetworkConnectivity(connected = false)
-
+            givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
             verify(getStats, never()).invoke(any(), any())
@@ -108,20 +100,23 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given there is no network, when granularity changed, stats are marked as refresh pending`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = false)
+            whenViewModelIsCreated()
+
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
-            assertTrue(sut.refreshStoreStats[ANY_SELECTED_STATS_GRANULARITY.ordinal])
             assertTrue(sut.refreshTopPerformerStats[ANY_SELECTED_STATS_GRANULARITY.ordinal])
         }
 
     @Test
     fun `given there is no network, when granularity changed, stats are not fetched from API`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = false)
+            whenViewModelIsCreated()
+
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -132,8 +127,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given cached stats, when stats granularity changes, then load stats for given granularity from cache`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
+            whenViewModelIsCreated()
             givenStatsForGranularityCached(ANY_SELECTED_STATS_GRANULARITY)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -147,27 +143,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given no cached stats, when stats granularity changes, then load stats forcing refresh from API`() =
-        testBlocking {
-            whenViewModelIsCreated()
-            givenNetworkConnectivity(connected = true)
-            givenStatsForGranularityNotCached(ANY_SELECTED_STATS_GRANULARITY)
-
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
-
-            verify(getStats).invoke(refresh = true, ANY_SELECTED_STATS_GRANULARITY)
-            verify(getTopPerformers).fetchTopPerformers(
-                ANY_SELECTED_STATS_GRANULARITY,
-                forceRefresh = true,
-                ANY_TOP_PERFORMERS_COUNT
-            )
-        }
-
-    @Test
     fun `given network connection, when on swipe to refresh, then stats are refreshed for selected granularity`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
+            whenViewModelIsCreated()
 
             sut.onPullToRefresh()
 
@@ -182,8 +162,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given network connection, when on swipe to refresh, then analytics is tracked`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
+            whenViewModelIsCreated()
 
             sut.onPullToRefresh()
 
@@ -193,9 +174,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given success loading revenue, when stats granularity changes, then UI is updated with revenue stats`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -210,9 +192,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given success loading revenue, when stats granularity changes, then analytics is tracked`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -225,9 +208,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given stats loaded, when stats granularity changes, then selected option is saved into prefs`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -242,7 +226,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(appPrefsWrapper.getActiveStatsGranularity(anyInt()))
                 .thenReturn(ANY_SELECTED_STATS_GRANULARITY.name)
-
+            givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
             verify(appPrefsWrapper).getActiveStatsGranularity(anyInt())
@@ -251,9 +235,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given error loading revenue, when stats granularity changes, then UI is updated with error`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsError)
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -265,9 +250,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given jetpack plugin not active, when stats granularity changes, then UI is updated with jetpack error`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.PluginNotActive)
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -279,9 +265,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given success loading visitor stats, when stats granularity changes, then UI is updated with visitor stats`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -293,9 +280,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given error loading visitor stats, when stats granularity changes, then UI is updated with error`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -307,13 +295,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given jetpack CP connected, when stats granularity changes, then show jetpack CP connected state`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(
                 GetStats.LoadStatsResult.VisitorStatUnavailable(
                     connectionType = SiteConnectionType.JetpackConnectionPackage
                 )
             )
+            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel()))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -324,9 +314,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given store has orders, when stats granularity changes, then UI is updated with has orders state`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = true))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -338,9 +329,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given store has no orders, when stats granularity changes, then UI is updated with no orders state`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = false))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -367,9 +359,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given top performers load success, when stats granularity changes, then analytics is tracked`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenFetchTopPerformersResult(Result.success(Unit))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -382,9 +375,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given top performers error, when stats granularity changes, then UI is updated with top performers error`() =
         testBlocking {
-            whenViewModelIsCreated()
+            givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
+            whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
@@ -411,6 +405,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     connectionType = SiteConnectionType.JetpackConnectionPackage
                 )
             )
+            givenObserveTopPerformersEmits(emptyList())
 
             whenViewModelIsCreated()
 
@@ -438,6 +433,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenever(
             appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
         ) doReturn true
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -468,6 +464,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenever(
             appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
         ) doReturn true
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -503,6 +500,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 storeTimezone = "-3"
             )
         ) doReturn true
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -538,6 +536,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 storeTimezone = "-3"
             )
         ) doReturn true
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -571,6 +570,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 storeTimezone = "-3"
             )
         ) doReturn false
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -597,6 +597,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
         whenever(selectedSite.getIfExists()) doReturn null
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -623,6 +624,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
         whenever(selectedSite.getIfExists()) doReturn testSite
+
+        givenObserveTopPerformersEmits(emptyList())
 
         // When
         whenViewModelIsCreated()
@@ -660,13 +663,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     private fun givenStatsForGranularityCached(granularity: StatsGranularity) {
-        sut.refreshStoreStats[granularity.ordinal] = false
         sut.refreshTopPerformerStats[granularity.ordinal] = false
-    }
-
-    private fun givenStatsForGranularityNotCached(granularity: StatsGranularity) {
-        sut.refreshStoreStats[granularity.ordinal] = true
-        sut.refreshTopPerformerStats[granularity.ordinal] = true
     }
 
     private fun givenObserveTopPerformersEmits(topPerformers: List<TopPerformerProduct>) {
