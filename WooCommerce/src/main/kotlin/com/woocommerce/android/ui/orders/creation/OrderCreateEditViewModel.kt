@@ -522,7 +522,7 @@ class OrderCreateEditViewModel @Inject constructor(
             product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
                     message = resourceProvider.getString(
-                        string.order_creation_barcode_scanning_unable_to_add_variable_product
+                        string.order_creation_barcode_scanning_unable_to_add_draft_product
                     )
                 )
                 trackProductSearchViaSKUFailureEvent(
