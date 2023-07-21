@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-04 14:54:03+0000
+Translation-Revision-Date: 2023-07-19 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Accéder aux réglages</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Annuler</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Accorder</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">L’accès à l’appareil photo est toujours interdit. Il est nécessaire pour scanner le code-barres. Veuillez l’activer dans les réglages de l’application</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">L’accès à l’appareil photo doit être autorisé pour scanner le code-barres</string>
+    <string name="barcode_scanning_alert_dialog_title">Autoriser l’accès à l’appareil photo</string>
+    <string name="order_creation_coupon_network_error">Un problème est survenu lors de la validation de votre code promo. Veuillez réessayer</string>
+    <string name="order_creation_coupon_invalid_code">Nous n’avons pas trouvé de promo associée à ce code. Veuillez réessayer</string>
+    <string name="order_creation_discount_amount_type">Montant (%1$s)</string>
+    <string name="order_creation_discount_value">Remise : %1$s</string>
+    <string name="order_creation_discounts_total_value"> - %1$s</string>
+    <string name="order_creation_discounts_total">Remise totale</string>
+    <string name="order_creation_discount">Remise</string>
+    <string name="order_creation_discount_amount_with_currency">Montant (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">La remise manuelle n’a pas pu être appliquée. Retirer d’abord les codes promo</string>
+    <string name="order_creation_discount_invalid_number_error">La remise n’est pas un numéro valide.</string>
+    <string name="order_creation_discount_too_big_error">La remise ne peut pas être supérieure au prix</string>
+    <string name="order_creation_remove_discount">Supprimer la remise</string>
+    <string name="highlights_tooltip_button_hint">Texte du bouton</string>
+    <string name="highlights_tooltip_message_hint">Message de l’info-bulle. \n Il peut comporter plusieurs lignes.</string>
+    <string name="highlights_tooltip_title_hint">Titre de l’info-bulle</string>
+    <string name="blaze_banner_dismiss_dialog_button">J’ai compris</string>
+    <string name="blaze_banner_dismiss_dialog_description">Aucune inquiétude ! Blaze est accessible depuis le Menu et la page détaillée du produit, pour plus de praticité.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Annonces Blaze</string>
+    <string name="blaze_banner_close_button_content_description">Bouton Fermer la bannière Blaze</string>
+    <string name="blaze_banner_button">Essayer Blaze maintenant</string>
+    <string name="blaze_banner_description">Transformez vos produits en publicités diffusées sur des millions de sites sur WordPress.com et Tumblr.</string>
+    <string name="blaze_banner_title">Promouvoir des produits avec Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">J’ai compris</string>
+    <string name="ai_product_description_tooltip_message">Utilisez notre outil d’intelligence artificielle pour générer rapidement des descriptions de produits. Il vous suffit de saisir des mots-clés, et nous nous chargeons du reste !</string>
+    <string name="ai_product_description_tooltip_title">✨ Rédiger avec l’IA</string>
+    <string name="ai_product_toolbar_button_tooltip">Générer une description avec l’IA</string>
+    <string name="ai_product_description_error">Un problème s’est produit lors de la génération de la description du produit. Veuillez réessayer plus tard.</string>
+    <string name="ai_product_description_label">Description générée par l’IA</string>
+    <string name="ai_product_description_learn_more_link">Alimenté par l’IA. &lt;a href=\'\'&gt;&lt;u&gt;Lire la suite&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Malheureusement, Tap To Pay sur Android n\'est pas encore disponible dans votre pays. Restez à l’affût !</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Pour utiliser Tap To Pay sur Android, votre appareil doit disposer des Services Google Play. Veuillez installer les Services Google Play ou acheter un lecteur de carte Bluetooth pour accepter les paiements en personne.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Pour utiliser Tap To Pay sur Android, vous devez disposer d’Android 10 ou d’une version ultérieure. Veuillez mettre à jour votre version d’Android ou acheter un lecteur de carte Bluetooth pour accepter les paiements en personne.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Pour utiliser Tap To Pay sur Android, votre appareil doit disposer d’une puce NFC. Veuillez acheter un lecteur de carte Bluetooth pour accepter les paiements en personne.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay n’est pas disponible</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Vérifier les prérequis</string>
+    <string name="error_troubleshooting">Résolution de problèmes</string>
+    <string name="orderlist_parsing_error_message">Ceci peut être dû à un conflit avec une extension. Réessayez plus tard ou contactez-nous et nous vous aiderons avec plaisir !</string>
+    <string name="orderlist_parsing_error_title">Nous n’avons pas pu charger vos données.</string>
     <string name="ai_product_description_dialog_message">Ajoutez des descriptions en un clin d’œil grâce à l’IA. Essayez notre fonctionnalité dès aujourd’hui !</string>
     <string name="ai_product_description_dialog_title">Ajouter la description du produit avec l’IA</string>
     <string name="ai_product_description_note_dialog_confirmation">J’ai compris</string>
@@ -250,8 +294,6 @@ Language: fr
     <string name="product_subscription_title">Abonnement</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Le lecteur de cartes accepte les paiements par carte de débit et de crédit : en appuyant la carte contre le lecteur, en la faisant glisser ou en utilisant la puce.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Acceptez des paiements sans contact en toute sécurité directement sur votre téléphone.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Tester Appuyer pour payer dans l’application</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Appuyer pour payer</string>
     <string name="card_reader_tap_to_pay_share_feedback">Partager un avis sur Appuyer pour payer</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossible de se connecter, car le mot de passe créé pour l’application n’est pas approuvé.</string>
     <string name="login_site_credentials_fetching_site">Récupération du site…</string>
@@ -297,7 +339,6 @@ Language: fr
     <string name="store_onboarding_launch_store_share_url_button">URL de partage</string>
     <string name="store_onboarding_launch_store_button">Publier ma boutique</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Pour lancer votre boutique, vous devez souscrire un plan payant. &lt;u&gt;Option payante&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">La fonctionnalité Appuyer pour payer n’est pas disponible pour votre boutique ou votre appareil</string>
     <string name="domains_search_domains">Rechercher des domaines</string>
     <string name="login_site_credentials_http_error">La connexion a échoué avec le code d’état %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Impossible de se connecter, car nous ne pouvons pas identifier l’URL d’administration de votre boutique.</string>

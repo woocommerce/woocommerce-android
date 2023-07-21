@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-03 12:54:03+0000
+Translation-Revision-Date: 2023-07-19 10:54:27+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Zu den Einstellungen</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Abbrechen</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Gewähren</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Du hast die Berechtigung zum Zugriff auf deine Kamera dauerhaft abgelehnt. Sie ist erforderlich, um den Barcode zu scannen. Bitte aktiviere die Option in den App-Einstellungen</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Zum Scannen des Barcodes ist die Berechtigung für den Zugriff auf deine Kamera erforderlich</string>
+    <string name="barcode_scanning_alert_dialog_title">Berechtigung zum Zugriff auf deine Kamera gewähren</string>
+    <string name="order_creation_coupon_network_error">Beim Prüfen deines Gutschein-Codes ist ein Fehler aufgetreten. Bitte versuche es erneut</string>
+    <string name="order_creation_coupon_invalid_code">Wir haben keinen Gutschein mit diesem Code gefunden. Bitte versuche es erneut</string>
+    <string name="order_creation_discount_amount_type">Betrag (%1$s)</string>
+    <string name="order_creation_discount_value">Rabatt %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">Rabatt gesamt</string>
+    <string name="order_creation_discount">Rabatt</string>
+    <string name="order_creation_discount_amount_with_currency">Betrag (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Der manuelle Rabatt konnte nicht angewendet werden. Entferne zuerst die Gutscheine</string>
+    <string name="order_creation_discount_invalid_number_error">Der Rabatt ist keine gültige Zahl</string>
+    <string name="order_creation_discount_too_big_error">Der Rabatt kann nicht höher sein als der Preis</string>
+    <string name="order_creation_remove_discount">Rabatt entfernen</string>
+    <string name="highlights_tooltip_button_hint">Button-Text</string>
+    <string name="highlights_tooltip_message_hint">Tooltip-Nachricht. \n Diese kann mehrere Zeilen umfassen.</string>
+    <string name="highlights_tooltip_title_hint">Tooltip-Titel</string>
+    <string name="blaze_banner_dismiss_dialog_button">Verstanden</string>
+    <string name="blaze_banner_dismiss_dialog_description">Kein Sorge! Auf Blaze kannst du ganz praktisch über das Menü und das Menü für Produktdetails zugreifen.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze-Werbung</string>
+    <string name="blaze_banner_close_button_content_description">Blaze-Banner-Button schließen</string>
+    <string name="blaze_banner_button">Blaze jetzt ausprobieren</string>
+    <string name="blaze_banner_description">Schalte Werbung für deine Produkte, die auf Millionen Websites auf WordPress.com und Tumblr präsentiert wird.</string>
+    <string name="blaze_banner_title">Produkte mit Blaze bewerben</string>
+    <string name="ai_product_description_tooltip_dismiss">Verstanden</string>
+    <string name="ai_product_description_tooltip_message">Nutze unser KI-gestütztes Tool, um Produktbeschreibungen schnell zu generieren. Gib einfach Stichwörter ein und wir erledigen den Rest!</string>
+    <string name="ai_product_description_tooltip_title">✨ Mit KI schreiben</string>
+    <string name="ai_product_toolbar_button_tooltip">Generiere eine Beschreibung mithilfe von KI</string>
+    <string name="ai_product_description_error">Bei der Generierung der Produktbeschreibung ist ein Problem aufgetreten. Bitte versuche es später erneut.</string>
+    <string name="ai_product_description_label">Von KI generierte Beschreibung</string>
+    <string name="ai_product_description_learn_more_link">Mit Unterstützung von KI. &lt;a href=\'\'&gt;&lt;u&gt;Weitere Informationen&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Tap to Pay auf Android ist in deinem Land leider noch nicht verfügbar. Bleib dran!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Um Tap to Pay auf Android nutzen zu können, müssen die Google Play-Dienste auf deinem Gerät installiert sein. Bitte installiere die Google Play-Dienste oder kaufe ein Bluetooth-Kartenlesegerät, um persönliche Zahlungen zu akzeptieren.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Um Tap to Pay auf Android nutzen zu können, brauchst du Android 10 oder eine neuere Version. Bitte aktualisiere Android oder kaufe ein Bluetooth-Kartenlesegerät, um persönliche Zahlungen zu akzeptieren.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Um Tap to Pay auf Android nutzen zu können, benötigt dein Gerät einen NFC-Chip. Bitte kaufe ein Bluetooth-Kartenlesegerät, um persönliche Zahlungen zu akzeptieren.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay ist nicht verfügbar</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Anforderungen prüfen</string>
+    <string name="error_troubleshooting">Problembehandlung</string>
+    <string name="orderlist_parsing_error_message">Dies könnte mit einem Konflikt mit einem Plugin zusammenhängen. Bitte versuche es später erneut oder kontaktiere uns – wir helfen dir gerne weiter!</string>
+    <string name="orderlist_parsing_error_title">Deine Daten konnten nicht geladen werden.</string>
     <string name="ai_product_description_dialog_message">Füge mit KI im Handumdrehen Beschreibungen hinzu. Probiere die Funktion noch heute aus!</string>
     <string name="ai_product_description_dialog_title">Produktbeschreibung mit KI hinzufügen</string>
     <string name="ai_product_description_note_dialog_confirmation">Verstanden</string>
@@ -250,8 +294,6 @@ Language: de
     <string name="product_subscription_title">Abonnement</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Das Kartenlesegerät akzeptiert Debit- oder Kreditkartenzahlung, die per Auflegen, Chip oder Durchziehen erfolgen.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Akzeptiere kontaktlose Zahlungen sicher und direkt über dein Mobiltelefon.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Teste Tap To Pay in der App</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_share_feedback">Teile Feedback zu Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Die Anmeldung ist nicht möglich, weil die Erstellung von Anwendungspasswörtern nicht genehmigt wurde.</string>
     <string name="login_site_credentials_fetching_site">Website wird abgerufen …</string>
@@ -297,7 +339,6 @@ Language: de
     <string name="store_onboarding_launch_store_share_url_button">URL teilen</string>
     <string name="store_onboarding_launch_store_button">Meinen Shop veröffentlichen</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Bitte aktualisiere deinen Tarif, um deinen Shop zu starten. &lt;u&gt;Upgrade durchführen&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay ist für deinen Shop oder dein Gerät nicht verfügbar</string>
     <string name="domains_search_domains">Domains durchsuchen</string>
     <string name="login_site_credentials_http_error">Die Anmeldung ist fehlgeschlagen: Statuscode %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Die Anmeldung ist fehlgeschlagen, da die Admin-URL deines Shops nicht ermitteln werden konnte</string>
