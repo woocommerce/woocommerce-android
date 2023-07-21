@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
@@ -11,9 +12,11 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -27,14 +30,22 @@ class GetStats @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
-    suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
-        merge(
+    suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
+        val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
+        val isForcedRefresh = shouldUpdateStats(selectionType, refresh)
+        return merge(
             hasOrders(),
-            revenueStats(refresh, granularity),
-            visitorStats(refresh, granularity)
-        ).flowOn(coroutineDispatchers.computation)
+            revenueStats(isForcedRefresh, granularity),
+            visitorStats(isForcedRefresh, granularity)
+        ).onCompletion {
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionType)
+        }
+            .flowOn(coroutineDispatchers.computation)
+    }
+
 
     private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
@@ -84,6 +95,7 @@ class GetStats @Inject constructor(
                         )
                     }
             }
+
             else -> selectedSite.connectionType?.let {
                 flowOf(LoadStatsResult.VisitorStatUnavailable(it))
             } ?: emptyFlow()
@@ -104,6 +116,16 @@ class GetStats @Inject constructor(
                     it.currentRange.end.formatToYYYYmmDDhhmmss()
                 )
             }
+
+    private suspend fun shouldUpdateStats(
+        selectionType: StatsTimeRangeSelection.SelectionType,
+        refresh: Boolean
+    ): Boolean {
+        if (refresh) return true
+        return analyticsUpdateDataStore
+            .shouldUpdateAnalytics(selectionType)
+            .firstOrNull() ?: true
+    }
 
     sealed class LoadStatsResult {
         data class RevenueStatsSuccess(
