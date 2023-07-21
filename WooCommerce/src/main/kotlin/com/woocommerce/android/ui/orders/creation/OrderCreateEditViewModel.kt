@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_DELETE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD
@@ -622,6 +623,11 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCustomerAddressDeleted() {
+        tracker.track(
+            ORDER_CUSTOMER_DELETE,
+            mapOf(KEY_FLOW to flow)
+        )
+
         _orderDraft.update { order ->
             order.copy(
                 customerId = null,

@@ -248,6 +248,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDERS_ADD_NEW,
     ORDER_PRODUCT_ADD,
     ORDER_CUSTOMER_ADD,
+    ORDER_CUSTOMER_DELETE,
     ORDER_FEE_ADD,
     ORDER_SHIPPING_METHOD_ADD,
     ORDER_CREATE_BUTTON_TAPPED,
