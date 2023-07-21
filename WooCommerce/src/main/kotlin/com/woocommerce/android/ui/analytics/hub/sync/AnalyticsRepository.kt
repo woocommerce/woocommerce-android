@@ -10,6 +10,7 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
@@ -217,7 +218,7 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    result = async { loadRevenueStats(startDate, endDate, granularity, fetchStrategy) }
                 ).let { currentRevenueStats[statsIdentifier.hashCode()] = it }
             }
         }
@@ -240,7 +241,7 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
+                    result = async { loadRevenueStats(startDate, endDate, granularity, fetchStrategy) }
                 ).let { previousRevenueStats[statsIdentifier] = it }
             }
         }
@@ -298,18 +299,27 @@ class AnalyticsRepository @Inject constructor(
     private fun AnalyticsStatsResultWrapper?.shouldBeUpdated(fetchStrategy: FetchStrategy) =
         this?.let { fetchStrategy == ForceNew && it.result.isCompleted } ?: true
 
-    private suspend fun fetchNetworkStats(
+    private suspend fun loadRevenueStats(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel?> =
-        statsRepository.fetchRevenueStats(
-            granularity,
-            fetchStrategy is ForceNew,
-            startDate,
-            endDate
-        ).flowOn(dispatchers.io).single().mapCatching { it }
+    ): Result<WCRevenueStatsModel?> {
+        return if (fetchStrategy == Saved) {
+            statsRepository.getRevenueStats(
+                granularity,
+                startDate,
+                endDate
+            )
+        } else {
+            statsRepository.fetchRevenueStats(
+                granularity,
+                fetchStrategy is ForceNew,
+                startDate,
+                endDate
+            )
+        }.flowOn(dispatchers.io).single().mapCatching { it }
+    }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrlOrDefault
