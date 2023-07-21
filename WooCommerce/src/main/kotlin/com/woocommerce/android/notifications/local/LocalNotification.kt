@@ -91,13 +91,15 @@ sealed class LocalNotification(
         }
     }
 
-    object FreeTrialSurveyNotification : LocalNotification(
+    data class FreeTrialSurveyNotification(val siteId: Long) : LocalNotification(
         title = R.string.local_notification_survey_after_24_hours_title,
         description = R.string.local_notification_survey_after_24_hours_description,
         type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
         delay = 24,
         delayUnit = TimeUnit.HOURS
     ) {
+        override val data: String = siteId.toString()
+
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description)
         }

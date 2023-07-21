@@ -173,7 +173,9 @@ class StoreInstallationViewModel @Inject constructor(
             localNotificationScheduler.scheduleNotification(
                 UpgradeToPaidPlanNotification(selectedSite.get().siteId)
             )
-            localNotificationScheduler.scheduleNotification(FreeTrialSurveyNotification)
+            localNotificationScheduler.scheduleNotification(
+                FreeTrialSurveyNotification(selectedSite.get().siteId)
+            )
         }
     }
 
