@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_DESCRIPTION_FEATURE
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_AI_FEEDBACK
@@ -72,7 +73,8 @@ class AIProductDescriptionViewModel @Inject constructor(
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
-            text = "${navArgs.productTitle} ${_viewState.value.features}"
+            text = "${navArgs.productTitle} ${_viewState.value.features}",
+            feature = PRODUCT_DESCRIPTION_FEATURE
         ).fold(
             onSuccess = { languageISOCode ->
                 handleIdentificationSuccess(languageISOCode)
