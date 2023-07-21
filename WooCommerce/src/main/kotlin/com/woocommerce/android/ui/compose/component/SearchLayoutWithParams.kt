@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -59,7 +61,7 @@ fun SearchLayoutWithParams(
                 .focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(autoCorrect = false),
         )
-        if (isFocused.value) {
+        if (isFocused.value || state.areSearchTypesAlwaysVisible) {
             if (paramsFillWidth) {
                 SearchParamsRowFillWidth(
                     supportedSearchTypes = state.supportedSearchTypes,
@@ -73,8 +75,8 @@ fun SearchLayoutWithParams(
             }
         }
     }
-    LaunchedEffect(state.isActive) {
-        if (state.isActive) {
+    LaunchedEffect(state.isSearchFocused) {
+        if (state.isSearchFocused) {
             focusRequester.requestFocus()
         } else {
             focusManager.clearFocus()
@@ -88,11 +90,10 @@ private fun SearchParamsRowScrollable(
     onSearchTypeSelected: (Int) -> Unit,
 ) {
     Row(
-        Modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            .horizontalScroll(rememberScrollState()),
+        Modifier.horizontalScroll(rememberScrollState()),
         horizontalArrangement = spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
         supportedSearchTypes.forEach { searchType ->
             WCSelectableChip(
                 onClick = { onSearchTypeSelected(searchType.labelResId) },
@@ -100,6 +101,7 @@ private fun SearchParamsRowScrollable(
                 isSelected = searchType.isSelected
             )
         }
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
     }
 }
 
@@ -130,7 +132,8 @@ private fun SearchParamsRowFillWidth(
 data class SearchLayoutWithParamsState(
     @StringRes val hint: Int,
     val searchQuery: String,
-    val isActive: Boolean,
+    val isSearchFocused: Boolean,
+    val areSearchTypesAlwaysVisible: Boolean,
     val supportedSearchTypes: List<SearchType>,
 ) {
     data class SearchType(
@@ -141,12 +144,13 @@ data class SearchLayoutWithParamsState(
 
 @Preview
 @Composable
-fun SearchLayoutPreviewFillMaxWidth() {
+fun SearchLayoutPreviewScrollable() {
     SearchLayoutWithParams(
         state = SearchLayoutWithParamsState(
             hint = R.string.product_selector_search_hint,
             searchQuery = "",
-            isActive = true,
+            isSearchFocused = false,
+            areSearchTypesAlwaysVisible = true,
             supportedSearchTypes = listOf(
                 SearchLayoutWithParamsState.SearchType(
                     labelResId = R.string.product_search_all,
@@ -164,6 +168,31 @@ fun SearchLayoutPreviewFillMaxWidth() {
             )
         ),
         paramsFillWidth = false,
+        onSearchQueryChanged = {},
+        onSearchTypeSelected = {},
+    )
+}
+
+@Preview
+@Composable
+fun SearchLayoutPreviewFillMaxWidth() {
+    SearchLayoutWithParams(
+        state = SearchLayoutWithParamsState(
+            hint = R.string.product_selector_search_hint,
+            searchQuery = "",
+            isSearchFocused = false,
+            areSearchTypesAlwaysVisible = true,
+            supportedSearchTypes = listOf(
+                SearchLayoutWithParamsState.SearchType(
+                    labelResId = R.string.product_search_sku,
+                    isSelected = true,
+                ),
+                SearchLayoutWithParamsState.SearchType(
+                    labelResId = R.string.product_visibility_public,
+                ),
+            )
+        ),
+        paramsFillWidth = true,
         onSearchQueryChanged = {},
         onSearchTypeSelected = {},
     )

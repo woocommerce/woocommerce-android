@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.payments.taptopay.summary
 
 import android.content.res.Configuration
+import android.text.method.LinkMovementMethod
+import android.view.LayoutInflater
+import android.widget.TextView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
@@ -26,6 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -38,7 +43,8 @@ fun TapToPaySummaryScreen(viewModel: TapToPaySummaryViewModel) {
         TapToPaySummaryScreen(
             uiState = state,
             onTryPaymentClicked = viewModel::onTryPaymentClicked,
-            onBackClick = viewModel::onBackClicked
+            onBackClick = viewModel::onBackClicked,
+            onLearnMoreClicked = viewModel::onLearnMoreClicked,
         )
     }
 }
@@ -48,6 +54,7 @@ fun TapToPaySummaryScreen(
     uiState: UiState,
     onTryPaymentClicked: () -> Unit,
     onBackClick: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -126,11 +133,29 @@ fun TapToPaySummaryScreen(
                         Text(stringResource(id = R.string.card_reader_tap_to_pay_explanation_try_payment))
                     }
                 }
+
+                LearnMoreAboutTTP(onLearnMoreClicked = onLearnMoreClicked)
             }
 
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         }
     }
+}
+
+@Composable
+fun LearnMoreAboutTTP(onLearnMoreClicked: () -> Unit) {
+    AndroidView(factory = { context ->
+        LayoutInflater.from(context).inflate(R.layout.card_reader_learn_more_section, null).apply {
+            with(this as TextView) {
+                text = HtmlCompat.fromHtml(
+                    context.getString(R.string.card_reader_tap_to_pay_learn_more),
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
+                movementMethod = LinkMovementMethod.getInstance()
+                setOnClickListener { onLearnMoreClicked() }
+            }
+        }
+    })
 }
 
 @Preview(name = "Light mode")
@@ -142,6 +167,7 @@ fun TapToPaySummaryScreenPreview() {
             uiState = UiState(isProgressVisible = false),
             onTryPaymentClicked = {},
             onBackClick = {},
+            onLearnMoreClicked = {},
         )
     }
 }

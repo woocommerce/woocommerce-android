@@ -8,4 +8,5 @@ object AppConstants {
     const val SEARCH_TYPING_DELAY_MS = 500L
     const val TWITTER_USERNAME = "woocommerce"
     const val INSTAGRAM_USERNAME = "woocommerce"
+    const val FADE_ANIMATION_DELAY_MS = 1000
 }
