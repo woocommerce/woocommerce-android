@@ -8,7 +8,6 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.singleOrNull
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 
@@ -16,16 +15,17 @@ class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
     private val currentTimeProvider: CurrentTimeProvider
 ) {
-    suspend fun shouldUpdateAnalytics(
+    fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
         maxOutdatedTime: Long = defaultMaxOutdatedTime
-    ): Boolean {
-        rangeSelection.lastUpdateTimestamp.singleOrNull()
-            ?.let { currentTime - it }
-            ?.takeIf { it < maxOutdatedTime }
-            ?.let { return false }
-            ?: return true
-    }
+    ) = rangeSelection.lastUpdateTimestamp
+        .map { lastUpdateTimestamp ->
+            lastUpdateTimestamp
+                ?.let { currentTime - it }
+                ?.let { timeElapsedSinceLastUpdate ->
+                    timeElapsedSinceLastUpdate > maxOutdatedTime
+                } ?: true
+        }
 
     suspend fun storeLastAnalyticsUpdate(rangeSelection: StatsTimeRangeSelection) {
         dataStore.edit { preferences ->
@@ -43,6 +43,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         get() = currentTimeProvider.currentDate().time
 
     companion object {
-        const val defaultMaxOutdatedTime = 1000 * 30L // 30 seconds
+        const val defaultMaxOutdatedTime = 1000 * 60 * 30L // 30 minutes
     }
 }
