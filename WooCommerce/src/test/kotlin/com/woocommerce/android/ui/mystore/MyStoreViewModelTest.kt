@@ -216,20 +216,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
             verify(appPrefsWrapper).setActiveStatsGranularity(
-                0,
                 ANY_SELECTED_STATS_GRANULARITY.name
             )
-        }
-
-    @Test
-    fun `given stats granularity previously selected, when view model is created, stats are retrieved from prefs`() =
-        testBlocking {
-            whenever(appPrefsWrapper.getActiveStatsGranularity(anyInt()))
-                .thenReturn(ANY_SELECTED_STATS_GRANULARITY.name)
-            givenObserveTopPerformersEmits(emptyList())
-            whenViewModelIsCreated()
-
-            verify(appPrefsWrapper).getActiveStatsGranularity(anyInt())
         }
 
     @Test
