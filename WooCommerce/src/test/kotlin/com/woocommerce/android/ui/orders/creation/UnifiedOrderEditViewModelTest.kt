@@ -214,6 +214,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when customer address deleted, then delete event tracked`() {
+        sut.onCustomerAddressDeleted()
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CUSTOMER_DELETE,
+            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+        )
+    }
+
+    @Test
     fun `when fee edited, send tracks event`() {
         sut.onFeeEdited(BigDecimal.TEN)
 
