@@ -12,14 +12,20 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.util.FeatureFlag
 
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
         val navController = fragment.findNavController()
 
         val action = when (target) {
-            is EditCustomer ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
+            is EditCustomer -> {
+                if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
+                } else {
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
+                }
+            }
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is SelectItems ->
@@ -35,7 +41,11 @@ object OrderCreateEditNavigator {
                 )
             is ShowProductDetails ->
                 OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
+                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(
+                        target.item,
+                        target.currency,
+                        target.discountEditEnabled
+                    )
             is ShowCreatedOrder ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
@@ -43,9 +53,16 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
             is EditCoupon ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditionFragment(
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditFragment(
+                    orderCreationMode = target.orderCreationMode,
                     couponCode = target.couponCode
                 )
+            is OrderCreateEditNavigationTarget.CouponList -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponListFragment(
+                    orderCreationMode = target.orderCreationMode,
+                    couponLines = target.couponLines.toTypedArray()
+                )
+            }
         }
 
         navController.navigate(action)

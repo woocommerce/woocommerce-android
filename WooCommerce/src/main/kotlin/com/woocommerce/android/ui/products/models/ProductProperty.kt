@@ -4,6 +4,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.products.models.ProductProperty.Type.BUTTON
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.COMPLEX_PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.DIVIDER
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.EDITABLE
@@ -24,6 +25,7 @@ sealed class ProductProperty(val type: Type) {
         EDITABLE,
         PROPERTY_GROUP,
         LINK,
+        BUTTON,
         READ_MORE,
         SWITCH,
         WARNING
@@ -59,6 +61,7 @@ sealed class ProductProperty(val type: Type) {
         @DrawableRes val icon: Int? = null,
         val showTitle: Boolean = true,
         val maxLines: Int = 1,
+        val isDividerVisible: Boolean = true,
         val onClick: (() -> Unit)? = null
     ) : ProductProperty(COMPLEX_PROPERTY) {
         override fun isNotEmpty(): Boolean {
@@ -112,6 +115,27 @@ sealed class ProductProperty(val type: Type) {
     data class Warning(
         val content: String = ""
     ) : ProductProperty(WARNING)
+
+    data class Button(
+        @StringRes val text: Int,
+        @DrawableRes val icon: Int? = null,
+        val isDividerVisible: Boolean = true,
+        val tooltip: Tooltip? = null,
+        val link: Link? = null,
+        val onClick: (() -> Unit)
+    ) : ProductProperty(BUTTON) {
+        data class Tooltip(
+            @StringRes val title: Int,
+            @StringRes val text: Int,
+            @StringRes val dismissButtonText: Int,
+            val onDismiss: (() -> Unit)
+        )
+
+        data class Link(
+            @StringRes val text: Int,
+            val onClick: () -> Unit,
+        )
+    }
 
     open fun isNotEmpty(): Boolean {
         return true

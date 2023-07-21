@@ -8,6 +8,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -71,6 +72,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs,
     private val feedbackRepository: FeedbackRepository,
+    private val tapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -152,7 +154,7 @@ class CardReaderHubViewModel @Inject constructor(
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_gridicons_money_on_surface,
-            label = UiStringRes(R.string.card_reader_collect_payment),
+            label = UiStringRes(R.string.card_reader_hub_collect_payment),
             index = 1,
             onClick = ::onCollectPaymentClicked
         ),
@@ -318,7 +320,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
+        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             CardReaderHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -414,10 +416,22 @@ class CardReaderHubViewModel @Inject constructor(
             is CardReadersHub -> {
                 when (params.openInHub) {
                     TAP_TO_PAY_SUMMARY -> {
-                        if (tapToPayAvailabilityStatus().isAvailable) {
-                            triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
+                        val ttpAvailabilityStatus = tapToPayAvailabilityStatus()
+                        if (ttpAvailabilityStatus is TapToPayAvailabilityStatus.Result.NotAvailable) {
+                            cardReaderTracker.trackTapToPayNotAvailableReason(
+                                ttpAvailabilityStatus,
+                                SOURCE,
+                            )
+                            tapToPayUnavailableHandler.handleTTPUnavailable(
+                                ttpAvailabilityStatus,
+                                ::triggerEvent
+                            ) { actionType ->
+                                handlePositiveButtonClickTTPUnavailable(actionType)
+                            }
                         } else {
-                            triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
+                            triggerEvent(
+                                CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
+                            )
                         }
                     }
                     NONE -> {
@@ -429,6 +443,22 @@ class CardReaderHubViewModel @Inject constructor(
                 // no-op
             }
         }.exhaustive
+    }
+
+    private fun handlePositiveButtonClickTTPUnavailable(
+        actionType: CardReaderHubTapToPayUnavailableHandler.ActionType
+    ) = when (actionType) {
+        CardReaderHubTapToPayUnavailableHandler.ActionType.PURCHASE_READER -> {
+            onPurchaseCardReaderClicked()
+        }
+
+        CardReaderHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS -> {
+            triggerEvent(
+                CardReaderHubEvents.OpenGenericWebView(
+                    STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
+                )
+            )
+        }
     }
 
     private fun trackEvent(event: AnalyticsEvent) {
@@ -493,7 +523,7 @@ class CardReaderHubViewModel @Inject constructor(
     companion object {
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
-        const val LEARN_MORE_SOURCE = "payments_menu"
+        private const val SOURCE = "payments_menu"
 
         private const val SHOW_FEEDBACK_AFTER_USAGE_DAYS = 30
     }

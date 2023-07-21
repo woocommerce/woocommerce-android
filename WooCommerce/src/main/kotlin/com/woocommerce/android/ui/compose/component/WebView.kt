@@ -8,6 +8,7 @@ import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +48,7 @@ fun WCWebView(
     captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
+    activityRegistry: ActivityResultRegistry? = null,
     loadWithOverviewMode: Boolean = false,
     isJavaScriptEnabled: Boolean = true,
     isDomStorageEnabled: Boolean = true,
@@ -109,9 +111,14 @@ fun WCWebView(
                         }
                     }
 
-                    this.webChromeClient = object : WebChromeClient() {
-                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                            progress = newProgress
+                    if (activityRegistry != null) {
+                        this.webChromeClient =
+                            WebChromeClientWithImageChooser(activityRegistry) { newProgress -> progress = newProgress }
+                    } else {
+                        this.webChromeClient = object : WebChromeClient() {
+                            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                                progress = newProgress
+                            }
                         }
                     }
 

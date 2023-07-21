@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-07-04 09:54:24+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">使用 AI 快速添加描述。 立即试用我们的功能！</string>
+    <string name="ai_product_description_dialog_title">使用 AI 添加产品描述</string>
+    <string name="ai_product_description_note_dialog_confirmation">知道了</string>
+    <string name="ai_product_description_note_dialog_message">请注意，此产品描述是使用我们的 AI 赋能工具生成的。 请检查和编辑内容以确保相关内容与您的品牌和消息相契合。</string>
+    <string name="ai_product_description_note_dialog_heading">不错的开局！</string>
+    <string name="ai_product_description_feedback">生成的描述\n对您是否有用？</string>
+    <string name="ai_product_description_regenerate_button">重新生成</string>
+    <string name="ai_product_description_survey">生成的描述对您是否有用？</string>
+    <string name="ai_product_description_hint">通过关键字突出显示产品的独特特点和受众，以便生成量身定制的描述。</string>
+    <string name="ai_product_description_example">示例：盆栽、仙人掌、植物、装饰、易打理</string>
+    <string name="ai_product_description_product_name">输入产品名称</string>
+    <string name="ai_product_description_title">撰写描述</string>
+    <string name="barcode_scanning_camera_permission_denied">需要相机权限才能扫描条形码。</string>
+    <string name="barcode_scanning_title">扫描条形码</string>
+    <string name="order_creation_customer_search_username">用户名</string>
+    <string name="order_creation_customer_search_name">名称</string>
+    <string name="order_creation_customer_search_email">电子邮件</string>
+    <string name="order_creation_customer_search_everything">所有内容</string>
+    <string name="order_creation_customer_filter_hint">按以下方式筛选客户</string>
+    <string name="order_creation_coupons_title">已应用优惠券</string>
+    <string name="more_settings">更多设置</string>
+    <string name="maybe_later">稍后再说</string>
+    <string name="product_sharing_regenerate">再写一遍</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#接收每一笔销售的通知：&lt;/b&gt;通过即时的销售通知，不会错过任何内容。 接收每一笔新销售的提醒，以便您能够庆祝成功并保持对商店活动的掌控。</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#只需轻触即可添加和编辑产品：&lt;/b&gt;通过应用添加新产品，更新详细信息，上传图片，并管理不同的变量。轻松保持库存的最新状态。</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#支持现场付款：&lt;/b&gt;通过现场接受付款，扩大您的销售机会。 使用该应用可以安全地处理信用卡交易，甚至可以与兼容的读卡器连接，以便实现便捷的现场付款。</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#管理和创建订单：&lt;/b&gt;轻松处理订单。 滚动、搜索和更改订单状态。 为商店内或电话购买即时快速地创建新订单。 简化您的订单管理流程。</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#跟踪销量和热门产品：&lt;/b&gt;随时了解您商店的实时表现。 识别您的畅销产品，并做出明智决策以实现最大的盈利。</string>
+    <string name="store_creation_in_progress_description_1">商店准备就绪后，您将会收到通知！ 请坐好，放轻松，我们来施展魔法，同时分享实用的贴士。🔮</string>
+    <string name="store_creation_in_progress_title_1">正在创建您的商店！ 只需几分钟</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">需要 PIN 码，但尚不支持“点按付款”功能。 考虑使用外部读卡器</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">购买读卡器</string>
+    <string name="order_sync_coupon_removed">优惠券无法使用并已从订单中删除</string>
+    <string name="product_sharing_ai_generating_failure">无法生成共享信息。 请重试！</string>
+    <string name="product_sharing_ai_info_label">详细了解我们的 AI 功能</string>
+    <string name="product_sharing_optional_message_label">添加一条可选消息</string>
+    <string name="product_sharing_generating">正在撰写…</string>
+    <string name="product_sharing_write_with_ai">使用 AI 写作</string>
+    <string name="more_menu_button_blaze_description">通过 Blaze 推广产品</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">✨ AI 内容生成器现已可用</string>
+    <string name="product_detail_menu_item_promote_with_blaze">通过 Blaze 推广</string>
     <string name="share_product">共享产品</string>
     <string name="first_product_celebration_body_message">恭喜！ 您离准备好新的商店又近了一步。</string>
     <string name="first_product_celebration_title">第一个产品已创建 🎉</string>
@@ -105,18 +147,11 @@ Language: zh_CN
     <string name="store_creation_profiler_industry_home_furniture_garden">家居、家具和园艺</string>
     <string name="store_creation_profiler_industry_food_drink">食品和饮料</string>
     <string name="store_creation_profiler_industry_health_beauty">卫生和美容</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact：&lt;/b&gt;我们最喜欢的颜色是紫色。💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact：&lt;/b&gt;Woo 团队由超过 350 名才华横溢的员工组成，他们分布在超过 30 个国家/地区。</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact：&lt;/b&gt;在世界各地举办了 150 多场 WooCommerce 峰会！ 一个会见同行商店业主的绝佳机会</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact：&lt;/b&gt;您的团队是猫派还是狗派？ Woo 团队中这两个流派各占一半！</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact：&lt;/b&gt;您知道吗？Woo 是由两个南非人和一个挪威人创立的。 在这些国家/地区，“商店”有三种可以互换的说法，分别是 Winkel、ivenkile 和 butikk。</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact：&lt;/b&gt;您知道吗？Woo 为全球近 400 万家商店提供服务。 为您打造优质交流平台。</string>
     <string name="store_creation_in_progress_title_6">打开店门</string>
     <string name="store_creation_in_progress_title_5">指引方向</string>
     <string name="store_creation_in_progress_title_4">执行收尾工作</string>
     <string name="store_creation_in_progress_title_3">整理库存空间</string>
     <string name="store_creation_in_progress_title_2">奠定基础</string>
-    <string name="store_creation_in_progress_title_1">Woo！ 我们正在创建您的商店</string>
     <string name="notifications_permission_description">我们需要您的许可，以便将新订单、评论等推送通知发送到您的设备。</string>
     <string name="notifications_permission_title">通知</string>
     <string name="product_type_composite">组合产品</string>

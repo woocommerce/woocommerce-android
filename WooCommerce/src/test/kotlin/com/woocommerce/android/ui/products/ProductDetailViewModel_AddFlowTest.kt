@@ -65,6 +65,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val mediaFilesRepository: MediaFilesRepository = mock()
     private val variationRepository: VariationRepository = mock()
     private val selectedSite: SelectedSite = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -79,9 +80,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
-    private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
-    }
+    private val isBlazeEnabled: IsBlazeEnabled = mock()
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
 
@@ -158,6 +157,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        doReturn(false).whenever(isAIProductDescriptionEnabled).invoke()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
@@ -184,7 +184,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mock(),
                 mock(),
                 mock(),
-                isBlazeEnabled
+                isBlazeEnabled,
+                isAIProductDescriptionEnabled
             )
         )
 

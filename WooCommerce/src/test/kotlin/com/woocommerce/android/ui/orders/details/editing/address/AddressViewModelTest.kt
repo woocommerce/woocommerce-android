@@ -2,14 +2,20 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.*
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressSelectionState
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.BILLING
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.AddressType.SHIPPING
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.Field
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowCountrySelector
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowStateSelector
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus
+import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -280,5 +286,25 @@ class AddressViewModelTest : BaseUnitTest() {
         assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse
         addressViewModel.onDifferentShippingAddressChecked(false)
         assertThat(addressViewModel.shouldEnableDoneButton.value).isTrue
+    }
+
+    @Test
+    fun `when clearSelectedAddress, then initialise with empty address`() {
+        addressViewModel.clearSelectedAddress()
+
+        assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
+            ViewState(
+                addressSelectionStates = mapOf(
+                    BILLING to AddressSelectionState(
+                        address = Address.EMPTY,
+                        stateSpinnerStatus = StateSpinnerStatus.DISABLED,
+                    ),
+                    SHIPPING to AddressSelectionState(
+                        address = Address.EMPTY,
+                        stateSpinnerStatus = StateSpinnerStatus.DISABLED,
+                    )
+                ),
+            )
+        )
     }
 }
