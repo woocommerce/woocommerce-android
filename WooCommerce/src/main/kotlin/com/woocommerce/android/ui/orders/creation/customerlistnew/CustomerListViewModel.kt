@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("EmptyFunctionBlock")
 class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
