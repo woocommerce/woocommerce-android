@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -185,6 +186,20 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_HAS_DIFFERENT_SHIPPING_DETAILS to false,
             )
         )
+    }
+
+    @Test
+    fun `when onEditCustomerClicked, then EditCustomer sent`() {
+        sut.onEditCustomerClicked()
+
+        assertThat(sut.event.value).isInstanceOf(OrderCreateEditNavigationTarget.EditCustomer::class.java)
+    }
+
+    @Test
+    fun `when onAddCustomerClicked, then AddCustomer sent`() {
+        sut.onAddCustomerClicked()
+
+        assertThat(sut.event.value).isInstanceOf(OrderCreateEditNavigationTarget.AddCustomer::class.java)
     }
 
     @Test
