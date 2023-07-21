@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import java.util.Date
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -38,8 +40,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
-
-typealias RevenueStatId = Pair<String, String>
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
@@ -209,7 +209,7 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriod = rangeSelection.currentRange
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
-        val statsIdentifier = RevenueStatId(startDate, endDate).hashCode()
+        val statsIdentifier = RevenueStatId(currentPeriod.start, currentPeriod.end).id
         val cachedRevenueStat = currentRevenueStats[statsIdentifier]
 
         getCurrentRevenueMutex.withLock {
@@ -232,7 +232,7 @@ class AnalyticsRepository @Inject constructor(
         val previousPeriod = rangeSelection.previousRange
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
-        val statsIdentifier = RevenueStatId(startDate, endDate).hashCode()
+        val statsIdentifier = RevenueStatId(previousPeriod.start, previousPeriod.end).id
         val cachedRevenueStat = previousRevenueStats[statsIdentifier]
 
         getPreviousRevenueMutex.withLock {
@@ -356,4 +356,17 @@ class AnalyticsRepository @Inject constructor(
         val endDate: String,
         val result: Deferred<Result<WCRevenueStatsModel?>>
     )
+
+    private data class RevenueStatId(
+        private val startDate: Date,
+        private val endDate: Date
+    ) {
+        val id: Int
+
+        init {
+            val startDateString = startDate.formatToYYYYmmDD()
+            val endDateString = endDate.formatToYYYYmmDD()
+            id = "$startDateString$endDateString".hashCode()
+        }
+    }
 }
