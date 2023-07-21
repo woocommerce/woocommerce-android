@@ -65,7 +65,7 @@ class OrdersUITest : TestBase() {
                 .addProductTap()
                 .assertProductsSelectorScreen(composeTestRule)
                 .selectProduct(composeTestRule, orderData.productName)
-                .addCustomerNote(note)
+                .editCustomerNote(note)
                 .addShipping()
                 .addFee()
                 .createOrder()
