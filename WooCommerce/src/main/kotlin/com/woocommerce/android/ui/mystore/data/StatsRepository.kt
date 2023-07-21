@@ -79,6 +79,16 @@ class StatsRepository @Inject constructor(
             }
         }
 
+    suspend fun getRevenueStats(
+        granularity: StatsGranularity,
+        startDate: String = "",
+        endDate: String = ""
+    ): Flow<Result<WCRevenueStatsModel?>> = flow {
+        wcStatsStore.getRawRevenueStats(
+            selectedSite.get(), granularity, startDate, endDate
+        ).let { emit(Result.success(it)) }
+    }
+
     suspend fun fetchVisitorStats(
         granularity: StatsGranularity,
         forced: Boolean,
