@@ -1,6 +1,8 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.6
+We're back with some new updates to improve your experience with our app! It's easy for you to generate product descriptions with a click of a button. As always, we're here to make your app journey smoother and more enjoyable. Thanks for sticking with us!
 
 ## 14.5
 Introducing our new In-Person Payments feature, Tap To Pay, on Android for quicker transactions and a smoother shopping experience. Also, managing discounts is now easier with our latest feature that allows you to apply direct product discounts during the order process, saving time and increasing efficiency. Keep your updates on to enjoy WooCommerce's continuous improvements and latest features!

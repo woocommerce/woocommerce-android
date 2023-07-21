@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_SHARING_FEATURE
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -77,7 +78,8 @@ class ProductSharingViewModel @Inject constructor(
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
-            text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}"
+            text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}",
+            feature = PRODUCT_SHARING_FEATURE
         ).fold(
             onSuccess = { languageISOCode ->
                 handleIdentificationSuccess(languageISOCode)

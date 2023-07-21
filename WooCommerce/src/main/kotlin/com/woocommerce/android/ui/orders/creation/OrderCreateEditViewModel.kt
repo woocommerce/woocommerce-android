@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -79,6 +80,7 @@ import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEdi
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
@@ -203,7 +205,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                 handleCouponEditResult()
             }
-
             is Mode.Edit -> {
                 viewModelScope.launch {
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
@@ -403,7 +404,6 @@ class OrderCreateEditViewModel @Inject constructor(
                     resourceProvider.getString(string.order_creation_barcode_scanning_scanning_failed)
                 )
             }
-
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
                 viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -512,14 +512,15 @@ class OrderCreateEditViewModel @Inject constructor(
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
             barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
+    @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (product.isVariable()) {
-            if (product.parentId == 0L) {
+        when {
+            product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
                     message = resourceProvider.getString(
                         string.order_creation_barcode_scanning_unable_to_add_variable_product
@@ -528,33 +529,56 @@ class OrderCreateEditViewModel @Inject constructor(
                 trackProductSearchViaSKUFailureEvent(
                     source,
                     barcodeFormat,
-                    "Instead of specific variations, user tried to add parent variable product."
+                    "Failed to add a product that is not published"
                 )
                 return
-            } else {
-                when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+            }
+            product.hasNoPrice() -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a product whose price is not specified"
+                )
+                return
+            }
+            product.isVariable() -> {
+                if (product.parentId == 0L) {
+                    sendAddingProductsViaScanningFailedEvent(
+                        message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    )
+                    trackProductSearchViaSKUFailureEvent(
+                        source,
+                        barcodeFormat,
+                        "Instead of specific variations, user tried to add parent variable product."
+                    )
+                    return
+                } else {
+                    when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                        null -> onProductsSelected(
+                            selectedItems = selectedItems +
+                                SelectedItem.ProductVariation(
+                                    productId = product.parentId,
+                                    variationId = product.remoteId
+                                ),
+                            source = source,
+                            addedVia = ProductAddedVia.SCANNING,
+                        )
+                        else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                    }
+                }
+            }
+            else -> {
+                when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                     null -> onProductsSelected(
-                        selectedItems = selectedItems +
-                            SelectedItem.ProductVariation(
-                                productId = product.parentId,
-                                variationId = product.remoteId
-                            ),
+                        selectedItems = selectedItems + Product(productId = product.remoteId),
                         source = source,
                         addedVia = ProductAddedVia.SCANNING,
                     )
-
                     else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                 }
-            }
-        } else {
-            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                null -> onProductsSelected(
-                    selectedItems = selectedItems + Product(productId = product.remoteId),
-                    source = source,
-                    addedVia = ProductAddedVia.SCANNING,
-                )
-
-                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
         trackProductSearchViaSKUSuccessEvent(source)
@@ -724,7 +748,6 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 )
             }
-
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -763,7 +786,6 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
             }
-
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -789,10 +811,8 @@ class OrderCreateEditViewModel @Inject constructor(
                     when (updateStatus) {
                         OrderUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
-
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
-
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
@@ -802,7 +822,6 @@ class OrderCreateEditViewModel @Inject constructor(
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
-
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
@@ -1090,5 +1109,9 @@ private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
+
+private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
+
+private fun ModelProduct.hasNoPrice() = price == null
 
 fun Order.Item.isSynced() = this.itemId != 0L
