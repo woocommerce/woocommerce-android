@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.mystore.domain
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -31,19 +34,22 @@ class GetStatsTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val statsRepository: StatsRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val getStats = GetStats(
         selectedSite,
         mock(),
         statsRepository,
         appPrefsWrapper,
-        coroutinesTestRule.testDispatchers
+        coroutinesTestRule.testDispatchers,
+        analyticsUpdateDataStore
     )
 
     @Before
     fun setup() = testBlocking {
         givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
         givenIsJetpackConnected(false)
+        givenShouldUpdateAnalyticsReturns(true)
         givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
         givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
     }
@@ -189,6 +195,11 @@ class GetStatsTest : BaseUnitTest() {
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {
         whenever(statsRepository.fetchVisitorStats(any(), anyBoolean(), anyString(), anyString()))
             .thenReturn(flow { emit(result) })
+    }
+
+    private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
+        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(),any()))
+            .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 
     private companion object {
