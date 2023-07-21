@@ -567,6 +567,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for a not published product, then trigger proper event`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+                )
+            ).thenReturn(
+                "You cannot add products that are not published"
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -594,6 +601,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for a not published product, then trigger event with proper message`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+                )
+            ).thenReturn("You cannot add products that are not published")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -614,13 +626,22 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_draft_product)
+            ).isEqualTo(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+                )
+            )
         }
     }
 
     @Test
     fun `when SKU search succeeds for a not published product, then track proper event`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+                )
+            ).thenReturn("You cannot add products that are not published")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -646,6 +667,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for a not published product, then track event with proper properties`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+                )
+            ).thenReturn("You cannot add products that are not published")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -678,6 +704,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for a published product whose price is not specified, then trigger event with proper message`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                )
+            ).thenReturn("Unable to add product with invalid price")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -699,13 +730,22 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
-            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price)
+            ).isEqualTo(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                )
+            )
         }
     }
 
     @Test
     fun `when SKU search succeeds for a published product whose price is not specified, then track proper event`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                )
+            ).thenReturn("You cannot add products with no price specified")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -732,6 +772,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when SKU search succeeds for a published product whose price is not specified, then track event with proper properties`() {
         testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                )
+            ).thenReturn("You cannot add products with no price specified")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -761,6 +806,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
     @Test
     fun `when SKU search succeeds for a not published product, then do not track product search event`() {
         testBlocking {
@@ -817,6 +863,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
+
     @Test
     fun `when parent variable product is scanned, then trigger proper event`() {
         testBlocking {
