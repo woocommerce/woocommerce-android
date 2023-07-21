@@ -77,13 +77,15 @@ sealed class LocalNotification(
         }
     }
 
-    object UpgradeToPaidPlanNotification : LocalNotification(
+    data class UpgradeToPaidPlanNotification(val siteId: Long) : LocalNotification(
         title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
         description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
         type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
         delay = 6,
-        delayUnit = TimeUnit.HOURS
+        delayUnit = TimeUnit.SECONDS
     ) {
+        override val data: String = siteId.toString()
+
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description)
         }

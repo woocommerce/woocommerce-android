@@ -170,7 +170,9 @@ class StoreInstallationViewModel @Inject constructor(
                 )
             }
 
-            localNotificationScheduler.scheduleNotification(UpgradeToPaidPlanNotification)
+            localNotificationScheduler.scheduleNotification(
+                UpgradeToPaidPlanNotification(selectedSite.get().siteId)
+            )
         }
     }
 
