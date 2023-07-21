@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -40,8 +40,11 @@ class GetStats @Inject constructor(
             hasOrders(),
             revenueStats(isForcedRefresh, granularity),
             visitorStats(isForcedRefresh, granularity)
-        ).onCompletion {
-            analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionType)
+        ).map { result ->
+            if (result is LoadStatsResult.RevenueStatsSuccess && isForcedRefresh) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionType)
+            }
+            result
         }
             .flowOn(coroutineDispatchers.computation)
     }
