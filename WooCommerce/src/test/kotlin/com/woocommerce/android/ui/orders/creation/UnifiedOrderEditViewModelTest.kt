@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -27,6 +28,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -184,6 +186,31 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_HAS_DIFFERENT_SHIPPING_DETAILS to false,
             )
         )
+    }
+
+    @Test
+    fun `when onEditCustomerClicked, then EditCustomer sent`() {
+        sut.onEditCustomerClicked()
+
+        assertThat(sut.event.value).isInstanceOf(OrderCreateEditNavigationTarget.EditCustomer::class.java)
+    }
+
+    @Test
+    fun `when onAddCustomerClicked, then AddCustomer sent`() {
+        sut.onAddCustomerClicked()
+
+        assertThat(sut.event.value).isInstanceOf(OrderCreateEditNavigationTarget.AddCustomer::class.java)
+    }
+
+    @Test
+    fun `when customer address deleted, then order is update with empty address`() {
+        sut.onCustomerAddressDeleted()
+
+        val values = sut.orderDraft.captureValues()
+
+        assertThat(values.last().customerId).isNull()
+        assertThat(values.last().billingAddress).isEqualTo(Address.EMPTY)
+        assertThat(values.last().shippingAddress).isEqualTo(Address.EMPTY)
     }
 
     @Test
