@@ -115,6 +115,9 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productSharingFragment"
             app:destination="@id/productSharingFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_AIProductDescriptionBottomSheetFragment"
+            app:destination="@id/AIProductDescriptionBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -324,6 +327,9 @@
             android:name="productTitle"
             android:defaultValue='""'
             app:argType="string" />
+        <action
+            android:id="@+id/action_aztecEditorFragment_to_AIProductDescriptionBottomSheetFragment"
+            app:destination="@id/AIProductDescriptionBottomSheetFragment" />
 
     </fragment>
     <fragment
@@ -731,6 +737,19 @@
         <argument
             android:name="productDescription"
             android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/AIProductDescriptionBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment"
+        android:label="AIProductDescriptionBottomSheetFragment" >
+        <argument
+            android:name="productTitle"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="productDescription"
             app:argType="string"
             app:nullable="true" />
     </dialog>

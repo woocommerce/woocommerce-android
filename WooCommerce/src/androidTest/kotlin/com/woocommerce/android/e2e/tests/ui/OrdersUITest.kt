@@ -49,7 +49,7 @@ class OrdersUITest : TestBase() {
 
     @Test
     fun e2eCreateOrderTest() {
-        val note = "Customer notes 123~"
+        val note = "Just a placeholder text"
         val status = "Processing"
         val ordersJSONArray = MocksReader().readOrderToArray()
 

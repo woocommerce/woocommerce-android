@@ -43,8 +43,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -153,34 +151,81 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flow and payment collectable, when view model init, then success emitted with collect true`() =
+    fun `when view model init, then success emitted with cash row`() =
         testBlocking {
             // GIVEN & WHEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
             val orderId = 1L
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
             // THEN
-            assertTrue((viewModel.viewStateData.value as Success).isPaymentCollectableWithExternalCardReader)
+            val row = (viewModel.viewStateData.value as Success).rows[0] as Success.Row.Single
+            assertThat(row.icon).isEqualTo(R.drawable.ic_gridicons_money_on_surface)
+            assertThat(row.label).isEqualTo(R.string.cash)
+            assertThat(row.isEnabled).isTrue()
         }
 
     @Test
-    fun `given payment flow and ipp and ttp collectable, when view model init, then success emitted with ttp collectable true`() =
+    fun `given payment flow and payment collectable and ttp, when view model init, then success emitted with ttp row`() =
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+            whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
             // THEN
-            assertTrue((viewModel.viewStateData.value as Success).isPaymentCollectableWithTapToPay)
+            val row = (viewModel.viewStateData.value as Success).rows[1] as Success.Row.Double
+            assertThat(row.icon).isEqualTo(R.drawable.ic_baseline_contactless)
+            assertThat(row.label).isEqualTo(R.string.card_reader_type_selection_tap_to_pay)
+            assertThat(row.description).isEqualTo(R.string.card_reader_type_selection_tap_to_pay_description)
+            assertThat(row.isEnabled).isTrue()
         }
 
     @Test
-    fun `given payment flow and ipp not collectable and ttp collectable, when view model init, then success emitted with ttp collectable false`() =
+    fun `given payment flow and payment collectable, when view model init, then success emitted with card reader row`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+
+            // WHEN
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            val row = (viewModel.viewStateData.value as Success).rows[2] as Success.Row.Double
+            assertThat(row.icon).isEqualTo(R.drawable.ic_gridicons_credit_card)
+            assertThat(row.label).isEqualTo(R.string.card_reader_type_selection_bluetooth_reader)
+            assertThat(row.description).isEqualTo(R.string.card_reader_type_selection_bluetooth_reader_description)
+            assertThat(row.isEnabled).isTrue()
+        }
+
+    @Test
+    fun `given payment flow and order with payment link, when view model init, then success emitted with stp and share link rows`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+            val orderId = 1L
+
+            // WHEN
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            val stpRow = (viewModel.viewStateData.value as Success).rows[3] as Success.Row.Single
+            assertThat(stpRow.icon).isEqualTo(R.drawable.ic_gridicons_link_on_surface)
+            assertThat(stpRow.label).isEqualTo(R.string.simple_payments_share_payment_link)
+            assertThat(stpRow.isEnabled).isTrue()
+
+            val paymentLinkRow = (viewModel.viewStateData.value as Success).rows[4] as Success.Row.Single
+            assertThat(paymentLinkRow.icon).isEqualTo(R.drawable.ic_baseline_qr_code_scanner)
+            assertThat(paymentLinkRow.label).isEqualTo(R.string.card_reader_type_selection_scan_to_pay)
+            assertThat(paymentLinkRow.isEnabled).isTrue()
+        }
+
+    @Test
+    fun `given payment flow and ipp not collectable and ttp collectable, when view model init, then success emitted without ttp`() =
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
@@ -191,11 +236,17 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
             // THEN
-            assertFalse((viewModel.viewStateData.value as Success).isPaymentCollectableWithTapToPay)
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(
+                rows.none {
+                    it is Success.Row.Double &&
+                        it.label == R.string.card_reader_type_selection_tap_to_pay
+                }
+            ).isTrue()
         }
 
     @Test
-    fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted with ttp collectable false`() =
+    fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted without ttp`() =
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
@@ -208,7 +259,37 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
             // THEN
-            assertFalse((viewModel.viewStateData.value as Success).isPaymentCollectableWithTapToPay)
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(
+                rows.none {
+                    it is Success.Row.Double &&
+                        it.label == R.string.card_reader_type_selection_tap_to_pay
+                }
+            ).isTrue()
+        }
+
+    @Test
+    fun `given try tap to pay, when view model init, then all disabled except ttp row`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+            val orderId = 1L
+
+            // WHEN
+            val viewModel = initViewModel(Payment(orderId, TRY_TAP_TO_PAY))
+
+            // THEN
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(rows).hasSize(5)
+            val enabledRows = rows.filter {
+                (it is Success.Row.Double && it.isEnabled) ||
+                    (it is Success.Row.Single && it.isEnabled)
+            }
+            assertThat(enabledRows).hasSize(1)
+            assertThat((enabledRows[0] as Success.Row.Double).label).isEqualTo(
+                R.string.card_reader_type_selection_tap_to_pay
+            )
         }
 
     @Test
@@ -816,7 +897,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
+        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
@@ -833,29 +914,13 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
+        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
             OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         )
     }
-
-    @Test
-    fun `given payment flow and not connected and ttp disabled, when vm init, then tracks tap to pay not available`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = Payment(orderId = orderId, paymentType = ORDER)
-            val tapToPayDisabled = TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
-            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayDisabled)
-
-            // WHEN
-            initViewModel(param)
-
-            // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayDisabled)
-        }
 
     @Test
     fun `given payment flow and not connected and ttp system not supported, when vm init, then tracks ttp system`() =
@@ -870,7 +935,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported, "payment_methods")
         }
 
     @Test
@@ -886,7 +951,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported, "payment_methods")
         }
 
     @Test
@@ -902,7 +967,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable, "payment_methods")
         }
 
     @Test
@@ -918,11 +983,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable)
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable, "payment_methods")
         }
 
     @Test
-    fun `given paymentUrl not empty, when vm init, then true returned`() =
+    fun `given paymentUrl not empty, when vm init, then scan to pay row emitted`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -933,11 +998,17 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(param)
 
             // THEN
-            assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isTrue()
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(
+                rows.firstOrNull {
+                    it is Success.Row.Single &&
+                        it.label == R.string.card_reader_type_selection_scan_to_pay
+                }
+            ).isNotNull()
         }
 
     @Test
-    fun `given paymentUrl empty, when vm init, then false returned`() =
+    fun `given paymentUrl empty, when vm init, then scan to pay row is not emitted`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -948,7 +1019,13 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(param)
 
             // THEN
-            assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isFalse()
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(
+                rows.firstOrNull {
+                    it is Success.Row.Single &&
+                        it.label == R.string.card_reader_type_selection_scan_to_pay
+                }
+            ).isNull()
         }
 
     @Test

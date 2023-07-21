@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 13:54:03+0000
+Translation-Revision-Date: 2023-07-04 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Ajoutez des descriptions en un clin d’œil grâce à l’IA. Essayez notre fonctionnalité dès aujourd’hui !</string>
+    <string name="ai_product_description_dialog_title">Ajouter la description du produit avec l’IA</string>
+    <string name="ai_product_description_note_dialog_confirmation">J’ai compris</string>
+    <string name="ai_product_description_note_dialog_message">N’oubliez pas que cette description de produit a été générée à l’aide de notre outil d’intelligence artificielle. Passez-la en revue et modifiez le contenu pour vous assurer qu’il correspond à votre marque et au message que vous voulez communiquer.</string>
+    <string name="ai_product_description_note_dialog_heading">C’est un excellent début !</string>
+    <string name="ai_product_description_feedback">La description générée\nest-elle utile ?</string>
+    <string name="ai_product_description_regenerate_button">Régénérer</string>
+    <string name="ai_product_description_survey">La description générée est-elle utile ?</string>
+    <string name="ai_product_description_hint">Mettez en avant les fonctionnalités uniques de votre produit ainsi que votre public à l’aide de mots-clés, pour une description sur mesure.</string>
+    <string name="ai_product_description_example">Exemple : en pot, cactus, plante, décoratif, entretien facile</string>
+    <string name="ai_product_description_product_name">Entrer le nom de votre produit</string>
+    <string name="ai_product_description_title">Écrire une description</string>
+    <string name="barcode_scanning_camera_permission_denied">L’autorisation d’accès à l’appareil photo est requise pour scanner le code-barres.</string>
+    <string name="barcode_scanning_title">Scanner le code-barres</string>
+    <string name="order_creation_customer_search_username">Identifiant</string>
+    <string name="order_creation_customer_search_name">Nom</string>
+    <string name="order_creation_customer_search_email">E-mail</string>
+    <string name="order_creation_customer_search_everything">Tout</string>
+    <string name="order_creation_customer_filter_hint">Filtrer les clients par</string>
+    <string name="order_creation_coupons_title">Codes promo appliqués</string>
+    <string name="more_settings">Plus de réglages</string>
+    <string name="maybe_later">Peut-être plus tard</string>
+    <string name="product_sharing_regenerate">Récrire</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Soyez informé de chaque vente :&lt;/b&gt; ne manquez rien grâce aux notifications de vente instantanées. Recevez des alertes à chaque nouvelle vente, pour fêter votre réussite et suivre l’activité de votre boutique.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Ajoutez et modifiez les produits d’un simple clic :&lt;/b&gt; ajoutez de nouveaux produits, mettez à jour les détails, chargez des images et gérez les variantes, le tout à partir de l’application. Gardez votre stock à jour sans effort.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Acceptez les paiements en personne :&lt;/b&gt; élargissez vos opportunités de vente en acceptant les paiements en personne. Utilisez l’application pour traiter les transactions par carte de crédit de manière sécurisée ou même vous connecter aux lecteurs de cartes compatibles, pour des paiements en personne conviviaux.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gérez et créez des commandes :&lt;/b&gt; gérez les commandes en toute simplicité. Faites défiler, recherchez et modifiez l’état d’une commande. Créez de nouvelles commandes au fur et à mesure pour des achats en magasin ou par téléphone. Simplifiez votre processus de gestion des commandes.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Suivez les ventes et les produits populaires :&lt;/b&gt; restez informé des performances de votre boutique en temps réel. Identifiez vos produits les plus vendus et prenez des décisions éclairées pour maximiser votre rentabilité.</string>
+    <string name="store_creation_in_progress_description_1">Vous serez informé dès que la boutique sera prête ! Asseyez-vous, détendez-vous et laissez la magie opérer tout en profitant de nos conseils utiles. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Création de votre boutique ! Cela ne prendra que quelques minutes</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Un code PIN est obligatoire, mais Appuyer pour payer ne le prend pas encore en charge. Envisager d’utiliser un lecteur de carte externe</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Acheter un lecteur de carte</string>
+    <string name="order_sync_coupon_removed">Le code promo n’a pas pu être appliqué et a été supprimé de la commande</string>
+    <string name="product_sharing_ai_generating_failure">Impossible de générer le message de partage. Veuillez réessayer !</string>
+    <string name="product_sharing_ai_info_label">En savoir plus sur notre fonctionnalité d’IA</string>
+    <string name="product_sharing_optional_message_label">Ajouter un message facultatif</string>
+    <string name="product_sharing_generating">Écriture…</string>
+    <string name="product_sharing_write_with_ai">Rédiger avec l’IA</string>
+    <string name="more_menu_button_blaze_description">Promouvoir des produits avec Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Générateur de contenu par IA disponible</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promouvoir avec Blaze</string>
     <string name="share_product">Partager le produit</string>
     <string name="first_product_celebration_body_message">Bravo ! Il ne vous reste qu’une seule étape à effectuer avant que votre nouvelle boutique ne soit prête.</string>
     <string name="first_product_celebration_title">Premier produit créé 🎉</string>
@@ -105,18 +147,11 @@ Language: fr
     <string name="store_creation_profiler_industry_home_furniture_garden">Maison, mobilier et jardin</string>
     <string name="store_creation_profiler_industry_food_drink">Alimentation et boissons</string>
     <string name="store_creation_profiler_industry_health_beauty">Santé et beauté</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#AnecdoteWoo :&lt;/b&gt; Notre couleur préférée est le violet. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#AnecdoteWoo :&lt;/b&gt; L’équipe Woo compte plus de 350 talents, répartis dans plus de 30 pays.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#AnecdoteWoo :&lt;/b&gt; Plus de 150 meetups WooCommerce se tiennent dans le monde entier ! Autant de formidables occasions de rencontrer d’autres propriétaires de boutique.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#AnecdoteWoo :&lt;/b&gt; Êtes-vous plutôt chat ou plutôt chien ? Dans l’équipe Woo, c’est 50/50 !</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#AnecdoteWoo :&lt;/b&gt; Saviez-vous que Woo a été fondé par deux Sud-Africains et un Norvégien ? Voilà trois façons de dire « boutique » dans ces pays : winkel, ivenkile et butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#AnecdoteWoo :&lt;/b&gt; Saviez-vous que Woo propulse près de 4 millions de boutiques dans le monde ? Vous êtes en bonne compagnie.</string>
     <string name="store_creation_in_progress_title_6">Ouverture des portes</string>
     <string name="store_creation_in_progress_title_5">Activation des lumières</string>
     <string name="store_creation_in_progress_title_4">Ajout des touches finales</string>
     <string name="store_creation_in_progress_title_3">Organisation de la salle de stock</string>
     <string name="store_creation_in_progress_title_2">Création des bases</string>
-    <string name="store_creation_in_progress_title_1">Génial ! Nous créons votre boutique</string>
     <string name="notifications_permission_description">Nous avons besoin de votre autorisation pour pouvoir vous envoyer des notifications push concernant les nouvelles commandes, les avis, etc. sur votre appareil.</string>
     <string name="notifications_permission_title">Notifications</string>
     <string name="product_type_composite">Composite Products</string>

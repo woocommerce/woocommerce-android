@@ -51,6 +51,7 @@
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
+    <string name="maybe_later">Maybe later</string>
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -125,6 +126,7 @@
     <string name="discard_message">Do you want to discard your changes?</string>
     <string name="discard_images_message">Product images are still uploading. Do you want to discard your changes?</string>
     <string name="more_options">More options</string>
+    <string name="more_settings">More settings</string>
     <string name="value_not_set">Not set</string>
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
@@ -468,6 +470,10 @@
     <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
     <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
     <string name="order_list_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
+    <string name="orderlist_parsing_error_title">We couldn\'t load your data.</string>
+    <string name="orderlist_parsing_error_message">This could be related to a conflict with a plugin. Please try again later or reach out to us and we\'ll be happy to assist you!</string>
+    <string name="error_troubleshooting">Troubleshooting</string>
+
     <!--
          Simple Payments
     -->
@@ -520,6 +526,7 @@
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_coupons_title">Coupons applied</string>
     <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
@@ -527,6 +534,16 @@
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_remove_discount">Remove discount</string>
+    <string name="order_creation_discount_too_big_error">Discount cannot be greater than the price</string>
+    <string name="order_creation_discount_invalid_number_error">Discount is not a valid number</string>
+    <string name="order_creation_discount_with_coupon_error">Manual discount could not be applied. Remove coupons first</string>
+    <string name="order_creation_discount_amount_with_currency">Amount (%1$s)</string>
+    <string name="order_creation_discount">Discount</string>
+    <string name="order_creation_discounts_total">Discounts Total</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discount_value">Discount %1$s</string>
+    <string name="order_creation_discount_amount_type">Amount (%1$s)</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_payment">Payment</string>
@@ -549,12 +566,30 @@
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
+    <string name="order_creation_customer_filter_hint">Filter customers by</string>
+    <string name="order_creation_customer_search_everything">Everything</string>
+    <string name="order_creation_customer_search_email">Email</string>
+    <string name="order_creation_customer_search_name">Name</string>
+    <string name="order_creation_customer_search_username">Username</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
+    <string name="order_creation_coupon_invalid_code">We couldn\'t find a coupon with that code. Please try again</string>
+    <string name="order_creation_coupon_network_error">Something went wrong when validating your coupon code. Please try again</string>
 
+    <!--
+         Barcode Scanning
+    -->
+    <string name="barcode_scanning_title">Scan Barcode</string>
+    <string name="barcode_scanning_camera_permission_denied">Camera permission is required to scan the barcode.</string>
+    <string name="barcode_scanning_alert_dialog_title">Grant Camera Permission</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Camera permission is required in order to scan the barcode</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">You have permanently denied Camera permission. It is required in order to scan the barcode. Please enable it from the app settings</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <!--
         Domains
     -->
@@ -610,6 +645,7 @@
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
     <string name="order_sync_failed">Unable to save changes</string>
+    <string name="order_sync_coupon_removed">Coupon could not be applied and was removed from the order</string>
     <!--
         Order Filters
     -->
@@ -1175,7 +1211,12 @@
     <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
     <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
 
     <!--
            Card Reader Tap To Pay Explanation
@@ -1189,8 +1230,6 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
     <string name="card_reader_tap_to_pay_explanation_refund_failed">The refund failed. Try to refund manually</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
     <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
@@ -1260,6 +1299,7 @@
     <string name="card_reader_payment_completed_payment_header">Payment successful</string>
     <string name="card_reader_payment_payment_failed_header">Payment failed</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Buy a card reader</string>
 
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Built-in reader is ready</string>
@@ -1282,6 +1322,7 @@
     <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
     <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
     <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">A PIN code is required, but Tap To Pay doesn\'t support it yet. Consider using an external card reader</string>
     <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
     <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
@@ -2987,18 +3028,18 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
-    <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
+    <string name="store_creation_in_progress_title_1">Creating Your Store! It\'ll be just a few minutes</string>
     <string name="store_creation_in_progress_title_2">Building the foundations</string>
     <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
     <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
     <string name="store_creation_in_progress_title_5">Turning on the lights</string>
     <string name="store_creation_in_progress_title_6">Opening the doors</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers almost 4 million stores worldwide? You’re in good company.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo was founded by two South Africans and a Norwegian? Here are three alternative ways to say “store” in those countries – Winkel, ivenkile, and butikk.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Are you Team Cat or Team Dog? The Woo team is split 50/50!</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; The Woo team is made up of over 350 talented individuals, distributed across 30+ countries.</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple. 💜</string>
+    <string name="store_creation_in_progress_description_1">You will be notified once the store is ready! Sit back, relax, and let us work our magic while sharing helpful tips. 🔮</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay updated on your store\'s real-time performance. Identify your top-selling products and make informed decisions for maximum profitability.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Handle orders with ease. Scroll, search, and change order status. Create new orders on the fly for in-store or phone purchases. Simplify your order management process.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Expand your sales opportunities by accepting payments in person. Use the app to securely process credit card transactions or even connect with compatible card readers for convenient in-person payments.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Add and edit products with a touch:&lt;/b&gt; Add new products, update details, upload images, and manage variations, all from the app. Keep your inventory up to date effortlessly.</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Get notified of every sale:&lt;/b&gt; Never miss a beat with instant sale notifications. Receive alerts for each new sale, allowing you to celebrate your success and stay on top of your store\'s activity.</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
@@ -3344,11 +3385,51 @@
     Product sharing with AI
     -->
     <string name="product_sharing_write_with_ai">Write with AI</string>
-    <string name="product_sharing_regenerate">Regenerate</string>
-    <string name="product_sharing_generating">Generating…</string>
+    <string name="product_sharing_regenerate">Write again</string>
+    <string name="product_sharing_generating">Writing…</string>
     <string name="product_sharing_optional_message_label">Add an optional message</string>
     <string name="product_sharing_ai_info_label">Learn more about our AI feature</string>
     <string name="product_sharing_ai_generating_failure">Unable to generate sharing message. Please try again!</string>
 
+    <!--
+    AI Product description
+    -->
+    <string name="ai_product_description_title">Write a description</string>
+    <string name="ai_product_description_product_name">Enter your product name</string>
+    <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
+    <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
+    <string name="ai_product_description_survey">Is the generated description helpful?</string>
+    <string name="ai_product_description_regenerate_button">Regenerate</string>
+    <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
+    <string name="ai_product_description_note_dialog_heading">Great start!</string>
+    <string name="ai_product_description_note_dialog_message">Please keep in mind that this product description was generated using our AI-powered tool. Please review and edit the content to ensure it aligns with your brand and messaging.</string>
+    <string name="ai_product_description_note_dialog_confirmation">Got it</string>
+    <string name="ai_product_description_learn_more_link">Powered by AI. &lt;a href=\'\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="ai_product_description_label">Description generated by AI</string>
+    <string name="ai_product_description_error">There was a problem generating the product description. Please try again later.</string>
+    <string name="ai_product_description_dialog_title">Add product description with AI</string>
+    <string name="ai_product_description_dialog_message">Add descriptions in a snap with AI. Try our feature today!</string>
+    <string name="ai_product_toolbar_button_tooltip">Generate a description using AI</string>
+    <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
+    <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
+    <string name="ai_product_description_tooltip_dismiss">Got it</string>
+
+    <!--
+    Blaze banner
+    -->
+    <string name="blaze_banner_title">Promote products with Blaze</string>
+    <string name="blaze_banner_description">Turn your products into ads that run across millions of sites on WordPress.com and Tumblr.</string>
+    <string name="blaze_banner_button">Try Blaze now</string>
+    <string name="blaze_banner_close_button_content_description">Close Blaze banner button</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
+    <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
+    <string name="blaze_banner_dismiss_dialog_button">Got it</string>
+
+    <!--
+    Highlights tooltip
+    -->
+    <string name="highlights_tooltip_title_hint">Tooltip title</string>
+    <string name="highlights_tooltip_message_hint">Tooltip message. \n This can be multiple lines.</string>
+    <string name="highlights_tooltip_button_hint">Button text</string>
 
 </resources>

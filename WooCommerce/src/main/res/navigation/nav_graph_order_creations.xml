@@ -37,6 +37,9 @@
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
             app:destination="@id/orderCreationCustomerFragment" />
         <action
+            android:id="@+id/action_orderCreationFragment_to_customerListFragment"
+            app:destination="@id/customerListFragmentNew" />
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
             app:destination="@id/orderCreationProductDetailsFragment"
             app:enterAnim="@anim/default_enter_anim"
@@ -80,8 +83,23 @@
                 android:defaultValue="@null"/>
         </action>
         <action
-            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditionFragment"
-            app:destination="@id/orderCreationCouponEditionFragment"
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponListFragment"
+            app:destination="@id/orderCreationCouponListFragment"
+            app:popUpTo="@id/orderCreationCouponListFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim">
+            <argument
+                android:name="couponLines"
+                app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
+        </action>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_orderCreationCouponEditFragment"
+            app:destination="@id/orderCreationCouponEditFragment"
+            app:popUpTo="@id/orderCreationCouponEditFragment"
+            app:popUpToInclusive="true"
             app:enterAnim="@anim/default_enter_anim"
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
@@ -103,7 +121,20 @@
             android:name="barcodeFormat"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
             app:nullable="true"/>
+        <argument
+            android:name="couponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment"/>
     </fragment>
+    <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
         android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
@@ -151,12 +182,33 @@
     </fragment>
     <fragment
         android:id="@+id/orderCreationProductDetailsFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment"
         android:label="OrderCreationProductDetailsFragment"
         tools:layout="@layout/fragment_order_create_edit_product_details">
         <argument
             android:name="item"
             app:argType="com.woocommerce.android.model.Order$Item" />
+        <argument
+            android:name="currency"
+            app:argType="string" />
+        <argument
+            android:name="discountEditEnabled"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_orderCreationProductDetailsFragment_to_orderCreationProductDiscountFragment"
+            app:destination="@id/orderCreationProductDiscountFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationProductDiscountFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment"
+        android:label="OrderCreateEditProductDiscountFragment">
+        <argument
+            android:name="item"
+            app:argType="com.woocommerce.android.model.Order$Item" />
+        <argument
+            android:name="currency"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/orderCreationShippingFragment"
@@ -183,14 +235,54 @@
             android:defaultValue="@null"/>
     </fragment>
     <fragment
-        android:id="@+id/orderCreationCouponEditionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionFragment"
-        android:label="OrderCreationCouponEditionFragment">
+        android:id="@+id/orderCreationCouponListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.list.OrderCreateCouponListFragment"
+        android:label="OrderCreationCouponListFragment">
+        <argument
+            android:name="couponLines"
+            app:argType="com.woocommerce.android.model.Order$CouponLine[]" />
+        <argument
+            android:name="orderCreationMode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <action
+            android:id="@+id/action_orderCreationCouponListFragment_to_orderCreationCouponEditFragment"
+            app:destination="@id/orderCreationCouponEditFragment"
+            app:popUpTo="@id/orderCreationCouponEditFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/orderCreationCouponEditFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragment"
+        android:label="OrderCreationCouponEditFragment">
         <argument
             android:name="couponCode"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null"/>
+        <argument
+            android:name="orderCreationMode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <action
+            android:id="@+id/action_orderCreationCouponEditFragment_to_orderCreationFragment"
+            app:destination="@id/orderCreationFragment"
+            app:popUpTo="@id/orderCreationFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
+            >
+            <argument
+                android:name="couponEditResult"
+                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
     </fragment>
 
     <action
@@ -203,8 +295,17 @@
     <fragment
         android:id="@+id/customerListFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
-        android:label="customerListFragment"
-        tools:layout="@layout/fragment_customer_list" />
+        android:label="customerListFragment" />
+    <fragment
+        android:id="@+id/customerListFragmentNew"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListFragment"
+        android:label="customerListFragment" >
+
+        <action
+            android:id="@+id/action_customerListFragment_to_orderCreationCustomerFragment"
+            app:destination="@id/orderCreationCustomerFragment" />
+
+    </fragment>
 
     <include app:graph="@navigation/nav_graph_product_selector" />
 </navigation>

@@ -18,31 +18,27 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
-import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -65,7 +61,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -112,9 +107,8 @@ class OrderListViewModel @Inject constructor(
     private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
     private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val appPrefs: AppPrefs,
     private val feedbackPrefs: FeedbackPrefs,
-    private val codeScanner: CodeScanner,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -173,14 +167,6 @@ class OrderListViewModel @Inject constructor(
     private var dismissListErrors = false
     var searchQuery = ""
 
-    private var scanningJob: Job? = null
-
-    private var isScanningInProgress: Boolean
-        get() = savedState.get<Boolean>(KEY_SCANNING_IN_PROGRESS) == true
-        set(value) {
-            savedState[KEY_SCANNING_IN_PROGRESS] = value
-        }
-
     private val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean
         get() {
             val simplePaymentsAndOrderFeedbackDismissed =
@@ -195,22 +181,6 @@ class OrderListViewModel @Inject constructor(
 
         EventBus.getDefault().register(this)
         dispatcher.register(this)
-
-        if (vmKilledWhenScanningInProgress()) {
-            isScanningInProgress = false
-            analyticsTracker.track(
-                AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-                mapOf(
-                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                    KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
-                )
-            )
-            triggerEvent(
-                OrderListEvent.VMKilledWhenScanningInProgress(
-                    R.string.order_list_barcode_scanning_process_death
-                )
-            )
-        }
 
         launch {
             // Populate any cached order status options immediately since we use this
@@ -232,11 +202,12 @@ class OrderListViewModel @Inject constructor(
         displayIPPFeedbackOrOrdersBannerOrJitm()
     }
 
-    private fun vmKilledWhenScanningInProgress() = scanningJob == null && isScanningInProgress
-
     fun loadOrders() {
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
-        viewState = viewState.copy(filterCount = getSelectedOrderFiltersCount())
+        viewState = viewState.copy(
+            filterCount = getSelectedOrderFiltersCount(),
+            isErrorFetchingDataBannerVisible = false
+        )
         activatePagedListWrapper(ordersPagedListWrapper!!)
         fetchOrdersAndOrderDependencies()
     }
@@ -274,13 +245,14 @@ class OrderListViewModel @Inject constructor(
      */
     fun fetchOrdersAndOrderDependencies() {
         if (networkStatus.isConnected()) {
+            viewState = viewState.copy(isErrorFetchingDataBannerVisible = false)
             launch(dispatchers.main) {
                 activePagedListWrapper?.fetchFirstPage()
                 fetchOrderStatusOptions()
                 fetchPaymentGateways()
             }
         } else {
-            viewState = viewState.copy(isRefreshPending = true)
+            viewState = viewState.copy(isRefreshPending = true, isErrorFetchingDataBannerVisible = false)
             showOfflineSnack()
         }
     }
@@ -317,50 +289,33 @@ class OrderListViewModel @Inject constructor(
 
     fun onScanClicked() {
         trackScanClickedEvent()
-        startScan()
+        triggerEvent(OrderListEvent.OpenBarcodeScanningFragment)
     }
 
     private fun trackScanClickedEvent() {
         analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
-    private fun startScan() {
-        scanningJob = launch {
-            isScanningInProgress = true
-            codeScanner.startScan().collect { status ->
-                isScanningInProgress = false
-                when (status) {
-                    is CodeScannerStatus.Failure -> {
-                        analyticsTracker.track(
-                            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-                            mapOf(
-                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
-                            )
-                        )
-                        triggerEvent(
-                            OrderListEvent.OnAddingProductViaScanningFailed(
-                                R.string.order_list_barcode_scanning_scanning_failed
-                            ) {
-                                startScan()
-                            }
-                        )
+    fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
+        when (status) {
+            is CodeScannerStatus.Failure -> {
+                barcodeScanningTracker.trackScanFailure(
+                    ScanningSource.ORDER_LIST,
+                    status.type
+                )
+                triggerEvent(
+                    OrderListEvent.OnAddingProductViaScanningFailed(
+                        R.string.order_list_barcode_scanning_scanning_failed
+                    ) {
+                        triggerEvent(OrderListEvent.OpenBarcodeScanningFragment)
                     }
-                    is CodeScannerStatus.Success -> {
-                        analyticsTracker.track(
-                            BARCODE_SCANNING_SUCCESS,
-                            mapOf(
-                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
-                            )
-                        )
-                        triggerEvent(
-                            OrderListEvent.OnBarcodeScanned(
-                                status.code,
-                                status.format
-                            )
-                        )
-                    }
-                }
+                )
+            }
+            is CodeScannerStatus.Success -> {
+                barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
+                triggerEvent(
+                    OrderListEvent.OnBarcodeScanned(status.code, status.format)
+                )
             }
         }
     }
@@ -434,11 +389,20 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.filter { error ->
-            !dismissListErrors && error != null
-        }.observe(this) {
-            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-        }
+        pagedListWrapper.listError
+            .filter { !dismissListErrors }
+            .filterNotNull()
+            .observe(this) { error ->
+                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
+                    viewState = viewState.copy(
+                        isErrorFetchingDataBannerVisible = true,
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
+                    )
+                } else {
+                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                }
+            }
         this.activePagedListWrapper = pagedListWrapper
 
         if (isFirstInit) {
@@ -450,20 +414,18 @@ class OrderListViewModel @Inject constructor(
 
     private fun displayIPPFeedbackOrOrdersBannerOrJitm() {
         viewModelScope.launch {
+            val bannerData = getIPPFeedbackBannerData()
             when {
-                shouldShowFeedbackBanner() -> {
-                    val bannerData = getIPPFeedbackBannerData()
-                    if (bannerData != null) {
-                        viewState = viewState.copy(
-                            ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
-                        )
-                        trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
-                    }
+                shouldShowFeedbackBanner() && bannerData != null -> {
+                    viewState = viewState.copy(
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
+                    )
+                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
                 }
                 !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
                     viewState = viewState.copy(
                         ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-                        jitmEnabled = appPrefs.isTapToPayEnabled
+                        jitmEnabled = true
                     )
                 }
             }
@@ -806,6 +768,8 @@ class OrderListViewModel @Inject constructor(
 
         data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
 
+        object OpenBarcodeScanningFragment : OrderListEvent()
+
         data class OnBarcodeScanned(
             val code: String,
             val barcodeFormat: BarcodeFormat
@@ -827,6 +791,7 @@ class OrderListViewModel @Inject constructor(
         val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
+        val isErrorFetchingDataBannerVisible: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
@@ -840,9 +805,5 @@ class OrderListViewModel @Inject constructor(
         data class Visible(
             val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
         ) : IPPSurveyFeedbackBannerState()
-    }
-
-    companion object {
-        private const val KEY_SCANNING_IN_PROGRESS = "scanning_in_progress"
     }
 }

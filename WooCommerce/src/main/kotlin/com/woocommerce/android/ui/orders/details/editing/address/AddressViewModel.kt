@@ -245,6 +245,7 @@ class AddressViewModel @Inject constructor(
         billingAddress: Address,
         shippingAddress: Address
     ) {
+        hasStarted = true
         viewState = viewState.copy(
             customerId = customerId,
             addressSelectionStates = mapOf(
@@ -258,6 +259,15 @@ class AddressViewModel @Inject constructor(
                 )
             )
         )
+    }
+
+    fun clearSelectedAddress() {
+        hasStarted = true
+        this.initialState = mapOf(
+            AddressType.BILLING to Address.EMPTY,
+            AddressType.SHIPPING to Address.EMPTY,
+        )
+        initialize(initialState)
     }
 
     @Parcelize

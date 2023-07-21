@@ -1,0 +1,1 @@
+We added the option for you to automatically generate conversion-friendly & SEO-optimized product descriptions for your WooCommerce products using the help of AI. Do try it out and share your feedback!

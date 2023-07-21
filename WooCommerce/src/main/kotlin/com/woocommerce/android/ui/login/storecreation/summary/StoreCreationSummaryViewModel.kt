@@ -58,7 +58,9 @@ class StoreCreationSummaryViewModel @Inject constructor(
         )
     }
 
-    fun onCancelPressed() { triggerEvent(OnCancelPressed) }
+    fun onCancelPressed() {
+        triggerEvent(OnCancelPressed)
+    }
 
     fun onTryForFreeButtonPressed() {
         tracker.track(AnalyticsEvent.SITE_CREATION_TRY_FOR_FREE_TAPPED)
@@ -74,12 +76,21 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 when (creationState) {
                     is Finished -> {
                         newStore.update(siteId = creationState.siteId)
+                        tracker.track(
+                            stat = AnalyticsEvent.SITE_CREATION_FREE_TRIAL_CREATED_SUCCESS,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_NEW_SITE_ID to newStore.data.siteId,
+                                AnalyticsTracker.KEY_INITIAL_DOMAIN to newStore.data.domain
+                            )
+                        )
                         triggerEvent(OnStoreCreationSuccess)
 
                         manageDeferredNotifications()
                     }
+
                     is Failed -> triggerEvent(OnStoreCreationFailure)
-                    else -> { /* no op */ }
+                    else -> { /* no op */
+                    }
                 }
             }
         }

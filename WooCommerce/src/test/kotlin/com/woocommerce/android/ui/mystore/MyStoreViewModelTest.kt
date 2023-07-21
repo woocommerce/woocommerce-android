@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -62,6 +63,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
     private val timezoneProvider: TimezoneProvider = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -416,15 +418,16 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the viewModel started, when device and store timezones are different, then trigger expected analytics event`() = testBlocking {
-        // Given
-        val testSite = SiteModel().apply {
-            timezone = "-3"
-        }
+    fun `given the viewModel started, when device and store timezones are different, then trigger expected analytics event`() =
+        testBlocking {
+            // Given
+            val testSite = SiteModel().apply {
+                timezone = "-3"
+            }
 
-        val deviceTimezone = mock<TimeZone> {
-            on { rawOffset } doReturn 0
-        }
+            val deviceTimezone = mock<TimeZone> {
+                on { rawOffset } doReturn 0
+            }
 
         whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
@@ -433,18 +436,18 @@ class MyStoreViewModelTest : BaseUnitTest() {
         ) doReturn true
         givenObserveTopPerformersEmits(emptyList())
 
-        // When
-        whenViewModelIsCreated()
+            // When
+            whenViewModelIsCreated()
 
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-            properties = mapOf(
-                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
-                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+                )
             )
-        )
-    }
+        }
 
     @Test
     fun `given the viewModel started, when device and store timezones are the same, then do nothing`() = testBlocking {
@@ -478,16 +481,17 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the viewModel started, when timezone track was NOT triggered before, then trigger expected analytics event`() = testBlocking {
-        // Given
-        val testSite = SiteModel().apply {
-            timezone = "-3"
-            siteId = 7777777
-        }
+    fun `given the viewModel started, when timezone track was NOT triggered before, then trigger expected analytics event`() =
+        testBlocking {
+            // Given
+            val testSite = SiteModel().apply {
+                timezone = "-3"
+                siteId = 7777777
+            }
 
-        val deviceTimezone = mock<TimeZone> {
-            on { rawOffset } doReturn 0
-        }
+            val deviceTimezone = mock<TimeZone> {
+                on { rawOffset } doReturn 0
+            }
 
         whenever(selectedSite.getIfExists()) doReturn testSite
         whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
@@ -500,18 +504,18 @@ class MyStoreViewModelTest : BaseUnitTest() {
         ) doReturn true
         givenObserveTopPerformersEmits(emptyList())
 
-        // When
-        whenViewModelIsCreated()
+            // When
+            whenViewModelIsCreated()
 
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-            properties = mapOf(
-                AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
-                AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+            // Then
+            verify(analyticsTrackerWrapper).track(
+                stat = AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STORE_TIMEZONE to testSite.timezone,
+                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to deviceTimezone.offsetInHours.toString()
+                )
             )
-        )
-    }
+        }
 
     @Test
     fun `given the viewModel started, when timezone track is triggered, then set appPrefs flag`() = testBlocking {
@@ -686,8 +690,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             myStoreTransactionLauncher,
             timezoneProvider,
+            isAIProductDescriptionEnabled,
             localNotificationScheduler,
-            shouldShowPrivacyBanner,
+            shouldShowPrivacyBanner
         )
     }
 

@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 11:54:04+0000
+Translation-Revision-Date: 2023-07-03 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="ai_product_description_dialog_message">Füge mit KI im Handumdrehen Beschreibungen hinzu. Probiere die Funktion noch heute aus!</string>
+    <string name="ai_product_description_dialog_title">Produktbeschreibung mit KI hinzufügen</string>
+    <string name="ai_product_description_note_dialog_confirmation">Verstanden</string>
+    <string name="ai_product_description_note_dialog_message">Beachte bitte, dass diese Produktbeschreibung mit unserem KI-gestützten Tool erstellt wurde. Überprüfe und bearbeite den Inhalt entsprechend, damit er deiner Marke und Botschaft entspricht.</string>
+    <string name="ai_product_description_note_dialog_heading">Guter Start!</string>
+    <string name="ai_product_description_feedback">Ist die generierte\nBeschreibung hilfreich?</string>
+    <string name="ai_product_description_regenerate_button">Neu generieren</string>
+    <string name="ai_product_description_survey">Ist die generierte Beschreibung hilfreich?</string>
+    <string name="ai_product_description_hint">Hebe die besonderen Funktionen deines Produkts und die Zielgruppe mit Stichwörtern für eine spezielle Beschreibung hervor.</string>
+    <string name="ai_product_description_example">Beispiel: eingetopft, Kaktus, Pflanze, dekorativ, pflegeleicht</string>
+    <string name="ai_product_description_product_name">Gib deinen Produktnamen ein</string>
+    <string name="ai_product_description_title">Verfasse eine Beschreibung</string>
+    <string name="barcode_scanning_camera_permission_denied">Zum Scannen des Barcodes ist die Berechtigung zum Zugriff auf deine Kamera erforderlich.</string>
+    <string name="barcode_scanning_title">Barcode scannen</string>
+    <string name="order_creation_customer_search_username">Benutzername</string>
+    <string name="order_creation_customer_search_name">Name</string>
+    <string name="order_creation_customer_search_email">E-Mail</string>
+    <string name="order_creation_customer_search_everything">Alles</string>
+    <string name="order_creation_customer_filter_hint">Kunden filtern nach</string>
+    <string name="order_creation_coupons_title">Gutscheine angewendet</string>
+    <string name="more_settings">Weitere Einstellungen</string>
+    <string name="maybe_later">Vielleicht später</string>
+    <string name="product_sharing_regenerate">Erneut schreiben</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Erhalte Benachrichtigungen zu jedem Verkauf:&lt;/b&gt; Mit sofortigen Verkaufsbenachrichtigungen bleibst du immer auf dem Laufenden. Du erhältst eine Benachrichtigung zu jedem neuen Verkauf. So kannst du deine Erfolge feiern und bleibst bei deiner Shop-Aktivität immer auf dem neuesten Stand.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Füge Produkte hinzu und bearbeite sie mit nur einer Berührung:&lt;/b&gt; Füge neue Produkte hinzu, aktualisiere Details, lade Bilder hoch und verwalte Varianten – alles in der App. Halte deinen Bestand ganz mühelos aktuell.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Nimm Zahlungen persönlich entgegen:&lt;/b&gt; Steigere deine Umsatzchancen, indem du Zahlungen persönlich entgegennimmst. Verwende die App, um Kreditkarten-Transaktionen sicher zu verarbeiten, oder verbinde kompatible Kartenlesegeräte, um persönliche Zahlungen bequem entgegenzunehmen.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Verwalte und erstelle Bestellungen:&lt;/b&gt; Bearbeite Bestellungen ganz einfach. Scrolle, suche und ändere den Bestellstatus. Erstelle im Handumdrehen neue Bestellungen für Käufe im Shop oder per Telefon. Vereinfache deinen Verwaltungsprozess für Bestellungen.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Verfolge Verkäufe und beliebte Produkte:&lt;/b&gt; Bleibe über die Performance deines Shops in Echtzeit auf dem Laufenden. Erkenne deine meistverkauften Produkte und triff fundierte Entscheidungen für maximale Rentabilität.</string>
+    <string name="store_creation_in_progress_description_1">Du wirst benachrichtigt, sobald der Shop einsatzbereit ist! Lehn dich zurück, entspann dich und lass uns den Zauberstab schwingen, während wir hilfreiche Tipps teilen. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Dein Shop wird erstellt! Nur noch wenige Minuten</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Ein PIN-Code ist erforderlich, dies wird jedoch von Tap to Pay noch nicht unterstützt. Verwende stattdessen ein externes Kartenlesegerät</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Kaufe ein Kartenlesegerät</string>
+    <string name="order_sync_coupon_removed">Gutschein konnte nicht angewendet werden und wurde aus der Bestellung entfernt</string>
+    <string name="product_sharing_ai_generating_failure">Nachricht zum Teilen kann nicht erstellt werden. Versuche es bitte noch einmal!</string>
+    <string name="product_sharing_ai_info_label">Erfahre mehr über unsere KI-Funktion</string>
+    <string name="product_sharing_optional_message_label">Optionale Nachricht hinzufügen</string>
+    <string name="product_sharing_generating">Schreiben …</string>
+    <string name="product_sharing_write_with_ai">Mit KI schreiben</string>
+    <string name="more_menu_button_blaze_description">Produkte mit Blaze bewerben</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">KI-Inhaltsgenerator verfügbar</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Mit Blaze bewerben</string>
     <string name="share_product">Produkt teilen</string>
     <string name="first_product_celebration_body_message">Glückwunsch! Du bist einen Schritt weiter auf dem Weg zu deinem neuen Shop.</string>
     <string name="first_product_celebration_title">Erstes Produkt erstellt 🎉</string>
@@ -105,18 +147,11 @@ Language: de
     <string name="store_creation_profiler_industry_home_furniture_garden">Heim, Möbel und Garten</string>
     <string name="store_creation_profiler_industry_food_drink">Essen und Trinken</string>
     <string name="store_creation_profiler_industry_health_beauty">Gesundheit und Beauty</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunfactZuWoo:&lt;/b&gt; Unsere Lieblingsfarbe ist Lila. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunfactZuWoo:&lt;/b&gt; Das Woo Team besteht aus über 350 talentierten Leuten in über 30 Ländern.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunfactZuWoo:&lt;/b&gt; Es gibt mehr als 150 WooCommerce-Treffen auf der ganzen Welt! Eine hervorragende Möglichkeit, um andere Shop-Besitzer kennenzulernen.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunfactZuWoo:&lt;/b&gt; Gehörst du zum Team Katze oder Team Hund? Beim Woo-Team steht es 50:50!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunfactZuWoo:&lt;/b&gt; Wusstest du, dass Woo von zwei Südafrikanern und einem Norweger gegründet wurde? Und so nennt man „Shop“ in diesen Ländern auch: winkel, ivenkile und butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunfactZuWoo:&lt;/b&gt; Wusstest du, dass fast 4 Millionen Shops weltweit Woo verwenden? Du bist in guter Gesellschaft.</string>
     <string name="store_creation_in_progress_title_6">Die Türen werden geöffnet …</string>
     <string name="store_creation_in_progress_title_5">Die Lichter werden eingeschaltet …</string>
     <string name="store_creation_in_progress_title_4">Jetzt noch der Feinschliff …</string>
     <string name="store_creation_in_progress_title_3">Das Lager wird eingerichtet …</string>
     <string name="store_creation_in_progress_title_2">Das Fundament wird gelegt …</string>
-    <string name="store_creation_in_progress_title_1">Woo! Dein Shop wird erstellt …</string>
     <string name="notifications_permission_description">Wir benötigen deine Zustimmung, um Push-Benachrichtigungen zu neuen Bestellungen, Bewertungen usw. direkt auf dein Gerät senden zu können.</string>
     <string name="notifications_permission_title">Benachrichtigungen</string>
     <string name="product_type_composite">Zusammengesetztes Produkt</string>
