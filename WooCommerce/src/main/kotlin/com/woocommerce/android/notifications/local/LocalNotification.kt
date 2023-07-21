@@ -82,7 +82,7 @@ sealed class LocalNotification(
         description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
         type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
         delay = 6,
-        delayUnit = TimeUnit.SECONDS
+        delayUnit = TimeUnit.HOURS
     ) {
         override val data: String = siteId.toString()
 
