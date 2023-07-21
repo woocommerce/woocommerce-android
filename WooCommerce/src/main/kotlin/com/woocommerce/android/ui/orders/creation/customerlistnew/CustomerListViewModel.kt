@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -21,6 +23,7 @@ class CustomerListViewModel @Inject constructor(
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     @Volatile
     private var paginationState = PaginationState(1, true)
@@ -57,6 +60,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onCustomerSelected(customerModel: WCCustomerModel) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         if (customerModel.remoteCustomerId > 0L) {
             // this customer is registered, so we may have more info on them
             tryLoadMoreInfo(customerModel)
@@ -124,6 +128,14 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
             // Add a delay to avoid multiple requests when the user types fast or switches search types
             delay(SEARCH_DELAY_MS)
+            if (searchQuery.isNotEmpty()) {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
+                    mapOf(
+                        "search_type" to viewState.value?.searchModes?.firstOrNull { it.isSelected }?.searchParam
+                    )
+                )
+            }
         }
         val supportedSearchModes = _viewState.value!!.searchModes
         val result = repository.searchCustomerListWithEmail(
