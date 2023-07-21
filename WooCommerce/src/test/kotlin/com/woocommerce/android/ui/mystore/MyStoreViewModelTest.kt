@@ -417,12 +417,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 on { rawOffset } doReturn 0
             }
 
-        whenever(selectedSite.getIfExists()) doReturn testSite
-        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(
-            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
-        ) doReturn true
-        givenObserveTopPerformersEmits(emptyList())
+            whenever(selectedSite.getIfExists()) doReturn testSite
+            whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+            whenever(
+                appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(any(), any(), any())
+            ) doReturn true
+            givenObserveTopPerformersEmits(emptyList())
 
             // When
             whenViewModelIsCreated()
@@ -481,16 +481,16 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 on { rawOffset } doReturn 0
             }
 
-        whenever(selectedSite.getIfExists()) doReturn testSite
-        whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
-        whenever(
-            appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
-                siteId = 7777777,
-                localTimezone = "0",
-                storeTimezone = "-3"
-            )
-        ) doReturn true
-        givenObserveTopPerformersEmits(emptyList())
+            whenever(selectedSite.getIfExists()) doReturn testSite
+            whenever(timezoneProvider.deviceTimezone) doReturn deviceTimezone
+            whenever(
+                appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
+                    siteId = 7777777,
+                    localTimezone = "0",
+                    storeTimezone = "-3"
+                )
+            ) doReturn true
+            givenObserveTopPerformersEmits(emptyList())
 
             // When
             whenViewModelIsCreated()
