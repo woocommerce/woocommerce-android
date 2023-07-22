@@ -182,7 +182,7 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
-            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(),any())
+            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any())
         }
 
     @Test
@@ -193,7 +193,7 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
-                .shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(),any())
+                .shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any())
         }
 
     @Test

@@ -649,7 +649,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
         // When granularity changes refresh is false
         verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
-
     }
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
