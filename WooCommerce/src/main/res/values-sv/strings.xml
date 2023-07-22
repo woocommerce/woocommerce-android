@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-04 11:54:03+0000
+Translation-Revision-Date: 2023-07-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Gå till inställningar</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Avbryt</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Bevilja</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Du har nekat kameraåtkomst permanent. Det krävs för streckkodsskanning. Aktivera det i appinställningarna</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Kameraåtkomst krävs för streckkodsskanning.</string>
+    <string name="barcode_scanning_alert_dialog_title">Bevilja kameraåtkomst</string>
+    <string name="order_creation_coupon_network_error">Något gick fel när din rabattkod skulle valideras. Försök igen</string>
+    <string name="order_creation_coupon_invalid_code">Vi kunde inte hitta en rabattkod med den koden. Försök igen</string>
+    <string name="order_creation_discount_amount_type">Belopp (%1$s)</string>
+    <string name="order_creation_discount_value">Rabatt %1$s</string>
+    <string name="order_creation_discounts_total_value">– %1$s</string>
+    <string name="order_creation_discounts_total">Totala rabatter</string>
+    <string name="order_creation_discount">Rabatt</string>
+    <string name="order_creation_discount_amount_with_currency">Belopp (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Manuell rabatt kunde inte tillämpas. Ta bort rabattkoder först</string>
+    <string name="order_creation_discount_invalid_number_error">Rabatt är inte ett giltigt nummer</string>
+    <string name="order_creation_discount_too_big_error">Rabatt kan inte vara större än priset</string>
+    <string name="order_creation_remove_discount">Ta bort rabatt</string>
+    <string name="highlights_tooltip_button_hint">Knapptext</string>
+    <string name="highlights_tooltip_message_hint">Verktygstipsmeddelande. \n Detta kan innehålla flera rader.</string>
+    <string name="highlights_tooltip_title_hint">Verktygstipsrubrik</string>
+    <string name="blaze_banner_dismiss_dialog_button">Jag förstår</string>
+    <string name="blaze_banner_dismiss_dialog_description">Inga problem. Blaze är tillgängligt via menyn och produktinformationsmenyn för din bekvämlighet.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze-annonser</string>
+    <string name="blaze_banner_close_button_content_description">Stäng Blaze-bannerknapp</string>
+    <string name="blaze_banner_button">Prova Blaze nu</string>
+    <string name="blaze_banner_description">Förvandla dina produkter till annonser som körs på miljontals WordPress.com- och Tumblr-webbplatser.</string>
+    <string name="blaze_banner_title">Marknadsför produkter med Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">Jag förstår</string>
+    <string name="ai_product_description_tooltip_message">Använd vårt AI-drivna verktyg för att snabbt generera produktbeskrivningar. Det är bara att ange nyckelord så gör vi resten.</string>
+    <string name="ai_product_description_tooltip_title">✨ Skriv med AI</string>
+    <string name="ai_product_toolbar_button_tooltip">Generera en beskrivning med AI</string>
+    <string name="ai_product_description_error">Det uppstod ett problem när produktbeskrivningen skulle genereras. Försök igen senare.</string>
+    <string name="ai_product_description_label">Beskrivning genererad av AI</string>
+    <string name="ai_product_description_learn_more_link">Drivs med AI. &lt;a href=\'\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Tryck för att betala på Android är inte tillgängligt i ditt land än. Håll ögonen öppna.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Din enhet behöver ha tjänsten Google Play för att du ska kunna använda Tryck för att betala på Android. För att ta emot personliga betalningar behöver du installera tjänsten Google Play eller köpa en Bluetooth-kortläsare.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">För att använda Tryck för att betala på Android behöver du Android 10 eller senare. För att ta emot personliga betalningar behöver du uppdatera Android eller köpa en Bluetooth-kortläsare.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Din enhet behöver ha ett NFC-chip för att du ska kunna använda Tryck för att betala på Android. För att ta emot personliga betalningar behöver du köpa en Bluetooth-kortläsare.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tryck för att betala är inte tillgängligt</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Kontrollera kraven</string>
+    <string name="error_troubleshooting">Felsökning</string>
+    <string name="orderlist_parsing_error_message">Detta kan bero på en tilläggskonflikt. Försök igen senare eller kontakta oss så hjälper vi dig gärna.</string>
+    <string name="orderlist_parsing_error_title">Vi kunde inte ladda dina data.</string>
     <string name="ai_product_description_dialog_message">Lägg till beskrivningar på nolltid med AI. Prova vår funktion idag.</string>
     <string name="ai_product_description_dialog_title">Lägg till produktbeskrivning med AI</string>
     <string name="ai_product_description_note_dialog_confirmation">Jag förstår</string>
@@ -250,8 +294,6 @@ Language: sv_SE
     <string name="product_subscription_title">Prenumeration</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kortläsaren accepterar blipp, chipp och magnetremsa vid betalning med betal- och kreditkort.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Testa Tryck för att betala i appen</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tryck för att betala</string>
     <string name="card_reader_tap_to_pay_share_feedback">Dela feedback om Tryck för att betala</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
     <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
@@ -297,7 +339,6 @@ Language: sv_SE
     <string name="store_onboarding_launch_store_share_url_button">Dela URL</string>
     <string name="store_onboarding_launch_store_button">Publicera min butik</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">För att lansera din butik behöver du uppgradera till vårt paket. &lt;u&gt;Uppgradera&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tryck för att betala är inte tillgängligt för din butik eller enhet</string>
     <string name="domains_search_domains">Sök domäner</string>
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>

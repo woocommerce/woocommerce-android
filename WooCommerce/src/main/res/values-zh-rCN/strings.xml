@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-04 09:54:24+0000
+Translation-Revision-Date: 2023-07-19 10:54:27+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">转至“设置”</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">取消</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">授予</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">您已经永久拒绝了相机权限。 需要该权限才能扫描条形码。 请通过应用程序设置启用该权限</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">需要相机权限才能扫描条形码</string>
+    <string name="barcode_scanning_alert_dialog_title">授予相机权限</string>
+    <string name="order_creation_coupon_network_error">验证您的优惠券代码时出现错误。 请重试</string>
+    <string name="order_creation_coupon_invalid_code">无法找到与该代码相匹配的优惠券。 请重试</string>
+    <string name="order_creation_discount_amount_type">金额 (%1$s)</string>
+    <string name="order_creation_discount_value">折扣 %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">折扣总额</string>
+    <string name="order_creation_discount">折扣</string>
+    <string name="order_creation_discount_amount_with_currency">金额 (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">无法手动应用折扣。 请先移除优惠券</string>
+    <string name="order_creation_discount_invalid_number_error">折扣是无效的数字</string>
+    <string name="order_creation_discount_too_big_error">折扣金额不能超过价格</string>
+    <string name="order_creation_remove_discount">删除折扣</string>
+    <string name="highlights_tooltip_button_hint">按钮文本</string>
+    <string name="highlights_tooltip_message_hint">工具提示消息。 \n 可能有多行。</string>
+    <string name="highlights_tooltip_title_hint">工具提示标题</string>
+    <string name="blaze_banner_dismiss_dialog_button">知道了</string>
+    <string name="blaze_banner_dismiss_dialog_description">不必担心！ 为方便起见，您可以从“菜单”和产品详细信息菜单中访问 Blaze。</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze 广告</string>
+    <string name="blaze_banner_close_button_content_description">关闭 Blaze 横幅按钮</string>
+    <string name="blaze_banner_button">立即试用 Blaze</string>
+    <string name="blaze_banner_description">将您的产品制作成广告，在 WordPress.com 和 Tumblr 的数百万个站点上投放。</string>
+    <string name="blaze_banner_title">通过 Blaze 推广产品</string>
+    <string name="ai_product_description_tooltip_dismiss">知道了</string>
+    <string name="ai_product_description_tooltip_message">利用 AI 赋能的工具，快速生成产品描述。 只需输入关键词，剩下的交给我们处理！</string>
+    <string name="ai_product_description_tooltip_title">✨ 使用 AI 写作</string>
+    <string name="ai_product_toolbar_button_tooltip">使用 AI 生成描述</string>
+    <string name="ai_product_description_error">生成产品描述时出现问题。 请稍后重试。</string>
+    <string name="ai_product_description_label">AI 生成的描述</string>
+    <string name="ai_product_description_learn_more_link">由 AI 提供支持。 &lt;a href=\'\'&gt;&lt;u&gt;了解更多&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">很抱歉，Android 上的点按付款功能目前在您的国家/地区不可用。 敬请继续关注！</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">要在 Android 上使用点按付款功能，您的设备需要 Google Play 服务。 要接受现场付款，请安装 Google Play 服务或购买蓝牙读卡器。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">要在 Android 上使用点按付款功能，您需要 Android 10 或以上版本的系统。 要接受现场付款，请更新 Android 或购买蓝牙读卡器。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">要在 Android 上使用点按付款功能，您的设备需要 NFC 芯片。 要接受现场付款，请购买蓝牙读卡器。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">点按付款不可用</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">检查要求</string>
+    <string name="error_troubleshooting">故障排除</string>
+    <string name="orderlist_parsing_error_message">这可能与插件冲突有关。 请稍后再试或与我们联系，我们很乐意为您提供帮助！</string>
+    <string name="orderlist_parsing_error_title">我们无法加载您的数据。</string>
     <string name="ai_product_description_dialog_message">使用 AI 快速添加描述。 立即试用我们的功能！</string>
     <string name="ai_product_description_dialog_title">使用 AI 添加产品描述</string>
     <string name="ai_product_description_note_dialog_confirmation">知道了</string>
@@ -250,8 +294,6 @@ Language: zh_CN
     <string name="product_subscription_title">订阅</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">读卡器接受借记卡和信用卡的触碰、芯片读取和刷卡支付。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">安全地接受直接通过您的手机进行非接触式支付。</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">在应用程序中测试“点按付款”功能</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">点按付款</string>
     <string name="card_reader_tap_to_pay_share_feedback">分享“点按付款”反馈</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">无法登录，因为未批准应用程序创建密码。</string>
     <string name="login_site_credentials_fetching_site">正在获取站点…</string>
@@ -297,7 +339,6 @@ Language: zh_CN
     <string name="store_onboarding_launch_store_share_url_button">分享 URL</string>
     <string name="store_onboarding_launch_store_button">发布我的商店</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">要启动商店，您需要升级套餐。 &lt;u&gt;升级&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">“点按付款”目前不适用于您的商店或设备</string>
     <string name="domains_search_domains">搜索域</string>
     <string name="login_site_credentials_http_error">登陆失败，状态代码为 %1$s</string>
     <string name="login_site_credentials_custom_admin_url">由于我们无法识别您商店的管理员 URL，无法登录</string>
