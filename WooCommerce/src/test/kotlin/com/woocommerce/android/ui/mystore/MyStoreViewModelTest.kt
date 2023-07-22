@@ -630,6 +630,28 @@ class MyStoreViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `test refresh behavior`() = testBlocking {
+        // Given
+        givenNetworkConnectivity(connected = true)
+        givenObserveTopPerformersEmits(emptyList())
+        whenViewModelIsCreated()
+
+        // When ViewModel starts refresh is false
+        verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+
+        sut.onPullToRefresh()
+
+        // When pull-to-refresh refresh is true
+        verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+
+        sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+
+        // When granularity changes refresh is false
+        verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
+
+    }
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
