@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -172,6 +173,72 @@ class GetStatsTest : BaseUnitTest() {
                     connectionType = SiteConnectionType.JetpackConnectionPackage
                 )
             )
+        }
+
+    @Test
+    fun `Given refresh is false, then check if analytic should update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(),any())
+        }
+
+    @Test
+    fun `Given refresh is true, then don't check if analytic should update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore, never())
+                .shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(),any())
+        }
+
+    @Test
+    fun `Given refresh is forced, then update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(any<StatsTimeRangeSelection.SelectionType>())
+        }
+
+    @Test
+    fun `Given should update is true, then update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+            givenShouldUpdateAnalyticsReturns(true)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(any<StatsTimeRangeSelection.SelectionType>())
+        }
+
+    @Test
+    fun `Given should update is false, then don't update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+            givenShouldUpdateAnalyticsReturns(false)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore, never())
+                .storeLastAnalyticsUpdate(any<StatsTimeRangeSelection.SelectionType>())
+        }
+
+    @Test
+    fun `Given should update is true and result fail, then don't update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
+            givenShouldUpdateAnalyticsReturns(true)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore, never())
+                .storeLastAnalyticsUpdate(any<StatsTimeRangeSelection.SelectionType>())
         }
 
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
