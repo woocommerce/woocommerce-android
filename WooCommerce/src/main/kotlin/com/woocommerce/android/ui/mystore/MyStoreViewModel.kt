@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -115,9 +114,6 @@ class MyStoreViewModel @Inject constructor(
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
-    @VisibleForTesting
-    val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
-
     private var jetpackMonitoringJob: Job? = null
 
     init {
@@ -134,7 +130,7 @@ class MyStoreViewModel @Inject constructor(
             }.collectLatest { pair ->
                 coroutineScope {
                     launch { loadStoreStats(pair.first, pair.second.isForcedRefresh) }
-                    launch { loadTopPerformersStats(pair.first) }
+                    launch { loadTopPerformersStats(pair.first, pair.second.isForcedRefresh) }
                 }
             }
         }
@@ -288,16 +284,8 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {
-        if (!networkStatus.isConnected()) {
-            refreshTopPerformerStats[granularity.ordinal] = true
-            return
-        }
-
-        val forceRefresh = refreshTopPerformerStats[granularity.ordinal]
-        if (forceRefresh) {
-            refreshTopPerformerStats[granularity.ordinal] = false
-        }
+    private suspend fun loadTopPerformersStats(granularity: StatsGranularity, forceRefresh: Boolean) {
+        if (!networkStatus.isConnected()) return
 
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
         val result = getTopPerformers.fetchTopPerformers(granularity, forceRefresh)
