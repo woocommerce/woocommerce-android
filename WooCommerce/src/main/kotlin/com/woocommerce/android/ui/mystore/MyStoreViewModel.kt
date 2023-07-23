@@ -129,8 +129,10 @@ class MyStoreViewModel @Inject constructor(
                 Pair(granularity, refreshEvent)
             }.collectLatest { pair ->
                 coroutineScope {
-                    launch { loadStoreStats(pair.first, pair.second.isForcedRefresh) }
-                    launch { loadTopPerformersStats(pair.first, pair.second.isForcedRefresh) }
+                    val granularity = pair.first
+                    val isForceRefresh = pair.second.isForcedRefresh
+                    launch { loadStoreStats(granularity, isForceRefresh) }
+                    launch { loadTopPerformersStats(granularity, isForceRefresh) }
                 }
             }
         }
