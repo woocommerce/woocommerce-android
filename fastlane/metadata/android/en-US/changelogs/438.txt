@@ -1,4 +1,1 @@
-<en-US>
-14.6:
 We're back with some new updates to improve your experience with our app! It's easy for you to generate product descriptions with a click of a button. As always, we're here to make your app journey smoother and more enjoyable. Thanks for sticking with us!
-</en-US>
