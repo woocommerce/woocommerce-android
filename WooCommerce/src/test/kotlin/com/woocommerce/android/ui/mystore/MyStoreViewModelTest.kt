@@ -83,7 +83,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 granularity = DEFAULT_STATS_GRANULARITY,
-                forceRefresh = true,
+                refresh = true,
                 topPerformersCount = ANY_TOP_PERFORMERS_COUNT
             )
         }
@@ -97,18 +97,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             verify(getStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
-        }
-
-    @Test
-    fun `given there is no network, when granularity changed, stats are marked as refresh pending`() =
-        testBlocking {
-            givenObserveTopPerformersEmits(emptyList())
-            givenNetworkConnectivity(connected = false)
-            whenViewModelIsCreated()
-
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
-
-            assertTrue(sut.refreshTopPerformerStats[ANY_SELECTED_STATS_GRANULARITY.ordinal])
         }
 
     @Test
@@ -130,14 +118,13 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             whenViewModelIsCreated()
-            givenStatsForGranularityCached(ANY_SELECTED_STATS_GRANULARITY)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
             verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 ANY_SELECTED_STATS_GRANULARITY,
-                forceRefresh = false,
+                refresh = false,
                 ANY_TOP_PERFORMERS_COUNT
             )
         }
@@ -154,7 +141,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 DEFAULT_STATS_GRANULARITY,
-                forceRefresh = true,
+                refresh = true,
                 ANY_TOP_PERFORMERS_COUNT
             )
         }
@@ -671,10 +658,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     private fun givenResourceProvider() {
         whenever(resourceProvider.getString(any(), any())).thenReturn("")
-    }
-
-    private fun givenStatsForGranularityCached(granularity: StatsGranularity) {
-        sut.refreshTopPerformerStats[granularity.ordinal] = false
     }
 
     private fun givenObserveTopPerformersEmits(topPerformers: List<TopPerformerProduct>) {

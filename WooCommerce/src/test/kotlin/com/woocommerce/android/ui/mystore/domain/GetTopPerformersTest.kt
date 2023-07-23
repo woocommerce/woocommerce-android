@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,20 +26,23 @@ import org.wordpress.android.fluxc.store.WCStatsStore
 @ExperimentalCoroutinesApi
 class GetTopPerformersTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val sut = GetTopPerformers(
         statsRepository,
-        coroutinesTestRule.testDispatchers
+        coroutinesTestRule.testDispatchers,
+        analyticsUpdateDataStore
     )
 
     @Test
     fun `Given fetch top performers success, when get top performers, then returns successful result`() =
         testBlocking {
             givenFetchTopPerformersResult(Result.success(Unit))
+            givenShouldUpdateAnalyticsReturns(true)
 
             val result = sut.fetchTopPerformers(
                 granularity = WCStatsStore.StatsGranularity.DAYS,
-                forceRefresh = false,
+                refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_NUMBER
             )
 
@@ -48,13 +53,12 @@ class GetTopPerformersTest : BaseUnitTest() {
     fun `Given fetch top performers error, when get top performers, then returns error`() =
         testBlocking {
             val wooException = WooException(WOO_GENERIC_ERROR)
-            givenFetchTopPerformersResult(
-                Result.failure(wooException)
-            )
+            givenShouldUpdateAnalyticsReturns(true)
+            givenFetchTopPerformersResult(Result.failure(wooException))
 
             val result = sut.fetchTopPerformers(
                 granularity = WCStatsStore.StatsGranularity.DAYS,
-                forceRefresh = false,
+                refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_NUMBER
             )
 
@@ -89,6 +93,11 @@ class GetTopPerformersTest : BaseUnitTest() {
                 anyInt(),
             )
         ).thenReturn(result)
+    }
+
+    private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
+        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any()))
+            .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 
     private companion object {
