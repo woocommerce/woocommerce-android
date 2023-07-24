@@ -31,17 +31,19 @@ class BarcodeScanningViewModel @Inject constructor(
     init {
         _viewState.value = ViewState(
             scannedProductItems = mutableListOf(),
-            currentScannedProduct = null
+            currentScannedProduct = null,
         )
     }
 
     fun updateProduct(stockQuantity: Int) {
+        _viewState.value = _viewState.value?.copy(showLoading = true)
         viewModelScope.launch {
             val product = _viewState.value?.currentScannedProduct!!.copy(
                 stockQuantity = stockQuantity.toDouble()
             )
 
             productDetailRepository.updateProduct(product)
+            _viewState.value = _viewState.value!!.copy(showLoading = false)
         }
     }
 
@@ -105,5 +107,6 @@ class BarcodeScanningViewModel @Inject constructor(
 data class ViewState(
     val scannedProductItems: MutableList<ProductSelectorViewModel.SelectedItem>,
     val currentScannedProduct: Product?,
-    var isScanningInProgress: Boolean = false
+    var isScanningInProgress: Boolean = false,
+    var showLoading: Boolean = false,
 )

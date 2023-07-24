@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetLayout
@@ -48,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -159,9 +161,10 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                 )
 
 
-                if ((viewModel.viewState.value as ViewState).currentScannedProduct?.name != null) {
+                val state = (viewModel.viewState.value as ViewState)
+                if (state.currentScannedProduct?.name != null) {
                     var stockQuantity = remember {
-                        mutableStateOf(0)
+                        mutableStateOf(state.currentScannedProduct.stockQuantity)
                     }
                     ModalBottomSheetLayout(
                         sheetState = sheetState,
@@ -187,11 +190,11 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
                                             .padding(16.dp),
-                                        onClick = { stockQuantity.value++ }
+                                        onClick = { stockQuantity.value-- }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
-                                            contentDescription = "Add",
+                                            contentDescription = "Minus",
                                         )
                                     }
 
@@ -204,22 +207,32 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
                                             .padding(16.dp),
-                                        onClick = { stockQuantity.value-- }
+                                        onClick = { stockQuantity.value++ }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
-                                            contentDescription = "Minus",
+                                            contentDescription = "Add",
                                         )
                                     }
                                 }
 
                                 Button(
-                                    modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally),
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .align(Alignment.CenterHorizontally),
                                     onClick = {
-                                    viewModel.updateProduct(stockQuantity.value)
-                                }
+                                    viewModel.updateProduct(stockQuantity.value.toInt())
+                                    }
                                 ) {
-                                    Text("Submit")
+                                    Box(contentAlignment = Alignment.Center) {
+                                        if ((viewModel.viewState.value as ViewState).showLoading) {
+                                            CircularProgressIndicator(
+                                                color = Color.White
+                                            )
+                                        } else {
+                                            Text("Submit")
+                                        }
+                                    }
                                 }
                             }
                         },
