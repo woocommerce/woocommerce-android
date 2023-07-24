@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +12,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -96,7 +96,13 @@ class GetTopPerformersTest : BaseUnitTest() {
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
-        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any()))
+        whenever(
+            analyticsUpdateDataStore.shouldUpdateAnalytics(
+                selectionType = any(),
+                maxOutdatedTime = any(),
+                analyticData = eq(AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS)
+            )
+        )
             .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 

@@ -109,7 +109,8 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
 
         sut = AnalyticsUpdateDataStore(
             dataStore = dataStore,
-            currentTimeProvider = currentTimeProvider
+            currentTimeProvider = currentTimeProvider,
+            mock()
         )
     }
 }
