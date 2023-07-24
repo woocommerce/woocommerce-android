@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,14 +22,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,27 +55,33 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Composable
 fun CustomerListScreen(viewModel: CustomerListViewModel) {
     val state by viewModel.viewState.observeAsState()
 
     state?.let {
-        Scaffold(topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.order_creation_fragment_title)) },
-                navigationIcon = {
-                    IconButton(viewModel::onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
-            )
-        }) { padding ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(id = R.string.order_creation_fragment_title)) },
+                    navigationIcon = {
+                        IconButton(viewModel::onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                    elevation = 0.dp,
+                )
+            },
+            floatingActionButton = {
+                CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
+            }
+        ) { padding ->
             CustomerListScreen(
                 modifier = Modifier.padding(padding),
                 state = it,
@@ -87,7 +98,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
 fun CustomerListScreen(
     modifier: Modifier = Modifier,
     state: CustomerListViewState,
-    onCustomerSelected: (Long) -> Unit,
+    onCustomerSelected: (WCCustomerModel) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
@@ -115,7 +126,7 @@ fun CustomerListScreen(
             onSearchTypeSelected = onSearchTypeChanged,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        PartialLoadingIndicator(state)
 
         when (val body = state.body) {
             CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
@@ -133,9 +144,38 @@ fun CustomerListScreen(
 }
 
 @Composable
+private fun PartialLoadingIndicator(state: CustomerListViewState) {
+    val spacerHeightWithLoading = 8.dp
+    val spacerHeightWithoutLoading = 6.dp
+    if (state.partialLoading) {
+        Spacer(modifier = Modifier.height(spacerHeightWithLoading))
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(spacerHeightWithoutLoading - spacerHeightWithLoading)
+        )
+    } else {
+        Spacer(modifier = Modifier.height(spacerHeightWithoutLoading))
+    }
+}
+
+@Composable
+private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        backgroundColor = colorResource(id = R.color.color_primary),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = stringResource(id = R.string.order_creation_add_customer_content_description)
+        )
+    }
+}
+
+@Composable
 private fun CustomerListLoaded(
     body: CustomerListViewState.CustomerList.Loaded,
-    onCustomerSelected: (Long) -> Unit,
+    onCustomerSelected: (WCCustomerModel) -> Unit,
     onEndOfListReached: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -149,12 +189,6 @@ private fun CustomerListLoaded(
     ) {
         itemsIndexed(
             items = body.customers,
-            key = { _, customer ->
-                when (customer) {
-                    is CustomerListViewState.CustomerList.Item.Customer -> customer.remoteId
-                    CustomerListViewState.CustomerList.Item.Loading -> -1L
-                }
-            },
         ) { _, customer ->
             when (customer) {
                 is CustomerListViewState.CustomerList.Item.Customer -> {
@@ -169,7 +203,24 @@ private fun CustomerListLoaded(
                     }
                 }
 
-                CustomerListViewState.CustomerList.Item.Loading -> CustomerListLoadingItem()
+                CustomerListViewState.CustomerList.Item.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
+            }
+        }
+
+        if (body.customers.lastOrNull() !is CustomerListViewState.CustomerList.Item.Loading) {
+            item {
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             }
         }
     }
@@ -182,16 +233,15 @@ private fun CustomerListLoaded(
 @Composable
 private fun CustomerListItem(
     customer: CustomerListViewState.CustomerList.Item.Customer,
-    onCustomerSelected: (Long) -> Unit,
+    onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 enabled = true,
-                onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCustomerSelected(customer.remoteId) }
+                onClick = { onCustomerSelected(customer.payload) }
             )
             .padding(
                 horizontal = dimensionResource(id = R.dimen.major_100),
@@ -336,6 +386,7 @@ fun CustomerListScreenPreview() {
                     isSelected = false,
                 ),
             ),
+            partialLoading = true,
             body = CustomerListViewState.CustomerList.Loaded(
                 customers = listOf(
                     CustomerListViewState.CustomerList.Item.Customer(
@@ -343,12 +394,16 @@ fun CustomerListScreenPreview() {
                         firstName = "John",
                         lastName = "Doe",
                         email = "John@gmail.com",
+
+                        payload = WCCustomerModel(),
                     ),
                     CustomerListViewState.CustomerList.Item.Customer(
                         remoteId = 2,
                         firstName = "Andrei",
                         lastName = "K",
                         email = "blac@aaa.com",
+
+                        payload = WCCustomerModel(),
                     ),
                     CustomerListViewState.CustomerList.Item.Loading,
                 ),

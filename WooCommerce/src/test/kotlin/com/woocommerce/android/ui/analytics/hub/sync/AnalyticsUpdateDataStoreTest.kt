@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -41,7 +42,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
             maxOutdatedTime = maxOutdatedTime
-        )
+        ).single()
 
         // Then
         assertThat(result).isTrue
@@ -60,7 +61,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
             maxOutdatedTime = maxOutdatedTime
-        )
+        ).single()
 
         // Then
         assertThat(result).isFalse
@@ -79,7 +80,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
             maxOutdatedTime = maxOutdatedTime
-        )
+        ).single()
 
         // Then
         assertThat(result).isTrue

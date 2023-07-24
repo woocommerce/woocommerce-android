@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clCardReader"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivSelectPaymentRowIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_10"
+        android:paddingVertical="@dimen/major_100"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="@id/tvSelectPaymentRowHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvSelectPaymentRowHeader"
+        tools:srcCompat="@drawable/ic_gridicons_credit_card" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvSelectPaymentRowHeader"
+        style="@style/Woo.Card.Body.Bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        app:layout_constraintBottom_toTopOf="@id/tvSelectPaymentRowDescription"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivSelectPaymentRowIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_goneMarginBottom="@dimen/major_100"
+        tools:text="@string/card_reader_type_selection_bluetooth_reader" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvSelectPaymentRowDescription"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="@dimen/minor_00"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="@dimen/major_100"
+        android:textColor="@color/color_surface_variant"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivCardReaderArrow"
+        app:layout_constraintStart_toStartOf="@id/tvSelectPaymentRowHeader"
+        app:layout_constraintTop_toBottomOf="@id/tvSelectPaymentRowHeader"
+        tools:text="@string/card_reader_type_selection_bluetooth_reader_description" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivCardReaderArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_right" />
+
+    <View
+        android:id="@+id/vSelectPaymentRowOverlay"
+        android:background="@color/color_on_primary_disabled"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

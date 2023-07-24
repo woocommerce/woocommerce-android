@@ -105,7 +105,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when screen shown, then collect payments row present`() {
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
-                it.label == UiStringRes(R.string.card_reader_collect_payment)
+                it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
             }
     }
 
@@ -182,7 +182,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on collect payment, then app navigates to payment collection screen`() {
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_collect_payment)
+            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
         }!!.onClick!!.invoke()
 
         assertThat(viewModel.event.getOrAwaitValue())
@@ -194,7 +194,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on collect payment, then collect payment event tracked`() {
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_collect_payment)
+            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
         }!!.onClick!!.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
@@ -567,7 +567,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             assertThat(
                 (
                     viewModel.viewStateData.getOrAwaitValue().rows.find {
-                        it.label == UiStringRes(R.string.card_reader_collect_payment)
+                        it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
                     }
                         as NonToggleableListItem
                     ).isEnabled
@@ -645,7 +645,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             assertThat(
                 (
                     viewModel.viewStateData.getOrAwaitValue().rows.find {
-                        it.label == UiStringRes(R.string.card_reader_collect_payment)
+                        it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
                     }
                         as NonToggleableListItem
                     ).isEnabled
