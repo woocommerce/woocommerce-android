@@ -47,15 +47,12 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
-            val isAdvancedSearchSupported = isAdvancedSearchSupported()
-            val supportedSearchModes = getSupportedSearchModes(isAdvancedSearchSupported)
-            _viewState.value = CustomerListViewState(
-                searchQuery = searchQuery,
-                searchModes = supportedSearchModes.selectSearchMode(selectedSearchModeId),
-                body = CustomerListViewState.CustomerList.Loading
-            )
             repository.loadCountries()
-            loadCustomers(1)
+            _viewState.value = if (isAdvancedSearchSupported()) {
+                advancedSearchSupportedInitState().also { loadCustomers(1) }
+            } else {
+                advancedSearchNotSupportedInitState()
+            }
         }
     }
 
@@ -74,7 +71,13 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
 
-        loadAfterSearchChanged()
+        launch {
+            if (isAdvancedSearchSupported()) {
+                loadAfterSearchChanged()
+            } else if (query.isEmpty()) {
+                _viewState.value = advancedSearchNotSupportedInitState()
+            }
+        }
     }
 
     fun onSearchTypeChanged(searchModeId: Int) {
@@ -224,6 +227,21 @@ class CustomerListViewModel @Inject constructor(
             )
         )
     }
+
+    private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
+        searchQuery = searchQuery,
+        searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
+        body = CustomerListViewState.CustomerList.Loaded(
+            customers = emptyList(),
+            shouldResetScrollPosition = true,
+        )
+    )
+
+    private fun advancedSearchSupportedInitState() = CustomerListViewState(
+        searchQuery = searchQuery,
+        searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
+        body = CustomerListViewState.CustomerList.Loading
+    )
 
     private fun List<SearchMode>.selectSearchMode(searchTypeId: Int?) =
         when {
