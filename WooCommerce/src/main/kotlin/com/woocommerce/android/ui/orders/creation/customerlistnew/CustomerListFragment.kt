@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -70,5 +71,10 @@ class CustomerListFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.trackViewShown(this)
     }
 }
