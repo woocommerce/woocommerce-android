@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -29,10 +30,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOption.COLLECTIVE_DECISION
+import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOption.COMPARING_WITH_OTHER_PLATFORMS
+import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOption.EVALUATING_HOW_TO_INTEGRATE_SERVICE
+import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOption.OTHER_REASONS
+import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOption.STILL_EXPLORING
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionUi
 
 @Composable
@@ -48,6 +57,7 @@ fun FreeTrialSurveyScreen(viewModel: FreeTrialSurveyViewModel) {
             FreeTrialSurveyContent(
                 surveyOptions = surveyOptions,
                 onSurveyOptionTapped = viewModel::onSurveyOptionTapped,
+                onFreeTextChanged = viewModel::freeTextEntered,
                 onSendTapped = viewModel::onSendTapped,
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
@@ -61,6 +71,7 @@ fun FreeTrialSurveyScreen(viewModel: FreeTrialSurveyViewModel) {
 fun FreeTrialSurveyContent(
     surveyOptions: List<SurveyOptionUi>,
     onSurveyOptionTapped: (SurveyOptionUi) -> Unit,
+    onFreeTextChanged: (String) -> Unit,
     onSendTapped: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -86,13 +97,24 @@ fun FreeTrialSurveyContent(
                     }
                 }
                 items(surveyOptions) { surveyOption ->
-                    SurveyItem(
-                        surveyOptionUi = surveyOption,
-                        onSurveyOptionSelected = onSurveyOptionTapped,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                    )
+                    if (surveyOption.optionType == OTHER_REASONS) {
+                        WCOutlinedTextField(
+                            modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100)),
+                            value = surveyOption.freeText,
+                            onValueChange = onFreeTextChanged,
+                            label = stringResource(id = surveyOption.textId),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                        )
+                    } else {
+                        SurveyItem(
+                            surveyOptionUi = surveyOption,
+                            onSurveyOptionSelected = onSurveyOptionTapped,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                        )
+                    }
                 }
             }
         }
@@ -183,25 +205,31 @@ fun SurveyScreenPreview() {
             SurveyOptionUi(
                 isSelected = false,
                 textId = R.string.free_trial_survey_option1,
+                optionType = STILL_EXPLORING
             ),
             SurveyOptionUi(
                 isSelected = false,
                 textId = R.string.free_trial_survey_option2,
+                optionType = COMPARING_WITH_OTHER_PLATFORMS
             ),
             SurveyOptionUi(
                 isSelected = false,
                 textId = R.string.free_trial_survey_option3,
+                optionType = COLLECTIVE_DECISION
             ),
             SurveyOptionUi(
                 isSelected = false,
                 textId = R.string.free_trial_survey_option4,
+                optionType = EVALUATING_HOW_TO_INTEGRATE_SERVICE
             ),
             SurveyOptionUi(
                 isSelected = false,
                 textId = R.string.free_trial_survey_option5,
+                optionType = OTHER_REASONS
             ),
         ),
         onSurveyOptionTapped = {},
+        onFreeTextChanged = {},
         onSendTapped = {},
     )
 }
