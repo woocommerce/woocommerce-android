@@ -83,7 +83,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 granularity = DEFAULT_STATS_GRANULARITY,
-                refresh = true,
+                refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_COUNT
             )
         }
