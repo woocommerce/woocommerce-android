@@ -429,6 +429,22 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value).isEqualTo(TapToPaySummaryViewModel.NavigateToOrderDetails(1))
         }
 
+    @Test
+    fun `when onLearnMoreClicked, then NavigateToUrlInGenericWebView emitted`() {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onLearnMoreClicked()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            TapToPaySummaryViewModel.NavigateToUrlInGenericWebView(
+                "https://woocommerce.com/document/woocommerce-payments/in-person-payments/tap-to-pay-android/"
+            )
+        )
+    }
+
     private fun initViewModel(
         flow: TapToPaySummaryFragment.TestTapToPayFlow = TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
     ) =

@@ -1,11 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 09:54:03+0000
+Translation-Revision-Date: 2023-07-20 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">設定に移動</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">キャンセル</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">付与</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">カメラの権限を永久に拒否しました。 バーコードをスキャンする際に必要です。 アプリ設定から有効化してください</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">バーコードをスキャンするにはカメラの権限が必要です</string>
+    <string name="barcode_scanning_alert_dialog_title">カメラの権限を付与</string>
+    <string name="order_creation_coupon_network_error">クーポンコードを検証する際にエラーが発生しました。 もう一度お試しください</string>
+    <string name="order_creation_coupon_invalid_code">そのコードのクーポンは見つかりませんでした。 もう一度お試しください</string>
+    <string name="order_creation_discount_amount_type">合計 (%1$s)</string>
+    <string name="order_creation_discount_value">割引 %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">割引合計</string>
+    <string name="order_creation_discount">割引</string>
+    <string name="order_creation_discount_amount_with_currency">合計 (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">手動割引を適用できませんでした。 最初にクーポンを削除</string>
+    <string name="order_creation_discount_invalid_number_error">割引は有効な数字ではありません</string>
+    <string name="order_creation_discount_too_big_error">価格を超える割引はできません</string>
+    <string name="order_creation_remove_discount">割引を削除</string>
+    <string name="highlights_tooltip_button_hint">ボタンのテキスト</string>
+    <string name="highlights_tooltip_message_hint">ツールチップのメッセージ。 \n 複数行にわたる可能性があります。</string>
+    <string name="highlights_tooltip_title_hint">ツールチップのタイトル</string>
+    <string name="blaze_banner_dismiss_dialog_button">OK</string>
+    <string name="blaze_banner_dismiss_dialog_description">心配はご無用です。 Blaze はご都合に合わせて、メニューと商品詳細メニューから利用できるようになっています。</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze 広告</string>
+    <string name="blaze_banner_close_button_content_description">Blaze バナーボタンを閉じる</string>
+    <string name="blaze_banner_button">今すぐ Blaze を試す</string>
+    <string name="blaze_banner_description">商品を広告に変えると WordPress.com や Tumblr にある何百万件ものサイトに掲載されます。</string>
+    <string name="blaze_banner_title">Blaze を使って商品を宣伝する</string>
+    <string name="ai_product_description_tooltip_dismiss">OK</string>
+    <string name="ai_product_description_tooltip_message">AI 搭載ツールを使用すると商品説明をすぐに生成できます。 キーワードを入力するだけで、あとはこちらで完了します。</string>
+    <string name="ai_product_description_tooltip_title">✨ AI で執筆</string>
+    <string name="ai_product_toolbar_button_tooltip">AI を使用して説明を生成</string>
+    <string name="ai_product_description_error">商品説明の生成中に問題が発生しました。 後でもう一度お試しください。</string>
+    <string name="ai_product_description_label">AI で生成された説明</string>
+    <string name="ai_product_description_learn_more_link">AI を活用しています。 &lt;a href=\'\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">残念ながら、お住まいの国では「Tap to Pay on Android」をまだご利用いただけません。 今しばらくお待ちください。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">「Tap to Pay on Android」を使用するには、お使いの端末に Google Play 開発者サービスが必要です。 オフラインでの支払いを受け付けるには、Google Play 開発者サービスをインストールするか、Bluetooth カードリーダーを購入してください。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">「Tap To Pay on Android」を使用するには Android 10以上が必要です。 オフラインでの支払いを受け付けるには、Android を更新するか、Bluetooth カードリーダーを購入してください。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">「Tap to Pay on Android」を使用するには、お使いの端末に NFC チップが必要です。 オフラインでの支払いを受け付けるには、Bluetooth カードリーダーを購入してください。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay は使用できません</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">要件を確認</string>
+    <string name="error_troubleshooting">トラブルシューティング</string>
+    <string name="orderlist_parsing_error_message">このエラーはプラグインとの競合に関連する可能性があります。 しばらくしてから再度お試しいただくか、サポートをご依頼ください。</string>
+    <string name="orderlist_parsing_error_title">データを読み込めませんでした。</string>
+    <string name="ai_product_description_dialog_message">AI で簡単に説明を追加します。 今すぐこの機能をお試しください。</string>
+    <string name="ai_product_description_dialog_title">AI で商品説明を追加する</string>
+    <string name="ai_product_description_note_dialog_confirmation">OK</string>
+    <string name="ai_product_description_note_dialog_message">この商品説明は AI を活用したツールを使用して生成されています。 コンテンツを確認して編集し、ブランドやメッセージと合っていることを確認してください。</string>
+    <string name="ai_product_description_note_dialog_heading">良い出だしです !</string>
+    <string name="ai_product_description_feedback">が生成されました\n説明は役立つものですか ?</string>
+    <string name="ai_product_description_regenerate_button">再生成</string>
+    <string name="ai_product_description_survey">生成された説明は役立つものですか ?</string>
+    <string name="ai_product_description_hint">カスタマイズされた説明のキーワードを使用して商品の独自の機能と対象ユーザーを強調します。</string>
+    <string name="ai_product_description_example">例: 鉢植え、サボテン、植物、観賞用、お手入れ簡単</string>
+    <string name="ai_product_description_product_name">商品名を入力</string>
+    <string name="ai_product_description_title">説明を入力してください</string>
+    <string name="barcode_scanning_camera_permission_denied">バーコードをスキャンするにはカメラの権限が必要です。</string>
+    <string name="barcode_scanning_title">バーコードをスキャンする</string>
+    <string name="order_creation_customer_search_username">ユーザー名</string>
+    <string name="order_creation_customer_search_name">名前</string>
+    <string name="order_creation_customer_search_email">メールアドレス</string>
+    <string name="order_creation_customer_search_everything">すべて</string>
+    <string name="order_creation_customer_filter_hint">次の条件で顧客を絞り込む</string>
+    <string name="order_creation_coupons_title">適用されるクーポン</string>
+    <string name="more_settings">その他の設定</string>
+    <string name="maybe_later">後で確認する</string>
     <string name="product_sharing_regenerate">もう一度記入する</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#すべての販売に関する通知が届く:&lt;/b&gt; 即時の販売通知をお送りします。 新たな売上がある度に通知が届くことで、成功を祝い、常にストアのアクティビティを把握できるようになります。</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#ワンタッチで商品を追加および編集:&lt;/b&gt; 新しい商品の追加、詳細の更新、画像のアップロード、バリエーションの管理をすべてアプリから行います。在庫を簡単に最新の状態に保つことができます。</string>
@@ -228,8 +294,6 @@ Language: ja_JP
     <string name="product_subscription_title">サブスクリプション</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">カードリーダーは、デビットカードとクレジットカードのタップ決済、チップ決済、スワイプ決済に対応しています。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">アプリで Tap To Pay を試す</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay についてのフィードバックを共有する</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
@@ -275,7 +339,6 @@ Language: ja_JP
     <string name="store_onboarding_launch_store_share_url_button">共有 URL</string>
     <string name="store_onboarding_launch_store_button">ストアを公開</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">ストアを公開するには、プランのアップグレードが必要です。 &lt;u&gt;アップグレード&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay はあなたのストアまたはお使いのデバイスでご利用いただけません</string>
     <string name="domains_search_domains">ドメインを検索</string>
     <string name="login_site_credentials_http_error">ステータスコード%1$sのためログインに失敗しました</string>
     <string name="login_site_credentials_custom_admin_url">ストアの管理 URL を識別できないためログインできません</string>

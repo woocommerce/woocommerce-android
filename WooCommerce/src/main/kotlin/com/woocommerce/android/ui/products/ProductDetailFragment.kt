@@ -323,16 +323,22 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
-                is ShowAIProductDescriptionBottomSheet -> showAIProductDescriptionBottomSheet(event.productTitle)
+                is ShowAIProductDescriptionBottomSheet -> showAIProductDescriptionBottomSheet(
+                    event.productTitle,
+                    event.productDescription
+                )
 
                 else -> event.isHandled = false
             }
         }
     }
 
-    private fun showAIProductDescriptionBottomSheet(title: String?) {
+    private fun showAIProductDescriptionBottomSheet(title: String?, description: String?) {
         findNavController().navigateSafely(
-            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(title)
+            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(
+                title,
+                description?.fastStripHtml()
+            )
         )
     }
 

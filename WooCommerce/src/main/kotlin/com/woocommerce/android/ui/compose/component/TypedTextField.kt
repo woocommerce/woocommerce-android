@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 /**
  * A generic [OutlinedTextField] that accepts a typed value of type [T], and have a listener that emits values of the
@@ -175,6 +176,34 @@ class NullableBigDecimalTextFieldValueMapper(
             else -> oldText
         }
     }
+}
+
+class NullableCurrencyTextFieldValueMapper(
+    private val decimalSeparator: String,
+    private val numberOfDecimals: Int
+) : TextFieldValueMapper<BigDecimal?> {
+    private val acceptedChars = "0123456789.$decimalSeparator"
+
+    override fun parseText(text: String): BigDecimal? =
+        text.replace(decimalSeparator, ".").toBigDecimalOrNull()
+
+    override fun printValue(value: BigDecimal?): String =
+        value?.setScale(numberOfDecimals, RoundingMode.HALF_UP)
+            ?.stripTrailingZeros()
+            ?.toPlainString()
+            ?.replace(".", decimalSeparator)
+            .orEmpty()
+
+    override fun transformText(oldText: String, newText: String): String {
+        val clearedText = newText.filter { it in acceptedChars }
+        return when {
+            clearedText.isEmpty() || clearedText == decimalSeparator || clearedText == "." -> clearedText
+            clearedText.hasAllowedNumberOfDecimals() && clearedText.toBigDecimalOrNull() != null -> clearedText
+            else -> oldText
+        }
+    }
+
+    private fun String.hasAllowedNumberOfDecimals() = substringAfter(decimalSeparator, "").length <= numberOfDecimals
 }
 
 class NullableIntTextFieldValueMapper(

@@ -1,11 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 13:54:03+0000
+Translation-Revision-Date: 2023-07-19 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Ga naar instellingen</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Annuleren</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Toekennen</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Je hebt de cameramachtiging permanent geweigerd. Deze is nodig om de streepjescode te scannen. Schakel deze in de appinstellingen in</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">De cameramachtiging is vereist om de streepjescode te scannen.</string>
+    <string name="barcode_scanning_alert_dialog_title">Cameramachtiging toekennen</string>
+    <string name="order_creation_coupon_network_error">Er is iets misgegaan bij het valideren van je kortingsboncode. Probeer het nog eens</string>
+    <string name="order_creation_coupon_invalid_code">We hebben geen kortingsbon gevonden met deze code. Probeer het nog eens</string>
+    <string name="order_creation_discount_amount_type">Bedrag (%1$s)</string>
+    <string name="order_creation_discount_value">Korting: %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">Totaal van kortingen</string>
+    <string name="order_creation_discount">Korting</string>
+    <string name="order_creation_discount_amount_with_currency">Bedrag (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Handmatige korting kon niet worden toegepast. Verwijder eerst de kortingsbonnen</string>
+    <string name="order_creation_discount_invalid_number_error">De korting is geen geldig cijfer</string>
+    <string name="order_creation_discount_too_big_error">De korting mag niet hoger liggen dan de prijs</string>
+    <string name="order_creation_remove_discount">Korting verwijderen</string>
+    <string name="highlights_tooltip_button_hint">Knoptekst</string>
+    <string name="highlights_tooltip_message_hint">Tooltipbericht. \n Dit mag uit meerdere regels bestaan.</string>
+    <string name="highlights_tooltip_title_hint">Titel van tooltip</string>
+    <string name="blaze_banner_dismiss_dialog_button">Duidelijk</string>
+    <string name="blaze_banner_dismiss_dialog_description">Maak je geen zorgen! Blaze is voor jouw gemak beschikbaar in het Menu en het productdetails-menu.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze-advertenties</string>
+    <string name="blaze_banner_close_button_content_description">Blaze sluiten bannerknop</string>
+    <string name="blaze_banner_button">Probeer Blaze nu</string>
+    <string name="blaze_banner_description">Tover je producten om in advertenties die op miljoenen sites op WordPress.com en Tumblr vertoond worden.</string>
+    <string name="blaze_banner_title">Producten promoten met Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">Duidelijk</string>
+    <string name="ai_product_description_tooltip_message">Gebruik onze door AI aangedreven tool om snel productbeschrijvingen te genereren. Voer gewoon wat trefwoorden in en wij doen de rest!</string>
+    <string name="ai_product_description_tooltip_title">✨ Schijf met AI</string>
+    <string name="ai_product_toolbar_button_tooltip">Productbeschrijving genereren met behulp van AI</string>
+    <string name="ai_product_description_error">Er is een probleem opgetreden tijdens het genereren van de productbeschrijving. Probeer het later opnieuw.</string>
+    <string name="ai_product_description_label">Beschrijving gegenereerd door AI</string>
+    <string name="ai_product_description_learn_more_link">Mogelijk gemaakt door AI. &lt;a href=\'\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Helaas is Tap to Pay nog niet beschikbaar voor Android in jouw land. Nog even geduld!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Google Play Services moet zijn geïnstalleerd op je apparaat om Tap to Pay op Android te gebruiken. Installeer Google Play Services of schaf een Bluetooth-kaartlezer aan om fysieke betalingen te kunnen accepteren.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Je hebt Android 10 of hoger nodig om Tap to Pay op Android te kunnen gebruiken. Update Android of schaf een Bluetooth-kaartlezer aan om fysieke betalingen te kunnen accepteren.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Je apparaat moet een NFC-chip hebben om Tap to Pay op Android te gebruiken. Schaf een Bluetooth-kaartlezer aan om fysieke betalingen te kunnen accepteren.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is niet beschikbaar</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Vereisten controleren</string>
+    <string name="error_troubleshooting">Probleemoplossing</string>
+    <string name="orderlist_parsing_error_message">Dit kan liggen aan een conflict met een plugin. Probeer het later opnieuw of neem contact met ons op zodat wij je kunnen helpen.</string>
+    <string name="orderlist_parsing_error_title">We konden je gegevens niet laden.</string>
+    <string name="ai_product_description_dialog_message">Voeg in mum van tijd beschrijvingen toe met behulp van AI. Bekijk deze functie vandaag nog!</string>
+    <string name="ai_product_description_dialog_title">AI-productbeschrijving toevoegen</string>
+    <string name="ai_product_description_note_dialog_confirmation">Duidelijk</string>
+    <string name="ai_product_description_note_dialog_message">Onthoud dat deze productbeschrijving is gegenereerd met ons AI-hulpmiddel. Bekijk en bewerk de content om er zeker van te zijn dat deze bij je merk en boodschap past.</string>
+    <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>
+    <string name="ai_product_description_feedback">Is de gegenereerde\nbeschrijving nuttig?</string>
+    <string name="ai_product_description_regenerate_button">Opnieuw genereren</string>
+    <string name="ai_product_description_survey">Is de gegenereerde beschrijving nuttig?</string>
+    <string name="ai_product_description_hint">Licht de unieke eigenschappen en doelgroep van de product uit met trefwoorden voor een op maat gemaakte beschrijving.</string>
+    <string name="ai_product_description_example">Voorbeeld: in pot, cactus, plant, decoratief, makkelijke verzorging</string>
+    <string name="ai_product_description_product_name">Voer je productnaam in</string>
+    <string name="ai_product_description_title">Stel een beschrijving op</string>
+    <string name="barcode_scanning_camera_permission_denied">De cameramachtiging is vereist om de streepjescode te scannen.</string>
+    <string name="barcode_scanning_title">Streepjescode scannen</string>
+    <string name="order_creation_customer_search_username">Gebruikersnaam</string>
+    <string name="order_creation_customer_search_name">Naam</string>
+    <string name="order_creation_customer_search_email">E-mail</string>
+    <string name="order_creation_customer_search_everything">Alles</string>
+    <string name="order_creation_customer_filter_hint">Klanten filteren op</string>
+    <string name="order_creation_coupons_title">Kortingsbonnen toegepast</string>
+    <string name="more_settings">Meer instellingen</string>
+    <string name="maybe_later">Misschien later</string>
     <string name="product_sharing_regenerate">Nog een keer schrijven</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Ontvang een melding bij elke aankoop:&lt;/b&gt; Je mist nooit meer iets met de directe verkoopmeldingen. Ontvang een waarschuwing over elke nieuwe verkoop, zodat je je successen kan vieren en je op de hoogte blijft van de activiteit in je winkel.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Voeg producten toe en bewerk ze met een enkele tik:&lt;/b&gt; Voeg nieuwe producten toe, werk gegevens bij, upload afbeeldingen en beheer alle variaties, en dat allemaal in de app. Houd je inventaris moeiteloos up-to-date.</string>
@@ -228,8 +294,6 @@ Language: nl
     <string name="product_subscription_title">Abonnement</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">De kaartlezer accepteert tik-, chip- en veegbetalingen met debit-en creditcards.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accepteert contactloze betalingen veilig en rechtstreeks vanaf je telefoon.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Test tik om te betalen in de app</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tik om te betalen</string>
     <string name="card_reader_tap_to_pay_share_feedback">Deel feedback over tik om te betalen</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Inloggen mislukt omdat het maken van een applicatiewachtwoord niet goedgekeurd is.</string>
     <string name="login_site_credentials_fetching_site">Website ophalen…</string>
@@ -275,7 +339,6 @@ Language: nl
     <string name="store_onboarding_launch_store_share_url_button">URL delen</string>
     <string name="store_onboarding_launch_store_button">Mijn winkel publiceren</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Om je winkel te lanceren, moet je je abonnement upgraden. &lt;u&gt;upgraden&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is niet beschikbaar voor je winkel of apparaat</string>
     <string name="domains_search_domains">Domeinen zoeken</string>
     <string name="login_site_credentials_http_error">Login mislukt met statuscode %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Het is niet gelukt om in te loggen omdat we de admin-URL van je winkel niet konden identificeren</string>

@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.divider.MaterialDivider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -77,6 +80,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
     private fun renderLoadingState(binding: FragmentSelectPaymentMethodBinding) {
         binding.container.isVisible = false
+        binding.tvSelectPaymentTitle.isVisible = false
         binding.pbLoading.isVisible = true
         binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = false
     }
@@ -86,49 +90,65 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         state: Success
     ) {
         binding.container.isVisible = true
+        binding.tvSelectPaymentTitle.isVisible = true
         binding.pbLoading.isVisible = false
-        binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = true
-        requireActivity().title = getString(
-            R.string.simple_payments_take_payment_button,
-            state.orderTotal
-        )
 
-        binding.textCash.setOnClickListener {
-            viewModel.onCashPaymentClicked()
-        }
+        requireActivity().title = getString(R.string.simple_payments_take_payment_button, state.orderTotal)
 
-        with(binding.clTapToPay) {
-            isVisible = state.isPaymentCollectableWithTapToPay
-            setOnClickListener {
-                viewModel.onTapToPayClicked()
-            }
-        }
+        binding.container.removeAllViews()
+        state.rows.forEach { row ->
+            binding.container.addView(
+                when (row) {
+                    is Success.Row.Single -> row.buildSingleRowView()
+                    is Success.Row.Double -> row.buildDoubleRow()
+                }
+            )
 
-        with(binding.clCardReader) {
-            isVisible = state.isPaymentCollectableWithExternalCardReader
-            setOnClickListener {
-                viewModel.onBtReaderClicked()
-            }
+            binding.container.addView(MaterialDivider(requireContext()))
         }
-
-        with(binding.textShare) {
-            isVisible = state.paymentUrl.isNotEmpty()
-            setOnClickListener {
-                viewModel.onSharePaymentUrlClicked()
-            }
-        }
-
-        with(binding.tvScanToPay) {
-            isVisible = state.isScanToPayAvailable
-            setOnClickListener { viewModel.onScanToPayClicked() }
-        }
-        binding.dividerAfterScanToPay.isVisible = state.isScanToPayAvailable
 
         with(binding.learnMoreIppPaymentMethodsTv) {
-            learnMore.setOnClickListener { state.learMoreIpp.onClick.invoke() }
-            UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learMoreIpp.label)
+            learnMore.setOnClickListener { state.learnMoreIpp.onClick.invoke() }
+            UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learnMoreIpp.label)
         }
     }
+
+    private fun Success.Row.Single.buildSingleRowView() =
+        layoutInflater.inflate(R.layout.item_select_payment_method_single_row, null)
+            .apply {
+                with(findViewById<TextView>(R.id.tvSelectPaymentRowHeader)) {
+                    text = getString(label)
+                    setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+                }
+
+                with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
+                    isVisible = !this@buildSingleRowView.isEnabled
+                }
+
+                if (this@buildSingleRowView.isEnabled) setOnClickListener { onClick() }
+            }
+
+    private fun Success.Row.Double.buildDoubleRow() =
+        layoutInflater.inflate(R.layout.item_select_payment_method_double_row, null)
+            .apply {
+                with(findViewById<TextView>(R.id.tvSelectPaymentRowHeader)) {
+                    text = getString(label)
+                }
+
+                with(findViewById<TextView>(R.id.tvSelectPaymentRowDescription)) {
+                    text = getString(description)
+                }
+
+                with(findViewById<ImageView>(R.id.ivSelectPaymentRowIcon)) {
+                    setImageResource(icon)
+                }
+
+                with(findViewById<View>(R.id.vSelectPaymentRowOverlay)) {
+                    isVisible = !this@buildDoubleRow.isEnabled
+                }
+
+                if (this@buildDoubleRow.isEnabled) setOnClickListener { onClick() }
+            }
 
     @Suppress("LongMethod", "ComplexMethod")
     private fun handleEvents(binding: FragmentSelectPaymentMethodBinding) {
@@ -188,7 +208,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToOrderList -> {
-                    val action = SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                    val action =
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
                     findNavController().navigateSafely(action)
                 }
 

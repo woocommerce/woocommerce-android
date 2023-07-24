@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -76,9 +77,11 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
@@ -102,7 +105,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -173,10 +175,6 @@ class OrderCreateEditViewModel @Inject constructor(
             Mode.Creation -> autoSyncPriceModifier
             is Mode.Edit -> autoSyncOrder
         }
-
-    fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
-        mapItemToProductUiModel(item)
-    }
 
     val currentDraft
         get() = _orderDraft.value
@@ -513,45 +511,71 @@ class OrderCreateEditViewModel @Inject constructor(
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
             barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
+    @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (product.isVariable()) {
-            if (product.parentId == 0L) {
+        when {
+            product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    message = string.order_creation_barcode_scanning_unable_to_add_draft_product
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
                     barcodeFormat,
-                    "Instead of specific variations, user tried to add parent variable product."
+                    "Failed to add a product that is not published"
                 )
                 return
-            } else {
-                when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+            }
+            product.hasNoPrice() -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a product whose price is not specified"
+                )
+                return
+            }
+            product.isVariable() -> {
+                if (product.parentId == 0L) {
+                    sendAddingProductsViaScanningFailedEvent(
+                        message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    )
+                    trackProductSearchViaSKUFailureEvent(
+                        source,
+                        barcodeFormat,
+                        "Instead of specific variations, user tried to add parent variable product."
+                    )
+                    return
+                } else {
+                    when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                        null -> onProductsSelected(
+                            selectedItems = selectedItems +
+                                SelectedItem.ProductVariation(
+                                    productId = product.parentId,
+                                    variationId = product.remoteId
+                                ),
+                            source = source,
+                            addedVia = ProductAddedVia.SCANNING,
+                        )
+                        else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                    }
+                }
+            }
+            else -> {
+                when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                     null -> onProductsSelected(
-                        selectedItems = selectedItems +
-                            SelectedItem.ProductVariation(
-                                productId = product.parentId,
-                                variationId = product.remoteId
-                            ),
+                        selectedItems = selectedItems + Product(productId = product.remoteId),
                         source = source,
                         addedVia = ProductAddedVia.SCANNING,
                     )
                     else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                 }
-            }
-        } else {
-            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                null -> onProductsSelected(
-                    selectedItems = selectedItems + Product(productId = product.remoteId),
-                    source = source,
-                    addedVia = ProductAddedVia.SCANNING,
-                )
-                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
         trackProductSearchViaSKUSuccessEvent(source)
@@ -624,6 +648,16 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCustomerAddressDeleted() {
+        _orderDraft.update { order ->
+            order.copy(
+                customerId = null,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY
+            )
+        }
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -639,7 +673,11 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomerClicked() {
+    fun onAddCustomerClicked() {
+        triggerEvent(AddCustomer)
+    }
+
+    fun onEditCustomerClicked() {
         triggerEvent(EditCustomer)
     }
 
@@ -669,7 +707,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onProductClicked(item: Order.Item) {
         // Don't show details if the product is not synced yet
         if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item))
+        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
     }
 
     fun onRetryPaymentsClicked() {
@@ -988,6 +1026,18 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(ORDER_COUPON_UPDATE, mapOf(KEY_FLOW to flow))
     }
 
+    fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
+        when (result) {
+            is ProductDetailsEditResult.ProductRemoved -> {
+                onRemoveProduct(result.item)
+            }
+        }
+    }
+
+    fun onProductDiscountEditResult(modifiedItem: Order.Item) {
+        _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
@@ -999,7 +1049,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean =
+            !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
 
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
@@ -1069,5 +1120,9 @@ private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
+
+private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
+
+private fun ModelProduct.hasNoPrice() = price == null
 
 fun Order.Item.isSynced() = this.itemId != 0L

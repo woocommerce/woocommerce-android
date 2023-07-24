@@ -97,6 +97,7 @@ fun DescriptionGenerationForm(
                 }
                 GenerationFlow(viewState, onFeaturesChanged) {
                     GeneratedDescription(
+                        isRegenerateEnabled = viewState.features.isNotEmpty(),
                         description = viewState.description,
                         onRegenerateButtonClicked = onRegenerateButtonClicked,
                         onApplyButtonClicked = onApplyButtonClicked,
@@ -117,6 +118,7 @@ fun DescriptionGenerationForm(
                     }
 
                     WCColoredButton(
+                        enabled = viewState.features.isNotEmpty(),
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(id = string.product_sharing_write_with_ai),
@@ -243,6 +245,7 @@ private fun RegenerationInProgress(onApplyButtonClicked: () -> Unit) {
 
 @Composable
 private fun GeneratedDescription(
+    isRegenerateEnabled: Boolean,
     description: String,
     onRegenerateButtonClicked: () -> Unit,
     onApplyButtonClicked: () -> Unit,
@@ -364,6 +367,7 @@ private fun GeneratedDescription(
             .fillMaxWidth()
     ) {
         WCTextButton(
+            enabled = isRegenerateEnabled,
             onClick = onRegenerateButtonClicked,
             modifier = Modifier.align(Alignment.CenterStart),
             colors = ButtonDefaults.textButtonColors(

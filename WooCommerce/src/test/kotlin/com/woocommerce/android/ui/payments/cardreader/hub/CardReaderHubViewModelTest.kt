@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -106,7 +105,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when screen shown, then collect payments row present`() {
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
-                it.label == UiStringRes(R.string.card_reader_collect_payment)
+                it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
             }
     }
 
@@ -183,7 +182,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on collect payment, then app navigates to payment collection screen`() {
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_collect_payment)
+            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
         }!!.onClick!!.invoke()
 
         assertThat(viewModel.event.getOrAwaitValue())
@@ -195,7 +194,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on collect payment, then collect payment event tracked`() {
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_collect_payment)
+            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
         }!!.onClick!!.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
@@ -568,7 +567,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             assertThat(
                 (
                     viewModel.viewStateData.getOrAwaitValue().rows.find {
-                        it.label == UiStringRes(R.string.card_reader_collect_payment)
+                        it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
                     }
                         as NonToggleableListItem
                     ).isEnabled
@@ -646,7 +645,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             assertThat(
                 (
                     viewModel.viewStateData.getOrAwaitValue().rows.find {
-                        it.label == UiStringRes(R.string.card_reader_collect_payment)
+                        it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
                     }
                         as NonToggleableListItem
                     ).isEnabled
@@ -1472,21 +1471,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
             assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         }
-
-    @Test
-    fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
-        // GIVEN
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayDisabled)
-
-        // WHEN
-        initViewModel()
-
-        // THEN
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
-        }
-    }
 
     @Test
     fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {

@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerAddressBinding
 import com.woocommerce.android.databinding.LayoutAddressFormBinding
@@ -46,11 +47,14 @@ class OrderCreateEditCustomerAddFragment :
         const val SELECT_BILLING_STATE_REQUEST = "select_billing_state_request"
         const val SELECT_SHIPPING_COUNTRY_REQUEST = "select_shipping_country_request"
         const val SELECT_SHIPPING_STATE_REQUEST = "select_shipping_state_request"
-        private const val SEARCH_ID = Int.MAX_VALUE
+        private const val MENU_ITEM_SEARCH_ID = Int.MAX_VALUE
+        private const val MENU_ITEM_DELETE_ID = MENU_ITEM_SEARCH_ID - 1
     }
 
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
+
+    private val editingOfAddedCustomer: OrderCreateEditCustomerAddFragmentArgs by navArgs()
 
     private var fragmentViewBinding: FragmentOrderCreateEditCustomerAddressBinding? = null
     private var shippingBinding: LayoutAddressFormBinding? = null
@@ -58,7 +62,8 @@ class OrderCreateEditCustomerAddFragment :
     private var showShippingAddressFormSwitch: LayoutAddressSwitchBinding? = null
     private var doneMenuItem: MenuItem? = null
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -125,6 +130,15 @@ class OrderCreateEditCustomerAddFragment :
                         billingAddress = event.addresses.getValue(BILLING),
                         shippingAddress = event.addresses.getValue(SHIPPING)
                     )
+
+                    if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
+                        findNavController().popBackStack(R.id.orderCreationFragment, false)
+                    } else {
+                        findNavController().navigateUp()
+                    }
+                }
+                is AddressViewModel.DeleteCustomer -> {
+                    sharedViewModel.onCustomerAddressDeleted()
                     findNavController().navigateUp()
                 }
                 is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
@@ -266,15 +280,24 @@ class OrderCreateEditCustomerAddFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
 
-        if (FeatureFlag.ORDER_CREATION_CUSTOMER_SEARCH.isEnabled()) {
+        if (!FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
             menu.add(
                 Menu.NONE,
-                SEARCH_ID,
+                MENU_ITEM_SEARCH_ID,
                 Menu.NONE,
                 android.R.string.search_go
             ).also {
                 it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                 it.setIcon(R.drawable.ic_search_24dp)
+            }
+        } else if (editingOfAddedCustomer.editingOfAddedCustomer) {
+            menu.add(
+                Menu.NONE,
+                MENU_ITEM_DELETE_ID,
+                Menu.NONE,
+                R.string.delete
+            ).also {
+                it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             }
         }
 
@@ -292,8 +315,12 @@ class OrderCreateEditCustomerAddFragment :
                 )
                 true
             }
-            SEARCH_ID -> {
+            MENU_ITEM_SEARCH_ID -> {
                 addressViewModel.onCustomerSearchClicked()
+                true
+            }
+            MENU_ITEM_DELETE_ID -> {
+                addressViewModel.onDeleteCustomerClicked()
                 true
             }
             else -> false

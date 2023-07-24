@@ -59,7 +59,7 @@ gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:sou
 gradle.ext.wooCommerceSharedBinaryPath = "com.woocommerce.shared:library"
 
 gradle.ext {
-    compileSdkVersion = 33
+    compileSdkVersion = 34
     targetSdkVersion = 33
     minSdkVersion = 24
 }
