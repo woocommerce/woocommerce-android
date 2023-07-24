@@ -111,8 +111,8 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (fetchSitePluginsResult.isError) {
             return PreferredPluginResult.Error
         }
-        val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
-        val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
+        val wcPayPluginInfo = fetchSitePluginsResult.model.getPlugin(WOOCOMMERCE_PAYMENTS)
+        val stripePluginInfo = fetchSitePluginsResult.model.getPlugin(STRIPE_EXTENSION_GATEWAY)
         return PreferredPluginResult.Success(getPreferredPlugin(stripePluginInfo, wcPayPluginInfo).type)
     }
 
@@ -130,8 +130,8 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
-        val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
-        val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
+        val wcPayPluginInfo = fetchSitePluginsResult.model.getPlugin(WOOCOMMERCE_PAYMENTS)
+        val stripePluginInfo = fetchSitePluginsResult.model.getPlugin(STRIPE_EXTENSION_GATEWAY)
 
         if (
             isBothPluginsActivated(wcPayPluginInfo, stripePluginInfo) &&
@@ -395,6 +395,10 @@ class CardReaderOnboardingChecker @Inject constructor(
             selfHostedSiteId = site.selfHostedSiteId,
         )
     }
+
+    private fun List<SitePluginModel>?.getPlugin(type: PluginType) = this?.firstOrNull {
+        it.name.endsWith(type.pluginName)
+    }
 }
 
 data class PersistentOnboardingData(
@@ -413,9 +417,9 @@ private data class PluginWrapper(
     val info: SitePluginModel?
 )
 
-enum class PluginType {
-    WOOCOMMERCE_PAYMENTS,
-    STRIPE_EXTENSION_GATEWAY
+enum class PluginType(val pluginName: String) {
+    WOOCOMMERCE_PAYMENTS("woocommerce-payments"),
+    STRIPE_EXTENSION_GATEWAY("woocommerce-gateway-stripe")
 }
 
 fun PluginType.getPluginInfo(wcPayPluginInfo: SitePluginModel?, stripePluginInfo: SitePluginModel?) =
