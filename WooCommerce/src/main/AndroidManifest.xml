@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT" />
     <uses-permission android:name="android.permission.NFC" />
@@ -195,6 +196,11 @@
 
         <service
             android:name=".media.ProductImagesService"
+            android:exported="false" />
+
+        <service
+            android:name=".media.ProductImagesJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="false" />
 
         <!-- Provider for exposing file URIs on Android 7+ (required for camera) -->

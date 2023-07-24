@@ -1,0 +1,2 @@
+14.5:
+Presentamos Tap To Pay, nuestra nueva función para realizar pagos en persona en Android, con la que hacer transacciones más rápido y disfrutar de una experiencia de compra más fluida. Además, gestionar descuentos es ahora más fácil con esta función, que te permite aplicar descuentos de producto directos mientras haces un pedido, con lo que ahorrarás tiempo y aumentarás la eficiencia. Sigue con las actualizaciones para disfrutar de las últimas funciones y las mejoras continuas de WooCommerce.
