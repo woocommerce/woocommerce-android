@@ -21,6 +21,7 @@ class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
+    private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported,
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
 ) : ScopedViewModel(savedState) {
     @Volatile
@@ -46,7 +47,8 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
-            val supportedSearchModes = getSupportedSearchModes()
+            val isAdvancedSearchSupported = isAdvancedSearchSupported()
+            val supportedSearchModes = getSupportedSearchModes(isAdvancedSearchSupported)
             _viewState.value = CustomerListViewState(
                 searchQuery = searchQuery,
                 searchModes = supportedSearchModes.selectSearchMode(selectedSearchModeId),
