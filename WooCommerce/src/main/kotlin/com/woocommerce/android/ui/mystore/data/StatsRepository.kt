@@ -183,7 +183,7 @@ class StatsRepository @Inject constructor(
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
+            wcOrderStore.hasOrders(selectedSite.get())
         }
 
         when (result) {
