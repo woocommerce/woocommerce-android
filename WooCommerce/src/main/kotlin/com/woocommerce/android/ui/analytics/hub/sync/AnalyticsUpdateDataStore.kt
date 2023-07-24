@@ -56,7 +56,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         }
     }
 
-
     private fun shouldUpdateAnalytics(
         timestampKey: String,
         maxOutdatedTime: Long = defaultMaxOutdatedTime,
