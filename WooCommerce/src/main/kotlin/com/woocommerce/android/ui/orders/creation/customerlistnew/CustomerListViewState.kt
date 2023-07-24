@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 data class CustomerListViewState(
+    @StringRes val searchHint: Int,
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
     val partialLoading: Boolean = false,
@@ -15,8 +16,8 @@ data class CustomerListViewState(
 ) {
     sealed class CustomerList {
         object Loading : CustomerList()
-        object Empty : CustomerList()
-        object Error : CustomerList()
+        data class Empty(@StringRes val message: Int) : CustomerList()
+        data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
             val shouldResetScrollPosition: Boolean,

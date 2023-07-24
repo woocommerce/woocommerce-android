@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -72,9 +73,9 @@ class CustomerListViewModel @Inject constructor(
         }
 
         launch {
-            if (isAdvancedSearchSupported()) {
+            if (query.isNotEmpty() || isAdvancedSearchSupported()) {
                 loadAfterSearchChanged()
-            } else if (query.isEmpty()) {
+            } else {
                 _viewState.value = advancedSearchNotSupportedInitState()
             }
         }
@@ -140,7 +141,9 @@ class CustomerListViewModel @Inject constructor(
         )
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
+            _viewState.value = _viewState.value!!.copy(
+                body = CustomerListViewState.CustomerList.Error(R.string.error_generic)
+            )
         } else {
             val customers = result.getOrNull() ?: emptyList()
             val hasNextPage = customers.size == PAGE_SIZE
@@ -177,7 +180,9 @@ class CustomerListViewModel @Inject constructor(
 
     private fun handleFirstPageLoaded(customers: List<WCCustomerModel>) {
         if (customers.isEmpty()) {
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Empty)
+            _viewState.value = _viewState.value!!.copy(
+                body = CustomerListViewState.CustomerList.Empty(R.string.order_creation_customer_search_empty)
+            )
         } else {
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Loaded(
@@ -229,15 +234,16 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
+        searchHint = R.string.order_creation_customer_filter_hint,
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
-        body = CustomerListViewState.CustomerList.Loaded(
-            customers = emptyList(),
-            shouldResetScrollPosition = true,
+        body = CustomerListViewState.CustomerList.Empty(
+            R.string.order_creation_customer_search_empty_on_old_version_wcpay
         )
     )
 
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
+        searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
