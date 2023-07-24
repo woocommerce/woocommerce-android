@@ -119,7 +119,7 @@
         </action>
         <action
             android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
-            app:destination="@id/barcodeScanningFragment"/>
+            app:destination="@id/barcodeScanningFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -579,6 +579,10 @@
             app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
             app:nullable="false" />
     </fragment>
+    <fragment
+        android:id="@+id/freeTrialSurveyFragment"
+        android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
+        android:label="FreeTrialSurveyFragment" />
     <action
         android:id="@+id/action_global_blazeWebViewFragment"
         app:destination="@id/BlazeWebViewFragment" />
@@ -588,6 +592,9 @@
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
+    <action
+        android:id="@+id/action_global_freeTrialSurveyFragment"
+        app:destination="@id/freeTrialSurveyFragment" />
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
         android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"

@@ -74,6 +74,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
@@ -783,12 +784,16 @@ class MainActivity :
                         viewModel.onRequestPrivacyUpdate(event.analyticsEnabled)
                     }.show()
                 }
+
                 MainActivityViewModel.ShowPrivacySettings -> {
                     showPrivacySettingsScreen(RequestedAnalyticsValue.NONE)
                 }
+
                 is MainActivityViewModel.ShowPrivacySettingsWithError -> {
                     showPrivacySettingsScreen(event.requestedAnalyticsValue)
                 }
+
+                is OpenFreeTrialSurvey -> openFreeTrialSurvey()
             }
         }
 
@@ -796,6 +801,12 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun openFreeTrialSurvey() {
+        navController.navigateSafely(
+            NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
+        )
     }
 
     private fun shortcutOpenStoreCreation(storeName: String?) {
@@ -863,6 +874,7 @@ class MainActivity :
             when (trialStatusBarState) {
                 TrialStatusBarState.Hidden ->
                     animateBottomBar(binding.trialBar, show = false)
+
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
                         context = this,

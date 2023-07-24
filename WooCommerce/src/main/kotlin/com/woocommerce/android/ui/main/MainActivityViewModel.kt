@@ -275,7 +275,7 @@ class MainActivityViewModel @Inject constructor(
                 FREE_TRIAL_EXPIRING,
                 UPGRADE_TO_PAID_PLAN -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
 
-                FREE_TRIAL_SURVEY -> TODO()
+                FREE_TRIAL_SURVEY -> triggerEvent(OpenFreeTrialSurvey)
 
                 STORE_CREATION_FINISHED -> {}
             }
@@ -327,7 +327,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
-
+    object OpenFreeTrialSurvey : Event()
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object NewFeature : MoreMenuBadgeState()
