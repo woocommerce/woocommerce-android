@@ -35,14 +35,26 @@ class GetStats @Inject constructor(
 ) {
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
         val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
-        val isForcedRefresh = shouldUpdateStats(selectionType, refresh)
+        val shouldRefreshRevenue =
+            shouldUpdateStats(selectionType, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+        val shouldRefreshVisitors =
+            shouldUpdateStats(selectionType, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(isForcedRefresh, granularity),
-            visitorStats(isForcedRefresh, granularity)
+            revenueStats(shouldRefreshRevenue, granularity),
+            visitorStats(shouldRefreshVisitors, granularity)
         ).map { result ->
-            if (result is LoadStatsResult.RevenueStatsSuccess && isForcedRefresh) {
-                analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionType)
+            if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    selectionType = selectionType,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                )
+            }
+            if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    selectionType = selectionType,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
             }
             result
         }
@@ -121,11 +133,12 @@ class GetStats @Inject constructor(
 
     private suspend fun shouldUpdateStats(
         selectionType: StatsTimeRangeSelection.SelectionType,
-        refresh: Boolean
+        refresh: Boolean,
+        analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
-            .shouldUpdateAnalytics(selectionType)
+            .shouldUpdateAnalytics(selectionType = selectionType, analyticData = analyticData)
             .firstOrNull() ?: true
     }
 
