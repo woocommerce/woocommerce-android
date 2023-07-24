@@ -27,7 +27,7 @@ class FreeTrialSurveyFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    FreeTrialSurvey(viewModel)
+                    FreeTrialSurveyScreen(viewModel)
                 }
             }
         }
