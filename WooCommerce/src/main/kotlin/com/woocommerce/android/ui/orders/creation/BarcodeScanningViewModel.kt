@@ -25,6 +25,7 @@ class BarcodeScanningViewModel @Inject constructor(
 
     private val scannedProductItems: MutableList<ProductSelectorViewModel.SelectedItem> = mutableListOf()
     private val scannedProductSKU: MutableList<String> = mutableListOf()
+    private var lastScannedSku: String = ""
     private val _viewState: MutableLiveData<ViewState> = MutableLiveData<ViewState>()
     val viewState: LiveData<ViewState> = _viewState
 
@@ -48,7 +49,7 @@ class BarcodeScanningViewModel @Inject constructor(
     }
 
     fun fetchProductBySKU(sku: String) {
-        if (sku !in scannedProductSKU && _viewState.value?.isScanningInProgress == false) {
+        if (sku != lastScannedSku && _viewState.value?.isScanningInProgress == false) {
             _viewState.value = _viewState.value!!.copy(
                 isScanningInProgress = true
             )
@@ -62,7 +63,8 @@ class BarcodeScanningViewModel @Inject constructor(
                         isScanningInProgress = false
                     )
 //                    scannedProductSKU.clear()
-                    scannedProductSKU.add(sku)
+//                    scannedProductSKU.add(sku)
+                    lastScannedSku = sku
                     products.firstOrNull()?.let { product ->
                         Log.d("ABCD", "Scanned Product: ${product.name}")
                         _viewState.value = ViewState(
@@ -72,6 +74,7 @@ class BarcodeScanningViewModel @Inject constructor(
                     }
                 } ?: run {
                     _viewState.value = ViewState(
+                        isScanningInProgress = false,
                         scannedProductItems = scannedProductItems,
                         currentScannedProduct = null
                     )

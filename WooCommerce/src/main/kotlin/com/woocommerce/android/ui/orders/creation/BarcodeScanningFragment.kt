@@ -18,8 +18,6 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,17 +48,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import coil.compose.AsyncImage
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -80,8 +76,11 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     private fun barcodeScannerView() {
-        val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Expanded)
-//        val scope = rememberCoroutineScope()
+        val modalSheetState = rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Expanded,
+            confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
+        )
+        val scope = rememberCoroutineScope()
 //        var showBottomSheet by remember { mutableStateOf(false) }
 
         var code: MutableState<String> = remember {
@@ -160,14 +159,19 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                     modifier = Modifier.weight(1f)
                 )
 
-
                 val state = (viewModel.viewState.value as ViewState)
+
+                LaunchedEffect(key1 = state.currentScannedProduct?.name) {
+                    scope.launch {
+                        modalSheetState.show()
+                    }
+                }
                 if (state.currentScannedProduct?.name != null) {
                     var stockQuantity = remember {
                         mutableStateOf(state.currentScannedProduct.stockQuantity)
                     }
                     ModalBottomSheetLayout(
-                        sheetState = sheetState,
+                        sheetState = modalSheetState,
                         sheetContent = {
                             Box(Modifier.defaultMinSize(minHeight = 1.dp))
                             Column(
@@ -176,8 +180,20 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                     .defaultMinSize(minHeight = 100.dp)
                             ) {
 
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    AsyncImage(
+                                        model = state.currentScannedProduct.firstImageUrl,
+                                        contentDescription = "Product Image",
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                    Text(
+                                        text = "${(viewModel.viewState.value as ViewState).currentScannedProduct?.name}",
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                    )
+                                }
                                 Text(
-                                    text = "${(viewModel.viewState.value as ViewState).currentScannedProduct?.name}",
+                                    text = "${(viewModel.viewState.value as ViewState).currentScannedProduct?.sku}",
                                     modifier = Modifier
                                         .align(Alignment.CenterHorizontally)
                                         .padding(16.dp)
@@ -221,7 +237,7 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                         .padding(16.dp)
                                         .align(Alignment.CenterHorizontally),
                                     onClick = {
-                                    viewModel.updateProduct(stockQuantity.value.toInt())
+                                        viewModel.updateProduct(stockQuantity.value.toInt())
                                     }
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
@@ -243,8 +259,6 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                         },
                     )
                 }
-
-
 
 
 //                (viewModel.viewState.value as ViewState).currentScannedProduct?.name?.let {
@@ -310,7 +324,7 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
             }
         }
         viewModel.event.observe(viewLifecycleOwner) {
-            when(it) {
+            when (it) {
                 is BarcodeScanningViewModel.ScannedItems -> {
                     navigateBackWithResult(
                         key = "barcode",
