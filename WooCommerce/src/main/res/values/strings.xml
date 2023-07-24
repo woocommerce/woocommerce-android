@@ -518,6 +518,7 @@
     <string name="order_creation_customer_note">Customer note</string>
     <string name="order_creation_customer_note_edit_content_description">Edit customer note</string>
     <string name="order_creation_add_customer">Add customer details</string>
+    <string name="order_creation_add_customer_existing_customer">Existing customer</string>
     <string name="order_creation_add_customer_content_description">add customer</string>
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>

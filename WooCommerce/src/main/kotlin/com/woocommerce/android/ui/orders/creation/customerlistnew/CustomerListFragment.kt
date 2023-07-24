@@ -51,14 +51,18 @@ class CustomerListFragment : BaseFragment() {
                     )
                     findNavController().navigateSafely(
                         CustomerListFragmentDirections
-                            .actionCustomerListFragmentToOrderCreationCustomerFragment()
+                            .actionCustomerListFragmentToOrderCreationCustomerFragment(
+                                editingOfAddedCustomer = false
+                            )
                     )
                 }
                 is AddCustomer -> {
                     addressViewModel.clearSelectedAddress()
                     findNavController().navigateSafely(
                         CustomerListFragmentDirections
-                            .actionCustomerListFragmentToOrderCreationCustomerFragment()
+                            .actionCustomerListFragmentToOrderCreationCustomerFragment(
+                                editingOfAddedCustomer = false
+                            )
                     )
                 }
                 is MultiLiveEvent.Event.Exit -> {
