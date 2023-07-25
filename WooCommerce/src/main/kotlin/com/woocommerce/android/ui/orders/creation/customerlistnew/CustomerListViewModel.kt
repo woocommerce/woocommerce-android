@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -245,7 +245,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
-        searchHint = R.string.order_creation_customer_filter_hint,
+        searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Empty(
@@ -254,7 +254,7 @@ class CustomerListViewModel @Inject constructor(
     )
 
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
-        searchHint = R.string.order_creation_customer_search_hint,
+        searchHint = R.string.order_creation_customer_filter_hint,
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
