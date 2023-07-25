@@ -3443,7 +3443,7 @@
     <!--
     Free trial survey
     -->
-    <string name="free_trial_survey_title">Help Us Understand Your Subscription Decisions. Your feedback matters.</string>
+    <string name="free_trial_survey_title">Help us understand your subscription decisions. Your feedback matters.</string>
     <string name="free_trial_survey_option1">I am still exploring and assessing the features and benefits of the app.</string>
     <string name="free_trial_survey_option2">I am evaluating and comparing your service with others on the market.</string>
     <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
