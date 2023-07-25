@@ -9,6 +9,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.Mode
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -75,11 +76,14 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    suspend fun setup(
+        mode: Mode = Mode.Edit(COUPON_ID),
+        prepareMocks: suspend () -> Unit = {}
+    ) {
         prepareMocks()
 
         viewModel = EditCouponViewModel(
-            savedStateHandle = EditCouponFragmentArgs(couponId = COUPON_ID).initSavedStateHandle(),
+            savedStateHandle = EditCouponFragmentArgs(mode).initSavedStateHandle(),
             couponRepository = couponRepository,
             couponUtils = couponUtils,
             parameterRepository = mock {

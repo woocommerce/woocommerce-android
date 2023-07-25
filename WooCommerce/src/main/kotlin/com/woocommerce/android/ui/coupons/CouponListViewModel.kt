@@ -162,6 +162,10 @@ class CouponListViewModel @Inject constructor(
         }
     }
 
+    fun onAddCouponClicked() {
+        triggerEvent(NavigateToAddCouponEvent)
+    }
+
     data class CouponListState(
         val loadingState: LoadingState = LoadingState.Idle,
         val searchQuery: String? = null,
@@ -182,4 +186,5 @@ class CouponListViewModel @Inject constructor(
     }
 
     data class NavigateToCouponDetailsEvent(val couponId: Long) : MultiLiveEvent.Event()
+    object NavigateToAddCouponEvent : MultiLiveEvent.Event()
 }

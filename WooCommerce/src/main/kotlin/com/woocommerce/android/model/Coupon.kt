@@ -91,6 +91,20 @@ data class Coupon(
         @Parcelize
         data class Custom(override val value: String) : Type(value)
     }
+
+    companion object {
+        val EMPTY: Coupon
+            get() = Coupon(
+                id = -1L,
+                productIds = emptyList(),
+                categoryIds = emptyList(),
+                restrictions = CouponRestrictions(
+                    excludedCategoryIds = emptyList(),
+                    restrictedEmails = emptyList(),
+                    excludedProductIds = emptyList()
+                ),
+            )
+    }
 }
 
 fun CouponWithEmails.toAppModel() = Coupon(

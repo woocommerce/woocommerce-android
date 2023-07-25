@@ -2432,6 +2432,7 @@
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
+    <string name="coupon_list_add_coupon_content_description">Add coupon</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
     <string name="coupon_list_item_label_everything">everything</string>
@@ -2492,6 +2493,7 @@
     <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
     <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
     <string name="coupon_edit_save_button">Save</string>
+    <string name="coupon_create_save_button">Create</string>
     <string name="coupon_edit_add_description">Add Description (Optional)</string>
     <string name="coupon_edit_edit_description">Edit Description</string>
     <string name="coupon_edit_description_editor_title">Coupon Description</string>
@@ -2505,7 +2507,9 @@
     <string name="coupon_edit_select_categories_title">Select Product Categories</string>
     <string name="coupon_edit_edit_products_title">Edit Product Categories (%1$d)</string>
     <string name="coupon_edit_coupon_updated">Coupon updated</string>
+    <string name="coupon_create_coupon_created">Coupon created</string>
     <string name="coupon_edit_coupon_update_failed">Updating coupon failed</string>
+    <string name="coupon_create_coupon_creation_failed">Creating coupon failed</string>
     <string name="coupon_edit_saving_dialog_title">Saving coupon</string>
     <string name="coupon_edit_saving_dialog_subtitle">Please wait…</string>
     <string name="coupon_restrictions_minimum_spend_hint">Minimum Spend (%1$s)</string>

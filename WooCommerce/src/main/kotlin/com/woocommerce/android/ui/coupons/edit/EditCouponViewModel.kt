@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.coupons.edit
 
+import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -28,16 +30,19 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 import java.util.Date
@@ -56,8 +61,15 @@ class EditCouponViewModel @Inject constructor(
     }
 
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
+    private val mode: StateFlow<Mode> = savedStateHandle.getStateFlow(this, navArgs.mode, "key_mode")
+
     private val storedCoupon: Deferred<Coupon> = async {
-        couponRepository.observeCoupon(navArgs.couponId).first()
+        with(mode.value) {
+            when (this) {
+                is Mode.Edit -> couponRepository.observeCoupon(couponId).first()
+                is Mode.Add -> Coupon.EMPTY
+            }
+        }
     }
 
     private val couponDraft = savedStateHandle.getNullableStateFlow(viewModelScope, null, Coupon::class.java)
@@ -76,7 +88,8 @@ class EditCouponViewModel @Inject constructor(
             localizedType = coupon.type?.let { couponUtils.localizeType(it) },
             amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
             hasChanges = !coupon.isSameCoupon(storedCoupon.await()),
-            isSaving = isSaving
+            isSaving = isSaving,
+            saveButtonText = getSateButtonText()
         )
     }
         .asLiveData()
@@ -202,6 +215,39 @@ class EditCouponViewModel @Inject constructor(
         val newCoupon = couponDraft.value!!
         trackUpdateChanges(oldCoupon, newCoupon)
 
+        when (mode.value) {
+            is Mode.Edit -> updateCoupon(newCoupon)
+            is Mode.Add -> addCoupon(newCoupon)
+        }
+
+        isSaving.value = false
+    }
+
+    private fun getSateButtonText(): Int = when (mode.value) {
+        is Mode.Edit -> R.string.coupon_edit_save_button
+        is Mode.Add -> R.string.coupon_create_save_button
+    }
+
+    private suspend fun addCoupon(newCoupon: Coupon) {
+        couponRepository.createCoupon(newCoupon)
+            .onSuccess {
+                triggerEvent(ShowSnackbar(R.string.coupon_create_coupon_created))
+                triggerEvent(Exit)
+            }
+            .onFailure { exception ->
+                WooLog.e(
+                    tag = WooLog.T.COUPONS,
+                    message = "Coupon create failed: ${exception.message}"
+                )
+                val wooErrorType = (exception as? WooException)?.error?.type
+                val message = exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR }
+                    ?.message?.let { UiString.UiStringText(it) }
+                    ?: UiString.UiStringRes(R.string.coupon_create_coupon_creation_failed)
+                triggerEvent(ShowUiStringSnackbar(message))
+            }
+    }
+
+    private suspend fun updateCoupon(newCoupon: Coupon) {
         couponRepository.updateCoupon(newCoupon)
             .onSuccess {
                 triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
@@ -228,8 +274,6 @@ class EditCouponViewModel @Inject constructor(
                     ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
                 triggerEvent(ShowUiStringSnackbar(message))
             }
-
-        isSaving.value = false
     }
 
     private fun trackUpdateChanges(oldCoupon: Coupon, newCoupon: Coupon) {
@@ -261,6 +305,16 @@ class EditCouponViewModel @Inject constructor(
         val localizedType: String?,
         val amountUnit: String,
         val hasChanges: Boolean,
-        val isSaving: Boolean
+        val isSaving: Boolean,
+        @StringRes val saveButtonText: Int,
     )
+
+    @Parcelize
+    sealed class Mode : Parcelable {
+        @Parcelize
+        object Add : Mode()
+
+        @Parcelize
+        data class Edit(val couponId: Long) : Mode()
+    }
 }

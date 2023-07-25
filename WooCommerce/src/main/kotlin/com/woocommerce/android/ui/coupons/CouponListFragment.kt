@@ -28,7 +28,9 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.COUPONS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToAddCouponEvent
 import com.woocommerce.android.ui.coupons.CouponListViewModel.NavigateToCouponDetailsEvent
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -77,6 +79,11 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
         setupObservers()
+        setupListeners()
+    }
+
+    private fun setupListeners() {
+        binding.addCouponButton.setOnClickListener { viewModel.onAddCouponClicked() }
     }
 
     private fun setupObservers() {
@@ -91,6 +98,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToCouponDetailsEvent -> navigateToCouponDetails(event.couponId)
+                is NavigateToAddCouponEvent -> navigateToAddCoupon()
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
@@ -169,6 +177,12 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     private fun navigateToCouponDetails(couponId: Long) {
         findNavController().navigateSafely(
             CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(couponId)
+        )
+    }
+
+    private fun navigateToAddCoupon() {
+        findNavController().navigateSafely(
+            CouponListFragmentDirections.actionCouponListFragmentToEditCouponFragment(EditCouponViewModel.Mode.Add)
         )
     }
 

@@ -10,6 +10,8 @@
         <action
             android:id="@+id/action_couponListFragment_to_couponDetailsFragment"
             app:destination="@id/couponDetailsFragment" />
+        <action android:id="@+id/action_couponListFragment_to_editCouponFragment"
+            app:destination="@id/editCouponFragment" />
     </fragment>
     <fragment
         android:id="@+id/couponDetailsFragment"
@@ -27,8 +29,8 @@
         android:name="com.woocommerce.android.ui.coupons.edit.EditCouponFragment"
         android:label="EditCouponFragment">
         <argument
-            android:name="couponId"
-            app:argType="long" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.coupons.edit.EditCouponViewModel$Mode" />
         <action
             android:id="@+id/action_editCouponFragment_to_productSelectorFragment"
             app:destination="@id/nav_graph_product_selector" >

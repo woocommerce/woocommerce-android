@@ -26,4 +26,14 @@
         app:layout_constraintTop_toBottomOf="@id/couponsWIPcard"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_coupon_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Woo.AddButton"
+        android:layout_margin="@dimen/major_100"
+        android:contentDescription="@string/coupon_list_add_coupon_content_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
