@@ -3444,10 +3444,10 @@
     Free trial survey
     -->
     <string name="free_trial_survey_title">Help Us Understand Your Subscription Decisions. Your feedback matters.</string>
-    <string name="free_trial_survey_option1">I am still exploring and assessing the features and benefits of app.</string>
+    <string name="free_trial_survey_option1">I am still exploring and assessing the features and benefits of the app.</string>
     <string name="free_trial_survey_option2">I am evaluating and comparing your service with others on the market.</string>
-    <string name="free_trial_survey_option3">I am part of a team, and we need to make the decision collectively.</string>
-    <string name="free_trial_survey_option4">I am evaluating how to best integrate this service into my business operations.</string>
+    <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
+    <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
     <string name="free_trial_survey_option5">Other (please specify)</string>
 
 </resources>
