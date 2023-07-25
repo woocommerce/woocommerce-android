@@ -78,13 +78,11 @@ class StatsRepository @Inject constructor(
             }
         }
 
-    suspend fun getRevenueStats(
-        granularity: StatsGranularity,
-        startDate: String = "",
-        endDate: String = ""
+    suspend fun getRevenueStatsById(
+        revenueRangeId: Int
     ): Flow<Result<WCRevenueStatsModel?>> = flow {
-        wcStatsStore.getRawRevenueStats(
-            selectedSite.get(), granularity, startDate, endDate
+        wcStatsStore.getRawRevenueStatsFromId(
+            selectedSite.get(), revenueRangeId
         ).let { emit(Result.success(it)) }
     }
 
