@@ -1,11 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-28 15:54:03+0000
+Translation-Revision-Date: 2023-07-20 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Ir a Ajustes</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Cancelar</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Conceder</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Has denegado de forma permanente el permiso de la cámara. Es necesario para escanear el código de barras. Actívalo en los ajustes de la aplicación</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Se necesita el permiso de la cámara para escanear el código de barras</string>
+    <string name="barcode_scanning_alert_dialog_title">Conceder permiso de la cámara</string>
+    <string name="order_creation_coupon_network_error">Se ha producido un error al validar el código de tu cupón. Inténtalo de nuevo</string>
+    <string name="order_creation_coupon_invalid_code">No hemos podido encontrar un cupón con ese código. Inténtalo de nuevo</string>
+    <string name="order_creation_discount_amount_type">Importe (%1$s)</string>
+    <string name="order_creation_discount_value">Descuento %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">Descuentos totales</string>
+    <string name="order_creation_discount">Descuento</string>
+    <string name="order_creation_discount_amount_with_currency">Importe (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">No se ha podido aplicar el descuento manual. Antes se deben eliminar los cupones</string>
+    <string name="order_creation_discount_invalid_number_error">El descuento no es un número válido.</string>
+    <string name="order_creation_discount_too_big_error">El descuento no puede superior al precio</string>
+    <string name="order_creation_remove_discount">Eliminar descuento</string>
+    <string name="highlights_tooltip_button_hint">Texto del botón</string>
+    <string name="highlights_tooltip_message_hint">Mensaje de información sobre la herramienta. \n Puede que tenga varias líneas.</string>
+    <string name="highlights_tooltip_title_hint">Título de la información sobre la herramienta</string>
+    <string name="blaze_banner_dismiss_dialog_button">De acuerdo</string>
+    <string name="blaze_banner_dismiss_dialog_description">No te preocupes. Para tu comodidad, puedes acceder a Blaze en el menú principal y en el de detalles del producto.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Anuncios de Blaze</string>
+    <string name="blaze_banner_close_button_content_description">Cerrar el botón del banner de Blaze</string>
+    <string name="blaze_banner_button">Probar Blaze ahora</string>
+    <string name="blaze_banner_description">Convierte tus productos en anuncios que se publicarán en millones de sitios web de WordPress.com y Tumblr.</string>
+    <string name="blaze_banner_title">Promociona productos con Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">De acuerdo</string>
+    <string name="ai_product_description_tooltip_message">Usa nuestra herramienta con tecnología de IA para generar rápidamente descripciones de productos. Tan solo tendrás que introducir palabras clave y nosotros haremos el resto.</string>
+    <string name="ai_product_description_tooltip_title">✨ Escribir con IA</string>
+    <string name="ai_product_toolbar_button_tooltip">Generar una descripción con IA</string>
+    <string name="ai_product_description_error">Se ha producido un problema al generar la descripción del producto. Inténtalo de nuevo más tarde.</string>
+    <string name="ai_product_description_label">Descripción generada con IA</string>
+    <string name="ai_product_description_learn_more_link">Con tecnología de IA. &lt;a href=\'\'&gt;&lt;u&gt;Más información&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Lamentablemente, Tap to Pay on Android todavía no está disponible en tu país. Mantente al día de las novedades.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Para utilizar Tap to Pay on Android, tu dispositivo debe disponer de Google Play Services. Para aceptar pagos en persona, instala Google Play Services o compra un lector de tarjetas con Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Para utilizar Tap to Pay on Android, debes tener la versión de Android 10 o posterior. Para aceptar pagos en persona, actualiza Android o compra un lector de tarjetas con Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Para utilizar Tap to Pay on Android, tu dispositivo debe disponer de un chip NFC. Para aceptar pagos en persona, compra un lector de tarjetas con Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay no está disponible</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Comprobar requisitos</string>
+    <string name="error_troubleshooting">Solución de problemas</string>
+    <string name="orderlist_parsing_error_message">Este problema se puede producir a causa de un conflicto con un plugin. Inténtalo de nuevo más tarde o ponte en contacto con nosotros y estaremos encantados de ayudarte.</string>
+    <string name="orderlist_parsing_error_title">No hemos podido cargar los datos.</string>
+    <string name="ai_product_description_dialog_message">Añade las descripciones rápidamente con la IA. ¡Prueba nuestra función hoy mismo!</string>
+    <string name="ai_product_description_dialog_title">Añadir la descripción del producto usando la IA</string>
+    <string name="ai_product_description_note_dialog_confirmation">De acuerdo</string>
+    <string name="ai_product_description_note_dialog_message">Ten en cuenta que esta descripción de producto se ha generado con nuestra herramienta con tecnología de IA. Revisa y edita el contenido para asegurarte de que esté en línea con tu marca y tu mensaje.</string>
+    <string name="ai_product_description_note_dialog_heading">¡Gran comienzo!</string>
+    <string name="ai_product_description_feedback">¿Es útil\nla descripción generada?</string>
+    <string name="ai_product_description_regenerate_button">Regenerar</string>
+    <string name="ai_product_description_survey">¿Es útil la descripción generada?</string>
+    <string name="ai_product_description_hint">Destaca las funciones únicas y el público de tu producto mediante palabras clave, así conseguirás una descripción personalizada.</string>
+    <string name="ai_product_description_example">Ejemplo: en maceta, cactus, planta, decorativa, de fácil cuidado</string>
+    <string name="ai_product_description_product_name">Introduce el nombre de tu producto</string>
+    <string name="ai_product_description_title">Escribe una descripción</string>
+    <string name="barcode_scanning_camera_permission_denied">Se necesita el permiso de la cámara para escanear el código de barras.</string>
+    <string name="barcode_scanning_title">Escanear código de barras</string>
+    <string name="order_creation_customer_search_username">Nombre de usuario</string>
+    <string name="order_creation_customer_search_name">Nombre</string>
+    <string name="order_creation_customer_search_email">Correo electrónico</string>
+    <string name="order_creation_customer_search_everything">Todo</string>
+    <string name="order_creation_customer_filter_hint">Filtrar clientes según</string>
+    <string name="order_creation_coupons_title">Cupones aplicados</string>
+    <string name="more_settings">Más ajustes</string>
+    <string name="maybe_later">Quizá más tarde</string>
     <string name="product_sharing_regenerate">Volver a escribir</string>
     <string name="store_creation_in_progress_description_6">&lt;b&gt;#Recibe notificaciones de todas las ventas:&lt;/b&gt; no te pierdas nada gracias a las notificaciones de venta instantáneas. Recibe alertas por cada nueva venta: así podrás celebrar tus logros y controlar la actividad de tu tienda.</string>
     <string name="store_creation_in_progress_description_5">&lt;b&gt;#Añade y edita productos en un clic:&lt;/b&gt; añade nuevos productos, actualiza los detalles, sube imágenes y gestiona las variaciones; todo ello desde la aplicación. Mantén tu inventario actualizado sin esfuerzo.</string>
@@ -72,7 +138,6 @@ Language: es
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">El sistema ha cerrado la aplicación de Woo mientras se ejecutaba en segundo plano. Puedes probar a usarla de nuevo.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">No puedes añadir un producto variable directamente. Elije una variación específica.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde.</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">No se ha encontrado el producto, por lo que no se ha podido añadir al nuevo pedido.</string>
     <string name="order_list_barcode_scanning_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde.</string>
     <string name="scan_barcode">Escanear código de barras</string>
     <string name="shipping_notice_banner_instructions_content">Ahora, para hacer envíos a países en los que se aplica la normativa aduanera de la Unión Europea (UE), debes describir cada artículo con claridad. Por ejemplo, si envías ropa, para que se acepte la descripción, debes indicar el tipo de ropa del que se trata (camisas de hombre, chalecos para chicas, chaquetas para chicos, etc.). De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>
@@ -228,8 +293,6 @@ Language: es
     <string name="product_subscription_title">Suscripción</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">El lector de tarjetas acepta pagos con tarjetas de débito y crédito con toque, chip y banda magnética.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Acepta pagos sin contacto de forma segura directamente desde tu teléfono.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Prueba Tap to Pay en la aplicación</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tocar para pagar</string>
     <string name="card_reader_tap_to_pay_share_feedback">Compartir comentarios sobre Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">No se puede acceder porque la creación de la contraseña de la aplicación no está aprobada.</string>
     <string name="login_site_credentials_fetching_site">Cargando sitio…</string>
@@ -275,7 +338,6 @@ Language: es
     <string name="store_onboarding_launch_store_share_url_button">URL para compartir</string>
     <string name="store_onboarding_launch_store_button">Publicar mi tienda</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Para publicar tu tienda, debes mejorar tu plan. &lt;u&gt;Mejorar&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">La función Tocar para pagar no está disponible para tu tienda o dispositivo.</string>
     <string name="domains_search_domains">Buscar dominios</string>
     <string name="login_site_credentials_http_error">No se ha podido acceder con el código de estado %1$s.</string>
     <string name="login_site_credentials_custom_admin_url">No puedes acceder porque no hemos conseguido identificar la URL de administración de tu tienda.</string>

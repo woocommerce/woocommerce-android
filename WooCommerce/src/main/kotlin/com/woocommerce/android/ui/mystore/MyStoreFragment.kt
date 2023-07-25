@@ -32,6 +32,7 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
@@ -230,6 +231,8 @@ class MyStoreFragment :
         blazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
+                is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
+                is ShowDialog -> event.showDialog()
             }
         }
     }
@@ -456,7 +459,7 @@ class MyStoreFragment :
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-
+        blazeViewModel.updateBlazeBannerStatus()
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
             usageTracksEventEmitter.interacted()

@@ -80,9 +80,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
-    private val isBlazeEnabled: IsBlazeEnabled = mock {
-        onBlocking { invoke() } doReturn false
-    }
+    private val isBlazeEnabled: IsBlazeEnabled = mock()
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
 

@@ -5,11 +5,13 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -17,6 +19,8 @@ import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -25,18 +29,25 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
+    private lateinit var analyticsDataStore: AnalyticsUpdateDataStore
     private lateinit var repository: AnalyticsRepository
 
     private lateinit var sut: UpdateAnalyticsHubStats
 
     @Before
     fun setUp() {
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(true)
+        }
         repository = mock()
         sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
             analyticsRepository = repository
         )
     }
@@ -51,7 +62,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -74,7 +85,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -97,7 +108,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -120,7 +131,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -143,7 +154,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -166,7 +177,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -193,7 +204,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -216,7 +227,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved, this)
+        sut(testRangeSelection, this)
 
         advanceUntilIdle()
 
@@ -229,22 +240,175 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         job.cancel()
     }
 
+    @Test
+    fun `when data store allows new stats fetch, then request data with ForceNew strategy`() = testBlocking {
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
+    }
+
+    @Test
+    fun `when data store does NOT allows net stats fetch, then request data with Saved strategy`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(repository).fetchRevenueData(testRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testRangeSelection, Saved)
+        verify(repository).fetchProductsData(testRangeSelection, Saved)
+    }
+
+    @Test
+    fun `when selection type is CUSTOM, then follow the data store and request data with Stored strategy`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testCustomRangeSelection, this)
+
+        // Then
+        verify(repository).fetchRevenueData(testCustomRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testCustomRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testCustomRangeSelection, Saved)
+        verify(repository).fetchProductsData(testCustomRangeSelection, Saved)
+    }
+
+    @Test
+    fun `when syncing stats data starts with forceUpdate true, then trigger update with ForceNew Strategy`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this, true)
+
+        // Then
+        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
+
+        verify(analyticsDataStore, never()).shouldUpdateAnalytics(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats data starts with forceUpdate false, then follow data store response`() = testBlocking {
+        // Given
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this, false)
+
+        // Then
+        verify(repository).fetchRevenueData(testRangeSelection, Saved)
+        verify(repository).fetchOrdersData(testRangeSelection, Saved)
+        verify(repository).fetchVisitorsData(testRangeSelection, Saved)
+        verify(repository).fetchProductsData(testRangeSelection, Saved)
+
+        verify(analyticsDataStore).shouldUpdateAnalytics(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats data starts with ForceNew strategy, then store the expected timestamp`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(analyticsDataStore).storeLastAnalyticsUpdate(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats data stats with Stored strategy, then do not store the timestamp`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(analyticsDataStore, never()).storeLastAnalyticsUpdate(testRangeSelection)
+    }
+
+    @Test
+    fun `when syncing stats with empty DataStore flow response, then use ForceNew strategy`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        analyticsDataStore = mock {
+            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn emptyFlow()
+        }
+        sut = UpdateAnalyticsHubStats(
+            analyticsUpdateDataStore = analyticsDataStore,
+            analyticsRepository = repository
+        )
+
+        // When
+        sut(testRangeSelection, this)
+
+        // Then
+        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
+    }
+
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
-                repository.fetchRevenueData(testRangeSelection, Saved)
+                repository.fetchRevenueData(testRangeSelection, ForceNew)
             } doReturn testRevenueResult
 
             onBlocking {
-                repository.fetchOrdersData(testRangeSelection, Saved)
+                repository.fetchOrdersData(testRangeSelection, ForceNew)
             } doReturn testOrdersResult
 
             onBlocking {
-                repository.fetchProductsData(testRangeSelection, Saved)
+                repository.fetchProductsData(testRangeSelection, ForceNew)
             } doReturn testProductsResult
 
             onBlocking {
-                repository.fetchVisitorsData(testRangeSelection, Saved)
+                repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn testVisitorsResult
         }
     }
@@ -252,19 +416,19 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     private fun configureErrorResponseStub() {
         repository.stub {
             onBlocking {
-                repository.fetchRevenueData(testRangeSelection, Saved)
+                repository.fetchRevenueData(testRangeSelection, ForceNew)
             } doReturn RevenueResult.RevenueError
 
             onBlocking {
-                repository.fetchOrdersData(testRangeSelection, Saved)
+                repository.fetchOrdersData(testRangeSelection, ForceNew)
             } doReturn OrdersResult.OrdersError
 
             onBlocking {
-                repository.fetchProductsData(testRangeSelection, Saved)
+                repository.fetchProductsData(testRangeSelection, ForceNew)
             } doReturn ProductsResult.ProductsError
 
             onBlocking {
-                repository.fetchVisitorsData(testRangeSelection, Saved)
+                repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn VisitorsResult.VisitorsError
         }
     }

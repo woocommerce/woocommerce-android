@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpdateOrder) : SyncStrategy {
+    @Suppress("ComplexMethod")
     private fun areEquivalent(old: Order, new: Order): Boolean {
         // Make sure to update the prices only when items did change
         val hasSameItems = old.items
@@ -16,10 +17,10 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
                 it.quantity > 0
             }
             .areSameAs(new.items) { newItem ->
-                // TODO M3: we need probably to compare the totals too, to account for discounts
                 this.productId == newItem.productId &&
                     this.variationId == newItem.variationId &&
-                    this.quantity == newItem.quantity
+                    this.quantity == newItem.quantity &&
+                    this.total == newItem.total
             }
 
         val hasSameShippingLines = old.shippingLines

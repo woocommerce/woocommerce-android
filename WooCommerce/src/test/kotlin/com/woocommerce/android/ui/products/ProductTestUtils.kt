@@ -22,6 +22,7 @@ object ProductTestUtils {
         customStatus: String? = null,
         variationIds: String = if (isVariable) "[123]" else "[]",
         productType: String? = null,
+        amount: String = "20.00",
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -31,7 +32,7 @@ object ProductTestUtils {
             status = customStatus ?: "publish"
             type = productType ?: if (isVariable) "variable" else "simple"
             stockStatus = "instock"
-            price = "20.00"
+            price = amount
             salePrice = "10.00"
             regularPrice = "30.00"
             averageRating = "3.0"

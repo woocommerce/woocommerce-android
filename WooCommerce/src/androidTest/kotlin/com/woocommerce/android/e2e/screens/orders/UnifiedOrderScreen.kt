@@ -6,13 +6,17 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.NestedScrollViewExtension
 import com.woocommerce.android.e2e.helpers.util.Screen
+import org.hamcrest.CoreMatchers.endsWith
+import org.hamcrest.Matchers
 import org.hamcrest.core.AllOf.allOf
 
 class UnifiedOrderScreen : Screen(ORDER_CREATION) {
@@ -28,6 +32,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         const val PAYMENT_SECTION = R.id.payment_section
         const val PRODUCTS_SECTION = R.id.products_section
         const val SHIPPING_BUTTON = R.id.shipping_button
+        const val SHIPPING_AMOUNT_INPUT = R.id.amountEditText
         const val TOOLBAR = R.id.collapsing_toolbar
         const val UPDATE_STATUS_LIST_VIEW = androidx.appcompat.R.id.select_dialog_listview
     }
@@ -58,10 +63,18 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun addShipping(): UnifiedOrderScreen {
+        scrollTo(PAYMENT_SECTION)
         waitForElementToBeDisplayed(PAYMENT_SECTION)
         clickOn(SHIPPING_BUTTON)
-        Espresso.onView((withText("0")))
-            .perform(ViewActions.replaceText("3.30"))
+        waitForElementToBeDisplayed(SHIPPING_AMOUNT_INPUT)
+
+        Espresso.onView(
+            allOf(
+                isDescendantOfA(withId(SHIPPING_AMOUNT_INPUT)),
+                withClassName(endsWith("EditText"))
+            )
+        ).perform(ViewActions.replaceText("3.30"))
+
         clickOn(DONE_BUTTON)
         return this
     }
@@ -80,15 +93,19 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         return this
     }
 
-    fun addCustomerNotes(note: String): UnifiedOrderScreen {
-        Espresso.onView(withId(NOTES_SECTION))
-            .perform(NestedScrollViewExtension())
-        Espresso.onView(withText("Add note"))
-            .perform(click())
+    fun editCustomerNote(note: String): UnifiedOrderScreen {
+        waitForElementToBeDisplayedWithoutFailure(NOTES_SECTION)
+        scrollTo(NOTES_SECTION)
 
-        Espresso.onView(withId(CUSTOMER_NOTE_EDITOR))
-            .perform((ViewActions.replaceText(note)))
+        val editNoteButton = Espresso.onView(
+            Matchers.allOf(
+                isDescendantOfA(withId(NOTES_SECTION)),
+                withId(R.id.edit_button)
+            )
+        )
 
+        clickOn(editNoteButton)
+        typeTextInto(CUSTOMER_NOTE_EDITOR, note)
         clickOn(DONE_BUTTON)
         return this
     }

@@ -22,8 +22,6 @@ import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInfo
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -140,11 +138,12 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onRefreshRequested() {
+        tracker.track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
-                fetchStrategy = getFetchStrategy(isRefreshing = true),
-                scope = viewModelScope
+                scope = viewModelScope,
+                forceUpdate = true
             ).collect {
                 mutableState.update { viewState ->
                     viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
@@ -164,15 +163,12 @@ class AnalyticsHubViewModel @Inject constructor(
     private fun formatValue(value: String, currencyCode: String?) =
         currencyCode?.let { currencyFormatter.formatCurrency(value, it) } ?: value
 
-    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
-
     private fun observeRangeSelectionChanges() {
         rangeSelectionState.onEach {
             updateDateSelector()
             trackSelectedDateRange()
             updateStats(
                 rangeSelection = it,
-                fetchStrategy = getFetchStrategy(isRefreshing = false),
                 scope = viewModelScope
             )
         }.launchIn(viewModelScope)

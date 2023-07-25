@@ -493,7 +493,7 @@
     <string name="simple_payments_cash_dlg_message">This will create your order and mark it as paid if you received payment outside of WooCommerce</string>
     <string name="existing_order_cash_dlg_message">This will mark this order as paid if you received payment outside of WooCommerce</string>
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
-    <string name="simple_payments_share_payment_link">Share payment link</string>
+    <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
     <!--
          Taxes
@@ -518,6 +518,8 @@
     <string name="order_creation_customer_note">Customer note</string>
     <string name="order_creation_customer_note_edit_content_description">Edit customer note</string>
     <string name="order_creation_add_customer">Add customer details</string>
+    <string name="order_creation_add_customer_existing_customer">Existing customer</string>
+    <string name="order_creation_add_customer_content_description">add customer</string>
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add products</string>
@@ -534,6 +536,16 @@
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_remove_discount">Remove discount</string>
+    <string name="order_creation_discount_too_big_error">Discount cannot be greater than the price</string>
+    <string name="order_creation_discount_invalid_number_error">Discount is not a valid number</string>
+    <string name="order_creation_discount_with_coupon_error">Manual discount could not be applied. Remove coupons first</string>
+    <string name="order_creation_discount_amount_with_currency">Amount (%1$s)</string>
+    <string name="order_creation_discount">Discount</string>
+    <string name="order_creation_discounts_total">Discounts Total</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discount_value">Discount %1$s</string>
+    <string name="order_creation_discount_amount_type">Amount (%1$s)</string>
     <string name="order_creation_remove_product">Remove product from order</string>
     <string name="order_creation_variations_screen_title">Select variation</string>
     <string name="order_creation_payment">Payment</string>
@@ -562,17 +574,26 @@
     <string name="order_creation_customer_search_name">Name</string>
     <string name="order_creation_customer_search_username">Username</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">You cannot add products that are not published</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">You cannot add products with no price specified</string>
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
-    <string name="invalid_coupon_code">We couldn\'t find a coupon with that code. Please try again</string>
+    <string name="order_creation_coupon_invalid_code">We couldn\'t find a coupon with that code. Please try again</string>
+    <string name="order_creation_coupon_network_error">Something went wrong when validating your coupon code. Please try again</string>
 
     <!--
          Barcode Scanning
     -->
     <string name="barcode_scanning_title">Scan Barcode</string>
     <string name="barcode_scanning_camera_permission_denied">Camera permission is required to scan the barcode.</string>
+    <string name="barcode_scanning_alert_dialog_title">Grant Camera Permission</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Camera permission is required in order to scan the barcode</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">You have permanently denied Camera permission. It is required in order to scan the barcode. Please enable it from the app settings</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Grant</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Cancel</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Go to settings</string>
     <!--
         Domains
     -->
@@ -1179,6 +1200,7 @@
             Card Reader Hub
         -->
     <string name="payments_hub_title">Payments</string>
+    <string name="card_reader_hub_collect_payment">Collect Payment</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
@@ -1193,8 +1215,13 @@
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
     <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
     <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Share Tap To Pay Feedback</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
 
     <!--
            Card Reader Tap To Pay Explanation
@@ -1208,11 +1235,10 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
     <string name="card_reader_tap_to_pay_explanation_refund_failed">The refund failed. Try to refund manually</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
     <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with Tap To Pay on Android</string>
 
     <!--
             Card Reader Type Selection
@@ -3390,6 +3416,9 @@
     <string name="ai_product_description_dialog_title">Add product description with AI</string>
     <string name="ai_product_description_dialog_message">Add descriptions in a snap with AI. Try our feature today!</string>
     <string name="ai_product_toolbar_button_tooltip">Generate a description using AI</string>
+    <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
+    <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
+    <string name="ai_product_description_tooltip_dismiss">Got it</string>
 
     <!--
     Blaze banner
@@ -3398,4 +3427,15 @@
     <string name="blaze_banner_description">Turn your products into ads that run across millions of sites on WordPress.com and Tumblr.</string>
     <string name="blaze_banner_button">Try Blaze now</string>
     <string name="blaze_banner_close_button_content_description">Close Blaze banner button</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
+    <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
+    <string name="blaze_banner_dismiss_dialog_button">Got it</string>
+
+    <!--
+    Highlights tooltip
+    -->
+    <string name="highlights_tooltip_title_hint">Tooltip title</string>
+    <string name="highlights_tooltip_message_hint">Tooltip message. \n This can be multiple lines.</string>
+    <string name="highlights_tooltip_button_hint">Button text</string>
+
 </resources>

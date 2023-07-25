@@ -235,7 +235,8 @@ class ProductDetailViewModel @Inject constructor(
             parameters,
             addonRepository,
             variationRepository,
-            isAIProductDescriptionEnabled
+            isAIProductDescriptionEnabled,
+            appPrefsWrapper
         )
     }
 
@@ -437,7 +438,16 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onWriteWithAIClicked() {
-        triggerEvent(ShowAIProductDescriptionBottomSheet(viewState.productDraft?.name))
+        val chosenDescription =
+            viewState.productDraft?.description.takeIf { it?.isNotEmpty() == true }
+                ?: viewState.productDraft?.shortDescription.takeIf { it?.isNotEmpty() == true }
+
+        triggerEvent(
+            ShowAIProductDescriptionBottomSheet(
+                viewState.productDraft?.name,
+                chosenDescription
+            )
+        )
 
         tracker.track(
             stat = PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED,
@@ -2348,6 +2358,7 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun shouldShowBlaze(productDraft: Product) =
         getProductVisibility() == PUBLIC &&
             productDraft.status != DRAFT &&
+            !isProductUnderCreation &&
             isBlazeEnabled()
 
     fun trackBlazeDisplayed() {
@@ -2406,7 +2417,10 @@ class ProductDetailViewModel @Inject constructor(
 
     data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
-    data class ShowAIProductDescriptionBottomSheet(val productTitle: String?) : Event()
+    data class ShowAIProductDescriptionBottomSheet(
+        val productTitle: String?,
+        val productDescription: String?
+    ) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
