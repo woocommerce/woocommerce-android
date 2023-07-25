@@ -1,11 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-15 19:54:04+0000
+Translation-Revision-Date: 2023-07-19 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">الانتقال إلى الإعدادات</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">إلغاء</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">منح</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">لقد رفضت صلاحية الكاميرا بشكل دائم. إنها مطلوبة من أجل مسح الرمز الشريطي ضوئيًا. يرجى تمكينها من إعدادات التطبيق</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">صلاحية الكاميرا مطلوبة من أجل مسح الرمز الشريطي ضوئيًا</string>
+    <string name="barcode_scanning_alert_dialog_title">منح صلاحية الكاميرا</string>
+    <string name="order_creation_coupon_network_error">حدث خطأ عند التحقق من كود القسيمة. ترجى المحاولة مجددًا</string>
+    <string name="order_creation_coupon_invalid_code">يتعذر علينا العثور على قسيمة من خلال ذلك الكود. ترجى المحاولة مجددًا</string>
+    <string name="order_creation_discount_amount_type">المبلغ (⁦%1$s⁩)</string>
+    <string name="order_creation_discount_value">الخصم ⁦%1$s⁩</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">إجمالي الخصومات</string>
+    <string name="order_creation_discount">الخصم</string>
+    <string name="order_creation_discount_amount_with_currency">المبلغ (⁦%1$s⁩)</string>
+    <string name="order_creation_discount_with_coupon_error">يتعذر تطبيق الخصم اليدوي إزالة القسائم أولاً</string>
+    <string name="order_creation_discount_invalid_number_error">الخصم ليس رقمًا صالحًا</string>
+    <string name="order_creation_discount_too_big_error">يتعذر أن يكون الخصم أكبر من السعر</string>
+    <string name="order_creation_remove_discount">إزالة خصم</string>
+    <string name="highlights_tooltip_button_hint">نص الزر</string>
+    <string name="highlights_tooltip_message_hint">رسالة أداوت التلميح. \n يمكن أن يكون هذا أسطرًا متعددة</string>
+    <string name="highlights_tooltip_title_hint">عنوان تلميح الأداة</string>
+    <string name="blaze_banner_dismiss_dialog_button">فهمت</string>
+    <string name="blaze_banner_dismiss_dialog_description">لا داعي للقلق! يمكن الوصول إلى Blaze من \"القائمة\" وقائمة تفاصيل المنتج من أجل راحتك.</string>
+    <string name="blaze_banner_dismiss_dialog_title">إعلانات Blaze</string>
+    <string name="blaze_banner_close_button_content_description">إغلاق زر شعار Blaze</string>
+    <string name="blaze_banner_button">تجربة Blaze الآن</string>
+    <string name="blaze_banner_description">حوّل منتجاتك إلى إعلانات تعمل عبر ملايين المواقع على ووردبريس.كوم وTumblr.</string>
+    <string name="blaze_banner_title">ترويج المنتجات باستخدام Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">فهمت</string>
+    <string name="ai_product_description_tooltip_message">استخدم أداتنا المدعومة من الذكاء الاصطناعي لإنشاء اشتراكات المنتجات بسرعة. ما عليك سوى إدخال الكلمات المفتاحية وسنتكفل بالبقية!</string>
+    <string name="ai_product_description_tooltip_title">✨ الكتابة باستخدام الذكاء الاصطناعي</string>
+    <string name="ai_product_toolbar_button_tooltip">إنشاء وصف باستخدام الذكاء الاصطناعي</string>
+    <string name="ai_product_description_error">كانت هناك مشكلة في أثناء إنشاء وصف المنتج. ترجى المحاولة مرة أخرى لاحقًا.</string>
+    <string name="ai_product_description_label">تم إنشاء وصف بواسطة الذكاء الاصطناعي</string>
+    <string name="ai_product_description_learn_more_link">مدعوم من الذكاء الاصطناعي. &lt;a href=\'\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">لسوء الحظ، لا تتوافر ميزة Tap To Pay على نظام التشغيل Android في بلدك حتى الآن. ابقَ على اطلاع!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">لاستخدام ميزة Tap To Pay على نظام التشغيل Android، يحتاج جهازك إلى Google Play Services. لقبول المدفوعات الشخصية، يرجى تثبيت Google Play Services أو شراء قارئ بطاقة Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">لاستخدام ميزة Tap To Pay على نظام التشغيل Android، تحتاج إلى وجود نظام التشغيل Android 10 أو نظام أعلى. لقبول المدفوعات الشخصية، يرجى تثبيت Android أو شراء قارئ بطاقة Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">لاستخدام ميزة Tap To Pay على نظام التشغيل Android، يحتاج جهازك إلى شريحة NFC. لقبول المدفوعات الشخصية، يرجى تثبيت Google Play Services أو شراء قارئ بطاقة Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">لا تتوافر ميزة Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">التحقق من المتطلبات</string>
+    <string name="error_troubleshooting">حل المشكلات</string>
+    <string name="orderlist_parsing_error_message">قد يرتبط ذلك بنزاع مع الاضافة. يرجى المحاولة مرة أخرى لاحقًا أو تواصل معنا وستسرنا مساعدتك!</string>
+    <string name="orderlist_parsing_error_title">تعذر علينا تحميل بياناتك</string>
+    <string name="ai_product_description_dialog_message">أضف أوصاف في لمح البصر باستخدام الذكاء الاصطناعي. جرّب الميزة التي نطرحها الآن!</string>
+    <string name="ai_product_description_dialog_title">إضافة وصف المنتج باستخدام الذكاء الاصطناعي</string>
+    <string name="ai_product_description_note_dialog_confirmation">فهمت</string>
+    <string name="ai_product_description_note_dialog_message">ترجى مراعاة أن وصف هذا المنتج تم إنشاؤه باستخدام أداة لدينا مدعومة من الذكاء الاصطناعي. ترجى مراجعة المحتوى وتحريره لضمان محاذاته مع علامتك التجارية ورسائلك.</string>
+    <string name="ai_product_description_note_dialog_heading">بداية رائعة!</string>
+    <string name="ai_product_description_feedback">هل الوصف المنشأ\nمفيد؟</string>
+    <string name="ai_product_description_regenerate_button">إعادة الإنشاء</string>
+    <string name="ai_product_description_survey">هل الوصف المنشأ مفيد؟</string>
+    <string name="ai_product_description_hint">سلّط الضوء على ميزات منتجك الفريدة وجمهورك باستخدام الكلمات المفتاحية للحصول على وصف مخصص.</string>
+    <string name="ai_product_description_example">مثال: أصيص، صبار، نبات، تزييني، سهل العناية</string>
+    <string name="ai_product_description_product_name">إدخال اسم منتجك</string>
+    <string name="ai_product_description_title">كتابة وصف</string>
+    <string name="barcode_scanning_camera_permission_denied">تلزم صلاحية الكاميرا لمسح الرمز الشريطي.</string>
+    <string name="barcode_scanning_title">مسح الرمز الشريطي ضوئيًا</string>
+    <string name="order_creation_customer_search_username">اسم المستخدم</string>
+    <string name="order_creation_customer_search_name">الاسم</string>
+    <string name="order_creation_customer_search_email">البريد الإلكتروني</string>
+    <string name="order_creation_customer_search_everything">كل شيء</string>
+    <string name="order_creation_customer_filter_hint">تصفية العملاء حسب</string>
+    <string name="order_creation_coupons_title">تم تطبيق القسائم</string>
+    <string name="more_settings">مزيد من الإعدادات</string>
+    <string name="maybe_later">ربما لاحقًا</string>
+    <string name="product_sharing_regenerate">الكتابة مجددًا</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#الحصول على تنبيه بكل عملية بيع:&lt;/b&gt; لا تفوّت شيئًا بفضل التنبيهات الفورية بعمليات البيع. استلم تنبيهات لكل عملية بيع جديدة، ما يسمح لك بالاحتفال بنجاحك والبقاء على اطلاع بكل نشاط في متجرك.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#أضف المنتجات وحررها بلمسة:&lt;/b&gt; أضف منتجات جديدة وحدِّث التفاصيل وارفع الصور وأدر التباينات، كل ذلك من التطبيق. حافظ على مخزونك محدَّثًا من دون عناء.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#إجراء الدفع شخصيًا:&lt;/b&gt; وسِّع فرص المبيعات الخاصة بك عن طريق قبول المدفوعات شخصيًا. استخدم التطبيق لمعالجة المعاملات عبر بطاقة الائتمان بأمان أو اتصل باستخدام قراء البطاقات المتوافقة لإجراء مدفوعات شخصية مريحة.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#إدارة الطلبات وإنشاؤها:&lt;/b&gt; عالج الطلبات بكل سهولة. يمكن التمرير والبحث وتغيير حالة الطلب. أنشئ طلبات جديدة في لمح البصر لإجراء عمليات الشراء داخل المتجر وعبر الهاتف. بسِّط عملية إدارة طلبك.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#تتبّع المبيعات والمنتجات الرائجة:&lt;/b&gt; كن مطلعًا على أداء متجرك في الوقت الفعلي. حدد أكثر منتجات مبيعًا واتخذ قرارات مستنيرة لتحقيق أقصى قدر من الربحية. </string>
+    <string name="store_creation_in_progress_description_1">ستُخطر بمجرد أن يصبح المتجر جاهزًا! اجلس واسترخِ ودعنا ننثر سحرنا في أثناء مشاركة النصائح المفيدة. 🔮</string>
+    <string name="store_creation_in_progress_title_1">إنشاء متجرك! سيستغرق الأمر بضع دقائق فقط</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">رمز PIN مطلوب، لكن لا تدعمه ميزة \"Tap To Pay\" حتى الآن. التفكير في استخدام قارئ البطاقات الخارجي</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">شراء قارئ البطاقات</string>
+    <string name="order_sync_coupon_removed">يتعذر تطبيق القسيمة وتمت إزالتها من الطلب</string>
+    <string name="product_sharing_ai_generating_failure">يتعذر إنشاء رسالة مشاركة. يرجى المحاولة مرة أخرى!</string>
+    <string name="product_sharing_ai_info_label">معرفة المزيد حول ميزة الذكاء الاصطناعي التي نطرحها</string>
+    <string name="product_sharing_optional_message_label">إضافة رسالة اختيارية</string>
+    <string name="product_sharing_generating">كتابة…</string>
+    <string name="product_sharing_write_with_ai">الكتابة باستخدام الذكاء الاصطناعي</string>
+    <string name="more_menu_button_blaze_description">ترويج المنتجات باستخدام Blaze</string>
+    <string name="more_menu_button_blaze">التوهج</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">يتوافر منشئ محتوى الذكاء الاصطناعي</string>
+    <string name="product_detail_menu_item_promote_with_blaze">الترويج باستخدام Blaze</string>
     <string name="share_product">مشاركة المنتج</string>
     <string name="first_product_celebration_body_message">تهانينا! لقد قمت بخطوة واحدة أقرب لجعل المتجر الجديد جاهزًا.</string>
     <string name="first_product_celebration_title">تم إنشاء المنتج أولاً 🎉</string>
@@ -52,7 +138,6 @@ Language: ar
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">يتعذر عليك إضافة المنتج المتغير مباشرة. يرجى تحديد تباين محدد</string>
     <string name="order_creation_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">المنتج غير موجود. تتعذر إضافة طلب جديد</string>
     <string name="order_list_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
     <string name="scan_barcode">مسح الرمز الشريطي ضوئيًا</string>
     <string name="shipping_notice_banner_instructions_content">يتطلب منك الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي وصف كل عنصر الآن بوضوح. على سبيل المثال، إذا كنت ترسل ملابس، فيجب عليك تحديد نوع الملابس (مثل: قمصان الرجال وسترات النساء التحتية وسترات الأولاد) لكي يصبح الوصف مقبولاً. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
@@ -105,18 +190,11 @@ Language: ar
     <string name="store_creation_profiler_industry_home_furniture_garden">المنزل والأثاث والحديقة</string>
     <string name="store_creation_profiler_industry_food_drink">الطعام والشراب</string>
     <string name="store_creation_profiler_industry_health_beauty">الصحة والجمال</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; اللون المفضّل لنا هو البنفسجي. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; يتشكل فريق Woo من أكثر من 350 من الأفراد الموهوبين، ويتم توزيعهم عبر أكثر من 30 بلدًا.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; هناك أكثر من 150 اجتماع WooCommerce يُعقد في جميع أنحاء العالم! طريقة رائعة لمقابلة مالكي المتاجر الزملاء.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل أنت Team Cat أم Team Dog؟ ينقسم فريق Woo 50/50!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل كنت على دراية بتأسيس Woo على يد شخصين من جنوب إفريقيا وآخر من النرويج؟ في ما يأتي ثلاث طرق بديلة لقول \"متجر\" في تلك البلدان، وهي: Winkel وivenkile وbutikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; هل كنت على دراية بأن Woo يشغِّل 4 ملايين متجر تقريبًا على مستوى العالم؟ أنت تتعامل مع شركة رائدة.</string>
     <string name="store_creation_in_progress_title_6">فتح الأبواب</string>
     <string name="store_creation_in_progress_title_5">تشغيل المصابيح</string>
     <string name="store_creation_in_progress_title_4">تطبيق اللمسات النهائية</string>
     <string name="store_creation_in_progress_title_3">تنظيم غرفة التخزين</string>
     <string name="store_creation_in_progress_title_2">إنشاء الأساسات</string>
-    <string name="store_creation_in_progress_title_1">Woo! ننشئ متجرك</string>
     <string name="notifications_permission_description">نحتاج إلى صلاحية إرسال تنبيهات الدفع للطلبات والمراجعات الجديدة وغير ذلك، ويتم توصيلها إلى جهازك.</string>
     <string name="notifications_permission_title">التنبيهات</string>
     <string name="product_type_composite">المنتجات المركّبة</string>
@@ -215,8 +293,6 @@ Language: ar
     <string name="product_subscription_title">الاشتراك</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">يقبل قارئ البطاقات المدفوعات من خلال الضغط والرقائق والسحب باستخدام بطاقات الخصم والائتمان.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">اقبل مدفوعات لا حصر لها بأمان وبشكل مباشر من هاتفك.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">اختبار ميزة Tap To Pay في التطبيق</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">الضغط للدفع</string>
     <string name="card_reader_tap_to_pay_share_feedback">مشاركة ملاحظات ميزة Tap To Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">يتعذر تسجيل الدخول لأن إنشاء كلمة مرور التطبيق غير معتمد.</string>
     <string name="login_site_credentials_fetching_site">جارٍ إحضار الموقع…</string>
@@ -262,7 +338,6 @@ Language: ar
     <string name="store_onboarding_launch_store_share_url_button">مشاركة عنوان URL</string>
     <string name="store_onboarding_launch_store_button">نشر متجري</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">لبدء متجرك، يتعين عليك الترقية إلى خطتنا. &lt;u&gt;ترقية&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">لا تتوافر ميزة \"الضغط للدفع\" في متجرك أو جهازك</string>
     <string name="domains_search_domains">البحث في النطاقات</string>
     <string name="login_site_credentials_http_error">فشل تسجيل الدخول باستخدام رمز الحالة ⁦%1$s⁩</string>
     <string name="login_site_credentials_custom_admin_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لمسؤول متجرك</string>

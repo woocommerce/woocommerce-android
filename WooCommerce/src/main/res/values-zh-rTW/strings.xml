@@ -1,11 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 09:54:04+0000
+Translation-Revision-Date: 2023-07-19 12:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">前往「設定」</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">取消</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">授予</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">你已永久拒絕相機授權。 掃瞄條碼必須獲得此授權。 請在應用程式設定中啟用該權限</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">需要相機權限才能掃瞄條碼</string>
+    <string name="barcode_scanning_alert_dialog_title">授予相機使用權限</string>
+    <string name="order_creation_coupon_network_error">驗證你的優惠券代碼時發生錯誤。 請再試一次</string>
+    <string name="order_creation_coupon_invalid_code">找不到此代碼的優惠券。 請再試一次</string>
+    <string name="order_creation_discount_amount_type">金額 (%1$s)</string>
+    <string name="order_creation_discount_value">折扣 %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">折扣總計</string>
+    <string name="order_creation_discount">折扣</string>
+    <string name="order_creation_discount_amount_with_currency">金額 (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">無法套用手動折扣。 請先移除優惠券</string>
+    <string name="order_creation_discount_invalid_number_error">折扣的號碼無效</string>
+    <string name="order_creation_discount_too_big_error">折扣不能大於價格</string>
+    <string name="order_creation_remove_discount">移除折扣</string>
+    <string name="highlights_tooltip_button_hint">按鈕文字</string>
+    <string name="highlights_tooltip_message_hint">工具提示訊息。 \n 可以是多行內容。</string>
+    <string name="highlights_tooltip_title_hint">工具提示標題</string>
+    <string name="blaze_banner_dismiss_dialog_button">知道了</string>
+    <string name="blaze_banner_dismiss_dialog_description">別擔心！ 你可以從「選單」和產品詳細資訊的選單來存取 Blaze，非常方便。</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze 廣告</string>
+    <string name="blaze_banner_close_button_content_description">關閉 Blaze 橫幅按鈕</string>
+    <string name="blaze_banner_button">立即試用 Blaze</string>
+    <string name="blaze_banner_description">將產品變成廣告，投放到 WordPress.com 和 Tumblr 上的數百萬個網站。</string>
+    <string name="blaze_banner_title">使用 Blaze 宣傳產品</string>
+    <string name="ai_product_description_tooltip_dismiss">知道了</string>
+    <string name="ai_product_description_tooltip_message">使用 AI 支援的工具來快速產生產品說明。 只要輸入關鍵字，剩下交給我們就行了！</string>
+    <string name="ai_product_description_tooltip_title">✨ 使用 AI 撰寫</string>
+    <string name="ai_product_toolbar_button_tooltip">使用 AI 產生說明</string>
+    <string name="ai_product_description_error">產生產品說明時發生問題。 請稍後再試一次。</string>
+    <string name="ai_product_description_label">使用 AI 產生的說明</string>
+    <string name="ai_product_description_learn_more_link">AI 技術支援。 &lt;a href=\'\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">不好意思，你的國家/地區目前尚未在 Android 上提供 Tap To Pay 服務。 敬請期待！</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">若要在 Android 上使用 Tap to Pay 功能，你的裝置需要使用 Google Play 服務。 若要接受親自付款，請安裝 Google Play 服務或購買藍牙讀卡機。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">若要在 Android 上使用 Tap to Pay 功能，你需要 Android 10 或更新版本。 若要接受親自付款，請更新 Android 或購買藍牙讀卡機。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">若要在 Android 上使用 Tap to Pay 功能，你的裝置需要使用 NFC 晶片。 若要接受親自付款，請購買藍牙讀卡機。</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">無法使用 Tap to Pay 功能</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">請檢查必要條件</string>
+    <string name="error_troubleshooting">疑難排解</string>
+    <string name="orderlist_parsing_error_message">這可能與外掛程式衝突有關。 請稍後再試或與我們聯絡，我們很樂意提供協助！</string>
+    <string name="orderlist_parsing_error_title">無法載入你的資料。</string>
+    <string name="ai_product_description_dialog_message">讓 AI 幫助你迅速新增說明。 立即試用我們的功能！</string>
+    <string name="ai_product_description_dialog_title">使用 AI 新增產品說明</string>
+    <string name="ai_product_description_note_dialog_confirmation">知道了</string>
+    <string name="ai_product_description_note_dialog_message">在此提醒，這是系統使用 AI 工具產生的產品說明。 請詳細檢閱及編輯內容，確認內容符合你的品牌形象和你想傳遞的訊息。</string>
+    <string name="ai_product_description_note_dialog_heading">很棒的開始！</string>
+    <string name="ai_product_description_feedback">產生的說明\n對你有幫助嗎？</string>
+    <string name="ai_product_description_regenerate_button">重新產生</string>
+    <string name="ai_product_description_survey">產生的說明對你有幫助嗎？</string>
+    <string name="ai_product_description_hint">不妨使用關鍵字來強調你產品的獨特功能和受眾，以確保說明符合你的確切需求。</string>
+    <string name="ai_product_description_example">範例：盆栽, 仙人掌, 植物, 家飾, 輕鬆照顧</string>
+    <string name="ai_product_description_product_name">輸入你的產品名稱</string>
+    <string name="ai_product_description_title">撰寫說明</string>
+    <string name="barcode_scanning_camera_permission_denied">需要相機權限才能掃瞄條碼。</string>
+    <string name="barcode_scanning_title">掃瞄條碼</string>
+    <string name="order_creation_customer_search_username">使用者名稱</string>
+    <string name="order_creation_customer_search_name">姓名</string>
+    <string name="order_creation_customer_search_email">電子郵件</string>
+    <string name="order_creation_customer_search_everything">全部</string>
+    <string name="order_creation_customer_filter_hint">顧客篩選依據</string>
+    <string name="order_creation_coupons_title">已使用優惠券</string>
+    <string name="more_settings">更多設定</string>
+    <string name="maybe_later">稍後再說</string>
+    <string name="product_sharing_regenerate">重新撰寫</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#每次銷售都會收到通知：&lt;/b&gt;接收即時銷售通知，讓你掌握所有環節。 每一筆新的銷售都能收到提示，讓你在歡慶成功的同時掌握商店的活動狀態。</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#輕觸即可新增及編輯產品：&lt;/b&gt;從應用程式即可新增產品、更新詳細資訊、上傳圖片和管理款式。輕鬆管理你的庫存最新狀態。</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#親自收款：&lt;/b&gt;透過親自收款拓展你的銷售商機。 使用此應用程式即可安全處理信用卡交易，甚至與相容的讀卡機連線，實現便利的親自收款。</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#管理及建立訂單：&lt;/b&gt;輕鬆處理訂單。 捲動、搜尋並變更訂單狀態。 隨時隨地為店內或電話購物建立新訂單。 簡化你的訂單管理程序。</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#追蹤銷售額和熱門產品：&lt;/b&gt;隨時掌握商店的即時表現。 找出最熱銷的產品並根據資訊做出決策，以獲得最大利潤。</string>
+    <string name="store_creation_in_progress_description_1">商店準備就緒時，你會收到通知！ 儘管放輕鬆，讓我們在施展魔法的同時和你分享一些實用秘訣。🔮</string>
+    <string name="store_creation_in_progress_title_1">正在建立你的商店！ 只要幾分鐘就能完成</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">需要 PIN 碼，但「Tap To Pay」(卡緊收) 功能尚未提供支援。 請考慮使用外部讀卡機</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">購買讀卡機</string>
+    <string name="order_sync_coupon_removed">優惠券無法套用，並已從訂單中移除</string>
+    <string name="product_sharing_ai_generating_failure">無法產生分享訊息。 請再試一次！</string>
+    <string name="product_sharing_ai_info_label">深入瞭解我們的 AI 功能</string>
+    <string name="product_sharing_optional_message_label">新增選用訊息</string>
+    <string name="product_sharing_generating">撰寫中…</string>
+    <string name="product_sharing_write_with_ai">使用 AI 撰寫</string>
+    <string name="more_menu_button_blaze_description">使用 Blaze 宣傳產品</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI 內容產生器現已可供使用</string>
+    <string name="product_detail_menu_item_promote_with_blaze">使用 Blaze 進行宣傳</string>
     <string name="share_product">分享產品</string>
     <string name="first_product_celebration_body_message">恭喜！ 你離新商店正式開幕更近一步了。</string>
     <string name="first_product_celebration_title">你建立了第一個產品 🎉</string>
@@ -52,7 +138,6 @@ Language: zh_TW
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">你無法直接新增商品款式。 請選取特定款式</string>
     <string name="order_creation_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">找不到商品。 無法新增至新訂單</string>
     <string name="order_list_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
     <string name="scan_barcode">掃描條碼</string>
     <string name="shipping_notice_banner_instructions_content">如需運送至遵循歐盟 (EU) 海關規定的國家/地區，現在必須清楚描述每件商品。 舉例來說，若要寄送衣服，你必須指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊。 否則貨件可能會在海關階段延誤或中斷。</string>
@@ -105,18 +190,11 @@ Language: zh_TW
     <string name="store_creation_profiler_industry_home_furniture_garden">住家、家具和花園</string>
     <string name="store_creation_profiler_industry_food_drink">食物與飲料</string>
     <string name="store_creation_profiler_industry_health_beauty">健康與美容</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact：&lt;/b&gt;我們最愛的是紫色。💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact：&lt;/b&gt;Woo 團隊聚集 350 多名人才，遍佈 30 多個國家/地區。</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact：&lt;/b&gt;世界各地已舉辦超過 150 場 WooCommerce 聚會！ 這是認識同行商家店主的好方法。</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact：&lt;/b&gt;你的團隊是貓派還是狗派？ Woo 團隊喜歡貓和狗的人各佔一半！</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact：&lt;/b&gt;你知道 Woo 是由兩個南非人和一個挪威人創立的嗎？ 在這些國家中「商店」還有另外三種說法 — Winkel、ivenkile 和 butikk。</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact：&lt;/b&gt;你知道 Woo 在全世界負責推動將近 400 萬家網路商店嗎？ 你有許多好伙伴。</string>
     <string name="store_creation_in_progress_title_6">正在打開店門</string>
     <string name="store_creation_in_progress_title_5">正在把燈光開起來</string>
     <string name="store_creation_in_progress_title_4">正在進行最後修飾</string>
     <string name="store_creation_in_progress_title_3">正在整理倉庫</string>
     <string name="store_creation_in_progress_title_2">正在打下穩固地基</string>
-    <string name="store_creation_in_progress_title_1">Woo！ 我們正在建立你的商店</string>
     <string name="notifications_permission_description">我們需要你授予權限，將新訂單、評論等內容的推播通知傳送至你的裝置。</string>
     <string name="notifications_permission_title">通知</string>
     <string name="product_type_composite">複合產品</string>
@@ -215,8 +293,6 @@ Language: zh_TW
     <string name="product_subscription_title">訂閱</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">讀卡機接受信用卡和簽帳金融卡的輕觸、晶片和刷卡付款。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">直接從手機安全地接受零接觸付款。</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">在應用程式中測試「Tap to Pay」(輕觸付款) 功能</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">「Tap to Pay」(輕觸付款) 功能</string>
     <string name="card_reader_tap_to_pay_share_feedback">分享「Tap to Pay」(輕觸付款) 功能意見回饋</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">無法登入，因為未核准建立應用程式密碼。</string>
     <string name="login_site_credentials_fetching_site">正在擷取網站…</string>
@@ -262,7 +338,6 @@ Language: zh_TW
     <string name="store_onboarding_launch_store_share_url_button">分享 URL</string>
     <string name="store_onboarding_launch_store_button">發表我的商店</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">若要推出商店，你需要升級我們的計畫。 &lt;u&gt;升級&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">「Tap to Pay」不適用於你的商店或裝置。</string>
     <string name="domains_search_domains">搜尋網域</string>
     <string name="login_site_credentials_http_error">登入失敗，狀態代碼為 %1$s</string>
     <string name="login_site_credentials_custom_admin_url">無法登入，因為我們無法識別你商店的管理 URL。</string>

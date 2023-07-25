@@ -1,11 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 11:54:04+0000
+Translation-Revision-Date: 2023-07-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Gå till inställningar</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Avbryt</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Bevilja</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Du har nekat kameraåtkomst permanent. Det krävs för streckkodsskanning. Aktivera det i appinställningarna</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Kameraåtkomst krävs för streckkodsskanning.</string>
+    <string name="barcode_scanning_alert_dialog_title">Bevilja kameraåtkomst</string>
+    <string name="order_creation_coupon_network_error">Något gick fel när din rabattkod skulle valideras. Försök igen</string>
+    <string name="order_creation_coupon_invalid_code">Vi kunde inte hitta en rabattkod med den koden. Försök igen</string>
+    <string name="order_creation_discount_amount_type">Belopp (%1$s)</string>
+    <string name="order_creation_discount_value">Rabatt %1$s</string>
+    <string name="order_creation_discounts_total_value">– %1$s</string>
+    <string name="order_creation_discounts_total">Totala rabatter</string>
+    <string name="order_creation_discount">Rabatt</string>
+    <string name="order_creation_discount_amount_with_currency">Belopp (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Manuell rabatt kunde inte tillämpas. Ta bort rabattkoder först</string>
+    <string name="order_creation_discount_invalid_number_error">Rabatt är inte ett giltigt nummer</string>
+    <string name="order_creation_discount_too_big_error">Rabatt kan inte vara större än priset</string>
+    <string name="order_creation_remove_discount">Ta bort rabatt</string>
+    <string name="highlights_tooltip_button_hint">Knapptext</string>
+    <string name="highlights_tooltip_message_hint">Verktygstipsmeddelande. \n Detta kan innehålla flera rader.</string>
+    <string name="highlights_tooltip_title_hint">Verktygstipsrubrik</string>
+    <string name="blaze_banner_dismiss_dialog_button">Jag förstår</string>
+    <string name="blaze_banner_dismiss_dialog_description">Inga problem. Blaze är tillgängligt via menyn och produktinformationsmenyn för din bekvämlighet.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze-annonser</string>
+    <string name="blaze_banner_close_button_content_description">Stäng Blaze-bannerknapp</string>
+    <string name="blaze_banner_button">Prova Blaze nu</string>
+    <string name="blaze_banner_description">Förvandla dina produkter till annonser som körs på miljontals WordPress.com- och Tumblr-webbplatser.</string>
+    <string name="blaze_banner_title">Marknadsför produkter med Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">Jag förstår</string>
+    <string name="ai_product_description_tooltip_message">Använd vårt AI-drivna verktyg för att snabbt generera produktbeskrivningar. Det är bara att ange nyckelord så gör vi resten.</string>
+    <string name="ai_product_description_tooltip_title">✨ Skriv med AI</string>
+    <string name="ai_product_toolbar_button_tooltip">Generera en beskrivning med AI</string>
+    <string name="ai_product_description_error">Det uppstod ett problem när produktbeskrivningen skulle genereras. Försök igen senare.</string>
+    <string name="ai_product_description_label">Beskrivning genererad av AI</string>
+    <string name="ai_product_description_learn_more_link">Drivs med AI. &lt;a href=\'\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Tryck för att betala på Android är inte tillgängligt i ditt land än. Håll ögonen öppna.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Din enhet behöver ha tjänsten Google Play för att du ska kunna använda Tryck för att betala på Android. För att ta emot personliga betalningar behöver du installera tjänsten Google Play eller köpa en Bluetooth-kortläsare.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">För att använda Tryck för att betala på Android behöver du Android 10 eller senare. För att ta emot personliga betalningar behöver du uppdatera Android eller köpa en Bluetooth-kortläsare.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Din enhet behöver ha ett NFC-chip för att du ska kunna använda Tryck för att betala på Android. För att ta emot personliga betalningar behöver du köpa en Bluetooth-kortläsare.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tryck för att betala är inte tillgängligt</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Kontrollera kraven</string>
+    <string name="error_troubleshooting">Felsökning</string>
+    <string name="orderlist_parsing_error_message">Detta kan bero på en tilläggskonflikt. Försök igen senare eller kontakta oss så hjälper vi dig gärna.</string>
+    <string name="orderlist_parsing_error_title">Vi kunde inte ladda dina data.</string>
+    <string name="ai_product_description_dialog_message">Lägg till beskrivningar på nolltid med AI. Prova vår funktion idag.</string>
+    <string name="ai_product_description_dialog_title">Lägg till produktbeskrivning med AI</string>
+    <string name="ai_product_description_note_dialog_confirmation">Jag förstår</string>
+    <string name="ai_product_description_note_dialog_message">Tänk på att den här produktbeskrivningen har genererats med vårt AI-drivna verktyg. Granska och redigera innehållet för att säkerställa att det överensstämmer med ditt varumärke och ditt budskap.</string>
+    <string name="ai_product_description_note_dialog_heading">Bra start!</string>
+    <string name="ai_product_description_feedback">Är den genererade\nbeskrivningen beskrivning användbar?</string>
+    <string name="ai_product_description_regenerate_button">Generera igen</string>
+    <string name="ai_product_description_survey">Är den genererade beskrivningen användbar?</string>
+    <string name="ai_product_description_hint">Framhäv din produkts unika funktioner och målgrupp med nyckelord för en skräddarsydd beskrivning.</string>
+    <string name="ai_product_description_example">Exempel: krukväxt, kaktus, växt, dekorativ, lättskött</string>
+    <string name="ai_product_description_product_name">Ange ditt produktnamn</string>
+    <string name="ai_product_description_title">Skriv en beskrivning</string>
+    <string name="barcode_scanning_camera_permission_denied">Kameraåtkomst krävs för streckkodsskanning.</string>
+    <string name="barcode_scanning_title">Skanna streckkod</string>
+    <string name="order_creation_customer_search_username">Användarnamn</string>
+    <string name="order_creation_customer_search_name">Namn</string>
+    <string name="order_creation_customer_search_email">E-post</string>
+    <string name="order_creation_customer_search_everything">Allt</string>
+    <string name="order_creation_customer_filter_hint">Filtrera kunder efter</string>
+    <string name="order_creation_coupons_title">Tillämpade rabattkoder</string>
+    <string name="more_settings">Fler inställningar</string>
+    <string name="maybe_later">Kanske senare</string>
+    <string name="product_sharing_regenerate">Skriv igen</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Bli meddelad om varje försäljning:&lt;/b&gt; Se till att du inte missar något med omedelbara försäljningsnotiser. Få meddelanden om varje ny försäljning, så att du kan fira din framgång och hålla koll på din butiksaktivitet.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Lägg till och redigera produkter med en beröring:&lt;/b&gt; Lägg till nya produkter, uppdatera information, ladda upp bilder och hantera variationer direkt i appen. Håll ditt lager uppdaterat utan ansträngning.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ta emot personliga betalningar:&lt;/b&gt; Utöka dina försäljningsmöjligheter genom att ta emot personliga betalningar. Använd appen för att på ett säkert sätt behandla kreditkortstransaktioner. Du kan till och med ansluta till kompatibla kortläsare för bekväma personliga betalningar.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Hantera och skapa beställningar:&lt;/b&gt; Hantera beställningar enkelt. Bläddra, sök och ändra beställningsstatus. Skapa nya beställningar i farten för köp i butik eller via telefon. Förenkla din beställningshanteringsprocess.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Spåra försäljning och populära produkter:&lt;/b&gt; Håll dig uppdaterad med butiksresultat i realtid. Identifiera dina bästsäljande produkter och fatta välgrundade beslut för maximal lönsamhet.</string>
+    <string name="store_creation_in_progress_description_1">Du kommer att få ett meddelande när butiken är klar. Luta dig tillbaka, slappna av och låt oss utöva vår magi samtidigt som vi delar med oss av användbara tips. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Skapar din butik! Det tar bara några minuter</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">En PIN-kod krävs, men Tryck för att betala stöder inte detta än. Överväg att använda en extern kortläsare</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Köp en kortläsare</string>
+    <string name="order_sync_coupon_removed">Rabattkod kunde inte tillämpas och togs bort från beställningen</string>
+    <string name="product_sharing_ai_generating_failure">Det gick inte att generera meddelandet för delning. Försök igen.</string>
+    <string name="product_sharing_ai_info_label">Lär dig mer om vår AI-funktion</string>
+    <string name="product_sharing_optional_message_label">Lägg till ett valfritt meddelande</string>
+    <string name="product_sharing_generating">Skriver …</string>
+    <string name="product_sharing_write_with_ai">Skriv med AI</string>
+    <string name="more_menu_button_blaze_description">Marknadsför produkter med Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">AI-innehållsgenerator tillgänglig</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Marknadsför med Blaze</string>
     <string name="share_product">Dela produkt</string>
     <string name="first_product_celebration_body_message">Grattis. Du är ett steg närmare att kunna lansera din nya butik.</string>
     <string name="first_product_celebration_title">Den första produkten har skapats 🎉</string>
@@ -52,7 +138,6 @@ Language: sv_SE
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan försöka använda den igen.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkt hittades inte. Kan inte lägga till i ny beställning</string>
     <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="scan_barcode">Skanna streckkod</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
@@ -105,18 +190,11 @@ Language: sv_SE
     <string name="store_creation_profiler_industry_home_furniture_garden">Hem, möbler och trädgård</string>
     <string name="store_creation_profiler_industry_food_drink">Mat och dryck</string>
     <string name="store_creation_profiler_industry_health_beauty">Hälsa och skönhet</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Vår favoritfärg är lila. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo-teamet består av över 350 begåvade individer, fördelade på över 30 länder.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; Det hålls över 150 WooCommerce-träffar världen över. Ett bra sätt att träffa andra butiksägare.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Är du på katt- eller hundteamet? Woo-teamet är uppdelat 50/50.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Visste du att Woo grundades av två sydafrikaner och en norrman? Här är tre alternativa sätt att säga \"butik\" i dessa länder – Winkel, ivenkile och butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Visste du att Woo driver nästan 4 miljoner butiker världen över? Du är i gott sällskap.</string>
     <string name="store_creation_in_progress_title_6">Öppnar dörrarna</string>
     <string name="store_creation_in_progress_title_5">Slå på belysningen</string>
     <string name="store_creation_in_progress_title_4">Slutför den sista finputsningen</string>
     <string name="store_creation_in_progress_title_3">Organiserar lagerrummet</string>
     <string name="store_creation_in_progress_title_2">Bygger grunden</string>
-    <string name="store_creation_in_progress_title_1">Woo! Vi skapar din butik</string>
     <string name="notifications_permission_description">Vi behöver din tillåtelse för att skicka push-notiser för nya beställningar, recensioner med mera till din enhet.</string>
     <string name="notifications_permission_title">Aviseringar</string>
     <string name="product_type_composite">Sammansatt produkt</string>
@@ -215,8 +293,6 @@ Language: sv_SE
     <string name="product_subscription_title">Prenumeration</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kortläsaren accepterar blipp, chipp och magnetremsa vid betalning med betal- och kreditkort.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Testa Tryck för att betala i appen</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tryck för att betala</string>
     <string name="card_reader_tap_to_pay_share_feedback">Dela feedback om Tryck för att betala</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
     <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
@@ -262,7 +338,6 @@ Language: sv_SE
     <string name="store_onboarding_launch_store_share_url_button">Dela URL</string>
     <string name="store_onboarding_launch_store_button">Publicera min butik</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">För att lansera din butik behöver du uppgradera till vårt paket. &lt;u&gt;Uppgradera&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tryck för att betala är inte tillgängligt för din butik eller enhet</string>
     <string name="domains_search_domains">Sök domäner</string>
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>

@@ -23,7 +23,7 @@ class JitmStoreInMemoryCache
     private val selectedSite: SelectedSite,
     private val pathsProvider: JitmMessagePathsProvider,
     private val jitmStore: JitmStoreWrapper,
-    private val queryParamsEncoder: QueryParamsEncoder,
+    private val jitmQueryParamsEncoder: JitmQueryParamsEncoder,
     private val jitmTracker: JitmTracker,
     private var appCoroutineScope: CoroutineScope
 ) {
@@ -47,7 +47,7 @@ class JitmStoreInMemoryCache
                     val response = jitmStore.fetchJitmMessage(
                         selectedSite.get(),
                         path,
-                        queryParamsEncoder.getEncodedQueryParams(),
+                        jitmQueryParamsEncoder.getEncodedQueryParams(),
                     )
                     handleResponse(path, response)
                 }
@@ -81,6 +81,10 @@ class JitmStoreInMemoryCache
 
         evictFirstMessage(messagePath)
         return jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
+    }
+
+    fun onCtaClicked(messagePath: String) {
+        evictFirstMessage(messagePath)
     }
 
     private fun handleResponse(path: String, response: WooResult<Array<JITMApiResponse>>) {

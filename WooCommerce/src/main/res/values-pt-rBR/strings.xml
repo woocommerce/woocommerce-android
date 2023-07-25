@@ -1,11 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-14 13:54:03+0000
+Translation-Revision-Date: 2023-07-19 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Ir para as configurações</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Cancelar</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Permitir</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Você recusou de forma permanente a permissão à câmera. Ela é obrigatória para a leitura do código de barras. Permita seu uso nas configurações do aplicativo</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">É necessária a permissão à câmera para ler o código de barras</string>
+    <string name="barcode_scanning_alert_dialog_title">Conceder permissão à câmera</string>
+    <string name="order_creation_coupon_network_error">Ocorreu um erro ao validar seu código de cupom. Tente novamente</string>
+    <string name="order_creation_coupon_invalid_code">Não foi possível encontrar um cupom com esse código. Tente novamente</string>
+    <string name="order_creation_discount_amount_type">Quantidade (%1$s)</string>
+    <string name="order_creation_discount_value">Desconto de %1$s</string>
+    <string name="order_creation_discounts_total_value">-%1$s</string>
+    <string name="order_creation_discounts_total">Desconto total</string>
+    <string name="order_creation_discount">Desconto</string>
+    <string name="order_creation_discount_amount_with_currency">Quantidade (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Não foi possível aplicar o desconto manual. Remova os cupons primeiro</string>
+    <string name="order_creation_discount_invalid_number_error">O desconto não é um número válido</string>
+    <string name="order_creation_discount_too_big_error">O desconto não pode ser superior ao preço</string>
+    <string name="order_creation_remove_discount">Remover desconto</string>
+    <string name="highlights_tooltip_button_hint">Texto do botão</string>
+    <string name="highlights_tooltip_message_hint">Mensagem da dica. \n É possível que sejam várias linhas.</string>
+    <string name="highlights_tooltip_title_hint">Título da dica</string>
+    <string name="blaze_banner_dismiss_dialog_button">Entendi</string>
+    <string name="blaze_banner_dismiss_dialog_description">Não se preocupe! Para sua praticidade, é possível acessar o Blaze na seção Menu e no menu de detalhes do produto.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Anúncios do Blaze</string>
+    <string name="blaze_banner_close_button_content_description">Botão para fechar banner do Blaze</string>
+    <string name="blaze_banner_button">Experimente o Blaze agora</string>
+    <string name="blaze_banner_description">Anuncie seus produtos e os exiba em milhões de sites no WordPress.com e no Tumblr.</string>
+    <string name="blaze_banner_title">Promova produtos com o Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">Entendi</string>
+    <string name="ai_product_description_tooltip_message">Use nossa ferramenta com IA para gerar descrições de produto rapidamente. Basta inserir as palavras-chave e deixar o resto com a gente!</string>
+    <string name="ai_product_description_tooltip_title">✨ Escreva com IA</string>
+    <string name="ai_product_toolbar_button_tooltip">Gere uma descrição usando IA</string>
+    <string name="ai_product_description_error">Ocorreu um problema ao gerar a descrição do produto. Tente novamente mais tarde.</string>
+    <string name="ai_product_description_label">Descrição gerada por IA</string>
+    <string name="ai_product_description_learn_more_link">Com tecnologia de IA. &lt;a href=\'\'&gt;&lt;u&gt;Saiba mais&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Infelizmente, a função Tap to Pay on Android ainda não está disponível no seu país. Fique ligado!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Para usar o Tap to Pay on Android, o seu dispositivo precisa acessar o Google Play Services. Para aceitar pagamentos presenciais, instale o Google Play Services ou adquira um leitor de cartão Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Para usar o Tap to Pay on Android, você precisa do Android 10 ou superior. Para aceitar pagamentos presenciais, atualize o Android ou adquira um leitor de cartão Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Para usar o Tap to Pay on Android, o seu dispositivo precisa de um chip NFC. Para aceitar pagamentos presenciais, adquira um leitor de cartão Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">O Tap to Pay não está disponível</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Verificar requisitos</string>
+    <string name="error_troubleshooting">Solução de problemas</string>
+    <string name="orderlist_parsing_error_message">É possível que seja um conflito com o plugin. Tente novamente mais tarde ou fale a gente. Vamos ter prazer em ajudar você!</string>
+    <string name="orderlist_parsing_error_title">Não foi possível carregar seus dados.</string>
+    <string name="ai_product_description_dialog_message">Adicione descrições em um piscar de olhos com IA. Experimente nossa funcionalidade hoje mesmo!</string>
+    <string name="ai_product_description_dialog_title">Adicionar descrição do produto com IA</string>
+    <string name="ai_product_description_note_dialog_confirmation">Entendi</string>
+    <string name="ai_product_description_note_dialog_message">Saiba que esta descrição do produto foi gerada usando nossa ferramenta com IA. Revise e edite o conteúdo para garantir que esteja alinhado com sua marca e mensagem.</string>
+    <string name="ai_product_description_note_dialog_heading">Ótimo começo!</string>
+    <string name="ai_product_description_feedback">A descrição\ngerada é útil?</string>
+    <string name="ai_product_description_regenerate_button">Gerar novamente</string>
+    <string name="ai_product_description_survey">A descrição gerada é útil?</string>
+    <string name="ai_product_description_hint">Destaque o público e as funcionalidades exclusivas do seu produto com palavras-chave para criar uma descrição personalizada.</string>
+    <string name="ai_product_description_example">Por exemplo: vaso, cacto, planta, decorativa, fácil de cuidar</string>
+    <string name="ai_product_description_product_name">Insira o nome do produto</string>
+    <string name="ai_product_description_title">Escreva uma descrição</string>
+    <string name="barcode_scanning_camera_permission_denied">É necessária a permissão da câmera para ler o código de barras.</string>
+    <string name="barcode_scanning_title">Escanear código de barras</string>
+    <string name="order_creation_customer_search_username">Nome de usuário</string>
+    <string name="order_creation_customer_search_name">Nome</string>
+    <string name="order_creation_customer_search_email">E-mail</string>
+    <string name="order_creation_customer_search_everything">Tudo</string>
+    <string name="order_creation_customer_filter_hint">Filtrar clientes por</string>
+    <string name="order_creation_coupons_title">Cupons aplicados</string>
+    <string name="more_settings">Mais configurações</string>
+    <string name="maybe_later">Talvez depois</string>
+    <string name="product_sharing_regenerate">Gravar novamente</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Receba notificações de todas as vendas:&lt;/b&gt; não perca oportunidades com as notificações instantâneas de venda. Receba alertas de cada venda para comemorar seu sucesso e ficar por dentro da atividade da sua loja.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Adicione e edite produtos com um toque:&lt;/b&gt; adicione novos produtos, atualize detalhes, faça upload de imagens e gerencie variações direto do aplicativo. Mantenha seu inventário atualizado sem esforços.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Receba pagamentos presencialmente:&lt;/b&gt; amplie suas oportunidades de venda com pagamentos presenciais. Use o aplicativo para processar transações com cartão de crédito de forma segura e também para se conectar com leitores de cartão compatíveis em pagamentos presenciais.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gerencie e crie pedidos:&lt;/b&gt; lide com os pedidos facilmente. Pesquise, mude e navegue pelos status dos pedidos. Faça novos pedidos a qualquer momento para compras na loja física ou pelo telefone. Simplifique o processo de gerenciamento do seu pedido.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Monitore vendas e produtos populares:&lt;/b&gt; fique por dentro do desempenho da sua loja em tempo real. Identifique os produtos mais vendidos e tome decisões conscientes para obter o máximo de lucro.</string>
+    <string name="store_creation_in_progress_description_1">Você receberá uma notificação quando a loja estiver pronta. Sente-se, relaxe e veja a magia acontecer enquanto compartilhamos dicas úteis. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Criando sua loja. Isso só vai levar alguns minutos</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Um código PIN é necessário, mas ele ainda não é compatível com o Tap to Pay. Considere usar um leitor de cartão externo</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Compre um leitor de cartão</string>
+    <string name="order_sync_coupon_removed">Não foi possível aplicar o cupom, por isso ele foi removido do pedido</string>
+    <string name="product_sharing_ai_generating_failure">Não foi possível gerar a mensagem de compartilhamento. Tente novamente.</string>
+    <string name="product_sharing_ai_info_label">Saiba mais sobre a nossa funcionalidade de IA</string>
+    <string name="product_sharing_optional_message_label">Adicionar uma mensagem opcional</string>
+    <string name="product_sharing_generating">Gravando…</string>
+    <string name="product_sharing_write_with_ai">Escrever com IA</string>
+    <string name="more_menu_button_blaze_description">Promova produtos com o Blaze</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Gerador de conteúdo com IA disponível</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Promover com o Blaze</string>
     <string name="share_product">Compartilhar produto</string>
     <string name="first_product_celebration_body_message">Parabéns! Você está a um passo de deixar a nova loja pronta.</string>
     <string name="first_product_celebration_title">Primeiro produto criado 🎉</string>
@@ -52,7 +138,6 @@ Language: pt_BR
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">O sistema encerrou o aplicativo do Woo enquanto ele estava sendo executado em segundo plano. Tente usá-lo novamente.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Não é possível adicionar produtos variáveis diretamente. Selecione uma variação específica</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Falha ao escanear. Tente novamente mais tarde</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Produto não encontrado. Não foi possível criar um novo pedido</string>
     <string name="order_list_barcode_scanning_scanning_failed">Falha ao escanear. Tente novamente mais tarde</string>
     <string name="scan_barcode">Escanear código de barras do produto</string>
     <string name="shipping_notice_banner_instructions_content">O envio para países que seguem as regras alfandegárias da União Europeia (UE) agora exige que você descreva de forma detalhada cada item. Por exemplo, se você está enviando roupas, deve indicar que tipo de roupa (camisas masculinas, colete feminino, jaqueta masculina) para que a descrição seja aceitável. Caso contrário, os envios podem sofrer atrasos ou ficar interditados na alfândega.</string>
@@ -105,18 +190,11 @@ Language: pt_BR
     <string name="store_creation_profiler_industry_home_furniture_garden">Casa, mobília e jardim</string>
     <string name="store_creation_profiler_industry_food_drink">Alimentação e bebidas</string>
     <string name="store_creation_profiler_industry_health_beauty">Saúde e beleza</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#CuriosidadeDoWoo:&lt;/b&gt; nossa cor favorita é roxo. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#CuriosidadeDoWoo:&lt;/b&gt; a equipe do Woo é composta por mais de 350 indivíduos talentosos, distribuídos em mais de 30 países.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#CuriosidadeDoWoo:&lt;/b&gt; acontecem mais de 150 encontros do WooCommerce no mundo todo! É uma ótima maneira de conhecer outros proprietários de lojas.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#CuriosidadeDoWoo:&lt;/b&gt; você é do tipo que prefere gato ou cachorro? A equipe do Woo está dividida.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#CuriosidadeDoWoo:&lt;/b&gt; você sabia que o Woo foi fundado por dois sul-africanos e um norueguês? Confira três maneiras diferentes de dizer \"loja\" nesses países: Winkel, ivenkile e butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#CuriosidadeDoWoo:&lt;/b&gt; você sabia que o Woo abriga quase quatro milhões de lojas pelo mundo todo? Você está em boa companhia.</string>
     <string name="store_creation_in_progress_title_6">Abrindo as portas</string>
     <string name="store_creation_in_progress_title_5">Acendendo as luzes</string>
     <string name="store_creation_in_progress_title_4">Dando os toques finais</string>
     <string name="store_creation_in_progress_title_3">Organizando o estoque</string>
     <string name="store_creation_in_progress_title_2">Fazendo o alicerce</string>
-    <string name="store_creation_in_progress_title_1">Eba! Estamos criando sua loja</string>
     <string name="notifications_permission_description">Precisamos da sua permissão para enviar notificações por push sobre novos pedidos, avaliações etc. para o seu dispositivo.</string>
     <string name="notifications_permission_title">Notificações</string>
     <string name="product_type_composite">Produto composto</string>
@@ -215,8 +293,6 @@ Language: pt_BR
     <string name="product_subscription_title">Assinatura</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">O leitor de cartão aceita pagamentos feitos ao aproximar, inserir ou passar cartões de crédito e débito.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Aceite pagamentos feitos por aproximação com segurança e diretamente do seu celular.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Teste o Tap to Pay no app</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap to Pay</string>
     <string name="card_reader_tap_to_pay_share_feedback">Compartilhe seu feedback sobre o Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Não foi possível fazer login porque a criação da senha do aplicativo não foi aprovada.</string>
     <string name="login_site_credentials_fetching_site">Buscando site…</string>
@@ -262,7 +338,6 @@ Language: pt_BR
     <string name="store_onboarding_launch_store_share_url_button">URL de compartilhamento</string>
     <string name="store_onboarding_launch_store_button">Publicar minha loja</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Para lançar sua loja, é necessário fazer upgrade para o nosso plano. &lt;u&gt;Fazer upgrade&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">O Tap to Pay não está disponível para sua loja ou dispositivo</string>
     <string name="domains_search_domains">Pesquisar domínios</string>
     <string name="login_site_credentials_http_error">Falha ao fazer login com o código do status %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Não foi possível fazer login porque não conseguimos identificar a URL de administrador da sua loja</string>

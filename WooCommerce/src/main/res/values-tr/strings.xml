@@ -1,11 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-06-15 11:54:03+0000
+Translation-Revision-Date: 2023-07-19 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Ayarlara git</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">İptal et</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">İzin Ver</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Kamera iznini kalıcı olarak reddettiniz. Barkodu taramak için gereklidir. Lütfen uygulama ayarlarından etkinleştirin</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Barkodun taranması için kamera izni gereklidir</string>
+    <string name="barcode_scanning_alert_dialog_title">Kamera İzni Ver</string>
+    <string name="order_creation_coupon_network_error">Kupon kodunuz doğrulanırken bir sorun oluştu. Lütfen tekrar deneyin</string>
+    <string name="order_creation_coupon_invalid_code">Bu koda sahip bir kupon bulamadık. Lütfen tekrar deneyin</string>
+    <string name="order_creation_discount_amount_type">Tutar (%1$s)</string>
+    <string name="order_creation_discount_value">İndirim %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">İndirim Toplamı</string>
+    <string name="order_creation_discount">İndirim</string>
+    <string name="order_creation_discount_amount_with_currency">Tutar (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Manuel indirim uygulanamadı. Öncelikle kuponu kaldırın</string>
+    <string name="order_creation_discount_invalid_number_error">İndirim geçerli bir sayı değil</string>
+    <string name="order_creation_discount_too_big_error">İndirim, fiyattan büyük olamaz</string>
+    <string name="order_creation_remove_discount">İndirimi kaldır</string>
+    <string name="highlights_tooltip_button_hint">Düğme metni</string>
+    <string name="highlights_tooltip_message_hint">Araç ipucu mesajı. \n Bu birkaç satırdan oluşabilir.</string>
+    <string name="highlights_tooltip_title_hint">Araç ipucu başlığı</string>
+    <string name="blaze_banner_dismiss_dialog_button">Anladım</string>
+    <string name="blaze_banner_dismiss_dialog_description">Endişe etmeyin! Blaze, konforunuz için Menü ve ürün ayrıntıları menüsünden erişilebilir.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze reklamları</string>
+    <string name="blaze_banner_close_button_content_description">Blaze bandı düğmesini kapat</string>
+    <string name="blaze_banner_button">Blaze\'i şimdi deneyin</string>
+    <string name="blaze_banner_description">Ürünlerinizi WordPress.com ve Tumblr\'da milyonlarca sitede gösterilen reklamlara dönüştürün.</string>
+    <string name="blaze_banner_title">Ürünleri Blaze ile tanıt</string>
+    <string name="ai_product_description_tooltip_dismiss">Anladım</string>
+    <string name="ai_product_description_tooltip_message">Ürün açıklamalarınızı hızlıca oluşturmak için yapay zeka destekli aracımızı kullanın. Anahtar sözcükleri girin ve gerisini bize bırakın!</string>
+    <string name="ai_product_description_tooltip_title">✨ Yapay zeka ile yaz</string>
+    <string name="ai_product_toolbar_button_tooltip">Yapay Zeka kullanarak bir açıklama oluşturun</string>
+    <string name="ai_product_description_error">Ürün açıklaması oluşturulurken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="ai_product_description_label">Açıklama yapay zeka ile oluşturuldu</string>
+    <string name="ai_product_description_learn_more_link">Yapay zeka destekli. &lt;a href=\'\'&gt;&lt;u&gt;Daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Maalesef Android\'de Tap To Pay henüz ülkenizde kullanılamıyor. Beklemede kalın!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Android\'de Tap To Pay\'i kullanmak için cihazınızda Google Play Hizmetleri bulunmalı. Şahsen yapılan ödemeleri kabul etmek için, lütfen Google Play Hizmetlerini yükleyin veya Bluetooth kart okuyucu satın alın.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Android\'de Tap To Pay\'i kullanmak için Android 10 veya üstüne ihtiyacınız var. Şahsen yapılan ödemeleri kabul etmek için, lütfen Android\'i güncelleyin veya Bluetooth kart okuyucu satın alın.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Android\'de Tap To Pay\'i kullanmak için cihazınızda NFC çipi bulunmalı. Şahsen yapılan ödemeleri kabul etmek için, lütfen bir Bluetooth kart okuyucu satın alın.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay kullanılmıyor</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Gereklilikleri kontrol edin</string>
+    <string name="error_troubleshooting">Sorun giderme</string>
+    <string name="orderlist_parsing_error_message">Bu, bir eklentiyle çakışmadan kaynaklanabilir. Lütfen daha sonra tekrar deneyin veya bize ulaşın, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_parsing_error_title">Verileriniz yüklenemedi.</string>
+    <string name="ai_product_description_dialog_message">Yapay zekayla açıklamaları anında ekleyin. Özelliğimizi bugün deneyin!</string>
+    <string name="ai_product_description_dialog_title">Yapay zekayla ürün açıklaması ekleyin</string>
+    <string name="ai_product_description_note_dialog_confirmation">Anladım</string>
+    <string name="ai_product_description_note_dialog_message">Bu ürün açıklamasının yapay zeka destekli aracımız kullanılarak oluşturulduğunu lütfen unutmayın. Lütfen markanız ve vermek istediğiniz mesajla uyumlu olduğundan emin olmak için bu açıklamayı inceleyip düzenleyin.</string>
+    <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>
+    <string name="ai_product_description_feedback">Oluşturulan\naçıklama faydalı oldu mu?</string>
+    <string name="ai_product_description_regenerate_button">Yeniden oluştur</string>
+    <string name="ai_product_description_survey">Oluşturulan açıklama faydalı oldu mu?</string>
+    <string name="ai_product_description_hint">Özelleştirilmiş bir açıklama için ürününüzün benzersiz özelliklerini ve hedef kitlenizi anahtar sözcüklerle vurgulayın.</string>
+    <string name="ai_product_description_example">Örneğin: Saksıda Yetişir, Kaktüs, Bitki, Dekoratif, Bakımı kolay</string>
+    <string name="ai_product_description_product_name">Ürün adınızı girin</string>
+    <string name="ai_product_description_title">Bir açıklama yazın</string>
+    <string name="barcode_scanning_camera_permission_denied">Barkodun taranması için kamera izni gereklidir.</string>
+    <string name="barcode_scanning_title">Barkodu Tarayın</string>
+    <string name="order_creation_customer_search_username">Kullanıcı adı</string>
+    <string name="order_creation_customer_search_name">Ad</string>
+    <string name="order_creation_customer_search_email">E-posta</string>
+    <string name="order_creation_customer_search_everything">Her şey</string>
+    <string name="order_creation_customer_filter_hint">Müşterileri filtreleme kriteri</string>
+    <string name="order_creation_coupons_title">Kupon uygulandı</string>
+    <string name="more_settings">Diğer ayarlar</string>
+    <string name="maybe_later">Belki daha sonra</string>
+    <string name="product_sharing_regenerate">Yeniden yazın</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Her satışta bildirim alın:&lt;/b&gt; Anlık satış bildirimleri sayesinde hiçbir şeyi kaçırmayın. Her yeni satışta bildirim alarak başarınızın keyfini çıkarabilir ve mağazanızdaki hareketler hakkında güncel bilgi sahibi olabilirsiniz.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Bir dokunuşla ürünleri ekleyin ve düzenleyin:&lt;/b&gt; Yeni ürün ekleme, ayrıntıları güncelleme, görseller yükleme ve varyasyonları yönetme işlemlerinin tamamını uygulamadan gerçekleştirin. Envanterinizi zahmetsiz bir şekilde güncel tutun.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ödemeleri şahsen alın:&lt;/b&gt; Ödemeleri şahsen kabul ederek satış fırsatlarınızı genişletin. Kredi kartı işlemlerini güvenli bir şekilde işlemek veya şahsi ödemeleri kolaylıkla almak üzere uyumlu kart okuyuculara bağlanmak için uygulamayı kullanın.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Siparişleri yönetin ve oluşturun:&lt;/b&gt; Siparişleri kolaylıkla işleyin. Ekranı kaydırın, arama yapın ve sipariş durumunu değiştirin. Mağaza içi veya telefonla satın alma işlemleri için anında yeni siparişler oluşturun. Sipariş yönetimi sürecinizi basitleştirin.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Satışları ve popüler ürünleri takip edin:&lt;/b&gt; Mağazanızın gerçek zamanlı performansı hakkında güncel bilgi alın. En çok satan ürünlerinizi belirleyin ve maksimum kârlılık sağlamak için bilinçli kararlar verin.</string>
+    <string name="store_creation_in_progress_description_1">Mağaza hazır olduğunda bildirim alacaksınız! Arkanıza yaslanın, keyfinize bakın ve bir yandan faydalı ipuçlarını paylaşmaya devam ederken mağazanızı hazırlamamızı bekleyin. 🔮</string>
+    <string name="store_creation_in_progress_title_1">Mağazanız Oluşturuluyor! Sadece birkaç dakika sürecek</string>
+    <string name="card_reader_payment_failed_pin_required_tap_to_pay">Bir PIN kodu gerekli, ancak Tap To Pay bunu henüz desteklemiyor. Harici bir kart okuyucu kullanmayı deneyin.</string>
+    <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Bir kart okuyucu satın alın</string>
+    <string name="order_sync_coupon_removed">Kupon uygulanamadı ve siparişten kaldırıldı</string>
+    <string name="product_sharing_ai_generating_failure">Paylaşım mesajı oluşturulamıyor Lütfen yeniden deneyin!</string>
+    <string name="product_sharing_ai_info_label">Yapay Zeka özelliği hakkında daha fazla bilgi edinin</string>
+    <string name="product_sharing_optional_message_label">İsteğe bağlı mesaj ekle</string>
+    <string name="product_sharing_generating">Yazıyor…</string>
+    <string name="product_sharing_write_with_ai">Yapay zeka ile yaz</string>
+    <string name="more_menu_button_blaze_description">Ürünleri Blaze ile tanıt</string>
+    <string name="more_menu_button_blaze">Blaze</string>
+    <string name="store_onboarding_task_product_description_ai_generator_text">Yapay zeka içerik üreticisi mevcut</string>
+    <string name="product_detail_menu_item_promote_with_blaze">Blaze ile tanıt</string>
     <string name="share_product">Ürün paylaşın</string>
     <string name="first_product_celebration_body_message">Tebrikler! Yeni mağazayı hazır hale getirmeye bir adım daha yaklaştınız.</string>
     <string name="first_product_celebration_title">İlk ürün oluşturuldu 🎉</string>
@@ -52,7 +138,6 @@ Language: tr
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Değişken ürünü doğrudan ekleyemezsiniz. Lütfen belirli bir varyasyon seçin</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Ürün bulunamadı. Yeni siparişe eklenemiyor</string>
     <string name="order_list_barcode_scanning_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
     <string name="scan_barcode">Barkodu Tarayın</string>
     <string name="shipping_notice_banner_instructions_content">Şu anda Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğeyi net bir şekilde açıklamanız gerekiyor. Örneğin, kıyafet gönderiyorsanız, açıklamanın kabul edilebilir olması için bunun ne tür bir kıyafet olduğunu (ör. erkek gömleği, kadın yeleği, erkek ceketi) belirtmeniz gerekiyor. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
@@ -105,18 +190,11 @@ Language: tr
     <string name="store_creation_profiler_industry_home_furniture_garden">Ev, mobilya ve bahçe</string>
     <string name="store_creation_profiler_industry_food_drink">Yiyecek ve içecek</string>
     <string name="store_creation_profiler_industry_health_beauty">Sağlık ve güzellik</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Favori rengimiz mor. 💜</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo ekibi, 30\'dan fazla ülkeye dağılmış 350\'den fazla yetenekli kişiden oluşur.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; Tüm dünyada düzenlenen 150\'den fazla WooCommerce buluşması var! Diğer mağaza sahipleriyle tanışmak için harika bir yol.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Kedi İnsanı mısınız yoksa Köpek İnsanı mı? Woo ekibi 50/50 bölündü!</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo\'nun iki Güney Afrikalı ve bir Norveçli tarafından kurulduğunu biliyor muydunuz? Bu ülkelerde \"mağaza\" demenin üç alternatif yolu: Winkel, ivenkile ve butikk.</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Woo\'nun dünya çapında 4 milyondan fazla mağazayı desteklediğini biliyor muydunuz? Yalnız değilsiniz.</string>
     <string name="store_creation_in_progress_title_6">Kapılar açılıyor</string>
     <string name="store_creation_in_progress_title_5">Işıklar açılıyor</string>
     <string name="store_creation_in_progress_title_4">Son dokunuşlar uygulanıyor</string>
     <string name="store_creation_in_progress_title_3">Stok odası düzenleniyor</string>
     <string name="store_creation_in_progress_title_2">Temelleri oluşturuluyor</string>
-    <string name="store_creation_in_progress_title_1">Woo! Mağazanızı oluşturuyoruz</string>
     <string name="notifications_permission_description">Size yeni siparişler, yorumlar vb. ile ilgili anlık bildirimler göndermek izninize ihtiyacımız var.</string>
     <string name="notifications_permission_title">Bildirimler</string>
     <string name="product_type_composite">Birleşik ürün</string>
@@ -215,8 +293,6 @@ Language: tr
     <string name="product_subscription_title">Abonelik</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kart okuyucu, banka ve kredi kartlarıyla dokunarak, çiple ve kaydırarak yapılan ödemeleri kabul eder.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Uygulamada Tap to Pay\'i test edin</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay ile ilgili görüşlerinizi paylaşın</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
     <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
@@ -262,7 +338,6 @@ Language: tr
     <string name="store_onboarding_launch_store_share_url_button">URL paylaş</string>
     <string name="store_onboarding_launch_store_button">Mağazamı yayınla</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Mağazanızı yayınlamak için paketimize yükseltmeniz gerekiyor. &lt;u&gt;Yükselt&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay, mağazanız veya cihazınız için kullanılamıyor</string>
     <string name="domains_search_domains">Alan adı ara</string>
     <string name="login_site_credentials_http_error">Durum kodu %1$s ile giriş başarısız oldu</string>
     <string name="login_site_credentials_custom_admin_url">Mağazanızın yönetici URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>

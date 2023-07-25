@@ -151,6 +151,12 @@
     <color name="link_text">@color/woo_blue_30</color>
 
     <!--
+    Button colors
+    -->
+    <color name="light_colored_button_text">@color/color_primary</color>
+    <color name="light_colored_button_background">@color/woo_black_80</color>
+
+    <!--
     Analytics
     -->
     <color name="analytics_background">@color/woo_black_90</color>
@@ -171,5 +177,11 @@
     <color name="free_trial_component_background">@color/woo_purple_90</color>
     <color name="free_trial_component_text">@color/woo_purple_40</color>
     <color name="free_trial_banner_content">@color/color_on_surface</color>
+
+    <!--
+    Highlight tooltip
+    -->
+    <color name="highlights_tooltip_background">@color/color_surface_elevated</color>
+    <color name="highlights_tooltip_title">@color/color_on_surface</color>
 
 </resources>

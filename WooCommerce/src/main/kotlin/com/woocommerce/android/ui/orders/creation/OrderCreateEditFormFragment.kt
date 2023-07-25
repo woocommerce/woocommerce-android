@@ -10,6 +10,7 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -37,6 +39,9 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
@@ -78,6 +83,8 @@ class OrderCreateEditFormFragment :
         )
     }
 
+    private val args: OrderCreateEditFormFragmentArgs by navArgs()
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = when (viewModel.mode) {
@@ -91,12 +98,28 @@ class OrderCreateEditFormFragment :
             ?.run { adapter as? OrderCreateEditProductsAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
             initView()
+        }
+        handleCouponEditResult()
+        handleProductDetailsEditResult()
+    }
+
+    private fun handleProductDetailsEditResult() {
+        handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
+            viewModel.onProductDetailsEditResult(it)
+        }
+        handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
+            viewModel.onProductDiscountEditResult(it)
+        }
+    }
+
+    private fun handleCouponEditResult() {
+        args.couponEditResult?.let {
+            viewModel.onCouponEditResult(it)
         }
     }
 
@@ -181,13 +204,13 @@ class OrderCreateEditFormFragment :
                 AddButton(
                     text = getString(R.string.order_creation_add_customer),
                     onClickListener = {
-                        viewModel.onCustomerClicked()
+                        viewModel.onAddCustomerClicked()
                     }
                 )
             )
         )
         customerSection.setOnEditButtonClicked {
-            viewModel.onCustomerClicked()
+            viewModel.onEditCustomerClicked()
         }
         customerSection.setEditButtonContentDescription(
             contentDescription = getString(R.string.order_creation_customer_edit_content_description)
@@ -204,9 +227,7 @@ class OrderCreateEditFormFragment :
             ),
             addProductsViaScanButton = AddButton(
                 text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = {
-                    viewModel.onScanClicked()
-                }
+                onClickListener = { viewModel.onScanClicked() }
             )
         )
     }
@@ -254,6 +275,7 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.shippingButton.isEnabled = idle
                     binding.paymentSection.feeButton.isEnabled = idle
                     binding.paymentSection.couponButton.isEnabled = new.isCouponButtonEnabled && idle
+                    binding.paymentSection.addCouponButton.isEnabled = new.isCouponButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
                 }
             }
@@ -280,6 +302,7 @@ class OrderCreateEditFormFragment :
             }
             new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
                 binding.paymentSection.couponButton.isEnabled = it
+                binding.paymentSection.addCouponButton.isEnabled = it
             }
         }
 
@@ -321,6 +344,14 @@ class OrderCreateEditFormFragment :
 
         paymentSection.productsTotalValue.text = bigDecimalFormatter(newOrderData.productsTotal)
         paymentSection.taxValue.text = bigDecimalFormatter(newOrderData.totalTax)
+        val hasDiscount = newOrderData.discountTotal.isNotEqualTo(BigDecimal.ZERO)
+        paymentSection.discountLayout.isVisible = hasDiscount
+        if (hasDiscount) {
+            paymentSection.discountValue.text = getString(
+                R.string.order_creation_discounts_total_value,
+                bigDecimalFormatter(newOrderData.discountTotal)
+            )
+        }
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
     }
 
@@ -345,17 +376,21 @@ class OrderCreateEditFormFragment :
 
     private fun OrderCreationPaymentSectionBinding.bindCouponsSubSection(newOrderData: Order) {
         couponButton.setOnClickListener { viewModel.onCouponButtonClicked() }
+        addCouponButton.setOnClickListener { viewModel.onAddCouponButtonClicked() }
+
         if (newOrderData.discountCodes.isNotNullOrEmpty()) {
+            couponButton.isVisible = true
+            couponValue.isVisible = true
+            addCouponButton.isVisible = true
             couponButton.text = getString(R.string.order_creation_coupon_codes, newOrderData.discountCodes)
             couponValue.text = getString(
                 R.string.order_creation_coupon_discount_value,
                 bigDecimalFormatter(newOrderData.discountTotal)
             )
-            couponButton.setIconResource(0)
         } else {
-            couponButton.setIconResource(R.drawable.ic_add)
-            couponButton.text = getString(R.string.order_creation_add_coupon)
-            couponValue.text = null
+            couponButton.isVisible = false
+            couponValue.isVisible = false
+            addCouponButton.isVisible = true
         }
     }
 
@@ -445,6 +480,9 @@ class OrderCreateEditFormFragment :
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
         }
+        handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
+        }
     }
 
     private fun handleViewModelEvents(event: Event) {
@@ -460,10 +498,15 @@ class OrderCreateEditFormFragment :
             is ShowDialog -> event.showDialog()
             is OnAddingProductViaScanningFailed -> {
                 uiMessageResolver.getRetrySnack(
-                    stringResId = event.message,
+                    message = event.message,
                     isIndefinite = false,
                     actionListener = event.retry
                 ).show()
+            }
+            is OpenBarcodeScanningFragment -> {
+                findNavController().navigateSafely(
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
+                )
             }
             is VMKilledWhenScanningInProgress -> {
                 ToastUtils.showToast(
@@ -542,6 +585,7 @@ class OrderCreateEditFormFragment :
             shippingButton.isEnabled = true
             lockIcon.isVisible = false
             couponButton.isEnabled = state.isCouponButtonEnabled
+            addCouponButton.isEnabled = state.isCouponButtonEnabled
         }
     }
 
@@ -557,6 +601,7 @@ class OrderCreateEditFormFragment :
             shippingButton.isEnabled = false
             lockIcon.isVisible = true
             couponButton.isEnabled = false
+            addCouponButton.isEnabled = false
         }
     }
 }

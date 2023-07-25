@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -21,6 +22,7 @@ fun BlazeWebViewScreen(
     viewState: BlazeWebViewState,
     userAgent: UserAgent,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
+    activityRegistry: ActivityResultRegistry,
     onPageFinished: (String) -> Unit,
     onClose: () -> Unit,
 ) {
@@ -39,6 +41,7 @@ fun BlazeWebViewScreen(
             userAgent = userAgent,
             wpComAuthenticator = wpcomWebViewAuthenticator,
             onPageFinished = onPageFinished,
+            activityRegistry = activityRegistry,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()

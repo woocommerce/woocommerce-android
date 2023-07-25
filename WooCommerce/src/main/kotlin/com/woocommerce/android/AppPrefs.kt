@@ -105,11 +105,14 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
-        IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
+        WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+        BLAZE_BANNER_HIDDEN,
+        IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+        NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
     }
 
     /**
@@ -118,6 +121,7 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
     }
 
     /**
@@ -239,10 +243,6 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
 
-    var isTapToPayEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, false)
-        set(value) = setBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, value)
-
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
@@ -258,6 +258,16 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
+
+    fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
+        setBoolean(getBlazeBannerKey(currentSiteId), hidden)
+    }
+
+    fun isBlazeBannerHidden(currentSiteId: Int) =
+        getBoolean(getBlazeBannerKey(currentSiteId), default = false)
+
+    private fun getBlazeBannerKey(currentSiteId: Int) =
+        PrefKeyString("${DeletablePrefKey.BLAZE_BANNER_HIDDEN}:$currentSiteId")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -768,6 +778,16 @@ object AppPrefs {
         setBoolean(DeletableSitePrefKey.TRACKING_EXTENSION_AVAILABLE, isAvailable)
     }
 
+    var wasAIProductDescriptionCelebrationShown: Boolean
+        get() = getBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletableSitePrefKey.AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+            value = value
+        )
+
     fun setOrderFilters(currentSiteId: Int, filterCategory: String, filterValue: String) {
         setString(getOrderFilterKey(currentSiteId, filterCategory), filterValue)
     }
@@ -859,13 +879,11 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
-    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
-        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    fun setActiveStatsGranularity(activeStatsGranularity: String) {
+        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, activeStatsGranularity)
     }
 
-    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
-        getActiveStatsGranularityFilterKey(currentSiteId)
-    )
+    fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
     fun markAsNewSignUp(newSignUp: Boolean) {
         setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
@@ -896,9 +914,6 @@ object AppPrefs {
     }
 
     fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
-
-    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
-        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Used for storing IPP feedback banner interaction data.
@@ -986,6 +1001,34 @@ object AppPrefs {
             key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
             value = value
         )
+
+    var wasAIProductDescriptionPromoDialogShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
+            value = value
+        )
+
+    var isAIProductDescriptionTooltipDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+            value = value
+        )
+
+    fun incrementAIDescriptionTooltipShownNumber() {
+        val currentTotal = getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
+        setInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, currentTotal + 1)
+    }
+
+    fun getAIDescriptionTooltipShownNumber() =
+        getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
         setString(

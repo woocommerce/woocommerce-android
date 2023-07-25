@@ -56,6 +56,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
 
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock {
         on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
@@ -112,7 +113,8 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 mock(),
                 mock(),
                 mock(),
-                mock()
+                mock(),
+                isAIProductDescriptionEnabled
             )
         )
 
