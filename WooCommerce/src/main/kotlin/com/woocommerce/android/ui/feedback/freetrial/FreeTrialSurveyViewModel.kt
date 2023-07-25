@@ -9,6 +9,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_SURVEY_SENT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.FREE_TEXT_KEY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.SURVEY_KEY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.local.LocalNotification.StillExploringNotification
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.COLLECTIVE_DECISION
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.COMPARING_WITH_OTHER_PLATFORMS
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.OTHER_REASONS
@@ -26,7 +29,9 @@ import javax.inject.Inject
 @HiltViewModel
 class FreeTrialSurveyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val notificationScheduler: LocalNotificationScheduler,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     private val _surveyState = savedState.getStateFlow(
         scope = this,
@@ -94,6 +99,11 @@ class FreeTrialSurveyViewModel @Inject constructor(
                 SURVEY_KEY to selectedOption.optionType.name.lowercase()
             ).putIfNotEmpty(FREE_TEXT_KEY to _surveyState.value.freeText)
         )
+        if (selectedOption.optionType == STILL_EXPLORING) {
+            notificationScheduler.scheduleNotification(
+                StillExploringNotification(selectedSite.get().siteId)
+            )
+        }
         triggerEvent(Exit)
     }
 
