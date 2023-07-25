@@ -524,6 +524,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
         const val VALUE_NOTIFICATION = "notification"
+        const val SURVEY_KEY = "survey_option"
+        const val FREE_TEXT_KEY = "free_text"
 
         // -- Store Onboarding
         const val ONBOARDING_TASK_KEY = "task"

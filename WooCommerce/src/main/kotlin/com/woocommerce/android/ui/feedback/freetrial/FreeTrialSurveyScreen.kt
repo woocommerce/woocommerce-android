@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.Su
 
 @Composable
 fun FreeTrialSurveyScreen(viewModel: FreeTrialSurveyViewModel) {
-    viewModel.surveyOptionsUi.observeAsState().value?.let { surveyState ->
+    viewModel.surveyState.observeAsState().value?.let { surveyState ->
         Scaffold(topBar = {
             Toolbar(
                 title = { Text("") },
@@ -98,7 +98,7 @@ fun FreeTrialSurveyContent(
                 if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     item { Title() }
                 }
-                items(surveyState.options) { surveyOption ->
+                items(surveyState.options.filter { it.optionType != OTHER_REASONS }) { surveyOption ->
                     SurveyItem(
                         surveyOptionUi = surveyOption,
                         onSurveyOptionSelected = onSurveyOptionTapped,

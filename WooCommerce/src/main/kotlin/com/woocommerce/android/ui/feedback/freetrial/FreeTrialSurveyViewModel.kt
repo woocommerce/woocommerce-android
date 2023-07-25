@@ -5,6 +5,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_SURVEY_SENT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.FREE_TEXT_KEY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.SURVEY_KEY
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.COLLECTIVE_DECISION
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.COMPARING_WITH_OTHER_PLATFORMS
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.OTHER_REASONS
@@ -16,13 +20,15 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.utils.putIfNotEmpty
 import javax.inject.Inject
 
 @HiltViewModel
 class FreeTrialSurveyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val _surveyOptionsUi = savedState.getStateFlow(
+    private val _surveyState = savedState.getStateFlow(
         scope = this,
         initialValue = FreeTrialSurveyState(
             options = listOf(
@@ -45,18 +51,23 @@ class FreeTrialSurveyViewModel @Inject constructor(
                     isSelected = false,
                     textId = R.string.free_trial_survey_option4,
                     optionType = COLLECTIVE_DECISION
+                ),
+                SurveyOptionUi(
+                    isSelected = false,
+                    textId = R.string.free_trial_survey_free_text,
+                    optionType = OTHER_REASONS
                 )
             )
         )
     )
-    val surveyOptionsUi = _surveyOptionsUi.asLiveData()
+    val surveyState = _surveyState.asLiveData()
 
     fun onArrowBackPressed() {
         triggerEvent(Exit)
     }
 
     fun onSurveyOptionTapped(surveyOptionUi: SurveyOptionUi) {
-        _surveyOptionsUi.update { currentState ->
+        _surveyState.update { currentState ->
             currentState.copy(
                 options = updateSelectedItem(
                     currentState,
@@ -76,11 +87,17 @@ class FreeTrialSurveyViewModel @Inject constructor(
     }
 
     fun onSendTapped() {
-        TODO()
+        val selectedOption = _surveyState.value.options.first { it.isSelected }
+        analyticsTrackerWrapper.track(
+            stat = LOCAL_NOTIFICATION_SURVEY_SENT,
+            properties = mutableMapOf(
+                SURVEY_KEY to selectedOption.optionType.name.lowercase()
+            ).putIfNotEmpty(FREE_TEXT_KEY to _surveyState.value.freeText)
+        )
     }
 
     fun freeTextEntered(freeText: String) {
-        _surveyOptionsUi.update { currentState ->
+        _surveyState.update { currentState ->
             currentState.copy(
                 options = updateSelectedItem(
                     currentState,
