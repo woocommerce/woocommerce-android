@@ -106,6 +106,9 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
+    private var _lastUpdate = MutableLiveData<Long?>()
+    val lastUpdate: LiveData<Long?> = _lastUpdate
+
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
@@ -235,6 +238,7 @@ class MyStoreViewModel @Inject constructor(
                 }
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
+        getStats.observeLastUpdate(granularity).collect { lastUpdateMillis -> _lastUpdate.value = lastUpdateMillis }
     }
 
     private fun onRevenueStatsSuccess(

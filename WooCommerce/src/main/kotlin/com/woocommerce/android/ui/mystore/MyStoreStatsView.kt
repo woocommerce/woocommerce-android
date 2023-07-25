@@ -114,6 +114,9 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val visitorsValue
         get() = binding.statsViewRow.visitorsValueTextview
 
+    private val lastUpdated
+        get() = binding.statsViewRow.lastUpdatedTextView
+
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
@@ -427,6 +430,23 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
+    fun showLastUpdate(lastUpdateMillis: Long?) {
+        if (lastUpdateMillis != null) {
+            val lastUpdateFormatted = dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateMillis)
+            lastUpdated.isVisible = true
+            fadeInLabelValue(
+                lastUpdated, String.format(
+                    Locale.getDefault(),
+                    resources.getString(R.string.last_update),
+                    lastUpdateFormatted
+                )
+            )
+        } else {
+            lastUpdated.isVisible = false
+        }
+
+    }
+
     @Suppress("MagicNumber")
     private fun updateConversionRate() {
         val ordersCount = ordersValue.text.toString().toIntOrNull()
@@ -447,6 +467,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun clearStatsHeaderValues() {
         statsDateValue.text = ""
+        lastUpdated.text = ""
         updateColorForStatsHeaderValues(R.color.skeleton_color)
 
         visitorsValue.setText(R.string.emdash)

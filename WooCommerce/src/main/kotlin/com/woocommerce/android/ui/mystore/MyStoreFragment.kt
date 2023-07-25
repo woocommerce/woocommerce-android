@@ -398,6 +398,9 @@ class MyStoreFragment :
                 else -> event.isHandled = false
             }
         }
+        myStoreViewModel.lastUpdate.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
+        }
     }
 
     private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
