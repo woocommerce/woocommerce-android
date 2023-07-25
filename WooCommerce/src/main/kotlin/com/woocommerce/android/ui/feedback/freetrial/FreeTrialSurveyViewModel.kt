@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_SURVEY_SENT
+import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_SURVEY_SENT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.FREE_TEXT_KEY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.SURVEY_KEY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -89,7 +89,7 @@ class FreeTrialSurveyViewModel @Inject constructor(
     fun onSendTapped() {
         val selectedOption = _surveyState.value.options.first { it.isSelected }
         analyticsTrackerWrapper.track(
-            stat = LOCAL_NOTIFICATION_SURVEY_SENT,
+            stat = FREE_TRIAL_SURVEY_SENT,
             properties = mutableMapOf(
                 SURVEY_KEY to selectedOption.optionType.name.lowercase()
             ).putIfNotEmpty(FREE_TEXT_KEY to _surveyState.value.freeText)
