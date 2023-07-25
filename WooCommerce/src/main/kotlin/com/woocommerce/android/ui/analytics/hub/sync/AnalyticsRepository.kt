@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import android.util.Log
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
@@ -306,17 +307,20 @@ class AnalyticsRepository @Inject constructor(
         revenueRangeId: Int,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> {
-        return if (fetchStrategy == Saved) {
+        if (fetchStrategy == Saved) {
             statsRepository.getRevenueStatsById(revenueRangeId)
-        } else {
-            statsRepository.fetchRevenueStats(
-                granularity,
-                fetchStrategy is ForceNew,
-                startDate,
-                endDate,
-                revenueRangeId
-            )
-        }.flowOn(dispatchers.io).single().mapCatching { it }
+                .flowOn(dispatchers.io).single()
+                .takeIf { it.isSuccess && it.getOrNull() != null }
+                ?.let { return it }
+        }
+
+        return statsRepository.fetchRevenueStats(
+            granularity,
+            fetchStrategy is ForceNew,
+            startDate,
+            endDate,
+            revenueRangeId
+        ).flowOn(dispatchers.io).single().mapCatching { it }
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
