@@ -144,10 +144,9 @@ class CustomerListViewModel @Inject constructor(
                 )
             }
         }
-        val supportedSearchModes = _viewState.value!!.searchModes
         val result = repository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
-            searchBy = supportedSearchModes.first { it.isSelected }.searchParam,
+            searchBy = getSearchParam(),
             pageSize = PAGE_SIZE,
             page = page
         )
@@ -244,6 +243,13 @@ class CustomerListViewModel @Inject constructor(
             )
         )
     }
+
+    private suspend fun getSearchParam() =
+        if (isAdvancedSearchSupported()) {
+            "all"
+        } else {
+            _viewState.value!!.searchModes.first { it.isSelected }.searchParam
+        }
 
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
         searchHint = R.string.order_creation_customer_search_hint,

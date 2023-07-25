@@ -570,7 +570,6 @@
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Use search to find existing customers</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_customer_filter_hint">Filter customers by</string>
-    <string name="order_creation_customer_search_everything">Everything</string>
     <string name="order_creation_customer_search_email">Email</string>
     <string name="order_creation_customer_search_name">Name</string>
     <string name="order_creation_customer_search_username">Username</string>

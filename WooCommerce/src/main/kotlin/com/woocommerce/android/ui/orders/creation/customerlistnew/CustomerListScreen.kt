@@ -372,8 +372,8 @@ fun CustomerListScreenPreview() {
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -428,8 +428,8 @@ fun CustomerListScreenEmptyPreview() {
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -462,8 +462,8 @@ fun CustomerListScreenErrorPreview() {
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -496,8 +496,8 @@ fun CustomerListScreenLoadingPreview() {
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
