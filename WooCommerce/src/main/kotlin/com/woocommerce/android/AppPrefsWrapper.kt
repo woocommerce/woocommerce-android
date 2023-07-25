@@ -188,12 +188,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
-    fun setActiveStatsGranularity(currentSiteId: Int, statsGranularity: String) {
-        AppPrefs.setActiveStatsGranularity(currentSiteId, statsGranularity)
+    fun setActiveStatsGranularity(statsGranularity: String) {
+        AppPrefs.setActiveStatsGranularity(statsGranularity)
     }
 
-    fun getActiveStatsGranularity(currentSiteId: Int) =
-        AppPrefs.getActiveStatsGranularity(currentSiteId)
+    fun getActiveStatsGranularity() =
+        AppPrefs.getActiveStatsGranularity()
 
     fun markAsNewSignUp(newSignUp: Boolean) {
         AppPrefs.markAsNewSignUp(newSignUp)
@@ -336,6 +336,13 @@ class AppPrefsWrapper @Inject constructor() {
 
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
+    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
+
+    var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
+
+    fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
+    fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {
@@ -348,4 +355,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isTimezoneTrackEventNeverTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) =
         AppPrefs.isTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone).not()
+
+    var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
+
+    fun isBlazeBannerHidden(siteId: Int): Boolean = AppPrefs.isBlazeBannerHidden(siteId)
+
+    fun setBlazeBannerHidden(siteId: Int, hide: Boolean) {
+        AppPrefs.setBlazeBannerHidden(siteId, hide)
+    }
 }

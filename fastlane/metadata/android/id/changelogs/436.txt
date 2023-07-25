@@ -1,0 +1,2 @@
+14.5:
+Memperkenalkan fitur Pembayaran Langsung baru kami, Ketuk Untuk Membayar, di Android agar transaksi lebih cepat dan pengalaman belanja lebih lancar. Mengelola diskon kini juga lebih mudah dengan fitur terbaru kami yang memungkinkan Anda menerapkan diskon produk langsung selama proses pemesanan agar hemat waktu dan makin efisien. Aktifkan pembaruan Anda untuk menikmati pengembangan lanjutan dan fitur terbaru WooCommerce!

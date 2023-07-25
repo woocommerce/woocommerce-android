@@ -28,9 +28,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -46,11 +48,23 @@ open class Screen {
     constructor(elementID: Int) {
         this.elementID = elementID
 
+        initializeAppPrefs()
+
         // If we fail to find the element, attempt recovery
         if (!waitForElementToBeDisplayedWithoutFailure(elementID)) {
             recover()
             waitForElementToBeDisplayed(elementID)
         }
+    }
+
+    private fun initializeAppPrefs() {
+        AppPrefs.init(getInstrumentation().targetContext.applicationContext)
+
+        // hide the promo dialog because it breaks the tests
+        AppPrefs.wasAIProductDescriptionPromoDialogShown = true
+
+        // also hide AI description tooltip to make test more simple
+        AppPrefs.isAIProductDescriptionTooltipDismissed = true
     }
 
     open fun recover() = Unit

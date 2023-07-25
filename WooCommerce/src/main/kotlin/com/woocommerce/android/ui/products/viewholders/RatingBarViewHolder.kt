@@ -11,12 +11,12 @@ class RatingBarViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent,
         val context = itemView.context
         val propertyView = itemView as WCProductPropertyView
         propertyView.show(
-            LinearLayout.VERTICAL,
-            context.getString(item.title),
-            item.value,
-            true,
-            item.icon,
-            true
+            orientation = LinearLayout.VERTICAL,
+            caption = context.getString(item.title),
+            detail = item.value,
+            showTitle = true,
+            propertyIcon = item.icon,
+            isRating = true
         )
         propertyView.setRating(item.rating)
 

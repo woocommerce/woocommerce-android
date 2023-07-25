@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.util.FeatureFlag
 
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
@@ -19,7 +21,17 @@ object OrderCreateEditNavigator {
 
         val action = when (target) {
             is EditCustomer ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
+                    editingOfAddedCustomer = true
+                )
+            is AddCustomer ->
+                if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
+                } else {
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
+                        editingOfAddedCustomer = false
+                    )
+                }
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is SelectItems ->
@@ -35,7 +47,11 @@ object OrderCreateEditNavigator {
                 )
             is ShowProductDetails ->
                 OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
+                    .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(
+                        target.item,
+                        target.currency,
+                        target.discountEditEnabled
+                    )
             is ShowCreatedOrder ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)
@@ -43,9 +59,16 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
             is EditCoupon ->
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditionFragment(
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditFragment(
+                    orderCreationMode = target.orderCreationMode,
                     couponCode = target.couponCode
                 )
+            is OrderCreateEditNavigationTarget.CouponList -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponListFragment(
+                    orderCreationMode = target.orderCreationMode,
+                    couponLines = target.couponLines.toTypedArray()
+                )
+            }
         }
 
         navController.navigate(action)

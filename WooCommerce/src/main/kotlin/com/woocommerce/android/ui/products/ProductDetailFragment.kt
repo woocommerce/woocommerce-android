@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsSta
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
@@ -188,6 +189,7 @@ class ProductDetailFragment :
         setupResultHandlers(viewModel)
     }
 
+    @Suppress("LongMethod")
     private fun setupResultHandlers(viewModel: ProductDetailViewModel) {
         handleResult<ProductTypesBottomSheetUiItem>(ProductTypesBottomSheetFragment.KEY_PRODUCT_TYPE_RESULT) {
             viewModel.updateProductDraft(type = it.type.value, isVirtual = it.isVirtual)
@@ -249,6 +251,10 @@ class ProductDetailFragment :
 
         handleNotice(ProductReviewsFragment.PRODUCT_REVIEWS_MODIFIED) {
             viewModel.refreshProduct()
+        }
+
+        handleResult<String>(AIProductDescriptionBottomSheetFragment.KEY_AI_GENERATED_DESCRIPTION_RESULT) { desc ->
+            viewModel.updateProductDraft(description = desc)
         }
     }
 
@@ -317,10 +323,23 @@ class ProductDetailFragment :
                     R.string.product_duplicate_progress_title,
                     R.string.product_duplicate_progress_body
                 )
+                is ShowAIProductDescriptionBottomSheet -> showAIProductDescriptionBottomSheet(
+                    event.productTitle,
+                    event.productDescription
+                )
 
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun showAIProductDescriptionBottomSheet(title: String?, description: String?) {
+        findNavController().navigateSafely(
+            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductDescriptionBottomSheetFragment(
+                title,
+                description?.fastStripHtml()
+            )
+        )
     }
 
     private fun openBlazeWebView(event: NavigateToBlazeWebView) {
@@ -593,4 +612,8 @@ class ProductDetailFragment :
     }
 
     override fun getFragmentTitle(): String = productName
+
+    fun trackBlazeDisplayedIfVisible() {
+        viewModel.trackBlazeDisplayed()
+    }
 }

@@ -7,19 +7,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_FAILURE
-import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_UPDATE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_DELETE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD
@@ -63,9 +62,13 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
@@ -74,9 +77,11 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
@@ -89,11 +94,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -101,7 +106,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -122,9 +126,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
-    private val codeScanner: CodeScanner,
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
+    private val barcodeScanningTracker: BarcodeScanningTracker,
+    private val resourceProvider: ResourceProvider,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -132,7 +137,6 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
-        private const val KEY_SCANNING_IN_PROGRESS = "scanning_in_progress"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -174,22 +178,10 @@ class OrderCreateEditViewModel @Inject constructor(
             is Mode.Edit -> autoSyncOrder
         }
 
-    fun getProductUIModelFromItem(item: Order.Item) = runBlocking {
-        mapItemToProductUiModel(item)
-    }
-
     val currentDraft
         get() = _orderDraft.value
 
     private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
-
-    private var scanningJob: Job? = null
-
-    private var isScanningInProgress: Boolean
-        get() = savedState.get<Boolean>(KEY_SCANNING_IN_PROGRESS) == true
-        set(value) {
-            savedState[KEY_SCANNING_IN_PROGRESS] = value
-        }
 
     init {
         when (mode) {
@@ -212,6 +204,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         ScanningSource.ORDER_LIST
                     )
                 }
+                handleCouponEditResult()
             }
             is Mode.Edit -> {
                 viewModelScope.launch {
@@ -225,28 +218,38 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
+                        handleCouponEditResult()
                     }
                 }
             }
         }
-        if (vmKilledWhenScanningInProgress()) {
-            isScanningInProgress = false
-            tracker.track(
-                BARCODE_SCANNING_FAILURE,
-                mapOf(
-                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
-                    KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.VMKilledWhileScanning.toString(),
-                )
-            )
-            triggerEvent(
-                VMKilledWhenScanningInProgress(
-                    R.string.order_creation_barcode_scanning_process_death
-                )
-            )
+    }
+
+    private fun handleCouponEditResult() {
+        args.couponEditResult?.let {
+            handleCouponEditResult(it)
         }
     }
 
-    private fun vmKilledWhenScanningInProgress() = scanningJob == null && isScanningInProgress
+    private fun handleCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+        when (couponEditResult) {
+            is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+                onCouponRemoved(couponEditResult.couponCode)
+            }
+
+            is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
+                onCouponAdded(couponEditResult.couponCode)
+            }
+
+            is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
+                onCouponUpdated(couponEditResult.oldCode, couponEditResult.newCode)
+            }
+        }
+    }
+
+    fun onCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+        handleCouponEditResult(couponEditResult)
+    }
 
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
@@ -274,15 +277,21 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onDecreaseProductsQuantity(id: Long) {
         _orderDraft.value.items
             .find { it.itemId == id }
-            ?.takeIf { it.quantity == 1F }
-            ?.let { onProductClicked(it) }
-            ?: run {
-                tracker.track(
-                    ORDER_PRODUCT_QUANTITY_CHANGE,
-                    mapOf(KEY_FLOW to flow)
-                )
-                _orderDraft.update { it.adjustProductQuantity(id, -1) }
+            ?.let {
+                if (it.quantity == 1F) {
+                    tracker.track(
+                        ORDER_PRODUCT_REMOVE,
+                        mapOf(KEY_FLOW to flow)
+                    )
+                } else {
+                    tracker.track(
+                        ORDER_PRODUCT_QUANTITY_CHANGE,
+                        mapOf(KEY_FLOW to flow)
+                    )
+                }
             }
+
+        _orderDraft.update { it.adjustProductQuantity(id, -1) }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
@@ -378,40 +387,33 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onScanClicked() {
         trackBarcodeScanningTapped()
-        startScan()
+        triggerEvent(OpenBarcodeScanningFragment)
     }
 
     private fun trackBarcodeScanningTapped() {
         tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
-    private fun startScan() {
-        scanningJob = viewModelScope.launch {
-            isScanningInProgress = true
-            codeScanner.startScan().collect { status ->
-                isScanningInProgress = false
-                when (status) {
-                    is CodeScannerStatus.Failure -> {
-                        tracker.track(
-                            BARCODE_SCANNING_FAILURE,
-                            mapOf(
-                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
-                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
-                            )
-                        )
-                        sendAddingProductsViaScanningFailedEvent(
-                            R.string.order_creation_barcode_scanning_scanning_failed
-                        )
-                    }
-                    is CodeScannerStatus.Success -> {
-                        tracker.track(
-                            BARCODE_SCANNING_SUCCESS,
-                            mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
-                        )
-                        viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(BarcodeOptions(status.code, status.format))
-                    }
-                }
+    fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
+        when (status) {
+            is CodeScannerStatus.Failure -> {
+                barcodeScanningTracker.trackScanFailure(
+                    source = ScanningSource.ORDER_CREATION,
+                    type = status.type
+                )
+                sendAddingProductsViaScanningFailedEvent(
+                    resourceProvider.getString(string.order_creation_barcode_scanning_scanning_failed)
+                )
+            }
+            is CodeScannerStatus.Success -> {
+                barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
+                viewState = viewState.copy(isUpdatingOrderDraft = true)
+                fetchProductBySKU(
+                    BarcodeOptions(
+                        sku = status.code,
+                        barcodeFormat = status.format
+                    )
+                )
             }
         }
     }
@@ -424,7 +426,7 @@ class OrderCreateEditViewModel @Inject constructor(
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
             } else {
-                SelectedItem.Product(item.productId)
+                Product(item.productId)
             }
         }.orEmpty()
         viewModelScope.launch {
@@ -483,7 +485,7 @@ class OrderCreateEditViewModel @Inject constructor(
             message,
         )
         sendAddingProductsViaScanningFailedEvent(
-            string.order_creation_barcode_scanning_unable_to_add_product
+            resourceProvider.getString(string.order_creation_barcode_scanning_unable_to_add_product, barcodeOptions.sku)
         )
     }
 
@@ -511,45 +513,77 @@ class OrderCreateEditViewModel @Inject constructor(
         barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
             barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
+    @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (product.isVariable()) {
-            if (product.parentId == 0L) {
+        when {
+            product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                    message = resourceProvider.getString(
+                        string.order_creation_barcode_scanning_unable_to_add_draft_product
+                    )
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,
                     barcodeFormat,
-                    "Instead of specific variations, user tried to add parent variable product."
+                    "Failed to add a product that is not published"
                 )
                 return
-            } else {
-                when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+            }
+            product.hasNoPrice() -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = resourceProvider.getString(
+                        string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+                    )
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a product whose price is not specified"
+                )
+                return
+            }
+            product.isVariable() -> {
+                if (product.parentId == 0L) {
+                    sendAddingProductsViaScanningFailedEvent(
+                        message = resourceProvider.getString(
+                            string.order_creation_barcode_scanning_unable_to_add_variable_product
+                        )
+                    )
+                    trackProductSearchViaSKUFailureEvent(
+                        source,
+                        barcodeFormat,
+                        "Instead of specific variations, user tried to add parent variable product."
+                    )
+                    return
+                } else {
+                    when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                        null -> onProductsSelected(
+                            selectedItems = selectedItems +
+                                SelectedItem.ProductVariation(
+                                    productId = product.parentId,
+                                    variationId = product.remoteId
+                                ),
+                            source = source,
+                            addedVia = ProductAddedVia.SCANNING,
+                        )
+                        else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                    }
+                }
+            }
+            else -> {
+                when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                     null -> onProductsSelected(
-                        selectedItems = selectedItems +
-                            SelectedItem.ProductVariation(
-                                productId = product.parentId,
-                                variationId = product.remoteId
-                            ),
+                        selectedItems = selectedItems + Product(productId = product.remoteId),
                         source = source,
                         addedVia = ProductAddedVia.SCANNING,
                     )
                     else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                 }
-            }
-        } else {
-            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                null -> onProductsSelected(
-                    selectedItems = selectedItems + Product(productId = product.remoteId),
-                    source = source,
-                    addedVia = ProductAddedVia.SCANNING,
-                )
-                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
         trackProductSearchViaSKUSuccessEvent(source)
@@ -592,11 +626,11 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun sendAddingProductsViaScanningFailedEvent(
-        @StringRes message: Int
+        message: String
     ) {
         triggerEvent(
             OnAddingProductViaScanningFailed(message) {
-                startScan()
+                triggerEvent(OpenBarcodeScanningFragment)
             }
         )
     }
@@ -622,6 +656,21 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCustomerAddressDeleted() {
+        tracker.track(
+            ORDER_CUSTOMER_DELETE,
+            mapOf(KEY_FLOW to flow)
+        )
+
+        _orderDraft.update { order ->
+            order.copy(
+                customerId = null,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY
+            )
+        }
+    }
+
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
         launch(dispatchers.io) {
             orderDetailRepository
@@ -637,7 +686,11 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomerClicked() {
+    fun onAddCustomerClicked() {
+        triggerEvent(AddCustomer)
+    }
+
+    fun onEditCustomerClicked() {
         triggerEvent(EditCustomer)
     }
 
@@ -667,7 +720,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onProductClicked(item: Order.Item) {
         // Don't show details if the product is not synced yet
         if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item))
+        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
     }
 
     fun onRetryPaymentsClicked() {
@@ -686,7 +739,15 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCouponButtonClicked() {
-        triggerEvent(EditCoupon(_orderDraft.value.couponLines.firstOrNull()?.code))
+        if (_orderDraft.value.couponLines.isEmpty()) {
+            triggerEvent(EditCoupon(mode))
+        } else {
+            triggerEvent(CouponList(mode, _orderDraft.value.couponLines))
+        }
+    }
+
+    fun onAddCouponButtonClicked() {
+        triggerEvent(EditCoupon(mode))
     }
 
     fun onShippingButtonClicked() {
@@ -933,16 +994,36 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponEntered(couponCode: String?) {
+    private fun onCouponAdded(couponCode: String) {
+        if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
         _orderDraft.update { draft ->
-            val couponLines = if (couponCode.isNullOrEmpty()) {
-                trackCouponRemoved()
-                emptyList()
-            } else {
-                trackCouponAdded()
-                listOf(Order.CouponLine(code = couponCode))
-            }
-            draft.copy(couponLines = couponLines)
+            val couponLines = draft.couponLines
+            draft.copy(couponLines = couponLines + Order.CouponLine(code = couponCode))
+        }.also {
+            trackCouponAdded()
+        }
+    }
+
+    private fun onCouponUpdated(oldCode: String, newCode: String) {
+        _orderDraft.value.couponLines.run {
+            if (oldCode == newCode || any { it.code == newCode } || none { it.code == oldCode }) return
+        }
+
+        _orderDraft.update { draft ->
+            val couponLines = draft.couponLines
+            val updatedCouponLines =
+                couponLines.filter { it.code != oldCode } + Order.CouponLine(code = newCode)
+            draft.copy(couponLines = updatedCouponLines)
+        }.also {
+            trackCouponUpdated()
+        }
+    }
+
+    private fun onCouponRemoved(couponCode: String) {
+        trackCouponRemoved()
+        _orderDraft.update { draft ->
+            val updatedCouponLines = draft.couponLines.filter { it.code != couponCode }
+            draft.copy(couponLines = updatedCouponLines)
         }
     }
 
@@ -952,6 +1033,22 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCouponRemoved() {
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
+    }
+
+    private fun trackCouponUpdated() {
+        tracker.track(ORDER_COUPON_UPDATE, mapOf(KEY_FLOW to flow))
+    }
+
+    fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
+        when (result) {
+            is ProductDetailsEditResult.ProductRemoved -> {
+                onRemoveProduct(result.item)
+            }
+        }
+    }
+
+    fun onProductDiscountEditResult(modifiedItem: Order.Item) {
+        _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
     }
 
     @Parcelize
@@ -965,7 +1062,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
         @IgnoredOnParcel
-        val canCreateOrder: Boolean = !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+        val canCreateOrder: Boolean =
+            !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
 
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
@@ -992,9 +1090,11 @@ class OrderCreateEditViewModel @Inject constructor(
 }
 
 data class OnAddingProductViaScanningFailed(
-    val message: Int,
+    val message: String,
     val retry: View.OnClickListener,
 ) : Event()
+
+object OpenBarcodeScanningFragment : Event()
 
 data class VMKilledWhenScanningInProgress(
     @StringRes val message: Int
@@ -1002,7 +1102,7 @@ data class VMKilledWhenScanningInProgress(
 
 object OnCouponRejectedByBackend : Event() {
     @StringRes
-    val message: Int = R.string.order_sync_coupon_removed
+    val message: Int = string.order_sync_coupon_removed
 }
 
 data class ProductUIModel(
@@ -1033,5 +1133,9 @@ private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
+
+private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
+
+private fun ModelProduct.hasNoPrice() = price == null
 
 fun Order.Item.isSynced() = this.itemId != 0L

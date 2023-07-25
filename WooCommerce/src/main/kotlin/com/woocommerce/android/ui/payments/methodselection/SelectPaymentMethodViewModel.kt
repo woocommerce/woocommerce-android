@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -46,12 +47,16 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -76,25 +81,29 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val _viewState = MutableLiveData<SelectPaymentMethodViewState>(Loading)
     val viewStateData: LiveData<SelectPaymentMethodViewState> = _viewState
 
-    private lateinit var order: Order
-    private lateinit var orderTotal: String
-    private lateinit var cardReaderPaymentFlowParam: Payment
+    private val _order = MutableStateFlow<Order?>(null)
+    private val order = _order.filterNotNull()
+    private val cardReaderPaymentFlowParam
+        get() = navArgs.cardReaderFlowParam as Payment
 
     init {
-        launch {
-            checkStatus()
-        }
+        checkStatus()
     }
 
-    private suspend fun checkStatus() {
+    private fun checkStatus() {
         when (val param = navArgs.cardReaderFlowParam) {
             is CardReadersHub -> triggerEvent(NavigateToCardReaderHubFlow(param))
             is PaymentOrRefund -> {
                 when (param) {
                     is Payment -> {
-                        // stay on screen
-                        cardReaderPaymentFlowParam = param
-                        showPaymentState(param)
+                        launch {
+                            // stay on screen
+                            _order.value = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
+                                orderMapper.toAppModel(it)
+                            }
+                            showPaymentState()
+                        }
+                        Unit
                     }
 
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
@@ -103,42 +112,109 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private suspend fun showPaymentState(param: PaymentOrRefund) {
-        order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
-            orderMapper.toAppModel(it)
-        }
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
-        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+    private suspend fun showPaymentState() {
+        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
+        val isPaymentCollectableWithTapToPay = isTapToPayAvailable()
+        val isTapToPayTestingState = cardReaderPaymentFlowParam.paymentType == TRY_TAP_TO_PAY &&
+            isPaymentCollectableWithCardReader &&
+            isPaymentCollectableWithTapToPay
+
         _viewState.value = buildSuccessState(
-            currencyCode = currencyCode,
-            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
-            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
+            order = order.first(),
+            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+            isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay,
+            isTapToPayTestingInProgress = isTapToPayTestingState,
         )
     }
 
     private fun buildSuccessState(
-        currencyCode: String,
+        order: Order,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
-    ) = Success(
-        paymentUrl = order.paymentUrl,
-        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
-        isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
-        isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
-        isScanToPayAvailable = order.paymentUrl.isNotEmpty(),
-        learMoreIpp = SelectPaymentMethodViewState.LearMoreIpp(
-            label = UiStringRes(
-                R.string.card_reader_connect_learn_more,
-                containsHtml = true
-            ),
-            onClick = ::onLearnMoreIppClicked
+        isTapToPayTestingInProgress: Boolean,
+    ): Success {
+        val rows = buildRows(
+            order,
+            isPaymentCollectableWithCardReader,
+            isPaymentCollectableWithTapToPay,
+            isTapToPayTestingInProgress
         )
-    )
+        return Success(
+            orderTotal = formatOrderTotal(order.total),
+            rows = rows,
+            learnMoreIpp = Success.LearnMoreIpp(
+                label = UiStringRes(
+                    R.string.card_reader_connect_learn_more,
+                    containsHtml = true
+                ),
+                onClick = ::onLearnMoreIppClicked
+            )
+        )
+    }
+
+    private fun buildRows(
+        order: Order,
+        isPaymentCollectableWithCardReader: Boolean,
+        isPaymentCollectableWithTapToPay: Boolean,
+        isTapToPayTestingInProgress: Boolean,
+    ): MutableList<Success.Row> {
+        val rows = mutableListOf<Success.Row>().apply {
+            add(
+                Success.Row.Single(
+                    label = R.string.cash,
+                    icon = R.drawable.ic_gridicons_money_on_surface,
+                    isEnabled = !isTapToPayTestingInProgress,
+                    onClick = ::onCashPaymentClicked
+                )
+            )
+            if (isPaymentCollectableWithCardReader) {
+                if (isPaymentCollectableWithTapToPay) {
+                    add(
+                        Success.Row.Double(
+                            label = R.string.card_reader_type_selection_tap_to_pay,
+                            description = R.string.card_reader_type_selection_tap_to_pay_description,
+                            icon = R.drawable.ic_baseline_contactless,
+                            isEnabled = true,
+                            onClick = ::onTapToPayClicked
+                        )
+                    )
+                }
+                add(
+                    Success.Row.Double(
+                        label = R.string.card_reader_type_selection_bluetooth_reader,
+                        description = R.string.card_reader_type_selection_bluetooth_reader_description,
+                        icon = R.drawable.ic_gridicons_credit_card,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onBtReaderClicked
+                    )
+                )
+            }
+            if (order.paymentUrl.isNotNullOrEmpty()) {
+                add(
+                    Success.Row.Single(
+                        label = R.string.simple_payments_share_payment_link,
+                        icon = R.drawable.ic_gridicons_link_on_surface,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onSharePaymentUrlClicked
+                    )
+                )
+                add(
+                    Success.Row.Single(
+                        label = R.string.card_reader_type_selection_scan_to_pay,
+                        icon = R.drawable.ic_baseline_qr_code_scanner,
+                        isEnabled = !isTapToPayTestingInProgress,
+                        onClick = ::onScanToPayClicked
+                    )
+                )
+            }
+        }
+        return rows
+    }
 
     private fun isTapToPayAvailable(): Boolean {
         val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
-            cardReaderTracker.trackTapToPayNotAvailableReason(result)
+            cardReaderTracker.trackTapToPayNotAvailableReason(result, SOURCE)
             false
         } else {
             true
@@ -146,22 +222,24 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-        val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-            SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
-            ORDER -> R.string.existing_order_cash_dlg_message
-        }
-        triggerEvent(
-            MultiLiveEvent.Event.ShowDialog(
-                titleId = R.string.simple_payments_cash_dlg_title,
-                messageId = messageIdForPaymentType,
-                positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                positiveBtnAction = { _, _ ->
-                    onCashPaymentConfirmed()
-                },
-                negativeButtonId = R.string.cancel
+        launch {
+            trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
+            val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
+                SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
+                ORDER -> R.string.existing_order_cash_dlg_message
+            }
+            triggerEvent(
+                MultiLiveEvent.Event.ShowDialog(
+                    titleId = R.string.simple_payments_cash_dlg_title,
+                    messageId = messageIdForPaymentType,
+                    positiveButtonId = R.string.simple_payments_cash_dlg_button,
+                    positiveBtnAction = { _, _ ->
+                        onCashPaymentConfirmed()
+                    },
+                    negativeButtonId = R.string.cancel
+                )
             )
-        )
+        }
     }
 
     /**
@@ -172,7 +250,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             launch {
                 trackPaymentMethodCompletion(
                     VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                    extraField = AnalyticsTracker.KEY_AMOUNT to orderTotal
+                    extraField = AnalyticsTracker.KEY_AMOUNT to formatOrderTotal(order.first().total)
                 )
                 updateOrderStatus(Order.Status.Completed.value).handleOrderUpdateResultBeforeExit()
             }
@@ -182,27 +260,33 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlClicked() {
-        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
-        triggerEvent(SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+        launch {
+            trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
+            triggerEvent(SharePaymentUrl(selectedSite.get().name, order.first().paymentUrl))
+        }
     }
 
     fun onSharePaymentUrlCompleted() {
-        trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
         launch {
+            trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
             updateOrderStatus(Order.Status.Pending.value).handleOrderUpdateResultBeforeExit()
         }
     }
 
     fun onBtReaderClicked() {
-        OrderDurationRecorder.recordCardPaymentStarted()
-        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_EXTERNAL)
-        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
+        launch {
+            OrderDurationRecorder.recordCardPaymentStarted()
+            trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_EXTERNAL)
+            triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
+        }
     }
 
     fun onTapToPayClicked() {
-        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_BUILT_IN)
-        appPrefs.setTTPWasUsedAtLeastOnce()
-        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
+        launch {
+            trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_BUILT_IN)
+            appPrefs.setTTPWasUsedAtLeastOnce()
+            triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
+        }
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
@@ -226,7 +310,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             if (status == CoreOrderStatus.COMPLETED.value) {
                 trackPaymentMethodCompletion(
                     VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                    extraField = AnalyticsTracker.KEY_AMOUNT to orderTotal
+                    extraField = AnalyticsTracker.KEY_AMOUNT to formatOrderTotal(order.first().total)
                 )
                 delay(DELAY_MS)
                 exitFlow()
@@ -243,8 +327,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onScanToPayClicked() {
-        trackPaymentMethodSelection(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
         launch {
+            trackPaymentMethodSelection(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
             updateOrderStatus(Order.Status.Pending.value).collect { result ->
                 _viewState.value = Loading
                 when (result) {
@@ -252,9 +336,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         if (result.event.isError) {
                             handleUpdateOrderStatusError()
                         } else {
-                            triggerEvent(SharePaymentUrlViaQr(order.paymentUrl))
+                            triggerEvent(SharePaymentUrlViaQr(order.first().paymentUrl))
                         }
-                        showPaymentState(cardReaderPaymentFlowParam)
+                        showPaymentState()
                     }
 
                     is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
@@ -277,19 +361,19 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onScanToPayCompleted() {
-        trackPaymentMethodCompletion(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
         launch {
+            trackPaymentMethodCompletion(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
             delay(DELAY_MS)
             exitFlow()
         }
     }
 
-    private fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
+    private suspend fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
             mutableMapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
-                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                AnalyticsTracker.KEY_ORDER_ID to order.first().id,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             ).also { mutableMap ->
                 cardReaderType?.let { mutableMap[KEY_PAYMENT_CARD_READER_TYPE] = it }
@@ -300,12 +384,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun trackPaymentMethodCompletion(paymentMethodType: String, extraField: Pair<String, String>? = null) {
+    private suspend fun trackPaymentMethodCompletion(
+        paymentMethodType: String,
+        extraField: Pair<String, String>? = null
+    ) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
             mutableMapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
-                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                AnalyticsTracker.KEY_ORDER_ID to order.first().id,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             ).apply {
                 extraField?.let { put(it.first, it.second) }
@@ -353,11 +440,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun exitFlow() {
+    private suspend fun exitFlow() {
         triggerEvent(
             when (cardReaderPaymentFlowParam.paymentType) {
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
-                TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order)
+                TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
                 ORDER -> NavigateBackToOrderList
             }
         )
@@ -371,7 +458,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
+        cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
             OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -381,11 +468,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
+    private fun formatOrderTotal(total: BigDecimal): String {
+        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        return currencyFormatter.formatCurrency(total, currencyCode)
+    }
+
     companion object {
         private const val DELAY_MS = 1L
         const val UTM_CAMPAIGN = "feature_announcement_card"
         const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
-        const val LEARN_MORE_SOURCE = "payment_methods"
+        private const val SOURCE = "payment_methods"
     }
 }

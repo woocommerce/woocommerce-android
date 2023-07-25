@@ -29,6 +29,7 @@ class WCProductPropertyView @JvmOverloads constructor(
     private var propertyNameText: TextView? = null
     private var propertyValueText: TextView? = null
     private var ratingBar: RatingBar? = null
+    private var divider: View? = null
 
     fun show(
         orientation: Int,
@@ -36,6 +37,7 @@ class WCProductPropertyView @JvmOverloads constructor(
         detail: CharSequence?,
         showTitle: Boolean,
         @DrawableRes propertyIcon: Int? = null,
+        isDividerVisible: Boolean = true,
         isRating: Boolean = false
     ) {
         ensureViewCreated(orientation, isRating)
@@ -59,6 +61,8 @@ class WCProductPropertyView @JvmOverloads constructor(
             propertyValueText?.isVisible = true
             propertyValueText?.text = detail
         }
+
+        divider?.isVisible = isDividerVisible
     }
 
     /**
@@ -130,6 +134,7 @@ class WCProductPropertyView @JvmOverloads constructor(
             propertyNameText = view?.findViewById(R.id.textPropertyName)
             propertyValueText = view?.findViewById(R.id.textPropertyValue)
             ratingBar = view?.findViewById(R.id.ratingBar)
+            divider = view?.findViewById(R.id.divider)
         }
     }
 }

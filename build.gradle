@@ -118,6 +118,9 @@ ext {
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
     stripeTerminalVersion = '2.21.1'
+    mlkitVersion = '17.1.0'
+    androidxCameraVersion = '1.2.3'
+    guavaVersion = '31.0.1-android'
 
     // Apache
     commonsText = '1.10.0'

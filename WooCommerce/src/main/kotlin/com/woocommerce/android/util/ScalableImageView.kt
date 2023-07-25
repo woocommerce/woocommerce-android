@@ -33,7 +33,7 @@ class ScalableImageView @JvmOverloads constructor(
 
     init {
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.ScalableImageView, defStyleAttr, 0)
-        val customScaleType = ScaleType.getType(typedArray.getString(R.styleable.ScalableImageView_scaleType))
+        val customScaleType = ScaleType.getType(typedArray.getString(R.styleable.ScalableImageView_scalableType))
         scaleType = when (customScaleType) {
             CENTER -> ImageView.ScaleType.CENTER
             CENTER_CROP -> ImageView.ScaleType.CENTER_CROP
