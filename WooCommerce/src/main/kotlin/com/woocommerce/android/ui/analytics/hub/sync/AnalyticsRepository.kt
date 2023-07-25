@@ -313,7 +313,8 @@ class AnalyticsRepository @Inject constructor(
                 granularity,
                 fetchStrategy is ForceNew,
                 startDate,
-                endDate
+                endDate,
+                revenueRangeId
             )
         }.flowOn(dispatchers.io).single().mapCatching { it }
     }
