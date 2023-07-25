@@ -149,6 +149,7 @@
     <string name="tip">Tip</string>
     <string name="hide_password_content_description">Hide password</string>
     <string name="show_password_content_description">Show password</string>
+    <string name="last_update">Last update %s</string>
 
     <!--
         Date/Time Labels
