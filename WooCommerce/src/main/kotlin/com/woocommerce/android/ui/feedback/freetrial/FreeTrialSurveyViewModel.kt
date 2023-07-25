@@ -94,6 +94,7 @@ class FreeTrialSurveyViewModel @Inject constructor(
                 SURVEY_KEY to selectedOption.optionType.name.lowercase()
             ).putIfNotEmpty(FREE_TEXT_KEY to _surveyState.value.freeText)
         )
+        triggerEvent(Exit)
     }
 
     fun freeTextEntered(freeText: String) {
