@@ -61,6 +61,17 @@ class GetStats @Inject constructor(
             .flowOn(coroutineDispatchers.computation)
     }
 
+    fun observeLastUpdate(granularity: StatsGranularity): Flow<Long?> {
+        val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
+        return analyticsUpdateDataStore.observeLastUpdate(
+            selectionType = selectionType,
+            analyticData = arrayOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            )
+        )
+    }
+
     private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
             .transform {
