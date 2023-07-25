@@ -218,7 +218,7 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { loadRevenueStats(startDate, endDate, granularity, fetchStrategy) }
+                    result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
                 ).let { currentRevenueStats[statsIdentifier.hashCode()] = it }
             }
         }
@@ -241,7 +241,7 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { loadRevenueStats(startDate, endDate, granularity, fetchStrategy) }
+                    result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
                 ).let { previousRevenueStats[statsIdentifier] = it }
             }
         }
@@ -303,14 +303,11 @@ class AnalyticsRepository @Inject constructor(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
+        revenueRangeId: Int,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> {
         return if (fetchStrategy == Saved) {
-            statsRepository.getRevenueStats(
-                granularity,
-                startDate,
-                endDate
-            )
+            statsRepository.getRevenueStatsById(revenueRangeId)
         } else {
             statsRepository.fetchRevenueStats(
                 granularity,
