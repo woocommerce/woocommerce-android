@@ -332,6 +332,11 @@ class DateUtils @Inject constructor(
      */
     fun getCurrentTime(): String = friendlyTimeFormat.format(Date())
 
+    /**
+     * Returns date millis in the format h:mm a
+     */
+    fun getDateMillisInFriendlyTimeFormat(dateMillis: Long): String = friendlyTimeFormat.format(Date(dateMillis))
+
     fun toIso8601Format(dateMillis: Long): String? =
         try {
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
