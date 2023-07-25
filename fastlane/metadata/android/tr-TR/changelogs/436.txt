@@ -1,2 +1,0 @@
-14.5:
-Daha hızlı işlemler ve daha sorunsuz bir alışveriş deneyimi için yeni Şahsen Ödeme özelliğimiz Tap To Pay ile tanışın. Ayrıca, sipariş işlemi sırasında doğrudan ürün indirimi uygulamanızı sağlayarak zaman kazandıran ve verimliliği artıran son özelliğimiz ile indirim yönetimi artık daha kolay. WooCommerce'in sürekli iyileştirmelerinden ve en yeni özelliklerinden yararlanmak için güncellemelerinizi açık tutun!
