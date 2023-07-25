@@ -113,10 +113,7 @@ fun FreeTrialSurveyContent(
 
         WCOutlinedTextField(
             modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100)
-                )
+                .padding(dimensionResource(id = R.dimen.major_100))
                 .onFocusEvent { focusState ->
                     if (focusState.isFocused) {
                         onFreeTextChanged(surveyState.freeText)
