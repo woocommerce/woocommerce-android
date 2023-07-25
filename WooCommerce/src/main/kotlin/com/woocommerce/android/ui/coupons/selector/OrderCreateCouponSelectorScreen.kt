@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.coupon.edit
+package com.woocommerce.android.ui.coupons.selector
 
 import androidx.compose.runtime.Composable
 
