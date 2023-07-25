@@ -170,6 +170,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Analytics Hub
     ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
     ANALYTICS_HUB_DATE_RANGE_SELECTED,
+    ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED,
 
     // -- Orders List
     ORDERS_LIST_FILTER,
@@ -248,6 +249,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDERS_ADD_NEW,
     ORDER_PRODUCT_ADD,
     ORDER_CUSTOMER_ADD,
+    ORDER_CUSTOMER_DELETE,
     ORDER_FEE_ADD,
     ORDER_SHIPPING_METHOD_ADD,
     ORDER_CREATE_BUTTON_TAPPED,

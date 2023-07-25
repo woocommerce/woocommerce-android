@@ -138,7 +138,6 @@ Language: de
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kannst variable Produkte nicht direkt hinzufügen. Bitte gib eine bestimmte Variante an</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scannen fehlgeschlagen. Bitte versuche es später erneut</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkt nicht gefunden. Hinzufügen zu neuer Bestellung nicht möglich</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scannen fehlgeschlagen. Bitte versuche es später erneut</string>
     <string name="scan_barcode">Barcode scannen</string>
     <string name="shipping_notice_banner_instructions_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union (EU) unterliegen, musst du jeden Artikel ab sofort klar und deutlich beschreiben. Beispiel: Wenn du Bekleidung versendest, musst du die Art der Bekleidung angeben (z. B. Shirts für Männer, Weste für Mädchen, Jacke für Jungen), damit die Beschreibung akzeptiert wird. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>

@@ -138,7 +138,6 @@ Language: sv_SE
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan försöka använda den igen.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkt hittades inte. Kan inte lägga till i ny beställning</string>
     <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="scan_barcode">Skanna streckkod</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>

@@ -1,2 +1,0 @@
-14.5 :
-La fonction de paiement en personne Appuyer pour payer sous Android accélère le traitement des transactions et améliore l’expérience d’achat. De plus, les remises sont plus faciles à gérer grâce à notre dernière fonctionnalité qui permet d’appliquer des remises directement au cours du processus de commande, ce qui constitue un gain de temps et d’efficacité. Activez vos mises à jour pour pouvoir profiter des améliorations et des dernières fonctionnalités de WooCommerce !
