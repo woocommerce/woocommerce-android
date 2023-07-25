@@ -138,7 +138,6 @@ Language: es
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">El sistema ha cerrado la aplicación de Woo mientras se ejecutaba en segundo plano. Puedes probar a usarla de nuevo.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">No puedes añadir un producto variable directamente. Elije una variación específica.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde.</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">No se ha encontrado el producto, por lo que no se ha podido añadir al nuevo pedido.</string>
     <string name="order_list_barcode_scanning_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde.</string>
     <string name="scan_barcode">Escanear código de barras</string>
     <string name="shipping_notice_banner_instructions_content">Ahora, para hacer envíos a países en los que se aplica la normativa aduanera de la Unión Europea (UE), debes describir cada artículo con claridad. Por ejemplo, si envías ropa, para que se acepte la descripción, debes indicar el tipo de ropa del que se trata (camisas de hombre, chalecos para chicas, chaquetas para chicos, etc.). De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>

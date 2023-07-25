@@ -16,6 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.NestedScrollViewExtension
 import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.CoreMatchers.endsWith
+import org.hamcrest.Matchers
 import org.hamcrest.core.AllOf.allOf
 
 class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
@@ -45,15 +46,18 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
     }
 
     fun addShipping(): UnifiedOrderScreen {
+        scrollTo(R.id.payment_section)
         waitForElementToBeDisplayed(R.id.payment_section)
         clickOn(R.id.shipping_button)
         waitForElementToBeDisplayed(R.id.amountEditText)
+
         Espresso.onView(
             allOf(
                 isDescendantOfA(withId(R.id.amountEditText)),
                 withClassName(endsWith("EditText"))
             )
         ).perform(ViewActions.replaceText("3.30"))
+
         clickOn(R.id.menu_done)
         return this
     }
@@ -72,11 +76,18 @@ class UnifiedOrderScreen : Screen(R.id.order_creation_root) {
         return this
     }
 
-    fun addCustomerNotes(note: String): UnifiedOrderScreen {
-        Espresso.onView(withId(R.id.notes_section))
-            .perform(NestedScrollViewExtension())
+    fun editCustomerNote(note: String): UnifiedOrderScreen {
+        waitForElementToBeDisplayedWithoutFailure(R.id.notes_section)
+        scrollTo(R.id.notes_section)
 
-        clickOn(Espresso.onView(withText("Add note")))
+        val editNoteButton = Espresso.onView(
+            Matchers.allOf(
+                isDescendantOfA(withId(R.id.notes_section)),
+                withId(R.id.edit_button)
+            )
+        )
+
+        clickOn(editNoteButton)
         typeTextInto(R.id.customerOrderNote_editor, note)
         clickOn(R.id.menu_done)
         return this

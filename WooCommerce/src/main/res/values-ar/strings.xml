@@ -138,7 +138,6 @@ Language: ar
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">أنهى النظام تطبيق Woo وهو قيد التشغيل في الخلفية. يمكنك محاولة استخدامه مجددًا.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">يتعذر عليك إضافة المنتج المتغير مباشرة. يرجى تحديد تباين محدد</string>
     <string name="order_creation_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">المنتج غير موجود. تتعذر إضافة طلب جديد</string>
     <string name="order_list_barcode_scanning_scanning_failed">فشل الفحص. ترجى المحاولة مجددًا في وقت لاحق</string>
     <string name="scan_barcode">مسح الرمز الشريطي ضوئيًا</string>
     <string name="shipping_notice_banner_instructions_content">يتطلب منك الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي وصف كل عنصر الآن بوضوح. على سبيل المثال، إذا كنت ترسل ملابس، فيجب عليك تحديد نوع الملابس (مثل: قمصان الرجال وسترات النساء التحتية وسترات الأولاد) لكي يصبح الوصف مقبولاً. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
