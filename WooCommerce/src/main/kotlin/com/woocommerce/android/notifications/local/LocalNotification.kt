@@ -80,7 +80,7 @@ sealed class LocalNotification(
     data class UpgradeToPaidPlanNotification(val siteId: Long) : LocalNotification(
         title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
         description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
-        type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
+        type = LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
         delay = 6,
         delayUnit = TimeUnit.HOURS
     ) {
@@ -94,7 +94,7 @@ sealed class LocalNotification(
     data class FreeTrialSurveyNotification(val siteId: Long) : LocalNotification(
         title = R.string.local_notification_survey_after_24_hours_title,
         description = R.string.local_notification_survey_after_24_hours_description,
-        type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
+        type = LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
         delay = 24,
         delayUnit = TimeUnit.HOURS
     ) {

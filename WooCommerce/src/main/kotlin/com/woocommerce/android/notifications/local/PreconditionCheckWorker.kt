@@ -12,10 +12,10 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
+import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
-import com.woocommerce.android.notifications.local.LocalNotificationType.UPGRADE_TO_PAID_PLAN
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
@@ -41,8 +41,8 @@ class PreconditionCheckWorker @AssistedInject constructor(
 
             FREE_TRIAL_EXPIRING,
             FREE_TRIAL_EXPIRED,
-            UPGRADE_TO_PAID_PLAN,
-            FREE_TRIAL_SURVEY -> proceedIfFreeTrialAndMatchesSite(data?.toLongOrNull())
+            SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
+            FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> proceedIfFreeTrialAndMatchesSite(data?.toLongOrNull())
 
             null -> cancelWork("Notification type is null. Cancelling work.")
         }

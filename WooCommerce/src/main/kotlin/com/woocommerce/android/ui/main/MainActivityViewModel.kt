@@ -19,10 +19,10 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
+import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
-import com.woocommerce.android.notifications.local.LocalNotificationType.UPGRADE_TO_PAID_PLAN
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -273,9 +273,9 @@ class MainActivityViewModel @Inject constructor(
                 STORE_CREATION_INCOMPLETE -> triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
                 FREE_TRIAL_EXPIRED,
                 FREE_TRIAL_EXPIRING,
-                UPGRADE_TO_PAID_PLAN -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+                SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
 
-                FREE_TRIAL_SURVEY -> triggerEvent(OpenFreeTrialSurvey)
+                FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
 
                 STORE_CREATION_FINISHED -> {}
             }
