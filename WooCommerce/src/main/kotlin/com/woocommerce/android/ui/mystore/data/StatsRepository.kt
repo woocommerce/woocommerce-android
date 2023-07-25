@@ -89,7 +89,7 @@ class StatsRepository @Inject constructor(
     suspend fun getRevenueStatsById(
         revenueRangeId: Int
     ): Flow<Result<WCRevenueStatsModel?>> = flow {
-        wcStatsStore.getRawRevenueStatsFromId(
+        wcStatsStore.getRawRevenueStatsFromRangeId(
             selectedSite.get(), revenueRangeId
         ).let { emit(Result.success(it)) }
     }
