@@ -138,6 +138,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onRefreshRequested() {
+        tracker.track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
