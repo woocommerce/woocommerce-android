@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-04 23:54:26+0000
+Translation-Revision-Date: 2023-07-20 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Перейти в настройки</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Отмена</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Разрешить</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Вы запретили доступ к камере. Он необходим, чтобы сканировать штрихкод. Предоставьте доступ в настройках приложения</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Разрешите доступ к камере, чтобы сканировать штрихкод</string>
+    <string name="barcode_scanning_alert_dialog_title">Предоставьте доступ к камере</string>
+    <string name="order_creation_coupon_network_error">Не удалось проверить код купона. Повторите попытку</string>
+    <string name="order_creation_coupon_invalid_code">Не удалось найти купон с таким кодом. Повторите попытку</string>
+    <string name="order_creation_discount_amount_type">Сумма (%1$s)</string>
+    <string name="order_creation_discount_value">Скидка %1$s</string>
+    <string name="order_creation_discounts_total_value">– %1$s</string>
+    <string name="order_creation_discounts_total">Сумма скидки</string>
+    <string name="order_creation_discount">Скидка</string>
+    <string name="order_creation_discount_amount_with_currency">Сумма (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Не удалось применить скидку вручную. Сначала удалите купоны</string>
+    <string name="order_creation_discount_invalid_number_error">Сумма скидки не является допустимым числом</string>
+    <string name="order_creation_discount_too_big_error">Скидка не может быть больше цены</string>
+    <string name="order_creation_remove_discount">Удалить скидку</string>
+    <string name="highlights_tooltip_button_hint">Текст кнопки</string>
+    <string name="highlights_tooltip_message_hint">Текст всплывающей подсказки. \n Может занимать несколько строк.</string>
+    <string name="highlights_tooltip_title_hint">Заголовок всплывающей подсказки</string>
+    <string name="blaze_banner_dismiss_dialog_button">Понятно</string>
+    <string name="blaze_banner_dismiss_dialog_description">Не волнуйтесь! Для удобства пользователей Blaze отображается в меню и разделе сведений о товаре.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Реклама в Blaze</string>
+    <string name="blaze_banner_close_button_content_description">Кнопка закрытия баннера Blaze</string>
+    <string name="blaze_banner_button">Попробовать Blaze</string>
+    <string name="blaze_banner_description">Демонстрируйте товары в рекламных объявлениях на миллионах сайтов WordPress.com и Tumblr.</string>
+    <string name="blaze_banner_title">Продвигайте товары с помощью Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">Понятно</string>
+    <string name="ai_product_description_tooltip_message">Наши инструменты на базе ИИ помогут вам быстро составлять описания товаров. Введите ключевые слова, а мы сделаем остальное.</string>
+    <string name="ai_product_description_tooltip_title">✨ Пишите тексты с помощью ИИ</string>
+    <string name="ai_product_toolbar_button_tooltip">Составить описание с помощью ИИ</string>
+    <string name="ai_product_description_error">Наши инструменты на базе ИИ помогут вам быстро создавать описания товаров. Повторите попытку позже.</string>
+    <string name="ai_product_description_label">Описание создано ИИ</string>
+    <string name="ai_product_description_learn_more_link">На основе ИИ. &lt;a href=\'\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">К сожалению, в вашей стране оплата в касание на Android пока не поддерживается. Следите за новостями!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Чтобы использовать оплату в касание на Android, на устройстве должны быть установлены службы Google Play. Чтобы принимать очные платежи, установите службы Google Play или купите терминал с поддержкой Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Чтобы использовать оплату в касание на Android, требуется Android 10 или более новой версии. Чтобы принимать очные платежи, обновите Android или купите терминал с поддержкой Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Чтобы использовать оплату в касание на Android, устройство должно быть оснащено модулем NFC. Чтобы принимать очные платежи, купите терминал с поддержкой Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Оплата в касание недоступна</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">См. требования</string>
+    <string name="error_troubleshooting">Устранение неполадок</string>
+    <string name="orderlist_parsing_error_message">Возможно, дело в конфликте с плагином. Повторите попытку позже или свяжитесь с нами. Мы будем рады помочь!</string>
+    <string name="orderlist_parsing_error_title">Не удалось загрузить данные.</string>
     <string name="ai_product_description_dialog_message">Используйте искусственный интеллект, чтобы быстро создавать описания. Попробуйте эту функцию уже сегодня!</string>
     <string name="ai_product_description_dialog_title">Создание описания товара с помощью ИИ</string>
     <string name="ai_product_description_note_dialog_confirmation">Понятно</string>
@@ -94,7 +138,6 @@ Language: ru
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Система завершила работу приложения Woo в момент его работы в фоновом режиме. Вы можете попробовать зайти в него ещё раз.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Невозможно добавить товар с вариациями напрямую. Выберите конкретную вариацию</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Сбой сканирования. Повторите попытку позже</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Товар не найден. Не удалось добавить в новый заказ</string>
     <string name="order_list_barcode_scanning_scanning_failed">Сбой сканирования. Повторите попытку позже</string>
     <string name="scan_barcode">Сканировать штрихкод</string>
     <string name="shipping_notice_banner_instructions_content">Отправляя товары в страны, которые следуют таможенным правилам Европейского союза (ЕС), вы теперь должны точно и понятно описать каждую позицию. Так, при отправке одежды необходимо указать её тип (например, мужские рубашки, жилет для девочки, куртка для мальчика), чтобы описание было приемлемым. В ином случае может произойти задержка или приостановка доставки на таможне.</string>
@@ -250,8 +293,6 @@ Language: ru
     <string name="product_subscription_title">Подписка</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Устройство чтения карт принимает платежи дебетовыми и кредитными картами. Их можно прикладывать, проводить или вставлять.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Принимайте бесконтактные платежи прямо в телефоне.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Попробуйте функцию «Оплата в касание» в приложении</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Оплата в касание</string>
     <string name="card_reader_tap_to_pay_share_feedback">Поделитесь отзывом о функции «Оплата в касание»</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Не удалось войти, поскольку не разрешается создавать пароль приложения.</string>
     <string name="login_site_credentials_fetching_site">Получение сайта…</string>
@@ -297,7 +338,6 @@ Language: ru
     <string name="store_onboarding_launch_store_share_url_button">URL-адрес рекомендации</string>
     <string name="store_onboarding_launch_store_button">Опубликовать мой магазин</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Чтобы запустить магазин, необходимо перейти на платный тарифный план. &lt;u&gt;Перейти&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">Ваш магазин или устройство не поддерживают функцию «Tap to Pay»</string>
     <string name="domains_search_domains">Поиск доменов</string>
     <string name="login_site_credentials_http_error">Не удалось войти. Код состояния: %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Не удалось войти, так как не удается найти URL-адрес администратора магазина</string>

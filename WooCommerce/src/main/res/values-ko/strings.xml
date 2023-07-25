@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-04 09:54:31+0000
+Translation-Revision-Date: 2023-07-20 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">설정으로 이동</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">취소</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">권한 부여</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">카메라 권한을 영구적으로 거부하셨습니다. 바코드를 스캔하려면 이 권한이 필요합니다. 앱 설정에서 활성화해 주세요.</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">바코드를 스캔하려면 카메라 권한이 필요합니다.</string>
+    <string name="barcode_scanning_alert_dialog_title">카메라 권한 부여</string>
+    <string name="order_creation_coupon_network_error">쿠폰 코드 유효성 검사 중 문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="order_creation_coupon_invalid_code">해당 코드가 있는 쿠폰을 찾을 수 없습니다. 다시 시도하세요.</string>
+    <string name="order_creation_discount_amount_type">금액(%1$s)</string>
+    <string name="order_creation_discount_value">%1$s 할인</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">할인 합계</string>
+    <string name="order_creation_discount">할인</string>
+    <string name="order_creation_discount_amount_with_currency">금액(%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">수동 할인은 적용할 수 없습니다. 먼저 쿠폰 제거</string>
+    <string name="order_creation_discount_invalid_number_error">할인이 유효한 번호가 아닙니다.</string>
+    <string name="order_creation_discount_too_big_error">할인이 가격보다 클 수 없습니다.</string>
+    <string name="order_creation_remove_discount">할인 제거</string>
+    <string name="highlights_tooltip_button_hint">버튼 텍스트</string>
+    <string name="highlights_tooltip_message_hint">도구 설명 메시지입니다. \n 여러 줄이 될 수 있습니다.</string>
+    <string name="highlights_tooltip_title_hint">도구 설명 제목</string>
+    <string name="blaze_banner_dismiss_dialog_button">알겠습니다.</string>
+    <string name="blaze_banner_dismiss_dialog_description">걱정하지 마세요! Blaze는 메뉴 및 상품 상세 정보 메뉴에서 편리하게 접근하실 수 있습니다.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Blaze 광고</string>
+    <string name="blaze_banner_close_button_content_description">Blaze 배너 버튼 닫기</string>
+    <string name="blaze_banner_button">지금 Blaze 사용해 보기</string>
+    <string name="blaze_banner_description">상품을 워드프레스닷컴과 Tumblr의 수백만 사이트에서 실행되는 광고로 전환하세요.</string>
+    <string name="blaze_banner_title">Blaze로 상품 홍보</string>
+    <string name="ai_product_description_tooltip_dismiss">알겠습니다.</string>
+    <string name="ai_product_description_tooltip_message">AI 기반 도구를 사용하여 상품 설명을 빠르게 생성하세요. 키워드만 입력하시면 나머지는 자동으로 진행됩니다!</string>
+    <string name="ai_product_description_tooltip_title">✨ AI로 쓰기</string>
+    <string name="ai_product_toolbar_button_tooltip">AI를 통해 설명 생성</string>
+    <string name="ai_product_description_error">상품 설명 생성 중 문제가 발생했습니다. 나중에 다시 시도하세요.</string>
+    <string name="ai_product_description_label">AI로 생성한 설명</string>
+    <string name="ai_product_description_learn_more_link">AI를 활용했습니다. &lt;a href=\'\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">죄송합니다. 해당 국가에서는 아직 Android에서 Tap To Pay를 사용할 수 없습니다. 계속 지켜봐 주세요!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Android에서 Tap To Pay를 사용하려면 기기에 Google Play 서비스가 필요합니다. 직접 결제를 수락하려면 Google Play 서비스를 설치하거나 블루투스 카드 리더를 구매하세요.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Android에서 Tap To Pay를 사용하려면 Android 10 이상이 필요합니다. 직접 결제를 수락하려면 Android를 업데이트하거나 블루투스 카드 리더를 구매하세요.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Android에서 Tap To Pay를 사용하려면 기기에 NFC 칩이 필요합니다. 직접 결제를 수락하려면 블루투스 카드 리더를 구매하세요.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay를 사용할 수 없습니다.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">요구 사항 확인</string>
+    <string name="error_troubleshooting">문제 해결</string>
+    <string name="orderlist_parsing_error_message">플러그인 충돌과 관련이 있을 수 있습니다. 나중에 다시 시도해 보세요. 또는 당사에 연락하면 기꺼이 도와드리겠습니다!</string>
+    <string name="orderlist_parsing_error_title">데이터를 로드할 수 없습니다.</string>
     <string name="ai_product_description_dialog_message">AI로 곧장 설명을 추가하세요. 지금 기능을 사용해 보세요!</string>
     <string name="ai_product_description_dialog_title">AI로 상품 설명 추가</string>
     <string name="ai_product_description_note_dialog_confirmation">알겠습니다.</string>
@@ -94,7 +138,6 @@ Language: ko_KR
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">배경에서 실행되는 시스템에서 Woo 앱을 종료했습니다. 다시 사용해 보실 수 있습니다.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">가변 상품을 직접 추가할 수 없습니다. 특정 변형을 선택하세요.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">상품을 찾을 수 없습니다. 새 주문을 추가할 수 없음</string>
     <string name="order_list_barcode_scanning_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
     <string name="scan_barcode">바코드 스캔</string>
     <string name="shipping_notice_banner_instructions_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송 시 모든 아이템을 명확하게 설명해야 합니다. 예를 들어, 의류를 발송하는 경우 설명이 수락될 수 있으려면 의류 유형을 표시해야 합니다(예: 남성용 셔츠, 여아용 조끼, 남아용 재킷). 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
@@ -250,8 +293,6 @@ Language: ko_KR
     <string name="product_subscription_title">구독</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">체크카드와 신용카드를 카드 리더에 올려놓거나 밀어 넣거나 살짝 밀어서 결제할 수 있습니다.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">스마트폰에서 직접 비접촉 결제를 안전하게 수락하세요.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">앱에서 Tap To Pay 테스트</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay 피드백 공유</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">애플리케이션 비밀번호 생성이 승인되지 않아서 로그인할 수 없습니다.</string>
     <string name="login_site_credentials_fetching_site">사이트를 가져오는 중…</string>
@@ -297,7 +338,6 @@ Language: ko_KR
     <string name="store_onboarding_launch_store_share_url_button">공유 URL</string>
     <string name="store_onboarding_launch_store_button">내 스토어 공개</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">스토어를 시작하려면 요금제로 업그레이드하셔야 합니다. &lt;u&gt;업그레이드&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">스토어 또는 기기에 Tap to Pay를 사용할 수 없습니다.</string>
     <string name="domains_search_domains">도메인 검색</string>
     <string name="login_site_credentials_http_error">로그인 실패(상태 코드 %1$s)</string>
     <string name="login_site_credentials_custom_admin_url">스토어의 관리 URL이 식별되지 않아서 로그인할 수 없습니다.</string>
