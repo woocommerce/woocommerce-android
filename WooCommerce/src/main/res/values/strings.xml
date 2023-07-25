@@ -3448,6 +3448,6 @@
     <string name="free_trial_survey_option2">I am evaluating and comparing your service with others on the market.</string>
     <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
     <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
-    <string name="free_trial_survey_option5">Other (please specify)</string>
+    <string name="free_trial_survey_free_text">Other (please specify)</string>
 
 </resources>
