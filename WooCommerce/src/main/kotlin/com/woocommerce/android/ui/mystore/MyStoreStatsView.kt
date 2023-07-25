@@ -435,7 +435,8 @@ class MyStoreStatsView @JvmOverloads constructor(
             val lastUpdateFormatted = dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateMillis)
             lastUpdated.isVisible = true
             fadeInLabelValue(
-                lastUpdated, String.format(
+                lastUpdated,
+                String.format(
                     Locale.getDefault(),
                     resources.getString(R.string.last_update),
                     lastUpdateFormatted
@@ -444,7 +445,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         } else {
             lastUpdated.isVisible = false
         }
-
     }
 
     @Suppress("MagicNumber")
