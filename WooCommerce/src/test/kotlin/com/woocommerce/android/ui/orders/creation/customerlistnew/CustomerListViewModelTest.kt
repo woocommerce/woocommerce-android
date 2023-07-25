@@ -46,7 +46,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         on { mapFromWCCustomerToItem(any()) }.thenReturn(mockCustomer)
     }
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes = mock {
-        onBlocking { invoke() }.thenReturn(
+        onBlocking { invoke(false) }.thenReturn(
             listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_name,
@@ -60,6 +60,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 )
             )
         )
+    }
+    private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported = mock {
+        onBlocking { invoke() }.thenReturn(false)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
@@ -667,6 +670,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         savedState,
         customerListRepository,
         customerListViewModelMapper,
+        isAdvancedSearchSupported,
         getSupportedSearchModes,
         analyticsTrackerWrapper,
     )

@@ -5,22 +5,18 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CustomerListGetSupportedSearchModesTest : BaseUnitTest() {
-
-    private val advancedSearchSupported: CustomerListIsAdvancedSearchSupported = mock()
-    private val action = CustomerListGetSupportedSearchModes(advancedSearchSupported)
+    private val action = CustomerListGetSupportedSearchModes()
 
     @Test
     fun `given advanced search not supported, when action invoked, then 3 search modes returned`() = testBlocking {
         // GIVEN
-        whenever(advancedSearchSupported()).thenReturn(false)
+        val isAdvancedSearchSupported = false
 
         // WHEN
-        val result = action()
+        val result = action(isAdvancedSearchSupported)
 
         // THEN
         assertThat(result[0]).isEqualTo(
@@ -49,10 +45,10 @@ class CustomerListGetSupportedSearchModesTest : BaseUnitTest() {
     @Test
     fun `given advanced search supported, when action invoked, then 4 search modes returned`() = testBlocking {
         // GIVEN
-        whenever(advancedSearchSupported()).thenReturn(true)
+        val isAdvancedSearchSupported = true
 
         // WHEN
-        val result = action()
+        val result = action(isAdvancedSearchSupported)
 
         // THEN
         assertThat(result[0]).isEqualTo(
