@@ -46,7 +46,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         on { mapFromWCCustomerToItem(any()) }.thenReturn(mockCustomer)
     }
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes = mock {
-        onBlocking { invoke(false) }.thenReturn(
+        onBlocking { invoke(true) }.thenReturn(
             listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_name,
@@ -62,7 +62,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         )
     }
     private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported = mock {
-        onBlocking { invoke() }.thenReturn(false)
+        onBlocking { invoke() }.thenReturn(true)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
@@ -99,6 +99,58 @@ class CustomerListViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given advanced search mode, when viewmodel init, then advanced loading state emitted`() = testBlocking {
+        // GIVEN
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+        val searchModes = listOf(
+            SearchMode(
+                labelResId = R.string.order_creation_customer_search_name,
+                searchParam = "name",
+                isSelected = true,
+            )
+        )
+        whenever(getSupportedSearchModes.invoke(true)).thenReturn(searchModes)
+        val viewModel = initViewModel()
+        val states = viewModel.viewState.captureValues()
+
+        // THEN
+        assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_filter_hint)
+        assertThat(states.last().searchModes).isEqualTo(searchModes)
+        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+    }
+
+    @Test
+    fun `given not advanced search mode, when viewmodel init, then not advanced state emitted and customers not loaded`() =
+        testBlocking {
+            // GIVEN
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
+
+            // THEN
+            verify(customerListRepository, never()).searchCustomerListWithEmail(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+
+            assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
+            assertThat(states.last().searchModes).isEqualTo(searchModes)
+            assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message).isEqualTo(
+                R.string.order_creation_customer_search_empty_on_old_version_wcpay
+            )
+        }
 
     @Test
     fun `given success returned from repo, when viewmodel init, then viewstate is updated with customers and first page true`() =
@@ -150,7 +202,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Empty::class.java)
+        assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message)
+            .isEqualTo(R.string.order_creation_customer_search_empty)
     }
 
     @Test
@@ -234,6 +287,105 @@ class CustomerListViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given search query and not advanced search, when onSearchQueryChanged is called, then search is invoked and viewstate updated with customers`() =
+        testBlocking {
+            // GIVEN
+            val searchQuery = "customer"
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+            val viewModel = initViewModel()
+
+            val states = viewModel.viewState.captureValues()
+
+            // WHEN
+            viewModel.onSearchQueryChanged(searchQuery)
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListRepository, times(1)).searchCustomerListWithEmail(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
+                .isEqualTo(listOf(mockCustomer))
+        }
+
+    @Test
+    fun `given empty search and not advanced search, when onSearchQueryChanged is called, then search is not invoked and viewstate not advanced search`() =
+        testBlocking {
+            // GIVEN
+            val searchQuery = ""
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+            val viewModel = initViewModel()
+
+            val states = viewModel.viewState.captureValues()
+
+            // WHEN
+            viewModel.onSearchQueryChanged(searchQuery)
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListRepository, never()).searchCustomerListWithEmail(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+            assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message)
+                .isEqualTo(R.string.order_creation_customer_search_empty_on_old_version_wcpay)
+        }
+
+    @Test
+    fun `given empty search and advanced search, when onSearchQueryChanged is called, then search is invoked and viewstate updated`() =
+        testBlocking {
+            // GIVEN
+            val searchQuery = ""
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(true)).thenReturn(searchModes)
+            val viewModel = initViewModel()
+
+            val states = viewModel.viewState.captureValues()
+
+            // WHEN
+            viewModel.onSearchQueryChanged(searchQuery)
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListRepository, times(2)).searchCustomerListWithEmail(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+            assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
+                .isEqualTo(listOf(mockCustomer))
+        }
 
     @Test
     fun `given search query, when onSearchQueryChanged is called, then search is invoked and viewstate updated with customers`() =

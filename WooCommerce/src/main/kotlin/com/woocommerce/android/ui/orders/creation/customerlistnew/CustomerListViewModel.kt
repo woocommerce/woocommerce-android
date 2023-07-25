@@ -51,10 +51,11 @@ class CustomerListViewModel @Inject constructor(
     init {
         launch {
             repository.loadCountries()
-            _viewState.value = if (isAdvancedSearchSupported()) {
-                advancedSearchSupportedInitState().also { loadCustomers(1) }
+            if (isAdvancedSearchSupported()) {
+                _viewState.value = advancedSearchSupportedInitState()
+                loadCustomers(1)
             } else {
-                advancedSearchNotSupportedInitState()
+                _viewState.value = advancedSearchNotSupportedInitState()
             }
         }
     }
