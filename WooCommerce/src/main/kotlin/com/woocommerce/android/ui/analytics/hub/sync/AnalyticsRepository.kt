@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
-import android.util.Log
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
