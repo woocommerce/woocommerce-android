@@ -157,11 +157,6 @@
                 android:name="selectedProductCategoryName"
                 app:argType="string"
                 app:nullable="true" />
-            <argument
-                android:name="restrictions"
-                android:defaultValue="@null"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]"
-                app:nullable="true" />
         </action>
         <action
             android:id="@+id/action_productListFragment_to_productTypesBottomSheet"

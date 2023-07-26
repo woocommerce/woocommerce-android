@@ -28,10 +28,6 @@
             android:name="selectedProductCategoryName"
             app:nullable="true"
             app:argType="string" />
-        <argument
-            android:name="restrictions"
-            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]"
-            app:nullable="true" />
     </fragment>
     <action
         android:id="@+id/action_productFilterListFragment_to_productFilterOptionListFragment"
