@@ -22,10 +22,23 @@ class ProductRestrictionsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given variable product with 0 number of variations, when order creation products restriction, then return true`() {
+    fun `given variable product with 0 number of variations, when order creation products restriction, then product is restricted`() {
         val product = ProductTestUtils.generateProduct(
             isVariable = true,
             variationIds = ""
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertTrue {
+            sut.isProductRestricted(product)
+        }
+    }
+
+    @Test
+    fun `given product with price not specified, when order creation products restriction, then product is restricted`() {
+        val product = ProductTestUtils.generateProduct(
+            amount = ""
         )
 
         val sut = OrderCreationProductRestrictions()
