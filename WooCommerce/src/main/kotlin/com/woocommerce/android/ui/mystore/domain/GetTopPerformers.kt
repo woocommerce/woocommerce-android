@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
+    private val localeProvider: LocaleProvider
 ) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -34,13 +36,13 @@ class GetTopPerformers @Inject constructor(
         refresh: Boolean = false,
         topPerformersCount: Int = NUM_TOP_PERFORMERS,
     ): Result<Unit> {
-        val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
-        val isForcedRefresh = shouldUpdateStats(selectionType, refresh)
+        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
+        val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
         return statsRepository.fetchTopPerformerProducts(isForcedRefresh, granularity, topPerformersCount)
             .let { result ->
                 if (result.isSuccess && isForcedRefresh) {
                     analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                        selectionType = selectionType,
+                        selectionRange = selectionRange,
                         analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
                     )
                 }
@@ -49,13 +51,13 @@ class GetTopPerformers @Inject constructor(
     }
 
     private suspend fun shouldUpdateStats(
-        selectionType: StatsTimeRangeSelection.SelectionType,
+        selectionRange: StatsTimeRangeSelection,
         refresh: Boolean
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
             .shouldUpdateAnalytics(
-                selectionType = selectionType,
+                selectionRange = selectionRange,
                 analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
             )
             .firstOrNull() ?: true

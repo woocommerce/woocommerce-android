@@ -37,25 +37,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         }
     }
 
-    fun shouldUpdateAnalytics(
-        selectionType: StatsTimeRangeSelection.SelectionType,
-        maxOutdatedTime: Long = defaultMaxOutdatedTime,
-        analyticData: AnalyticData = AnalyticData.ALL
-    ) = shouldUpdateAnalytics(getTimeStampKey(selectionType.identifier, analyticData), maxOutdatedTime)
-
-    suspend fun storeLastAnalyticsUpdate(
-        selectionType: StatsTimeRangeSelection.SelectionType,
-        analyticData: AnalyticData = AnalyticData.ALL
-    ) {
-        if (analyticData == AnalyticData.ALL) {
-            AnalyticData.values().forEach { dataItem ->
-                storeLastAnalyticsUpdate(getTimeStampKey(selectionType.identifier, dataItem))
-            }
-        } else {
-            storeLastAnalyticsUpdate(getTimeStampKey(selectionType.identifier, analyticData))
-        }
-    }
-
     private fun shouldUpdateAnalytics(
         timestampKey: String,
         maxOutdatedTime: Long = defaultMaxOutdatedTime,
