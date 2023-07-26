@@ -796,7 +796,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.getRevenueStats(any(), any(), any()))
+            whenever(statsRepository.getRevenueStatsById(any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -815,12 +815,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             sut.fetchProductsData(testSelectionData, Saved)
 
             // Then
-            verify(statsRepository, times(1)).getRevenueStats(
-                any(), eq(previousStart), eq(previousEnd)
-            )
-            verify(statsRepository, times(1)).getRevenueStats(
-                any(), eq(currentStart), eq(currentEnd)
-            )
+            verify(statsRepository, times(1)).getRevenueStatsById(any())
+            verify(statsRepository, times(1)).getRevenueStatsById(any())
         }
 
     @Test
