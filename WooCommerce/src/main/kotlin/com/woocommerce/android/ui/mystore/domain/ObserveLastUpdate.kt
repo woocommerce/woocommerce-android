@@ -1,21 +1,22 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
 
 class ObserveLastUpdate @Inject constructor(
-    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
+    private val localeProvider: LocaleProvider
 ) {
     operator fun invoke(
         granularity: WCStatsStore.StatsGranularity,
         analyticData: List<AnalyticsUpdateDataStore.AnalyticData>
     ): Flow<Long?> {
-        val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
+        val rangeSelection = granularity.asRangeSelection(localeProvider.provideLocale())
         return analyticsUpdateDataStore.observeLastUpdate(
-            selectionType = selectionType,
+            rangeSelection = rangeSelection,
             analyticData = analyticData
         )
     }
@@ -24,9 +25,9 @@ class ObserveLastUpdate @Inject constructor(
         granularity: WCStatsStore.StatsGranularity,
         analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Flow<Long?> {
-        val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
+        val rangeSelection = granularity.asRangeSelection(localeProvider.provideLocale())
         return analyticsUpdateDataStore.observeLastUpdate(
-            selectionType = selectionType,
+            rangeSelection = rangeSelection,
             analyticData = analyticData
         )
     }

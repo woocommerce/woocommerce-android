@@ -40,40 +40,21 @@ class AnalyticsUpdateDataStore @Inject constructor(
         }
     }
 
-    fun shouldUpdateAnalytics(
-        selectionType: StatsTimeRangeSelection.SelectionType,
-        maxOutdatedTime: Long = defaultMaxOutdatedTime,
-        analyticData: AnalyticData = AnalyticData.ALL
-    ) = shouldUpdateAnalytics(getTimeStampKey(selectionType.identifier, analyticData), maxOutdatedTime)
-
-    suspend fun storeLastAnalyticsUpdate(
-        selectionType: StatsTimeRangeSelection.SelectionType,
-        analyticData: AnalyticData = AnalyticData.ALL
-    ) {
-        if (analyticData == AnalyticData.ALL) {
-            AnalyticData.values().forEach { dataItem ->
-                storeLastAnalyticsUpdate(getTimeStampKey(selectionType.identifier, dataItem))
-            }
-        } else {
-            storeLastAnalyticsUpdate(getTimeStampKey(selectionType.identifier, analyticData))
-        }
-    }
-
     fun observeLastUpdate(
-        selectionType: StatsTimeRangeSelection.SelectionType,
+        rangeSelection: StatsTimeRangeSelection,
         analyticData: List<AnalyticData>
     ): Flow<Long?> {
         val timestampKeys = analyticData.map { data ->
-            getTimeStampKey(selectionType.identifier, data)
+            getTimeStampKey(rangeSelection.identifier, data)
         }
         return observeLastUpdate(timestampKeys)
     }
 
     fun observeLastUpdate(
-        selectionType: StatsTimeRangeSelection.SelectionType,
+        rangeSelection: StatsTimeRangeSelection,
         analyticData: AnalyticData
     ): Flow<Long?> {
-        val timestampKeys = getTimeStampKey(selectionType.identifier, analyticData)
+        val timestampKeys = getTimeStampKey(rangeSelection.identifier, analyticData)
         return observeLastUpdate(timestampKeys)
     }
 
@@ -136,4 +117,3 @@ class AnalyticsUpdateDataStore @Inject constructor(
         ALL
     }
 }
-
