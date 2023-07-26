@@ -31,7 +31,8 @@ class GetTopPerformersTest : BaseUnitTest() {
     private val sut = GetTopPerformers(
         statsRepository,
         coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore
+        analyticsUpdateDataStore,
+        mock()
     )
 
     @Test
