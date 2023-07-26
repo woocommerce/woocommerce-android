@@ -25,15 +25,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         rangeSelection: StatsTimeRangeSelection
     ) = storeLastAnalyticsUpdate(rangeSelection.identifier)
 
-    fun shouldUpdateAnalytics(
-        selectionType: StatsTimeRangeSelection.SelectionType,
-        maxOutdatedTime: Long = defaultMaxOutdatedTime
-    ) = shouldUpdateAnalytics(selectionType.identifier, maxOutdatedTime)
-
-    suspend fun storeLastAnalyticsUpdate(
-        selectionType: StatsTimeRangeSelection.SelectionType
-    ) = storeLastAnalyticsUpdate(selectionType.identifier)
-
     private fun shouldUpdateAnalytics(
         timestampKey: String,
         maxOutdatedTime: Long = defaultMaxOutdatedTime
