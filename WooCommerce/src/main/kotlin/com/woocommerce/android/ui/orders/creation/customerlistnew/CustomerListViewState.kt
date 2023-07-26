@@ -25,28 +25,14 @@ data class CustomerListViewState(
         sealed class Item {
             data class Customer(
                 val remoteId: Long,
-                val firstName: String,
-                val lastName: String,
-                val email: String,
-                val username: String,
-
-                val highlightedPeaces: List<HighlightedPeace>,
+                val firstName: HighlightedText,
+                val lastName: HighlightedText,
+                val email: HighlightedText,
+                val username: HighlightedText,
 
                 val payload: WCCustomerModel,
             ) : Item() {
-                sealed class HighlightedPeace(open val start: Int, open  val end: Int) {
-                    data class FirstName(override val start: Int, override val end: Int) :
-                        HighlightedPeace(start, end)
-
-                    data class LastName(override val start: Int, override val end: Int) :
-                        HighlightedPeace(start, end)
-
-                    data class Username(override val start: Int, override val end: Int) :
-                        HighlightedPeace(start, end)
-
-                    data class Email(override val start: Int, override val end: Int) :
-                        HighlightedPeace(start, end)
-                }
+                data class HighlightedText(val text: String, val start: Int, val end: Int)
             }
 
             object Loading : Item()

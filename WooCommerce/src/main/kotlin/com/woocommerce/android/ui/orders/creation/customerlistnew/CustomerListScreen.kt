@@ -46,8 +46,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -55,6 +58,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListViewState.CustomerList.Item.Customer
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Composable
@@ -191,7 +195,7 @@ private fun CustomerListLoaded(
             items = body.customers,
         ) { _, customer ->
             when (customer) {
-                is CustomerListViewState.CustomerList.Item.Customer -> {
+                is Customer -> {
                     CustomerListItem(
                         customer = customer,
                         onCustomerSelected = onCustomerSelected
@@ -232,7 +236,7 @@ private fun CustomerListLoaded(
 
 @Composable
 private fun CustomerListItem(
-    customer: CustomerListViewState.CustomerList.Item.Customer,
+    customer: Customer,
     onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
     Column(
@@ -249,17 +253,34 @@ private fun CustomerListItem(
             )
     ) {
         Text(
-            text = "${customer.firstName} ${customer.lastName}",
+            text = "${customer.firstName.highlight(SpanStyle(fontWeight = FontWeight.W900))}" +
+                "${customer.lastName.highlight(SpanStyle(fontWeight = FontWeight.W900))}",
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.W700,
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = customer.email,
+            text = customer.email.highlight(),
             style = MaterialTheme.typography.body2,
         )
     }
 }
+
+@Composable
+private fun Customer.HighlightedText.highlight(style: SpanStyle = SpanStyle(fontWeight = FontWeight.W700)) =
+    buildAnnotatedString {
+        if (start == end) {
+            append(text)
+            return@buildAnnotatedString
+        }
+        append(text.substring(0, start))
+        withStyle(
+            style = style
+        ) {
+            append(text.substring(start, end))
+        }
+        append(text.substring(end, text.length))
+    }
 
 @Composable
 private fun CustomerListEmpty(@StringRes message: Int) {
@@ -389,25 +410,21 @@ fun CustomerListScreenPreview() {
             partialLoading = true,
             body = CustomerListViewState.CustomerList.Loaded(
                 customers = listOf(
-                    CustomerListViewState.CustomerList.Item.Customer(
+                    Customer(
                         remoteId = 1,
-                        firstName = "John",
-                        lastName = "Doe",
-                        email = "John@gmail.com",
-                        username = "JohnDoe",
-
-                        highlightedPeaces = emptyList(),
+                        firstName = Customer.HighlightedText("John", 0, 1),
+                        lastName = Customer.HighlightedText("Doe", 0, 1),
+                        email = Customer.HighlightedText("email@email.com", 3, 10),
+                        username = Customer.HighlightedText("JohnDoe", 0, 6),
 
                         payload = WCCustomerModel(),
                     ),
-                    CustomerListViewState.CustomerList.Item.Customer(
+                    Customer(
                         remoteId = 2,
-                        firstName = "Andrei",
-                        lastName = "K",
-                        email = "blac@aaa.com",
-                        username = "JohnDoe",
-
-                        highlightedPeaces = emptyList(),
+                        firstName = Customer.HighlightedText("Andrei", 0, 1),
+                        lastName = Customer.HighlightedText("Doe", 0, 1),
+                        email = Customer.HighlightedText("blabla@email.com", 3, 10),
+                        username = Customer.HighlightedText("AndreiDoe", 0, 6),
 
                         payload = WCCustomerModel(),
                     ),

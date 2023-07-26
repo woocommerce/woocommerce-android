@@ -7,15 +7,16 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import javax.inject.Inject
 
-class CustomerListViewModelMapper @Inject constructor() {
-    fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel) =
+class CustomerListViewModelMapper @Inject constructor(
+    private val highlighter: CustomerListSearchResultsHighlighter
+) {
+    fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel, search: String) =
         CustomerListViewState.CustomerList.Item.Customer(
             remoteId = wcCustomerModel.remoteCustomerId,
-            firstName = wcCustomerModel.firstName,
-            lastName = wcCustomerModel.lastName,
-            email = wcCustomerModel.email,
-            username = wcCustomerModel.username,
-            highlightedPeaces = emptyList(),
+            firstName = highlighter(wcCustomerModel.firstName, search),
+            lastName = highlighter(wcCustomerModel.lastName, search),
+            email = highlighter(wcCustomerModel.email, search),
+            username = highlighter(wcCustomerModel.username, search),
 
             payload = wcCustomerModel,
         )
