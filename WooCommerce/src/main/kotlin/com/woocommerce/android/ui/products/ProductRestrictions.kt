@@ -9,7 +9,7 @@ interface ProductRestrictions {
     val restrictions: List<ProductRestriction>
     fun isProductRestricted(product: Product): Boolean {
         return restrictions.map { restriction -> restriction(product) }
-            .fold(true) { acc, result -> acc && result }
+            .fold(false) { acc, result -> acc || result }
     }
 }
 
@@ -18,8 +18,8 @@ class CouponsProductRestrictions @Inject constructor() : ProductRestrictions {
     override val restrictions: List<ProductRestriction>
         get() = listOf(
             ProductRestriction.NonPublishedProducts,
-            ProductRestriction.NoVariableProductsWithNoVariations,
-            ProductRestriction.ProductWithPriceSpecified,
+            ProductRestriction.VariableProductsWithNoVariations,
+            ProductRestriction.ProductWithPriceNotSpecified,
         )
 }
 
@@ -28,8 +28,8 @@ class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictio
     override val restrictions: List<ProductRestriction>
         get() = listOf(
             ProductRestriction.NonPublishedProducts,
-            ProductRestriction.NoVariableProductsWithNoVariations,
-            ProductRestriction.ProductWithPriceSpecified,
+            ProductRestriction.VariableProductsWithNoVariations,
+            ProductRestriction.ProductWithPriceNotSpecified,
         )
 }
 
@@ -38,8 +38,8 @@ class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictio
     override val restrictions: List<ProductRestriction>
         get() = listOf(
             ProductRestriction.NonPublishedProducts,
-            ProductRestriction.NoVariableProductsWithNoVariations,
-            ProductRestriction.ProductWithPriceSpecified,
+            ProductRestriction.VariableProductsWithNoVariations,
+            ProductRestriction.ProductWithPriceNotSpecified,
         )
 }
 
@@ -53,16 +53,16 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     }
 
     @Parcelize
-    object NoVariableProductsWithNoVariations : ProductRestriction() {
+    object VariableProductsWithNoVariations : ProductRestriction() {
         override fun invoke(product: Product): Boolean {
-            return !(product.isVariable() && product.numVariations == 0)
+            return (product.isVariable() && product.numVariations == 0)
         }
     }
 
     @Parcelize
-    object ProductWithPriceSpecified : ProductRestriction() {
+    object ProductWithPriceNotSpecified : ProductRestriction() {
         override fun invoke(product: Product): Boolean {
-            return product.price != null
+            return product.price == null
         }
 
     }

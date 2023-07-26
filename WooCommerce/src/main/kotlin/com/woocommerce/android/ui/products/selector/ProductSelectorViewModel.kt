@@ -179,7 +179,7 @@ class ProductSelectorViewModel @Inject constructor(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             ).distinctBy { it }
-        ).filter { product ->
+        ).filterNot { product ->
             productRestrictions.isProductRestricted(product = product)
         }
     }
@@ -196,7 +196,7 @@ class ProductSelectorViewModel @Inject constructor(
             .toMap()
         popularProducts.value = productsMapper.mapProductIdsToProduct(
             topPopularProductsSorted.keys.toList()
-        ).filter { product ->
+        ).filterNot { product ->
             productRestrictions.isProductRestricted(product = product)
         }
     }
