@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,20 +20,18 @@ import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val localeProvider: LocaleProvider,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
+    private val convertToStatsTimeRange: CastGranularityAsStatsTimeRange
 ) {
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
+        val selectionRange = convertToStatsTimeRange(granularity)
         val shouldRefreshRevenue =
             shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
         val shouldRefreshVisitors =
@@ -118,7 +115,7 @@ class GetStats @Inject constructor(
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
     private val StatsGranularity.statsDateRange
-        get() = asRangeSelection(localeProvider.provideLocale()).let {
+        get() = convertToStatsTimeRange(this).let {
             Pair(
                 it.currentRange.start.formatToYYYYmmDDhhmmss(),
                 it.currentRange.end.formatToYYYYmmDDhhmmss()
@@ -160,9 +157,3 @@ class GetStats @Inject constructor(
         ) : LoadStatsResult()
     }
 }
-
-fun StatsGranularity.asRangeSelection(locale: Locale? = null) = StatsTimeRangeSelection.SelectionType.from(this)
-    .generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = locale ?: Locale.getDefault()
-    )
