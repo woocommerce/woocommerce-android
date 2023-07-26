@@ -12,17 +12,6 @@ interface ProductRestrictions {
             .fold(false) { acc, result -> acc || result }
     }
 }
-
-class CouponsProductRestrictions @Inject constructor() : ProductRestrictions {
-
-    override val restrictions: List<ProductRestriction>
-        get() = listOf(
-            ProductRestriction.NonPublishedProducts,
-            ProductRestriction.VariableProductsWithNoVariations,
-            ProductRestriction.ProductWithPriceNotSpecified,
-        )
-}
-
 class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictions {
 
     override val restrictions: List<ProductRestriction>
