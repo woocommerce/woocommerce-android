@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -34,31 +34,29 @@ class GetStats @Inject constructor(
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val selectionType = StatsTimeRangeSelection.SelectionType.from(granularity)
+        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
         val shouldRefreshRevenue =
-            shouldUpdateStats(selectionType, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
         val shouldRefreshVisitors =
-            shouldUpdateStats(selectionType, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
             revenueStats(shouldRefreshRevenue, granularity),
             visitorStats(shouldRefreshVisitors, granularity)
-        ).map { result ->
+        ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    selectionType = selectionType,
+                    rangeSelection = selectionRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
                 )
             }
             if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    selectionType = selectionType,
+                    rangeSelection = selectionRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
                 )
             }
-            result
-        }
-            .flowOn(coroutineDispatchers.computation)
+        }.flowOn(coroutineDispatchers.computation)
     }
 
     private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
@@ -120,25 +118,24 @@ class GetStats @Inject constructor(
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
     private val StatsGranularity.statsDateRange
-        get() = StatsTimeRangeSelection.SelectionType.from(this)
-            .generateSelectionData(
-                calendar = Calendar.getInstance(),
-                locale = localeProvider.provideLocale() ?: Locale.getDefault()
-            ).let {
-                Pair(
-                    it.currentRange.start.formatToYYYYmmDDhhmmss(),
-                    it.currentRange.end.formatToYYYYmmDDhhmmss()
-                )
-            }
+        get() = asRangeSelection(localeProvider.provideLocale()).let {
+            Pair(
+                it.currentRange.start.formatToYYYYmmDDhhmmss(),
+                it.currentRange.end.formatToYYYYmmDDhhmmss()
+            )
+        }
 
     private suspend fun shouldUpdateStats(
-        selectionType: StatsTimeRangeSelection.SelectionType,
+        selectionRange: StatsTimeRangeSelection,
         refresh: Boolean,
         analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
-            .shouldUpdateAnalytics(selectionType = selectionType, analyticData = analyticData)
+            .shouldUpdateAnalytics(
+                rangeSelection = selectionRange,
+                analyticData = analyticData
+            )
             .firstOrNull() ?: true
     }
 
@@ -163,3 +160,9 @@ class GetStats @Inject constructor(
         ) : LoadStatsResult()
     }
 }
+
+fun StatsGranularity.asRangeSelection(locale: Locale? = null) = StatsTimeRangeSelection.SelectionType.from(this)
+    .generateSelectionData(
+        calendar = Calendar.getInstance(),
+        locale = locale ?: Locale.getDefault()
+    )

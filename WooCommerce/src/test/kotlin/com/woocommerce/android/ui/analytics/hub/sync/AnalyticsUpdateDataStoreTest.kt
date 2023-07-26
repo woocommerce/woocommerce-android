@@ -4,8 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
+import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -99,11 +99,11 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val selectionType = StatsTimeRangeSelection.SelectionType.from(WCStatsStore.StatsGranularity.DAYS)
+        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection()
 
         // When
         sut.storeLastAnalyticsUpdate(
-            selectionType = selectionType,
+            rangeSelection = rangeSelection,
             analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
         )
 
@@ -118,12 +118,12 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val selectionType = StatsTimeRangeSelection.SelectionType.from(WCStatsStore.StatsGranularity.DAYS)
+        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection()
         val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.values().size
 
         // When
         sut.storeLastAnalyticsUpdate(
-            selectionType = selectionType,
+            rangeSelection = rangeSelection,
             analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
         )
 

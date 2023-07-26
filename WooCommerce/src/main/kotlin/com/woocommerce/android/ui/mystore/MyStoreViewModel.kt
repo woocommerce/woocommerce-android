@@ -115,7 +115,7 @@ class MyStoreViewModel @Inject constructor(
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
-    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+    private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
@@ -130,13 +130,13 @@ class MyStoreViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
-                refreshTrigger.onStart { emit(RefreshEvent()) }
+                refreshTrigger.onStart { emit(RefreshState()) }
             ) { granularity, refreshEvent ->
                 Pair(granularity, refreshEvent)
             }.collectLatest { pair ->
                 coroutineScope {
                     val granularity = pair.first
-                    val isForceRefresh = pair.second.isForcedRefresh
+                    val isForceRefresh = pair.second.shouldRefresh
                     launch { loadStoreStats(granularity, isForceRefresh) }
                     launch { loadTopPerformersStats(granularity, isForceRefresh) }
                 }
@@ -178,7 +178,7 @@ class MyStoreViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            refreshTrigger.tryEmit(RefreshEvent())
+            refreshTrigger.tryEmit(RefreshState())
         }
     }
 
@@ -193,7 +193,7 @@ class MyStoreViewModel @Inject constructor(
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
-        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+        refreshTrigger.tryEmit(RefreshState(isForced = true))
     }
 
     fun getSelectedSiteName(): String =
@@ -472,12 +472,12 @@ class MyStoreViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
     }
 
-    data class RefreshEvent(private val isForced: Boolean = false) {
+    data class RefreshState(private val isForced: Boolean = false) {
         /**
-         * [isForcedRefresh] will be true only the first time the refresh event is consulted and when
+         * [shouldRefresh] will be true only the first time the refresh event is consulted and when
          * isForced is initialized on true. Once the event is handled the property will change its value to false
          */
-        var isForcedRefresh: Boolean = isForced
+        var shouldRefresh: Boolean = isForced
             private set
             get(): Boolean {
                 val result = field

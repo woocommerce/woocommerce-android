@@ -31,7 +31,8 @@ class GetTopPerformersTest : BaseUnitTest() {
     private val sut = GetTopPerformers(
         statsRepository,
         coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore
+        analyticsUpdateDataStore,
+        mock()
     )
 
     @Test
@@ -98,7 +99,7 @@ class GetTopPerformersTest : BaseUnitTest() {
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
         whenever(
             analyticsUpdateDataStore.shouldUpdateAnalytics(
-                selectionType = any(),
+                rangeSelection = any(),
                 maxOutdatedTime = any(),
                 analyticData = eq(AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS)
             )

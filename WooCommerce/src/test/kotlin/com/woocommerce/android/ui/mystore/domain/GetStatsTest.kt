@@ -4,7 +4,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -184,12 +183,12 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
-                any<StatsTimeRangeSelection.SelectionType>(),
+                any(),
                 any(),
                 eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
             )
             verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
-                any<StatsTimeRangeSelection.SelectionType>(),
+                any(),
                 any(),
                 eq(AnalyticsUpdateDataStore.AnalyticData.VISITORS)
             )
@@ -203,7 +202,7 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
-                .shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any(), any())
+                .shouldUpdateAnalytics(any(), any(), any())
         }
 
     @Test
@@ -215,7 +214,7 @@ class GetStatsTest : BaseUnitTest() {
 
             verify(analyticsUpdateDataStore)
                 .storeLastAnalyticsUpdate(
-                    any<StatsTimeRangeSelection.SelectionType>(),
+                    any(),
                     eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
                 )
         }
@@ -229,7 +228,7 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
-                any<StatsTimeRangeSelection.SelectionType>(),
+                any(),
                 eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
             )
         }
@@ -244,7 +243,7 @@ class GetStatsTest : BaseUnitTest() {
 
             verify(analyticsUpdateDataStore, never())
                 .storeLastAnalyticsUpdate(
-                    any<StatsTimeRangeSelection.SelectionType>(),
+                    any(),
                     eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
                 )
         }
@@ -259,7 +258,7 @@ class GetStatsTest : BaseUnitTest() {
 
             verify(analyticsUpdateDataStore, never())
                 .storeLastAnalyticsUpdate(
-                    any<StatsTimeRangeSelection.SelectionType>(),
+                    any(),
                     eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
                 )
         }
@@ -290,7 +289,7 @@ class GetStatsTest : BaseUnitTest() {
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
         whenever(
             analyticsUpdateDataStore.shouldUpdateAnalytics(
-                selectionType = any(),
+                rangeSelection = any(),
                 maxOutdatedTime = any(),
                 analyticData = any()
             )
