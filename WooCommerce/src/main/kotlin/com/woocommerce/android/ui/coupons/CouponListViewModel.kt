@@ -163,7 +163,7 @@ class CouponListViewModel @Inject constructor(
     }
 
     fun onAddCouponClicked() {
-        triggerEvent(NavigateToAddCouponEvent)
+        triggerEvent(NavigateToCouponTypePicker)
     }
 
     data class CouponListState(
@@ -186,5 +186,5 @@ class CouponListViewModel @Inject constructor(
     }
 
     data class NavigateToCouponDetailsEvent(val couponId: Long) : MultiLiveEvent.Event()
-    object NavigateToAddCouponEvent : MultiLiveEvent.Event()
+    object NavigateToCouponTypePicker : MultiLiveEvent.Event()
 }

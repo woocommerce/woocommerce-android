@@ -28,6 +28,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -54,7 +55,8 @@ class EditCouponViewModel @Inject constructor(
     private val couponRepository: CouponRepository,
     private val couponUtils: CouponUtils,
     private val parameterRepository: ParameterRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
@@ -67,7 +69,7 @@ class EditCouponViewModel @Inject constructor(
         with(mode.value) {
             when (this) {
                 is Mode.Edit -> couponRepository.observeCoupon(couponId).first()
-                is Mode.Add -> Coupon.EMPTY
+                is Mode.Create -> Coupon.EMPTY.copy(type = type)
             }
         }
     }
@@ -85,7 +87,7 @@ class EditCouponViewModel @Inject constructor(
     ) { coupon, isSaving ->
         ViewState(
             couponDraft = coupon,
-            localizedType = coupon.type?.let { couponUtils.localizeType(it) },
+            screenTitle = getScreenTitle(coupon),
             amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
             hasChanges = !coupon.isSameCoupon(storedCoupon.await()),
             isSaving = isSaving,
@@ -93,6 +95,20 @@ class EditCouponViewModel @Inject constructor(
         )
     }
         .asLiveData()
+
+    private fun getScreenTitle(coupon: Coupon): String {
+        val localizedType = coupon.type?.let { couponUtils.localizeType(it) }
+        return when (mode.value) {
+            is Mode.Edit -> getEditModeScreenTitle(localizedType)
+            is Mode.Create -> getCreateModeScreenTitle(localizedType)
+        }
+    }
+
+    private fun getCreateModeScreenTitle(localizedType: String?) =
+        localizedType ?: resourceProvider.getString(R.string.coupon_create_screen_title_default)
+
+    private fun getEditModeScreenTitle(localizedType: String?) =
+        localizedType ?: resourceProvider.getString(R.string.coupon_edit_screen_title_default)
 
     init {
         if (couponDraft.value == null) {
@@ -217,7 +233,7 @@ class EditCouponViewModel @Inject constructor(
 
         when (mode.value) {
             is Mode.Edit -> updateCoupon(newCoupon)
-            is Mode.Add -> addCoupon(newCoupon)
+            is Mode.Create -> addCoupon(newCoupon)
         }
 
         isSaving.value = false
@@ -225,7 +241,7 @@ class EditCouponViewModel @Inject constructor(
 
     private fun getSaveButtonText(): Int = when (mode.value) {
         is Mode.Edit -> R.string.coupon_edit_save_button
-        is Mode.Add -> R.string.coupon_create_save_button
+        is Mode.Create -> R.string.coupon_create_save_button
     }
 
     private suspend fun addCoupon(newCoupon: Coupon) {
@@ -302,17 +318,17 @@ class EditCouponViewModel @Inject constructor(
 
     data class ViewState(
         val couponDraft: Coupon,
-        val localizedType: String?,
         val amountUnit: String,
         val hasChanges: Boolean,
         val isSaving: Boolean,
         @StringRes val saveButtonText: Int,
+        val screenTitle: String,
     )
 
     @Parcelize
     sealed class Mode : Parcelable {
         @Parcelize
-        object Add : Mode()
+        data class Create(val type: Coupon.Type) : Mode()
 
         @Parcelize
         data class Edit(val couponId: Long) : Mode()
