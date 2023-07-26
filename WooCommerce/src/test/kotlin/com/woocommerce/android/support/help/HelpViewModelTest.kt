@@ -8,7 +8,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -124,7 +123,6 @@ class HelpViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            whenever(wooStore.getSitePlugin(any(), any())).thenReturn(null)
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -145,9 +143,11 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wcpay installed, when on contact clicked, then event triggered with wcpay tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(mock())
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(buildPluginModel("woocommerce-payments", false))
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -168,12 +168,11 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wcpay installed and act, when on contact clicked, then event triggered wcpay tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            val wcpayPluginModel = mock<SitePluginModel> {
-                on { isActive }.thenReturn(true)
-            }
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(wcpayPluginModel)
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(buildPluginModel("woocommerce-payments", true))
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -194,9 +193,11 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with stripe installed, when on contact clicked, then event triggered with stripe tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(mock())
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(buildPluginModel("woocommerce-gateway-stripe", false))
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -217,12 +218,11 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with stripe ins and act, when on contact clicked, then event triggered with tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            val stripePluginModel = mock<SitePluginModel> {
-                on { isActive }.thenReturn(true)
-            }
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(stripePluginModel)
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(buildPluginModel("woocommerce-gateway-stripe", true))
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -243,13 +243,14 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc and stripe installed, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            val wcpayPluginModel = mock<SitePluginModel>()
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(wcpayPluginModel)
-            val stripePluginModel = mock<SitePluginModel>()
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(stripePluginModel)
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildPluginModel("woocommerce-payments", false),
+                        buildPluginModel("woocommerce-gateway-stripe", false),
+                    )
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -270,15 +271,14 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc inst and act and stripe ins, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            val wcpayPluginModel = mock<SitePluginModel> {
-                on { isActive }.thenReturn(true)
-            }
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(wcpayPluginModel)
-            val stripePluginModel = mock<SitePluginModel>()
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(stripePluginModel)
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildPluginModel("woocommerce-payments", true),
+                        buildPluginModel("woocommerce-gateway-stripe", false),
+                    )
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -299,15 +299,14 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc inst and stripe ins and act, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            val wcpayPluginModel = mock<SitePluginModel>()
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(wcpayPluginModel)
-            val stripePluginModel = mock<SitePluginModel> {
-                on { isActive }.thenReturn(true)
-            }
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(stripePluginModel)
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildPluginModel("woocommerce-payments", false),
+                        buildPluginModel("woocommerce-gateway-stripe", true),
+                    )
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -328,17 +327,14 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc and stripe inst and act, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
-            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
-            val wcpayPluginModel = mock<SitePluginModel> {
-                on { isActive }.thenReturn(true)
-            }
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(wcpayPluginModel)
-            val stripePluginModel = mock<SitePluginModel> {
-                on { isActive }.thenReturn(true)
-            }
-            whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(stripePluginModel)
+            whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildPluginModel("woocommerce-payments", true),
+                        buildPluginModel("woocommerce-gateway-stripe", true),
+                    )
+                )
+            )
 
             // WHEN
             viewModel.contactSupport(TicketType.MobileApp)
@@ -353,5 +349,11 @@ class HelpViewModelTest : BaseUnitTest() {
                     )
                 )
             )
+        }
+
+    private fun buildPluginModel(name: String, isActive: Boolean) =
+        SitePluginModel().apply {
+            this.setIsActive(isActive)
+            this.name = name
         }
 }
