@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +30,8 @@ class GetTopPerformersTest : BaseUnitTest() {
     private val sut = GetTopPerformers(
         statsRepository,
         coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore
+        analyticsUpdateDataStore,
+        mock()
     )
 
     @Test
@@ -96,7 +96,7 @@ class GetTopPerformersTest : BaseUnitTest() {
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
-        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any<StatsTimeRangeSelection.SelectionType>(), any()))
+        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any(), any()))
             .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 
