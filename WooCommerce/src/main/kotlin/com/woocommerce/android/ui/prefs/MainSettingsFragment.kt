@@ -231,17 +231,17 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupApplicationPasswordsSettings()
         presenter.setupOnboardingListVisibilitySetting()
 
-        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
-            binding.optionDomain.isVisible ||
-            binding.optionStoreOnboardingListVisibility.isVisible ||
-            binding.shippingClasses.isVisible
-
         binding.shippingClasses.apply {
             isVisible = FeatureFlag.SHIPPING_ZONES.isEnabled()
             setOnClickListener {
                 openReactNative()
             }
         }
+
+        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
+            binding.optionDomain.isVisible ||
+            binding.optionStoreOnboardingListVisibility.isVisible ||
+            binding.shippingClasses.isVisible
     }
 
     private fun showDomainDashboard() {
