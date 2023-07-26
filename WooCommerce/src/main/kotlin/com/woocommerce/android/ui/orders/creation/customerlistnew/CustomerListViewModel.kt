@@ -76,13 +76,7 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
 
-        launch {
-            if (query.isNotEmpty() || isAdvancedSearchSupported()) {
-                loadAfterSearchChanged()
-            } else {
-                _viewState.value = advancedSearchNotSupportedInitState()
-            }
-        }
+        loadIfNeededAfterSearchChanged()
     }
 
     fun onSearchTypeChanged(searchModeId: Int) {
@@ -94,7 +88,7 @@ class CustomerListViewModel @Inject constructor(
             )
         }
 
-        if (searchQuery.isNotEmpty()) loadAfterSearchChanged()
+        if (searchQuery.isNotEmpty()) loadIfNeededAfterSearchChanged()
     }
 
     fun onNavigateBack() {
@@ -109,9 +103,15 @@ class CustomerListViewModel @Inject constructor(
         launch { loadCustomers(paginationState.currentPage + 1) }
     }
 
-    private fun loadAfterSearchChanged() {
+    private fun loadIfNeededAfterSearchChanged() {
         loadingFirstPageJob?.cancel()
-        loadingFirstPageJob = launch { loadCustomers(1) }
+        loadingFirstPageJob = launch {
+            if (searchQuery.isNotEmpty() || isAdvancedSearchSupported()) {
+                loadCustomers(1)
+            } else {
+                _viewState.value = advancedSearchNotSupportedInitState()
+            }
+        }
     }
 
     private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
