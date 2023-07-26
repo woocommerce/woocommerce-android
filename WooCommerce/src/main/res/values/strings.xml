@@ -3438,4 +3438,9 @@
     <string name="highlights_tooltip_message_hint">Tooltip message. \n This can be multiple lines.</string>
     <string name="highlights_tooltip_button_hint">Button text</string>
 
+    <!--
+    Shipping zones
+    -->
+    <string name="shipping_classes_zones">Shipping classes &amp; zones></string>
+
 </resources>
