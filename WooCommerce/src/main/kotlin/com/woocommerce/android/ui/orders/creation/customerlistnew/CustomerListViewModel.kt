@@ -246,7 +246,7 @@ class CustomerListViewModel @Inject constructor(
 
     private suspend fun getSearchParam() =
         if (isAdvancedSearchSupported()) {
-            "all"
+            SEARCH_MODE_VALUE_ALL
         } else {
             _viewState.value!!.searchModes.first { it.isSelected }.searchParam
         }
@@ -275,6 +275,8 @@ class CustomerListViewModel @Inject constructor(
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
         private const val SEARCH_MODE_KEY = "search_mode"
+
+        private const val SEARCH_MODE_VALUE_ALL = "all"
 
         private const val SEARCH_DELAY_MS = 500L
 
