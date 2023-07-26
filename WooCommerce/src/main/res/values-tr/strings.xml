@@ -138,7 +138,6 @@ Language: tr
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Değişken ürünü doğrudan ekleyemezsiniz. Lütfen belirli bir varyasyon seçin</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Ürün bulunamadı. Yeni siparişe eklenemiyor</string>
     <string name="order_list_barcode_scanning_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
     <string name="scan_barcode">Barkodu Tarayın</string>
     <string name="shipping_notice_banner_instructions_content">Şu anda Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğeyi net bir şekilde açıklamanız gerekiyor. Örneğin, kıyafet gönderiyorsanız, açıklamanın kabul edilebilir olması için bunun ne tür bir kıyafet olduğunu (ör. erkek gömleği, kadın yeleği, erkek ceketi) belirtmeniz gerekiyor. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>

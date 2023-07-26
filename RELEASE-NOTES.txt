@@ -3,6 +3,7 @@
 -----
 - [*] [Internal] Changed the way how we get WCPay and Stripe plugin's info from the API response [https://github.com/woocommerce/woocommerce-android/pull/9460]
 
+
 14.6
 -----
 - [*] [Internal] All payment methods are disabled during Tap To Pay testing except TTP itself [https://github.com/woocommerce/woocommerce-android/pull/9428]
