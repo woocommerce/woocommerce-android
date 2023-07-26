@@ -34,7 +34,7 @@ class GetStats @Inject constructor(
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val selectionRange = granularity.asRangeSelection
+        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
         val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
         return merge(
             hasOrders(),
@@ -105,15 +105,8 @@ class GetStats @Inject constructor(
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
-    private val StatsGranularity.asRangeSelection
-        get() = StatsTimeRangeSelection.SelectionType.from(this)
-            .generateSelectionData(
-                calendar = Calendar.getInstance(),
-                locale = localeProvider.provideLocale() ?: Locale.getDefault()
-            )
-
     private val StatsGranularity.statsDateRange
-        get() = asRangeSelection.let {
+        get() = asRangeSelection(localeProvider.provideLocale()).let {
             Pair(
                 it.currentRange.start.formatToYYYYmmDDhhmmss(),
                 it.currentRange.end.formatToYYYYmmDDhhmmss()
@@ -151,3 +144,9 @@ class GetStats @Inject constructor(
         ) : LoadStatsResult()
     }
 }
+
+fun StatsGranularity.asRangeSelection(locale: Locale? = null) = StatsTimeRangeSelection.SelectionType.from(this)
+    .generateSelectionData(
+        calendar = Calendar.getInstance(),
+        locale = locale ?: Locale.getDefault()
+    )
