@@ -8,7 +8,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 data class CustomerListViewState(
-    @StringRes val searchHint: Int,
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
     val partialLoading: Boolean = false,

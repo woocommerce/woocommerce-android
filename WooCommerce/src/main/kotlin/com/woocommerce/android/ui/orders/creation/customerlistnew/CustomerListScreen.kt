@@ -65,7 +65,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(id = R.string.order_creation_add_customer_existing_customer)) },
+                    title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
                     navigationIcon = {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(
@@ -110,7 +110,7 @@ fun CustomerListScreen(
     ) {
         SearchLayoutWithParams(
             state = SearchLayoutWithParamsState(
-                hint = state.searchHint,
+                hint = R.string.order_creation_customer_search_hint,
                 searchQuery = state.searchQuery,
                 isSearchFocused = false,
                 areSearchTypesAlwaysVisible = true,
@@ -368,7 +368,6 @@ fun CustomerListScreenPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
-            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
@@ -424,7 +423,6 @@ fun CustomerListScreenEmptyPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
-            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
@@ -458,7 +456,6 @@ fun CustomerListScreenErrorPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
-            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
@@ -492,7 +489,6 @@ fun CustomerListScreenLoadingPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
-            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(

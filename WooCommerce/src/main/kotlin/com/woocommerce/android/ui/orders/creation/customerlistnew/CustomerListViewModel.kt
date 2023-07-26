@@ -252,7 +252,6 @@ class CustomerListViewModel @Inject constructor(
         }
 
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
-        searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Empty(
@@ -261,7 +260,6 @@ class CustomerListViewModel @Inject constructor(
     )
 
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
-        searchHint = R.string.order_creation_customer_filter_hint,
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
