@@ -70,7 +70,9 @@
                 android:id="@+id/shipping_classes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:optionTitle="@string/shipping_classes_zones" />
+                android:visibility="gone"
+                app:optionTitle="@string/shipping_classes_zones"
+                tools:visibility="visible" />
 
             <!--
                 Store onboarding list visibility
