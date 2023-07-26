@@ -65,7 +65,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(id = R.string.order_creation_fragment_title)) },
+                    title = { Text(stringResource(id = R.string.order_creation_add_customer_existing_customer)) },
                     navigationIcon = {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(

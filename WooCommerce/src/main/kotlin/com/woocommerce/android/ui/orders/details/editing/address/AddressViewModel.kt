@@ -188,6 +188,10 @@ class AddressViewModel @Inject constructor(
         triggerEvent(SearchCustomers)
     }
 
+    fun onDeleteCustomerClicked() {
+        triggerEvent(DeleteCustomer)
+    }
+
     fun onDoneSelected(addDifferentShippingChecked: Boolean? = null) {
         // order creation/editing will fail if billing email address is invalid
         viewState.addressSelectionStates.get(AddressType.BILLING)?.address?.email?.let { billingEmail ->
@@ -305,6 +309,8 @@ class AddressViewModel @Inject constructor(
         val customerId: Long?,
         val addresses: Map<AddressType, Address>
     ) : MultiLiveEvent.Event()
+
+    object DeleteCustomer : MultiLiveEvent.Event()
 
     enum class Field {
         FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip, Email
