@@ -116,7 +116,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
         val states = viewModel.viewState.captureValues()
 
         // THEN
-        assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_filter_hint)
         assertThat(states.last().searchModes).isEqualTo(searchModes)
         assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
     }
@@ -145,7 +144,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any()
             )
 
-            assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
             assertThat(states.last().searchModes).isEqualTo(searchModes)
             assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message).isEqualTo(
                 R.string.order_creation_customer_search_empty_on_old_version_wcpay
@@ -378,8 +376,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(customerListRepository, times(2)).searchCustomerListWithEmail(
-                any(),
-                any(),
+                eq(searchQuery),
+                eq("all"),
                 any(),
                 any()
             )
@@ -632,8 +630,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
             viewModel.onCustomerSelected(wcCustomer)
 
             // THEN
-            assertThat(states[0].partialLoading).isFalse()
-            assertThat(states[1].partialLoading).isTrue()
+            assertThat(states[0].partialLoading).isFalse
+            assertThat(states[1].partialLoading).isTrue
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         }
 

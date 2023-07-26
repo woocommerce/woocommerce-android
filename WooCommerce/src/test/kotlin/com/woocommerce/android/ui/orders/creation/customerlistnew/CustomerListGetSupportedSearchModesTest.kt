@@ -43,7 +43,7 @@ class CustomerListGetSupportedSearchModesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given advanced search supported, when action invoked, then 4 search modes returned`() = testBlocking {
+    fun `given advanced search supported, when action invoked, then 0 search modes returned`() = testBlocking {
         // GIVEN
         val isAdvancedSearchSupported = true
 
@@ -51,33 +51,6 @@ class CustomerListGetSupportedSearchModesTest : BaseUnitTest() {
         val result = action(isAdvancedSearchSupported)
 
         // THEN
-        assertThat(result[0]).isEqualTo(
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_everything,
-                searchParam = "all",
-                isSelected = false,
-            )
-        )
-        assertThat(result[1]).isEqualTo(
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_name,
-                searchParam = "name",
-                isSelected = false,
-            )
-        )
-        assertThat(result[2]).isEqualTo(
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_email,
-                searchParam = "email",
-                isSelected = false,
-            )
-        )
-        assertThat(result[3]).isEqualTo(
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_username,
-                searchParam = "username",
-                isSelected = false,
-            )
-        )
+        assertThat(result).isEmpty()
     }
 }
