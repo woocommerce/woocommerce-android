@@ -42,7 +42,7 @@ class GetTopPerformers @Inject constructor(
             .let { result ->
                 if (result.isSuccess && isForcedRefresh) {
                     analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                        selectionRange = selectionRange,
+                        rangeSelection = selectionRange,
                         analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
                     )
                 }
@@ -57,7 +57,7 @@ class GetTopPerformers @Inject constructor(
         if (refresh) return true
         return analyticsUpdateDataStore
             .shouldUpdateAnalytics(
-                selectionRange = selectionRange,
+                rangeSelection = selectionRange,
                 analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
             )
             .firstOrNull() ?: true

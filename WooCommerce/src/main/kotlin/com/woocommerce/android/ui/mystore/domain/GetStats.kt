@@ -46,13 +46,13 @@ class GetStats @Inject constructor(
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    selectionType = selectionRange,
+                    rangeSelection = selectionRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
                 )
             }
             if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    selectionType = selectionRange,
+                    rangeSelection = selectionRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
                 )
             }
@@ -127,11 +127,15 @@ class GetStats @Inject constructor(
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,
-        refresh: Boolean
+        refresh: Boolean,
+        analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
-            .shouldUpdateAnalytics(selectionRange)
+            .shouldUpdateAnalytics(
+                rangeSelection = selectionRange,
+                analyticData = analyticData
+            )
             .firstOrNull() ?: true
     }
 

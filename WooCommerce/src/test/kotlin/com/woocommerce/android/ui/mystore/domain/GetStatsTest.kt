@@ -289,7 +289,7 @@ class GetStatsTest : BaseUnitTest() {
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
         whenever(
             analyticsUpdateDataStore.shouldUpdateAnalytics(
-                selectionType = any(),
+                rangeSelection = any(),
                 maxOutdatedTime = any(),
                 analyticData = any()
             )
