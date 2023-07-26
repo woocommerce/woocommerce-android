@@ -8,6 +8,7 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 class ProductRestrictionsTest : BaseUnitTest() {
 
+    //region order creation
     @Test
     fun `given draft product, when order creation products restriction, then the product is restricted`() {
         val product = ProductTestUtils.generateProduct(
@@ -47,4 +48,5 @@ class ProductRestrictionsTest : BaseUnitTest() {
             sut.isProductRestricted(product)
         }
     }
+    //endregion
 }
