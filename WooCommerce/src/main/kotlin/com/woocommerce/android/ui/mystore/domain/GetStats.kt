@@ -27,29 +27,30 @@ class GetStats @Inject constructor(
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
-    private val convertToStatsTimeRange: CastGranularityAsStatsTimeRange
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
-    suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val selectionRange = convertToStatsTimeRange(granularity)
+    suspend operator fun invoke(
+        refresh: Boolean,
+        timeRangeSelection: StatsTimeRangeSelection
+    ): Flow<LoadStatsResult> {
         val shouldRefreshRevenue =
-            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            shouldUpdateStats(timeRangeSelection, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
         val shouldRefreshVisitors =
-            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+            shouldUpdateStats(timeRangeSelection, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(shouldRefreshRevenue, granularity),
-            visitorStats(shouldRefreshVisitors, granularity)
+            revenueStats(shouldRefreshRevenue, timeRangeSelection),
+            visitorStats(shouldRefreshVisitors, timeRangeSelection)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection = selectionRange,
+                    rangeSelection = timeRangeSelection,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
                 )
             }
             if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection = selectionRange,
+                    rangeSelection = timeRangeSelection,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
                 )
             }
@@ -66,8 +67,11 @@ class GetStats @Inject constructor(
                 }
             }
 
-    private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val (startDate, endDate) = granularity.statsDateRange
+    private suspend fun revenueStats(
+        forceRefresh: Boolean,
+        timeRangeSelection: StatsTimeRangeSelection
+    ): Flow<LoadStatsResult> {
+        val (startDate, endDate) = timeRangeSelection.formattedDateRanges
         return statsRepository.fetchRevenueStats(
             granularity,
             forceRefresh,
@@ -91,8 +95,11 @@ class GetStats @Inject constructor(
         }
     }
 
-    private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val (startDate, endDate) = granularity.statsDateRange
+    private suspend fun visitorStats(
+        forceRefresh: Boolean,
+        timeRangeSelection: StatsTimeRangeSelection
+    ): Flow<LoadStatsResult> {
+        val (startDate, endDate) = timeRangeSelection.formattedDateRanges
         // Visitor stats are only available for Jetpack connected sites
         return when (selectedSite.connectionType) {
             SiteConnectionType.Jetpack -> {
@@ -114,11 +121,11 @@ class GetStats @Inject constructor(
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
-    private val StatsGranularity.statsDateRange
-        get() = convertToStatsTimeRange(this).let {
+    private val StatsTimeRangeSelection.formattedDateRanges: Pair<String, String>
+        get() = this.currentRange.let {
             Pair(
-                it.currentRange.start.formatToYYYYmmDDhhmmss(),
-                it.currentRange.end.formatToYYYYmmDDhhmmss()
+                it.start.formatToYYYYmmDDhhmmss(),
+                it.end.formatToYYYYmmDDhhmmss()
             )
         }
 
