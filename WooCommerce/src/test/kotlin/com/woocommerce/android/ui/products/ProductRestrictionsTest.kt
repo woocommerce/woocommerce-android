@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 class ProductRestrictionsTest : BaseUnitTest() {
 
     @Test
-    fun `given draft product, when order creation products restriction, then return true`() {
+    fun `given draft product, when order creation products restriction, then the product is restricted`() {
         val product = ProductTestUtils.generateProduct(
             customStatus = ProductStatus.DRAFT.name
         )
