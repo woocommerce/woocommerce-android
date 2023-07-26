@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.model.Coupon.CouponRestrictions
+import com.woocommerce.android.ui.products.ProductRestriction
+import com.woocommerce.android.ui.products.ProductRestrictions
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
@@ -14,7 +16,7 @@ sealed class EditCouponNavigationTarget : Event() {
 
     data class EditIncludedProducts(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        val restrictions: List<ProductSelectorViewModel.ProductSelectorRestriction>
+        val restrictions: List<ProductRestriction>
     ) : EditCouponNavigationTarget()
 
     data class EditIncludedProductCategories(val categoryIds: List<Long>) :

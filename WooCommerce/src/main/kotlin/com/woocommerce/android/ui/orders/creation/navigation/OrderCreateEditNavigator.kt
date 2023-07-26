@@ -37,7 +37,6 @@ object OrderCreateEditNavigator {
             is SelectItems ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
                     selectedItems = target.selectedItems.toTypedArray(),
-                    restrictions = target.restrictions.toTypedArray(),
                     productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
                 )
             is EditFee ->
