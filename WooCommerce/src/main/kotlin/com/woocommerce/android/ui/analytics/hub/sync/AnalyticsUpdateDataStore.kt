@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
@@ -60,20 +61,19 @@ class AnalyticsUpdateDataStore @Inject constructor(
 
     fun observeLastUpdate(
         selectionType: StatsTimeRangeSelection.SelectionType,
-        vararg analyticData: AnalyticData
+        analyticData: List<AnalyticData>
     ): Flow<Long?> {
         val timestampKeys = analyticData.map { data ->
             getTimeStampKey(selectionType.identifier, data)
         }
         return observeLastUpdate(timestampKeys)
     }
+
     fun observeLastUpdate(
-        rangeSelection: StatsTimeRangeSelection,
-        vararg analyticData: AnalyticData
+        selectionType: StatsTimeRangeSelection.SelectionType,
+        analyticData: AnalyticData
     ): Flow<Long?> {
-        val timestampKeys = analyticData.map { data ->
-            getTimeStampKey(rangeSelection.identifier, data)
-        }
+        val timestampKeys = getTimeStampKey(selectionType.identifier, analyticData)
         return observeLastUpdate(timestampKeys)
     }
 
@@ -84,13 +84,12 @@ class AnalyticsUpdateDataStore @Inject constructor(
             dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
         }
         return combine(flows) { lastUpdateMillisArray -> lastUpdateMillisArray.filterNotNull() }
-            .map { notNullValues ->
-                if (notNullValues.size == timestampKeys.size) {
-                    notNullValues.min()
-                } else {
-                    null
-                }
-            }
+            .filter { notNullValues -> notNullValues.size == timestampKeys.size }
+            .map { lastUpdateValues -> lastUpdateValues.min() }
+    }
+
+    private fun observeLastUpdate(timestampKey: String): Flow<Long?> {
+        return dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
     }
 
     private fun shouldUpdateAnalytics(
