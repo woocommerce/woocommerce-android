@@ -114,11 +114,11 @@ class GetStats @Inject constructor(
 
     private val StatsGranularity.statsDateRange
         get() = asRangeSelection.let {
-                Pair(
-                    it.currentRange.start.formatToYYYYmmDDhhmmss(),
-                    it.currentRange.end.formatToYYYYmmDDhhmmss()
-                )
-            }
+            Pair(
+                it.currentRange.start.formatToYYYYmmDDhhmmss(),
+                it.currentRange.end.formatToYYYYmmDDhhmmss()
+            )
+        }
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,
