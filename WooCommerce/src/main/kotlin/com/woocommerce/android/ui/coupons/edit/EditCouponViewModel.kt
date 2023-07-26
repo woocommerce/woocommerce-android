@@ -89,7 +89,7 @@ class EditCouponViewModel @Inject constructor(
             amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
             hasChanges = !coupon.isSameCoupon(storedCoupon.await()),
             isSaving = isSaving,
-            saveButtonText = getSateButtonText()
+            saveButtonText = getSaveButtonText()
         )
     }
         .asLiveData()
@@ -223,7 +223,7 @@ class EditCouponViewModel @Inject constructor(
         isSaving.value = false
     }
 
-    private fun getSateButtonText(): Int = when (mode.value) {
+    private fun getSaveButtonText(): Int = when (mode.value) {
         is Mode.Edit -> R.string.coupon_edit_save_button
         is Mode.Add -> R.string.coupon_create_save_button
     }
