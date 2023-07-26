@@ -160,16 +160,17 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                 )
 
                 val state = (viewModel.viewState.value as ViewState)
+                var stockQuantity = remember {
+                    mutableStateOf(state.currentScannedProduct?.stockQuantity)
+                }
 
                 LaunchedEffect(key1 = state.currentScannedProduct?.name) {
                     scope.launch {
+                        stockQuantity.value = state.currentScannedProduct?.stockQuantity
                         modalSheetState.show()
                     }
                 }
                 if (state.currentScannedProduct?.name != null) {
-                    var stockQuantity = remember {
-                        mutableStateOf(state.currentScannedProduct.stockQuantity)
-                    }
                     ModalBottomSheetLayout(
                         sheetState = modalSheetState,
                         sheetContent = {
@@ -206,7 +207,7 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
                                             .padding(16.dp),
-                                        onClick = { stockQuantity.value-- }
+                                        onClick = { stockQuantity.value = stockQuantity.value!! - 1 }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
@@ -223,7 +224,7 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
                                             .padding(16.dp),
-                                        onClick = { stockQuantity.value++ }
+                                        onClick = { stockQuantity.value = stockQuantity.value!! + 1 }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Add,
@@ -237,7 +238,7 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                                         .padding(16.dp)
                                         .align(Alignment.CenterHorizontally),
                                     onClick = {
-                                        viewModel.updateProduct(stockQuantity.value.toInt())
+                                        viewModel.updateProduct(stockQuantity.value?.toInt()!!)
                                     }
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
