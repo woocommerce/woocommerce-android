@@ -394,6 +394,9 @@ fun CustomerListScreenPreview() {
                         firstName = "John",
                         lastName = "Doe",
                         email = "John@gmail.com",
+                        username = "JohnDoe",
+
+                        highlightedPeaces = emptyList(),
 
                         payload = WCCustomerModel(),
                     ),
@@ -402,6 +405,9 @@ fun CustomerListScreenPreview() {
                         firstName = "Andrei",
                         lastName = "K",
                         email = "blac@aaa.com",
+                        username = "JohnDoe",
+
+                        highlightedPeaces = emptyList(),
 
                         payload = WCCustomerModel(),
                     ),

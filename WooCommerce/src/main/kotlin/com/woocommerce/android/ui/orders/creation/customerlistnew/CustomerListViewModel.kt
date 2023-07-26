@@ -25,6 +25,7 @@ class CustomerListViewModel @Inject constructor(
     private val mapper: CustomerListViewModelMapper,
     private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported,
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
+    private val getHighlightedPeaces: CustomerListGetHighlightedPeaces,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     @Volatile
@@ -182,7 +183,7 @@ class CustomerListViewModel @Inject constructor(
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
                 customers = currentBody.customers + customers.map {
-                    mapper.mapFromWCCustomerToItem(it)
+                    it.mapAndHighlight(searchQuery)
                 },
                 shouldResetScrollPosition = false,
             )
@@ -197,9 +198,7 @@ class CustomerListViewModel @Inject constructor(
         } else {
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Loaded(
-                    customers = customers.map {
-                        mapper.mapFromWCCustomerToItem(it)
-                    },
+                    customers = customers.map { it.mapAndHighlight(searchQuery) },
                     shouldResetScrollPosition = true,
                 )
             )
@@ -270,6 +269,11 @@ class CustomerListViewModel @Inject constructor(
             isEmpty() -> emptyList()
             searchTypeId == null -> listOf(first().copy(isSelected = true)) + drop(1)
             else -> map { it.copy(isSelected = it.labelResId == searchTypeId) }
+        }
+
+    private fun WCCustomerModel.mapAndHighlight(query: String) =
+        mapper.mapFromWCCustomerToItem(this).apply {
+            copy(highlightedPeaces = getHighlightedPeaces(this, query))
         }
 
     private companion object {

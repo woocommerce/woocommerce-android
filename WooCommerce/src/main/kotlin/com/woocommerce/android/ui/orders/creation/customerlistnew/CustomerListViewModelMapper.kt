@@ -14,6 +14,8 @@ class CustomerListViewModelMapper @Inject constructor() {
             firstName = wcCustomerModel.firstName,
             lastName = wcCustomerModel.lastName,
             email = wcCustomerModel.email,
+            username = wcCustomerModel.username,
+            highlightedPeaces = emptyList(),
 
             payload = wcCustomerModel,
         )
