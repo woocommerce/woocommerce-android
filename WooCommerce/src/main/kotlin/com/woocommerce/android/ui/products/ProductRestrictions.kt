@@ -13,7 +13,6 @@ interface ProductRestrictions {
     }
 }
 class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictions {
-
     override val restrictions: List<ProductRestriction>
         get() = listOf(
             ProductRestriction.NonPublishedProducts,
@@ -23,7 +22,6 @@ class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictio
 }
 
 class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictions {
-
     override val restrictions: List<ProductRestriction>
         get() = listOf(
             ProductRestriction.NonPublishedProducts,
