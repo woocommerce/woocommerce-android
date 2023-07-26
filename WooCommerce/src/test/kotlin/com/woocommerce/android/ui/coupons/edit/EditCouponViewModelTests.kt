@@ -46,6 +46,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: EditCouponViewModel
 
     private var storedCoupon = CouponTestUtils.generateTestCoupon(COUPON_ID)
+    private var emptyCoupon = CouponTestUtils.generateEmptyCoupon()
 
     private val couponRepository: CouponRepository = mock {
         on { observeCoupon(COUPON_ID) } doAnswer {
@@ -101,6 +102,34 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
         assertThat(state.couponDraft).isEqualTo(storedCoupon)
         assertThat(state.hasChanges).isEqualTo(false)
+    }
+
+    @Test
+    fun `when screen is opened in add new mode, then load empty coupon`() = testBlocking {
+        setup(mode = Mode.Add)
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.couponDraft).isEqualTo(emptyCoupon)
+        assertThat(state.hasChanges).isEqualTo(false)
+    }
+
+    @Test
+    fun `when screen is opened in add new mode, then save button should have correct text`() = testBlocking {
+        setup(mode = Mode.Add)
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.saveButtonText).isEqualTo(R.string.coupon_create_save_button)
+    }
+
+    @Test
+    fun `when screen is opened in edit mode, then save button should have correct text`() = testBlocking {
+        setup()
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.saveButtonText).isEqualTo(R.string.coupon_edit_save_button)
     }
 
     @Test
