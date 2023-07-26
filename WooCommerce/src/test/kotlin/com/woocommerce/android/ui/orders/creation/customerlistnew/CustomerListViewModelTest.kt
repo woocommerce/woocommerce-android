@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
@@ -59,6 +61,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
             )
         )
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
@@ -148,7 +151,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given search query, when onSearchQueryChanged is called, then update search query is updated`() =
+    fun `given search query, when onSearchQueryChanged is called, then update search query is updated and tracked`() =
         testBlocking {
             // GIVEN
             val searchQuery = "customer"
@@ -160,6 +163,74 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.viewState.value?.searchQuery).isEqualTo(searchQuery)
         }
+
+    @Test
+    fun `when onSearchQueryChanged is called, then tracked with all`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onSearchQueryChanged("customer")
+
+        // THEN
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
+            mapOf(
+                "search_type" to "all"
+            )
+        )
+    }
+
+    @Test
+    fun `when onSearchTypeChanged is called with email, then tracked with email`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onSearchTypeChanged(R.string.order_creation_customer_search_email)
+
+        // THEN
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
+            mapOf(
+                "search_type" to "email"
+            )
+        )
+    }
+
+    @Test
+    fun `when onSearchTypeChanged is called with name, then tracked with name`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onSearchTypeChanged(R.string.order_creation_customer_search_name)
+
+        // THEN
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
+            mapOf(
+                "search_type" to "name"
+            )
+        )
+    }
+
+    @Test
+    fun `when onSearchTypeChanged is called with username, then tracked with username`() = testBlocking {
+        // GIVEN
+        val viewModel = initViewModel()
+
+        // WHEN
+        viewModel.onSearchTypeChanged(R.string.order_creation_customer_search_username)
+
+        // THEN
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
+            mapOf(
+                "search_type" to "username"
+            )
+        )
+    }
 
     @Test
     fun `given search query, when onSearchQueryChanged is called, then search is invoked and viewstate updated with customers`() =
@@ -358,6 +429,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                     shippingAddress = address,
                 )
             )
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         }
 
     @Test
@@ -407,6 +479,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(states[0].partialLoading).isFalse()
             assertThat(states[1].partialLoading).isTrue()
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         }
 
     @Test
@@ -457,6 +530,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                     shippingAddress = address,
                 )
             )
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         }
 
     @Test
@@ -514,6 +588,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                     shippingAddress = address,
                 )
             )
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         }
 
     @Test
@@ -561,6 +636,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                     shippingAddress = address,
                 )
             )
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         }
 
     @Test
@@ -592,5 +668,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
         customerListRepository,
         customerListViewModelMapper,
         getSupportedSearchModes,
+        analyticsTrackerWrapper,
     )
 }

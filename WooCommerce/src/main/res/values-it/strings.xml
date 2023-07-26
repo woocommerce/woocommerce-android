@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-05 09:54:05+0000
+Translation-Revision-Date: 2023-07-19 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Vai su Impostazioni</string>
+    <string name="barcode_scanning_alert_dialog_dismiss_label">Annulla</string>
+    <string name="barcode_scanning_alert_dialog_rationale_cta_label">Concedi</string>
+    <string name="barcode_scanning_alert_dialog_permanently_denied_message">Hai negato in maniera definitiva l\'autorizzazione alla Fotocamera. È richiesta per la scansione del codice a barre. Procedi all\'abilitazione nelle impostazioni dell\'app</string>
+    <string name="barcode_scanning_alert_dialog_rationale_message">Per poter scansionare il codice a barre è richiesta l\'autorizzazione della fotocamera</string>
+    <string name="barcode_scanning_alert_dialog_title">Concedi autorizzazione alla fotocamera</string>
+    <string name="order_creation_coupon_network_error">Si è verificato un problema durante la convalida del codice promozionale. Riprova</string>
+    <string name="order_creation_coupon_invalid_code">Non abbiamo trovato un codice promozionale con questo codice. Riprova</string>
+    <string name="order_creation_discount_amount_type">Importo (%1$s)</string>
+    <string name="order_creation_discount_value">Sconto %1$s</string>
+    <string name="order_creation_discounts_total_value">- %1$s</string>
+    <string name="order_creation_discounts_total">Totale sconti</string>
+    <string name="order_creation_discount">Sconto</string>
+    <string name="order_creation_discount_amount_with_currency">Importo (%1$s)</string>
+    <string name="order_creation_discount_with_coupon_error">Impossibile applicare lo sconto manuale. Rimuovi prima i codici promozionali</string>
+    <string name="order_creation_discount_invalid_number_error">Lo sconto non è un numero valido</string>
+    <string name="order_creation_discount_too_big_error">Lo sconto non può essere superiore al prezzo</string>
+    <string name="order_creation_remove_discount">Rimuovi lo sconto</string>
+    <string name="highlights_tooltip_button_hint">Testo del pulsante</string>
+    <string name="highlights_tooltip_message_hint">Messaggio del tooltip. \n Può essere più righe.</string>
+    <string name="highlights_tooltip_title_hint">Titolo del tooltip</string>
+    <string name="blaze_banner_dismiss_dialog_button">Fatto</string>
+    <string name="blaze_banner_dismiss_dialog_description">Non preoccuparti. Blaze è accessibile da Menu e dal menu dei dettagli del prodotto per tua comodità.</string>
+    <string name="blaze_banner_dismiss_dialog_title">Annunci pubblicitari di Blaze</string>
+    <string name="blaze_banner_close_button_content_description">Chiudi il pulsante del banner di Blaze</string>
+    <string name="blaze_banner_button">Prova Blaze ora</string>
+    <string name="blaze_banner_description">Trasforma i tuoi prodotti in annunci pubblicitari pubblicati su milioni di siti su WordPress.com e Tumblr.</string>
+    <string name="blaze_banner_title">Promuovi i prodotti con Blaze</string>
+    <string name="ai_product_description_tooltip_dismiss">Fatto</string>
+    <string name="ai_product_description_tooltip_message">Usa il nostro strumento basato sull\'IA per generare rapidamente le descrizioni dei prodotti. Basta inserire le parole chiave e noi faremo il resto.</string>
+    <string name="ai_product_description_tooltip_title">✨ Scrivi con l\'IA</string>
+    <string name="ai_product_toolbar_button_tooltip">Genera una descrizione usando l\'IA</string>
+    <string name="ai_product_description_error">Si è verificato un problema durante la generazione della descrizione del prodotto. Riprova più tardi.</string>
+    <string name="ai_product_description_label">Descrizione generata dall\'IA</string>
+    <string name="ai_product_description_learn_more_link">Con tecnologia IA. &lt;a href=\'\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_country">Sfortunatamente, Tocca per pagare su Android non è ancora disponibile nel tuo Paese. Rimani aggiornato.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_gms">Per usare la funzionalità Tocca per pagare su Android, il tuo dispositivo necessita di Google Play Services. Per accettare pagamenti di persona, installa Google Play Services o acquista un lettore di carte Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_android_version">Per usare la funzionalità Tocca per pagare su Android, devi disporre di Android 10 o una versione più recente. Per accettare pagamenti di persona, aggiorna Android o acquista un lettore di carte Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_nfc">Per usare la funzionalità Tocca per pagare su Android, il tuo dispositivo necessita di un chip NFC. Per accettare pagamenti di persona, acquista un lettore di carte Bluetooth.</string>
+    <string name="card_reader_tap_to_pay_not_available_error_title">Tocca per pagare non è disponibile</string>
+    <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Verifica i requisiti</string>
+    <string name="error_troubleshooting">Risoluzione dei problemi</string>
+    <string name="orderlist_parsing_error_message">Questo potrebbe essere correlato a un conflitto con un plugin. Riprova più tardi o contattaci per ricevere assistenza.</string>
+    <string name="orderlist_parsing_error_title">Impossibile caricare i tuoi dati.</string>
     <string name="ai_product_description_dialog_message">Aggiungi descrizioni in un attimo con l\'IA. Prova la nostra funzionalità oggi stesso.</string>
     <string name="ai_product_description_dialog_title">Aggiungi la descrizione del prodotto con l\'IA</string>
     <string name="ai_product_description_note_dialog_confirmation">OK</string>
@@ -94,7 +138,6 @@ Language: it
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Il sistema ha terminato l\'app Woo mentre era in esecuzione in background. Puoi provare a usarla di nuovo.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Non è possibile aggiungere direttamente il prodotto variabile. Seleziona una variante specifica</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
-    <string name="order_creation_barcode_scanning_unable_to_add_product">Prodotto non trovato. Impossibile aggiungere al nuovo ordine</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
     <string name="scan_barcode">Scansiona codice a barre</string>
     <string name="shipping_notice_banner_instructions_content">La spedizione in Paesi che seguono le regole doganali dell\'Unione europea (UE) ora richiede la descrizione chiara di ogni elemento. Ad esempio, se stai inviando capi di vestiario, devi indicare il tipo di abbigliamento (come camicie da uomo, gilet da ragazza, giacca da ragazzo) affinché la descrizione sia accettabile. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
@@ -250,8 +293,6 @@ Language: it
     <string name="product_subscription_title">Abbonamento</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Il lettore di carte accetta pagamenti contactless, chip e tramite strisciata con carte di debito e di credito.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accetta in modo sicuro pagamenti contactless direttamente dal tuo telefono.</string>
-    <string name="card_reader_tap_to_pay_beta_features_subheading">Prova Tocca per pagare nell\'app</string>
-    <string name="card_reader_tap_to_pay_beta_features_heading">Tocca per pagare</string>
     <string name="card_reader_tap_to_pay_share_feedback">Condividi il feedback su Tocca per pagare</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossibile accedere perché la creazione della password dell\'applicazione non è stata approvata.</string>
     <string name="login_site_credentials_fetching_site">Sito in caricamento…</string>
@@ -297,7 +338,6 @@ Language: it
     <string name="store_onboarding_launch_store_share_url_button">Condividi URL</string>
     <string name="store_onboarding_launch_store_button">Pubblica il mio negozio</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Per lanciare il tuo negozio, hai bisogno di eseguire l\'aggiornamento al nostro piano. &lt;u&gt;Aggiorna&lt;/u&gt;</string>
-    <string name="card_reader_tap_to_pay_not_available_error">L\'opzione Tocca per pagare non è disponibile per il tuo negozio o il tuo dispositivo.</string>
     <string name="domains_search_domains">Cerca domini</string>
     <string name="login_site_credentials_http_error">Accesso non riuscito con codice dello stato %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Impossibile accedere perché non possiamo identificare l\'URL di amministrazione del negozio</string>

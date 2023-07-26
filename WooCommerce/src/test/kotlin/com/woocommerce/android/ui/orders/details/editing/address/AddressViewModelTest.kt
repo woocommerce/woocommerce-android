@@ -307,4 +307,11 @@ class AddressViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `when onDeleteCustomerClicked, then emit DeleteCustomer event`() {
+        addressViewModel.onDeleteCustomerClicked()
+
+        assertThat(addressViewModel.event.value).isEqualTo(AddressViewModel.DeleteCustomer)
+    }
 }

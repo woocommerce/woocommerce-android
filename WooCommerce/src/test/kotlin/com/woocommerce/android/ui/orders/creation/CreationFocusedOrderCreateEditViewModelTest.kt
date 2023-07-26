@@ -158,7 +158,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        sut.onCustomerClicked()
+        sut.onEditCustomerClicked()
 
         assertThat(lastReceivedEvent).isNotNull
         assertThat(lastReceivedEvent).isInstanceOf(EditCustomer::class.java)
