@@ -40,13 +40,11 @@ class GetStats @Inject constructor(
             hasOrders(),
             revenueStats(isForcedRefresh, granularity),
             visitorStats(isForcedRefresh, granularity)
-        ).map { result ->
+        ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && isForcedRefresh) {
-                analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionType)
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionRange)
             }
-            result
-        }
-            .flowOn(coroutineDispatchers.computation)
+        }.flowOn(coroutineDispatchers.computation)
     }
 
     private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
