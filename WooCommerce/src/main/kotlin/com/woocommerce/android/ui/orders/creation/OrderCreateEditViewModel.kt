@@ -732,7 +732,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 selectedItems,
                 listOf(
                     ProductRestriction.NonPublishedProducts,
-                    ProductRestriction.NoVariableProductsWithNoVariations
+                    ProductRestriction.VariableProductsWithNoVariations
                 )
             )
         )
