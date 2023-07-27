@@ -285,8 +285,8 @@ private fun Customer.Text.render() =
         is Customer.Text.Placeholder -> buildAnnotatedString {
             withStyle(
                 SpanStyle(
-                color = colorResource(id = R.color.color_on_surface_disabled),
-            )
+                    color = colorResource(id = R.color.color_on_surface_disabled),
+                )
             ) {
                 append(text)
             }

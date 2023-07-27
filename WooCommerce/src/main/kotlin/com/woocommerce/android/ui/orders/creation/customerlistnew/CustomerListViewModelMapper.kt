@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListDisplayTextHandler.CustomerParam
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import javax.inject.Inject
@@ -13,9 +14,9 @@ class CustomerListViewModelMapper @Inject constructor(
     fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel, search: String) =
         CustomerListViewState.CustomerList.Item.Customer(
             remoteId = wcCustomerModel.remoteCustomerId,
-            name = textHandler(CustomerListDisplayTextHandler.CustomerParam.Name(wcCustomerModel.fullName), search),
-            email = textHandler(CustomerListDisplayTextHandler.CustomerParam.Email(wcCustomerModel.email), search),
-            username = textHandler(CustomerListDisplayTextHandler.CustomerParam.Username(wcCustomerModel.username), search),
+            name = textHandler(CustomerParam.Name(wcCustomerModel.fullName), search),
+            email = textHandler(CustomerParam.Email(wcCustomerModel.email), search),
+            username = textHandler(CustomerParam.Username(wcCustomerModel.username), search),
 
             payload = wcCustomerModel,
         )
