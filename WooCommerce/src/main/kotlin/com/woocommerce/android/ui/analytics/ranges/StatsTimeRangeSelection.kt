@@ -144,6 +144,22 @@ class StatsTimeRangeSelection private constructor(
             }
         }
 
+        fun toStatsGranularity(): StatsGranularity {
+            return when (this) {
+                TODAY -> StatsGranularity.DAYS
+                YESTERDAY -> StatsGranularity.DAYS
+                LAST_WEEK -> StatsGranularity.WEEKS
+                LAST_MONTH -> StatsGranularity.MONTHS
+                LAST_QUARTER -> StatsGranularity.MONTHS
+                LAST_YEAR -> StatsGranularity.YEARS
+                WEEK_TO_DATE -> StatsGranularity.WEEKS
+                MONTH_TO_DATE -> StatsGranularity.MONTHS
+                QUARTER_TO_DATE -> StatsGranularity.MONTHS
+                YEAR_TO_DATE -> StatsGranularity.YEARS
+                CUSTOM -> throw IllegalStateException("Custom selection type should use the correct constructor")
+            }
+        }
+
         val identifier: String
             get() = when (this) {
                 TODAY -> "Today"
