@@ -79,6 +79,19 @@ class ProductRestrictionsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given published product, when product filters products restriction, then the product is not restricted`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.PUBLISH.name
+        )
+
+        val sut = ProductFilterProductRestrictions()
+
+        assertFalse {
+            sut.isProductRestricted(product)
+        }
+    }
+
+    @Test
     fun `given variable product with 0 number of variations, when product filters products restriction, then product is restricted`() {
         val product = ProductTestUtils.generateProduct(
             isVariable = true,
