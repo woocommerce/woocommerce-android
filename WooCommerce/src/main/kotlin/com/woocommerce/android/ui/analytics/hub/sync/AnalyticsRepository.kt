@@ -50,10 +50,8 @@ class AnalyticsRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val getCurrentRevenueMutex = Mutex()
-    private var currentRevenueStats: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
-
     private val getPreviousRevenueMutex = Mutex()
-    private var previousRevenueStats: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
+    private var revenueStatsCache: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
 
     suspend fun fetchRevenueData(
         rangeSelection: StatsTimeRangeSelection,
@@ -211,7 +209,7 @@ class AnalyticsRepository @Inject constructor(
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
         val statsIdentifier = RevenueRangeId(currentPeriod, rangeSelection.selectionType).id
-        val cachedRevenueStat = currentRevenueStats[statsIdentifier]
+        val cachedRevenueStat = revenueStatsCache[statsIdentifier]
 
         getCurrentRevenueMutex.withLock {
             if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
@@ -219,10 +217,10 @@ class AnalyticsRepository @Inject constructor(
                     startDate = startDate,
                     endDate = endDate,
                     result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
-                ).let { currentRevenueStats[statsIdentifier.hashCode()] = it }
+                ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
-        return@coroutineScope currentRevenueStats[statsIdentifier]!!.result.await()
+        return@coroutineScope revenueStatsCache.getValue(statsIdentifier).result.await()
     }
 
     private suspend fun getPreviousPeriodStats(
@@ -234,7 +232,7 @@ class AnalyticsRepository @Inject constructor(
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
         val statsIdentifier = RevenueRangeId(previousPeriod, rangeSelection.selectionType).id
-        val cachedRevenueStat = previousRevenueStats[statsIdentifier]
+        val cachedRevenueStat = revenueStatsCache[statsIdentifier]
 
         getPreviousRevenueMutex.withLock {
             if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
@@ -242,10 +240,10 @@ class AnalyticsRepository @Inject constructor(
                     startDate = startDate,
                     endDate = endDate,
                     result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
-                ).let { previousRevenueStats[statsIdentifier] = it }
+                ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
-        return@coroutineScope previousRevenueStats[statsIdentifier]!!.result.await()
+        return@coroutineScope revenueStatsCache.getValue(statsIdentifier).result.await()
     }
 
     private suspend fun getProductStats(
