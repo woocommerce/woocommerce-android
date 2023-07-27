@@ -64,5 +64,19 @@ class ProductRestrictionsTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given variable product with 0 number of variations, when product filters products restriction, then product is restricted`() {
+        val product = ProductTestUtils.generateProduct(
+            isVariable = true,
+            variationIds = ""
+        )
+
+        val sut = ProductFilterProductRestrictions()
+
+        assertTrue {
+            sut.isProductRestricted(product)
+        }
+    }
+
     //endregion
 }
