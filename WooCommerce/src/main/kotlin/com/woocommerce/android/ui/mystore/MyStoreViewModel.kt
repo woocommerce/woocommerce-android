@@ -48,14 +48,12 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
@@ -119,8 +117,12 @@ class MyStoreViewModel @Inject constructor(
 
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
-    private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
+    private val _activeStatsGranularity = savedState
+        .getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
+
+    private val activeTimeRangeSelection
+        get() = convertToStatsTimeRange(_activeStatsGranularity.value)
 
     private var jetpackMonitoringJob: Job? = null
 
@@ -230,7 +232,7 @@ class MyStoreViewModel @Inject constructor(
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
-        updateMyStoreStats(forceRefresh, convertToStatsTimeRange(granularity))
+        updateMyStoreStats(forceRefresh, activeTimeRangeSelection)
             .collect {
                 when (it) {
                     is RevenueStatsSuccess -> onRevenueStatsSuccess(it, granularity)
@@ -244,7 +246,7 @@ class MyStoreViewModel @Inject constructor(
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
         observeLastUpdate(
-            convertToStatsTimeRange(granularity),
+            activeTimeRangeSelection,
             listOf(
                 AnalyticsUpdateDataStore.AnalyticData.REVENUE,
                 AnalyticsUpdateDataStore.AnalyticData.VISITORS
@@ -305,7 +307,7 @@ class MyStoreViewModel @Inject constructor(
         if (!networkStatus.isConnected()) return
 
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
-        val result = getTopPerformers.fetchTopPerformers(granularity, forceRefresh)
+        val result = getTopPerformers.fetchTopPerformers(activeTimeRangeSelection, forceRefresh)
         result.fold(
             onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
             onSuccess = {
@@ -318,13 +320,9 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
-            _activeStatsGranularity
-                .flatMapLatest { granularity ->
-                    getTopPerformers.observeTopPerformers(granularity)
-                }
+            getTopPerformers.observeTopPerformers(activeTimeRangeSelection)
                 .collectLatest {
                     _topPerformersState.value = _topPerformersState.value?.copy(
                         topPerformers = it.toTopPerformersUiList(),
