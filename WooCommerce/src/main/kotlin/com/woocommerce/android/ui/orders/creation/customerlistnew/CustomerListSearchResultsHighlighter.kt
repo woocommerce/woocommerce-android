@@ -8,6 +8,8 @@ class CustomerListSearchResultsHighlighter @Inject constructor() {
         value.findMatch(query).let { Customer.HighlightedText(value, it.first, it.second) }
 
     private fun String.findMatch(query: String): Pair<Int, Int> {
+        if (query.length < 2) return 0 to 0
+
         val index = indexOf(query, ignoreCase = true)
         return if (index != -1) {
             index to index + query.length

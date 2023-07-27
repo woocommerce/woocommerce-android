@@ -25,8 +25,7 @@ data class CustomerListViewState(
         sealed class Item {
             data class Customer(
                 val remoteId: Long,
-                val firstName: HighlightedText,
-                val lastName: HighlightedText,
+                val name: HighlightedText,
                 val email: HighlightedText,
                 val username: HighlightedText,
 

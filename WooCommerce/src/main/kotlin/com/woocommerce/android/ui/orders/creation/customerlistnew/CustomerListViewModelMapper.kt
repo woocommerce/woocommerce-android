@@ -13,8 +13,7 @@ class CustomerListViewModelMapper @Inject constructor(
     fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel, search: String) =
         CustomerListViewState.CustomerList.Item.Customer(
             remoteId = wcCustomerModel.remoteCustomerId,
-            firstName = highlighter(wcCustomerModel.firstName, search),
-            lastName = highlighter(wcCustomerModel.lastName, search),
+            name = highlighter(wcCustomerModel.fullName, search),
             email = highlighter(wcCustomerModel.email, search),
             username = highlighter(wcCustomerModel.username, search),
 
@@ -71,4 +70,7 @@ class CustomerListViewModelMapper @Inject constructor(
             phone = wcCustomer.billingPhone,
             email = wcCustomer.billingEmail
         )
+
+    private val WCCustomerModel.fullName: String
+        get() = "$firstName $lastName"
 }

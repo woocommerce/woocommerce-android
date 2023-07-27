@@ -48,8 +48,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -253,10 +253,8 @@ private fun CustomerListItem(
             )
     ) {
         Text(
-            text = "${customer.firstName.highlight(SpanStyle(fontWeight = FontWeight.W900))}" +
-                "${customer.lastName.highlight(SpanStyle(fontWeight = FontWeight.W900))}",
+            text = customer.name.highlight(),
             style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.W700,
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -267,7 +265,7 @@ private fun CustomerListItem(
 }
 
 @Composable
-private fun Customer.HighlightedText.highlight(style: SpanStyle = SpanStyle(fontWeight = FontWeight.W700)) =
+private fun Customer.HighlightedText.highlight() =
     buildAnnotatedString {
         if (start == end) {
             append(text)
@@ -275,7 +273,9 @@ private fun Customer.HighlightedText.highlight(style: SpanStyle = SpanStyle(font
         }
         append(text.substring(0, start))
         withStyle(
-            style = style
+            style = SpanStyle(
+                textDecoration = TextDecoration.Underline
+            )
         ) {
             append(text.substring(start, end))
         }
@@ -412,8 +412,7 @@ fun CustomerListScreenPreview() {
                 customers = listOf(
                     Customer(
                         remoteId = 1,
-                        firstName = Customer.HighlightedText("John", 0, 1),
-                        lastName = Customer.HighlightedText("Doe", 0, 1),
+                        name = Customer.HighlightedText("John Doe", 0, 1),
                         email = Customer.HighlightedText("email@email.com", 3, 10),
                         username = Customer.HighlightedText("JohnDoe", 0, 6),
 
@@ -421,8 +420,7 @@ fun CustomerListScreenPreview() {
                     ),
                     Customer(
                         remoteId = 2,
-                        firstName = Customer.HighlightedText("Andrei", 0, 1),
-                        lastName = Customer.HighlightedText("Doe", 0, 1),
+                        name = Customer.HighlightedText("Andrei Kdn", 0, 1),
                         email = Customer.HighlightedText("blabla@email.com", 3, 10),
                         username = Customer.HighlightedText("AndreiDoe", 0, 6),
 
