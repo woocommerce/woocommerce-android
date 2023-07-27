@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.customerlistnew
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -255,21 +256,21 @@ private fun CustomerListItem(
     ) {
         Row {
             Text(
-                text = customer.name.highlight(),
+                text = customer.name.render(),
                 color = colorResource(id = R.color.color_on_surface),
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.W500,
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = customer.username.highlight(),
+                text = customer.username.render(),
                 color = colorResource(id = R.color.color_on_surface_medium),
                 style = MaterialTheme.typography.subtitle1,
             )
         }
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = customer.email.highlight(),
+            text = customer.email.render(),
             color = colorResource(id = R.color.color_on_surface),
             style = MaterialTheme.typography.body2,
         )
@@ -277,7 +278,23 @@ private fun CustomerListItem(
 }
 
 @Composable
-private fun Customer.HighlightedText.highlight() =
+private fun Customer.Text.render() =
+    when (this) {
+        is Customer.Text.Highlighted -> highlight()
+
+        is Customer.Text.Placeholder -> buildAnnotatedString {
+            withStyle(
+                SpanStyle(
+                color = colorResource(id = R.color.color_on_surface_disabled),
+            )
+            ) {
+                append(text)
+            }
+        }
+    }
+
+@Composable
+private fun Customer.Text.Highlighted.highlight() =
     buildAnnotatedString {
         if (start == end) {
             append(text)
@@ -424,17 +441,25 @@ fun CustomerListScreenPreview() {
                 customers = listOf(
                     Customer(
                         remoteId = 1,
-                        name = Customer.HighlightedText("John Doe", 0, 1),
-                        email = Customer.HighlightedText("email@email.com", 3, 10),
-                        username = Customer.HighlightedText("· JohnDoe", 3, 6),
+                        name = Customer.Text.Highlighted("John Doe", 0, 1),
+                        email = Customer.Text.Highlighted("email@email.com", 3, 10),
+                        username = Customer.Text.Highlighted("· JohnDoe", 3, 6),
 
                         payload = WCCustomerModel(),
                     ),
                     Customer(
                         remoteId = 2,
-                        name = Customer.HighlightedText("Andrei Kdn", 5, 8),
-                        email = Customer.HighlightedText("blabla@email.com", 3, 10),
-                        username = Customer.HighlightedText("· AndreiDoe", 3, 6),
+                        name = Customer.Text.Highlighted("Andrei Kdn", 5, 8),
+                        email = Customer.Text.Highlighted("blabla@email.com", 3, 10),
+                        username = Customer.Text.Highlighted("· AndreiDoe", 3, 6),
+
+                        payload = WCCustomerModel(),
+                    ),
+                    Customer(
+                        remoteId = 3,
+                        name = Customer.Text.Placeholder("No name"),
+                        email = Customer.Text.Placeholder("No email"),
+                        username = Customer.Text.Placeholder(""),
 
                         payload = WCCustomerModel(),
                     ),
@@ -484,6 +509,7 @@ fun CustomerListScreenEmptyPreview() {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomerListScreenErrorPreview() {
     CustomerListScreen(

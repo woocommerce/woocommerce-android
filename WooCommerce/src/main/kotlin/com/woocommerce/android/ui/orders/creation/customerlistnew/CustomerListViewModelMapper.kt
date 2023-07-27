@@ -8,14 +8,14 @@ import org.wordpress.android.fluxc.model.order.OrderAddress
 import javax.inject.Inject
 
 class CustomerListViewModelMapper @Inject constructor(
-    private val highlighter: CustomerListSearchResultsHighlighter
+    private val textHandler: CustomerListDisplayTextHandler,
 ) {
     fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel, search: String) =
         CustomerListViewState.CustomerList.Item.Customer(
             remoteId = wcCustomerModel.remoteCustomerId,
-            name = highlighter(wcCustomerModel.fullName, search),
-            email = highlighter(wcCustomerModel.email, search),
-            username = highlighter(wcCustomerModel.username, search),
+            name = textHandler(CustomerListDisplayTextHandler.CustomerParam.Name(wcCustomerModel.fullName), search),
+            email = textHandler(CustomerListDisplayTextHandler.CustomerParam.Email(wcCustomerModel.email), search),
+            username = textHandler(CustomerListDisplayTextHandler.CustomerParam.Username(wcCustomerModel.username), search),
 
             payload = wcCustomerModel,
         )

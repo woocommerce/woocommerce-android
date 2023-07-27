@@ -25,13 +25,16 @@ data class CustomerListViewState(
         sealed class Item {
             data class Customer(
                 val remoteId: Long,
-                val name: HighlightedText,
-                val email: HighlightedText,
-                val username: HighlightedText,
+                val name: Text,
+                val email: Text,
+                val username: Text,
 
                 val payload: WCCustomerModel,
             ) : Item() {
-                data class HighlightedText(val text: String, val start: Int, val end: Int)
+                sealed class Text {
+                    data class Highlighted(val text: String, val start: Int, val end: Int) : Text()
+                    data class Placeholder(val text: String) : Text()
+                }
             }
 
             object Loading : Item()
