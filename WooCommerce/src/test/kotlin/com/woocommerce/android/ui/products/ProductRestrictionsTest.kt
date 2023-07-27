@@ -171,6 +171,5 @@ class ProductRestrictionsTest : BaseUnitTest() {
             sut.isProductRestricted(product)
         }
     }
-
     //endregion
 }
