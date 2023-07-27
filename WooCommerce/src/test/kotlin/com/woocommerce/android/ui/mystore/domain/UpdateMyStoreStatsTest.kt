@@ -31,13 +31,13 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.GENERI
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
 @ExperimentalCoroutinesApi
-class GetStatsTest : BaseUnitTest() {
+class UpdateMyStoreStatsTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val statsRepository: StatsRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
-    private val getStats = GetStats(
+    private val updateMyStoreStats = UpdateMyStoreStats(
         selectedSite,
         mock(),
         statsRepository,
@@ -60,11 +60,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.HasOrders }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.HasOrders }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.HasOrders(false))
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.HasOrders(false))
         }
 
     @Test
@@ -72,11 +72,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenCheckIfStoreHasNoOrdersFlow(Result.success(false))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.HasOrders }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.HasOrders }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.HasOrders(true))
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.HasOrders(true))
         }
 
     @Test
@@ -84,11 +84,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.RevenueStatsSuccess }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.RevenueStatsSuccess }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS))
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS))
         }
 
     @Test
@@ -96,11 +96,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.RevenueStatsError }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.RevenueStatsError }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsError)
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.RevenueStatsError)
         }
 
     @Test
@@ -108,11 +108,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.failure(StatsException(PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR)))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.PluginNotActive }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.PluginNotActive }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.PluginNotActive)
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.PluginNotActive)
         }
 
     @Test
@@ -120,7 +120,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(appPrefsWrapper).setV4StatsSupported(true)
         }
@@ -130,7 +130,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.failure(StatsException(PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR)))
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(appPrefsWrapper).setV4StatsSupported(false)
         }
@@ -140,11 +140,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.VisitorsStatsSuccess }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsSuccess(ANY_VISITOR_STATS))
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.VisitorsStatsSuccess(ANY_VISITOR_STATS))
         }
 
     @Test
@@ -152,11 +152,11 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchVisitorStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.VisitorsStatsError }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsError)
+            assertThat(result).isEqualTo(UpdateMyStoreStats.LoadStatsResult.VisitorsStatsError)
         }
 
     @Test
@@ -164,12 +164,12 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenIsJetpackConnected(true)
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.VisitorStatUnavailable }
+            val result = updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY)
+                .filter { it is UpdateMyStoreStats.LoadStatsResult.VisitorStatUnavailable }
                 .first()
 
             assertThat(result).isEqualTo(
-                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                UpdateMyStoreStats.LoadStatsResult.VisitorStatUnavailable(
                     connectionType = SiteConnectionType.JetpackConnectionPackage
                 )
             )
@@ -180,7 +180,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
                 any(),
@@ -199,7 +199,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = true, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
                 .shouldUpdateAnalytics(any(), any(), any())
@@ -210,7 +210,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = true, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore)
                 .storeLastAnalyticsUpdate(
@@ -225,7 +225,7 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
             givenShouldUpdateAnalyticsReturns(true)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
                 any(),
@@ -239,7 +239,7 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
             givenShouldUpdateAnalyticsReturns(false)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
                 .storeLastAnalyticsUpdate(
@@ -254,7 +254,7 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
             givenShouldUpdateAnalyticsReturns(true)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            updateMyStoreStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
                 .storeLastAnalyticsUpdate(

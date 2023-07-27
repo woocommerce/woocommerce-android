@@ -27,14 +27,14 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.domain.CastGranularityAsStatsTimeRange
-import com.woocommerce.android.ui.mystore.domain.GetStats
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsError
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsSuccess
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorStatUnavailable
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsError
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.HasOrders
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.PluginNotActive
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.RevenueStatsError
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.RevenueStatsSuccess
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.VisitorStatUnavailable
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.VisitorsStatsError
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
@@ -78,7 +78,7 @@ class MyStoreViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
-    private val getStats: GetStats,
+    private val updateMyStoreStats: UpdateMyStoreStats,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
@@ -230,7 +230,7 @@ class MyStoreViewModel @Inject constructor(
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
-        getStats(forceRefresh, convertToStatsTimeRange(granularity))
+        updateMyStoreStats(forceRefresh, convertToStatsTimeRange(granularity))
             .collect {
                 when (it) {
                     is RevenueStatsSuccess -> onRevenueStatsSuccess(it, granularity)

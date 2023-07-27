@@ -11,7 +11,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.mystore.domain.GetStats
+import com.woocommerce.android.ui.mystore.domain.UpdateMyStoreStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
@@ -52,7 +52,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val getStats: GetStats = mock()
+    private val updateMyStoreStats: UpdateMyStoreStats = mock()
     private val getTopPerformers: GetTopPerformers = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
@@ -74,7 +74,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
-        givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
+        givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.VisitorsStatsError)
         givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
     }
 
@@ -85,7 +85,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
-            verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+            verify(updateMyStoreStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 granularity = DEFAULT_STATS_GRANULARITY,
                 refresh = false,
@@ -100,7 +100,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
-            verify(getStats, never()).invoke(any(), any())
+            verify(updateMyStoreStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
         }
 
@@ -113,7 +113,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
-            verify(getStats, never()).invoke(any(), any())
+            verify(updateMyStoreStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
         }
 
@@ -126,7 +126,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
-            verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
+            verify(updateMyStoreStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 ANY_SELECTED_STATS_GRANULARITY,
                 refresh = false,
@@ -143,7 +143,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             sut.onPullToRefresh()
 
-            verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+            verify(updateMyStoreStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 DEFAULT_STATS_GRANULARITY,
                 refresh = true,
@@ -168,7 +168,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -186,7 +186,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -202,7 +202,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -217,7 +217,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsError)
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.RevenueStatsError)
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -232,7 +232,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.PluginNotActive)
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.PluginNotActive)
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -247,7 +247,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -262,7 +262,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.VisitorsStatsError)
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -278,7 +278,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(
-                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                UpdateMyStoreStats.LoadStatsResult.VisitorStatUnavailable(
                     connectionType = SiteConnectionType.JetpackConnectionPackage
                 )
             )
@@ -296,7 +296,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = true))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.HasOrders(hasOrder = true))
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -311,7 +311,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = false))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.HasOrders(hasOrder = false))
             whenViewModelIsCreated()
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
@@ -381,7 +381,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(siteFlow)
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(
-                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                UpdateMyStoreStats.LoadStatsResult.VisitorStatUnavailable(
                     connectionType = SiteConnectionType.JetpackConnectionPackage
                 )
             )
@@ -389,7 +389,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            givenStatsLoadingResult(UpdateMyStoreStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
             siteFlow.value = siteAfterInstallation
 
             assertThat(sut.visitorStatsState.value).isNotInstanceOf(
@@ -630,21 +630,21 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
 
         // When ViewModel starts refresh is false
-        verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+        verify(updateMyStoreStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
 
         sut.onPullToRefresh()
 
         // When pull-to-refresh refresh is true
-        verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+        verify(updateMyStoreStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
 
         sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
         // When granularity changes refresh is false
-        verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
+        verify(updateMyStoreStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
     }
 
-    private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
-        whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
+    private suspend fun givenStatsLoadingResult(result: UpdateMyStoreStats.LoadStatsResult) {
+        whenever(updateMyStoreStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
 
     private suspend fun givenFetchTopPerformersResult(result: Result<Unit>) {
@@ -678,7 +678,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             networkStatus,
             resourceProvider,
             wooCommerceStore,
-            getStats,
+            updateMyStoreStats,
             getTopPerformers,
             currencyFormatter,
             selectedSite,

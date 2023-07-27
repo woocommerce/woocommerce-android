@@ -21,7 +21,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import javax.inject.Inject
 
-class GetStats @Inject constructor(
+class UpdateMyStoreStats @Inject constructor(
     private val selectedSite: SelectedSite,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
