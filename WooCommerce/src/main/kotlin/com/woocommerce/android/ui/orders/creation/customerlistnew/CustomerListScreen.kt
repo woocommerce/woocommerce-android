@@ -280,21 +280,25 @@ private fun CustomerListItem(
 @Composable
 private fun Customer.Text.render() =
     when (this) {
-        is Customer.Text.Highlighted -> highlight()
+        is Customer.Text.Highlighted -> buildHighlightText()
 
-        is Customer.Text.Placeholder -> buildAnnotatedString {
-            withStyle(
-                SpanStyle(
-                    color = colorResource(id = R.color.color_on_surface_disabled),
-                )
-            ) {
-                append(text)
-            }
+        is Customer.Text.Placeholder -> buildPlaceholder()
+    }
+
+@Composable
+private fun Customer.Text.Placeholder.buildPlaceholder() =
+    buildAnnotatedString {
+        withStyle(
+            SpanStyle(
+                color = colorResource(id = R.color.color_on_surface_disabled),
+            )
+        ) {
+            append(text)
         }
     }
 
 @Composable
-private fun Customer.Text.Highlighted.highlight() =
+private fun Customer.Text.Highlighted.buildHighlightText() =
     buildAnnotatedString {
         if (start == end) {
             append(text)
