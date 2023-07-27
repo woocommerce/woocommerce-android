@@ -51,8 +51,8 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
         override fun invoke(product: Product): Boolean {
             return product.price == null
         }
-
     }
 }
 
-private fun Product.isVariable() = productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION
+private fun Product.isVariable() =
+    productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION

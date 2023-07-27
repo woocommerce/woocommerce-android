@@ -604,9 +604,6 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Failed to add a product whose price is not specified"
                 )
             }
-            else -> {
-
-            }
         }
     }
 
