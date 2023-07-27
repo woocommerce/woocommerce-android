@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -252,13 +253,24 @@ private fun CustomerListItem(
                 vertical = dimensionResource(id = R.dimen.minor_100)
             )
     ) {
-        Text(
-            text = customer.name.highlight(),
-            style = MaterialTheme.typography.subtitle1,
-        )
+        Row {
+            Text(
+                text = customer.name.highlight(),
+                color = colorResource(id = R.color.color_on_surface),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.W500,
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = customer.username.highlight(),
+                color = colorResource(id = R.color.color_on_surface_medium),
+                style = MaterialTheme.typography.subtitle1,
+            )
+        }
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = customer.email.highlight(),
+            color = colorResource(id = R.color.color_on_surface),
             style = MaterialTheme.typography.body2,
         )
     }
@@ -414,15 +426,15 @@ fun CustomerListScreenPreview() {
                         remoteId = 1,
                         name = Customer.HighlightedText("John Doe", 0, 1),
                         email = Customer.HighlightedText("email@email.com", 3, 10),
-                        username = Customer.HighlightedText("JohnDoe", 0, 6),
+                        username = Customer.HighlightedText("· JohnDoe", 3, 6),
 
                         payload = WCCustomerModel(),
                     ),
                     Customer(
                         remoteId = 2,
-                        name = Customer.HighlightedText("Andrei Kdn", 0, 1),
+                        name = Customer.HighlightedText("Andrei Kdn", 5, 8),
                         email = Customer.HighlightedText("blabla@email.com", 3, 10),
-                        username = Customer.HighlightedText("AndreiDoe", 0, 6),
+                        username = Customer.HighlightedText("· AndreiDoe", 3, 6),
 
                         payload = WCCustomerModel(),
                     ),
