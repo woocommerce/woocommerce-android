@@ -7,6 +7,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_ALL
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_EMAIL
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_NAME
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_USERNAME
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -144,9 +148,10 @@ class CustomerListViewModel @Inject constructor(
                 )
             }
         }
+        val searchBy = getSearchParam()
         val result = repository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
-            searchBy = getSearchParam(),
+            searchBy = searchBy,
             pageSize = PAGE_SIZE,
             page = page
         )
@@ -159,37 +164,41 @@ class CustomerListViewModel @Inject constructor(
             val customers = result.getOrNull() ?: emptyList()
             val hasNextPage = customers.size == PAGE_SIZE
             paginationState = PaginationState(page, hasNextPage)
-            handleSuccessfulResponse(customers, page == 1, hasNextPage)
+            handleSuccessfulResponse(customers, page == 1, hasNextPage, searchBy)
         }
     }
 
     private fun handleSuccessfulResponse(
         customers: List<WCCustomerModel>,
         firstPageLoaded: Boolean,
-        hasNextPage: Boolean
+        hasNextPage: Boolean,
+        searchParam: String,
     ) {
         removeLoadingItemFromList()
         if (firstPageLoaded) {
-            handleFirstPageLoaded(customers)
+            handleFirstPageLoaded(customers, searchParam)
         } else {
-            handleNextPageLoaded(customers)
+            handleNextPageLoaded(customers, searchParam)
         }
         if (hasNextPage) appendLoadingItemToList()
     }
 
-    private fun handleNextPageLoaded(customers: List<WCCustomerModel>) {
+    private fun handleNextPageLoaded(customers: List<WCCustomerModel>, searchParam: String) {
         val currentBody = _viewState.value!!.body as CustomerListViewState.CustomerList.Loaded
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
                 customers = currentBody.customers + customers.map {
-                    mapper.mapFromWCCustomerToItem(it, searchQuery)
+                    mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                 },
                 shouldResetScrollPosition = false,
             )
         )
     }
 
-    private fun handleFirstPageLoaded(customers: List<WCCustomerModel>) {
+    private fun handleFirstPageLoaded(
+        customers: List<WCCustomerModel>,
+        searchParam: String,
+    ) {
         if (customers.isEmpty()) {
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Empty(R.string.order_creation_customer_search_empty)
@@ -198,7 +207,7 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Loaded(
                     customers = customers.map {
-                        mapper.mapFromWCCustomerToItem(it, searchQuery)
+                        mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
                     shouldResetScrollPosition = true,
                 )
@@ -251,6 +260,15 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value!!.searchModes.first { it.isSelected }.searchParam
         }
 
+    private fun searchParamToSearchType(searchParam: String) =
+        when (searchParam) {
+            SEARCH_MODE_VALUE_NAME -> CustomerListDisplayTextHandler.SearchType.NAME
+            SEARCH_MODE_VALUE_EMAIL -> CustomerListDisplayTextHandler.SearchType.EMAIL
+            SEARCH_MODE_VALUE_USERNAME -> CustomerListDisplayTextHandler.SearchType.USERNAME
+            SEARCH_MODE_VALUE_ALL -> CustomerListDisplayTextHandler.SearchType.ALL
+            else -> error("Unknown search param: $searchParam")
+        }
+
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
         searchQuery = searchQuery,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
@@ -275,8 +293,6 @@ class CustomerListViewModel @Inject constructor(
     private companion object {
         private const val SEARCH_QUERY_KEY = "search_query"
         private const val SEARCH_MODE_KEY = "search_mode"
-
-        private const val SEARCH_MODE_VALUE_ALL = "all"
 
         private const val SEARCH_DELAY_MS = 500L
 

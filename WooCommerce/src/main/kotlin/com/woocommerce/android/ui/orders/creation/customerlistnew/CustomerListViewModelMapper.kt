@@ -11,12 +11,15 @@ import javax.inject.Inject
 class CustomerListViewModelMapper @Inject constructor(
     private val textHandler: CustomerListDisplayTextHandler,
 ) {
-    fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel, search: String) =
-        CustomerListViewState.CustomerList.Item.Customer(
+    fun mapFromWCCustomerToItem(
+        wcCustomerModel: WCCustomerModel,
+        searchQuery: String,
+        searchType: CustomerListDisplayTextHandler.SearchType,
+    ) = CustomerListViewState.CustomerList.Item.Customer(
             remoteId = wcCustomerModel.remoteCustomerId,
-            name = textHandler(CustomerParam.Name(wcCustomerModel.fullName), search),
-            email = textHandler(CustomerParam.Email(wcCustomerModel.email), search),
-            username = textHandler(CustomerParam.Username(wcCustomerModel.username), search),
+            name = textHandler(CustomerParam.Name(wcCustomerModel.fullName), searchQuery, searchType),
+            email = textHandler(CustomerParam.Email(wcCustomerModel.email), searchQuery, searchType),
+            username = textHandler(CustomerParam.Username(wcCustomerModel.username), searchQuery, searchType),
 
             payload = wcCustomerModel,
         )
