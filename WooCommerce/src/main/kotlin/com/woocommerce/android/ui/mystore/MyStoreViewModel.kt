@@ -26,6 +26,7 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.mystore.domain.CastGranularityAsStatsTimeRange
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -88,6 +89,7 @@ class MyStoreViewModel @Inject constructor(
     private val timezoneProvider: TimezoneProvider,
     private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
     private val observeLastUpdate: ObserveLastUpdate,
+    private val convertToStatsTimeRange: CastGranularityAsStatsTimeRange,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -228,7 +230,7 @@ class MyStoreViewModel @Inject constructor(
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
-        getStats(forceRefresh, granularity)
+        getStats(forceRefresh, convertToStatsTimeRange(granularity))
             .collect {
                 when (it) {
                     is RevenueStatsSuccess -> onRevenueStatsSuccess(it, granularity)
@@ -242,7 +244,7 @@ class MyStoreViewModel @Inject constructor(
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
         observeLastUpdate(
-            granularity,
+            convertToStatsTimeRange(granularity),
             listOf(
                 AnalyticsUpdateDataStore.AnalyticData.REVENUE,
                 AnalyticsUpdateDataStore.AnalyticData.VISITORS
