@@ -38,7 +38,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.round
 
