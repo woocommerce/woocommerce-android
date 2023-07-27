@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreateCouponSelectorViewModel @Inject constructor(
+class CouponSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
 //    private val wooCommerceStore: WooCommerceStore,
 //    private val selectedSite: SelectedSite,

@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderCreateCouponSelectorFragment : BaseFragment() {
+class CouponSelectorFragment : BaseFragment() {
 //    private val viewModel by viewModels<OrderCreateCouponSelectorViewModel>()
 
     override fun onCreateView(
@@ -21,7 +21,7 @@ class OrderCreateCouponSelectorFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 WooThemeWithBackground {
-                    OrderCreateCouponSelectorScreen(
+                    CouponSelectorScreen(
 //                        viewModel = viewModel,
 //                        onCouponSelected = { /*TODO*/ }
                     )
