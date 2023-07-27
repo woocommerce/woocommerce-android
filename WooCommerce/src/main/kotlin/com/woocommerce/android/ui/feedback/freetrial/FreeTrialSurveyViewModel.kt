@@ -5,12 +5,15 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_SURVEY_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_SURVEY_SENT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.FREE_TEXT_KEY
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.SURVEY_KEY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FREE_TRIAL_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SURVEY_FREE_TEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SURVEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.local.LocalNotification.StillExploringNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.COLLECTIVE_DECISION
 import com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyViewModel.SurveyOptionType.COMPARING_WITH_OTHER_PLATFORMS
@@ -67,6 +70,15 @@ class FreeTrialSurveyViewModel @Inject constructor(
     )
     val surveyState = _surveyState.asLiveData()
 
+    init {
+        analyticsTrackerWrapper.track(
+            stat = FREE_TRIAL_SURVEY_DISPLAYED,
+            properties = mutableMapOf(
+                KEY_FREE_TRIAL_SOURCE to LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED.value,
+            )
+        )
+    }
+
     fun onArrowBackPressed() {
         triggerEvent(Exit)
     }
@@ -96,8 +108,9 @@ class FreeTrialSurveyViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = FREE_TRIAL_SURVEY_SENT,
             properties = mutableMapOf(
-                SURVEY_KEY to selectedOption.optionType.name.lowercase()
-            ).putIfNotEmpty(FREE_TEXT_KEY to _surveyState.value.freeText)
+                KEY_SURVEY_OPTION to selectedOption.optionType.name.lowercase(),
+                KEY_FREE_TRIAL_SOURCE to LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED.value,
+            ).putIfNotEmpty(KEY_SURVEY_FREE_TEXT to _surveyState.value.freeText)
         )
         if (selectedOption.optionType == STILL_EXPLORING) {
             notificationScheduler.scheduleNotification(
