@@ -76,6 +76,19 @@ class ProductRestrictionsTest : BaseUnitTest() {
             sut.isProductRestricted(product)
         }
     }
+
+    @Test
+    fun `given product with price specified, when order creation products restriction, then product is not restricted`() {
+        val product = ProductTestUtils.generateProduct(
+            amount = "10"
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertFalse {
+            sut.isProductRestricted(product)
+        }
+    }
     //endregion
 
     //region product selector
