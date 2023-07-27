@@ -23,6 +23,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TR
 import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
+import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -277,7 +278,9 @@ class MainActivityViewModel @Inject constructor(
 
                 FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
 
-                STORE_CREATION_FINISHED -> {}
+                STORE_CREATION_FINISHED,
+                THREE_DAYS_AFTER_STILL_EXPLORING -> {
+                }
             }
         }
     }
