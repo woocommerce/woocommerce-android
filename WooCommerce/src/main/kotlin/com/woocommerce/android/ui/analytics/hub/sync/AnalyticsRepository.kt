@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersR
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.MONTH_TO_DATE
@@ -207,7 +208,7 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriod = rangeSelection.currentRange
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
-        val statsIdentifier = RevenueStatId(currentPeriod.start, currentPeriod.end).id
+        val statsIdentifier = RevenueRangeId(currentPeriod, rangeSelection.selectionType).id
         val cachedRevenueStat = revenueStatsCache[statsIdentifier]
 
         getCurrentRevenueMutex.withLock {
@@ -230,7 +231,7 @@ class AnalyticsRepository @Inject constructor(
         val previousPeriod = rangeSelection.previousRange
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
-        val statsIdentifier = RevenueStatId(previousPeriod.start, previousPeriod.end).id
+        val statsIdentifier = RevenueRangeId(previousPeriod, rangeSelection.selectionType).id
         val cachedRevenueStat = revenueStatsCache[statsIdentifier]
 
         getPreviousRevenueMutex.withLock {
@@ -355,16 +356,16 @@ class AnalyticsRepository @Inject constructor(
         val result: Deferred<Result<WCRevenueStatsModel?>>
     )
 
-    private data class RevenueStatId(
-        private val startDate: Date,
-        private val endDate: Date
+    private data class RevenueRangeId(
+        private val timeRange: AnalyticsHubTimeRange,
+        private val selectionType: SelectionType
     ) {
         val id: Int
 
         init {
-            val startDateString = startDate.formatToYYYYmmDD()
-            val endDateString = endDate.formatToYYYYmmDD()
-            id = "$startDateString$endDateString".hashCode()
+            val startDateString = timeRange.start.formatToYYYYmmDD()
+            val endDateString = timeRange.end.formatToYYYYmmDD()
+            id = "${selectionType.identifier}$startDateString$endDateString".hashCode()
         }
     }
 }
