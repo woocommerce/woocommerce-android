@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class GetStats @Inject constructor(
@@ -73,7 +72,7 @@ class GetStats @Inject constructor(
     ): Flow<LoadStatsResult> {
         val (startDate, endDate) = timeRangeSelection.formattedDateRanges
         return statsRepository.fetchRevenueStats(
-            granularity,
+            timeRangeSelection.selectionType.toStatsGranularity(),
             forceRefresh,
             startDate,
             endDate
@@ -103,8 +102,12 @@ class GetStats @Inject constructor(
         // Visitor stats are only available for Jetpack connected sites
         return when (selectedSite.connectionType) {
             SiteConnectionType.Jetpack -> {
-                statsRepository.fetchVisitorStats(granularity, forceRefresh, startDate, endDate)
-                    .transform { result ->
+                statsRepository.fetchVisitorStats(
+                    timeRangeSelection.selectionType.toStatsGranularity(),
+                    forceRefresh,
+                    startDate,
+                    endDate
+                ).transform { result ->
                         result.fold(
                             onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
                             onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
