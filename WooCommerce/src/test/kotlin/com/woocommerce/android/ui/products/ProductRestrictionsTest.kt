@@ -159,5 +159,18 @@ class ProductRestrictionsTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given product with price specified, when product filters products restriction, then product is not restricted`() {
+        val product = ProductTestUtils.generateProduct(
+            amount = "10"
+        )
+
+        val sut = ProductFilterProductRestrictions()
+
+        assertFalse {
+            sut.isProductRestricted(product)
+        }
+    }
+
     //endregion
 }
