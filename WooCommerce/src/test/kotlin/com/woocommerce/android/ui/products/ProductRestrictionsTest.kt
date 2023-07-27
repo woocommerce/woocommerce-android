@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -18,6 +19,19 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertTrue {
+            sut.isProductRestricted(product)
+        }
+    }
+
+    @Test
+    fun `given published product, when order creation products restriction, then the product is not restricted`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.PUBLISH.name
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertFalse {
             sut.isProductRestricted(product)
         }
     }
