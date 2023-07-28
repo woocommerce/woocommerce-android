@@ -12,10 +12,10 @@ import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
 
 /**
  * This is not a screen per-se, as it shows the notification drawer with a push notification.
- * This is why we provide an [TabNavComponent.MY_STORE_BUTTON] as the [elementID].
+ * This is why we provide an [R.id.dashboard] as the [elementID].
  */
 class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBuilder) :
-    Screen(TabNavComponent.MY_STORE_BUTTON) {
+    Screen(R.id.dashboard) {
     init {
         displayNotification()
         openNotificationShade()

@@ -10,12 +10,7 @@ import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matchers
 
 class FilterScreen : Screen {
-
-    companion object {
-        const val TOOLBAR = R.id.toolbar
-    }
-
-    constructor() : super(TOOLBAR)
+    constructor() : super(R.id.toolbar)
 
     fun filterByPropertyAndValue(property: String, value: String): FilterScreen {
         clickByTextAndId(property, R.id.filterItemName)
