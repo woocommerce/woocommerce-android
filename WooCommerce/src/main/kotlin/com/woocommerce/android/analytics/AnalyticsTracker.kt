@@ -426,6 +426,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
         const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
         const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
+        const val KEY_COUPON_DISCOUNT_TYPE = "discount_type"
+        const val VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE = "percent"
+        const val VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART = "fixed_cart"
+        const val VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT = "fixed_product"
+        const val VALUE_COUPON_DISCOUNT_TYPE_CUSTOM = "custom"
+        const val KEY_INCLUDES_FREE_SHIPPING = "includes_free_shipping"
+        const val KEY_HAS_DESCRIPTION = "has_description"
+        const val KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS = "has_product_or_category_descriptions"
+        const val KEY_HAS_USAGE_RESTRICTIONS = "has_usage_restrictions"
 
         // -- Onboarding
         const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"

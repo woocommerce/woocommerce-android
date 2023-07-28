@@ -8,8 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_INITIATED
+import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_UPDATE_INITIATED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Coupon
@@ -229,7 +236,10 @@ class EditCouponViewModel @Inject constructor(
 
         val oldCoupon = storedCoupon.await()
         val newCoupon = couponDraft.value!!
-        trackUpdateChanges(oldCoupon, newCoupon)
+        when (mode.value) {
+            is Mode.Edit -> trackUpdateChanges(oldCoupon, newCoupon)
+            is Mode.Create -> trackCreateCoupon(newCoupon)
+        }
 
         when (mode.value) {
             is Mode.Edit -> updateCoupon(newCoupon)
@@ -249,6 +259,7 @@ class EditCouponViewModel @Inject constructor(
             .onSuccess {
                 triggerEvent(ShowSnackbar(R.string.coupon_create_coupon_created))
                 triggerEvent(Exit)
+                analyticsTrackerWrapper.track(COUPON_CREATION_SUCCESS)
             }
             .onFailure { exception ->
                 WooLog.e(
@@ -256,6 +267,12 @@ class EditCouponViewModel @Inject constructor(
                     message = "Coupon create failed: ${exception.message}"
                 )
                 val wooErrorType = (exception as? WooException)?.error?.type
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.COUPON_CREATION_FAILED,
+                    errorContext = this@EditCouponViewModel.javaClass.simpleName,
+                    errorType = wooErrorType?.name,
+                    errorDescription = exception.message
+                )
                 val message = exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR }
                     ?.message?.let { UiString.UiStringText(it) }
                     ?: UiString.UiStringRes(R.string.coupon_create_coupon_creation_failed)
@@ -312,6 +329,24 @@ class EditCouponViewModel @Inject constructor(
                 Pair(AnalyticsTracker.KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED, wereCouponProdsOrCatsUpdated),
                 Pair(AnalyticsTracker.KEY_COUPON_EXPIRY_DATE_UPDATED, wasCouponExpiryDateUpdated),
                 Pair(AnalyticsTracker.KEY_COUPON_USAGE_RESTRICTIONS_UPDATED, wereCouponUsageRestrictionsUpdated)
+            )
+        )
+    }
+
+
+    private fun trackCreateCoupon(newCoupon: Coupon) {
+        val type = when (newCoupon.type) {
+            is Coupon.Type.FixedCart -> VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
+            is Coupon.Type.Percent -> VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
+            is Coupon.Type.FixedProduct -> VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
+            is Coupon.Type.Custom -> VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
+            null -> null
+        }
+        analyticsTrackerWrapper.track(
+            COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to type,
+                // TODO: Add more properties
             )
         )
     }
