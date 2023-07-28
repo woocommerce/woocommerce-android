@@ -9,7 +9,8 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 
 class CustomerListViewModelMapperTest {
-    private val mapper = CustomerListViewModelMapper()
+    private val textHandler: CustomerListDisplayTextHandler = mock()
+    private val mapper = CustomerListViewModelMapper(textHandler)
 
     @Test
     fun `when mapFromWCCustomer, then return view model customer model`() {
@@ -22,12 +23,15 @@ class CustomerListViewModelMapperTest {
         }
 
         // WHEN
-        val result = mapper.mapFromWCCustomerToItem(wcCustomerModel)
+        val result = mapper.mapFromWCCustomerToItem(
+            wcCustomerModel,
+            "",
+            CustomerListDisplayTextHandler.SearchType.ALL
+        )
 
         // THEN
         assertThat(result.remoteId).isEqualTo(1)
-        assertThat(result.firstName).isEqualTo("firstName")
-        assertThat(result.lastName).isEqualTo("lastName")
+        assertThat(result.name).isEqualTo("firstName lastName")
         assertThat(result.email).isEqualTo("email")
     }
 
