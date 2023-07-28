@@ -524,6 +524,28 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then clear cached card reader credentials`() {
+        testBlocking {
+            val site = selectedSite.get()
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId
+                )
+            ).thenReturn(true)
+            whenever(cardReaderManager.initialized).thenReturn(true)
+
+            initViewModel()
+            (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+                it.label == UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onClick!!.invoke()
+
+            verify(cardReaderManager).clearCachedCredentials()
+        }
+    }
+
+    @Test
     fun `given onboarding error, when view model init, then show error message`() =
         testBlocking {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
