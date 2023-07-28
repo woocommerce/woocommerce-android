@@ -280,7 +280,7 @@ private fun CustomerListItem(
 @Composable
 private fun Customer.Text.render() =
     when (this) {
-        is Customer.Text.Highlighted -> buildHighlightText()
+        is Customer.Text.Highlighted -> buildHighlightedText()
 
         is Customer.Text.Placeholder -> buildPlaceholder()
     }
@@ -298,18 +298,14 @@ private fun Customer.Text.Placeholder.buildPlaceholder() =
     }
 
 @Composable
-private fun Customer.Text.Highlighted.buildHighlightText() =
+private fun Customer.Text.Highlighted.buildHighlightedText() =
     buildAnnotatedString {
-        if (start == end) {
+        if (start >= end) {
             append(text)
             return@buildAnnotatedString
         }
         append(text.substring(0, start))
-        withStyle(
-            style = SpanStyle(
-                textDecoration = TextDecoration.Underline
-            )
-        ) {
+        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
             append(text.substring(start, end))
         }
         append(text.substring(end, text.length))

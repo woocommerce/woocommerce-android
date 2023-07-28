@@ -9,8 +9,8 @@ class CustomerListDisplayTextHandler @Inject constructor(
     private val highlighter: CustomerListSearchResultsHighlighter,
     private val resourceProvider: ResourceProvider,
 ) {
-    operator fun invoke(param: CustomerParam, matchBy: String, searchType: SearchType): Customer.Text {
-        return when (param) {
+    operator fun invoke(param: CustomerParam, matchBy: String, searchType: SearchType) =
+        when (param) {
             is CustomerParam.Email -> handleEmail(
                 param.text,
                 matchBy,
@@ -29,7 +29,6 @@ class CustomerListDisplayTextHandler @Inject constructor(
                 searchType == SearchType.ALL || searchType == SearchType.USERNAME
             )
         }
-    }
 
     private fun handleName(name: String, matchBy: String, highlight: Boolean) =
         if (name.isEmpty()) {
