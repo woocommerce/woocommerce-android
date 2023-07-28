@@ -3,13 +3,13 @@ package com.woocommerce.android.support.help
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,8 +34,8 @@ class HelpViewModel @Inject constructor(
             val tags = if (fetchSitePluginsResult.isError) {
                 listOf(SITE_PLUGINS_FETCHING_ERROR_TAG)
             } else {
-                val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_PAYMENTS)
-                val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_STRIPE_GATEWAY)
+                val wcPayPluginInfo = fetchSitePluginsResult.model.getPlugin(PluginType.WOOCOMMERCE_PAYMENTS)
+                val stripePluginInfo = fetchSitePluginsResult.model.getPlugin(PluginType.STRIPE_EXTENSION_GATEWAY)
 
                 listOf(determineWcPayTag(wcPayPluginInfo), determineStripeTag(stripePluginInfo))
             }
@@ -60,6 +60,10 @@ class HelpViewModel @Inject constructor(
         } else {
             STRIPE_INSTALLED
         }
+
+    private fun List<SitePluginModel>?.getPlugin(type: PluginType) = this?.firstOrNull {
+        it.name.endsWith(type.pluginName)
+    }
 
     sealed class ContactSupportEvent : MultiLiveEvent.Event() {
         object ShowLoading : ContactSupportEvent()
