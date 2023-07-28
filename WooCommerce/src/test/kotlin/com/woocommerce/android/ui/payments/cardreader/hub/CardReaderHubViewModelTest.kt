@@ -546,6 +546,27 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then remove last connected card reader id`() {
+        testBlocking {
+            val site = selectedSite.get()
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId
+                )
+            ).thenReturn(true)
+
+            initViewModel()
+            (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+                it.label == UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onClick!!.invoke()
+
+            verify(appPrefsWrapper).removeLastConnectedCardReaderId()
+        }
+    }
+
+    @Test
     fun `given onboarding error, when view model init, then show error message`() =
         testBlocking {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
