@@ -431,6 +431,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART = "fixed_cart"
         const val VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT = "fixed_product"
         const val VALUE_COUPON_DISCOUNT_TYPE_CUSTOM = "custom"
+        const val KEY_HAS_EXPIRY_DATE = "has_expiry_date"
         const val KEY_INCLUDES_FREE_SHIPPING = "includes_free_shipping"
         const val KEY_HAS_DESCRIPTION = "has_description"
         const val KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS = "has_product_or_category_descriptions"

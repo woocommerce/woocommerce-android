@@ -13,6 +13,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_UPDATE_INITIATED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DESCRIPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_EXPIRY_DATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_USAGE_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_INCLUDES_FREE_SHIPPING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
@@ -342,11 +347,27 @@ class EditCouponViewModel @Inject constructor(
             is Coupon.Type.Custom -> VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
             null -> null
         }
+        val hasRestrictions = with(newCoupon.restrictions) {
+            isForIndividualUse == true ||
+                    usageLimit != null ||
+                    usageLimitPerUser != null ||
+                    limitUsageToXItems != null ||
+                    areSaleItemsExcluded == true ||
+                    minimumAmount != null ||
+                    maximumAmount != null ||
+                    excludedProductIds.isNotEmpty() ||
+                    excludedCategoryIds.isNotEmpty() ||
+                    restrictedEmails.isNotEmpty()
+        }
         analyticsTrackerWrapper.track(
             COUPON_CREATION_INITIATED,
             mapOf(
                 KEY_COUPON_DISCOUNT_TYPE to type,
-                // TODO: Add more properties
+                KEY_HAS_EXPIRY_DATE to (newCoupon.dateExpires != null),
+                KEY_INCLUDES_FREE_SHIPPING to newCoupon.isShippingFree,
+                KEY_HAS_DESCRIPTION to (newCoupon.description != null),
+                KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS to (newCoupon.productIds.isNotEmpty() || newCoupon.categoryIds.isNotEmpty()),
+                KEY_HAS_USAGE_RESTRICTIONS to hasRestrictions
             )
         )
     }
