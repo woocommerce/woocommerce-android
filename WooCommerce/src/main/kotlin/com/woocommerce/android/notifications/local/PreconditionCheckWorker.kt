@@ -12,6 +12,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.notifications.local.LocalNotificationType.UPGRADE_TO_PAID_PLAN
@@ -35,16 +36,19 @@ class PreconditionCheckWorker @AssistedInject constructor(
         val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
         return when (type) {
-            STORE_CREATION_FINISHED -> Result.success()
+            STORE_CREATION_FINISHED,
             STORE_CREATION_INCOMPLETE -> Result.success()
-            FREE_TRIAL_EXPIRING -> proceedIfFreeMatchingSite(data?.toLongOrNull())
-            FREE_TRIAL_EXPIRED -> proceedIfFreeMatchingSite(data?.toLongOrNull())
-            UPGRADE_TO_PAID_PLAN -> proceedIfFreeMatchingSite(data?.toLongOrNull())
+
+            FREE_TRIAL_EXPIRING,
+            FREE_TRIAL_EXPIRED,
+            UPGRADE_TO_PAID_PLAN,
+            FREE_TRIAL_SURVEY -> proceedIfFreeTrialAndMatchesSite(data?.toLongOrNull())
+
             null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
 
-    private fun proceedIfFreeMatchingSite(siteId: Long?): Result {
+    private fun proceedIfFreeTrialAndMatchesSite(siteId: Long?): Result {
         val site = selectedSite.get()
         return if (site.isFreeTrial && site.siteId == siteId) {
             Result.success()

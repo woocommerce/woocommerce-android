@@ -19,6 +19,7 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.notifications.local.LocalNotificationType.UPGRADE_TO_PAID_PLAN
@@ -273,6 +274,8 @@ class MainActivityViewModel @Inject constructor(
                 FREE_TRIAL_EXPIRED,
                 FREE_TRIAL_EXPIRING,
                 UPGRADE_TO_PAID_PLAN -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+
+                FREE_TRIAL_SURVEY -> TODO()
 
                 STORE_CREATION_FINISHED -> {}
             }
