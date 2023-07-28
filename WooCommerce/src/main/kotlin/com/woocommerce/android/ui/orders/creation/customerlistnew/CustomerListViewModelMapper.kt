@@ -16,13 +16,13 @@ class CustomerListViewModelMapper @Inject constructor(
         searchQuery: String,
         searchType: CustomerListDisplayTextHandler.SearchType,
     ) = CustomerListViewState.CustomerList.Item.Customer(
-            remoteId = wcCustomerModel.remoteCustomerId,
-            name = textHandler(CustomerParam.Name(wcCustomerModel.fullName), searchQuery, searchType),
-            email = textHandler(CustomerParam.Email(wcCustomerModel.email), searchQuery, searchType),
-            username = textHandler(CustomerParam.Username(wcCustomerModel.username), searchQuery, searchType),
+        remoteId = wcCustomerModel.remoteCustomerId,
+        name = textHandler(CustomerParam.Name(wcCustomerModel.fullName), searchQuery, searchType),
+        email = textHandler(CustomerParam.Email(wcCustomerModel.email), searchQuery, searchType),
+        username = textHandler(CustomerParam.Username(wcCustomerModel.username), searchQuery, searchType),
 
-            payload = wcCustomerModel,
-        )
+        payload = wcCustomerModel,
+    )
 
     fun mapFromOrderAddressToAddress(
         address: OrderAddress,
