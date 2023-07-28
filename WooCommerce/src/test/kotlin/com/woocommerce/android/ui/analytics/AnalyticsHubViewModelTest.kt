@@ -658,11 +658,19 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when last information changes, then update view state as expected`() = testBlocking {
+    fun `when last update information changes, then update view state as expected`() = testBlocking {
         whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(123456789L))
         sut = givenAViewModel()
 
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo(123456789L)
+    }
+
+    @Test
+    fun `when last update information is not initialized, then update view state field is null`() = testBlocking {
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
+        sut = givenAViewModel()
+
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo(null)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
