@@ -53,6 +53,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -61,6 +62,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
+    private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,
     private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
@@ -104,6 +106,7 @@ class AnalyticsHubViewModel @Inject constructor(
         observeProductsChanges()
         observeRevenueChanges()
         observeRangeSelectionChanges()
+        observeLastUpdateTimestamp()
         if (FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()) {
             shouldAskForFeedback()
         }
@@ -264,6 +267,10 @@ class AnalyticsHubViewModel @Inject constructor(
             .filter { state -> state is RevenueState.Available }
             .onEach { transactionLauncher.onRevenueFetched() }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeLastUpdateTimestamp() {
+        TODO("Not yet implemented")
     }
 
     private fun updateDateSelector() {
