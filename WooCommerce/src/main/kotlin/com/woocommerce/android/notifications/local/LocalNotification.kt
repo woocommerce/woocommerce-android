@@ -104,4 +104,18 @@ sealed class LocalNotification(
             return resourceProvider.getString(description)
         }
     }
+
+    data class StillExploringNotification(val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_still_exploring_title,
+        description = R.string.local_notification_still_exploring_description,
+        type = LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING,
+        delay = 3,
+        delayUnit = TimeUnit.DAYS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
 }
