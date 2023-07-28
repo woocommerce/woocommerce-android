@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
+import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
@@ -72,7 +74,8 @@ class CardReaderHubViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs,
     private val feedbackRepository: FeedbackRepository,
-    private val tapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler
+    private val tapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler,
+    private val cardReaderDataAction: ClearCardReaderDataAction,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -350,6 +353,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCardReaderPaymentProviderClicked() {
+        disconnectCardReader()
         cardReaderChecker.invalidateCache()
         trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
@@ -358,6 +362,12 @@ class CardReaderHubViewModel @Inject constructor(
                 CardReaderOnboardingState.ChoosePaymentGatewayProvider
             )
         )
+    }
+
+    private fun disconnectCardReader() {
+        viewModelScope.launch {
+            cardReaderDataAction()
+        }
     }
 
     private fun onCashOnDeliveryToggled(isChecked: Boolean) {
