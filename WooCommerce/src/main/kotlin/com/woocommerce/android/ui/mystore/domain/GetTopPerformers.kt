@@ -41,7 +41,10 @@ class GetTopPerformers @Inject constructor(
         return statsRepository.fetchTopPerformerProducts(isForcedRefresh, granularity, topPerformersCount)
             .let { result ->
                 if (result.isSuccess && isForcedRefresh) {
-                    analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionRange)
+                    analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                        rangeSelection = selectionRange,
+                        analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+                    )
                 }
                 result
             }
@@ -53,7 +56,10 @@ class GetTopPerformers @Inject constructor(
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
-            .shouldUpdateAnalytics(selectionRange)
+            .shouldUpdateAnalytics(
+                rangeSelection = selectionRange,
+                analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            )
             .firstOrNull() ?: true
     }
 

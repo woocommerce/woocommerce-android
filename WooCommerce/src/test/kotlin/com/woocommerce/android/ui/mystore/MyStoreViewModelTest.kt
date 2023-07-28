@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
@@ -29,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyList
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -64,6 +66,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
     private val timezoneProvider: TimezoneProvider = mock()
     private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
+    private val observeLastUpdate: ObserveLastUpdate = mock {
+        onBlocking { invoke(any(), anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
+    }
 
     private lateinit var sut: MyStoreViewModel
 
@@ -683,6 +688,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             myStoreTransactionLauncher,
             timezoneProvider,
             isAIProductDescriptionEnabled,
+            observeLastUpdate,
             localNotificationScheduler,
             shouldShowPrivacyBanner
         )
@@ -705,5 +711,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             total = 1.5,
             imageUrl = null
         )
+        const val DEFAULT_LAST_UPDATE = 1690382344865L
     }
 }

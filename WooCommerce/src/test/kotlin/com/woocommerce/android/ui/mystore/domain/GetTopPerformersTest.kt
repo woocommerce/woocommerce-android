@@ -12,6 +12,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -96,7 +97,13 @@ class GetTopPerformersTest : BaseUnitTest() {
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
-        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any(), any()))
+        whenever(
+            analyticsUpdateDataStore.shouldUpdateAnalytics(
+                rangeSelection = any(),
+                maxOutdatedTime = any(),
+                analyticData = eq(AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS)
+            )
+        )
             .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 

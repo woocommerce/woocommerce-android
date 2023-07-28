@@ -35,14 +35,26 @@ class GetStats @Inject constructor(
 ) {
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
         val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
-        val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
+        val shouldRefreshRevenue =
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+        val shouldRefreshVisitors =
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(isForcedRefresh, granularity),
-            visitorStats(isForcedRefresh, granularity)
+            revenueStats(shouldRefreshRevenue, granularity),
+            visitorStats(shouldRefreshVisitors, granularity)
         ).onEach { result ->
-            if (result is LoadStatsResult.RevenueStatsSuccess && isForcedRefresh) {
-                analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionRange)
+            if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection = selectionRange,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                )
+            }
+            if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection = selectionRange,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
             }
         }.flowOn(coroutineDispatchers.computation)
     }
@@ -115,11 +127,15 @@ class GetStats @Inject constructor(
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,
-        refresh: Boolean
+        refresh: Boolean,
+        analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
-            .shouldUpdateAnalytics(selectionRange)
+            .shouldUpdateAnalytics(
+                rangeSelection = selectionRange,
+                analyticData = analyticData
+            )
             .firstOrNull() ?: true
     }
 
