@@ -30,7 +30,9 @@ import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -42,7 +44,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -53,10 +57,6 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
-import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
-import com.woocommerce.android.util.DateUtils
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(

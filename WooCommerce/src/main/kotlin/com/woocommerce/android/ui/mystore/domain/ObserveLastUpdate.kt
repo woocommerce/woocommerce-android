@@ -35,7 +35,7 @@ class ObserveLastUpdate @Inject constructor(
 
     operator fun invoke(
         timeRangeSelection: StatsTimeRangeSelection
-    ) : Flow<Long?> {
+    ): Flow<Long?> {
         return analyticsUpdateDataStore.observeLastUpdate(
             rangeSelection = timeRangeSelection,
             analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
