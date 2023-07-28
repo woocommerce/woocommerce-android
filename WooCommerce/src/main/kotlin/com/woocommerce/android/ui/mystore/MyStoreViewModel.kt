@@ -135,11 +135,9 @@ class MyStoreViewModel @Inject constructor(
                 _activeStatsGranularity,
                 refreshTrigger.onStart { emit(RefreshState()) }
             ) { granularity, refreshEvent ->
-                Pair(granularity, refreshEvent)
-            }.collectLatest { pair ->
+                Pair(granularity, refreshEvent.shouldRefresh)
+            }.collectLatest { (granularity, isForceRefresh) ->
                 coroutineScope {
-                    val granularity = pair.first
-                    val isForceRefresh = pair.second.shouldRefresh
                     launch { loadStoreStats(granularity, isForceRefresh) }
                     launch { loadTopPerformersStats(granularity, isForceRefresh) }
                 }
