@@ -119,6 +119,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(states.last().searchModes).isEqualTo(searchModes)
+        assertThat(states.last().showFabInEmptyState).isTrue()
+        assertThat(states.last().searchFocused).isFalse()
+        assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
         assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
     }
 
@@ -252,8 +255,16 @@ class CustomerListViewModelTest : BaseUnitTest() {
             )
 
             assertThat(states.last().searchModes).isEqualTo(searchModes)
-            assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message).isEqualTo(
+            assertThat(states.last().searchModes).isEqualTo(searchModes)
+            assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_old_wc_hint)
+            assertThat(states.last().searchFocused).isTrue()
+            val emptyState = states.last().body as CustomerListViewState.CustomerList.Empty
+            assertThat(emptyState.message).isEqualTo(
                 R.string.order_creation_customer_search_empty_on_old_version_wcpay
+            )
+            assertThat(emptyState.image).isEqualTo(R.drawable.img_search_suggestion)
+            assertThat(emptyState.buttonText).isEqualTo(
+                R.string.order_creation_customer_search_empty_add_details_manually
             )
         }
 
@@ -313,8 +324,12 @@ class CustomerListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message)
+        val emptyState = states.last().body as CustomerListViewState.CustomerList.Empty
+        assertThat(emptyState.message)
             .isEqualTo(R.string.order_creation_customer_search_empty)
+        assertThat(emptyState.message).isEqualTo(R.string.order_creation_customer_search_empty)
+        assertThat(emptyState.image).isEqualTo(R.drawable.img_empty_search)
+        assertThat(emptyState.buttonText).isNull()
     }
 
     @Test

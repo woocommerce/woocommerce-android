@@ -330,8 +330,7 @@ private fun CustomerListEmpty(
     @DrawableRes image: Int,
     @StringRes buttonText: Int?,
     onAddCustomerClicked: () -> Unit,
-
-    ) {
+) {
     CustomerListNoDataState(
         text = message,
         image = image,
