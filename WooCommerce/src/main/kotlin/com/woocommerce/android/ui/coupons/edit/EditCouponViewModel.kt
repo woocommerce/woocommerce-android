@@ -15,7 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DESCRIPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_EXPIRY_DATE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_USAGE_RESTRICTIONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_INCLUDES_FREE_SHIPPING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
@@ -338,7 +338,6 @@ class EditCouponViewModel @Inject constructor(
         )
     }
 
-
     private fun trackCreateCoupon(newCoupon: Coupon) {
         val type = when (newCoupon.type) {
             is Coupon.Type.FixedCart -> VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
@@ -347,17 +346,9 @@ class EditCouponViewModel @Inject constructor(
             is Coupon.Type.Custom -> VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
             null -> null
         }
-        val hasRestrictions = with(newCoupon.restrictions) {
-            isForIndividualUse == true ||
-                    usageLimit != null ||
-                    usageLimitPerUser != null ||
-                    limitUsageToXItems != null ||
-                    areSaleItemsExcluded == true ||
-                    minimumAmount != null ||
-                    maximumAmount != null ||
-                    excludedProductIds.isNotEmpty() ||
-                    excludedCategoryIds.isNotEmpty() ||
-                    restrictedEmails.isNotEmpty()
+
+        val hasProductOrCategoryRestrictions = with(newCoupon.restrictions) {
+            excludedProductIds.isNotEmpty() || excludedCategoryIds.isNotEmpty()
         }
         analyticsTrackerWrapper.track(
             COUPON_CREATION_INITIATED,
@@ -366,10 +357,23 @@ class EditCouponViewModel @Inject constructor(
                 KEY_HAS_EXPIRY_DATE to (newCoupon.dateExpires != null),
                 KEY_INCLUDES_FREE_SHIPPING to newCoupon.isShippingFree,
                 KEY_HAS_DESCRIPTION to (newCoupon.description != null),
-                KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS to (newCoupon.productIds.isNotEmpty() || newCoupon.categoryIds.isNotEmpty()),
-                KEY_HAS_USAGE_RESTRICTIONS to hasRestrictions
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to hasProductOrCategoryRestrictions,
+                KEY_HAS_USAGE_RESTRICTIONS to newCoupon.hasUsageRestrictions()
             )
         )
+    }
+
+    private fun Coupon.hasUsageRestrictions() = with(restrictions) {
+        isForIndividualUse == true ||
+            usageLimit != null ||
+            usageLimitPerUser != null ||
+            limitUsageToXItems != null ||
+            areSaleItemsExcluded == true ||
+            minimumAmount != null ||
+            maximumAmount != null ||
+            excludedProductIds.isNotEmpty() ||
+            excludedCategoryIds.isNotEmpty() ||
+            restrictedEmails.isNotEmpty()
     }
 
     data class ViewState(

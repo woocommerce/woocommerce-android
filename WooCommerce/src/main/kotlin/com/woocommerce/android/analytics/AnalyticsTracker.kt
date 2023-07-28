@@ -434,7 +434,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_EXPIRY_DATE = "has_expiry_date"
         const val KEY_INCLUDES_FREE_SHIPPING = "includes_free_shipping"
         const val KEY_HAS_DESCRIPTION = "has_description"
-        const val KEY_HAS_PRODUCT_OR_CATEGORY_DESCRIPTIONS = "has_product_or_category_descriptions"
+        const val KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS = "has_product_or_category_restrictions"
         const val KEY_HAS_USAGE_RESTRICTIONS = "has_usage_restrictions"
 
         // -- Onboarding
