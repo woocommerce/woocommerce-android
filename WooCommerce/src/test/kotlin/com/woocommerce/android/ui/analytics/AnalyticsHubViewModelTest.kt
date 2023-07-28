@@ -63,6 +63,7 @@ import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.flowOf
 
 @ExperimentalCoroutinesApi
 class AnalyticsHubViewModelTest : BaseUnitTest() {
@@ -654,6 +655,14 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
+    }
+
+    @Test
+    fun `when last information changes, then update view state as expected`() = testBlocking {
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(123456789L))
+        sut = givenAViewModel()
+
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo(123456789L)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
