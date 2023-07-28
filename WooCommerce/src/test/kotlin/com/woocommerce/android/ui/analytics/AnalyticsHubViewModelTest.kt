@@ -670,8 +670,16 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when last update information is not initialized, then update view state field is null`() = testBlocking {
+    fun `when last update information is not initialized, then update view state field is empty`() = testBlocking {
         whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
+        sut = givenAViewModel()
+
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
+    }
+
+    @Test
+    fun `when last update information is null, then update view state field is empty`() = testBlocking {
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
         sut = givenAViewModel()
 
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
