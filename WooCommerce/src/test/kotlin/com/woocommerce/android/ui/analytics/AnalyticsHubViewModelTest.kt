@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -85,6 +86,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val dateUtils: DateUtils = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -659,10 +661,12 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when last update information changes, then update view state as expected`() = testBlocking {
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(123456789L))
+        val lastUpdateTimestamp = 123456789L
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(lastUpdateTimestamp))
+        whenever(dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateTimestamp)).thenReturn("9:35 AM")
         sut = givenAViewModel()
 
-        assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo(123456789L)
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo("9:35 AM")
     }
 
     @Test
@@ -670,7 +674,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
         sut = givenAViewModel()
 
-        assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo(null)
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -689,6 +693,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             localeProvider,
             feedbackRepository,
             tracker,
+            dateUtils,
             savedState
         )
     }
