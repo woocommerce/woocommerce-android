@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
@@ -85,6 +87,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
+    private val observeLastUpdate: ObserveLastUpdate,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -105,6 +108,12 @@ class MyStoreViewModel @Inject constructor(
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
+
+    private var _lastUpdateStats = MutableLiveData<Long?>()
+    val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
+
+    private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
+    val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
 
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
@@ -235,6 +244,21 @@ class MyStoreViewModel @Inject constructor(
                 }
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
+        launch {
+            observeLastUpdate(
+                granularity,
+                listOf(
+                    AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
+        }
+        launch {
+            observeLastUpdate(
+                granularity,
+                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
+        }
     }
 
     private fun onRevenueStatsSuccess(

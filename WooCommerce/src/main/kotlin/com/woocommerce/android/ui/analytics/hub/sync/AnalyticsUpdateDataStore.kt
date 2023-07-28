@@ -9,6 +9,9 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
@@ -35,6 +38,39 @@ class AnalyticsUpdateDataStore @Inject constructor(
         } else {
             storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, analyticData))
         }
+    }
+
+    fun observeLastUpdate(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticData: List<AnalyticData>
+    ): Flow<Long?> {
+        val timestampKeys = analyticData.map { data ->
+            getTimeStampKey(rangeSelection.identifier, data)
+        }
+        return observeLastUpdate(timestampKeys)
+    }
+
+    fun observeLastUpdate(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticData: AnalyticData
+    ): Flow<Long?> {
+        val timestampKeys = getTimeStampKey(rangeSelection.identifier, analyticData)
+        return observeLastUpdate(timestampKeys)
+    }
+
+    private fun observeLastUpdate(
+        timestampKeys: List<String>
+    ): Flow<Long?> {
+        val flows = timestampKeys.map { timestampKey ->
+            dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
+        }
+        return combine(flows) { lastUpdateMillisArray -> lastUpdateMillisArray.filterNotNull() }
+            .filter { notNullValues -> notNullValues.size == timestampKeys.size }
+            .map { lastUpdateValues -> lastUpdateValues.min() }
+    }
+
+    private fun observeLastUpdate(timestampKey: String): Flow<Long?> {
+        return dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
     }
 
     private fun shouldUpdateAnalytics(
