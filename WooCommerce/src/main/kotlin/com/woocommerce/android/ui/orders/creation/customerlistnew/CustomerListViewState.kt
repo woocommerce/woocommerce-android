@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.customerlistnew
 
 import android.os.Parcelable
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -11,12 +12,17 @@ data class CustomerListViewState(
     @StringRes val searchHint: Int,
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
+    val showFabInEmptyState: Boolean,
     val partialLoading: Boolean = false,
     val body: CustomerList = CustomerList.Loading,
 ) {
     sealed class CustomerList {
         object Loading : CustomerList()
-        data class Empty(@StringRes val message: Int) : CustomerList()
+        data class Empty(
+            @StringRes val message: Int,
+            @DrawableRes val image: Int,
+            @StringRes val buttonText: Int?,
+        ) : CustomerList()
         data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
