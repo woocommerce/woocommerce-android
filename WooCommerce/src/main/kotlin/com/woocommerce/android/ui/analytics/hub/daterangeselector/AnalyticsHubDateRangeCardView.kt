@@ -36,7 +36,7 @@ class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
                     isVisible = true
                     text = String.format(
                         Locale.getDefault(),
-                        resources.getString(R.string.last_update),
+                        resources.getString(R.string.last_update_with_frequency),
                         lastUpdateTimestamp
                     )
                 }
