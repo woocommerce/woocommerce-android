@@ -71,24 +71,28 @@
             android:layout_height="1dp"
             android:background="@color/divider_color" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/previous_range_description"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             style="@style/Woo.Card.Body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_100"
-            android:layout_marginTop="@dimen/major_100"
-            android:maxLines="1"
-            tools:text="Compared to Jan 1 - Dec 31, 2021" />
+            android:layout_margin="@dimen/major_100"
+            android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/last_update_timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_50"
-            tools:text="Last update: 9:35 AM (Updates every 30 minutes)" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/previous_range_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                tools:text="Compared to Jan 1 - Dec 31, 2021" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/last_update_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                tools:text="Last update: 9:35 AM (Updates every 30 minutes)" />
+
+        </LinearLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
