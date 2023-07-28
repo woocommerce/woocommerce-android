@@ -2444,6 +2444,14 @@
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
+    <string name="coupon_type_picker_title">Create Coupon</string>
+    <string name="coupon_type_picker_icon_content_description">Coupon type icon</string>
+    <string name="coupon_type_picker_percentage_discount_title">Percentage Discount</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Fixed Cart Discount</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Fixed Product Discount</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Create a percentage discount for selected products</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Create a fixed total discount for the entire cart</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Create a fixed total discount for selected products</string>
     <string name="coupon_details_heading">Coupon Summary</string>
     <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
     <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
@@ -2484,6 +2492,9 @@
     <string name="coupon_details_restricted_emails">Restricted to customers with emails: %1$s</string>
     <string name="coupon_details_menu_edit">Edit Coupon</string>
     <string name="coupon_edit_screen_title">Edit %1$s</string>
+    <string name="coupon_edit_screen_title_default">Edit Coupon</string>
+    <string name="coupon_create_screen_title">Create %1$s</string>
+    <string name="coupon_create_screen_title_default">Create Coupon</string>
     <string name="coupon_edit_details_section">Coupon Details</string>
     <string name="coupon_edit_conditions_section">Apply this coupon to</string>
     <string name="coupon_edit_amount_hint">Amount (%1$s)</string>

@@ -90,7 +90,8 @@ class EditCouponViewModelTests : BaseUnitTest() {
             parameterRepository = mock {
                 on { getParameters(any(), any()) } doReturn siteParams
             },
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -105,18 +106,18 @@ class EditCouponViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen is opened in add new mode, then load empty coupon`() = testBlocking {
-        setup(mode = Mode.Add)
+    fun `when screen is opened in creation mode, then load empty coupon`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
 
         val state = viewModel.viewState.captureValues().last()
 
-        assertThat(state.couponDraft).isEqualTo(emptyCoupon)
+        assertThat(state.couponDraft).isEqualTo(emptyCoupon.copy(type = Coupon.Type.Percent))
         assertThat(state.hasChanges).isEqualTo(false)
     }
 
     @Test
-    fun `when screen is opened in add new mode, then save button should have correct text`() = testBlocking {
-        setup(mode = Mode.Add)
+    fun `when screen is opened in creation mode, then save button should have correct text`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
 
         val state = viewModel.viewState.captureValues().last()
 

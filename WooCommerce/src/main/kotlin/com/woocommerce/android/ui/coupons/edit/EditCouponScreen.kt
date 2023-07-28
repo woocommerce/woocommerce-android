@@ -389,7 +389,7 @@ private fun EditCouponPreview() {
                         restrictedEmails = emptyList()
                     )
                 ),
-                localizedType = "Fixed Rate Discount",
+                screenTitle = "Fixed Rate Discount",
                 amountUnit = "%",
                 hasChanges = true,
                 isSaving = true,

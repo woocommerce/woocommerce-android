@@ -55,14 +55,13 @@ class EditCouponFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         setupObservers()
         handleResults()
     }
 
     private fun setupObservers() {
         viewModel.viewState.observe(viewLifecycleOwner) {
-            screenTitle = getString(R.string.coupon_edit_screen_title, it.localizedType)
+            screenTitle = it.screenTitle
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
