@@ -786,6 +786,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOCAL_NOTIFICATION_DISPLAYED,
     LOCAL_NOTIFICATION_TAPPED,
     LOCAL_NOTIFICATION_DISMISSED,
+    FREE_TRIAL_SURVEY_SENT,
 
     // Widgets
     WIDGET_TAPPED,
