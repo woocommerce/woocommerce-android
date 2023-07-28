@@ -7,6 +7,7 @@ import com.woocommerce.android.AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfig
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
+import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
@@ -95,6 +97,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
     }
     private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
+    private val cardReaderManager: CardReaderManager = mock()
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
+
+    private val clearCardReaderDataAction: ClearCardReaderDataAction = ClearCardReaderDataAction(
+        cardReaderManager,
+        appPrefsWrapper,
+        cardReaderOnboardingChecker
+    )
 
     @Before
     fun setUp() {
@@ -490,6 +500,28 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
+
+    @Test
+    fun `given multiple plugins installed, when change payment provider clicked, then disconnect the card reader`() {
+        testBlocking {
+            val site = selectedSite.get()
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId
+                )
+            ).thenReturn(true)
+            whenever(cardReaderManager.initialized).thenReturn(true)
+
+            initViewModel()
+            (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+                it.label == UiStringRes(R.string.card_reader_manage_payment_provider)
+            }!!.onClick!!.invoke()
+
+            verify(cardReaderManager).disconnectReader()
+        }
+    }
 
     @Test
     fun `given onboarding error, when view model init, then show error message`() =
@@ -1745,6 +1777,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             appPrefs,
             feedbackRepository,
             cardReaderHubTapToPayUnavailableHandler,
+            clearCardReaderDataAction,
         )
         viewModel.onViewVisible()
     }
