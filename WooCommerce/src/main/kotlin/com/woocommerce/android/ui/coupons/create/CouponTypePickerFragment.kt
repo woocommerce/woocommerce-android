@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -26,13 +25,11 @@ class CouponTypePickerFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    Column {
-                        CouponTypePickerScreen(
-                            viewModel::onPercentageDiscountClicked,
-                            viewModel::onFixedCartDiscountClicked,
-                            viewModel::onFixedProductDiscountClicked
-                        )
-                    }
+                    CouponTypePickerScreen(
+                        viewModel::onPercentageDiscountClicked,
+                        viewModel::onFixedCartDiscountClicked,
+                        viewModel::onFixedProductDiscountClicked
+                    )
                 }
             }
         }
