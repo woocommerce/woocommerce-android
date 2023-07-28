@@ -6,10 +6,12 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.text.bold
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import java.util.Locale
 
 class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
@@ -27,7 +29,12 @@ class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
     }
 
     fun updateLastUpdateTimestamp(lastUpdateTimestamp: String) {
-        binding.lastUpdateTimestamp.text = lastUpdateTimestamp
+        with(binding.lastUpdateTimestamp) {
+            lastUpdateTimestamp
+                .takeIf { it.isNotEmpty() }
+                ?.let { text = lastUpdateTimestamp }
+                ?: apply { isVisible = false }
+        }
     }
 
     fun updatePreviousRange(previousRange: String) {
