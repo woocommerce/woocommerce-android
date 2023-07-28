@@ -80,13 +80,14 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
-            NotShowIndicator,
-            AnalyticsHubDateRangeSelectorViewState.EMPTY,
-            LoadingViewState,
-            LoadingViewState,
-            LoadingProductsViewState,
-            LoadingViewState,
-            false
+            refreshIndicator = NotShowIndicator,
+            analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
+            revenueState = LoadingViewState,
+            ordersState = LoadingViewState,
+            productsState = LoadingProductsViewState,
+            sessionState = LoadingViewState,
+            showFeedBackBanner = false,
+            lastUpdateTimestamp = ""
         )
     )
     val viewState: StateFlow<AnalyticsViewState> = mutableState
