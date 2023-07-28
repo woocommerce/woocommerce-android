@@ -277,6 +277,7 @@ class CustomerListViewModel @Inject constructor(
         searchHint = R.string.order_creation_customer_search_old_wc_hint,
         searchQuery = searchQuery,
         showFabInEmptyState = false,
+        searchFocused = true,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Empty(
             R.string.order_creation_customer_search_empty_on_old_version_wcpay,
@@ -289,6 +290,7 @@ class CustomerListViewModel @Inject constructor(
         searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
         showFabInEmptyState = true,
+        searchFocused = false,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
     )

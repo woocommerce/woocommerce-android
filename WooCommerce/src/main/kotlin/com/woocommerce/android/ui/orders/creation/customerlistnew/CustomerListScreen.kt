@@ -125,7 +125,7 @@ fun CustomerListScreen(
             state = SearchLayoutWithParamsState(
                 hint = state.searchHint,
                 searchQuery = state.searchQuery,
-                isSearchFocused = false,
+                isSearchFocused = state.searchFocused,
                 areSearchTypesAlwaysVisible = true,
                 supportedSearchTypes = state.searchModes.map {
                     SearchLayoutWithParamsState.SearchType(
@@ -456,6 +456,7 @@ fun CustomerListScreenPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
+            searchFocused = false,
             showFabInEmptyState = true,
             searchModes = listOf(
                 SearchMode(
@@ -523,6 +524,7 @@ fun CustomerListScreenEmptyOldPreview() {
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
             showFabInEmptyState = false,
+            searchFocused = false,
             searchModes = listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_username,
@@ -563,6 +565,7 @@ fun CustomerListScreenEmptyNewPreview() {
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
             showFabInEmptyState = true,
+            searchFocused = false,
             searchModes = emptyList(),
             body = CustomerListViewState.CustomerList.Empty(
                 message = R.string.order_creation_customer_search_empty,
@@ -588,6 +591,7 @@ fun CustomerListScreenErrorPreview() {
             searchHint = R.string.order_creation_customer_search_old_wc_hint,
             searchQuery = "search",
             showFabInEmptyState = true,
+            searchFocused = false,
             searchModes = listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_username,
@@ -624,6 +628,7 @@ fun CustomerListScreenLoadingPreview() {
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             showFabInEmptyState = true,
+            searchFocused = false,
             searchModes = listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_username,
