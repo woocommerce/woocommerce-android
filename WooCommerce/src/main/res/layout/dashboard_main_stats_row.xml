@@ -156,4 +156,14 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/lastUpdatedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="@color/color_on_surface_medium"
+        tools:text="Last updated 11:25 AM"
+        android:layout_marginTop="@dimen/major_100"/>
+
 </LinearLayout>
