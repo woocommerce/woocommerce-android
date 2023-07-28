@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
@@ -29,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyList
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -64,6 +66,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
     private val timezoneProvider: TimezoneProvider = mock()
     private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
+    private val observeLastUpdate: ObserveLastUpdate = mock {
+        onBlocking { invoke(any(), anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
+    }
 
     private lateinit var sut: MyStoreViewModel
 
@@ -83,7 +88,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 granularity = DEFAULT_STATS_GRANULARITY,
-                forceRefresh = true,
+                refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_COUNT
             )
         }
@@ -97,18 +102,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             verify(getStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
-        }
-
-    @Test
-    fun `given there is no network, when granularity changed, stats are marked as refresh pending`() =
-        testBlocking {
-            givenObserveTopPerformersEmits(emptyList())
-            givenNetworkConnectivity(connected = false)
-            whenViewModelIsCreated()
-
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
-
-            assertTrue(sut.refreshTopPerformerStats[ANY_SELECTED_STATS_GRANULARITY.ordinal])
         }
 
     @Test
@@ -130,14 +123,13 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             whenViewModelIsCreated()
-            givenStatsForGranularityCached(ANY_SELECTED_STATS_GRANULARITY)
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
             verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 ANY_SELECTED_STATS_GRANULARITY,
-                forceRefresh = false,
+                refresh = false,
                 ANY_TOP_PERFORMERS_COUNT
             )
         }
@@ -154,7 +146,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
                 DEFAULT_STATS_GRANULARITY,
-                forceRefresh = true,
+                refresh = true,
                 ANY_TOP_PERFORMERS_COUNT
             )
         }
@@ -673,10 +665,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenever(resourceProvider.getString(any(), any())).thenReturn("")
     }
 
-    private fun givenStatsForGranularityCached(granularity: StatsGranularity) {
-        sut.refreshTopPerformerStats[granularity.ordinal] = false
-    }
-
     private fun givenObserveTopPerformersEmits(topPerformers: List<TopPerformerProduct>) {
         whenever(getTopPerformers.observeTopPerformers(any()))
             .thenReturn(
@@ -700,6 +688,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             myStoreTransactionLauncher,
             timezoneProvider,
             isAIProductDescriptionEnabled,
+            observeLastUpdate,
             localNotificationScheduler,
             shouldShowPrivacyBanner
         )
@@ -722,5 +711,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             total = 1.5,
             imageUrl = null
         )
+        const val DEFAULT_LAST_UPDATE = 1690382344865L
     }
 }

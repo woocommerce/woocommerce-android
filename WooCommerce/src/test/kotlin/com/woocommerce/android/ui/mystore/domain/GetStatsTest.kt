@@ -19,6 +19,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -181,7 +182,16 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
-            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(any(), any())
+            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
+                any(),
+                any(),
+                eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            )
+            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
+                any(),
+                any(),
+                eq(AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+            )
         }
 
     @Test
@@ -192,7 +202,7 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
-                .shouldUpdateAnalytics(any(), any())
+                .shouldUpdateAnalytics(any(), any(), any())
         }
 
     @Test
@@ -202,7 +212,11 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
 
-            verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(any())
+            verify(analyticsUpdateDataStore)
+                .storeLastAnalyticsUpdate(
+                    any(),
+                    eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                )
         }
 
     @Test
@@ -213,7 +227,10 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
-            verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(any())
+            verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
+                any(),
+                eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            )
         }
 
     @Test
@@ -225,7 +242,10 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
-                .storeLastAnalyticsUpdate(any())
+                .storeLastAnalyticsUpdate(
+                    any(),
+                    eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                )
         }
 
     @Test
@@ -237,7 +257,10 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
             verify(analyticsUpdateDataStore, never())
-                .storeLastAnalyticsUpdate(any())
+                .storeLastAnalyticsUpdate(
+                    any(),
+                    eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                )
         }
 
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
@@ -264,7 +287,13 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
-        whenever(analyticsUpdateDataStore.shouldUpdateAnalytics(any(), any()))
+        whenever(
+            analyticsUpdateDataStore.shouldUpdateAnalytics(
+                rangeSelection = any(),
+                maxOutdatedTime = any(),
+                analyticData = any()
+            )
+        )
             .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 

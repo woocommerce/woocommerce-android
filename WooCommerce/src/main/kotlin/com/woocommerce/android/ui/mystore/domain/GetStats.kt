@@ -34,15 +34,27 @@ class GetStats @Inject constructor(
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val selectionRange = granularity.asRangeSelection
-        val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
+        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
+        val shouldRefreshRevenue =
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+        val shouldRefreshVisitors =
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(isForcedRefresh, granularity),
-            visitorStats(isForcedRefresh, granularity)
+            revenueStats(shouldRefreshRevenue, granularity),
+            visitorStats(shouldRefreshVisitors, granularity)
         ).onEach { result ->
-            if (result is LoadStatsResult.RevenueStatsSuccess && isForcedRefresh) {
-                analyticsUpdateDataStore.storeLastAnalyticsUpdate(selectionRange)
+            if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection = selectionRange,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                )
+            }
+            if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection = selectionRange,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
             }
         }.flowOn(coroutineDispatchers.computation)
     }
@@ -105,15 +117,8 @@ class GetStats @Inject constructor(
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
-    private val StatsGranularity.asRangeSelection
-        get() = StatsTimeRangeSelection.SelectionType.from(this)
-            .generateSelectionData(
-                calendar = Calendar.getInstance(),
-                locale = localeProvider.provideLocale() ?: Locale.getDefault()
-            )
-
     private val StatsGranularity.statsDateRange
-        get() = asRangeSelection.let {
+        get() = asRangeSelection(localeProvider.provideLocale()).let {
             Pair(
                 it.currentRange.start.formatToYYYYmmDDhhmmss(),
                 it.currentRange.end.formatToYYYYmmDDhhmmss()
@@ -122,11 +127,15 @@ class GetStats @Inject constructor(
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,
-        refresh: Boolean
+        refresh: Boolean,
+        analyticData: AnalyticsUpdateDataStore.AnalyticData
     ): Boolean {
         if (refresh) return true
         return analyticsUpdateDataStore
-            .shouldUpdateAnalytics(selectionRange)
+            .shouldUpdateAnalytics(
+                rangeSelection = selectionRange,
+                analyticData = analyticData
+            )
             .firstOrNull() ?: true
     }
 
@@ -151,3 +160,9 @@ class GetStats @Inject constructor(
         ) : LoadStatsResult()
     }
 }
+
+fun StatsGranularity.asRangeSelection(locale: Locale? = null) = StatsTimeRangeSelection.SelectionType.from(this)
+    .generateSelectionData(
+        calendar = Calendar.getInstance(),
+        locale = locale ?: Locale.getDefault()
+    )
