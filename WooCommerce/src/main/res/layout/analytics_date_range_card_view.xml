@@ -76,9 +76,19 @@
             style="@style/Woo.Card.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/major_100"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
             android:maxLines="1"
             tools:text="Compared to Jan 1 - Dec 31, 2021" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/last_update_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_50"
+            tools:text="Last update: 9:35 AM (Updates every 30 minutes)" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
