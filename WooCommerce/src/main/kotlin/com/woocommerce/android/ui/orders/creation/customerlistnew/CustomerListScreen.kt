@@ -116,7 +116,7 @@ fun CustomerListScreen(
     ) {
         SearchLayoutWithParams(
             state = SearchLayoutWithParamsState(
-                hint = R.string.order_creation_customer_search_hint,
+                hint = state.searchHint,
                 searchQuery = state.searchQuery,
                 isSearchFocused = false,
                 areSearchTypesAlwaysVisible = true,
@@ -418,6 +418,7 @@ fun CustomerListScreenPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
+            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
@@ -481,6 +482,7 @@ fun CustomerListScreenEmptyPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
+            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
@@ -515,6 +517,7 @@ fun CustomerListScreenErrorPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
+            searchHint = R.string.order_creation_customer_search_old_wc_hint,
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
@@ -548,6 +551,7 @@ fun CustomerListScreenLoadingPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
+            searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
