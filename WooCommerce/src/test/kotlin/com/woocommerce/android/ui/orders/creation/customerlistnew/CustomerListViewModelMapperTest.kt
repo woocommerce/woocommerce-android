@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListViewState.CustomerList.Item.Customer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 
@@ -19,8 +21,48 @@ class CustomerListViewModelMapperTest {
             on { remoteCustomerId }.thenReturn(1)
             on { firstName }.thenReturn("firstName")
             on { lastName }.thenReturn("lastName")
+            on { username }.thenReturn("username")
             on { email }.thenReturn("email")
         }
+
+        val highlightedName = Customer.Text.Highlighted(
+            "firstName lastName",
+            0,
+            17
+        )
+        whenever(
+            textHandler.invoke(
+                CustomerListDisplayTextHandler.CustomerParam.Name("firstName lastName"),
+                "",
+                CustomerListDisplayTextHandler.SearchType.ALL,
+            )
+        ).thenReturn(highlightedName)
+
+        val highlightedEmail = Customer.Text.Highlighted(
+            "email",
+            0,
+            17
+        )
+        whenever(
+            textHandler.invoke(
+                CustomerListDisplayTextHandler.CustomerParam.Email("email"),
+                "",
+                CustomerListDisplayTextHandler.SearchType.ALL,
+            )
+        ).thenReturn(highlightedEmail)
+
+        val highlightedUsername = Customer.Text.Highlighted(
+            "username",
+            0,
+            17
+        )
+        whenever(
+            textHandler.invoke(
+                CustomerListDisplayTextHandler.CustomerParam.Username("username"),
+                "",
+                CustomerListDisplayTextHandler.SearchType.ALL,
+            )
+        ).thenReturn(highlightedUsername)
 
         // WHEN
         val result = mapper.mapFromWCCustomerToItem(
@@ -31,8 +73,9 @@ class CustomerListViewModelMapperTest {
 
         // THEN
         assertThat(result.remoteId).isEqualTo(1)
-        assertThat(result.name).isEqualTo("firstName lastName")
-        assertThat(result.email).isEqualTo("email")
+        assertThat(result.name).isEqualTo(highlightedName)
+        assertThat(result.email).isEqualTo(highlightedEmail)
+        assertThat(result.username).isEqualTo(highlightedUsername)
     }
 
     @Test
