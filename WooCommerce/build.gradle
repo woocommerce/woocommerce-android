@@ -37,6 +37,7 @@ repositories {
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
+            includeGroup "com.woocommerce.shared"
         }
     }
     maven {
@@ -100,6 +101,10 @@ android {
             exclude("META-INF/*.kotlin_module")
             pickFirst 'META-INF/AL2.0'
             pickFirst 'META-INF/LGPL2.1'
+
+            // Avoid React Native's JNI duplicated classes
+            pickFirst '**/libc++_shared.so'
+            pickFirst '**/libfbjni.so'
         }
 
         resConfigs(
@@ -397,6 +402,8 @@ dependencies {
     implementation "androidx.camera:camera-view:$androidxCameraVersion"
 
     implementation "com.google.guava:guava:$guavaVersion"
+
+    implementation "${gradle.ext.wooCommerceSharedBinaryPath}:$wooCommerceSharedVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
