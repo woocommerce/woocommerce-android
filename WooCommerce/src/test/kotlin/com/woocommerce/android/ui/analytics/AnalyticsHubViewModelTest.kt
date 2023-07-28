@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -78,6 +79,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     private val updateStats: UpdateAnalyticsHubStats = mock()
+    private val observeLastUpdate: ObserveLastUpdate = mock()
     private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
@@ -666,6 +668,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             transactionLauncher,
             mock(),
             updateStats,
+            observeLastUpdate,
             localeProvider,
             feedbackRepository,
             tracker,
