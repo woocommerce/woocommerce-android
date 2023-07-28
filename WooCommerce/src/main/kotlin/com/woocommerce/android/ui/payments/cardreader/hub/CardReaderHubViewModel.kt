@@ -354,7 +354,6 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onCardReaderPaymentProviderClicked() {
         disconnectCardReader()
-        cardReaderChecker.invalidateCache()
         trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
         triggerEvent(
