@@ -150,6 +150,7 @@
     <string name="hide_password_content_description">Hide password</string>
     <string name="show_password_content_description">Show password</string>
     <string name="last_update">Last update %s</string>
+    <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
 
     <!--
         Date/Time Labels
@@ -3453,7 +3454,7 @@
     <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
 
-    <!--  
+    <!--
     Shipping zones
     -->
     <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
