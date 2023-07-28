@@ -109,8 +109,11 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    private var _lastUpdate = MutableLiveData<Long?>()
-    val lastUpdate: LiveData<Long?> = _lastUpdate
+    private var _lastUpdateStats = MutableLiveData<Long?>()
+    val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
+
+    private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
+    val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
 
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
@@ -241,13 +244,21 @@ class MyStoreViewModel @Inject constructor(
                 }
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
-        observeLastUpdate(
-            granularity,
-            listOf(
-                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
-                AnalyticsUpdateDataStore.AnalyticData.VISITORS
-            )
-        ).collect { lastUpdateMillis -> _lastUpdate.value = lastUpdateMillis }
+        launch {
+            observeLastUpdate(
+                granularity,
+                listOf(
+                    AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
+        }
+        launch {
+            observeLastUpdate(
+                granularity,
+                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
+        }
     }
 
     private fun onRevenueStatsSuccess(
