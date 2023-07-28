@@ -173,6 +173,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun observeRangeSelectionChanges() {
         rangeSelectionState.onEach {
+            observeLastUpdateTimestamp()
             updateDateSelector()
             trackSelectedDateRange()
             updateStats(
@@ -275,12 +276,12 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeLastUpdateTimestamp() {
-        rangeSelectionState.onEach {
-            observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
-                .filterNotNull()
-                .map { dateUtils.getDateMillisInFriendlyTimeFormat(it) }
-                .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
-        }.launchIn(viewModelScope)
+        mutableState.value = viewState.value.copy(lastUpdateTimestamp = "")
+        observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
+            .filterNotNull()
+            .map { dateUtils.getDateMillisInFriendlyTimeFormat(it) }
+            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
+            .launchIn(viewModelScope)
     }
 
     private fun updateDateSelector() {
