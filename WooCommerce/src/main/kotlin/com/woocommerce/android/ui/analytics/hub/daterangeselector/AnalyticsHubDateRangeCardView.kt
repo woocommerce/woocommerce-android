@@ -11,6 +11,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import java.util.Locale
 
 class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
@@ -33,7 +34,11 @@ class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
                 .takeIf { it.isNotEmpty() }
                 ?.let {
                     isVisible = true
-                    text = lastUpdateTimestamp
+                    text = String.format(
+                        Locale.getDefault(),
+                        resources.getString(R.string.last_update),
+                        lastUpdateTimestamp
+                    )
                 }
                 ?: apply { isVisible = false }
         }
