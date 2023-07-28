@@ -748,5 +748,9 @@
             android:name="productTitle"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="productDescription"
+            app:argType="string"
+            app:nullable="true" />
     </dialog>
 </navigation>

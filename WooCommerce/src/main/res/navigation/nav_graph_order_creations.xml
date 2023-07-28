@@ -35,7 +35,8 @@
 
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
-            app:destination="@id/orderCreationCustomerFragment" />
+            app:destination="@id/orderCreationCustomerFragment" >
+        </action>
         <action
             android:id="@+id/action_orderCreationFragment_to_customerListFragment"
             app:destination="@id/customerListFragmentNew" />
@@ -156,6 +157,10 @@
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomerAddFragment"
         android:label="OrderCreationCustomerFragment"
         tools:layout="@layout/fragment_base_edit_address">
+        <argument
+            android:name="editingOfAddedCustomer"
+            app:argType="boolean" />
+
         <action
             android:id="@+id/action_search_filter_fragment"
             app:destination="@id/searchFilterFragment" />

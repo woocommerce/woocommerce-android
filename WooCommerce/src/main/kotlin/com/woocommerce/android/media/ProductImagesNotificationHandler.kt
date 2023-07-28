@@ -2,7 +2,11 @@ package com.woocommerce.android.media
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.job.JobParameters
+import android.app.job.JobService
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavDeepLinkBuilder
@@ -61,6 +65,17 @@ class ProductImagesNotificationHandler @Inject constructor(
         val notification = notificationBuilder.build()
         service.startForeground(FOREGROUND_NOTIFICATION_ID, notification)
         notificationManager.notify(FOREGROUND_NOTIFICATION_ID, notification)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    fun attachToService(service: ProductImagesJobService, params: JobParameters) {
+        val notification = notificationBuilder.build()
+        service.setNotification(
+            params,
+            FOREGROUND_NOTIFICATION_ID,
+            notification,
+            JobService.JOB_END_NOTIFICATION_POLICY_REMOVE
+        )
     }
 
     fun update(currentUpload: Int, totalUploads: Int) {

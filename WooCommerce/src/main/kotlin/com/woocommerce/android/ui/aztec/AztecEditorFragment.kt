@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_B
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentAztecEditorBinding
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -117,7 +118,8 @@ class AztecEditorFragment :
 
         findNavController().navigateSafely(
             AztecEditorFragmentDirections.actionAztecEditorFragmentToAIProductDescriptionBottomSheetFragment(
-                navArgs.productTitle
+                navArgs.productTitle,
+                getEditorText()?.fastStripHtml()
             )
         )
     }

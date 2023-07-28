@@ -46,21 +46,20 @@ class AIRepository @Inject constructor(
             features,
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
+        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
-    suspend fun identifyISOLanguageCode(site: SiteModel, text: String): Result<String> {
+    suspend fun identifyISOLanguageCode(site: SiteModel, text: String, feature: String): Result<String> {
         val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
-        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE, skipCache = true)
+        return fetchJetpackAICompletionsForSite(site, prompt, feature)
     }
 
     private suspend fun fetchJetpackAICompletionsForSite(
         site: SiteModel,
         prompt: String,
-        feature: String,
-        skipCache: Boolean = true
+        feature: String
     ): Result<String> = withContext(Dispatchers.IO) {
-        jetpackAIStore.fetchJetpackAICompletionsForSite(site, prompt, feature, skipCache).run {
+        jetpackAIStore.fetchJetpackAICompletions(site, prompt, feature).run {
             when (this) {
                 is JetpackAICompletionsResponse.Success -> {
                     WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")

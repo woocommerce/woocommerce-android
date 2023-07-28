@@ -58,12 +58,20 @@ class AnalyticsTracker private constructor(private val context: Context) {
         return uuid
     }
 
+    private fun track(stat: String) {
+        track(stat, false, emptyMap<String, String>())
+    }
+
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
+        track(stat.name, stat.siteless, properties)
+    }
+
+    private fun track(statName: String, isSiteless: Boolean, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
 
-        val eventName = stat.name.lowercase(Locale.getDefault())
+        val eventName = statName.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -75,7 +83,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val finalProperties = properties.toMutableMap()
 
-        if (!stat.siteless) {
+        if (!isSiteless) {
             site?.let {
                 finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
@@ -545,6 +553,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Product sharing with AI
         const val KEY_IS_RETRY = "is_retry"
         const val KEY_WITH_MESSAGE = "with_message"
+        const val VALUE_PRODUCT_SHARING = "product_sharing"
         const val VALUE_PRODUCT_SHARING_MESSAGE = "product_sharing_message"
 
         // -- AI product description
@@ -552,6 +561,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRODUCT_FORM = "product_form"
         const val VALUE_PRODUCT_DESCRIPTION = "product_description"
         const val KEY_IS_USEFUL = "is_useful"
+
+        // -- AI Language detection
+        const val KEY_DETECTED_LANGUAGE = "language"
 
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
@@ -572,6 +584,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
             instance = AnalyticsTracker(context.applicationContext)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
+        }
+
+        fun track(stat: String) {
+            if (sendUsageStats) {
+                instance?.track(stat)
+            }
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {

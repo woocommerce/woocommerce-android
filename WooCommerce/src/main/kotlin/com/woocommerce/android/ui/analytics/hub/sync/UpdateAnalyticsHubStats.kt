@@ -15,11 +15,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
     private val analyticsRepository: AnalyticsRepository
 ) {
     private val _revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
@@ -38,14 +40,26 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
-        fetchStrategy: FetchStrategy,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        forceUpdate: Boolean = false
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
         _revenueState.update { RevenueState.Loading }
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
+        withFetchStrategyFrom(rangeSelection, forceUpdate) { fetchStrategy ->
+            updateStatsData(scope, rangeSelection, fetchStrategy)
+        }
+
+        return fullStatsRequestState
+    }
+
+    private suspend fun updateStatsData(
+        scope: CoroutineScope,
+        rangeSelection: StatsTimeRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) {
         awaitAll(
             scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy),
             scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy),
@@ -53,7 +67,27 @@ class UpdateAnalyticsHubStats @Inject constructor(
             scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
         )
 
-        return fullStatsRequestState
+        if (fetchStrategy == FetchStrategy.ForceNew) {
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection)
+        }
+    }
+
+    private suspend fun withFetchStrategyFrom(
+        rangeSelection: StatsTimeRangeSelection,
+        forceUpdate: Boolean,
+        action: suspend (FetchStrategy) -> Unit
+    ) {
+        if (forceUpdate) {
+            action(FetchStrategy.ForceNew)
+            return
+        }
+
+        analyticsUpdateDataStore
+            .shouldUpdateAnalytics(rangeSelection)
+            .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
+            .firstOrNull()
+            ?.let { action(it) }
+            ?: action(FetchStrategy.ForceNew)
     }
 
     private fun combineFullUpdateState() =
