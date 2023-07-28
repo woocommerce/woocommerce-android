@@ -43,7 +43,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val mockCustomer: CustomerListViewState.CustomerList.Item.Customer = mock()
     private val customerListViewModelMapper: CustomerListViewModelMapper = mock {
-        on { mapFromWCCustomerToItem(any()) }.thenReturn(mockCustomer)
+        on { mapFromWCCustomerToItem(any(), any(), any()) }.thenReturn(mockCustomer)
     }
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes = mock {
         onBlocking { invoke(true) }.thenReturn(
@@ -68,7 +68,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
-        // GIVEN
+        // WHEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
         advanceUntilIdle()
@@ -79,7 +79,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when viewmodel init, then viewstate is updated with search modes`() = testBlocking {
-        // GIVEN
+        // WHEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
 
@@ -112,6 +112,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
             )
         )
         whenever(getSupportedSearchModes.invoke(true)).thenReturn(searchModes)
+
+        // WHEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
 
@@ -119,6 +121,109 @@ class CustomerListViewModelTest : BaseUnitTest() {
         assertThat(states.last().searchModes).isEqualTo(searchModes)
         assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
     }
+
+    @Test
+    fun `given advanced search mode, when viewmodel init, then all passed to model mapper`() = testBlocking {
+        // GIVEN
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+        val searchModes = emptyList<SearchMode>()
+        whenever(getSupportedSearchModes.invoke(true)).thenReturn(searchModes)
+
+        // WHEN
+        initViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(customerListViewModelMapper).mapFromWCCustomerToItem(
+            any(),
+            eq(""),
+            eq(CustomerListDisplayTextHandler.SearchType.ALL)
+        )
+    }
+
+    @Test
+    fun `given not advanced search mode and name selected, when on search query changed, then name passed to model mapper`() =
+        testBlocking {
+            // GIVEN
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+            val query = "query"
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(query)
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListViewModelMapper).mapFromWCCustomerToItem(
+                any(),
+                eq(query),
+                eq(CustomerListDisplayTextHandler.SearchType.NAME)
+            )
+        }
+
+    @Test
+    fun `given not advanced search mode and email selected, when on search query changed, then email passed to model mapper`() =
+        testBlocking {
+            // GIVEN
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_email,
+                    searchParam = "email",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+            val query = "query"
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(query)
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListViewModelMapper).mapFromWCCustomerToItem(
+                any(),
+                eq(query),
+                eq(CustomerListDisplayTextHandler.SearchType.EMAIL)
+            )
+        }
+
+    @Test
+    fun `given not advanced search mode and username selected, when on search query changed, then username passed to model mapper`() =
+        testBlocking {
+            // GIVEN
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
+                    isSelected = true,
+                )
+            )
+            whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+            val query = "query"
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(query)
+            advanceUntilIdle()
+
+            // THEN
+            verify(customerListViewModelMapper).mapFromWCCustomerToItem(
+                any(),
+                eq(query),
+                eq(CustomerListDisplayTextHandler.SearchType.USERNAME)
+            )
+        }
 
     @Test
     fun `given not advanced search mode, when viewmodel init, then not advanced state emitted and customers not loaded`() =
@@ -133,6 +238,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(getSupportedSearchModes.invoke(false)).thenReturn(searchModes)
+
+            // WHEN
             val viewModel = initViewModel()
             val states = viewModel.viewState.captureValues()
 
@@ -156,6 +263,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
                 .thenReturn(Result.success((1..30).map { mock() }))
+
+            // WHEN
             val viewModel = initViewModel()
             val states = viewModel.viewState.captureValues()
             advanceUntilIdle()
@@ -169,7 +278,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given page number 1, when viewmodel init, then viewstate is updated to Loading state`() = testBlocking {
-        // GIVEN
+        // WHEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
 
@@ -182,6 +291,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
             .thenReturn(Result.failure(Throwable()))
+
+        // WHEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
         advanceUntilIdle()
@@ -195,6 +306,8 @@ class CustomerListViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
             .thenReturn(Result.success(emptyList()))
+
+        // WHEN
         val viewModel = initViewModel()
         val states = viewModel.viewState.captureValues()
         advanceUntilIdle()

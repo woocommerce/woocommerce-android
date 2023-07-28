@@ -15,6 +15,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class CustomerListFragment : BaseFragment() {
     private val viewModel by viewModels<CustomerListViewModel>()
     private val addressViewModel by hiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -45,17 +47,13 @@ class CustomerListFragment : BaseFragment() {
         ) { event ->
             when (event) {
                 is CustomerSelected -> {
-                    addressViewModel.onAddressesChanged(
+                    sharedViewModel.onCustomerAddressEdited(
                         customerId = event.customerId,
                         billingAddress = event.billingAddress,
                         shippingAddress = event.shippingAddress
                     )
-                    findNavController().navigateSafely(
-                        CustomerListFragmentDirections
-                            .actionCustomerListFragmentToOrderCreationCustomerFragment(
-                                editingOfAddedCustomer = false
-                            )
-                    )
+
+                    findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
                 is AddCustomer -> {
                     addressViewModel.clearSelectedAddress()
