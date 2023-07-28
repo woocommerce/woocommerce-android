@@ -385,6 +385,11 @@ private fun CustomerListNoDataState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.weight(1f))
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = null,
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
         Text(
             text = stringResource(id = text),
             textAlign = TextAlign.Center,
@@ -394,14 +399,9 @@ private fun CustomerListNoDataState(
                 end = dimensionResource(id = R.dimen.major_150)
             )
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = null,
-        )
 
         addCustomerButtonText?.let {
-            Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
             WCColoredButton(onClick = { onAddCustomerClicked() }) {
                 Text(text = stringResource(id = it))
             }
@@ -541,7 +541,7 @@ fun CustomerListScreenEmptyOldPreview() {
                 ),
             ),
             body = CustomerListViewState.CustomerList.Empty(
-                message = R.string.order_creation_customer_search_empty,
+                message = R.string.order_creation_customer_search_empty_on_old_version_wcpay,
                 image = R.drawable.img_search_suggestion,
                 buttonText = R.string.order_creation_customer_search_empty_add_details_manually
             ),
