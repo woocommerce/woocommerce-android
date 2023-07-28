@@ -271,7 +271,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun observeLastUpdateTimestamp() {
         observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
-            .onEach {  }
+            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
             .launchIn(viewModelScope)
     }
 
