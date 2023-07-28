@@ -270,7 +270,9 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeLastUpdateTimestamp() {
-        TODO("Not yet implemented")
+        observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
+            .onEach {  }
+            .launchIn(viewModelScope)
     }
 
     private fun updateDateSelector() {
