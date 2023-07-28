@@ -76,4 +76,46 @@ sealed class LocalNotification(
             return resourceProvider.getString(description, name)
         }
     }
+
+    data class UpgradeToPaidPlanNotification(val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
+        description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
+        type = LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
+        delay = 6,
+        delayUnit = TimeUnit.HOURS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
+
+    data class FreeTrialSurveyNotification(val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_survey_after_24_hours_title,
+        description = R.string.local_notification_survey_after_24_hours_description,
+        type = LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
+        delay = 24,
+        delayUnit = TimeUnit.HOURS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
+
+    data class StillExploringNotification(val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_still_exploring_title,
+        description = R.string.local_notification_still_exploring_description,
+        type = LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING,
+        delay = 3,
+        delayUnit = TimeUnit.DAYS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
 }

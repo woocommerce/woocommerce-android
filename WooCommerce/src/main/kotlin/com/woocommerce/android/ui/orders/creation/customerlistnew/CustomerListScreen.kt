@@ -65,7 +65,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(id = R.string.order_creation_add_customer_existing_customer)) },
+                    title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
                     navigationIcon = {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(
@@ -110,7 +110,7 @@ fun CustomerListScreen(
     ) {
         SearchLayoutWithParams(
             state = SearchLayoutWithParamsState(
-                hint = R.string.order_creation_customer_filter_hint,
+                hint = R.string.order_creation_customer_search_hint,
                 searchQuery = state.searchQuery,
                 isSearchFocused = false,
                 areSearchTypesAlwaysVisible = true,
@@ -129,8 +129,8 @@ fun CustomerListScreen(
         PartialLoadingIndicator(state)
 
         when (val body = state.body) {
-            CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
-            CustomerListViewState.CustomerList.Error -> CustomerListError()
+            is CustomerListViewState.CustomerList.Empty -> CustomerListEmpty(body.message)
+            is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
             CustomerListViewState.CustomerList.Loading -> CustomerListSkeleton()
             is CustomerListViewState.CustomerList.Loaded -> {
                 CustomerListLoaded(
@@ -262,17 +262,17 @@ private fun CustomerListItem(
 }
 
 @Composable
-private fun CustomerListEmpty() {
+private fun CustomerListEmpty(@StringRes message: Int) {
     CustomerListNoDataState(
-        text = R.string.order_creation_customer_search_empty,
+        text = message,
         image = R.drawable.img_empty_search
     )
 }
 
 @Composable
-private fun CustomerListError() {
+private fun CustomerListError(@StringRes message: Int) {
     CustomerListNoDataState(
-        text = R.string.error_generic,
+        text = message,
         image = R.drawable.img_woo_generic_error
     )
 }
@@ -371,8 +371,8 @@ fun CustomerListScreenPreview() {
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -426,8 +426,8 @@ fun CustomerListScreenEmptyPreview() {
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -441,7 +441,7 @@ fun CustomerListScreenEmptyPreview() {
                     isSelected = false,
                 ),
             ),
-            body = CustomerListViewState.CustomerList.Empty,
+            body = CustomerListViewState.CustomerList.Empty(R.string.order_creation_customer_search_empty),
         ),
         {},
         {},
@@ -459,8 +459,8 @@ fun CustomerListScreenErrorPreview() {
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -474,7 +474,7 @@ fun CustomerListScreenErrorPreview() {
                     isSelected = false,
                 ),
             ),
-            body = CustomerListViewState.CustomerList.Error,
+            body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
         ),
         {},
         {},
@@ -489,11 +489,11 @@ fun CustomerListScreenLoadingPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
-            searchQuery = "search",
+            searchQuery = "",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
