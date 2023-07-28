@@ -26,6 +26,10 @@ class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
         binding.selectionTitle.text = context.getString(selectionType.localizedResourceId)
     }
 
+    fun updateLastUpdateTimestamp(lastUpdateTimestamp: String) {
+        binding.lastUpdateTimestamp.text = lastUpdateTimestamp
+    }
+
     fun updatePreviousRange(previousRange: String) {
         SpannableStringBuilder()
             .append(resources.getString(R.string.date_compared_to))
