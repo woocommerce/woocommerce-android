@@ -76,4 +76,32 @@ sealed class LocalNotification(
             return resourceProvider.getString(description, name)
         }
     }
+
+    data class UpgradeToPaidPlanNotification(val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
+        description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
+        type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
+        delay = 6,
+        delayUnit = TimeUnit.HOURS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
+
+    data class FreeTrialSurveyNotification(val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_survey_after_24_hours_title,
+        description = R.string.local_notification_survey_after_24_hours_description,
+        type = LocalNotificationType.UPGRADE_TO_PAID_PLAN,
+        delay = 24,
+        delayUnit = TimeUnit.HOURS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description)
+        }
+    }
 }

@@ -1,2 +1,0 @@
-14.5:
-Ti presentiamo la nostra nuova funzione per i Pagamenti di persona, Tocca per pagare, disponibile su Android per transazioni più rapide e un'esperienza di acquisto più fluida. Inoltre, la gestione degli sconti è ora più semplice grazie alla nostra ultima funzionalità che consente di applicare sconti diretti sui prodotti durante il processo di ordine, risparmiando tempo e aumentando l'efficienza. Mantieni gli aggiornamenti per sfruttare i continui miglioramenti e le ultime funzionalità di WooCommerce!

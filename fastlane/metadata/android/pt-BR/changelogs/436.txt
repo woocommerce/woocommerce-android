@@ -1,2 +1,0 @@
-14.5:
-Apresentamos nossa nova funcionalidade de pagamento presencial: o Tap to Pay on Android, que oferece transações mais rápidas e uma experiência de compra mais suave. Além disso, agora ficou mais fácil gerenciar descontos com a nossa mais recente funcionalidade, que permite aplicar descontos diretamente no produto durante o processo de pedido. Isso economiza tempo e aumenta a eficiência. Mantenha o aplicativo atualizado para aproveitar as funcionalidades mais recentes e as contínuas melhorias do WooCommerce.
