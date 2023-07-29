@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-19 16:54:04+0000
+Translation-Revision-Date: 2023-07-26 16:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">Android\'de Tap To Pay ile ödemeleri kabul etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi alın&lt;/a&gt;</string>
+    <string name="card_reader_hub_collect_payment">Ödeme Alın</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Fiyatı belirtilmemiş ürünleri ekleyemezsiniz</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Yayımlanmamış ürünleri ekleyemezsiniz</string>
+    <string name="order_creation_add_customer_content_description">müşteri ekle</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Ayarlara git</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">İptal et</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">İzin Ver</string>

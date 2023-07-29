@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-20 11:54:03+0000
+Translation-Revision-Date: 2023-07-27 14:54:21+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Узнайте больше&lt;/a&gt; о том, как принимать оплату в касание на Android</string>
+    <string name="card_reader_hub_collect_payment">Получение платежей</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Нельзя добавить товар, не указав цену</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Нельзя добавить неопубликованный товар</string>
+    <string name="order_creation_add_customer_content_description">добавить клиента</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Перейти в настройки</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Отмена</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Разрешить</string>

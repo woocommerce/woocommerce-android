@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-20 11:54:03+0000
+Translation-Revision-Date: 2023-07-26 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang menerima pembayaran dengan Tap To Tap di Android</string>
+    <string name="card_reader_hub_collect_payment">Terima Pembayaran</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Anda tidak dapat menambahkan produk tanpa menentukan harga</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Anda tidak dapat menambahkan produk yang belum dipublikasikan</string>
+    <string name="order_creation_add_customer_content_description">tambahkan pelanggan</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Buka pengaturan</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Batal</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Izinkan</string>
