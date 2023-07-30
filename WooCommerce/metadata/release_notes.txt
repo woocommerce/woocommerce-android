@@ -1,1 +1,4 @@
-We're back with some new updates to improve your experience with our app! It's easy for you to generate product descriptions with a click of a button. As always, we're here to make your app journey smoother and more enjoyable. Thanks for sticking with us!
+- [*] [Internal] Changed the way how we get WCPay and Stripe plugin's info from the API response [https://github.com/woocommerce/woocommerce-android/pull/9460]
+- [**] You can now see your shipping zone list from Settings. [https://github.com/woocommerce/woocommerce-android/pull/9496]
+
+
