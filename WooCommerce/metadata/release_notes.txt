@@ -1,4 +1,1 @@
-- [*] [Internal] Changed the way how we get WCPay and Stripe plugin's info from the API response [https://github.com/woocommerce/woocommerce-android/pull/9460]
-- [**] You can now see your shipping zone list from Settings. [https://github.com/woocommerce/woocommerce-android/pull/9496]
-
-
+We've been working on making shipping configuration available in the app. Your Shipping Zones are now viewable from the Settings screen. Stay tuned for more updates on this in the future!
