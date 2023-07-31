@@ -506,7 +506,11 @@ class OrderListFragment :
     }
 
     private fun navigateToTryTestOrderScreen() {
-        findNavController().navigateSafely(R.id.action_orderListFragment_to_createTestOrderDialogFragment)
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToCreateTestOrderDialogFragment(
+                siteUrl = selectedSite.get().url
+            )
+        )
     }
 
     private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {

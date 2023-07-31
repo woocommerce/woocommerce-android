@@ -598,5 +598,10 @@
     <dialog
         android:id="@+id/createTestOrderDialogFragment"
         android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
-        android:label="CreateTestOrderDialogFragment" />
+        android:label="CreateTestOrderDialogFragment" >
+        <argument
+            android:name="siteUrl"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
 </navigation>
