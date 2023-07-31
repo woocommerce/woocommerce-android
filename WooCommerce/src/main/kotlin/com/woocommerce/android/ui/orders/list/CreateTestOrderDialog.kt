@@ -86,13 +86,13 @@ fun TestOrderStep(stepNumber: Int, stepTextId: Int) {
     val formattedNumber = format.format(stepNumber)
     Column {
         Row(
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(dimensionResource(id = R.dimen.major_200))
                     .background(
-                        color = colorResource(R.color.color_surface_elevated),
+                        color = colorResource(R.color.try_test_order_step),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
