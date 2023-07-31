@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.coupons.create
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -43,25 +44,34 @@ fun CouponTypePickerScreen(
             typeNameTitle = stringResource(R.string.coupon_type_picker_percentage_discount_title),
             subtitle = stringResource(R.string.coupon_type_picker_percentage_discount_subtitle),
             iconRes = R.drawable.ic_coupon_percentage,
+            contentDescription = R.string.coupon_type_picker_percentage_content_description,
             onClick = onPercentageDiscountClicked
         )
         CouponType(
             typeNameTitle = stringResource(R.string.coupon_type_picker_fixed_cart_discount_title),
             subtitle = stringResource(R.string.coupon_type_picker_fixed_cart_discount_subtitle),
             iconRes = R.drawable.ic_coupon_fixed_cart,
+            contentDescription = R.string.coupon_type_picker_fixed_cart_content_description,
             onClick = onFixedCartDiscountClicked
         )
         CouponType(
             typeNameTitle = stringResource(R.string.coupon_type_picker_fixed_product_discount_title),
             subtitle = stringResource(R.string.coupon_type_picker_fixed_product_discount_subtitle),
             iconRes = R.drawable.ic_coupon_fixed_product,
+            contentDescription = R.string.coupon_type_picker_fixed_product_content_description,
             onClick = onFixedProductDiscountClicked
         )
     }
 }
 
 @Composable
-fun CouponType(@DrawableRes iconRes: Int, typeNameTitle: String, subtitle: String, onClick: () -> Unit) {
+fun CouponType(
+    @DrawableRes iconRes: Int,
+    typeNameTitle: String,
+    subtitle: String,
+    @StringRes contentDescription: Int,
+    onClick: () -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,7 +81,7 @@ fun CouponType(@DrawableRes iconRes: Int, typeNameTitle: String, subtitle: Strin
         val (icon, title, description) = createRefs()
         Image(
             painter = painterResource(id = iconRes),
-            contentDescription = stringResource(R.string.coupon_type_picker_icon_content_description),
+            contentDescription = stringResource(contentDescription),
             modifier = Modifier
                 .constrainAs(icon) {
                     top.linkTo(parent.top)
@@ -111,6 +121,7 @@ fun CouponTypePreview() {
         typeNameTitle = "Percentage Discount",
         subtitle = "Create a percentage discount for selected products",
         iconRes = R.drawable.ic_coupon_fixed_cart,
+        contentDescription = R.string.coupon_type_picker_percentage_content_description,
         onClick = {}
     )
 }

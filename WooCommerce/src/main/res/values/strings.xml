@@ -2445,7 +2445,9 @@
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
     <string name="coupon_type_picker_title">Create Coupon</string>
-    <string name="coupon_type_picker_icon_content_description">Coupon type icon</string>
+    <string name="coupon_type_picker_percentage_content_description">Coupon type - percentage discount</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Coupon type - fixed cart</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Coupon type - fixed product</string>
     <string name="coupon_type_picker_percentage_discount_title">Percentage Discount</string>
     <string name="coupon_type_picker_fixed_cart_discount_title">Fixed Cart Discount</string>
     <string name="coupon_type_picker_fixed_product_discount_title">Fixed Product Discount</string>
