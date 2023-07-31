@@ -14,6 +14,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -53,12 +55,15 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
-            repository.loadCountries()
             if (isAdvancedSearchSupported()) {
                 _viewState.value = advancedSearchSupportedInitState()
-                loadCustomers(1)
+                awaitAll(
+                    async { loadCustomers(1) },
+                    async { repository.loadCountries() },
+                )
             } else {
                 _viewState.value = advancedSearchNotSupportedInitState()
+                repository.loadCountries()
             }
         }
     }
