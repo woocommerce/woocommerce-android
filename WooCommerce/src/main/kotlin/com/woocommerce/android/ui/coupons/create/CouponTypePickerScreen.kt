@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -76,6 +77,7 @@ fun CouponType(@DrawableRes iconRes: Int, typeNameTitle: String, subtitle: Strin
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                 }
+                .size(dimensionResource(id = R.dimen.major_125))
         )
         Text(
             text = typeNameTitle,
