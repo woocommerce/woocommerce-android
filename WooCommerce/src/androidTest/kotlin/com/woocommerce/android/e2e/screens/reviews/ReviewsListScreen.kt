@@ -10,24 +10,20 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.moremenu.MoreMenuScreen
 import org.hamcrest.Matchers
 
-class ReviewsListScreen : Screen(LIST_VIEW) {
-    companion object {
-        const val LIST_VIEW = R.id.reviewsList
-    }
-
+class ReviewsListScreen : Screen(R.id.reviewsList) {
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
-        selectListItem(reviewTitle, LIST_VIEW)
+        selectListItem(reviewTitle, R.id.reviewsList)
         waitForElementToBeDisplayed(R.id.review_product_name)
         return SingleReviewScreen()
     }
 
     fun selectReviewByIndex(reviewIndex: Int): SingleReviewScreen {
-        selectItemAtIndexInRecyclerView(reviewIndex, LIST_VIEW, LIST_VIEW)
+        selectItemAtIndexInRecyclerView(reviewIndex, R.id.reviewsList, R.id.reviewsList)
         return SingleReviewScreen()
     }
 
     fun scrollToReview(reviewTitle: String): ReviewsListScreen {
-        scrollToListItem(reviewTitle, LIST_VIEW)
+        scrollToListItem(reviewTitle, R.id.reviewsList)
         return ReviewsListScreen()
     }
 

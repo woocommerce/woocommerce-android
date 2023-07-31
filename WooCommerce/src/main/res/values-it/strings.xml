@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-19 16:54:04+0000
+Translation-Revision-Date: 2023-07-26 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Scopri di più&lt;/a&gt; sull\'accettazione di pagamenti con Tocca per pagare su Android</string>
+    <string name="card_reader_hub_collect_payment">Ricevi pagamenti</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Impossibile aggiungere prodotti senza un prezzo specificato</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Impossibile aggiungere i prodotti che non sono stati pubblicati</string>
+    <string name="order_creation_add_customer_content_description">aggiungi il cliente</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Vai su Impostazioni</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Annulla</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Concedi</string>

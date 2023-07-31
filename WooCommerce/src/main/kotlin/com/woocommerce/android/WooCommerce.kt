@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.android.volley.VolleyLog
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.extensions.getCurrentProcessName
+import com.woocommerce.shared.library.AnalyticsBridge
+import com.woocommerce.shared.library.LibraryDependencyProvider
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -13,7 +16,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
-open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provider {
+open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provider, LibraryDependencyProvider {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     // inject it lazily to avoid creating it before initializing WellSql
@@ -56,5 +59,13 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
 
     companion object {
         private const val TAP_TO_PAY_STRIPE_PROCESS_NAME = "com.stripe.cots.aidlservice"
+    }
+
+    override fun provideAnalyticsBridge(): AnalyticsBridge {
+        return object : AnalyticsBridge {
+            override fun sendEvent(event: String) {
+                AnalyticsTracker.track(event)
+            }
+        }
     }
 }

@@ -17,6 +17,13 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.local.LocalNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
+import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
+import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
+import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -92,6 +99,7 @@ class MainActivityViewModel @Inject constructor(
                 )
                 triggerEvent(ShortcutOpenPayments)
             }
+
             SHORTCUT_OPEN_ORDER_CREATION -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
@@ -131,21 +139,27 @@ class MainActivityViewModel @Inject constructor(
             is ResolveAppLink.Action.ChangeSiteAndRestart -> {
                 changeSiteAndRestart(event.siteId, RestartActivityForAppLink(event.uri))
             }
+
             is ResolveAppLink.Action.ViewOrderDetail -> {
                 triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
             }
+
             ResolveAppLink.Action.ViewStats -> {
                 triggerEvent(ViewMyStoreStats)
             }
+
             ResolveAppLink.Action.ViewPayments -> {
                 triggerEvent(ViewPayments)
             }
+
             ResolveAppLink.Action.ViewTapToPay -> {
                 triggerEvent(ViewTapToPay)
             }
+
             is ResolveAppLink.Action.ViewUrlInWebView -> {
                 triggerEvent(ViewUrlInWebView(event.url))
             }
+
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
@@ -255,14 +269,18 @@ class MainActivityViewModel @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
+        LocalNotificationType.fromString(notification.tag)?.let {
+            when (it) {
+                STORE_CREATION_INCOMPLETE -> triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+                FREE_TRIAL_EXPIRED,
+                FREE_TRIAL_EXPIRING,
+                SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
 
-        when (notification.tag) {
-            LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
-                triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
-            }
-            LocalNotificationType.FREE_TRIAL_EXPIRED.value,
-            LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
-                triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+                FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
+
+                STORE_CREATION_FINISHED,
+                THREE_DAYS_AFTER_STILL_EXPLORING -> {
+                }
             }
         }
     }
@@ -312,7 +330,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
-
+    object OpenFreeTrialSurvey : Event()
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object NewFeature : MoreMenuBadgeState()
