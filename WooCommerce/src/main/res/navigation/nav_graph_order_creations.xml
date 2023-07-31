@@ -290,17 +290,6 @@
         </action>
     </fragment>
 
-    <action
-        android:id="@+id/action_global_customerListFragment"
-        app:destination="@id/customerListFragment"
-        app:enterAnim="@null"
-        app:exitAnim="@null"
-        app:popEnterAnim="@null"
-        app:popExitAnim="@null" />
-    <fragment
-        android:id="@+id/customerListFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
-        android:label="customerListFragment" />
     <fragment
         android:id="@+id/customerListFragmentNew"
         android:name="com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListFragment"
