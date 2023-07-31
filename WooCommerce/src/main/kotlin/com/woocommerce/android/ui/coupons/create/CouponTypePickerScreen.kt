@@ -34,10 +34,10 @@ fun CouponTypePickerScreen(
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(
-                0.dp,
-                dimensionResource(id = R.dimen.major_110),
-                0.dp,
-                dimensionResource(id = R.dimen.major_100)
+                start = 0.dp,
+                top = dimensionResource(id = R.dimen.major_125),
+                end = 0.dp,
+                bottom = dimensionResource(id = R.dimen.major_75)
             )
         )
         CouponType(
