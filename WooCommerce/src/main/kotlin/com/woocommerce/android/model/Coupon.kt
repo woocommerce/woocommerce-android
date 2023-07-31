@@ -93,17 +93,16 @@ data class Coupon(
     }
 
     companion object {
-        val EMPTY: Coupon
-            get() = Coupon(
-                id = -1L,
-                productIds = emptyList(),
-                categoryIds = emptyList(),
-                restrictions = CouponRestrictions(
-                    excludedCategoryIds = emptyList(),
-                    restrictedEmails = emptyList(),
-                    excludedProductIds = emptyList()
-                ),
-            )
+        val EMPTY = Coupon(
+            id = -1L,
+            productIds = emptyList(),
+            categoryIds = emptyList(),
+            restrictions = CouponRestrictions(
+                excludedCategoryIds = emptyList(),
+                restrictedEmails = emptyList(),
+                excludedProductIds = emptyList()
+            ),
+        )
     }
 }
 
