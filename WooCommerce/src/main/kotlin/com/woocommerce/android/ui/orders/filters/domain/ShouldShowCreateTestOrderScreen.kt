@@ -5,7 +5,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 
 class ShouldShowCreateTestOrderScreen @Inject constructor(
@@ -15,8 +14,7 @@ class ShouldShowCreateTestOrderScreen @Inject constructor(
 ) {
     operator fun invoke(): Boolean {
         val site = selectedSite.get()
-        return FeatureFlag.CREATE_TEST_ORDER.isEnabled() &&
-            site.isSitePublic &&
+        return site.isSitePublic &&
             orderListRepository.getAllPaymentGateways(site).isNotEmpty() &&
             productListRepository.getProductList().any {
                 it.status == ProductStatus.PUBLISH
