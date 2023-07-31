@@ -459,7 +459,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Suppress("NestedBlockDepth")
+    @Suppress("NestedBlockDepth", "ComplexMethod")
     fun createAndPostEmptyViewType(wrapper: PagedListWrapper<OrderListItemUIType>) {
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
             wrapper.data.value == null

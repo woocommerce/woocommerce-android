@@ -106,7 +106,6 @@ fun TestOrderStep(stepNumber: Int, stepTextId: Int) {
         }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
     }
 }
 
