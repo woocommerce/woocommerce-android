@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 
@@ -18,6 +20,8 @@ class CreateTestOrderDialogFragment : DialogFragment() {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
+
+    private val navArgs: CreateTestOrderDialogFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +39,15 @@ class CreateTestOrderDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     CreateTestOrderDialog {
+                        openStoreUrl()
                     }
                 }
             }
         }
+    }
+
+    private fun openStoreUrl() {
+        ChromeCustomTabUtils.launchUrl(requireActivity(), navArgs.siteUrl)
     }
 
     override fun onStart() {
