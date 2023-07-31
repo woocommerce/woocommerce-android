@@ -119,6 +119,9 @@
         <action
             android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
             app:destination="@id/barcodeScanningFragment"/>
+        <action
+            android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
+            app:destination="@id/createTestOrderDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -592,4 +595,8 @@
         android:id="@+id/AIProductDescriptionDialogFragment"
         android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"
         android:label="AIProductDescriptionDialogFragment" />
+    <dialog
+        android:id="@+id/createTestOrderDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
+        android:label="CreateTestOrderDialogFragment" />
 </navigation>
