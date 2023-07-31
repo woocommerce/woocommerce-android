@@ -1953,8 +1953,16 @@
     <string name="reviews_empty_message">No reviews yet!</string>
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
 
+    <!-- Empty order: try a test order -->
     <string name="empty_order_test_order_message">Run a test order to ensure your WooCommerce process delivers a seamless customer experience</string>
     <string name="empty_order_test_order_button">Try a test order</string>
+
+    <string name="try_test_order_heading">Try a test order</string>
+    <string name="try_test_order_step_1">Tap the button below to be redirected to your online store via a web browser.</string>
+    <string name="try_test_order_step_2">Select your test product, add to cart, and complete checkout on that web store as a real customer.</string>
+    <string name="try_test_order_step_3">Complete the payment and await a push notification about the order on your WooCommerce app.</string>
+    <string name="try_test_order_step_4">Use the app to process the refund for the test order</string>
+    <string name="try_test_order_button">Start test order</string>
     <!--
         Settings
     -->
