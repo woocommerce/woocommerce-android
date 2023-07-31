@@ -77,6 +77,32 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given advanced search mode, when viewmodel init, then loadCountries is called`() = testBlocking {
+        // GIVEN
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+
+        // WHEN
+        initViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(customerListRepository).loadCountries()
+    }
+
+    @Test
+    fun `given non advanced search mode, when viewmodel init, then loadCountries is called`() = testBlocking {
+        // GIVEN
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+
+        // WHEN
+        initViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(customerListRepository).loadCountries()
+    }
+
+    @Test
     fun `when viewmodel init, then viewstate is updated with search modes`() = testBlocking {
         // WHEN
         val viewModel = initViewModel()
