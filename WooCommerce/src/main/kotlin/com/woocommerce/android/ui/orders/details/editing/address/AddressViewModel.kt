@@ -184,10 +184,6 @@ class AddressViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    fun onCustomerSearchClicked() {
-        triggerEvent(SearchCustomers)
-    }
-
     fun onDeleteCustomerClicked() {
         triggerEvent(DeleteCustomer)
     }
@@ -315,6 +311,4 @@ class AddressViewModel @Inject constructor(
     enum class Field {
         FirstName, LastName, Company, Phone, Address1, Address2, City, State, Zip, Email
     }
-
-    object SearchCustomers : MultiLiveEvent.Event()
 }
