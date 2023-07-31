@@ -109,8 +109,11 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    private var _lastUpdate = MutableLiveData<Long?>()
-    val lastUpdate: LiveData<Long?> = _lastUpdate
+    private var _lastUpdateStats = MutableLiveData<Long?>()
+    val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
+
+    private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
+    val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
 
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
@@ -136,11 +139,9 @@ class MyStoreViewModel @Inject constructor(
                 _activeStatsGranularity,
                 refreshTrigger.onStart { emit(RefreshState()) }
             ) { granularity, refreshEvent ->
-                Pair(granularity, refreshEvent)
-            }.collectLatest { pair ->
+                Pair(granularity, refreshEvent.shouldRefresh)
+            }.collectLatest { (granularity, isForceRefresh) ->
                 coroutineScope {
-                    val granularity = pair.first
-                    val isForceRefresh = pair.second.shouldRefresh
                     launch { loadStoreStats(granularity, isForceRefresh) }
                     launch { loadTopPerformersStats(granularity, isForceRefresh) }
                 }
@@ -245,13 +246,21 @@ class MyStoreViewModel @Inject constructor(
                 }
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
-        observeLastUpdate(
-            activeTimeRangeSelection,
-            listOf(
-                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
-                AnalyticsUpdateDataStore.AnalyticData.VISITORS
-            )
-        ).collect { lastUpdateMillis -> _lastUpdate.value = lastUpdateMillis }
+        launch {
+            observeLastUpdate(
+                activeTimeRangeSelection,
+                listOf(
+                    AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
+        }
+        launch {
+            observeLastUpdate(
+                activeTimeRangeSelection,
+                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
+        }
     }
 
     private fun onRevenueStatsSuccess(

@@ -19,6 +19,7 @@ import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.SkeletonView
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Locale
@@ -31,12 +32,19 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     private val binding = MyStoreTopPerformersBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     private lateinit var selectedSite: SelectedSite
+    private lateinit var dateUtils: DateUtils
 
     private var skeletonView = SkeletonView()
 
-    fun initView(selectedSite: SelectedSite) {
-        this.selectedSite = selectedSite
+    private val lastUpdated
+        get() = binding.lastUpdatedTextView
 
+    fun initView(
+        selectedSite: SelectedSite,
+        dateUtils: DateUtils,
+    ) {
+        this.selectedSite = selectedSite
+        this.dateUtils = dateUtils
         binding.topPerformersRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         binding.topPerformersRecycler.adapter = TopPerformersAdapter()
         binding.topPerformersRecycler.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator()
@@ -85,6 +93,20 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         showEmptyView(false)
         binding.topPerformersEmptyViewLinearLayout.isVisible = show
         binding.topPerformersRecycler.isVisible = !show
+    }
+
+    fun showLastUpdate(lastUpdateMillis: Long?) {
+        if (lastUpdateMillis != null) {
+            val lastUpdateFormatted = dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateMillis)
+            lastUpdated.isVisible = true
+            lastUpdated.text = String.format(
+                Locale.getDefault(),
+                resources.getString(R.string.last_update),
+                lastUpdateFormatted
+            )
+        } else {
+            lastUpdated.isVisible = false
+        }
     }
 
     class TopPerformersViewHolder(val viewBinding: TopPerformersListItemBinding) :

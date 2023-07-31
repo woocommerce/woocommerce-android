@@ -3,9 +3,14 @@ package com.woocommerce.android.ui.orders.creation.customerlistnew
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_ALL
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_EMAIL
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_NAME
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_USERNAME
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +27,7 @@ class CustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
+    private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported,
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
@@ -48,14 +54,13 @@ class CustomerListViewModel @Inject constructor(
 
     init {
         launch {
-            val supportedSearchModes = getSupportedSearchModes()
-            _viewState.value = CustomerListViewState(
-                searchQuery = searchQuery,
-                searchModes = supportedSearchModes.selectSearchMode(selectedSearchModeId),
-                body = CustomerListViewState.CustomerList.Loading
-            )
             repository.loadCountries()
-            loadCustomers(1)
+            if (isAdvancedSearchSupported()) {
+                _viewState.value = advancedSearchSupportedInitState()
+                loadCustomers(1)
+            } else {
+                _viewState.value = advancedSearchNotSupportedInitState()
+            }
         }
     }
 
@@ -75,7 +80,7 @@ class CustomerListViewModel @Inject constructor(
             _viewState.value = _viewState.value!!.copy(searchQuery = this)
         }
 
-        loadAfterSearchChanged()
+        loadIfNeededAfterSearchChanged()
     }
 
     fun onSearchTypeChanged(searchModeId: Int) {
@@ -87,7 +92,7 @@ class CustomerListViewModel @Inject constructor(
             )
         }
 
-        if (searchQuery.isNotEmpty()) loadAfterSearchChanged()
+        if (searchQuery.isNotEmpty()) loadIfNeededAfterSearchChanged()
     }
 
     fun onNavigateBack() {
@@ -102,9 +107,15 @@ class CustomerListViewModel @Inject constructor(
         launch { loadCustomers(paginationState.currentPage + 1) }
     }
 
-    private fun loadAfterSearchChanged() {
+    private fun loadIfNeededAfterSearchChanged() {
         loadingFirstPageJob?.cancel()
-        loadingFirstPageJob = launch { loadCustomers(1) }
+        loadingFirstPageJob = launch {
+            if (searchQuery.isNotEmpty() || isAdvancedSearchSupported()) {
+                loadCustomers(1)
+            } else {
+                _viewState.value = advancedSearchNotSupportedInitState()
+            }
+        }
     }
 
     private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
@@ -137,58 +148,66 @@ class CustomerListViewModel @Inject constructor(
                 )
             }
         }
-        val supportedSearchModes = _viewState.value!!.searchModes
+        val searchBy = getSearchParam()
         val result = repository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
-            searchBy = supportedSearchModes.first { it.isSelected }.searchParam,
+            searchBy = searchBy,
             pageSize = PAGE_SIZE,
             page = page
         )
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Error)
+            _viewState.value = _viewState.value!!.copy(
+                body = CustomerListViewState.CustomerList.Error(R.string.error_generic)
+            )
         } else {
             val customers = result.getOrNull() ?: emptyList()
             val hasNextPage = customers.size == PAGE_SIZE
             paginationState = PaginationState(page, hasNextPage)
-            handleSuccessfulResponse(customers, page == 1, hasNextPage)
+            handleSuccessfulResponse(customers, page == 1, hasNextPage, searchBy)
         }
     }
 
     private fun handleSuccessfulResponse(
         customers: List<WCCustomerModel>,
         firstPageLoaded: Boolean,
-        hasNextPage: Boolean
+        hasNextPage: Boolean,
+        searchParam: String,
     ) {
         removeLoadingItemFromList()
         if (firstPageLoaded) {
-            handleFirstPageLoaded(customers)
+            handleFirstPageLoaded(customers, searchParam)
         } else {
-            handleNextPageLoaded(customers)
+            handleNextPageLoaded(customers, searchParam)
         }
         if (hasNextPage) appendLoadingItemToList()
     }
 
-    private fun handleNextPageLoaded(customers: List<WCCustomerModel>) {
+    private fun handleNextPageLoaded(customers: List<WCCustomerModel>, searchParam: String) {
         val currentBody = _viewState.value!!.body as CustomerListViewState.CustomerList.Loaded
         _viewState.value = _viewState.value!!.copy(
             body = currentBody.copy(
                 customers = currentBody.customers + customers.map {
-                    mapper.mapFromWCCustomerToItem(it)
+                    mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                 },
                 shouldResetScrollPosition = false,
             )
         )
     }
 
-    private fun handleFirstPageLoaded(customers: List<WCCustomerModel>) {
+    private fun handleFirstPageLoaded(
+        customers: List<WCCustomerModel>,
+        searchParam: String,
+    ) {
         if (customers.isEmpty()) {
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Empty)
+            _viewState.value = _viewState.value!!.copy(
+                body = CustomerListViewState.CustomerList.Empty(R.string.order_creation_customer_search_empty)
+            )
         } else {
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Loaded(
                     customers = customers.map {
-                        mapper.mapFromWCCustomerToItem(it)
+                        mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
                     shouldResetScrollPosition = true,
                 )
@@ -233,6 +252,36 @@ class CustomerListViewModel @Inject constructor(
             )
         )
     }
+
+    private suspend fun getSearchParam() =
+        if (isAdvancedSearchSupported()) {
+            SEARCH_MODE_VALUE_ALL
+        } else {
+            _viewState.value!!.searchModes.first { it.isSelected }.searchParam
+        }
+
+    private fun searchParamToSearchType(searchParam: String) =
+        when (searchParam) {
+            SEARCH_MODE_VALUE_NAME -> CustomerListDisplayTextHandler.SearchType.NAME
+            SEARCH_MODE_VALUE_EMAIL -> CustomerListDisplayTextHandler.SearchType.EMAIL
+            SEARCH_MODE_VALUE_USERNAME -> CustomerListDisplayTextHandler.SearchType.USERNAME
+            SEARCH_MODE_VALUE_ALL -> CustomerListDisplayTextHandler.SearchType.ALL
+            else -> error("Unknown search param: $searchParam")
+        }
+
+    private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
+        searchQuery = searchQuery,
+        searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
+        body = CustomerListViewState.CustomerList.Empty(
+            R.string.order_creation_customer_search_empty_on_old_version_wcpay
+        )
+    )
+
+    private fun advancedSearchSupportedInitState() = CustomerListViewState(
+        searchQuery = searchQuery,
+        searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
+        body = CustomerListViewState.CustomerList.Loading
+    )
 
     private fun List<SearchMode>.selectSearchMode(searchTypeId: Int?) =
         when {

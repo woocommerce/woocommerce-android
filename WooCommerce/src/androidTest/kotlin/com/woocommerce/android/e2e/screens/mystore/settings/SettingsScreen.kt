@@ -10,18 +10,12 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.moremenu.MoreMenuScreen
 
 class SettingsScreen : Screen {
-    companion object {
-        const val HELP_BUTTON = R.id.option_help_and_support
-        const val BETA_FEATURES_BUTTON = R.id.option_beta_features
-        const val LOG_OUT_BUTTON = R.id.btn_option_logout
-    }
-
     // Using HELP_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
     // LOG_OUT_BUTTON
-    constructor() : super(HELP_BUTTON)
+    constructor() : super(R.id.option_help_and_support)
 
     fun openBetaFeatures(): BetaFeaturesScreen {
-        clickOn(BETA_FEATURES_BUTTON)
+        clickOn(R.id.option_beta_features)
         return BetaFeaturesScreen()
     }
 
@@ -49,7 +43,7 @@ class SettingsScreen : Screen {
     }
 
     fun logOut() {
-        if (!isElementCompletelyDisplayed(LOG_OUT_BUTTON)) {
+        if (!isElementCompletelyDisplayed(R.id.btn_option_logout)) {
             // We'd like to do this:
             //
             // scrollTo(LOG_OUT_BUTTON)
@@ -59,10 +53,10 @@ class SettingsScreen : Screen {
             // with the behavior that required the workaround to use SELECTED_STORE.
             //
             // Immediately attempting a scroll solves the issue.
-            Espresso.onView(ViewMatchers.withId(LOG_OUT_BUTTON)).perform(NestedScrollViewExtension())
+            Espresso.onView(ViewMatchers.withId(R.id.btn_option_logout)).perform(NestedScrollViewExtension())
         }
 
-        clickOn(LOG_OUT_BUTTON)
+        clickOn(R.id.btn_option_logout)
 
         // Confirm Log Out
         clickButtonInDialogWithTitle(R.string.signout)

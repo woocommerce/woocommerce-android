@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-20 11:54:03+0000
+Translation-Revision-Date: 2023-07-27 10:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">Android の Tap To Pay による支払いの受け取りについて&lt;a href=\'\'&gt;詳しくはこちら&lt;/a&gt;をご覧ください</string>
+    <string name="card_reader_hub_collect_payment">支払いを受け取る</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">価格が指定されていない商品は追加できません</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">公開されていない商品は追加できません</string>
+    <string name="order_creation_add_customer_content_description">顧客を追加</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">設定に移動</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">キャンセル</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">付与</string>
