@@ -364,7 +364,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun disconnectCardReader() {
-        viewModelScope.launch {
+        launch {
             cardReaderDataAction()
         }
     }
