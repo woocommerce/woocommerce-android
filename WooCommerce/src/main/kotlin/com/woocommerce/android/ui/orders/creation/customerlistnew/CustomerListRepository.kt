@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlist
+package com.woocommerce.android.ui.orders.creation.customerlistnew
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Location

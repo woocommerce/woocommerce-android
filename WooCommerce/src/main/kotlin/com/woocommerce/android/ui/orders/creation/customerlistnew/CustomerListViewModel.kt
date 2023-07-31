@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_ALL
 import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_EMAIL
 import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_NAME
