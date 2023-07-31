@@ -466,29 +466,31 @@ class OrderListViewModel @Inject constructor(
         val isListEmpty = wrapper.isEmpty.value ?: true
         val isError = wrapper.listError.value != null
 
-        val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
-            when {
-                isError -> EmptyViewType.NETWORK_ERROR
-                isLoadingData -> {
-                    // don't show intermediate screen when loading search results
-                    if (isSearching) {
-                        null
-                    } else {
-                        EmptyViewType.ORDER_LIST_LOADING
+        viewModelScope.launch {
+            val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
+                when {
+                    isError -> EmptyViewType.NETWORK_ERROR
+                    isLoadingData -> {
+                        // don't show intermediate screen when loading search results
+                        if (isSearching) {
+                            null
+                        } else {
+                            EmptyViewType.ORDER_LIST_LOADING
+                        }
+                    }
+                    isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
+                    viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
+                    else -> when {
+                        !networkStatus.isConnected() -> EmptyViewType.NETWORK_OFFLINE
+                        shouldShowCreateTestOrderScreen() -> EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
+                        else -> EmptyViewType.ORDER_LIST
                     }
                 }
-                isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
-                viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
-                else -> when {
-                    !networkStatus.isConnected() -> EmptyViewType.NETWORK_OFFLINE
-                    shouldShowCreateTestOrderScreen() -> EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
-                    else -> EmptyViewType.ORDER_LIST
-                }
+            } else {
+                null
             }
-        } else {
-            null
+            _emptyViewType.postValue(newEmptyViewType)
         }
-        _emptyViewType.postValue(newEmptyViewType)
     }
 
     private fun showOfflineSnack() {

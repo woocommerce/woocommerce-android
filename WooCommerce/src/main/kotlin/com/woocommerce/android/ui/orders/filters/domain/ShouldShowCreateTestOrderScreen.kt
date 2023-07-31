@@ -5,6 +5,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ShouldShowCreateTestOrderScreen @Inject constructor(
@@ -12,12 +14,23 @@ class ShouldShowCreateTestOrderScreen @Inject constructor(
     private val orderListRepository: OrderListRepository,
     private val productListRepository: ProductListRepository
 ) {
-    operator fun invoke(): Boolean {
+    suspend operator fun invoke(): Boolean {
         val site = selectedSite.get()
+
         return site.isSitePublic &&
             orderListRepository.getAllPaymentGateways(site).isNotEmpty() &&
-            productListRepository.getProductList().any {
-                it.status == ProductStatus.PUBLISH
+            checkPublishedProductsExist()
+    }
+
+    private suspend fun checkPublishedProductsExist(): Boolean {
+        val localProductList = productListRepository.getProductList()
+
+        val productList = localProductList.ifEmpty {
+            withContext(Dispatchers.IO) {
+                productListRepository.fetchProductList()
             }
+        }
+
+        return productList.any { it.status == ProductStatus.PUBLISH }
     }
 }

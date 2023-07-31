@@ -35,7 +35,6 @@ class CreateTestOrderDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     CreateTestOrderDialog {
-
                     }
                 }
             }
