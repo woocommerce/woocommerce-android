@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import com.woocommerce.android.R
 import javax.inject.Inject

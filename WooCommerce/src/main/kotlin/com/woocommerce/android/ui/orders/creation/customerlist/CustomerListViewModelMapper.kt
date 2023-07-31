@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListDisplayTextHandler.CustomerParam
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListDisplayTextHandler.CustomerParam
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import javax.inject.Inject

@@ -39,7 +39,7 @@
         </action>
         <action
             android:id="@+id/action_orderCreationFragment_to_customerListFragment"
-            app:destination="@id/customerListFragmentNew" />
+            app:destination="@id/customerListFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
             app:destination="@id/orderCreationProductDetailsFragment"
@@ -291,8 +291,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/customerListFragmentNew"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListFragment"
+        android:id="@+id/customerListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
         android:label="customerListFragment" >
 
         <action
