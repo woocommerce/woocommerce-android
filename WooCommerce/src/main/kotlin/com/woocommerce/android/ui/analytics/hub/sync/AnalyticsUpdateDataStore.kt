@@ -21,6 +21,13 @@ class AnalyticsUpdateDataStore @Inject constructor(
     private val currentTimeProvider: CurrentTimeProvider,
     private val selectedSite: SelectedSite
 ) {
+    /***
+     * Creates a flow that will emit true if the analytics data should be updated.
+     *
+     * The decision is based on the [rangeSelection] and [maxOutdatedTime] parameters.
+     *
+     * If no [maxOutdatedTime] is provided, the [defaultMaxOutdatedTime] value will be used.
+     */
     fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
         maxOutdatedTime: Long = defaultMaxOutdatedTime,
@@ -29,6 +36,11 @@ class AnalyticsUpdateDataStore @Inject constructor(
         .map { prefs -> prefs[longPreferencesKey(getTimeStampKey(rangeSelection.identifier, analyticData))] }
         .map { lastUpdateTime -> isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) }
 
+    /***
+     * Stores the current timestamp for a given [rangeSelection] and [analyticData]
+     *
+     * Will trigger a update to anyone listening to [AnalyticsUpdateDataStore.observeLastUpdate]
+     */
     suspend fun storeLastAnalyticsUpdate(
         rangeSelection: StatsTimeRangeSelection,
         analyticData: AnalyticData = AnalyticData.ALL
