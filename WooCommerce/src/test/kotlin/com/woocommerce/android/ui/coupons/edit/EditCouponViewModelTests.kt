@@ -2,6 +2,16 @@ package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DESCRIPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_EXPIRY_DATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_USAGE_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_INCLUDES_FREE_SHIPPING
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
@@ -9,6 +19,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.Mode
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -45,6 +56,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: EditCouponViewModel
 
     private var storedCoupon = CouponTestUtils.generateTestCoupon(COUPON_ID)
+    private var emptyCoupon = CouponTestUtils.generateEmptyCoupon()
 
     private val couponRepository: CouponRepository = mock {
         on { observeCoupon(COUPON_ID) } doAnswer {
@@ -75,17 +87,21 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    suspend fun setup(
+        mode: Mode = Mode.Edit(COUPON_ID),
+        prepareMocks: suspend () -> Unit = {}
+    ) {
         prepareMocks()
 
         viewModel = EditCouponViewModel(
-            savedStateHandle = EditCouponFragmentArgs(couponId = COUPON_ID).initSavedStateHandle(),
+            savedStateHandle = EditCouponFragmentArgs(mode).initSavedStateHandle(),
             couponRepository = couponRepository,
             couponUtils = couponUtils,
             parameterRepository = mock {
                 on { getParameters(any(), any()) } doReturn siteParams
             },
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -97,6 +113,34 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
         assertThat(state.couponDraft).isEqualTo(storedCoupon)
         assertThat(state.hasChanges).isEqualTo(false)
+    }
+
+    @Test
+    fun `when screen is opened in creation mode, then load empty coupon`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.couponDraft).isEqualTo(emptyCoupon.copy(type = Coupon.Type.Percent))
+        assertThat(state.hasChanges).isEqualTo(false)
+    }
+
+    @Test
+    fun `when screen is opened in creation mode, then save button should have correct text`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.saveButtonText).isEqualTo(R.string.coupon_create_save_button)
+    }
+
+    @Test
+    fun `when screen is opened in edit mode, then save button should have correct text`() = testBlocking {
+        setup()
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.saveButtonText).isEqualTo(R.string.coupon_edit_save_button)
     }
 
     @Test
@@ -262,4 +306,91 @@ class EditCouponViewModelTests : BaseUnitTest() {
         val event = viewModel.event.captureValues().last()
         assertThat(event).isEqualTo(ShowUiStringSnackbar(UiStringRes(R.string.coupon_edit_coupon_update_failed)))
     }
+
+    @Test
+    fun `given coupon creation mode and percentage type, when create clicked, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE,
+                KEY_HAS_EXPIRY_DATE to false,
+                KEY_INCLUDES_FREE_SHIPPING to null,
+                KEY_HAS_DESCRIPTION to false,
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to false,
+                KEY_HAS_USAGE_RESTRICTIONS to false
+            )
+        )
+    }
+
+    @Test
+    fun `given coupon creation mode and fixed product type, when create clicked, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.FixedProduct))
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT,
+                KEY_HAS_EXPIRY_DATE to false,
+                KEY_INCLUDES_FREE_SHIPPING to null,
+                KEY_HAS_DESCRIPTION to false,
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to false,
+                KEY_HAS_USAGE_RESTRICTIONS to false
+            )
+        )
+    }
+
+    @Test
+    fun `given coupon creation mode and fixed cart type, when create clicked, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.FixedCart))
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART,
+                KEY_HAS_EXPIRY_DATE to false,
+                KEY_INCLUDES_FREE_SHIPPING to null,
+                KEY_HAS_DESCRIPTION to false,
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to false,
+                KEY_HAS_USAGE_RESTRICTIONS to false
+            )
+        )
+    }
+
+    @Test
+    fun `given coupon creation mode, when coupon created, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent)) {
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(Unit))
+        }
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.COUPON_CREATION_SUCCESS)
+    }
+
+    @Test
+    fun `given coupon creation mode, when coupon creation fails, should track event`() =
+        testBlocking {
+            setup(mode = Mode.Create(Coupon.Type.Percent)) {
+                whenever(couponRepository.createCoupon(any())).thenReturn(
+                    Result.failure(WooException(WooError(TIMEOUT, UNKNOWN, "message")))
+                )
+            }
+
+            viewModel.onSaveClick()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.COUPON_CREATION_FAILED,
+                EditCouponViewModel::class.java.simpleName,
+                "TIMEOUT",
+                "message"
+            )
+        }
 }

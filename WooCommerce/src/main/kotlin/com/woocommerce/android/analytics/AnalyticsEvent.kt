@@ -770,6 +770,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     COUPON_UPDATE_FAILED,
     COUPON_DELETE_SUCCESS,
     COUPON_DELETE_FAILED,
+    COUPON_CREATION_SUCCESS,
+    COUPON_CREATION_FAILED,
+    COUPON_CREATION_INITIATED,
 
     // Onboarding
     LOGIN_ONBOARDING_SHOWN,
