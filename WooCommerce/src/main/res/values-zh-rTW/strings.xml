@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-19 12:54:03+0000
+Translation-Revision-Date: 2023-07-26 16:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;如何在 Android 使用「iPhone卡緊收」收受付款</string>
+    <string name="card_reader_hub_collect_payment">收取付款</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">不可新增未標價的產品</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">不可新增未上架的產品</string>
+    <string name="order_creation_add_customer_content_description">新增顧客</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">前往「設定」</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">取消</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">授予</string>

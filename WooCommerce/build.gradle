@@ -80,9 +80,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "14.6-rc-2"
+            versionName "14.6"
         }
-        versionCode 440
+        versionCode 441
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -113,6 +113,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig true
         compose true
         viewBinding true
     }
@@ -231,10 +232,10 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
+    implementation("com.automattic.tracks:experimentation:$automatticTracksVersion") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:3.1.0'
+    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"

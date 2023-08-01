@@ -11,11 +11,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.mystore.settings.SettingsScreen
 import com.woocommerce.android.e2e.screens.reviews.ReviewsListScreen
 
-class MoreMenuScreen : Screen(MORE_MENU_VIEW) {
-    companion object {
-        const val MORE_MENU_VIEW = R.id.more_menu_compose_view
-    }
-
+class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
     fun openReviewsListScreen(composeTestRule: ComposeTestRule): ReviewsListScreen {
         composeTestRule.onNodeWithText(
             getTranslatedString(R.string.more_menu_button_reviews)

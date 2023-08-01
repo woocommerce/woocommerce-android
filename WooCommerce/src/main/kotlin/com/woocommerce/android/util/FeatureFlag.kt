@@ -57,11 +57,11 @@ enum class FeatureFlag {
             BLAZE,
             SHARING_PRODUCT_AI,
             PRODUCT_DESCRIPTION_AI_GENERATOR,
-            ORDER_CREATION_PRODUCT_DISCOUNTS -> true
+            ORDER_CREATION_PRODUCT_DISCOUNTS,
+            SHIPPING_ZONES -> true
 
             MORE_MENU_INBOX,
-            WC_SHIPPING_BANNER,
-            SHIPPING_ZONES -> PackageUtils.isDebugBuild()
+            WC_SHIPPING_BANNER -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

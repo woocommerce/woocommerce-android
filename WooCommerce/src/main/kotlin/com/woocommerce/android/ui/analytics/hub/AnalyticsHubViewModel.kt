@@ -30,7 +30,9 @@ import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -42,7 +44,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -61,9 +65,11 @@ class AnalyticsHubViewModel @Inject constructor(
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
+    private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,
     private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
+    private val dateUtils: DateUtils,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -78,13 +84,14 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
-            NotShowIndicator,
-            AnalyticsHubDateRangeSelectorViewState.EMPTY,
-            LoadingViewState,
-            LoadingViewState,
-            LoadingProductsViewState,
-            LoadingViewState,
-            false
+            refreshIndicator = NotShowIndicator,
+            analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
+            revenueState = LoadingViewState,
+            ordersState = LoadingViewState,
+            productsState = LoadingProductsViewState,
+            sessionState = LoadingViewState,
+            showFeedBackBanner = false,
+            lastUpdateTimestamp = ""
         )
     )
     val viewState: StateFlow<AnalyticsViewState> = mutableState
@@ -104,6 +111,7 @@ class AnalyticsHubViewModel @Inject constructor(
         observeProductsChanges()
         observeRevenueChanges()
         observeRangeSelectionChanges()
+        observeLastUpdateTimestamp()
         if (FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()) {
             shouldAskForFeedback()
         }
@@ -165,6 +173,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun observeRangeSelectionChanges() {
         rangeSelectionState.onEach {
+            observeLastUpdateTimestamp()
             updateDateSelector()
             trackSelectedDateRange()
             updateStats(
@@ -263,6 +272,15 @@ class AnalyticsHubViewModel @Inject constructor(
             .drop(1)
             .filter { state -> state is RevenueState.Available }
             .onEach { transactionLauncher.onRevenueFetched() }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeLastUpdateTimestamp() {
+        mutableState.value = viewState.value.copy(lastUpdateTimestamp = "")
+        observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
+            .filterNotNull()
+            .map { dateUtils.getDateMillisInFriendlyTimeFormat(it) }
+            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
             .launchIn(viewModelScope)
     }
 

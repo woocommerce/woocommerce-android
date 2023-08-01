@@ -26,6 +26,17 @@ object CouponTestUtils {
         )
     }
 
+    fun generateEmptyCoupon() = Coupon(
+        id = -1,
+        productIds = emptyList(),
+        categoryIds = emptyList(),
+        restrictions = CouponRestrictions(
+            excludedProductIds = emptyList(),
+            excludedCategoryIds = emptyList(),
+            restrictedEmails = emptyList()
+        )
+    )
+
     fun generateCouponRestrictions() = CouponRestrictions(
         minimumAmount = BigDecimal.TEN,
         maximumAmount = BigDecimal("100"),
