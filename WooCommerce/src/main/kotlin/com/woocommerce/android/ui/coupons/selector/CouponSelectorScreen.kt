@@ -48,7 +48,7 @@ fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
         state = couponListState,
         onCouponClicked = viewModel::onCouponClicked,
         onRefresh = viewModel::onRefresh,
-         onLoadMore = viewModel::onLoadMore,
+        onLoadMore = viewModel::onLoadMore,
     )
 
 }
@@ -68,6 +68,7 @@ fun CouponSelectorScreen(
             onRefresh = onRefresh,
             onLoadMore = onLoadMore,
         )
+
         state.loadingState == LoadingState.Loading -> CouponSelectorListSkeleton()
         state.isSearchOpen -> CouponSelectorEmptySearch(searchQuery = state.searchQuery.orEmpty())
         else -> EmptyCouponSelectorList()
@@ -144,7 +145,7 @@ fun CouponSelectorList(
             modifier = Modifier
                 .background(color = MaterialTheme.colors.surface)
         ) {
-            itemsIndexed(coupons) {_, coupons ->
+            itemsIndexed(coupons) { _, coupons ->
                 CouponSelectorListItem(coupons, onCouponClicked)
                 Divider(
                     modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
@@ -152,7 +153,7 @@ fun CouponSelectorList(
                     thickness = dimensionResource(id = R.dimen.minor_10)
                 )
             }
-            if(loadingState == LoadingState.Appending) {
+            if (loadingState == LoadingState.Appending) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -173,17 +174,17 @@ fun CouponSelectorList(
 @Composable
 fun CouponSelectorListItem(
     coupon: CouponSelectorItem,
-    onCouponSelected: (Long) -> Unit
+    onCouponClicked: (Long) -> Unit
 ) {
-    Column (
+    Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        enabled = true,
-                        role = Role.Button,
-                        onClick = { onCouponSelected(coupon.id) })
-                    .padding(dimensionResource(id = R.dimen.major_100))
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = true,
+                role = Role.Button,
+                onClick = { onCouponClicked(coupon.id) })
+            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         coupon.code?.let {
             Text(
@@ -246,7 +247,7 @@ fun CouponSelectorListSkeleton() {
 
 @Composable
 fun CouponSelectorEmptySearch(searchQuery: String) {
-    if(searchQuery.isEmpty()) return
+    if (searchQuery.isEmpty()) return
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -272,7 +273,6 @@ fun CouponSelectorEmptySearch(searchQuery: String) {
 }
 
 
-
 @Preview(
     showBackground = true,
     backgroundColor = 0xFFFFFFFF
@@ -286,7 +286,7 @@ fun CouponSelectorListItemPreview() {
             summary = "This is a summary of the coupon",
             isActive = true
         ),
-        onCouponSelected = {}
+        onCouponClicked = {}
     )
 }
 
@@ -333,7 +333,8 @@ fun CouponSelectorListSkeletonPreview() {
 
 @Preview(
     showBackground = true,
-    backgroundColor = 0xFFFFFFFF)
+    backgroundColor = 0xFFFFFFFF
+)
 @Composable
 fun CouponSelectorEmptyListPreview() {
     EmptyCouponSelectorList()
