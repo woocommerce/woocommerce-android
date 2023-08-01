@@ -2,16 +2,22 @@ package com.woocommerce.android.ui.analytics.hub.sync
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.edit
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
+import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Calendar
 import java.util.Date
@@ -86,14 +92,51 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         assertThat(result).isTrue
     }
 
+    @Test
+    fun `given store analytics is called with an analytic data different than ALL, then save the value for that key`() = testBlocking {
+        // Given
+        createAnalyticsUpdateScenarioWith(
+            lastUpdateTimestamp = null,
+            currentTimestamp = 100
+        )
+        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection()
+
+        // When
+        sut.storeLastAnalyticsUpdate(
+            rangeSelection = rangeSelection,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        )
+
+        // Then only one value saved
+        verify(dataStore).edit(any())
+    }
+
+    @Test
+    fun `given store analytics is called with an analytic data ALL, then save the value for ALL analytic keys`() = testBlocking {
+        // Given
+        createAnalyticsUpdateScenarioWith(
+            lastUpdateTimestamp = null,
+            currentTimestamp = 100
+        )
+        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection()
+        val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.values().size
+
+        // When
+        sut.storeLastAnalyticsUpdate(
+            rangeSelection = rangeSelection,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
+        )
+
+        // Then saved for all analytic data values
+        verify(dataStore, times(numberOfAnalyticsDataKeys)).edit(any())
+    }
+
     private fun createAnalyticsUpdateScenarioWith(
         lastUpdateTimestamp: Long?,
         currentTimestamp: Long
     ) {
         val analyticsPreferences = mock<Preferences> {
-            on {
-                get(longPreferencesKey(defaultSelectionData.selectionType.identifier))
-            } doReturn lastUpdateTimestamp
+            on { get(any<Preferences.Key<Long>>()) } doReturn lastUpdateTimestamp
         }
 
         dataStore = mock {
@@ -107,9 +150,14 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             on { currentDate() } doReturn mockDate
         }
 
+        val selectedSite: SelectedSite = mock {
+            on { getSelectedSiteId() } doReturn 1
+        }
+
         sut = AnalyticsUpdateDataStore(
             dataStore = dataStore,
-            currentTimeProvider = currentTimeProvider
+            currentTimeProvider = currentTimeProvider,
+            selectedSite = selectedSite
         )
     }
 }

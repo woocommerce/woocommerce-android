@@ -35,12 +35,15 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
@@ -78,10 +81,12 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     private val updateStats: UpdateAnalyticsHubStats = mock()
+    private val observeLastUpdate: ObserveLastUpdate = mock()
     private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val dateUtils: DateUtils = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -654,6 +659,32 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_PULL_TO_REFRESH_TRIGGERED)
     }
 
+    @Test
+    fun `when last update information changes, then update view state as expected`() = testBlocking {
+        val lastUpdateTimestamp = 123456789L
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(lastUpdateTimestamp))
+        whenever(dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateTimestamp)).thenReturn("9:35 AM")
+        sut = givenAViewModel()
+
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo("9:35 AM")
+    }
+
+    @Test
+    fun `when last update information is not initialized, then update view state field is empty`() = testBlocking {
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
+        sut = givenAViewModel()
+
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
+    }
+
+    @Test
+    fun `when last update information is null, then update view state field is empty`() = testBlocking {
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        sut = givenAViewModel()
+
+        assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -666,9 +697,11 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             transactionLauncher,
             mock(),
             updateStats,
+            observeLastUpdate,
             localeProvider,
             feedbackRepository,
             tracker,
+            dateUtils,
             savedState
         )
     }

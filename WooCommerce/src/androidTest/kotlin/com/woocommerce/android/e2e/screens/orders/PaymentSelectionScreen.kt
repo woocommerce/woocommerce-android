@@ -4,14 +4,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
 class PaymentSelectionScreen : Screen {
-    companion object {
-        const val CARD_BUTTON = R.id.clCardReader
-    }
-
-    constructor() : super(CARD_BUTTON)
+    constructor() : super(R.id.clCardReader)
 
     fun chooseCardPayment(): CardReaderPaymentScreen {
-        clickOn(CARD_BUTTON)
+        clickOn(R.id.clCardReader)
         return CardReaderPaymentScreen()
     }
 

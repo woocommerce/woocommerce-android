@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.model.UiString
@@ -278,9 +279,10 @@ class EditCouponViewModel @Inject constructor(
                     errorType = wooErrorType?.name,
                     errorDescription = exception.message
                 )
-                val message = exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR }
-                    ?.message?.let { UiString.UiStringText(it) }
-                    ?: UiString.UiStringRes(R.string.coupon_create_coupon_creation_failed)
+                val message =
+                    exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR && it.message.isNotNullOrEmpty() }
+                        ?.message?.let { UiString.UiStringText(it) }
+                        ?: UiString.UiStringRes(R.string.coupon_create_coupon_creation_failed)
                 triggerEvent(ShowUiStringSnackbar(message))
             }
     }
@@ -307,9 +309,10 @@ class EditCouponViewModel @Inject constructor(
                     errorDescription = exception.message
                 )
 
-                val message = exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR }
-                    ?.message?.let { UiString.UiStringText(it) }
-                    ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
+                val message =
+                    exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR && it.message.isNotNullOrEmpty() }
+                        ?.message?.let { UiString.UiStringText(it) }
+                        ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
                 triggerEvent(ShowUiStringSnackbar(message))
             }
     }

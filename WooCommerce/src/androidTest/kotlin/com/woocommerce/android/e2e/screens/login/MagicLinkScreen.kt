@@ -4,14 +4,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
 class MagicLinkScreen : Screen {
-    companion object {
-        const val USE_PASSWORD_BUTTON = R.id.login_enter_password
-    }
-
-    constructor() : super(USE_PASSWORD_BUTTON)
+    constructor() : super(R.id.login_enter_password)
 
     fun proceedWithPassword(): PasswordScreen {
-        clickOn(USE_PASSWORD_BUTTON)
+        clickOn(R.id.login_enter_password)
         return PasswordScreen()
     }
 }

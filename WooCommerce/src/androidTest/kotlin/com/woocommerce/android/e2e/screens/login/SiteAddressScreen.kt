@@ -4,16 +4,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
 class SiteAddressScreen : Screen {
-    companion object {
-        const val SITE_ADDRESS_FIELD = org.wordpress.android.login.R.id.input
-        const val NEXT_BUTTON = R.id.bottom_button
-    }
-
-    constructor() : super(SITE_ADDRESS_FIELD)
+    constructor() : super(org.wordpress.android.login.R.id.input)
 
     fun proceedWith(siteAddress: String): EmailAddressScreen {
-        typeTextInto(SITE_ADDRESS_FIELD, siteAddress)
-        clickOn(NEXT_BUTTON)
+        typeTextInto(org.wordpress.android.login.R.id.input, siteAddress)
+        clickOn(R.id.bottom_button)
 
         return EmailAddressScreen()
     }

@@ -15,8 +15,8 @@ data class CustomerListViewState(
 ) {
     sealed class CustomerList {
         object Loading : CustomerList()
-        object Empty : CustomerList()
-        object Error : CustomerList()
+        data class Empty(@StringRes val message: Int) : CustomerList()
+        data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
             val shouldResetScrollPosition: Boolean,
@@ -25,12 +25,17 @@ data class CustomerListViewState(
         sealed class Item {
             data class Customer(
                 val remoteId: Long,
-                val firstName: String,
-                val lastName: String,
-                val email: String,
+                val name: Text,
+                val email: Text,
+                val username: Text,
 
                 val payload: WCCustomerModel,
-            ) : Item()
+            ) : Item() {
+                sealed class Text {
+                    data class Highlighted(val text: String, val start: Int, val end: Int) : Text()
+                    data class Placeholder(val text: String) : Text()
+                }
+            }
 
             object Loading : Item()
         }
