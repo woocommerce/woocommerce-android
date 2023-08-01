@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 
+/***
+ * Data store responsible for signaling when the analytics data should be updated
+ * through stored timestamp.
+ */
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
     private val currentTimeProvider: CurrentTimeProvider,
