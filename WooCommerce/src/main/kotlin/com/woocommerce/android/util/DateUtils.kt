@@ -364,6 +364,13 @@ class DateUtils @Inject constructor(
             null
         }
 
+    fun isToday(date: Date): Boolean {
+        val todayStart = getDateForTodayAtTheStartOfTheDay()
+        return isSameDay(date, Date(todayStart))
+    }
+
+    fun isSameDay(date1: Date, date2: Date) = DateUtils.isSameDay(date1,date2)
+
     companion object {
         const val ZERO = 0
 
