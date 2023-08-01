@@ -92,7 +92,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
     @Test
     fun `given non advanced search mode, when viewmodel init, then loadCountries is called`() = testBlocking {
         // GIVEN
-        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
 
         // WHEN
         initViewModel()
