@@ -57,6 +57,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import kotlinx.coroutines.Job
 
 @HiltViewModel
@@ -283,8 +284,11 @@ class AnalyticsHubViewModel @Inject constructor(
         mutableState.value = viewState.value.copy(lastUpdateTimestamp = "")
         lastUpdateObservationJob = observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
             .filterNotNull()
-            .map { dateUtils.getDateMillisInFriendlyTimeFormat(it) }
-            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
+            .map {
+                if (dateUtils.isToday(Date(it))) dateUtils.getDateMillisInFriendlyTimeFormat(it)
+                else dateUtils.getDayMonthDateString(Date(it).formatToYYYYmmDDhhmmss())
+            }
+            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it.orEmpty()) }
             .launchIn(viewModelScope)
     }
 
