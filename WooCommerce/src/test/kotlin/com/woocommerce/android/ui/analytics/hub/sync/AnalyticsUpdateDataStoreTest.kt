@@ -133,12 +133,10 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
 
     @Test
     fun `given a range selection timestamp is updated, then last update observation emits new value`() = testBlocking {
-
     }
 
     @Test
     fun `given a range selection timestamp is updated, then last update observation emits new value for all analyticData types`() = testBlocking {
-
     }
 
     private fun createAnalyticsUpdateScenarioWith(
