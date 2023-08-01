@@ -141,26 +141,17 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             currentTimestamp = 2000
         )
 
+        // When
         sut.observeLastUpdate(
             rangeSelection = defaultSelectionData,
-            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
         ).onEach {
             timestampUpdate = it
         }.launchIn(this)
 
-        // When
-        sut.storeLastAnalyticsUpdate(
-            rangeSelection = defaultSelectionData,
-            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
-        )
-
         // Then
         assertThat(timestampUpdate).isNotNull()
         assertThat(timestampUpdate).isEqualTo(2000)
-    }
-
-    @Test
-    fun `given a range selection timestamp is updated, then last update observation emits new value for all analyticData types`() = testBlocking {
     }
 
     private fun createAnalyticsUpdateScenarioWith(
