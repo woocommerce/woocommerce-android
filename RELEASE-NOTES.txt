@@ -2,6 +2,7 @@
 14.8
 -----
 - [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
+- [*] Added a "Create test order" screen for published sites with existing product(s) and payment gateway(s) and no orders yet. [https://github.com/woocommerce/woocommerce-android/pull/9508]
 
 14.7
 -----
