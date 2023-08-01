@@ -22,6 +22,8 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @ExperimentalCoroutinesApi
 class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
@@ -133,6 +135,28 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
 
     @Test
     fun `given a range selection timestamp is updated, then last update observation emits new value`() = testBlocking {
+        // Given
+        var timestampUpdate: Long? = null
+        createAnalyticsUpdateScenarioWith(
+            currentTimestamp = 2000
+        )
+
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // When
+        sut.storeLastAnalyticsUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
+        )
+
+        // Then
+        assertThat(timestampUpdate).isNotNull()
+        assertThat(timestampUpdate).isEqualTo(2000)
     }
 
     @Test
@@ -145,6 +169,35 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     ) {
         val analyticsPreferences = mock<Preferences> {
             on { get(any<Preferences.Key<Long>>()) } doReturn lastUpdateTimestamp
+        }
+
+        dataStore = mock {
+            on { data } doReturn flowOf(analyticsPreferences)
+        }
+
+        val mockDate = mock<Date> {
+            on { time } doReturn currentTimestamp
+        }
+        currentTimeProvider = mock {
+            on { currentDate() } doReturn mockDate
+        }
+
+        val selectedSite: SelectedSite = mock {
+            on { getSelectedSiteId() } doReturn 1
+        }
+
+        sut = AnalyticsUpdateDataStore(
+            dataStore = dataStore,
+            currentTimeProvider = currentTimeProvider,
+            selectedSite = selectedSite
+        )
+    }
+
+    private fun createAnalyticsUpdateScenarioWith(
+        currentTimestamp: Long
+    ) {
+        val analyticsPreferences = mock<Preferences> {
+            on { get(any<Preferences.Key<Long>>()) } doReturn currentTimestamp
         }
 
         dataStore = mock {
