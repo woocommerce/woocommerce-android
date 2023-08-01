@@ -30,7 +30,7 @@ class CustomerListViewModel @Inject constructor(
     private val mapper: CustomerListViewModelMapper,
     private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported,
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     @Volatile
     private var paginationState = PaginationState(1, true)
@@ -69,7 +69,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onCustomerSelected(customerModel: WCCustomerModel) {
-        analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+        analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
         if (customerModel.remoteCustomerId > 0L) {
             // this customer is registered, so we may have more info on them
             tryLoadMoreInfo(customerModel)
@@ -104,6 +104,7 @@ class CustomerListViewModel @Inject constructor(
     }
 
     fun onAddCustomerClicked() {
+        analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
         triggerEvent(AddCustomer)
     }
 
@@ -144,7 +145,7 @@ class CustomerListViewModel @Inject constructor(
             // Add a delay to avoid multiple requests when the user types fast or switches search types
             delay(SEARCH_DELAY_MS)
             if (searchQuery.isNotEmpty()) {
-                analyticsTrackerWrapper.track(
+                analyticsTracker.track(
                     AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
                     mapOf(
                         "search_type" to viewState.value?.searchModes?.firstOrNull { it.isSelected }?.searchParam
