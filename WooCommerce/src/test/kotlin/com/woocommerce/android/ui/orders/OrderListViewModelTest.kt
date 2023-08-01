@@ -257,6 +257,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+        whenever(shouldShowCreateTestOrderScreen()).doReturn(false)
 
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
