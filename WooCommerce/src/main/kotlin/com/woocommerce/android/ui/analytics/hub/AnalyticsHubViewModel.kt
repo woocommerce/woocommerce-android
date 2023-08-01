@@ -57,6 +57,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import kotlinx.coroutines.Job
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -104,6 +105,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val ranges
         get() = rangeSelectionState.value
+
+    private var lastUpdateObservationJob: Job? = null
 
     init {
         observeOrdersStatChanges()
@@ -276,8 +279,9 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeLastUpdateTimestamp() {
+        lastUpdateObservationJob?.cancel()
         mutableState.value = viewState.value.copy(lastUpdateTimestamp = "")
-        observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
+        lastUpdateObservationJob = observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
             .filterNotNull()
             .map { dateUtils.getDateMillisInFriendlyTimeFormat(it) }
             .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
