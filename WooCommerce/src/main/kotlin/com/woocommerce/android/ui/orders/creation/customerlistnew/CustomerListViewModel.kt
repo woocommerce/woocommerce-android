@@ -201,7 +201,11 @@ class CustomerListViewModel @Inject constructor(
     ) {
         if (customers.isEmpty()) {
             _viewState.value = _viewState.value!!.copy(
-                body = CustomerListViewState.CustomerList.Empty(R.string.order_creation_customer_search_empty)
+                body = CustomerListViewState.CustomerList.Empty(
+                    R.string.order_creation_customer_search_empty,
+                    R.drawable.img_empty_search,
+                    buttonText = null,
+                )
             )
         } else {
             _viewState.value = _viewState.value!!.copy(
@@ -270,15 +274,23 @@ class CustomerListViewModel @Inject constructor(
         }
 
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
+        searchHint = R.string.order_creation_customer_search_old_wc_hint,
         searchQuery = searchQuery,
+        showFabInEmptyState = false,
+        searchFocused = true,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Empty(
-            R.string.order_creation_customer_search_empty_on_old_version_wcpay
+            R.string.order_creation_customer_search_empty_on_old_version_wcpay,
+            R.drawable.img_search_suggestion,
+            R.string.order_creation_customer_search_empty_add_details_manually,
         )
     )
 
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
+        searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
+        showFabInEmptyState = true,
+        searchFocused = false,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading
     )
