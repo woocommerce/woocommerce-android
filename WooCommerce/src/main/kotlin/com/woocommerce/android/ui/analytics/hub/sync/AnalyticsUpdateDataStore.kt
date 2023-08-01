@@ -42,6 +42,25 @@ class AnalyticsUpdateDataStore @Inject constructor(
         }
     }
 
+
+    /***
+     * Creates a flow that will emit the latest timestamp stored for a given [rangeSelection] and [analyticData]
+     *
+     * Useful for views that need to always display when the analytics data was last updated.
+     */
+    fun observeLastUpdate(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticData: AnalyticData
+    ): Flow<Long?> {
+        val timestampKeys = getTimeStampKey(rangeSelection.identifier, analyticData)
+        return observeLastUpdate(timestampKeys)
+    }
+
+    /***
+     * Creates a flow that will emit the latest timestamp stored for a given [rangeSelection] and list of [analyticData]
+     *
+     * Useful for views that need to always display when the analytics data was last updated.
+     */
     fun observeLastUpdate(
         rangeSelection: StatsTimeRangeSelection,
         analyticData: List<AnalyticData>
@@ -49,14 +68,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         val timestampKeys = analyticData.map { data ->
             getTimeStampKey(rangeSelection.identifier, data)
         }
-        return observeLastUpdate(timestampKeys)
-    }
-
-    fun observeLastUpdate(
-        rangeSelection: StatsTimeRangeSelection,
-        analyticData: AnalyticData
-    ): Flow<Long?> {
-        val timestampKeys = getTimeStampKey(rangeSelection.identifier, analyticData)
         return observeLastUpdate(timestampKeys)
     }
 
