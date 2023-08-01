@@ -1,6 +1,5 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 14.8
------
 - [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
 - [*] Added coupon creation feature [https://github.com/woocommerce/woocommerce-android/pull/9474]
 

@@ -24,7 +24,6 @@ org.gradle.caching=true
 android.useAndroidX=true
 android.enableJetifier=false
 
-
 # For more details on what these properties do visit
 # https://github.com/woocommerce/woocommerce-android/blob/trunk/README.md
 
@@ -57,3 +56,4 @@ tracksEnabled = false
 #tracksUsername = <optional username>
 
 android.nonTransitiveRClass=true
+android.enableR8.fullMode=false
