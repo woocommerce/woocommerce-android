@@ -9,6 +9,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.Mode
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -45,6 +46,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: EditCouponViewModel
 
     private var storedCoupon = CouponTestUtils.generateTestCoupon(COUPON_ID)
+    private var emptyCoupon = CouponTestUtils.generateEmptyCoupon()
 
     private val couponRepository: CouponRepository = mock {
         on { observeCoupon(COUPON_ID) } doAnswer {
@@ -75,17 +77,21 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    suspend fun setup(
+        mode: Mode = Mode.Edit(COUPON_ID),
+        prepareMocks: suspend () -> Unit = {}
+    ) {
         prepareMocks()
 
         viewModel = EditCouponViewModel(
-            savedStateHandle = EditCouponFragmentArgs(couponId = COUPON_ID).initSavedStateHandle(),
+            savedStateHandle = EditCouponFragmentArgs(mode).initSavedStateHandle(),
             couponRepository = couponRepository,
             couponUtils = couponUtils,
             parameterRepository = mock {
                 on { getParameters(any(), any()) } doReturn siteParams
             },
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -97,6 +103,34 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
         assertThat(state.couponDraft).isEqualTo(storedCoupon)
         assertThat(state.hasChanges).isEqualTo(false)
+    }
+
+    @Test
+    fun `when screen is opened in creation mode, then load empty coupon`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.couponDraft).isEqualTo(emptyCoupon.copy(type = Coupon.Type.Percent))
+        assertThat(state.hasChanges).isEqualTo(false)
+    }
+
+    @Test
+    fun `when screen is opened in creation mode, then save button should have correct text`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.saveButtonText).isEqualTo(R.string.coupon_create_save_button)
+    }
+
+    @Test
+    fun `when screen is opened in edit mode, then save button should have correct text`() = testBlocking {
+        setup()
+
+        val state = viewModel.viewState.captureValues().last()
+
+        assertThat(state.saveButtonText).isEqualTo(R.string.coupon_edit_save_button)
     }
 
     @Test
