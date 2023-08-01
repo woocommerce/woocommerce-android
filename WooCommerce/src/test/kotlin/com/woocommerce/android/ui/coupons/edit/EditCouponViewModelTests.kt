@@ -2,6 +2,16 @@ package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DESCRIPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_EXPIRY_DATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_USAGE_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_INCLUDES_FREE_SHIPPING
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
@@ -296,4 +306,91 @@ class EditCouponViewModelTests : BaseUnitTest() {
         val event = viewModel.event.captureValues().last()
         assertThat(event).isEqualTo(ShowUiStringSnackbar(UiStringRes(R.string.coupon_edit_coupon_update_failed)))
     }
+
+    @Test
+    fun `given coupon creation mode and percentage type, when create clicked, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent))
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE,
+                KEY_HAS_EXPIRY_DATE to false,
+                KEY_INCLUDES_FREE_SHIPPING to null,
+                KEY_HAS_DESCRIPTION to false,
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to false,
+                KEY_HAS_USAGE_RESTRICTIONS to false
+            )
+        )
+    }
+
+    @Test
+    fun `given coupon creation mode and fixed product type, when create clicked, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.FixedProduct))
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT,
+                KEY_HAS_EXPIRY_DATE to false,
+                KEY_INCLUDES_FREE_SHIPPING to null,
+                KEY_HAS_DESCRIPTION to false,
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to false,
+                KEY_HAS_USAGE_RESTRICTIONS to false
+            )
+        )
+    }
+
+    @Test
+    fun `given coupon creation mode and fixed cart type, when create clicked, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.FixedCart))
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART,
+                KEY_HAS_EXPIRY_DATE to false,
+                KEY_INCLUDES_FREE_SHIPPING to null,
+                KEY_HAS_DESCRIPTION to false,
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to false,
+                KEY_HAS_USAGE_RESTRICTIONS to false
+            )
+        )
+    }
+
+    @Test
+    fun `given coupon creation mode, when coupon created, should track event`() = testBlocking {
+        setup(mode = Mode.Create(Coupon.Type.Percent)) {
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(Unit))
+        }
+
+        viewModel.onSaveClick()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.COUPON_CREATION_SUCCESS)
+    }
+
+    @Test
+    fun `given coupon creation mode, when coupon creation fails, should track event`() =
+        testBlocking {
+            setup(mode = Mode.Create(Coupon.Type.Percent)) {
+                whenever(couponRepository.createCoupon(any())).thenReturn(
+                    Result.failure(WooException(WooError(TIMEOUT, UNKNOWN, "message")))
+                )
+            }
+
+            viewModel.onSaveClick()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.COUPON_CREATION_FAILED,
+                EditCouponViewModel::class.java.simpleName,
+                "TIMEOUT",
+                "message"
+            )
+        }
 }
