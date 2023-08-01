@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +23,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
@@ -86,6 +87,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
+    private val observeLastUpdate: ObserveLastUpdate,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -107,19 +109,19 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
+    private var _lastUpdateStats = MutableLiveData<Long?>()
+    val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
+
+    private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
+    val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
+
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
-    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
-
-    @VisibleForTesting
-    val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
-
-    @VisibleForTesting
-    val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
     private var jetpackMonitoringJob: Job? = null
 
@@ -131,13 +133,13 @@ class MyStoreViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
-                refreshTrigger.onStart { emit(Unit) }
-            ) { granularity, _ ->
-                granularity
-            }.collectLatest { granularity ->
+                refreshTrigger.onStart { emit(RefreshState()) }
+            ) { granularity, refreshEvent ->
+                Pair(granularity, refreshEvent.shouldRefresh)
+            }.collectLatest { (granularity, isForceRefresh) ->
                 coroutineScope {
-                    launch { loadStoreStats(granularity) }
-                    launch { loadTopPerformersStats(granularity) }
+                    launch { loadStoreStats(granularity, isForceRefresh) }
+                    launch { loadTopPerformersStats(granularity, isForceRefresh) }
                 }
             }
         }
@@ -177,9 +179,7 @@ class MyStoreViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            if (refreshStoreStats.any { it } || refreshTopPerformerStats.any { it }) {
-                refreshTrigger.tryEmit(Unit)
-            }
+            refreshTrigger.tryEmit(RefreshState())
         }
     }
 
@@ -194,8 +194,7 @@ class MyStoreViewModel @Inject constructor(
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
-        resetForceRefresh()
-        refreshTrigger.tryEmit(Unit)
+        refreshTrigger.tryEmit(RefreshState(isForced = true))
     }
 
     fun getSelectedSiteName(): String =
@@ -223,17 +222,11 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadStoreStats(granularity: StatsGranularity) {
+    private suspend fun loadStoreStats(granularity: StatsGranularity, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
-            refreshStoreStats[granularity.ordinal] = true
             _revenueStatsState.value = RevenueStatsViewState.Content(null, granularity)
             _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
             return
-        }
-
-        val forceRefresh = refreshStoreStats[granularity.ordinal]
-        if (forceRefresh) {
-            refreshStoreStats[granularity.ordinal] = false
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
         getStats(forceRefresh, granularity)
@@ -249,6 +242,21 @@ class MyStoreViewModel @Inject constructor(
                 }
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
+        launch {
+            observeLastUpdate(
+                granularity,
+                listOf(
+                    AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
+        }
+        launch {
+            observeLastUpdate(
+                granularity,
+                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
+        }
     }
 
     private fun onRevenueStatsSuccess(
@@ -295,21 +303,13 @@ class MyStoreViewModel @Inject constructor(
                 .filter { it?.connectionType == SiteConnectionType.Jetpack }
                 .take(1)
                 .collect {
-                    loadStoreStats(_activeStatsGranularity.value)
+                    loadStoreStats(_activeStatsGranularity.value, false)
                 }
         }
     }
 
-    private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {
-        if (!networkStatus.isConnected()) {
-            refreshTopPerformerStats[granularity.ordinal] = true
-            return
-        }
-
-        val forceRefresh = refreshTopPerformerStats[granularity.ordinal]
-        if (forceRefresh) {
-            refreshTopPerformerStats[granularity.ordinal] = false
-        }
+    private suspend fun loadTopPerformersStats(granularity: StatsGranularity, forceRefresh: Boolean) {
+        if (!networkStatus.isConnected()) return
 
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
         val result = getTopPerformers.fetchTopPerformers(granularity, forceRefresh)
@@ -329,7 +329,9 @@ class MyStoreViewModel @Inject constructor(
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
             _activeStatsGranularity
-                .flatMapLatest { granularity -> getTopPerformers.observeTopPerformers(granularity) }
+                .flatMapLatest { granularity ->
+                    getTopPerformers.observeTopPerformers(granularity)
+                }
                 .collectLatest {
                     _topPerformersState.value = _topPerformersState.value?.copy(
                         topPerformers = it.toTopPerformersUiList(),
@@ -405,15 +407,6 @@ class MyStoreViewModel @Inject constructor(
             onClick = ::onTopPerformerSelected
         )
 
-    private fun resetForceRefresh() {
-        refreshTopPerformerStats.forEachIndexed { index, _ ->
-            refreshTopPerformerStats[index] = true
-        }
-        refreshStoreStats.forEachIndexed { index, _ ->
-            refreshStoreStats[index] = true
-        }
-    }
-
     private fun getTotalSpendFormatted(totalSpend: BigDecimal, currency: String) =
         currencyFormatter.formatCurrency(
             totalSpend,
@@ -486,5 +479,21 @@ class MyStoreViewModel @Inject constructor(
         object ShowAIProductDescriptionDialog : MyStoreEvent()
 
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
+    }
+
+    data class RefreshState(private val isForced: Boolean = false) {
+        /**
+         * [shouldRefresh] will be true only the first time the refresh event is consulted and when
+         * isForced is initialized on true. Once the event is handled the property will change its value to false
+         */
+        var shouldRefresh: Boolean = isForced
+            private set
+            get(): Boolean {
+                val result = field
+                if (field) {
+                    field = false
+                }
+                return result
+            }
     }
 }

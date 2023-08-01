@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.customerlistnew
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -46,8 +47,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -55,6 +60,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListViewState.CustomerList.Item.Customer
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Composable
@@ -65,7 +71,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(id = R.string.order_creation_add_customer_existing_customer)) },
+                    title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
                     navigationIcon = {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(
@@ -110,7 +116,7 @@ fun CustomerListScreen(
     ) {
         SearchLayoutWithParams(
             state = SearchLayoutWithParamsState(
-                hint = R.string.order_creation_customer_filter_hint,
+                hint = R.string.order_creation_customer_search_hint,
                 searchQuery = state.searchQuery,
                 isSearchFocused = false,
                 areSearchTypesAlwaysVisible = true,
@@ -129,8 +135,8 @@ fun CustomerListScreen(
         PartialLoadingIndicator(state)
 
         when (val body = state.body) {
-            CustomerListViewState.CustomerList.Empty -> CustomerListEmpty()
-            CustomerListViewState.CustomerList.Error -> CustomerListError()
+            is CustomerListViewState.CustomerList.Empty -> CustomerListEmpty(body.message)
+            is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
             CustomerListViewState.CustomerList.Loading -> CustomerListSkeleton()
             is CustomerListViewState.CustomerList.Loaded -> {
                 CustomerListLoaded(
@@ -191,7 +197,7 @@ private fun CustomerListLoaded(
             items = body.customers,
         ) { _, customer ->
             when (customer) {
-                is CustomerListViewState.CustomerList.Item.Customer -> {
+                is Customer -> {
                     CustomerListItem(
                         customer = customer,
                         onCustomerSelected = onCustomerSelected
@@ -232,7 +238,7 @@ private fun CustomerListLoaded(
 
 @Composable
 private fun CustomerListItem(
-    customer: CustomerListViewState.CustomerList.Item.Customer,
+    customer: Customer,
     onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
     Column(
@@ -248,31 +254,75 @@ private fun CustomerListItem(
                 vertical = dimensionResource(id = R.dimen.minor_100)
             )
     ) {
-        Text(
-            text = "${customer.firstName} ${customer.lastName}",
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.W700,
-        )
+        Row {
+            Text(
+                text = customer.name.render(),
+                color = colorResource(id = R.color.color_on_surface),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.W500,
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = customer.username.render(),
+                color = colorResource(id = R.color.color_on_surface_medium),
+                style = MaterialTheme.typography.subtitle1,
+            )
+        }
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = customer.email,
+            text = customer.email.render(),
+            color = colorResource(id = R.color.color_on_surface),
             style = MaterialTheme.typography.body2,
         )
     }
 }
 
 @Composable
-private fun CustomerListEmpty() {
+private fun Customer.Text.render() =
+    when (this) {
+        is Customer.Text.Highlighted -> buildHighlightedText()
+
+        is Customer.Text.Placeholder -> buildPlaceholder()
+    }
+
+@Composable
+private fun Customer.Text.Placeholder.buildPlaceholder() =
+    buildAnnotatedString {
+        withStyle(
+            SpanStyle(
+                color = colorResource(id = R.color.color_on_surface_disabled),
+            )
+        ) {
+            append(text)
+        }
+    }
+
+@Composable
+private fun Customer.Text.Highlighted.buildHighlightedText() =
+    buildAnnotatedString {
+        if (start >= end) {
+            append(text)
+            return@buildAnnotatedString
+        }
+        append(text.substring(0, start))
+        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+            append(text.substring(start, end))
+        }
+        append(text.substring(end, text.length))
+    }
+
+@Composable
+private fun CustomerListEmpty(@StringRes message: Int) {
     CustomerListNoDataState(
-        text = R.string.order_creation_customer_search_empty,
+        text = message,
         image = R.drawable.img_empty_search
     )
 }
 
 @Composable
-private fun CustomerListError() {
+private fun CustomerListError(@StringRes message: Int) {
     CustomerListNoDataState(
-        text = R.string.error_generic,
+        text = message,
         image = R.drawable.img_woo_generic_error
     )
 }
@@ -371,8 +421,8 @@ fun CustomerListScreenPreview() {
             searchQuery = "",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -389,19 +439,27 @@ fun CustomerListScreenPreview() {
             partialLoading = true,
             body = CustomerListViewState.CustomerList.Loaded(
                 customers = listOf(
-                    CustomerListViewState.CustomerList.Item.Customer(
+                    Customer(
                         remoteId = 1,
-                        firstName = "John",
-                        lastName = "Doe",
-                        email = "John@gmail.com",
+                        name = Customer.Text.Highlighted("John Doe", 0, 1),
+                        email = Customer.Text.Highlighted("email@email.com", 3, 10),
+                        username = Customer.Text.Highlighted("· JohnDoe", 3, 6),
 
                         payload = WCCustomerModel(),
                     ),
-                    CustomerListViewState.CustomerList.Item.Customer(
+                    Customer(
                         remoteId = 2,
-                        firstName = "Andrei",
-                        lastName = "K",
-                        email = "blac@aaa.com",
+                        name = Customer.Text.Highlighted("Andrei Kdn", 5, 8),
+                        email = Customer.Text.Highlighted("blabla@email.com", 3, 10),
+                        username = Customer.Text.Highlighted("· AndreiDoe", 3, 6),
+
+                        payload = WCCustomerModel(),
+                    ),
+                    Customer(
+                        remoteId = 3,
+                        name = Customer.Text.Placeholder("No name"),
+                        email = Customer.Text.Placeholder("No email"),
+                        username = Customer.Text.Placeholder(""),
 
                         payload = WCCustomerModel(),
                     ),
@@ -426,8 +484,8 @@ fun CustomerListScreenEmptyPreview() {
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -441,7 +499,7 @@ fun CustomerListScreenEmptyPreview() {
                     isSelected = false,
                 ),
             ),
-            body = CustomerListViewState.CustomerList.Empty,
+            body = CustomerListViewState.CustomerList.Empty(R.string.order_creation_customer_search_empty),
         ),
         {},
         {},
@@ -451,6 +509,7 @@ fun CustomerListScreenEmptyPreview() {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomerListScreenErrorPreview() {
     CustomerListScreen(
@@ -459,8 +518,8 @@ fun CustomerListScreenErrorPreview() {
             searchQuery = "search",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(
@@ -474,7 +533,7 @@ fun CustomerListScreenErrorPreview() {
                     isSelected = false,
                 ),
             ),
-            body = CustomerListViewState.CustomerList.Error,
+            body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
         ),
         {},
         {},
@@ -489,11 +548,11 @@ fun CustomerListScreenLoadingPreview() {
     CustomerListScreen(
         modifier = Modifier,
         state = CustomerListViewState(
-            searchQuery = "search",
+            searchQuery = "",
             searchModes = listOf(
                 SearchMode(
-                    labelResId = R.string.order_creation_customer_search_everything,
-                    searchParam = "all",
+                    labelResId = R.string.order_creation_customer_search_username,
+                    searchParam = "username",
                     isSelected = true,
                 ),
                 SearchMode(

@@ -63,6 +63,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
                     remoteSearch()
                 }
                 SearchType.SKU -> {
+                    searchInCache()
                     remoteSearch()
                 }
             }
@@ -91,10 +92,16 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private fun searchInCache() {
+        val searchOptions = if (searchType.value == SearchType.SKU) {
+            SkuSearchOptions.PartialMatch
+        } else {
+            SkuSearchOptions.Disabled
+        }
         repository.searchProductsInCache(
             offset = offset.value,
             pageSize = PAGE_SIZE,
             searchQuery = searchQuery.value,
+            skuSearchOptions = searchOptions
         ).let { loadedProducts ->
             searchResults.update { list -> updateSearchResult(list, loadedProducts) }
         }

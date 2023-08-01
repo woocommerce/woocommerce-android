@@ -185,7 +185,7 @@ class MyStoreFragment :
             viewLifecycleOwner.lifecycleScope
         ) { myStoreViewModel.onViewAnalyticsClicked() }
 
-        binding.myStoreTopPerformers.initView(selectedSite)
+        binding.myStoreTopPerformers.initView(selectedSite, dateUtils)
 
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
         binding.myStoreStatsAvailabilityMessage.setClickableText(
@@ -397,6 +397,12 @@ class MyStoreFragment :
 
                 else -> event.isHandled = false
             }
+        }
+        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
         }
     }
 

@@ -54,11 +54,19 @@ class StatsRepository @Inject constructor(
         granularity: StatsGranularity,
         forced: Boolean,
         startDate: String = "",
-        endDate: String = ""
+        endDate: String = "",
+        revenueRangeId: Int = 0
     ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
             val result = wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
+                FetchRevenueStatsPayload(
+                    site = selectedSite.get(),
+                    granularity = granularity,
+                    startDate = startDate,
+                    endDate = endDate,
+                    forced = forced,
+                    revenueRangeId = revenueRangeId
+                )
             )
 
             if (!result.isError) {
@@ -77,6 +85,14 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(exception))
             }
         }
+
+    suspend fun getRevenueStatsById(
+        revenueRangeId: Int
+    ): Flow<Result<WCRevenueStatsModel?>> = flow {
+        wcStatsStore.getRawRevenueStatsFromRangeId(
+            selectedSite.get(), revenueRangeId
+        ).let { emit(Result.success(it)) }
+    }
 
     suspend fun fetchVisitorStats(
         granularity: StatsGranularity,
@@ -183,7 +199,7 @@ class StatsRepository @Inject constructor(
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
+            wcOrderStore.hasOrders(selectedSite.get())
         }
 
         when (result) {
