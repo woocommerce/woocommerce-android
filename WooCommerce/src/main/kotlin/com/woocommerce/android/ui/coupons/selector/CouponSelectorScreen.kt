@@ -50,7 +50,6 @@ fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
         onRefresh = viewModel::onRefresh,
         onLoadMore = viewModel::onLoadMore,
     )
-
 }
 
 @Composable
@@ -119,7 +118,6 @@ fun EmptyCouponSelectorList() {
     }
 }
 
-
 @Composable
 fun CouponSelectorList(
     coupons: List<CouponSelectorItem>,
@@ -183,7 +181,8 @@ fun CouponSelectorListItem(
             .clickable(
                 enabled = true,
                 role = Role.Button,
-                onClick = { onCouponClicked(coupon.id) })
+                onClick = { onCouponClicked(coupon.id) }
+            )
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         coupon.code?.let {
@@ -271,7 +270,6 @@ fun CouponSelectorEmptySearch(searchQuery: String) {
         )
     }
 }
-
 
 @Preview(
     showBackground = true,
