@@ -97,7 +97,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
 
     fun showLastUpdate(lastUpdateMillis: Long?) {
         if (lastUpdateMillis != null) {
-            val lastUpdateFormatted = dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateMillis)
+            val lastUpdateFormatted = dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
             lastUpdated.isVisible = true
             lastUpdated.text = String.format(
                 Locale.getDefault(),
