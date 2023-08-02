@@ -58,18 +58,6 @@ fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
             topBar = {
                 TopAppBar(
                     title = { Text(text = stringResource(id = R.string.order_creation_select_coupon)) },
-                    navigationIcon = {
-                        IconButton(viewModel::onNavigateBack) {
-                            Icon(
-                                imageVector = if (state.searchState.isActive) {
-                                    Icons.Filled.ArrowBack
-                                } else {
-                                    Icons.Filled.Close
-                                },
-                                contentDescription = stringResource(id = R.string.back)
-                            )
-                        }
-                    },
                     backgroundColor = colorResource(id = R.color.color_toolbar),
                     elevation = 0.dp
                 )
