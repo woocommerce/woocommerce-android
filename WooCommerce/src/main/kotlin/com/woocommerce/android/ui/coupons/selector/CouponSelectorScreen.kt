@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.coupons.selector
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,8 +18,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -42,35 +51,67 @@ import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
 fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
-    val couponListState by viewModel.couponSelectorState.observeAsState(CouponSelectorState())
-
-    CouponSelectorScreen(
-        state = couponListState,
-        onCouponClicked = viewModel::onCouponClicked,
-        onRefresh = viewModel::onRefresh,
-        onLoadMore = viewModel::onLoadMore,
-    )
+    val viewState by viewModel.couponSelectorState.observeAsState(CouponSelectorState())
+    BackHandler(onBack = viewModel::onNavigateBack)
+    viewState.let { state ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = stringResource(id = R.string.order_creation_select_coupon)) },
+                    navigationIcon = {
+                        IconButton(viewModel::onNavigateBack) {
+                            Icon(
+                                imageVector = if (state.searchState.isActive) {
+                                    Icons.Filled.ArrowBack
+                                } else {
+                                    Icons.Filled.Close
+                                },
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                    elevation = 0.dp
+                )
+            },
+        ) { padding ->
+            CouponSelectorScreen(
+                modifier = Modifier.padding(padding),
+                state = state,
+                onCouponClicked = viewModel::onCouponClicked,
+                onRefresh = viewModel::onRefresh,
+                onLoadMore = viewModel::onLoadMore,
+            )
+        }
+    }
 }
 
 @Composable
 fun CouponSelectorScreen(
+    modifier: Modifier = Modifier,
     state: CouponSelectorState,
     onCouponClicked: (Long) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
-    when {
-        state.coupons.isNotEmpty() -> CouponSelectorList(
-            coupons = state.coupons,
-            loadingState = state.loadingState,
-            onCouponClicked = onCouponClicked,
-            onRefresh = onRefresh,
-            onLoadMore = onLoadMore,
-        )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+    ) {
+        when {
+            state.coupons.isNotEmpty() -> CouponSelectorList(
+                coupons = state.coupons,
+                loadingState = state.loadingState,
+                onCouponClicked = onCouponClicked,
+                onRefresh = onRefresh,
+                onLoadMore = onLoadMore,
+            )
 
-        state.loadingState == LoadingState.Loading -> CouponSelectorListSkeleton()
-        state.isSearchOpen -> CouponSelectorEmptySearch(searchQuery = state.searchQuery.orEmpty())
-        else -> EmptyCouponSelectorList()
+            state.loadingState == LoadingState.Loading -> CouponSelectorListSkeleton()
+            state.isSearchOpen -> CouponSelectorEmptySearch(searchQuery = state.searchQuery.orEmpty())
+            else -> EmptyCouponSelectorList()
+        }
     }
 }
 
