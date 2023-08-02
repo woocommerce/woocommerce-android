@@ -184,4 +184,9 @@
     <color name="highlights_tooltip_background">@color/color_surface_elevated</color>
     <color name="highlights_tooltip_title">@color/color_on_surface</color>
 
+    <!--
+    Test order step number
+    -->
+    <color name="try_test_order_step">@color/woo_black_60</color>
+
 </resources>

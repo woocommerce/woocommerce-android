@@ -14,7 +14,9 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
@@ -90,6 +92,10 @@ class OrderListRepository @Inject constructor(
                 } else RequestResult.SUCCESS
             } else RequestResult.NO_ACTION_NEEDED
         }
+    }
+
+    fun getAllPaymentGateways(site: SiteModel): List<WCGatewayModel> {
+        return gatewayStore.getAllGateways(site)
     }
 
     @Suppress("unused")
