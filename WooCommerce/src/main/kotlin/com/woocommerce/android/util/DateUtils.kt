@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.util.WooLog.T.UTILS
 import org.apache.commons.lang3.time.DateUtils
 import java.text.DateFormatSymbols
@@ -370,6 +371,15 @@ class DateUtils @Inject constructor(
     }
 
     fun isSameDay(date1: Date, date2: Date) = DateUtils.isSameDay(date1,date2)
+
+    fun getDateOrTimeFromMillis(millis: Long): String? {
+        val date = Date(millis)
+        return if (isToday(date)) {
+            getDateMillisInFriendlyTimeFormat(millis)
+        } else {
+            getDayMonthDateString(date.formatToYYYYmmDDhhmmss())
+        }
+    }
 
     companion object {
         const val ZERO = 0
