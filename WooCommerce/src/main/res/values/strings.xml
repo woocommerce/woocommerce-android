@@ -525,6 +525,7 @@
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_select_coupon">Select a coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
