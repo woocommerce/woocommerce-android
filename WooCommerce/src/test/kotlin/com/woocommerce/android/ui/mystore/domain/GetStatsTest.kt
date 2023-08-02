@@ -236,7 +236,7 @@ class GetStatsTest : BaseUnitTest() {
     @Test
     fun `Given should update is false, then don't update last analytic update`() =
         testBlocking {
-            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+            getRevenueStatsById(Result.success(ANY_REVENUE_STATS))
             givenShouldUpdateAnalyticsReturns(false)
 
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
@@ -246,6 +246,28 @@ class GetStatsTest : BaseUnitTest() {
                     any(),
                     eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
                 )
+        }
+
+    @Test
+    fun `Given should update is false and the revenue is on local cache then don't call fetch`() =
+        testBlocking {
+            getRevenueStatsById(Result.success(ANY_REVENUE_STATS))
+            givenShouldUpdateAnalyticsReturns(false)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `Given should update is false and the revenue is NOT on local cache then call fetch with refresh false`() =
+        testBlocking {
+            getRevenueStatsById(Result.success(null))
+            givenShouldUpdateAnalyticsReturns(false)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(statsRepository).fetchRevenueStats(any(), eq(false), any(), any(), any())
         }
 
     @Test
@@ -272,6 +294,9 @@ class GetStatsTest : BaseUnitTest() {
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
         whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString(), any()))
             .thenReturn(flow { emit(result) })
+    }
+    private suspend fun getRevenueStatsById(result: Result<WCRevenueStatsModel?>) {
+        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(flow { emit(result) })
     }
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
