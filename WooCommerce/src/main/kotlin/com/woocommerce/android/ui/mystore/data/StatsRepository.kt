@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
+import java.util.Date
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -365,4 +367,13 @@ class StatsRepository @Inject constructor(
             message = this.message
         )
     }
+}
+
+fun String.asRevenueRangeId(
+    startDate: Date,
+    endDate: Date
+): Int {
+    val startDateString = startDate.formatToYYYYmmDD()
+    val endDateString = endDate.formatToYYYYmmDD()
+    return "$this$startDateString$endDateString".hashCode()
 }
