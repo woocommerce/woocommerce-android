@@ -149,7 +149,7 @@
     <string name="tip">Tip</string>
     <string name="hide_password_content_description">Hide password</string>
     <string name="show_password_content_description">Show password</string>
-    <string name="last_update">Last update %s</string>
+    <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
 
     <!--

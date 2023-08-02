@@ -364,6 +364,25 @@ class DateUtils @Inject constructor(
             null
         }
 
+    /***
+     * Will generate a formatted date string in two possible formats:
+     * 1. If the date is today, it will return the time in the format h:mm a
+     * 2. If the date is not today, it will return the date in the format MMM dd, yyyy
+     */
+    fun getDateOrTimeFromMillis(millis: Long): String? {
+        val date = Date(millis)
+        return if (isToday(date)) {
+            getDateMillisInFriendlyTimeFormat(millis)
+        } else {
+            getDayMonthDateString(date.formatToYYYYmmDD())
+        }
+    }
+
+    private fun isToday(date: Date): Boolean {
+        val todayStart = getDateForTodayAtTheStartOfTheDay()
+        return DateUtils.isSameDay(date, Date(todayStart))
+    }
+
     companion object {
         const val ZERO = 0
 
