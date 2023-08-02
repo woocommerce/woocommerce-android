@@ -285,8 +285,9 @@ class AnalyticsHubViewModel @Inject constructor(
         lastUpdateObservationJob = observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
             .filterNotNull()
             .map {
-                if (dateUtils.isToday(Date(it))) dateUtils.getDateMillisInFriendlyTimeFormat(it)
-                else dateUtils.getDayMonthDateString(Date(it).formatToYYYYmmDDhhmmss())
+                val lastUpdate = Date(it)
+                if (dateUtils.isToday(lastUpdate)) dateUtils.getDateMillisInFriendlyTimeFormat(it)
+                else dateUtils.getDayMonthDateString(lastUpdate.formatToYYYYmmDDhhmmss())
             }
             .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it.orEmpty()) }
             .launchIn(viewModelScope)
