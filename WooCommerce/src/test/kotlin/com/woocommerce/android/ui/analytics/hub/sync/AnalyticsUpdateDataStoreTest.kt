@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -22,8 +24,6 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 @ExperimentalCoroutinesApi
 class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
