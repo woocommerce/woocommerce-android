@@ -748,7 +748,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddCouponButtonClicked() {
-        triggerEvent(OrderCreateEditNavigationTarget.SelectCoupon(mode))
+        triggerEvent(OrderCreateEditNavigationTarget.AddCoupon(mode))
     }
 
     fun onShippingButtonClicked() {
