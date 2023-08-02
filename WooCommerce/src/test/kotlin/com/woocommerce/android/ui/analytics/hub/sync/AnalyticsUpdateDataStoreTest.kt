@@ -195,20 +195,13 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             on { data } doReturn flowOf(analyticsPreferences)
         }
 
-        val mockDate = mock<Date> {
-            on { time } doReturn currentTimestamp
-        }
-        currentTimeProvider = mock {
-            on { currentDate() } doReturn mockDate
-        }
-
         val selectedSite: SelectedSite = mock {
             on { getSelectedSiteId() } doReturn 1
         }
 
         sut = AnalyticsUpdateDataStore(
             dataStore = dataStore,
-            currentTimeProvider = currentTimeProvider,
+            currentTimeProvider = mock(),
             selectedSite = selectedSite
         )
     }
