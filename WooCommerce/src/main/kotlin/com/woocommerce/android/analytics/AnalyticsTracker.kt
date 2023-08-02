@@ -87,6 +87,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
             site?.let {
                 finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
+                finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
+                finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -276,6 +278,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
 
         const val KEY_COUPONS_COUNT = "coupons_count"
+
+        const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
+        const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
