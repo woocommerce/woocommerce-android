@@ -69,7 +69,7 @@ object OrderCreateEditNavigator {
                     couponLines = target.couponLines.toTypedArray()
                 )
             }
-            is OrderCreateEditNavigationTarget.SelectCoupon -> {
+            is OrderCreateEditNavigationTarget.AddCoupon -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment(
                     orderCreationMode = target.orderCreationMode,
                     couponCode = target.couponCode
