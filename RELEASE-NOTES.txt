@@ -2,6 +2,7 @@
 14.8
 - [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
 - [*] Added coupon creation feature [https://github.com/woocommerce/woocommerce-android/pull/9474]
+- [*] [Internal] Fixed logic disabling editable controls in order creation/edit form [https://github.com/woocommerce/woocommerce-android/pull/9515]
 
 14.7
 -----
