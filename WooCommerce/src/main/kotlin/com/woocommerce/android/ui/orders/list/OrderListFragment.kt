@@ -412,6 +412,7 @@ class OrderListFragment :
                         }
                     }
                     EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER -> {
+                        AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_TEST_ORDER_DISPLAYED)
                         emptyView.show(emptyViewType) {
                             navigateToTryTestOrderScreen()
                         }
