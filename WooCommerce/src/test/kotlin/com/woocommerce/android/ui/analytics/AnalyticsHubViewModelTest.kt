@@ -663,7 +663,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `when last update information changes, then update view state as expected`() = testBlocking {
         val lastUpdateTimestamp = 123456789L
         whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(lastUpdateTimestamp))
-        whenever(dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateTimestamp)).thenReturn("9:35 AM")
+        whenever(dateUtils.getDateOrTimeFromMillis(lastUpdateTimestamp)).thenReturn("9:35 AM")
         sut = givenAViewModel()
 
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo("9:35 AM")
