@@ -365,13 +365,11 @@ class DateUtils @Inject constructor(
             null
         }
 
-    fun isToday(date: Date): Boolean {
-        val todayStart = getDateForTodayAtTheStartOfTheDay()
-        return isSameDay(date, Date(todayStart))
-    }
-
-    fun isSameDay(date1: Date, date2: Date) = DateUtils.isSameDay(date1,date2)
-
+    /***
+     * Will generate a formatted date string in two possible formats:
+     * 1. If the date is today, it will return the time in the format h:mm a
+     * 2. If the date is not today, it will return the date in the format MMM dd, yyyy
+     */
     fun getDateOrTimeFromMillis(millis: Long): String? {
         val date = Date(millis)
         return if (isToday(date)) {
@@ -379,6 +377,11 @@ class DateUtils @Inject constructor(
         } else {
             getDayMonthDateString(date.formatToYYYYmmDDhhmmss())
         }
+    }
+
+    private fun isToday(date: Date): Boolean {
+        val todayStart = getDateForTodayAtTheStartOfTheDay()
+        return DateUtils.isSameDay(date, Date(todayStart))
     }
 
     companion object {
