@@ -273,7 +273,9 @@ class OrderCreateEditCustomerAddFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
 
-        if (editingOfAddedCustomer.editingOfAddedCustomer) {
+        if (editingOfAddedCustomer.editingOfAddedCustomer &&
+            sharedViewModel.mode == OrderCreateEditViewModel.Mode.Creation
+        ) {
             menu.add(
                 Menu.NONE,
                 MENU_ITEM_DELETE_ID,
