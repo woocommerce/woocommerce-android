@@ -52,6 +52,11 @@ class CustomerListFragment : BaseFragment() {
                         billingAddress = event.billingAddress,
                         shippingAddress = event.shippingAddress
                     )
+                    addressViewModel.onAddressesChanged(
+                        customerId = event.customerId,
+                        billingAddress = event.billingAddress,
+                        shippingAddress = event.shippingAddress
+                    )
 
                     findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }

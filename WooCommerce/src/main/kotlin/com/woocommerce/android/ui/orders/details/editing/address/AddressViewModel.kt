@@ -245,7 +245,7 @@ class AddressViewModel @Inject constructor(
         billingAddress: Address,
         shippingAddress: Address
     ) {
-        hasStarted = true
+        clearSelectedAddress()
         viewState = viewState.copy(
             customerId = customerId,
             addressSelectionStates = mapOf(
@@ -267,6 +267,7 @@ class AddressViewModel @Inject constructor(
             AddressType.BILLING to Address.EMPTY,
             AddressType.SHIPPING to Address.EMPTY,
         )
+        viewState = ViewState()
         initialize(initialState)
     }
 
