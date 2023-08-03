@@ -178,11 +178,23 @@ private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit
                 text = stringResource(id = string.ai_product_description_title),
                 style = MaterialTheme.typography.h6
             )
-            Text(
-                text = state.productTitle ?: stringResource(id = string.ai_product_description_product_name),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = color.color_on_surface_medium)
-            )
+
+            if (state.productTitle.isEmpty()) {
+                OutlinedTextField(
+                    value = "",
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { },
+                    placeholder = {
+                        Text(stringResource(id = string.ai_product_description_title_hint))
+                    }
+                )
+            } else {
+                Text(
+                    text = state.productTitle,
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(id = color.color_on_surface_medium)
+                )
+            }
         }
         Divider(
             color = colorResource(id = color.divider_color),

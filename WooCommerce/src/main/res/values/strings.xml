@@ -3442,6 +3442,7 @@
     <string name="ai_product_description_product_name">Enter your product name</string>
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
+    <string name="ai_product_description_title_hint">Enter product title.</string>
     <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
