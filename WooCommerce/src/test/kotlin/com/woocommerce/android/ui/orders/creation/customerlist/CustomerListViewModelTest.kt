@@ -946,7 +946,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onAddCustomerClicked, then AddCustomer event triggered`() {
+    fun `when onAddCustomerClicked, then AddCustomer event triggered and event tracked`() {
         // GIVEN
         val viewModel = initViewModel()
 
@@ -954,6 +954,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         viewModel.onAddCustomerClicked()
 
         // THEN
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
         assertThat(viewModel.event.value).isEqualTo(AddCustomer)
     }
 

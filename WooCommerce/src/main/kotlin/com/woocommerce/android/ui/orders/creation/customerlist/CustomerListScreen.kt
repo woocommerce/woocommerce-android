@@ -183,6 +183,7 @@ private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
     FloatingActionButton(
         onClick = onClick,
         backgroundColor = colorResource(id = R.color.color_primary),
+        contentColor = colorResource(id = R.color.woo_white),
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
