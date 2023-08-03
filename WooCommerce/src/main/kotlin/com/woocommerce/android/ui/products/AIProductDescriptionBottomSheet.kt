@@ -194,7 +194,7 @@ private fun GenerationFlow(
                 )
             } else {
                 OutlinedTextField(
-                    value = "",
+                    value = state.productTitle,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                     onValueChange = onTitleChanged,
