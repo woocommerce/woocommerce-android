@@ -136,4 +136,4 @@ enum class LoadingState {
     Idle, Loading, Refreshing, Appending
 }
 
-object NavigateToCouponList: MultiLiveEvent.Event()
+object NavigateToCouponList : MultiLiveEvent.Event()
