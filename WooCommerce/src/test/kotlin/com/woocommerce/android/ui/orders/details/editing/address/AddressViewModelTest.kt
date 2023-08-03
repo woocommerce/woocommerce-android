@@ -289,11 +289,12 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when clearSelectedAddress, then initialise with empty address`() {
+    fun `when clearSelectedAddress, then initialise with empty address`() = testBlocking {
         addressViewModel.clearSelectedAddress()
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
+                customerId = null,
                 addressSelectionStates = mapOf(
                     BILLING to AddressSelectionState(
                         address = Address.EMPTY,
