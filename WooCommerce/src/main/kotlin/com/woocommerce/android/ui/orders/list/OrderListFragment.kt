@@ -411,6 +411,12 @@ class OrderListFragment :
                             refreshOrders()
                         }
                     }
+                    EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER -> {
+                        AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_TEST_ORDER_DISPLAYED)
+                        emptyView.show(emptyViewType) {
+                            navigateToTryTestOrderScreen()
+                        }
+                    }
                     else -> {
                         emptyView.show(emptyViewType)
                     }
@@ -498,6 +504,15 @@ class OrderListFragment :
 
     private fun showOrderFilters() {
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun navigateToTryTestOrderScreen() {
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_TRY_TEST_ORDER_TAPPED)
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToCreateTestOrderDialogFragment(
+                siteUrl = selectedSite.get().url
+            )
+        )
     }
 
     private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {

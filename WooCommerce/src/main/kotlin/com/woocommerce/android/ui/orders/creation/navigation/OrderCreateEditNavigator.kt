@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
-import com.woocommerce.android.util.FeatureFlag
 
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
@@ -24,13 +23,7 @@ object OrderCreateEditNavigator {
                     editingOfAddedCustomer = true
                 )
             is AddCustomer ->
-                if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
-                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
-                } else {
-                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
-                        editingOfAddedCustomer = false
-                    )
-                }
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomerListFragment()
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
             is SelectItems ->

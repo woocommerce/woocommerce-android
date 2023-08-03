@@ -1,6 +1,7 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import android.os.Parcelable
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -8,14 +9,21 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 data class CustomerListViewState(
+    @StringRes val searchHint: Int,
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
+    val showFabInEmptyState: Boolean,
+    val searchFocused: Boolean,
     val partialLoading: Boolean = false,
     val body: CustomerList = CustomerList.Loading,
 ) {
     sealed class CustomerList {
         object Loading : CustomerList()
-        data class Empty(@StringRes val message: Int) : CustomerList()
+        data class Empty(
+            @StringRes val message: Int,
+            @DrawableRes val image: Int,
+            @StringRes val buttonText: Int?,
+        ) : CustomerList()
         data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
@@ -25,12 +33,17 @@ data class CustomerListViewState(
         sealed class Item {
             data class Customer(
                 val remoteId: Long,
-                val firstName: String,
-                val lastName: String,
-                val email: String,
+                val name: Text,
+                val email: Text,
+                val username: Text,
 
                 val payload: WCCustomerModel,
-            ) : Item()
+            ) : Item() {
+                sealed class Text {
+                    data class Highlighted(val text: String, val start: Int, val end: Int) : Text()
+                    data class Placeholder(val text: String) : Text()
+                }
+            }
 
             object Loading : Item()
         }

@@ -12,7 +12,8 @@ data class AnalyticsViewState(
     val ordersState: AnalyticsHubInformationViewState,
     val productsState: AnalyticsHubListViewState,
     val sessionState: AnalyticsHubInformationViewState,
-    val showFeedBackBanner: Boolean
+    val showFeedBackBanner: Boolean,
+    val lastUpdateTimestamp: String
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {

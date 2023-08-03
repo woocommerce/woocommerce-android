@@ -1,22 +1,28 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListDisplayTextHandler.CustomerParam
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import javax.inject.Inject
 
-class CustomerListViewModelMapper @Inject constructor() {
-    fun mapFromWCCustomerToItem(wcCustomerModel: WCCustomerModel) =
-        CustomerListViewState.CustomerList.Item.Customer(
-            remoteId = wcCustomerModel.remoteCustomerId,
-            firstName = wcCustomerModel.firstName,
-            lastName = wcCustomerModel.lastName,
-            email = wcCustomerModel.email,
+class CustomerListViewModelMapper @Inject constructor(
+    private val textHandler: CustomerListDisplayTextHandler,
+) {
+    fun mapFromWCCustomerToItem(
+        wcCustomerModel: WCCustomerModel,
+        searchQuery: String,
+        searchType: CustomerListDisplayTextHandler.SearchType,
+    ) = CustomerListViewState.CustomerList.Item.Customer(
+        remoteId = wcCustomerModel.remoteCustomerId,
+        name = textHandler(CustomerParam.Name(wcCustomerModel.fullName), searchQuery, searchType),
+        email = textHandler(CustomerParam.Email(wcCustomerModel.email), searchQuery, searchType),
+        username = textHandler(CustomerParam.Username(wcCustomerModel.username), searchQuery, searchType),
 
-            payload = wcCustomerModel,
-        )
+        payload = wcCustomerModel,
+    )
 
     fun mapFromOrderAddressToAddress(
         address: OrderAddress,
@@ -68,4 +74,7 @@ class CustomerListViewModelMapper @Inject constructor() {
             phone = wcCustomer.billingPhone,
             email = wcCustomer.billingEmail
         )
+
+    private val WCCustomerModel.fullName: String
+        get() = "$firstName $lastName"
 }

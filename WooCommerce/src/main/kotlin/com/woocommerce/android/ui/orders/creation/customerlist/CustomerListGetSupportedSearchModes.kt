@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import com.woocommerce.android.R
 import javax.inject.Inject
@@ -11,21 +11,26 @@ class CustomerListGetSupportedSearchModes @Inject constructor() {
             supportedSearchModes
         }
 
-    private companion object {
-        val supportedSearchModes = listOf(
+    companion object {
+        const val SEARCH_MODE_VALUE_ALL = "all"
+        const val SEARCH_MODE_VALUE_NAME = "name"
+        const val SEARCH_MODE_VALUE_EMAIL = "email"
+        const val SEARCH_MODE_VALUE_USERNAME = "username"
+
+        private val supportedSearchModes = listOf(
             SearchMode(
                 labelResId = R.string.order_creation_customer_search_name,
-                searchParam = "name",
+                searchParam = SEARCH_MODE_VALUE_NAME,
                 isSelected = false,
             ),
             SearchMode(
                 labelResId = R.string.order_creation_customer_search_email,
-                searchParam = "email",
+                searchParam = SEARCH_MODE_VALUE_EMAIL,
                 isSelected = false,
             ),
             SearchMode(
                 labelResId = R.string.order_creation_customer_search_username,
-                searchParam = "username",
+                searchParam = SEARCH_MODE_VALUE_USERNAME,
                 isSelected = false,
             ),
         )

@@ -4,14 +4,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
 class BetaFeaturesScreen : Screen {
-    companion object {
-        const val PRODUCT_ADDONS_SWITCH = R.id.switchAddonsToggle
-    }
-
-    constructor() : super(PRODUCT_ADDONS_SWITCH)
+    constructor() : super(R.id.switchAddonsToggle)
 
     fun enableProductAddons(): BetaFeaturesScreen {
-        flipSwitchOn(R.id.switchSetting_switch, PRODUCT_ADDONS_SWITCH)
+        flipSwitchOn(R.id.switchSetting_switch, R.id.switchAddonsToggle)
         return BetaFeaturesScreen()
     }
 

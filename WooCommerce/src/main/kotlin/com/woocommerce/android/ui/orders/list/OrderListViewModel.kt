@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
+import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
@@ -103,6 +104,7 @@ class OrderListViewModel @Inject constructor(
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
     private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData,
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
+    private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen,
     private val markFeedbackBannerAsDismissed: MarkFeedbackBannerAsDismissed,
     private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
     private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
@@ -457,37 +459,38 @@ class OrderListViewModel @Inject constructor(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Suppress("NestedBlockDepth", "ComplexMethod")
     fun createAndPostEmptyViewType(wrapper: PagedListWrapper<OrderListItemUIType>) {
         val isLoadingData = wrapper.isFetchingFirstPage.value ?: false ||
             wrapper.data.value == null
         val isListEmpty = wrapper.isEmpty.value ?: true
         val isError = wrapper.listError.value != null
 
-        val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
-            when {
-                isError -> EmptyViewType.NETWORK_ERROR
-                isLoadingData -> {
-                    // don't show intermediate screen when loading search results
-                    if (isSearching) {
-                        null
-                    } else {
-                        EmptyViewType.ORDER_LIST_LOADING
+        viewModelScope.launch {
+            val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
+                when {
+                    isError -> EmptyViewType.NETWORK_ERROR
+                    isLoadingData -> {
+                        // don't show intermediate screen when loading search results
+                        if (isSearching) {
+                            null
+                        } else {
+                            EmptyViewType.ORDER_LIST_LOADING
+                        }
+                    }
+                    isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
+                    viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
+                    else -> when {
+                        !networkStatus.isConnected() -> EmptyViewType.NETWORK_OFFLINE
+                        shouldShowCreateTestOrderScreen() -> EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
+                        else -> EmptyViewType.ORDER_LIST
                     }
                 }
-                isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
-                viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
-                else -> {
-                    if (networkStatus.isConnected()) {
-                        EmptyViewType.ORDER_LIST
-                    } else {
-                        EmptyViewType.NETWORK_OFFLINE
-                    }
-                }
+            } else {
+                null
             }
-        } else {
-            null
+            _emptyViewType.postValue(newEmptyViewType)
         }
-        _emptyViewType.postValue(newEmptyViewType)
     }
 
     private fun showOfflineSnack() {

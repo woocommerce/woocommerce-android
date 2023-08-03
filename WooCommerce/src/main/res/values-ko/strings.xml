@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-20 09:54:03+0000
+Translation-Revision-Date: 2023-07-28 17:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_tap_to_pay_learn_more">Android에서 Tap To Pay로 결제 수락 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
+    <string name="card_reader_hub_collect_payment">결제 수령</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">지정된 가격이 없는 상품은 추가할 수 없습니다.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">공개되지 않은 상품은 추가할 수 없습니다.</string>
+    <string name="order_creation_add_customer_content_description">고객 추가</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">설정으로 이동</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">취소</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">권한 부여</string>

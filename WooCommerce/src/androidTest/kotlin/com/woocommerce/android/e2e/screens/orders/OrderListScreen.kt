@@ -13,17 +13,10 @@ import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matchers
 
-class OrderListScreen : Screen(LIST_VIEW) {
-    companion object {
-        const val LIST_VIEW = R.id.ordersList
-        const val LIST_ITEM = R.id.linearLayout
-        const val SEARCH_BUTTON = R.id.menu_search
-        const val CREATE_ORDER_BUTTON = R.id.createOrderButton
-    }
-
+class OrderListScreen : Screen(R.id.ordersList) {
     fun selectOrder(index: Int): SingleOrderScreen {
         val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
+        selectItemAtIndexInRecyclerView(correctedIndex, R.id.ordersList, R.id.linearLayout)
         return SingleOrderScreen()
     }
 
@@ -41,7 +34,7 @@ class OrderListScreen : Screen(LIST_VIEW) {
     }
 
     fun openSearchPane(): OrderListScreen {
-        clickOn(SEARCH_BUTTON)
+        clickOn(R.id.menu_search)
         return this
     }
 
@@ -75,7 +68,7 @@ class OrderListScreen : Screen(LIST_VIEW) {
     }
 
     fun createFABTap(): UnifiedOrderScreen {
-        clickOn(CREATE_ORDER_BUTTON)
+        clickOn(R.id.createOrderButton)
         return UnifiedOrderScreen()
     }
 
@@ -111,7 +104,7 @@ class OrderListScreen : Screen(LIST_VIEW) {
                     )
                 ),
                 // And that all of them are children of Orders List
-                ViewMatchers.isDescendantOfA(ViewMatchers.withId(LIST_VIEW)),
+                ViewMatchers.isDescendantOfA(ViewMatchers.withId(R.id.ordersList)),
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -120,7 +113,7 @@ class OrderListScreen : Screen(LIST_VIEW) {
     }
 
     fun assertOrdersCount(count: Int): OrderListScreen {
-        Espresso.onView(ViewMatchers.withId(LIST_VIEW))
+        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
             .check(
                 ViewAssertions.matches(
                     CustomMatchers()
