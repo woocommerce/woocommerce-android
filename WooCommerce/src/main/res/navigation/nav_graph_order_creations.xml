@@ -329,8 +329,5 @@
         <argument
             android:name="orderCreationMode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
-        <action
-            android:id="@+id/action_couponSelectorFragment_to_orderCreationFragment"
-            app:destination="@id/orderCreationFragment" />
     </fragment>
 </navigation>

@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
@@ -13,19 +12,14 @@ import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
@@ -67,7 +61,9 @@ class CouponSelectorViewModel @Inject constructor(
         )
     }.asLiveData()
 
-    init { fetchCoupons() }
+    init {
+        fetchCoupons()
+    }
 
     private fun Coupon.toUiModel(): CouponSelectorItem {
         return CouponSelectorItem(
@@ -78,8 +74,8 @@ class CouponSelectorViewModel @Inject constructor(
         )
     }
 
-    fun onCouponClicked(couponId: Long) {
-        triggerEvent(NavigateBackToOrderCreationEvent(couponId))
+    fun onCouponClicked(coupon: CouponSelectorItem) {
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(coupon.code))
     }
 
     fun onLoadMore() {
@@ -136,5 +132,3 @@ data class CouponSelectorItem(
 enum class LoadingState {
     Idle, Loading, Refreshing, Appending
 }
-
-data class NavigateBackToOrderCreationEvent(val couponId: Long) : MultiLiveEvent.Event()

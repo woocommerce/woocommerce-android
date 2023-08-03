@@ -73,7 +73,7 @@ fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
 fun CouponSelectorScreen(
     modifier: Modifier = Modifier,
     state: CouponSelectorState,
-    onCouponClicked: (Long) -> Unit,
+    onCouponClicked: (CouponSelectorItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -145,7 +145,7 @@ fun EmptyCouponSelectorList() {
 fun CouponSelectorList(
     coupons: List<CouponSelectorItem>,
     loadingState: LoadingState,
-    onCouponClicked: (Long) -> Unit,
+    onCouponClicked: (CouponSelectorItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -195,7 +195,7 @@ fun CouponSelectorList(
 @Composable
 fun CouponSelectorListItem(
     coupon: CouponSelectorItem,
-    onCouponClicked: (Long) -> Unit
+    onCouponClicked: (CouponSelectorItem) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -204,7 +204,7 @@ fun CouponSelectorListItem(
             .clickable(
                 enabled = true,
                 role = Role.Button,
-                onClick = { onCouponClicked(coupon.id) }
+                onClick = { onCouponClicked(coupon) }
             )
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
@@ -279,9 +279,8 @@ fun CouponSelectorListItemPreview() {
             code = "coupon1",
             summary = "This is a summary of the coupon",
             isActive = true
-        ),
-        onCouponClicked = {}
-    )
+        )
+    ) {}
 }
 
 @Preview(
@@ -314,9 +313,8 @@ fun CouponSelectorListPreview() {
         coupons = coupons,
         onCouponClicked = {},
         loadingState = LoadingState.Idle,
-        onRefresh = {},
-        onLoadMore = {}
-    )
+        onRefresh = {}
+    ) {}
 }
 
 @Preview()

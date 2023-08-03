@@ -995,7 +995,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onCouponAdded(couponCode: String) {
+    fun onCouponAdded(couponCode: String) {
         if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
         _orderDraft.update { draft ->
             val couponLines = draft.couponLines
