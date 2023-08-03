@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowStateSelector
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -274,7 +275,7 @@ class OrderCreateEditCustomerAddFragment :
         menu.clear()
 
         if (editingOfAddedCustomer.editingOfAddedCustomer &&
-            sharedViewModel.mode == OrderCreateEditViewModel.Mode.Creation
+            FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.isEnabled()
         ) {
             menu.add(
                 Menu.NONE,
