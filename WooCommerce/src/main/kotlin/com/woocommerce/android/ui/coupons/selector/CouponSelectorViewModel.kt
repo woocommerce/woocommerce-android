@@ -100,6 +100,9 @@ class CouponSelectorViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onEmptyScreenButtonClicked() {
+        triggerEvent(NavigateToCouponList)
+    }
     private fun fetchCoupons() = launch {
         loadingState.value = LoadingState.Loading
         couponListHandler.fetchCoupons(forceRefresh = true)
@@ -132,3 +135,5 @@ data class CouponSelectorItem(
 enum class LoadingState {
     Idle, Loading, Refreshing, Appending
 }
+
+object NavigateToCouponList: MultiLiveEvent.Event()

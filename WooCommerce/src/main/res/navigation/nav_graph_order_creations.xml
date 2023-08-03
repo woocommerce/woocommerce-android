@@ -310,13 +310,12 @@
         android:id="@+id/couponSelectorFragment"
         android:name="com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment"
         android:label="CouponSelectorFragment" >
-        <argument
-            android:name="couponCode"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
-        <argument
-            android:name="orderCreationMode"
-            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <action
+            android:id="@+id/action_couponSelectorFragment_to_couponListFragment"
+            app:destination="@id/couponListFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/couponListFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
+        android:label="CouponListFragment" />
 </navigation>

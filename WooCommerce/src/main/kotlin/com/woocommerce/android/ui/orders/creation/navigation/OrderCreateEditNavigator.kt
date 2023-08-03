@@ -62,10 +62,7 @@ object OrderCreateEditNavigator {
                 )
             }
             is OrderCreateEditNavigationTarget.AddCoupon -> {
-                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment(
-                    orderCreationMode = target.orderCreationMode,
-                    couponCode = target.couponCode
-                )
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment()
             }
         }
         navController.navigate(action)

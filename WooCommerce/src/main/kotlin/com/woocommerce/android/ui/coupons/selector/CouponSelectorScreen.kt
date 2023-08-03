@@ -64,6 +64,7 @@ fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
                 onCouponClicked = viewModel::onCouponClicked,
                 onRefresh = viewModel::onRefresh,
                 onLoadMore = viewModel::onLoadMore,
+                onEmptyScreenButtonClicked = viewModel::onEmptyScreenButtonClicked
             )
         }
     }
@@ -76,6 +77,7 @@ fun CouponSelectorScreen(
     onCouponClicked: (CouponSelectorItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
+    onEmptyScreenButtonClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -92,13 +94,15 @@ fun CouponSelectorScreen(
             )
 
             state.loadingState == LoadingState.Loading -> CouponSelectorListSkeleton()
-            else -> EmptyCouponSelectorList()
+            else -> EmptyCouponSelectorList(onEmptyScreenButtonClicked)
         }
     }
 }
 
 @Composable
-fun EmptyCouponSelectorList() {
+fun EmptyCouponSelectorList(
+    onButtonClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,7 +136,7 @@ fun EmptyCouponSelectorList() {
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         WCColoredButton(
-            onClick = {},
+            onClick = onButtonClicked,
             text = stringResource(id = R.string.order_creation_coupons_empty_list_button),
             modifier = Modifier
                 .fillMaxWidth()
@@ -329,5 +333,5 @@ fun CouponSelectorListSkeletonPreview() {
 )
 @Composable
 fun CouponSelectorEmptyListPreview() {
-    EmptyCouponSelectorList()
+    EmptyCouponSelectorList {}
 }

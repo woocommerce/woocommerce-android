@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -42,6 +43,12 @@ class CouponSelectorFragment : BaseFragment() {
 
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_COUPON_SELECTOR_RESULT, it.data)
+                }
+
+                is NavigateToCouponList -> {
+                    findNavController().navigateSafely(
+                        CouponSelectorFragmentDirections.actionCouponSelectorFragmentToCouponListFragment()
+                    )
                 }
             }
         }
