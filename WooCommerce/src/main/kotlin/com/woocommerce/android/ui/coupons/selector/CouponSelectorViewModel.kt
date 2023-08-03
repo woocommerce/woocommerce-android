@@ -11,6 +11,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
@@ -68,12 +70,7 @@ class CouponSelectorViewModel @Inject constructor(
         )
     }.asLiveData()
 
-    init {
-        if (searchQuery.value == null) {
-            fetchCoupons()
-        }
-        monitorSearchQuery()
-    }
+    init { fetchCoupons() }
 
     private fun Coupon.toUiModel(): CouponSelectorItem {
         return CouponSelectorItem(
@@ -104,6 +101,10 @@ class CouponSelectorViewModel @Inject constructor(
         couponListHandler.fetchCoupons(forceRefresh = true)
             .onFailure { triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed)) }
         loadingState.value = LoadingState.Idle
+    }
+
+    fun onNavigateBack() {
+        triggerEvent(Exit)
     }
 
     private fun fetchCoupons() = launch {
@@ -157,7 +158,11 @@ data class CouponSelectorState(
 data class SearchState(
     val isActive: Boolean = false,
     val searchQuery: String = ""
-) : Parcelable
+) : Parcelable {
+    companion object {
+        val EMPTY = SearchState()
+    }
+}
 
 data class CouponSelectorItem(
     val id: Long,

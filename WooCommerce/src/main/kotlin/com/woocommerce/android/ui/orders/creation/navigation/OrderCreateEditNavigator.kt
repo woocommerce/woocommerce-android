@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
@@ -73,6 +74,14 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment(
                     orderCreationMode = target.orderCreationMode,
                     couponCode = target.couponCode
+                )
+            }
+
+            is OrderCreateEditNavigationTarget.SelectCoupon -> {
+                CouponSelectorFragmentDirections.actionCouponSelectorFragmentToOrderCreationFragment(
+                    barcodeFormat = null,
+                    mode = target.orderCreationMode,
+                    sku = null,
                 )
             }
         }
