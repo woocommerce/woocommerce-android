@@ -186,7 +186,13 @@ private fun GenerationFlow(
                 style = MaterialTheme.typography.h6
             )
 
-            if (state.productTitle.isEmpty()) {
+            if (state.isProductTitleInitiallyPresent) {
+                Text(
+                    text = state.productTitle,
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(id = color.color_on_surface_medium)
+                )
+            } else {
                 OutlinedTextField(
                     value = "",
                     modifier = Modifier.fillMaxWidth(),
@@ -195,12 +201,6 @@ private fun GenerationFlow(
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_title_hint))
                     }
-                )
-            } else {
-                Text(
-                    text = state.productTitle,
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = color.color_on_surface_medium)
                 )
             }
         }
@@ -504,7 +504,8 @@ fun PreviewAIDescriptionGenerationForm() {
             generationState = Start(true),
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
-                "make a statement with the \"Fit Fashionista\" activewear set."
+                "make a statement with the \"Fit Fashionista\" activewear set.",
+            isProductTitleInitiallyPresent = true
         ),
         onTitleChanged = {},
         onFeaturesChanged = {},

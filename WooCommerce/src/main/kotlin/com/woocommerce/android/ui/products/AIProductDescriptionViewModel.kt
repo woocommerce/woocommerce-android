@@ -51,7 +51,8 @@ class AIProductDescriptionViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         ViewState(
             productTitle = navArgs.productTitle,
-            features = navArgs.productDescription ?: ""
+            features = navArgs.productDescription ?: "",
+            isProductTitleInitiallyPresent = navArgs.productTitle.isNotEmpty()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -238,7 +239,8 @@ class AIProductDescriptionViewModel @Inject constructor(
         val features: String = "",
         val description: String = "",
         val identifiedLanguageISOCode: String? = null,
-        val generationState: GenerationState = Start()
+        val generationState: GenerationState = Start(),
+        val isProductTitleInitiallyPresent: Boolean,
     ) {
         sealed class GenerationState {
             data class Start(val showError: Boolean = false) : GenerationState()
