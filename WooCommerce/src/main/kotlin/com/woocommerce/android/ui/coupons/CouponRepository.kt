@@ -124,26 +124,7 @@ class CouponRepository @Inject constructor(
     }
 
     suspend fun updateCoupon(coupon: Coupon): Result<Unit> {
-        val request = UpdateCouponRequest(
-            code = coupon.code,
-            description = coupon.description,
-            amount = coupon.amount?.toPlainString(),
-            discountType = coupon.type?.value,
-            isShippingFree = coupon.isShippingFree,
-            expiryDate = coupon.dateExpires?.time?.let { dateUtils.toIso8601Format(it) } ?: "",
-            productIds = coupon.productIds,
-            productCategoryIds = coupon.categoryIds,
-            usageLimit = coupon.restrictions.usageLimit,
-            usageLimitPerUser = coupon.restrictions.usageLimitPerUser,
-            restrictedEmails = coupon.restrictions.restrictedEmails,
-            areSaleItemsExcluded = coupon.restrictions.areSaleItemsExcluded,
-            isForIndividualUse = coupon.restrictions.isForIndividualUse,
-            maximumAmount = coupon.restrictions.maximumAmount?.toPlainString(),
-            minimumAmount = coupon.restrictions.minimumAmount?.toPlainString(),
-            limitUsageToXItems = coupon.restrictions.limitUsageToXItems,
-            excludedProductIds = coupon.restrictions.excludedProductIds,
-            excludedProductCategoryIds = coupon.restrictions.excludedCategoryIds
-        )
+        val request = coupon.createUpdateCouponRequest()
 
         val result = store.updateCoupon(
             site = selectedSite.get(),
@@ -156,6 +137,42 @@ class CouponRepository @Inject constructor(
             else -> Result.success(Unit)
         }
     }
+
+    suspend fun createCoupon(coupon: Coupon): Result<Unit> {
+        val request = coupon.createUpdateCouponRequest()
+
+        val result = store.createCoupon(
+            site = selectedSite.get(),
+            updateCouponRequest = request
+        )
+
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
+    }
+
+    private fun Coupon.createUpdateCouponRequest() =
+        UpdateCouponRequest(
+            code = code,
+            description = description,
+            amount = amount?.toPlainString(),
+            discountType = type?.value,
+            isShippingFree = isShippingFree,
+            expiryDate = dateExpires?.time?.let { dateUtils.toIso8601Format(it) } ?: "",
+            productIds = productIds,
+            productCategoryIds = categoryIds,
+            usageLimit = restrictions.usageLimit,
+            usageLimitPerUser = restrictions.usageLimitPerUser,
+            restrictedEmails = restrictions.restrictedEmails,
+            areSaleItemsExcluded = restrictions.areSaleItemsExcluded,
+            isForIndividualUse = restrictions.isForIndividualUse,
+            maximumAmount = restrictions.maximumAmount?.toPlainString(),
+            minimumAmount = restrictions.minimumAmount?.toPlainString(),
+            limitUsageToXItems = restrictions.limitUsageToXItems,
+            excludedProductIds = restrictions.excludedProductIds,
+            excludedProductCategoryIds = restrictions.excludedCategoryIds
+        )
 
     data class SearchResult(
         val coupons: List<Coupon>,

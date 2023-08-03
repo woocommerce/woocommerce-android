@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -131,6 +133,27 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         verify(dataStore, times(numberOfAnalyticsDataKeys)).edit(any())
     }
 
+    @Test
+    fun `given a range selection timestamp is updated, then last update observation emits new value`() = testBlocking {
+        // Given
+        var timestampUpdate: Long? = null
+        createAnalyticsUpdateScenarioWith(
+            currentTimestamp = 2000
+        )
+
+        // When
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNotNull()
+        assertThat(timestampUpdate).isEqualTo(2000)
+    }
+
     private fun createAnalyticsUpdateScenarioWith(
         lastUpdateTimestamp: Long?,
         currentTimestamp: Long
@@ -157,6 +180,28 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         sut = AnalyticsUpdateDataStore(
             dataStore = dataStore,
             currentTimeProvider = currentTimeProvider,
+            selectedSite = selectedSite
+        )
+    }
+
+    private fun createAnalyticsUpdateScenarioWith(
+        currentTimestamp: Long
+    ) {
+        val analyticsPreferences = mock<Preferences> {
+            on { get(any<Preferences.Key<Long>>()) } doReturn currentTimestamp
+        }
+
+        dataStore = mock {
+            on { data } doReturn flowOf(analyticsPreferences)
+        }
+
+        val selectedSite: SelectedSite = mock {
+            on { getSelectedSiteId() } doReturn 1
+        }
+
+        sut = AnalyticsUpdateDataStore(
+            dataStore = dataStore,
+            currentTimeProvider = mock(),
             selectedSite = selectedSite
         )
     }

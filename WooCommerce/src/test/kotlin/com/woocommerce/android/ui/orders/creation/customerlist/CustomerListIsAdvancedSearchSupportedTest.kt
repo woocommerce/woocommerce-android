@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest

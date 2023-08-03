@@ -16,11 +16,35 @@ import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 
+/***
+ * Data store responsible for signaling when the analytics data should be updated
+ * through stored timestamp.
+ */
 class AnalyticsUpdateDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
     private val currentTimeProvider: CurrentTimeProvider,
     private val selectedSite: SelectedSite
 ) {
+    /***
+     * Creates a flow that will emit true if the analytics data should be updated.
+     *
+     * The decision is based on the [rangeSelection] and [maxOutdatedTime] parameters.
+     *
+     * If no [maxOutdatedTime] is provided, the [defaultMaxOutdatedTime] value will be used.
+     */
+    fun shouldUpdateAnalytics(
+        rangeSelection: StatsTimeRangeSelection,
+        maxOutdatedTime: Long = defaultMaxOutdatedTime,
+        analyticData: AnalyticData = AnalyticData.ALL
+    ) = dataStore.data
+        .map { prefs -> prefs[longPreferencesKey(getTimeStampKey(rangeSelection.identifier, analyticData))] }
+        .map { lastUpdateTime -> isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) }
+
+    /***
+     * Stores the current timestamp for a given [rangeSelection] and [analyticData]
+     *
+     * Will trigger a update to anyone listening to [AnalyticsUpdateDataStore.observeLastUpdate]
+     */
     suspend fun storeLastAnalyticsUpdate(
         rangeSelection: StatsTimeRangeSelection,
         analyticData: AnalyticData = AnalyticData.ALL
@@ -34,6 +58,24 @@ class AnalyticsUpdateDataStore @Inject constructor(
         }
     }
 
+    /***
+     * Creates a flow that will emit the latest timestamp stored for a given [rangeSelection] and [analyticData]
+     *
+     * Useful for views that need to always display when the analytics data was last updated.
+     */
+    fun observeLastUpdate(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticData: AnalyticData
+    ): Flow<Long?> {
+        val timestampKeys = getTimeStampKey(rangeSelection.identifier, analyticData)
+        return observeLastUpdate(timestampKeys)
+    }
+
+    /***
+     * Creates a flow that will emit the latest timestamp stored for a given [rangeSelection] and list of [analyticData]
+     *
+     * Useful for views that need to always display when the analytics data was last updated.
+     */
     fun observeLastUpdate(
         rangeSelection: StatsTimeRangeSelection,
         analyticData: List<AnalyticData>
@@ -41,14 +83,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         val timestampKeys = analyticData.map { data ->
             getTimeStampKey(rangeSelection.identifier, data)
         }
-        return observeLastUpdate(timestampKeys)
-    }
-
-    fun observeLastUpdate(
-        rangeSelection: StatsTimeRangeSelection,
-        analyticData: AnalyticData
-    ): Flow<Long?> {
-        val timestampKeys = getTimeStampKey(rangeSelection.identifier, analyticData)
         return observeLastUpdate(timestampKeys)
     }
 
@@ -66,14 +100,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
     private fun observeLastUpdate(timestampKey: String): Flow<Long?> {
         return dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
     }
-
-    fun shouldUpdateAnalytics(
-        rangeSelection: StatsTimeRangeSelection,
-        maxOutdatedTime: Long = defaultMaxOutdatedTime,
-        analyticData: AnalyticData = AnalyticData.ALL
-    ) = dataStore.data
-        .map { prefs -> prefs[longPreferencesKey(getTimeStampKey(rangeSelection.identifier, analyticData))] }
-        .map { lastUpdateTime -> isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) }
 
     private suspend fun storeLastAnalyticsUpdate(timestampKey: String) {
         dataStore.edit { preferences ->

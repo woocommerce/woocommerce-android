@@ -29,7 +29,6 @@ enum class FeatureFlag {
     SHARING_PRODUCT_AI,
     BLAZE,
     PRODUCT_DESCRIPTION_AI_GENERATOR,
-    CUSTOMER_LIST_SEARCH_2,
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     SHIPPING_ZONES;
 
@@ -62,8 +61,7 @@ enum class FeatureFlag {
             SHIPPING_ZONES -> true
 
             MORE_MENU_INBOX,
-            WC_SHIPPING_BANNER,
-            CUSTOMER_LIST_SEARCH_2 -> PackageUtils.isDebugBuild()
+            WC_SHIPPING_BANNER -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

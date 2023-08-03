@@ -1,15 +1,30 @@
 package com.woocommerce.android.ui.coupons.edit
 
+import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_INITIATED
+import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.COUPON_UPDATE_INITIATED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_COUPON_DISCOUNT_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DESCRIPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_EXPIRY_DATE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_USAGE_RESTRICTIONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_INCLUDES_FREE_SHIPPING
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEqualTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.model.UiString
@@ -26,18 +41,22 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 import java.util.Date
@@ -49,15 +68,23 @@ class EditCouponViewModel @Inject constructor(
     private val couponRepository: CouponRepository,
     private val couponUtils: CouponUtils,
     private val parameterRepository: ParameterRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
     }
 
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
+    private val mode: StateFlow<Mode> = savedStateHandle.getStateFlow(this, navArgs.mode, "key_mode")
+
     private val storedCoupon: Deferred<Coupon> = async {
-        couponRepository.observeCoupon(navArgs.couponId).first()
+        with(mode.value) {
+            when (this) {
+                is Mode.Edit -> couponRepository.observeCoupon(couponId).first()
+                is Mode.Create -> Coupon.EMPTY.copy(type = type)
+            }
+        }
     }
 
     private val couponDraft = savedStateHandle.getNullableStateFlow(viewModelScope, null, Coupon::class.java)
@@ -73,13 +100,28 @@ class EditCouponViewModel @Inject constructor(
     ) { coupon, isSaving ->
         ViewState(
             couponDraft = coupon,
-            localizedType = coupon.type?.let { couponUtils.localizeType(it) },
+            screenTitle = getScreenTitle(coupon),
             amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
             hasChanges = !coupon.isSameCoupon(storedCoupon.await()),
-            isSaving = isSaving
+            isSaving = isSaving,
+            saveButtonText = getSaveButtonText()
         )
     }
         .asLiveData()
+
+    private fun getScreenTitle(coupon: Coupon): String {
+        val localizedType = coupon.type?.let { couponUtils.localizeType(it) }
+        return when (mode.value) {
+            is Mode.Edit -> getEditModeScreenTitle(localizedType)
+            is Mode.Create -> getCreateModeScreenTitle(localizedType)
+        }
+    }
+
+    private fun getCreateModeScreenTitle(localizedType: String?) =
+        localizedType ?: resourceProvider.getString(R.string.coupon_create_screen_title_default)
+
+    private fun getEditModeScreenTitle(localizedType: String?) =
+        localizedType ?: resourceProvider.getString(R.string.coupon_edit_screen_title_default)
 
     init {
         if (couponDraft.value == null) {
@@ -200,8 +242,52 @@ class EditCouponViewModel @Inject constructor(
 
         val oldCoupon = storedCoupon.await()
         val newCoupon = couponDraft.value!!
-        trackUpdateChanges(oldCoupon, newCoupon)
+        when (mode.value) {
+            is Mode.Edit -> trackUpdateChanges(oldCoupon, newCoupon)
+            is Mode.Create -> trackCreateCoupon(newCoupon)
+        }
 
+        when (mode.value) {
+            is Mode.Edit -> updateCoupon(newCoupon)
+            is Mode.Create -> addCoupon(newCoupon)
+        }
+
+        isSaving.value = false
+    }
+
+    private fun getSaveButtonText(): Int = when (mode.value) {
+        is Mode.Edit -> R.string.coupon_edit_save_button
+        is Mode.Create -> R.string.coupon_create_save_button
+    }
+
+    private suspend fun addCoupon(newCoupon: Coupon) {
+        couponRepository.createCoupon(newCoupon)
+            .onSuccess {
+                triggerEvent(ShowSnackbar(R.string.coupon_create_coupon_created))
+                triggerEvent(Exit)
+                analyticsTrackerWrapper.track(COUPON_CREATION_SUCCESS)
+            }
+            .onFailure { exception ->
+                WooLog.e(
+                    tag = WooLog.T.COUPONS,
+                    message = "Coupon create failed: ${exception.message}"
+                )
+                val wooErrorType = (exception as? WooException)?.error?.type
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.COUPON_CREATION_FAILED,
+                    errorContext = this@EditCouponViewModel.javaClass.simpleName,
+                    errorType = wooErrorType?.name,
+                    errorDescription = exception.message
+                )
+                val message =
+                    exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR && it.message.isNotNullOrEmpty() }
+                        ?.message?.let { UiString.UiStringText(it) }
+                        ?: UiString.UiStringRes(R.string.coupon_create_coupon_creation_failed)
+                triggerEvent(ShowUiStringSnackbar(message))
+            }
+    }
+
+    private suspend fun updateCoupon(newCoupon: Coupon) {
         couponRepository.updateCoupon(newCoupon)
             .onSuccess {
                 triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
@@ -223,13 +309,12 @@ class EditCouponViewModel @Inject constructor(
                     errorDescription = exception.message
                 )
 
-                val message = exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR }
-                    ?.message?.let { UiString.UiStringText(it) }
-                    ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
+                val message =
+                    exception.takeIf { wooErrorType == WooErrorType.GENERIC_ERROR && it.message.isNotNullOrEmpty() }
+                        ?.message?.let { UiString.UiStringText(it) }
+                        ?: UiString.UiStringRes(R.string.coupon_edit_coupon_update_failed)
                 triggerEvent(ShowUiStringSnackbar(message))
             }
-
-        isSaving.value = false
     }
 
     private fun trackUpdateChanges(oldCoupon: Coupon, newCoupon: Coupon) {
@@ -256,11 +341,59 @@ class EditCouponViewModel @Inject constructor(
         )
     }
 
+    private fun trackCreateCoupon(newCoupon: Coupon) {
+        val type = when (newCoupon.type) {
+            is Coupon.Type.FixedCart -> VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART
+            is Coupon.Type.Percent -> VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE
+            is Coupon.Type.FixedProduct -> VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT
+            is Coupon.Type.Custom -> VALUE_COUPON_DISCOUNT_TYPE_CUSTOM
+            null -> null
+        }
+
+        val hasProductOrCategoryRestrictions = with(newCoupon.restrictions) {
+            excludedProductIds.isNotEmpty() || excludedCategoryIds.isNotEmpty()
+        }
+        analyticsTrackerWrapper.track(
+            COUPON_CREATION_INITIATED,
+            mapOf(
+                KEY_COUPON_DISCOUNT_TYPE to type,
+                KEY_HAS_EXPIRY_DATE to (newCoupon.dateExpires != null),
+                KEY_INCLUDES_FREE_SHIPPING to newCoupon.isShippingFree,
+                KEY_HAS_DESCRIPTION to (newCoupon.description != null),
+                KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to hasProductOrCategoryRestrictions,
+                KEY_HAS_USAGE_RESTRICTIONS to newCoupon.hasUsageRestrictions()
+            )
+        )
+    }
+
+    private fun Coupon.hasUsageRestrictions() = with(restrictions) {
+        isForIndividualUse == true ||
+            usageLimit != null ||
+            usageLimitPerUser != null ||
+            limitUsageToXItems != null ||
+            areSaleItemsExcluded == true ||
+            minimumAmount != null ||
+            maximumAmount != null ||
+            excludedProductIds.isNotEmpty() ||
+            excludedCategoryIds.isNotEmpty() ||
+            restrictedEmails.isNotEmpty()
+    }
+
     data class ViewState(
         val couponDraft: Coupon,
-        val localizedType: String?,
         val amountUnit: String,
         val hasChanges: Boolean,
-        val isSaving: Boolean
+        val isSaving: Boolean,
+        @StringRes val saveButtonText: Int,
+        val screenTitle: String,
     )
+
+    @Parcelize
+    sealed class Mode : Parcelable {
+        @Parcelize
+        data class Create(val type: Coupon.Type) : Mode()
+
+        @Parcelize
+        data class Edit(val couponId: Long) : Mode()
+    }
 }

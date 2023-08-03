@@ -1,6 +1,6 @@
-package com.woocommerce.android.ui.orders.creation.customerlistnew
+package com.woocommerce.android.ui.orders.creation.customerlist
 
-import com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListViewState.CustomerList.Item.Customer
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewState.CustomerList.Item.Customer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

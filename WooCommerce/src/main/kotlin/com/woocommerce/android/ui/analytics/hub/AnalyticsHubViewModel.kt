@@ -40,6 +40,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
@@ -104,6 +105,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val ranges
         get() = rangeSelectionState.value
+
+    private var lastUpdateObservationJob: Job? = null
 
     init {
         observeOrdersStatChanges()
@@ -276,11 +279,12 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeLastUpdateTimestamp() {
+        lastUpdateObservationJob?.cancel()
         mutableState.value = viewState.value.copy(lastUpdateTimestamp = "")
-        observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
+        lastUpdateObservationJob = observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
             .filterNotNull()
-            .map { dateUtils.getDateMillisInFriendlyTimeFormat(it) }
-            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it) }
+            .map { dateUtils.getDateOrTimeFromMillis(it) }
+            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it.orEmpty()) }
             .launchIn(viewModelScope)
     }
 

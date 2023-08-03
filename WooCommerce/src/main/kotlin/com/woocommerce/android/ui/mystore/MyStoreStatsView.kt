@@ -432,7 +432,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showLastUpdate(lastUpdateMillis: Long?) {
         if (lastUpdateMillis != null) {
-            val lastUpdateFormatted = dateUtils.getDateMillisInFriendlyTimeFormat(lastUpdateMillis)
+            val lastUpdateFormatted = dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
             lastUpdated.isVisible = true
             fadeInLabelValue(
                 lastUpdated,
