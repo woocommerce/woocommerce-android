@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +50,7 @@ class CreateTestOrderDialogFragment : DialogFragment() {
 
     private fun openStoreUrl() {
         ChromeCustomTabUtils.launchUrl(requireActivity(), navArgs.siteUrl)
+        AnalyticsTracker.track(AnalyticsEvent.TEST_ORDER_START_TAPPED)
     }
 
     override fun onStart() {
