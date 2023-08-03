@@ -47,7 +47,6 @@ class CouponSelectorViewModel @Inject constructor(
 
     private val currencyCode by lazy { wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode }
 
-    private val searchQuery = savedState.getNullableStateFlow(this, null, String::class.java)
     private val loadingState = MutableStateFlow(LoadingState.Idle)
 
     val couponSelectorState = combine(
@@ -61,11 +60,9 @@ class CouponSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = searchQuery
-    ) { coupons, loadingState, searchQuery ->
+    ) { coupons, loadingState ->
         CouponSelectorState(
             loadingState = loadingState,
-            searchQuery = searchQuery,
             coupons = coupons
         )
     }.asLiveData()
@@ -115,54 +112,19 @@ class CouponSelectorViewModel @Inject constructor(
             }
         loadingState.value = LoadingState.Idle
     }
-
-    private fun monitorSearchQuery() {
-        viewModelScope.launch {
-            searchQuery
-                .withIndex()
-                .filterNot {
-                    it.index == 0 && it.value == null
-                }
-                .map { it.value }
-                .onEach {
-                    loadingState.value = LoadingState.Loading
-                }
-                .debounce { if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS }
-                .collectLatest { query ->
-                    loadingState.value = LoadingState.Idle
-                    couponListHandler.fetchCoupons(query)
-                        .onFailure {
-                            triggerEvent(
-                                MultiLiveEvent.Event.ShowSnackbar(
-                                    if (query == null) R.string.coupon_list_loading_failed
-                                    else R.string.coupon_list_search_failed
-                                )
-                            )
-                        }
-                    loadingState.value = LoadingState.Idle
-                }
-        }
-    }
 }
 
 data class CouponSelectorState(
     val loadingState: LoadingState = LoadingState.Idle,
-    val searchQuery: String? = null,
     val coupons: List<CouponSelectorItem> = emptyList(),
     val searchState: SearchState = SearchState()
-) {
-    val isSearchOpen = searchQuery != null
-}
+)
 
 @Parcelize
 data class SearchState(
     val isActive: Boolean = false,
     val searchQuery: String = ""
-) : Parcelable {
-    companion object {
-        val EMPTY = SearchState()
-    }
-}
+) : Parcelable
 
 data class CouponSelectorItem(
     val id: Long,
