@@ -81,8 +81,7 @@ class CouponSelectorViewModel @Inject constructor(
     fun onLoadMore() {
         viewModelScope.launch {
             loadingState.value = LoadingState.Appending
-            couponListHandler.fetchCoupons()
-                .onFailure {
+            couponListHandler.loadMore().onFailure {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed))
                 }
             loadingState.value = LoadingState.Idle
