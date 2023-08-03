@@ -124,7 +124,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     private suspend fun generateProductDescriptionText(languageISOCode: String) {
         val result = aiRepository.generateProductDescription(
             site = selectedSite.get(),
-            productName = navArgs.productTitle ?: "",
+            productName = navArgs.productTitle,
             features = _viewState.value.features,
             languageISOCode = languageISOCode
         )
@@ -230,7 +230,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val productTitle: String? = null,
+        val productTitle: String = "",
         val features: String = "",
         val description: String = "",
         val identifiedLanguageISOCode: String? = null,
