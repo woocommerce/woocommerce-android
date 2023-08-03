@@ -99,7 +99,7 @@ fun DescriptionGenerationForm(
                 }
                 GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     GeneratedDescription(
-                        isRegenerateEnabled = viewState.features.isNotEmpty(),
+                        isRegenerateEnabled = viewState.features.isNotEmpty() && viewState.productTitle.isNotEmpty(),
                         description = viewState.description,
                         onRegenerateButtonClicked = onRegenerateButtonClicked,
                         onApplyButtonClicked = onApplyButtonClicked,
@@ -120,7 +120,7 @@ fun DescriptionGenerationForm(
                     }
 
                     WCColoredButton(
-                        enabled = viewState.features.isNotEmpty(),
+                        enabled = viewState.features.isNotEmpty() && viewState.productTitle.isNotEmpty(),
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(id = string.product_sharing_write_with_ai),
