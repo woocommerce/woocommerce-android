@@ -66,6 +66,7 @@ fun AIProductDescriptionBottomSheet(
     viewModel.viewState.observeAsState().value?.let { state ->
         DescriptionGenerationForm(
             viewState = state,
+            onTitleChanged = viewModel::onTitleChanged,
             onFeaturesChanged = viewModel::onFeaturesChanged,
             onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
             onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
@@ -81,6 +82,7 @@ fun AIProductDescriptionBottomSheet(
 @Composable
 fun DescriptionGenerationForm(
     viewState: ViewState,
+    onTitleChanged: (String) -> Unit,
     onFeaturesChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onRegenerateButtonClicked: () -> Unit,
@@ -95,7 +97,7 @@ fun DescriptionGenerationForm(
                 if (generationState.showError) {
                     Error()
                 }
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     GeneratedDescription(
                         isRegenerateEnabled = viewState.features.isNotEmpty(),
                         description = viewState.description,
@@ -107,12 +109,12 @@ fun DescriptionGenerationForm(
                 }
             }
             GenerationState.Generating -> {
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     ProductDescriptionSkeletonView()
                 }
             }
             is Start -> {
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     if (generationState.showError) {
                         Error()
                     }
@@ -133,7 +135,7 @@ fun DescriptionGenerationForm(
                 }
             }
             Regenerating -> {
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     RegenerationInProgress(onApplyButtonClicked)
                 }
             }
@@ -164,7 +166,12 @@ private fun Error() {
 }
 
 @Composable
-private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit, content: @Composable () -> Unit) {
+private fun GenerationFlow(
+    state: ViewState,
+    onTitleChanged: (String) -> Unit,
+    onFeaturesChanged: (String) -> Unit,
+    content: @Composable () -> Unit
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
@@ -183,7 +190,8 @@ private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit
                 OutlinedTextField(
                     value = "",
                     modifier = Modifier.fillMaxWidth(),
-                    onValueChange = { },
+                    maxLines = 1,
+                    onValueChange = onTitleChanged,
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_title_hint))
                     }
@@ -498,6 +506,7 @@ fun PreviewAIDescriptionGenerationForm() {
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set."
         ),
+        onTitleChanged = {},
         onFeaturesChanged = {},
         onGenerateButtonClicked = {},
         onRegenerateButtonClicked = {},

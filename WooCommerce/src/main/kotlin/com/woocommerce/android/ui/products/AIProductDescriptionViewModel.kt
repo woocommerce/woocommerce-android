@@ -193,6 +193,10 @@ class AIProductDescriptionViewModel @Inject constructor(
         _viewState.update { _viewState.value.copy(features = features) }
     }
 
+    fun onTitleChanged(title: String) {
+        _viewState.update { _viewState.value.copy(productTitle = title) }
+    }
+
     fun onApplyButtonClicked() {
         tracker.track(PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED)
 
