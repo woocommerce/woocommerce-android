@@ -77,7 +77,7 @@ class CouponSelectorViewModel @Inject constructor(
     }
 
     fun onLoadMore() {
-        viewModelScope.launch {
+        launch {
             loadingState.value = LoadingState.Appending
             couponListHandler
                 .loadMore()
