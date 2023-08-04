@@ -80,9 +80,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "14.7"
+            versionName "14.8-rc-1"
         }
-        versionCode 443
+        versionCode 444
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
