@@ -50,7 +50,6 @@ class CouponSelectorFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         CouponSelectorFragmentDirections.actionCouponSelectorFragmentToCouponListFragment()
                     )
-//                    AnalyticsTracker.track(AnalyticsEvent.ORDER_GO_TO_COUPON_LIST_TAPPED)
                 }
             }
         }
