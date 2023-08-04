@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -50,6 +52,7 @@ class CouponSelectorFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         CouponSelectorFragmentDirections.actionCouponSelectorFragmentToCouponListFragment()
                     )
+                    AnalyticsTracker.track(AnalyticsEvent.ORDER_GO_TO_COUPON_LIST_TAPPED)
                 }
             }
         }
