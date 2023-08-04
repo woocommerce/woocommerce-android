@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'fastlane', '~> 2'
+gem 'fastlane', '~> 2.214'
 gem 'nokogiri'
 
 ### Fastlane Plugins
