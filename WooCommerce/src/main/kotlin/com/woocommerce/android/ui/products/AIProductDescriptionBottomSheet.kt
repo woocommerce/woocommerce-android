@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
@@ -80,6 +79,7 @@ fun AIProductDescriptionBottomSheet(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
+@Suppress("LongParameterList")
 fun DescriptionGenerationForm(
     viewState: ViewState,
     onTitleChanged: (String) -> Unit,
@@ -223,7 +223,7 @@ private fun GenerationFlow(
             )
 
             Text(
-                text = stringResource(id = R.string.ai_product_description_example),
+                text = stringResource(id = string.ai_product_description_example),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = color.color_on_surface_medium)
             )
@@ -264,6 +264,7 @@ private fun RegenerationInProgress(onApplyButtonClicked: () -> Unit) {
 }
 
 @Composable
+@Suppress("LongParameterList")
 private fun GeneratedDescription(
     isRegenerateEnabled: Boolean,
     description: String,
@@ -425,7 +426,7 @@ fun ProductDescriptionSkeletonView() {
                 color = MaterialTheme.colors.background,
                 shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
             )
-            .padding(dimensionResource(id = R.dimen.major_110))
+            .padding(dimensionResource(id = dimen.major_110))
             .fillMaxWidth()
     ) {
         SkeletonView(
@@ -467,7 +468,7 @@ fun CelebrationDialog(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
-            .padding(all = dimensionResource(id = R.dimen.major_100))
+            .padding(all = dimensionResource(id = dimen.major_100))
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -475,22 +476,22 @@ fun CelebrationDialog(
             painter = painterResource(id = drawable.img_ai_generated_content),
             contentDescription = null,
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.ai_product_description_note_dialog_heading),
+            text = stringResource(id = string.ai_product_description_note_dialog_heading),
             style = MaterialTheme.typography.h6,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.ai_product_description_note_dialog_message),
+            text = stringResource(id = string.ai_product_description_note_dialog_message),
             style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
 
         WCColoredButton(onClick = onConfirmClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.ai_product_description_note_dialog_confirmation))
+            Text(text = stringResource(id = string.ai_product_description_note_dialog_confirmation))
         }
     }
 }
