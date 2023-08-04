@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.coupons.selector
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite

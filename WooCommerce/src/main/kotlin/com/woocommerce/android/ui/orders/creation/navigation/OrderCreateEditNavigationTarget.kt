@@ -34,7 +34,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val couponCode: String? = null
     ) : OrderCreateEditNavigationTarget()
 
-    object  AddCoupon : OrderCreateEditNavigationTarget()
+    object AddCoupon : OrderCreateEditNavigationTarget()
 
     data class CouponList(
         val orderCreationMode: OrderCreateEditViewModel.Mode,
