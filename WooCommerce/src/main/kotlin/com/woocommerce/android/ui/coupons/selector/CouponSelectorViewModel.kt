@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.coupons.selector
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Date
 import javax.inject.Inject
@@ -118,14 +116,7 @@ class CouponSelectorViewModel @Inject constructor(
 data class CouponSelectorState(
     val loadingState: LoadingState = LoadingState.Idle,
     val coupons: List<CouponSelectorItem> = emptyList(),
-    val searchState: SearchState = SearchState()
 )
-
-@Parcelize
-data class SearchState(
-    val isActive: Boolean = false,
-    val searchQuery: String = ""
-) : Parcelable
 
 data class CouponSelectorItem(
     val id: Long,
