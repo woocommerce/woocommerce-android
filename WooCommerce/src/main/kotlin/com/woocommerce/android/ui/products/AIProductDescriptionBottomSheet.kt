@@ -109,7 +109,7 @@ fun DescriptionGenerationForm(
                 }
             }
             GenerationState.Generating -> {
-                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged, enableTextFields = false) {
                     ProductDescriptionSkeletonView()
                 }
             }
@@ -135,7 +135,7 @@ fun DescriptionGenerationForm(
                 }
             }
             Regenerating -> {
-                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged, enableTextFields = true) {
                     RegenerationInProgress(onApplyButtonClicked)
                 }
             }
@@ -170,6 +170,7 @@ private fun GenerationFlow(
     state: ViewState,
     onTitleChanged: (String) -> Unit,
     onFeaturesChanged: (String) -> Unit,
+    enableTextFields: Boolean = true,
     content: @Composable () -> Unit
 ) {
     Column(
@@ -197,6 +198,7 @@ private fun GenerationFlow(
                     value = state.productTitle,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
+                    enabled = enableTextFields,
                     onValueChange = onTitleChanged,
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_title_hint))
@@ -217,6 +219,7 @@ private fun GenerationFlow(
                 value = state.features,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = onFeaturesChanged,
+                enabled = enableTextFields,
                 placeholder = {
                     Text(stringResource(id = string.ai_product_description_hint))
                 }
