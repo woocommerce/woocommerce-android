@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -57,4 +58,6 @@ class CouponSelectorFragment : BaseFragment() {
     companion object {
         const val KEY_COUPON_SELECTOR_RESULT = "coupon-selector-result"
     }
+
+    override fun getFragmentTitle() = getString(R.string.order_creation_select_coupon)
 }

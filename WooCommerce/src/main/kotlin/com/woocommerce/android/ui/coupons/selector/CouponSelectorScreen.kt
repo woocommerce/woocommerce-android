@@ -19,9 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -48,26 +45,14 @@ import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
     val viewState by viewModel.couponSelectorState.observeAsState(CouponSelectorState())
     BackHandler(onBack = viewModel::onNavigateBack)
-    viewState.let { state ->
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = stringResource(id = R.string.order_creation_select_coupon)) },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
-                    elevation = 0.dp
-                )
-            },
-        ) { padding ->
-            CouponSelectorScreen(
-                modifier = Modifier.padding(padding),
-                state = state,
-                onCouponClicked = viewModel::onCouponClicked,
-                onRefresh = viewModel::onRefresh,
-                onLoadMore = viewModel::onLoadMore,
-                onEmptyScreenButtonClicked = viewModel::onEmptyScreenButtonClicked
-            )
-        }
-    }
+
+    CouponSelectorScreen(
+        state = viewState,
+        onCouponClicked = viewModel::onCouponClicked,
+        onRefresh = viewModel::onRefresh,
+        onLoadMore = viewModel::onLoadMore,
+        onEmptyScreenButtonClicked = viewModel::onEmptyScreenButtonClicked
+    )
 }
 
 @Composable
