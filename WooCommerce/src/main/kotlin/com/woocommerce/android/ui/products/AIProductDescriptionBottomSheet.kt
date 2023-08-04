@@ -99,7 +99,6 @@ fun DescriptionGenerationForm(
                 }
                 GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     GeneratedDescription(
-                        isRegenerateEnabled = viewState.canGenerateWithAI,
                         description = viewState.description,
                         onRegenerateButtonClicked = onRegenerateButtonClicked,
                         onApplyButtonClicked = onApplyButtonClicked,
@@ -120,7 +119,6 @@ fun DescriptionGenerationForm(
                     }
 
                     WCColoredButton(
-                        enabled = viewState.canGenerateWithAI,
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(id = string.product_sharing_write_with_ai),
@@ -199,6 +197,7 @@ private fun GenerationFlow(
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                     enabled = enableTextFields,
+                    isError = state.shouldShowErrorOutlineIfEmpty && state.productTitle.isEmpty(),
                     onValueChange = onTitleChanged,
                     placeholder = {
                         Text(stringResource(id = string.ai_product_description_title_hint))
@@ -220,6 +219,7 @@ private fun GenerationFlow(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = onFeaturesChanged,
                 enabled = enableTextFields,
+                isError = state.shouldShowErrorOutlineIfEmpty && state.features.isEmpty(),
                 placeholder = {
                     Text(stringResource(id = string.ai_product_description_hint))
                 }
@@ -269,7 +269,6 @@ private fun RegenerationInProgress(onApplyButtonClicked: () -> Unit) {
 @Composable
 @Suppress("LongParameterList")
 private fun GeneratedDescription(
-    isRegenerateEnabled: Boolean,
     description: String,
     onRegenerateButtonClicked: () -> Unit,
     onApplyButtonClicked: () -> Unit,
@@ -391,7 +390,6 @@ private fun GeneratedDescription(
             .fillMaxWidth()
     ) {
         WCTextButton(
-            enabled = isRegenerateEnabled,
             onClick = onRegenerateButtonClicked,
             modifier = Modifier.align(Alignment.CenterStart),
             colors = ButtonDefaults.textButtonColors(
