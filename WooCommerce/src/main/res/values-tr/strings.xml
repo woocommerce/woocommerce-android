@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 16:54:03+0000
+Translation-Revision-Date: 2023-08-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_classes_zones">Gönderim sınıfları ve bölgeleri</string>
+    <string name="free_trial_survey_free_text">Diğer sebep (lütfen belirtin)</string>
+    <string name="free_trial_survey_option4">Bir ekibin parçasıyım ve kararı toplu olarak almamız gerekiyor.</string>
+    <string name="free_trial_survey_option3">Hizmetin fiyatını kararımda önemli bir faktör olarak görüyorum.</string>
+    <string name="free_trial_survey_option2">Hizmetinizi değerlendiriyor ve piyasadaki diğer hizmetlerle karşılaştırıyorum.</string>
+    <string name="free_trial_survey_option1">Uygulamanın özelliklerini ve faydalarını araştırmaya ve değerlendirmeye devam ediyorum.</string>
+    <string name="free_trial_survey_title">Abonelik kararlarınızı anlamamıza yardımcı olun. Geri bildiriminiz bizim için önemli.</string>
+    <string name="local_notification_still_exploring_description">Acele etmeyin, zamanınızı kullanın! Herhangi bir sorunuz varsa veya yardıma ihtiyacınız varsa, size her zaman yardımcı olmaya hazırız. Keyifli keşifler!</string>
+    <string name="local_notification_still_exploring_title">🧭 WooCommerce\'i Keşfetmeye Devam Mı Ediyorsunuz?</string>
+    <string name="free_trial_survey_screen_title">Abonelik Kararınızı Anlamamıza Yardımcı Olun</string>
+    <string name="local_notification_survey_after_24_hours_description">Karar alma yolculuğunuzu öğrenmeyi amaçlıyoruz. Şu anki durumunuz hakkında bize bilgi verebilir misiniz?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡Abonelik Kararınızı Anlamamıza Yardımcı Olun</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Mağazanız için gelişmiş özellikleri ve kişiselleştirilmiş önerileri keşfedin! Size en uygun paketi seçmek için dokunun.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 İşinizi ilerletin!</string>
+    <string name="order_creation_customer_search_empty_email">E-posta adresi yok</string>
+    <string name="order_creation_customer_search_empty_name">Ad yok</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Mevcut müşterileri bulmak için arama özelliğini kullanın</string>
+    <string name="last_update_with_frequency">Son güncelleme %s (Her 30 dakikada bir güncellenir)</string>
+    <string name="last_update">Son güncelleme %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android\'de Tap To Pay ile ödemeleri kabul etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi alın&lt;/a&gt;</string>
     <string name="card_reader_hub_collect_payment">Ödeme Alın</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Fiyatı belirtilmemiş ürünleri ekleyemezsiniz</string>
@@ -72,8 +91,6 @@ Language: tr
     <string name="order_creation_customer_search_username">Kullanıcı adı</string>
     <string name="order_creation_customer_search_name">Ad</string>
     <string name="order_creation_customer_search_email">E-posta</string>
-    <string name="order_creation_customer_search_everything">Her şey</string>
-    <string name="order_creation_customer_filter_hint">Müşterileri filtreleme kriteri</string>
     <string name="order_creation_coupons_title">Kupon uygulandı</string>
     <string name="more_settings">Diğer ayarlar</string>
     <string name="maybe_later">Belki daha sonra</string>
@@ -143,6 +160,7 @@ Language: tr
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Değişken ürünü doğrudan ekleyemezsiniz. Lütfen belirli bir varyasyon seçin</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">%s SKU kodlu ürün bulunamadı. Siparişe eklenemiyor</string>
     <string name="order_list_barcode_scanning_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
     <string name="scan_barcode">Barkodu Tarayın</string>
     <string name="shipping_notice_banner_instructions_content">Şu anda Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğeyi net bir şekilde açıklamanız gerekiyor. Örneğin, kıyafet gönderiyorsanız, açıklamanın kabul edilebilir olması için bunun ne tür bir kıyafet olduğunu (ör. erkek gömleği, kadın yeleği, erkek ceketi) belirtmeniz gerekiyor. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
@@ -807,7 +825,7 @@ Language: tr
     <string name="order_editing_locked_content_description">kilitli</string>
     <string name="order_editing_non_editable_message">Ürünleri veya Ödeme Ayrıntılarını düzenlemek için durumu Ödeme Bekliyor olarak değiştirin.</string>
     <string name="order_editing_non_editable_title">Bu siparişin bazı bölümleri şu anda düzenlenemez</string>
-    <string name="order_creation_customer_search_hint">Müşterileri ara</string>
+    <string name="order_creation_customer_search_hint">Müşterilerde ara</string>
     <string name="order_creation_customer_search_empty">Müşteri bulunamadı</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Şimdi değil</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Mağazaya Uzantı Ekleyin</string>

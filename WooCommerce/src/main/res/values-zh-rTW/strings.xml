@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 16:54:04+0000
+Translation-Revision-Date: 2023-08-04 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="shipping_classes_zones">運送類別與區域</string>
+    <string name="free_trial_survey_free_text">其他原因 (請說明)。</string>
+    <string name="free_trial_survey_option4">我需要和團隊成員一起決定。</string>
+    <string name="free_trial_survey_option3">服務價格是影響我決策的重要因素。</string>
+    <string name="free_trial_survey_option2">我正在評估你們的服務，並與市面上其他服務比較。</string>
+    <string name="free_trial_survey_option1">我還在探索及評估此應用程式的功能與優點。</string>
+    <string name="free_trial_survey_title">請說明哪些因素影響你的訂閱決策。 我們很重視你的意見。</string>
+    <string name="local_notification_still_exploring_description">慢慢來，不趕時間！ 如有任何疑問或需要協助，我們會隨時為你服務。 祝你探索愉快！</string>
+    <string name="local_notification_still_exploring_title">🧭 還在探索 WooCommerce 嗎？</string>
+    <string name="free_trial_survey_screen_title">請說明哪些因素影響你的訂閱決策。</string>
+    <string name="local_notification_survey_after_24_hours_description">我們想瞭解你的決策過程。 可以把你目前的狀態告訴我們嗎？</string>
+    <string name="local_notification_survey_after_24_hours_title">💡 請說明哪些因素影響你的訂閱決策</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">探索適合你商店的進階功能和個人化建議！ 點選最適合你的方案。</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 讓業務蒸蒸日上！</string>
+    <string name="order_creation_customer_search_empty_email">沒有電子郵件地址</string>
+    <string name="order_creation_customer_search_empty_name">沒有名稱</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">使用搜尋功能，找到現有顧客</string>
+    <string name="last_update_with_frequency">最近更新時間 %s (每 30 分鐘更新一次)</string>
+    <string name="last_update">最近更新時間 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;如何在 Android 使用「iPhone卡緊收」收受付款</string>
     <string name="card_reader_hub_collect_payment">收取付款</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">不可新增未標價的產品</string>
@@ -72,8 +91,6 @@ Language: zh_TW
     <string name="order_creation_customer_search_username">使用者名稱</string>
     <string name="order_creation_customer_search_name">姓名</string>
     <string name="order_creation_customer_search_email">電子郵件</string>
-    <string name="order_creation_customer_search_everything">全部</string>
-    <string name="order_creation_customer_filter_hint">顧客篩選依據</string>
     <string name="order_creation_coupons_title">已使用優惠券</string>
     <string name="more_settings">更多設定</string>
     <string name="maybe_later">稍後再說</string>
@@ -143,6 +160,7 @@ Language: zh_TW
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">你無法直接新增商品款式。 請選取特定款式</string>
     <string name="order_creation_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">找不到貨號為 %s 的產品。 無法新增至訂單</string>
     <string name="order_list_barcode_scanning_scanning_failed">掃描失敗。 請稍後再試一次</string>
     <string name="scan_barcode">掃描條碼</string>
     <string name="shipping_notice_banner_instructions_content">如需運送至遵循歐盟 (EU) 海關規定的國家/地區，現在必須清楚描述每件商品。 舉例來說，若要寄送衣服，你必須指明衣服種類 (例如，男性襯衫、女童背心、男童外套)，海關才會採納相關資訊。 否則貨件可能會在海關階段延誤或中斷。</string>

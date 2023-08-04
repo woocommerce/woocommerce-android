@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 12:54:03+0000
+Translation-Revision-Date: 2023-08-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="shipping_classes_zones">Clases y zonas de envío</string>
+    <string name="free_trial_survey_free_text">Otro motivo (especificar)</string>
+    <string name="free_trial_survey_option4">Formo parte de un equipo y tenemos que tomar la decisión de manera conjunta.</string>
+    <string name="free_trial_survey_option3">El precio del servicio fue un factor importante a la hora de tomar la decisión.</string>
+    <string name="free_trial_survey_option2">Estoy evaluando y comparando vuestro servicio con otros del mercado.</string>
+    <string name="free_trial_survey_option1">Sigo explorando y evaluando las funciones y las ventajas de la aplicación.</string>
+    <string name="free_trial_survey_title">Ayúdanos a entender las decisiones que tomas con respecto a la suscripción. Tu opinión importa.</string>
+    <string name="local_notification_still_exploring_description">¡Sin prisas! ¡Tómate tu tiempo! Si tienes alguna pregunta o necesitas asistencia, estamos aquí para ayudar. ¡Buena exploración!</string>
+    <string name="local_notification_still_exploring_title">🧭 ¿Sigues explorando WooCommerce?</string>
+    <string name="free_trial_survey_screen_title">Ayúdanos a entender tu decisión con respecto a la suscripción</string>
+    <string name="local_notification_survey_after_24_hours_description">Nos interesa conocer cómo ha sido el proceso de toma de decisión. ¿Puedes informarnos sobre tu estado actual?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡 Ayúdanos a entender tu decisión con respecto a la suscripción</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Descubre funciones avanzadas y recomendaciones personalizadas para la tienda. Toca para elegir el plan que más te convenga.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 ¡Que tu negocio no pare!</string>
+    <string name="order_creation_customer_search_empty_email">No hay dirección de correo electrónico</string>
+    <string name="order_creation_customer_search_empty_name">Sin nombre</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Encuentra clientes existentes con la función de búsqueda</string>
+    <string name="last_update_with_frequency">Última actualización: %s (se actualiza cada 30 minutos)</string>
+    <string name="last_update">Última actualización: %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Obtén más información&lt;/a&gt; sobre la aceptación de pagos con Tap To Pay on Android</string>
     <string name="card_reader_hub_collect_payment">Recibir pago</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">No puedes añadir productos para los que no se haya especificado un precio</string>
@@ -72,8 +91,6 @@ Language: es
     <string name="order_creation_customer_search_username">Nombre de usuario</string>
     <string name="order_creation_customer_search_name">Nombre</string>
     <string name="order_creation_customer_search_email">Correo electrónico</string>
-    <string name="order_creation_customer_search_everything">Todo</string>
-    <string name="order_creation_customer_filter_hint">Filtrar clientes según</string>
     <string name="order_creation_coupons_title">Cupones aplicados</string>
     <string name="more_settings">Más ajustes</string>
     <string name="maybe_later">Quizá más tarde</string>
@@ -143,6 +160,7 @@ Language: es
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">El sistema ha cerrado la aplicación de Woo mientras se ejecutaba en segundo plano. Puedes probar a usarla de nuevo.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">No puedes añadir un producto variable directamente. Elije una variación específica.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">No se ha encontrado el producto con el SKU \"%s\", por lo que no se ha podido añadir al pedido.</string>
     <string name="order_list_barcode_scanning_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde.</string>
     <string name="scan_barcode">Escanear código de barras</string>
     <string name="shipping_notice_banner_instructions_content">Ahora, para hacer envíos a países en los que se aplica la normativa aduanera de la Unión Europea (UE), debes describir cada artículo con claridad. Por ejemplo, si envías ropa, para que se acepte la descripción, debes indicar el tipo de ropa del que se trata (camisas de hombre, chalecos para chicas, chaquetas para chicos, etc.). De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>
