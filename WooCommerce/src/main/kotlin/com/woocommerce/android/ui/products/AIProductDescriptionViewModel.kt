@@ -240,8 +240,10 @@ class AIProductDescriptionViewModel @Inject constructor(
         val description: String = "",
         val identifiedLanguageISOCode: String? = null,
         val generationState: GenerationState = Start(),
-        val isProductTitleInitiallyPresent: Boolean,
+        val isProductTitleInitiallyPresent: Boolean
     ) {
+        val canGenerateWithAI: Boolean
+            get() = productTitle.isNotEmpty() && features.isNotEmpty()
         sealed class GenerationState {
             data class Start(val showError: Boolean = false) : GenerationState()
             object Generating : GenerationState()
