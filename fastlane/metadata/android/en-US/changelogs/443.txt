@@ -1,0 +1,1 @@
+We've been working on making shipping configuration available in the app. Your Shipping Zones are now viewable from the Settings screen. Stay tuned for more updates on this in the future!
