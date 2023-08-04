@@ -149,7 +149,7 @@
     <string name="tip">Tip</string>
     <string name="hide_password_content_description">Hide password</string>
     <string name="show_password_content_description">Show password</string>
-    <string name="last_update">Last update %s</string>
+    <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
 
     <!--
@@ -568,13 +568,15 @@
     <string name="order_creation_fee_percentage_toggle_text">Calculate as percentage</string>
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Use search to find existing customers</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Search for an existing customer or</string>
     <string name="order_creation_customer_search_hint">Search for customers</string>
+    <string name="order_creation_customer_search_old_wc_hint">Search for customers by</string>
     <string name="order_creation_customer_search_email">Email</string>
     <string name="order_creation_customer_search_name">Name</string>
     <string name="order_creation_customer_search_username">Username</string>
     <string name="order_creation_customer_search_empty_name">No name</string>
     <string name="order_creation_customer_search_empty_email">No email address</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Add details manually</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
@@ -1954,6 +1956,17 @@
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="reviews_empty_message">No reviews yet!</string>
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
+
+    <!-- Empty order: try a test order -->
+    <string name="empty_order_test_order_message">Run a test order to ensure your WooCommerce process delivers a seamless customer experience</string>
+    <string name="empty_order_test_order_button">Try a test order</string>
+
+    <string name="try_test_order_heading">Try a test order</string>
+    <string name="try_test_order_step_1">Tap the button below to be redirected to your online store via a web browser.</string>
+    <string name="try_test_order_step_2">Select your test product, add to cart, and complete checkout on that web store as a real customer.</string>
+    <string name="try_test_order_step_3">Complete the payment and await a push notification about the order on your WooCommerce app.</string>
+    <string name="try_test_order_step_4">Use the app to process the refund for the test order</string>
+    <string name="try_test_order_button">Start test order</string>
     <!--
         Settings
     -->
@@ -2434,6 +2447,7 @@
 
     <!-- coupons -->
     <string name="coupons">Coupons</string>
+    <string name="coupon_list_add_coupon_content_description">Add coupon</string>
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
     <string name="coupon_list_item_label_everything">everything</string>
@@ -2445,6 +2459,16 @@
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
+    <string name="coupon_type_picker_title">Create Coupon</string>
+    <string name="coupon_type_picker_percentage_content_description">Coupon type - percentage discount</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Coupon type - fixed cart</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Coupon type - fixed product</string>
+    <string name="coupon_type_picker_percentage_discount_title">Percentage Discount</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Fixed Cart Discount</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Fixed Product Discount</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Create a percentage discount for selected products</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Create a fixed total discount for the entire cart</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Create a fixed total discount for selected products</string>
     <string name="coupon_details_heading">Coupon Summary</string>
     <string name="coupon_details_minimum_spend">Minimum spend of %s</string>
     <string name="coupon_details_maximum_spend">Maximum spend of %s</string>
@@ -2485,6 +2509,9 @@
     <string name="coupon_details_restricted_emails">Restricted to customers with emails: %1$s</string>
     <string name="coupon_details_menu_edit">Edit Coupon</string>
     <string name="coupon_edit_screen_title">Edit %1$s</string>
+    <string name="coupon_edit_screen_title_default">Edit Coupon</string>
+    <string name="coupon_create_screen_title">Create %1$s</string>
+    <string name="coupon_create_screen_title_default">Create Coupon</string>
     <string name="coupon_edit_details_section">Coupon Details</string>
     <string name="coupon_edit_conditions_section">Apply this coupon to</string>
     <string name="coupon_edit_amount_hint">Amount (%1$s)</string>
@@ -2494,6 +2521,7 @@
     <string name="coupon_edit_code_helper">Customers need to enter this code to use the coupon.</string>
     <string name="coupon_edit_regenerate_coupon">Regenerate Coupon Code</string>
     <string name="coupon_edit_save_button">Save</string>
+    <string name="coupon_create_save_button">Create</string>
     <string name="coupon_edit_add_description">Add Description (Optional)</string>
     <string name="coupon_edit_edit_description">Edit Description</string>
     <string name="coupon_edit_description_editor_title">Coupon Description</string>
@@ -2507,7 +2535,9 @@
     <string name="coupon_edit_select_categories_title">Select Product Categories</string>
     <string name="coupon_edit_edit_products_title">Edit Product Categories (%1$d)</string>
     <string name="coupon_edit_coupon_updated">Coupon updated</string>
+    <string name="coupon_create_coupon_created">Coupon created</string>
     <string name="coupon_edit_coupon_update_failed">Updating coupon failed</string>
+    <string name="coupon_create_coupon_creation_failed">Creating coupon failed</string>
     <string name="coupon_edit_saving_dialog_title">Saving coupon</string>
     <string name="coupon_edit_saving_dialog_subtitle">Please wait…</string>
     <string name="coupon_restrictions_minimum_spend_hint">Minimum Spend (%1$s)</string>
