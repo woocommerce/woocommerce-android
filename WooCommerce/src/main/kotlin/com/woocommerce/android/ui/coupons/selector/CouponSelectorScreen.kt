@@ -36,9 +36,9 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.coupons.CouponListSkeleton
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
@@ -221,39 +221,7 @@ fun CouponSelectorListItemInfo(summary: String) {
 
 @Composable
 fun CouponSelectorListSkeleton() {
-    val numberOfInboxSkeletonRows = 10
-    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
-        repeat(numberOfInboxSkeletonRows) {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
-                        vertical = dimensionResource(id = R.dimen.minor_100)
-                    )
-                ) {
-                    SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_text_medium_width),
-                        dimensionResource(id = R.dimen.major_125)
-                    )
-                    SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_text_large_width),
-                        dimensionResource(id = R.dimen.major_100)
-                    )
-                    SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_text_small_width),
-                        dimensionResource(id = R.dimen.major_125)
-                    )
-                }
-                Divider(
-                    modifier = Modifier
-                        .offset(x = dimensionResource(id = R.dimen.major_100)),
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
-                )
-            }
-        }
-    }
+    CouponListSkeleton()
 }
 
 @Preview(

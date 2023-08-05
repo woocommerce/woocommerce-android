@@ -198,7 +198,7 @@ private fun CouponListItemInfo(
 }
 
 @Composable
-private fun CouponListSkeleton() {
+fun CouponListSkeleton() {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
         repeat(numberOfInboxSkeletonRows) {
