@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -29,7 +30,13 @@ class CouponSelectorFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CouponSelectorScreen(viewModel)
+                    CouponSelectorScreen(
+                        state = viewModel.couponSelectorState.observeAsState(),
+                        onCouponClicked = viewModel::onCouponClicked,
+                        onRefresh = viewModel::onRefresh,
+                        onLoadMore = viewModel::onLoadMore,
+                        onEmptyScreenButtonClicked = viewModel::onEmptyScreenButtonClicked,
+                    )
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.coupons.selector
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +19,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -40,23 +38,9 @@ import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListSkeleton
 
 @Composable
-fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
-    val viewState by viewModel.couponSelectorState.observeAsState(CouponSelectorState())
-    BackHandler(onBack = viewModel::onNavigateBack)
-
-    CouponSelectorScreen(
-        state = viewState,
-        onCouponClicked = viewModel::onCouponClicked,
-        onRefresh = viewModel::onRefresh,
-        onLoadMore = viewModel::onLoadMore,
-        onEmptyScreenButtonClicked = viewModel::onEmptyScreenButtonClicked
-    )
-}
-
-@Composable
 fun CouponSelectorScreen(
     modifier: Modifier = Modifier,
-    state: CouponSelectorState,
+    state: State<CouponSelectorState?>,
     onCouponClicked: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
@@ -68,15 +52,15 @@ fun CouponSelectorScreen(
             .background(MaterialTheme.colors.surface)
     ) {
         when {
-            state.coupons.isNotEmpty() -> CouponSelectorList(
-                coupons = state.coupons,
-                loadingState = state.loadingState,
+            state.value?.coupons?.isNotEmpty() == true -> CouponSelectorList(
+                coupons = state.value?.coupons ?: emptyList(),
+                loadingState = state.value?.loadingState ?: LoadingState.Loading,
                 onCouponClicked = onCouponClicked,
                 onRefresh = onRefresh,
                 onLoadMore = onLoadMore,
             )
 
-            state.loadingState == LoadingState.Loading -> CouponSelectorListSkeleton()
+            state.value?.loadingState == LoadingState.Loading -> CouponSelectorListSkeleton()
             else -> EmptyCouponSelectorList(onEmptyScreenButtonClicked)
         }
     }
