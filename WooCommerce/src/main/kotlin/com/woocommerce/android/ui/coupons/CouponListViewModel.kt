@@ -85,8 +85,8 @@ class CouponListViewModel @Inject constructor(
         )
     }
 
-    fun onCouponClick(couponId: Long) {
-        triggerEvent(NavigateToCouponDetailsEvent(couponId))
+    fun onCouponClick(coupon: CouponListItem) {
+        triggerEvent(NavigateToCouponDetailsEvent(coupon.id))
     }
 
     fun onLoadMore() {

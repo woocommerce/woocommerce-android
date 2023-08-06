@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.coupons.selector
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +28,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -40,7 +38,6 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListSkeleton
-import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
 @Composable
 fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
@@ -187,36 +184,9 @@ fun CouponSelectorListItem(
     coupon: CouponListItem,
     onCouponClicked: (CouponListItem) -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = true,
-                role = Role.Button,
-                onClick = { onCouponClicked(coupon) }
-            )
-            .padding(dimensionResource(id = R.dimen.major_100))
-    ) {
-        coupon.code?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface,
-            )
-        }
-
-        CouponSelectorListItemInfo(summary = coupon.summary)
-        CouponExpirationLabel(coupon.isActive)
-    }
-}
-
-@Composable
-fun CouponSelectorListItemInfo(summary: String) {
-    Text(
-        text = summary,
-        style = MaterialTheme.typography.caption,
-        color = colorResource(id = R.color.color_on_surface_medium)
+    CouponListItem(
+        coupon = coupon,
+        onCouponClick = onCouponClicked
     )
 }
 

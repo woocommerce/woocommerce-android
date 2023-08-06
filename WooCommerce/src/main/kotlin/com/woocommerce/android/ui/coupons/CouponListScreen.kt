@@ -56,7 +56,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 @Composable
 fun CouponListScreen(
     state: CouponListState,
-    onCouponClick: (Long) -> Unit,
+    onCouponClick: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
@@ -104,7 +104,7 @@ private fun EmptyCouponList() {
 private fun CouponList(
     coupons: List<CouponListItem>,
     loadingState: LoadingState,
-    onCouponClick: (Long) -> Unit,
+    onCouponClick: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
@@ -155,9 +155,9 @@ private fun CouponList(
 }
 
 @Composable
-private fun CouponListItem(
+fun CouponListItem(
     coupon: CouponListItem,
-    onCouponClick: (Long) -> Unit
+    onCouponClick: (CouponListItem) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -167,7 +167,7 @@ private fun CouponListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCouponClick(coupon.id) }
+                onClick = { onCouponClick(coupon) }
             )
             .padding(dimensionResource(id = R.dimen.major_100)),
     ) {
