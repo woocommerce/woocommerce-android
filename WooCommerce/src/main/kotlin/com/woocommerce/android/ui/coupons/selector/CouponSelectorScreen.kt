@@ -38,6 +38,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListSkeleton
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 
@@ -59,7 +60,7 @@ fun CouponSelectorScreen(viewModel: CouponSelectorViewModel) {
 fun CouponSelectorScreen(
     modifier: Modifier = Modifier,
     state: CouponSelectorState,
-    onCouponClicked: (CouponSelectorItem) -> Unit,
+    onCouponClicked: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
     onEmptyScreenButtonClicked: () -> Unit
@@ -132,9 +133,9 @@ fun EmptyCouponSelectorList(
 
 @Composable
 fun CouponSelectorList(
-    coupons: List<CouponSelectorItem>,
+    coupons: List<CouponListItem>,
     loadingState: LoadingState,
-    onCouponClicked: (CouponSelectorItem) -> Unit,
+    onCouponClicked: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -183,8 +184,8 @@ fun CouponSelectorList(
 
 @Composable
 fun CouponSelectorListItem(
-    coupon: CouponSelectorItem,
-    onCouponClicked: (CouponSelectorItem) -> Unit,
+    coupon: CouponListItem,
+    onCouponClicked: (CouponListItem) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -231,7 +232,7 @@ fun CouponSelectorListSkeleton() {
 @Composable
 fun CouponSelectorListItemPreview() {
     CouponSelectorListItem(
-        coupon = CouponSelectorItem(
+        coupon = CouponListItem(
             id = 1,
             code = "coupon1",
             summary = "This is a summary of the coupon",
@@ -247,19 +248,19 @@ fun CouponSelectorListItemPreview() {
 @Composable
 fun CouponSelectorListPreview() {
     val coupons = listOf(
-        CouponSelectorItem(
+        CouponListItem(
             id = 1,
             code = "coupon1",
             summary = "This is a summary of the coupon",
             isActive = true
         ),
-        CouponSelectorItem(
+        CouponListItem(
             id = 2,
             code = "coupon2",
             summary = "This is a summary of the coupon",
             isActive = true
         ),
-        CouponSelectorItem(
+        CouponListItem(
             id = 3,
             code = "coupon3",
             summary = "This is a summary of the coupon",

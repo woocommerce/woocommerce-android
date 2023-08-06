@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
+import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -62,8 +63,8 @@ class CouponSelectorViewModel @Inject constructor(
         fetchCoupons()
     }
 
-    private fun Coupon.toUiModel(): CouponSelectorItem {
-        return CouponSelectorItem(
+    private fun Coupon.toUiModel(): CouponListItem {
+        return CouponListItem(
             id = id,
             code = code,
             summary = couponUtils.generateSummary(this, currencyCode),
@@ -71,7 +72,7 @@ class CouponSelectorViewModel @Inject constructor(
         )
     }
 
-    fun onCouponClicked(coupon: CouponSelectorItem) {
+    fun onCouponClicked(coupon: CouponListItem) {
         triggerEvent(MultiLiveEvent.Event.ExitWithResult(coupon.code))
     }
 
@@ -114,14 +115,7 @@ class CouponSelectorViewModel @Inject constructor(
 
 data class CouponSelectorState(
     val loadingState: LoadingState = LoadingState.Idle,
-    val coupons: List<CouponSelectorItem> = emptyList(),
-)
-
-data class CouponSelectorItem(
-    val id: Long,
-    val code: String? = null,
-    val summary: String,
-    val isActive: Boolean,
+    val coupons: List<CouponListItem> = emptyList(),
 )
 
 enum class LoadingState {

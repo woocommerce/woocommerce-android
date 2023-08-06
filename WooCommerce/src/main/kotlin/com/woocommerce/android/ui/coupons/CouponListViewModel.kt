@@ -174,13 +174,6 @@ class CouponListViewModel @Inject constructor(
         val isSearchOpen = searchQuery != null
     }
 
-    data class CouponListItem(
-        val id: Long,
-        val code: String? = null,
-        val summary: String,
-        val isActive: Boolean
-    )
-
     enum class LoadingState {
         Idle, Loading, Refreshing, Appending
     }
