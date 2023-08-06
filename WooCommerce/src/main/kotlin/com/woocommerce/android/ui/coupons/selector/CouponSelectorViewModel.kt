@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.coupons.selector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
 import com.woocommerce.android.ui.coupons.CouponListItem
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -43,7 +41,7 @@ class CouponSelectorViewModel @Inject constructor(
 
     val couponSelectorState = combine(
         flow = couponListHandler.couponsFlow
-            .map { coupons -> coupons.map { it.toUiModel() } },
+            .map { coupons -> coupons.map { it.toUiModel(couponUtils, currencyCode) } },
         flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == LoadingState.Idle) {
@@ -61,15 +59,6 @@ class CouponSelectorViewModel @Inject constructor(
 
     init {
         fetchCoupons()
-    }
-
-    private fun Coupon.toUiModel(): CouponListItem {
-        return CouponListItem(
-            id = id,
-            code = code,
-            summary = couponUtils.generateSummary(this, currencyCode),
-            isActive = dateExpires?.after(Date()) ?: true
-        )
     }
 
     fun onCouponClicked(coupon: CouponListItem) {

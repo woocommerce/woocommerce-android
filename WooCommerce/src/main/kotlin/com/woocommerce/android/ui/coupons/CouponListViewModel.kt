@@ -7,7 +7,6 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -51,7 +49,7 @@ class CouponListViewModel @Inject constructor(
 
     val couponsState = combine(
         flow = couponListHandler.couponsFlow
-            .map { coupons -> coupons.map { it.toUiModel() } },
+            .map { coupons -> coupons.map { it.toUiModel(couponUtils, currencyCode) } },
         flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == LoadingState.Idle) {
@@ -74,15 +72,6 @@ class CouponListViewModel @Inject constructor(
             fetchCoupons()
         }
         monitorSearchQuery()
-    }
-
-    private fun Coupon.toUiModel(): CouponListItem {
-        return CouponListItem(
-            id = id,
-            code = code,
-            summary = couponUtils.generateSummary(this, currencyCode),
-            isActive = dateExpires?.after(Date()) ?: true
-        )
     }
 
     fun onCouponClick(coupon: CouponListItem) {
