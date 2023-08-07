@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
@@ -204,7 +205,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
 
         if (networkStatus.isConnected()) {
-            updateSelectedSite.runIfNotLimited()
+            if (FeatureFlag.SITE_CHECK_TASK.isEnabled()) updateSelectedSite.runIfNotLimited()
 
             appCoroutineScope.launch {
                 registerDevice(IF_NEEDED)
