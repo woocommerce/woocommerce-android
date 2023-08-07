@@ -130,7 +130,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it).let {
                         if (it.model?.hasWooCommerce == false) {
-                            // The previously selected site is not connected anymore, take the user to the site picker
                             restartMainActivity()
                         }
                     }
