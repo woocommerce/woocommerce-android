@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +30,7 @@ class BlazeBannerViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
+    private val orderStore: WCOrderStore,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _isBlazeBannerVisible = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = false)
@@ -40,8 +42,10 @@ class BlazeBannerViewModel @Inject constructor(
         launch {
             val publishedProducts = productRepository.getProductList()
                 .filter { it.status == PUBLISH }
+            val orderList = orderStore.getOrdersForSite(selectedSite.get())
             _isBlazeBannerVisible.value = !appPrefsWrapper.isBlazeBannerHidden(selectedSite.getSelectedSiteId()) &&
                 publishedProducts.isNotEmpty() &&
+                orderList.isEmpty() &&
                 isBlazeEnabled()
         }
     }
