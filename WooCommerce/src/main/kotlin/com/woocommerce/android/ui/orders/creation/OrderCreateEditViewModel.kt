@@ -228,7 +228,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
-            handleCouponEditResult(it)
+            handleCouponEditResult()
         }
     }
 
@@ -748,7 +748,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddCouponButtonClicked() {
-        triggerEvent(OrderCreateEditNavigationTarget.AddCoupon(mode))
+        triggerEvent(OrderCreateEditNavigationTarget.AddCoupon)
     }
 
     fun onShippingButtonClicked() {

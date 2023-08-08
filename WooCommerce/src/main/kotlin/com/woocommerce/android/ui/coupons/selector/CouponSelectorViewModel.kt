@@ -1,15 +1,14 @@
 package com.woocommerce.android.ui.coupons.selector
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
+import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -22,9 +21,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -48,7 +45,7 @@ class CouponSelectorViewModel @Inject constructor(
 
     val couponSelectorState = combine(
         flow = couponListHandler.couponsFlow
-            .map { coupons -> coupons.map { it.toUiModel() } },
+            .map { coupons -> coupons.map { it.toUiModel(couponUtils, currencyCode) } },
         flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == LoadingState.Idle) {
@@ -68,21 +65,12 @@ class CouponSelectorViewModel @Inject constructor(
         fetchCoupons()
     }
 
-    private fun Coupon.toUiModel(): CouponSelectorItem {
-        return CouponSelectorItem(
-            id = id,
-            code = code,
-            summary = couponUtils.generateSummary(this, currencyCode),
-            isActive = dateExpires?.after(Date()) ?: true
-        )
-    }
-
-    fun onCouponClicked(coupon: CouponSelectorItem) {
+    fun onCouponClicked(coupon: CouponListItem) {
         triggerEvent(MultiLiveEvent.Event.ExitWithResult(coupon.code))
     }
 
     fun onLoadMore() {
-        viewModelScope.launch {
+        launch {
             loadingState.value = LoadingState.Appending
             couponListHandler
                 .loadMore()
@@ -121,21 +109,7 @@ class CouponSelectorViewModel @Inject constructor(
 
 data class CouponSelectorState(
     val loadingState: LoadingState = LoadingState.Idle,
-    val coupons: List<CouponSelectorItem> = emptyList(),
-    val searchState: SearchState = SearchState()
-)
-
-@Parcelize
-data class SearchState(
-    val isActive: Boolean = false,
-    val searchQuery: String = ""
-) : Parcelable
-
-data class CouponSelectorItem(
-    val id: Long,
-    val code: String? = null,
-    val summary: String,
-    val isActive: Boolean,
+    val coupons: List<CouponListItem> = emptyList(),
 )
 
 enum class LoadingState {
