@@ -107,7 +107,7 @@ class CouponSelectorViewModel @Inject constructor(
 
     fun onEmptyScreenButtonClicked() {
         triggerEvent(NavigateToCouponList)
-        analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_GO_TO_COUPON_LIST_TAPPED)
+        analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_GO_TO_COUPON_BUTTON_TAPPED)
     }
     private fun fetchCoupons() = launch {
         loadingState.value = LoadingState.Loading
