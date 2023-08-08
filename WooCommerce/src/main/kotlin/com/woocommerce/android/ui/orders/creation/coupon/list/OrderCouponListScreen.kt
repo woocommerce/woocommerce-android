@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -17,7 +16,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -35,13 +33,11 @@ import com.woocommerce.android.model.Order
 @Composable
 fun OrderCouponListScreen(
     onNavigateBackClicked: () -> Unit = {},
-    onAddCouponClicked: () -> Unit = {},
     onCouponClicked: (Order.CouponLine) -> Unit = {},
     couponsState: State<List<Order.CouponLine>>,
 ) {
     Scaffold(
         topBar = { TopBar(onNavigateBackClicked) },
-        floatingActionButton = { FAB(onAddCouponClicked) }
     ) { padding ->
         CouponList(padding, couponsState, onCouponClicked)
     }
@@ -62,16 +58,6 @@ private fun TopBar(onNavigateBackClicked: () -> Unit) {
         backgroundColor = colorResource(id = R.color.color_toolbar),
         elevation = dimensionResource(id = R.dimen.appbar_elevation),
     )
-}
-
-@Composable
-private fun FAB(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = onClick,
-        backgroundColor = colorResource(id = R.color.color_primary),
-    ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add coupon")
-    }
 }
 
 @Composable
@@ -112,12 +98,6 @@ private fun CouponList(
             }
         }
     }
-}
-
-@Composable
-@Preview
-private fun FABPreview() {
-    FAB(onClick = {})
 }
 
 @Composable

@@ -22,10 +22,6 @@ class OrderCreateCouponListViewModel @Inject constructor(
         "key_coupons"
     ).asLiveData()
 
-    fun onAddCouponClicked() {
-        triggerEvent(AddCoupon)
-    }
-
     fun onCouponClicked(coupon: Order.CouponLine) {
         triggerEvent(EditCoupon(coupon.code))
     }
