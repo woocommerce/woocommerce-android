@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.coupons.CouponListHandler
 import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -83,10 +82,6 @@ class CouponSelectorViewModel @Inject constructor(
             .fetchCoupons(forceRefresh = true)
             .onFailure { triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.coupon_list_loading_failed)) }
         loadingState.value = LoadingState.Idle
-    }
-
-    fun onNavigateBack() {
-        triggerEvent(Exit)
     }
 
     fun onEmptyScreenButtonClicked() {
