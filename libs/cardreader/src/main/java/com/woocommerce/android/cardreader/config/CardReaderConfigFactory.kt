@@ -6,6 +6,7 @@ class CardReaderConfigFactory {
             "US" -> CardReaderConfigForUSA
             "CA" -> CardReaderConfigForCanada
             "GB" -> CardReaderConfigForGB
+            "AU" -> CardReaderConfigForAus
             else -> CardReaderConfigForUnsupportedCountry
         }
     }
