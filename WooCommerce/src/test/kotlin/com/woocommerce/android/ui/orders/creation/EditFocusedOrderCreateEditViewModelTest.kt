@@ -157,8 +157,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("new_code")
 
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
@@ -176,8 +175,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("new_code")
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
             assertEquals(1, size)
@@ -188,9 +186,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.onCouponEditResult(couponRemoveResult)
 
         // then
-        latestOrderDraft!!.couponLines.apply {
-            assertTrue(isEmpty())
-        }
+        latestOrderDraft!!.couponLines.apply { assertTrue(isEmpty()) }
     }
 
     @Test
@@ -202,8 +198,8 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             latestOrderDraft = it
         }
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code"))
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code2"))
+        sut.onCouponAdded("new_code")
+        sut.onCouponAdded("new_code2")
 
         // when
         sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code"))
@@ -241,7 +237,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onCouponAdded("new_code")
 
         // when
         sut.onCouponButtonClicked()
@@ -334,7 +330,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onCouponAdded("code ")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
