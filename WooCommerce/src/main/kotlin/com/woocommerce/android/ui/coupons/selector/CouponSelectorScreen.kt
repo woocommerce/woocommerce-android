@@ -78,7 +78,7 @@ fun EmptyCouponSelectorList(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.order_creation_coupons_empty_list_title),
+            text = stringResource(id = R.string.coupon_selector_empty_list_title),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
@@ -93,7 +93,7 @@ fun EmptyCouponSelectorList(
         )
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
         Text(
-            text = stringResource(id = R.string.order_creation_coupons_empty_list_message),
+            text = stringResource(id = R.string.coupon_selector_empty_list_message),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.padding(
@@ -104,7 +104,7 @@ fun EmptyCouponSelectorList(
         Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
         WCColoredButton(
             onClick = onButtonClicked,
-            text = stringResource(id = R.string.order_creation_coupons_empty_list_button),
+            text = stringResource(id = R.string.coupon_selector_empty_list_button),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
