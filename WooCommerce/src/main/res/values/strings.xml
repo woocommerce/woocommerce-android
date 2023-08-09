@@ -3120,6 +3120,7 @@
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
 
+    <string name="store_creation_store_profiler_industries_header">About your store</string>
     <string name="store_creation_store_profiler_industries_title">What will you be selling?</string>
     <string name="store_creation_store_profiler_industries_description">Choose a category that best fits your business.</string>
     <string name="store_creation_store_profiler_industries_search_hint">Type a category</string>

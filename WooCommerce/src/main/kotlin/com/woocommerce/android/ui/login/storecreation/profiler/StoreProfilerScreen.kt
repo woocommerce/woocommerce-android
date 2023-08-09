@@ -165,7 +165,7 @@ private fun HeaderContent(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
         Text(
-            text = profilerStepContent.storeName.uppercase(),
+            text = stringResource(id = R.string.store_creation_store_profiler_industries_header).uppercase(),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
