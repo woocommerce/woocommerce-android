@@ -237,14 +237,6 @@ class OrderCreateEditViewModel @Inject constructor(
             is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
                 onCouponRemoved(couponEditResult.couponCode)
             }
-
-            is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
-                onCouponAdded(couponEditResult.couponCode)
-            }
-
-            is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
-                onCouponUpdated(couponEditResult.oldCode, couponEditResult.newCode)
-            }
         }
     }
 
