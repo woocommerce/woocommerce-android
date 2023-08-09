@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
+import com.woocommerce.android.ui.coupons.CouponListItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
@@ -140,6 +141,27 @@ class CouponSelectorViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(event.message).isEqualTo(R.string.coupon_list_loading_failed)
     }
+
+    @Test
+    @Suppress("UNCHECKED_CAST")
+    fun `given non-empty coupon list, when a coupon is tapped, then screen returns with a correct result`() =
+        testBlocking {
+            // GIVEN
+            setup()
+            val coupon = CouponListItem(1, "Coupon", "10", true)
+            var event: MultiLiveEvent.Event.ExitWithResult<String>? = null
+            viewModel.event.observeForever {
+                event = it as? MultiLiveEvent.Event.ExitWithResult<String>
+            }
+
+            // WHEN
+            viewModel.onCouponClicked(coupon)
+
+            // THEN
+            assertThat(event).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
+            val couponCode = (event as MultiLiveEvent.Event.ExitWithResult<String>).data
+            assertThat(couponCode).isEqualTo(coupon.code)
+        }
 
     @Test
     fun `given coupon list empty, when user click on Go to Coupons List, then event is tracked`() = testBlocking {
