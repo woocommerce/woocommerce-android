@@ -63,7 +63,6 @@ class OrderCreateCouponEditFragment : BaseFragment() {
                 WooThemeWithBackground {
                     OrderCreateCouponEditScreen(
                         state = state,
-                        onCouponCodeChanged = viewModel::onCouponCodeChanged,
                         onCouponRemoved = viewModel::onCouponRemoved
                     )
                 }
@@ -112,5 +111,5 @@ class OrderCreateCouponEditFragment : BaseFragment() {
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.order_creation_add_coupon)
+    override fun getFragmentTitle() = getString(R.string.order_creation_remove_this_coupon)
 }
