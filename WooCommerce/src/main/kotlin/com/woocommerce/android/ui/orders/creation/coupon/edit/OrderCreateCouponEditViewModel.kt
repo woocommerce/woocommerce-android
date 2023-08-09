@@ -5,9 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.ui.orders.creation.coupon.edit.CouponValidator.CouponValidationResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -20,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderCreateCouponEditViewModel @Inject constructor(
-    private val validator: CouponValidator,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -40,47 +37,12 @@ class OrderCreateCouponEditViewModel @Inject constructor(
     )
 
     val viewState = combine(couponCode, validationState) { code, validation ->
-        val isDoneButtonEnabled = code?.isNotNullOrEmpty() == true && validation == ValidationState.Idle
         ViewState(
-            isDoneButtonEnabled = isDoneButtonEnabled,
             couponCode = code ?: "",
             isRemoveButtonVisible = navArgs.couponCode.isNotNullOrEmpty(),
             validationState = validation
         )
     }.asLiveData()
-
-    suspend fun onDoneClicked() {
-        validationState.update {
-            ValidationState.InProgress
-        }
-        val couponCode = couponCode.value
-        when {
-            couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.VALID -> {
-                validationState.update {
-                    ValidationState.Idle
-                }
-                val initialCouponCode = navArgs.couponCode
-                if (initialCouponCode.isNullOrEmpty()) {
-                    triggerEvent(CouponEditResult.AddNewCouponCode(couponCode))
-                } else {
-                    triggerEvent(CouponEditResult.UpdateCouponCode(initialCouponCode, couponCode))
-                }
-            }
-
-            couponCode != null && validator.isCouponValid(couponCode) == CouponValidationResult.NETWORK_ERROR -> {
-                validationState.update {
-                    ValidationState.Error(R.string.order_creation_coupon_network_error)
-                }
-            }
-
-            else -> {
-                validationState.update {
-                    ValidationState.Error(R.string.order_creation_coupon_invalid_code)
-                }
-                viewState.value?.isDoneButtonEnabled = false
-            }
-        }
-    }
 
     fun onCouponCodeChanged(newCode: String) {
         validationState.update {
@@ -98,7 +60,6 @@ class OrderCreateCouponEditViewModel @Inject constructor(
     }
 
     data class ViewState(
-        var isDoneButtonEnabled: Boolean = false,
         val couponCode: String = "",
         val isRemoveButtonVisible: Boolean = false,
         val validationState: ValidationState = ValidationState.Idle,

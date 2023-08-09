@@ -49,7 +49,7 @@ fun OrderCreateCouponEditionScreenPreview() {
         state = object : State<OrderCreateCouponEditViewModel.ViewState?> {
             override val value: OrderCreateCouponEditViewModel.ViewState
                 get() = OrderCreateCouponEditViewModel.ViewState(
-                    true, "code",
+                    "code",
                     true, Idle
                 )
         },
