@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 12:54:03+0000
+Translation-Revision-Date: 2023-08-03 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_classes_zones">Zona &amp; kelas pengiriman</string>
+    <string name="free_trial_survey_free_text">Alasan lain (sebutkan)</string>
+    <string name="free_trial_survey_option4">Saya adalah bagian dari sebuah tim, dan keputusan harus dibuat secara kolektif.</string>
+    <string name="free_trial_survey_option3">Harga layanan merupakan faktor penting dalam keputusan ini.</string>
+    <string name="free_trial_survey_option2">Saya sedang mengevaluasi dan membandingkan layanan Anda dengan penyedia layanan lainnya di pasar.</string>
+    <string name="free_trial_survey_option1">Saya masih menjelajahi dan menilai berbagai fitur dan manfaat aplikasi.</string>
+    <string name="free_trial_survey_title">Bantu kami memahami keputusan berlangganan Anda. Feedback dari Anda sangat berharga.</string>
+    <string name="local_notification_still_exploring_description">Tak perlu terburu-buru, santai saja! Jika Anda memiliki pertanyaan atau membutuhkan bantuan, kami siap membantu. Selamat menjelajah!</string>
+    <string name="local_notification_still_exploring_title">🧭 Masih Menjelajahi WooCommerce?</string>
+    <string name="free_trial_survey_screen_title">Bantu Kami Memahami Keputusan Berlangganan Anda</string>
+    <string name="local_notification_survey_after_24_hours_description">Kami tertarik dengan perjalanan pengambilan keputusan Anda. Bisa ceritakan status Anda saat ini?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡Bantu Kami Memahami Keputusan Berlangganan Anda</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Temukan fitur tingkat lanjut dan rekomendasi personal untuk toko Anda! Ketuk untuk memilih paket yang paling sesuai.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Terus jalankan bisnis Anda!</string>
+    <string name="order_creation_customer_search_empty_email">Tidak ada alamat email</string>
+    <string name="order_creation_customer_search_empty_name">Tidak ada nama</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Gunakan pencarian untuk menemukan pelanggan yang sudah ada</string>
+    <string name="last_update_with_frequency">Pembaruan terakhir %s (Diperbarui setiap 30 menit)</string>
+    <string name="last_update">Pembaruan terakhir %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang menerima pembayaran dengan Tap To Tap di Android</string>
     <string name="card_reader_hub_collect_payment">Terima Pembayaran</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Anda tidak dapat menambahkan produk tanpa menentukan harga</string>
@@ -72,8 +91,6 @@ Language: id
     <string name="order_creation_customer_search_username">Nama Pengguna:</string>
     <string name="order_creation_customer_search_name">Nama</string>
     <string name="order_creation_customer_search_email">Email</string>
-    <string name="order_creation_customer_search_everything">Semuanya</string>
-    <string name="order_creation_customer_filter_hint">Saring pelanggan berdasarkan</string>
     <string name="order_creation_coupons_title">Kupon diterapkan</string>
     <string name="more_settings">Pengaturan selengkapnya</string>
     <string name="maybe_later">Mungkin nanti</string>
@@ -143,6 +160,7 @@ Language: id
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Anda tidak dapat menambahkan produk bervariasi secara langsung. Pilih sebuah variasi secara spesifik.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produk dengan SKU %s tidak ditemukan. Tidak dapat menambahkan ke pesanan</string>
     <string name="order_list_barcode_scanning_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
     <string name="scan_barcode">Pindai Barcode</string>
     <string name="shipping_notice_banner_instructions_content">Sekarang, pengiriman ke negara yang memberlakukan aturan bea cukai Uni Eropa (UE) mewajibkan Anda menguraikan setiap item. Contohnya, jika Anda mengirim pakaian, Anda harus menerangkan jenis pakaiannya (seperti, baju pria, rompi wanita, jaket pria) dalam deskripsinya untuk dapat diterima.  Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>

@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-28 17:54:03+0000
+Translation-Revision-Date: 2023-08-03 09:54:35+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="shipping_classes_zones">배송 클래스 및 구역</string>
+    <string name="free_trial_survey_free_text">기타 사유(직접 입력)</string>
+    <string name="free_trial_survey_option4">나는 팀의 일원이며 팀에서 단체적으로 결정해야 합니다.</string>
+    <string name="free_trial_survey_option3">내 결정에서는 서비스 가격이 중요한 요인입니다.</string>
+    <string name="free_trial_survey_option2">나는 해당 서비스를 평가하며 시중의 다른 서비스와 비교하는 중입니다.</string>
+    <string name="free_trial_survey_option1">나는 아직 앱의 기능과 혜택을 둘러보는 중입니다.</string>
+    <string name="free_trial_survey_title">회원님의 구독 결정을 이해하도록 도와주세요. 회원님의 피드백이 중요합니다.</string>
+    <string name="local_notification_still_exploring_description">서두르지 말고 천천히 진행하세요. 질문이 있거나 도움이 필요하면 기꺼이 도와드리겠습니다. 천천히 둘러보세요.</string>
+    <string name="local_notification_still_exploring_title">🧭 아직 우커머스를 둘러보시는 중이신가요?</string>
+    <string name="free_trial_survey_screen_title">회원님의 구독 결정을 이해하도록 도와주기</string>
+    <string name="local_notification_survey_after_24_hours_description">회원님의 의사 결정 여정에 관심이 있습니다. 현재 상태를 말씀해 주실 수 있을까요?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡회원님의 구독 결정을 이해하도록 도와주기</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">고급 기능과 개인화된 스토어 추천 사항을 찾아보세요! 가장 알맞은 요금제를 눌러서 선택하세요.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 비즈니스를 계속 발전시키세요!</string>
+    <string name="order_creation_customer_search_empty_email">이메일 주소 없음</string>
+    <string name="order_creation_customer_search_empty_name">이름 없음</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">검색을 사용하여 기존 고객 찾기</string>
+    <string name="last_update_with_frequency">최근 업데이트 %s(30분마다 업데이트)</string>
+    <string name="last_update">최근 업데이트 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android에서 Tap To Pay로 결제 수락 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
     <string name="card_reader_hub_collect_payment">결제 수령</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">지정된 가격이 없는 상품은 추가할 수 없습니다.</string>
@@ -72,8 +91,6 @@ Language: ko_KR
     <string name="order_creation_customer_search_username">사용자명</string>
     <string name="order_creation_customer_search_name">이름</string>
     <string name="order_creation_customer_search_email">이메일 주소</string>
-    <string name="order_creation_customer_search_everything">모든 것</string>
-    <string name="order_creation_customer_filter_hint">고객 필터링 기준</string>
     <string name="order_creation_coupons_title">적용된 쿠폰</string>
     <string name="more_settings">추가 설정</string>
     <string name="maybe_later">나중에 시작</string>
@@ -143,6 +160,7 @@ Language: ko_KR
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">배경에서 실행되는 시스템에서 Woo 앱을 종료했습니다. 다시 사용해 보실 수 있습니다.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">가변 상품을 직접 추가할 수 없습니다. 특정 변형을 선택하세요.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">SKU가 %s인 상품을 찾을 수 없습니다. 주문에 추가할 수 없음</string>
     <string name="order_list_barcode_scanning_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
     <string name="scan_barcode">바코드 스캔</string>
     <string name="shipping_notice_banner_instructions_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송 시 모든 아이템을 명확하게 설명해야 합니다. 예를 들어, 의류를 발송하는 경우 설명이 수락될 수 있으려면 의류 유형을 표시해야 합니다(예: 남성용 셔츠, 여아용 조끼, 남아용 재킷). 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>

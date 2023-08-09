@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 16:54:03+0000
+Translation-Revision-Date: 2023-08-03 09:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="shipping_classes_zones">Classi e zone di spedizione</string>
+    <string name="free_trial_survey_free_text">Altro motivo (specificare)</string>
+    <string name="free_trial_survey_option4">Faccio parte di una team e la decisione va presa insieme a tutti i membri.</string>
+    <string name="free_trial_survey_option3">Trovo che il prezzo del servizio sia un fattore significativo nella mia decisione.</string>
+    <string name="free_trial_survey_option2">Sto valutando e confrontando il tuo servizio con altri sul mercato.</string>
+    <string name="free_trial_survey_option1">Sto ancora esplorando e valutando le funzionalità e i vantaggi dell\'app.</string>
+    <string name="free_trial_survey_title">Aiutaci a capire le tue decisioni relative all\'abbonamento. Il tuo feedback è importante.</string>
+    <string name="local_notification_still_exploring_description">Nessuna fretta, prenditi il tuo tempo. Se hai domande o nel caso in cui necessiti assistenza, siamo qui per aiutarti. Buona esplorazione.</string>
+    <string name="local_notification_still_exploring_title">🧭 Stai ancora esplorando WooCommerce?</string>
+    <string name="free_trial_survey_screen_title">Aiutaci a capire le tue decisioni relative all\'abbonamento</string>
+    <string name="local_notification_survey_after_24_hours_description">Siamo interessati al tuo percorso decisionale. Potresti parlarci del tuo stato attuale?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡Aiutaci a capire le tue decisioni relative all\'abbonamento</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Scopri funzionalità avanzate e consigli personalizzati per il tuo negozio. Tocca per scegliere un piano che meglio si adatta alle tue esigenze.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Fai crescere il tuo business.</string>
+    <string name="order_creation_customer_search_empty_email">Nessun indirizzo e-mail</string>
+    <string name="order_creation_customer_search_empty_name">Nessun nome</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Usa la ricerca per trovare i clienti esistenti</string>
+    <string name="last_update_with_frequency">Ultimo aggiornamento: %s (aggiornamenti ogni 30 minuti)</string>
+    <string name="last_update">Ultimo aggiornamento: %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Scopri di più&lt;/a&gt; sull\'accettazione di pagamenti con Tocca per pagare su Android</string>
     <string name="card_reader_hub_collect_payment">Ricevi pagamenti</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Impossibile aggiungere prodotti senza un prezzo specificato</string>
@@ -72,8 +91,6 @@ Language: it
     <string name="order_creation_customer_search_username">Nome utente</string>
     <string name="order_creation_customer_search_name">Nome</string>
     <string name="order_creation_customer_search_email">E-mail</string>
-    <string name="order_creation_customer_search_everything">Tutto</string>
-    <string name="order_creation_customer_filter_hint">Filtra clienti per</string>
     <string name="order_creation_coupons_title">Codice promozionale applicato</string>
     <string name="more_settings">Più impostazioni</string>
     <string name="maybe_later">Forse dopo</string>
@@ -143,6 +160,7 @@ Language: it
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Il sistema ha terminato l\'app Woo mentre era in esecuzione in background. Puoi provare a usarla di nuovo.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Non è possibile aggiungere direttamente il prodotto variabile. Seleziona una variante specifica</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Impossibile trovare il prodotto con SKU %s. Impossibile aggiungere all\'ordine</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
     <string name="scan_barcode">Scansiona codice a barre</string>
     <string name="shipping_notice_banner_instructions_content">La spedizione in Paesi che seguono le regole doganali dell\'Unione europea (UE) ora richiede la descrizione chiara di ogni elemento. Ad esempio, se stai inviando capi di vestiario, devi indicare il tipo di abbigliamento (come camicie da uomo, gilet da ragazza, giacca da ragazzo) affinché la descrizione sia accettabile. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>

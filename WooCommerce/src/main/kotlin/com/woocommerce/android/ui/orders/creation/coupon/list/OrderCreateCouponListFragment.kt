@@ -31,7 +31,6 @@ class OrderCreateCouponListFragment : BaseFragment() {
             WooThemeWithBackground {
                 OrderCouponListScreen(
                     onNavigateBackClicked = viewModel::onNavigateBack,
-                    onAddCouponClicked = viewModel::onAddCouponClicked,
                     onCouponClicked = viewModel::onCouponClicked,
                     couponsState = viewModel.coupons.observeAsState(emptyList()),
                 )

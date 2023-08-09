@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 14:54:05+0000
+Translation-Revision-Date: 2023-08-04 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_classes_zones">配送类型和配送区域</string>
+    <string name="free_trial_survey_free_text">其他原因（请具体说明）</string>
+    <string name="free_trial_survey_option4">我是团队的一员，我们需要共同做出决定。</string>
+    <string name="free_trial_survey_option3">服务价格是影响我决定的一项重要因素。</string>
+    <string name="free_trial_survey_option2">我正在评估您的服务，并将其与市场上的其他服务进行比较</string>
+    <string name="free_trial_survey_option1">我仍在探索和评估此应用程序的功能和优势。</string>
+    <string name="free_trial_survey_title">帮助我们了解您的订阅决定。 我们非常重视您的反馈意见。</string>
+    <string name="local_notification_still_exploring_description">别着急，慢慢来！ 如果您有任何疑问或者需要任何帮助，请随时联系我们。 尽情探索吧！</string>
+    <string name="local_notification_still_exploring_title">🧭 仍在探索 WooCommerce？</string>
+    <string name="free_trial_survey_screen_title">帮助我们了解您的订阅决定</string>
+    <string name="local_notification_survey_after_24_hours_description">我们想要了解您的决策过程。 可以与我们分享您的现状吗？</string>
+    <string name="local_notification_survey_after_24_hours_title">💡 帮助我们了解您的订阅决定</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">发现适用于您商店的高级功能和个性化建议！ 轻触选择一款最适合您的套餐。</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 助您的业务继续发展壮大！</string>
+    <string name="order_creation_customer_search_empty_email">无电子邮件地址</string>
+    <string name="order_creation_customer_search_empty_name">无名称</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">通过搜索来查找现有客户</string>
+    <string name="last_update_with_frequency">上次更新时间 %s（每 30 分钟更新一次）</string>
+    <string name="last_update">上次更新时间 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;详细了解&lt;/a&gt;如何在 Android 设备上使用点按付款功能接受付款</string>
     <string name="card_reader_hub_collect_payment">收取付款</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">您无法添加未指定价格的产品</string>
@@ -72,8 +91,6 @@ Language: zh_CN
     <string name="order_creation_customer_search_username">用户名</string>
     <string name="order_creation_customer_search_name">名称</string>
     <string name="order_creation_customer_search_email">电子邮件</string>
-    <string name="order_creation_customer_search_everything">所有内容</string>
-    <string name="order_creation_customer_filter_hint">按以下方式筛选客户</string>
     <string name="order_creation_coupons_title">已应用优惠券</string>
     <string name="more_settings">更多设置</string>
     <string name="maybe_later">稍后再说</string>
@@ -143,6 +160,7 @@ Language: zh_CN
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">当 Woo 应用程序在后台运行时，系统会将其终止。 您可以尝试再次使用它。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">您不能直接添加变体产品。 请选择一个特定的变体</string>
     <string name="order_creation_barcode_scanning_scanning_failed">扫描失败。 请稍后再试</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">未找到 SKU 为 %s 的产品。 无法添加到订单</string>
     <string name="order_list_barcode_scanning_scanning_failed">扫描失败。 请稍后再试</string>
     <string name="scan_barcode">扫描条形码</string>
     <string name="shipping_notice_banner_instructions_content">现在，当运输到遵守欧盟 (EU) 海关规定的国家/地区时，您需要清楚地描述每一件商品。 例如，假设您发送衣服，您的描述中需要指出是哪种类型的衣服（例如，男士衬衫、女孩背心、男孩夹克）才可被接受。 否则货物可能会在海关滞留或被扣留。</string>
@@ -807,7 +825,7 @@ Language: zh_CN
     <string name="order_editing_locked_content_description">已锁定</string>
     <string name="order_editing_non_editable_message">要编辑产品或付款详细信息，请将状态更改为“待付款”。</string>
     <string name="order_editing_non_editable_title">此订单的部分内容当前不可编辑</string>
-    <string name="order_creation_customer_search_hint">搜索客户</string>
+    <string name="order_creation_customer_search_hint">查找客户</string>
     <string name="order_creation_customer_search_empty">未找到客户</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">不用了</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">将扩展添加到商店</string>

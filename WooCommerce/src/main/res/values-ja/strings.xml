@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-27 10:54:03+0000
+Translation-Revision-Date: 2023-08-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="shipping_classes_zones">配送クラス &amp; 配送地域</string>
+    <string name="free_trial_survey_free_text">その他の理由 (具体的にご記入ください)</string>
+    <string name="free_trial_survey_option4">自分はチームの一員であり、全体で決定を下す必要がある。</string>
+    <string name="free_trial_survey_option3">サービスの価格が自分の決定における重要な要素であると感じている。</string>
+    <string name="free_trial_survey_option2">貴社のサービスを市場の他のサービスと評価し、比較している。</string>
+    <string name="free_trial_survey_option1">まだアプリの機能と利点を調査し、評価している最中だ。</string>
+    <string name="free_trial_survey_title">プランの決定についてお教えください。 フィードバックをお待ちしております。</string>
+    <string name="local_notification_still_exploring_description">どうぞお時間をお取りください。 ご質問がある場合やサポートが必要な場合は、いつでもお手伝いいたします。 ご利用をお楽しみください。</string>
+    <string name="local_notification_still_exploring_title">🧭 まだ WooCommerce をお試し中ですか ?</string>
+    <string name="free_trial_survey_screen_title">プランの決定についてお教えください</string>
+    <string name="local_notification_survey_after_24_hours_description">お客様の決定に至るプロセスについて知りたいと考えております。 現在の状況について教えていただけますか ?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡プランの決定についてお教えください</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">ストア向けの高度な機能とあなたへのおすすめをご覧ください。 タップしてあなたに最適なプランをお選びください。</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟ビジネスを推し進めていきましょう !</string>
+    <string name="order_creation_customer_search_empty_email">メールアドレスなし</string>
+    <string name="order_creation_customer_search_empty_name">名前</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">検索を使用して既存の顧客を見つける</string>
+    <string name="last_update_with_frequency">最終更新 %s (30分ごとに更新)</string>
+    <string name="last_update">最終更新 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android の Tap To Pay による支払いの受け取りについて&lt;a href=\'\'&gt;詳しくはこちら&lt;/a&gt;をご覧ください</string>
     <string name="card_reader_hub_collect_payment">支払いを受け取る</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">価格が指定されていない商品は追加できません</string>
@@ -72,8 +91,6 @@ Language: ja_JP
     <string name="order_creation_customer_search_username">ユーザー名</string>
     <string name="order_creation_customer_search_name">名前</string>
     <string name="order_creation_customer_search_email">メールアドレス</string>
-    <string name="order_creation_customer_search_everything">すべて</string>
-    <string name="order_creation_customer_filter_hint">次の条件で顧客を絞り込む</string>
     <string name="order_creation_coupons_title">適用されるクーポン</string>
     <string name="more_settings">その他の設定</string>
     <string name="maybe_later">後で確認する</string>
@@ -143,6 +160,7 @@ Language: ja_JP
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">バックグラウンドで実行中の Woo アプリがシステムにより終了しました。 再度使用してみることができます。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">直接バリエーション商品を追加できません。 特定のバリエーションを選択してください</string>
     <string name="order_creation_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください。</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">SKU「%s」の商品が見つかりません。 注文に追加できません</string>
     <string name="order_list_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください</string>
     <string name="scan_barcode">バーコードのスキャン</string>
     <string name="shipping_notice_banner_instructions_content">欧州連合 (EU) の関税法規則に従う国への発送は、すべての品目について明確な説明が求められるようになりました。 たとえば衣類を送る場合、どのようなタイプの衣類であるか (例: 男性用シャツ、女児用ベスト、男児用上着など) を明記しなければ認められません。 これを怠ると、配送が税関で遅延または中断されることがあります。</string>
@@ -807,7 +825,7 @@ Language: ja_JP
     <string name="order_editing_locked_content_description">ロック中</string>
     <string name="order_editing_non_editable_message">「商品」または「支払いの詳細」を編集するには、ステータスを「支払い待ち」に変更します。</string>
     <string name="order_editing_non_editable_title">この注文の一部は現在編集できません</string>
-    <string name="order_creation_customer_search_hint">お客様検索</string>
+    <string name="order_creation_customer_search_hint">顧客を検索</string>
     <string name="order_creation_customer_search_empty">お客様が見つかりません</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">後で</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">ストアに拡張機能を追加</string>
