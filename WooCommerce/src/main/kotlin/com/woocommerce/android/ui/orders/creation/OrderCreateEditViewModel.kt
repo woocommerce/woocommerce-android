@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
@@ -227,7 +228,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
-            handleCouponEditResult(it)
+            handleCouponEditResult()
         }
     }
 
@@ -747,7 +748,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddCouponButtonClicked() {
-        triggerEvent(EditCoupon(mode))
+        triggerEvent(OrderCreateEditNavigationTarget.AddCoupon)
     }
 
     fun onShippingButtonClicked() {
@@ -994,7 +995,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onCouponAdded(couponCode: String) {
+    fun onCouponAdded(couponCode: String) {
         if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
         _orderDraft.update { draft ->
             val couponLines = draft.couponLines

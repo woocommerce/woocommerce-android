@@ -31,6 +31,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -106,6 +107,9 @@ class OrderCreateEditFormFragment :
         }
         handleCouponEditResult()
         handleProductDetailsEditResult()
+        handleResult<String>(KEY_COUPON_SELECTOR_RESULT) {
+            viewModel.onCouponAdded(it)
+        }
     }
 
     private fun handleProductDetailsEditResult() {

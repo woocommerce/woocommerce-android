@@ -527,9 +527,13 @@
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_select_coupon">Select a coupon</string>
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
+    <string name="coupon_selector_empty_list_button">Go to Coupons</string>
+    <string name="coupon_selector_empty_list_message">You haven\'t created any coupons yet. Create a coupon to apply it to this order.</string>
+    <string name="coupon_selector_empty_list_title">Everyone loves a deal</string>
     <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>

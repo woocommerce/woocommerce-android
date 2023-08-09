@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
         val navController = fragment.findNavController()
-
         val action = when (target) {
             is EditCustomer ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment(
@@ -62,8 +61,10 @@ object OrderCreateEditNavigator {
                     couponLines = target.couponLines.toTypedArray()
                 )
             }
+            is OrderCreateEditNavigationTarget.AddCoupon -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment()
+            }
         }
-
         navController.navigate(action)
     }
 }
