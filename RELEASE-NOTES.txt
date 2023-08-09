@@ -3,9 +3,6 @@
 14.9
 -----
 - [*] Orders with Coupons: Users can now select a coupon from a list when adding it to an order. [https://github.com/woocommerce/woocommerce-android/pull/9510]
-14.9
------
-
 
 14.8
 - [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
