@@ -1096,8 +1096,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("abc")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -1140,8 +1139,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("abc")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("abc")
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
@@ -1151,7 +1149,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given products and coupon applied, when going to product details, then should disable discount editing`() {
         createSut()
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onCouponAdded("abc")
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
         sut.onProductClicked(sut.currentDraft.items.first())
         var lastReceivedEvent: Event? = null
