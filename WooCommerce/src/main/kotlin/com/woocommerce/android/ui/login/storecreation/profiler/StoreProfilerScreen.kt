@@ -126,7 +126,7 @@ private fun ProfilerContent(
                 }
                 itemsIndexed(profilerStepContent.options) { index, category ->
                     if (index == 0)
-                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
 
                     ProfilerOptionItem(
                         category = category,
