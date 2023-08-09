@@ -23,8 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -42,14 +40,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -70,12 +66,6 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
                 actions = {
                     TextButton(onClick = viewModel::onSkipPressed) {
                         Text(text = stringResource(id = R.string.skip))
-                    }
-                    IconButton(onClick = viewModel::onHelpPressed) {
-                        Icon(
-                            painter = painterResource(id = drawable.ic_help_24dp),
-                            contentDescription = stringResource(id = string.help)
-                        )
                     }
                 }
             )
