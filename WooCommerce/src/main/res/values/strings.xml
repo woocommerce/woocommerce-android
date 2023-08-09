@@ -3121,12 +3121,12 @@
     <string name="store_creation_store_name_hint">Store name</string>
 
     <string name="store_creation_store_profiler_industries_header">About your store</string>
-    <string name="store_creation_store_profiler_industries_title">What do you plan to sell in your store?</string>
-    <string name="store_creation_store_profiler_industries_description">Choose a category that defines your business the best.</string>
+    <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
+    <string name="store_creation_store_profiler_industries_description">Choose a category that defines\nyour business the best.</string>
     <string name="store_creation_store_profiler_industries_search_hint">Type a category</string>
     <string name="store_creation_profiler_options_search_empty">No available results for this search</string>
-    <string name="store_creation_store_profiler_journey_title">Which one of these best describes you?</string>
-    <string name="store_creation_store_profiler_journey_description">Let us know where you are in your commerce journey so that we can tailor your Woo experience for you.</string>
+    <string name="store_creation_store_profiler_journey_title">Which one of these best\ndescribes you?</string>
+    <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
     <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
     <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
 
