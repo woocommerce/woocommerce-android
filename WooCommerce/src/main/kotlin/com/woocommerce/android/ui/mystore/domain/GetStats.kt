@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
+import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -70,12 +72,27 @@ class GetStats @Inject constructor(
             }
 
     private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val (startDate, endDate) = granularity.statsDateRange
+        val rangeSelection = granularity.asRangeSelection(localeProvider.provideLocale())
+        val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
+            startDate = rangeSelection.currentRange.start,
+            endDate = rangeSelection.currentRange.end
+        )
+        if (forceRefresh.not()) {
+            statsRepository.getRevenueStatsById(revenueRangeId)
+                .single()
+                .takeIf { it.isSuccess && it.getOrNull() != null }
+                ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
+        }
+
+        val startDate = rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss()
+        val endDate = rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
+
         return statsRepository.fetchRevenueStats(
             granularity,
             forceRefresh,
             startDate,
-            endDate
+            endDate,
+            revenueRangeId
         ).transform { result ->
             result.fold(
                 onSuccess = { stats ->

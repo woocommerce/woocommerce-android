@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 12:54:03+0000
+Translation-Revision-Date: 2023-08-03 09:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_classes_zones">Verzendklasses en -zones</string>
+    <string name="free_trial_survey_free_text">Andere reden (hier opgeven)</string>
+    <string name="free_trial_survey_option4">Ik ben onderdeel van een team en we nemen de beslissing samen.</string>
+    <string name="free_trial_survey_option3">Ik vind de prijs van de service een doorslaggevende factor bij mijn beslissing.</string>
+    <string name="free_trial_survey_option2">Ik beoordeel jullie service door deze te vergelijken met vergelijkbare producten op de markt.</string>
+    <string name="free_trial_survey_option1">Ik ben nog bezig met alle functies en voordelen van de app te ontdekken en te beoordelen.</string>
+    <string name="free_trial_survey_title">Help ons begrijpen wat jouw beslissingen omtrent abonnementen beïnvloed. Jouw feedback is belangrijk.</string>
+    <string name="local_notification_still_exploring_description">Geen haast, neem je tijd! Als je nog vragen hebt of anderszins hulp nodig hebt, staan we altijd voor je klaar. Veel plezier op deze ontdekkingstocht!</string>
+    <string name="local_notification_still_exploring_title">🧭 Nog bezig met WooCommerce ontdekken?</string>
+    <string name="free_trial_survey_screen_title">💡Help ons begrijpen wat jouw beslissingen omtrent abonnementen beïnvloed</string>
+    <string name="local_notification_survey_after_24_hours_description">We willen graag weten hoe jij tot een beslissing komt. Kan je ons vertellen over je huidige status?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡Help ons begrijpen wat jouw beslissingen omtrent abonnementen beïnvloed</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Ontdek geavanceerde functies en gepersonaliseerde aanbevelingen voor jouw winkel! Tik op het abonnement dat het beste bij je past.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Blijf aan de slag!</string>
+    <string name="order_creation_customer_search_empty_email">Geen e-mailadres</string>
+    <string name="order_creation_customer_search_empty_name">Geen naam</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Gebruik de zoekfunctie om bestaande klanten te vinden</string>
+    <string name="last_update_with_frequency">Laatst bijgewerkt %s (wordt elke 30 minuten bijgewerkt)</string>
+    <string name="last_update">Laatst bijgewerkt %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het accepteren van betalingen met Tap to Pay op Android</string>
     <string name="card_reader_hub_collect_payment">Betaling ontvangen</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Je kan geen producten zonder prijs toevoegen</string>
@@ -72,8 +91,6 @@ Language: nl
     <string name="order_creation_customer_search_username">Gebruikersnaam</string>
     <string name="order_creation_customer_search_name">Naam</string>
     <string name="order_creation_customer_search_email">E-mail</string>
-    <string name="order_creation_customer_search_everything">Alles</string>
-    <string name="order_creation_customer_filter_hint">Klanten filteren op</string>
     <string name="order_creation_coupons_title">Kortingsbonnen toegepast</string>
     <string name="more_settings">Meer instellingen</string>
     <string name="maybe_later">Misschien later</string>
@@ -143,6 +160,7 @@ Language: nl
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Het systeem heeft de Woo-app afgesloten terwijl deze in de achtergrond bezig was. Je kan proberen deze opnieuw te gebruiken.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Je kan een variabel product niet rechtstreeks toevoegen. Selecteer een bepaalde variatie.</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scan mislukt. Probeer het later opnieuw</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Product met SKU %s niet gevonden. Kon bestelling niet toevoegen</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scan mislukt Probeer het later opnieuw</string>
     <string name="scan_barcode">Streepjescode scannen</string>
     <string name="shipping_notice_banner_instructions_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je elk artikel duidelijk beschrijven. Bijvoorbeeld, als je kleding verzendt moet je in de beschrijving duidelijk aangeven wat voor soort kleding het is (bijv. herenshirt, damesvest, kinderjas). Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>

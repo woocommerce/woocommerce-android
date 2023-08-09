@@ -1,0 +1,2 @@
+14.7:
+Trabalhamos para disponibilizar a configuração de envio no app. Agora você pode visualizar suas zonas de envio na tela de configurações. Fique ligado para não perder atualizações sobre isso no futuro.
