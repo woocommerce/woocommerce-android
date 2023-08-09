@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.coupons.selector
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
 import com.woocommerce.android.ui.coupons.CouponListItem
@@ -29,6 +31,7 @@ class CouponSelectorViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val couponListHandler: CouponListHandler,
     private val couponUtils: CouponUtils,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
 
     companion object {
@@ -87,6 +90,7 @@ class CouponSelectorViewModel @Inject constructor(
 
     fun onEmptyScreenButtonClicked() {
         triggerEvent(NavigateToCouponList)
+        analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_GO_TO_COUPON_BUTTON_TAPPED)
     }
     private fun fetchCoupons() = launch {
         loadingState.value = LoadingState.Loading
