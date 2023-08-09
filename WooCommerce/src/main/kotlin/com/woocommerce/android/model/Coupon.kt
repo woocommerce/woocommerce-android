@@ -4,8 +4,6 @@ import android.os.Parcelable
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
-import com.woocommerce.android.ui.coupons.CouponListItem
-import com.woocommerce.android.util.CouponUtils
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
@@ -41,16 +39,6 @@ data class Coupon(
             productIds == otherCoupon.productIds &&
             categoryIds == otherCoupon.categoryIds &&
             restrictions.isSameRestrictions(otherCoupon.restrictions)
-    }
-
-    fun toUiModel(couponUtils: CouponUtils, currencyCode: String?): CouponListItem {
-
-        return CouponListItem(
-            id = id,
-            code = code,
-            summary = couponUtils.generateSummary(this, currencyCode),
-            isActive = dateExpires?.after(Date()) ?: true
-        )
     }
 
     @Parcelize

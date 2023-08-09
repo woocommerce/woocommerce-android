@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.CouponListHandler
 import com.woocommerce.android.ui.coupons.CouponListItem
+import com.woocommerce.android.ui.coupons.toUiModel
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
