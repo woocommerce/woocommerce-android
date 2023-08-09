@@ -28,7 +28,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
         "key_coupon_code"
     )
 
-    val viewState  = combine(
+    val viewState = combine(
         couponCode,
         couponCode.map { it.isNotNullOrEmpty() }
     ) { couponCode, isRemoveButtonVisible ->

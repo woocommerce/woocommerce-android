@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 
-
 @Composable
 fun OrderCreateCouponEditScreen(
     state: State<OrderCreateCouponEditViewModel.ViewState?>,

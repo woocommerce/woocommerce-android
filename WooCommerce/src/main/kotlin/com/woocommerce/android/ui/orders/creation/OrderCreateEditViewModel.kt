@@ -12,7 +12,6 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_UPDATE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
@@ -1011,10 +1010,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCouponRemoved() {
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
-    }
-
-    private fun trackCouponUpdated() {
-        tracker.track(ORDER_COUPON_UPDATE, mapOf(KEY_FLOW to flow))
     }
 
     fun onProductDetailsEditResult(result: ProductDetailsEditResult) {
