@@ -314,7 +314,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Order Coupon
     ORDER_COUPON_ADD,
     ORDER_COUPON_REMOVE,
-    ORDER_COUPON_UPDATE,
     ORDER_GO_TO_COUPON_BUTTON_TAPPED,
 
     // -- Order discount
