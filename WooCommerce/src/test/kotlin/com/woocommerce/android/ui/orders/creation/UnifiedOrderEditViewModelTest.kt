@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -74,6 +75,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     lateinit var productListRepository: ProductListRepository
     private lateinit var resourceProvider: ResourceProvider
+    private lateinit var productRestrictions: OrderCreationProductRestrictions
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -142,6 +144,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 getString(R.string.order_creation_barcode_scanning_scanning_failed)
             } doReturn "Scanning failed. Please try again later"
         }
+        productRestrictions = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -508,22 +511,20 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PENDING.name
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PENDING.name
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -573,23 +574,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                amount = ""
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PUBLISH.name,
-                        amount = ""
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -613,19 +612,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PENDING.name
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PENDING.name
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -645,19 +642,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("You cannot add products that are not published")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PENDING.name
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PENDING.name
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -681,19 +676,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("You cannot add products that are not published")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PENDING.name
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PENDING.name
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -711,19 +704,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("You cannot add products that are not published")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PENDING.name
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PENDING.name
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -748,20 +739,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("Unable to add product with invalid price")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                amount = ""
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PUBLISH.name,
-                        amount = ""
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -785,20 +774,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("You cannot add products with no price specified")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                amount = ""
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PUBLISH.name,
-                        amount = ""
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -816,20 +803,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("You cannot add products with no price specified")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                amount = ""
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PUBLISH.name,
-                        amount = ""
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -849,19 +834,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PENDING.name,
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PENDING.name,
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -877,20 +860,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                amount = ""
+            )
             whenever(
                 productListRepository.searchProductList(
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        customStatus = ProductStatus.PUBLISH.name,
-                        amount = ""
-                    )
-                )
-            )
+            ).thenReturn(listOf(product))
+            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -2171,6 +2152,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             productRepository = productListRepository,
             checkDigitRemoverFactory = checkDigitRemoverFactory,
             resourceProvider = resourceProvider,
+            productRestrictions = productRestrictions,
         )
     }
 

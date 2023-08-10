@@ -405,7 +405,6 @@ class ProductNavigator @Inject constructor() {
                         target.productStatus,
                         target.productCategory,
                         target.productCategoryName,
-                        target.restrictions.toTypedArray(),
                     )
                 )
             }
