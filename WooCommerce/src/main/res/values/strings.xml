@@ -1452,7 +1452,7 @@
     <string name="card_reader_onboarding_title">In-Person Payments</string>
     <string name="card_reader_onboarding_loading">Connecting to your account</string>
 
-    <string name="card_reader_onboarding_country_not_supported_header">We don\'t support In-Person Payments in %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_header">We don\'t support Card In-Person Payments in %1$s</string>
     <string name="card_reader_onboarding_country_not_supported_hint">You can still accept In-Person Cash Payments by enabling the \"cash on delivery\" payment method on your store</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Need some help? &lt;a href=\'\'&gt;Contact support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
