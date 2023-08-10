@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -1109,7 +1109,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc")
+        val couponEditResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("abc")
         sut.onCouponEditResult(couponEditResult)
 
         verify(tracker).track(

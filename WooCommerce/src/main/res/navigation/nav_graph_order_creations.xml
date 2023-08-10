@@ -124,7 +124,7 @@
             app:nullable="true"/>
         <argument
             android:name="couponEditResult"
-            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
             app:nullable="true"
             android:defaultValue="@null"/>
         <action
@@ -288,7 +288,7 @@
             >
             <argument
                 android:name="couponEditResult"
-                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>

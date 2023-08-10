@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OrderCreateCouponEditFragment : BaseFragment() {
     private val args: OrderCreateCouponEditFragmentArgs by navArgs()
-    private val viewModel by viewModels<OrderCreateCouponEditViewModel>()
+    private val viewModel by viewModels<OrderCreateCouponDetailsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,10 +44,10 @@ class OrderCreateCouponEditFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+                is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
                     val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
                         mode = args.orderCreationMode,
-                        couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon(it.couponCode),
+                        couponEditResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon(it.couponCode),
                         sku = null,
                         barcodeFormat = null
                     )

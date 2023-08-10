@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 
 @Composable
 fun OrderCreateCouponEditScreen(
-    state: State<OrderCreateCouponEditViewModel.ViewState?>,
+    state: State<OrderCreateCouponDetailsViewModel.ViewState?>,
     onCouponRemoved: () -> Unit,
 ) {
     Column(
@@ -45,9 +45,9 @@ fun OrderCreateCouponEditScreen(
 @Composable
 fun OrderCreateCouponEditionScreenPreview() {
     OrderCreateCouponEditScreen(
-        state = object : State<OrderCreateCouponEditViewModel.ViewState?> {
-            override val value: OrderCreateCouponEditViewModel.ViewState
-                get() = OrderCreateCouponEditViewModel.ViewState(
+        state = object : State<OrderCreateCouponDetailsViewModel.ViewState?> {
+            override val value: OrderCreateCouponDetailsViewModel.ViewState
+                get() = OrderCreateCouponDetailsViewModel.ViewState(
                     "code",
                     true,
                 )

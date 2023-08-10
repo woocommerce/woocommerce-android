@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -182,7 +182,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         }
 
         // when
-        val couponRemoveResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code")
+        val couponRemoveResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("new_code")
         sut.onCouponEditResult(couponRemoveResult)
 
         // then
@@ -202,7 +202,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.onCouponAdded("new_code2")
 
         // when
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code"))
+        sut.onCouponEditResult(OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("new_code"))
 
         // then
         latestOrderDraft!!.couponLines.apply {
@@ -343,7 +343,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc"))
+        sut.onCouponEditResult(OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("abc"))
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,

@@ -15,7 +15,7 @@ import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class OrderCreateCouponEditViewModel @Inject constructor(
+class OrderCreateCouponDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 

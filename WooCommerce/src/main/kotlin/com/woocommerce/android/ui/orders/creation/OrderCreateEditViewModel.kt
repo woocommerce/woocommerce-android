@@ -65,7 +65,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
@@ -231,15 +231,15 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun handleCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+    private fun handleCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         when (couponEditResult) {
-            is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+            is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
                 onCouponRemoved(couponEditResult.couponCode)
             }
         }
     }
 
-    fun onCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+    fun onCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         handleCouponEditResult(couponEditResult)
     }
 
