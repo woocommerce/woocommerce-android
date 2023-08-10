@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.summary
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -87,7 +88,7 @@ private fun StoreCreationSummaryScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_125))
                         .padding(
-                            top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding),
+                            top = dimensionResource(id = R.dimen.major_350),
                             bottom = dimensionResource(id = R.dimen.major_75)
                         )
                 )
@@ -144,38 +145,35 @@ private fun SummaryBody(modifier: Modifier) {
 @Composable
 private fun SummaryFreeTrialFeatureList() {
     Column {
-        FeatureRow(iconId = R.drawable.ic_star, stringId = R.string.free_trial_feature_premium_themes)
-        FeatureRow(iconId = R.drawable.ic_box, stringId = R.string.free_trial_feature_unlimited_products)
-        FeatureRow(iconId = R.drawable.ic_truck, stringId = R.string.free_trial_feature_shipping_labels)
-        FeatureRow(iconId = R.drawable.ic_chart, stringId = R.string.free_trial_feature_ecommerce_reports)
-        FeatureRow(iconId = R.drawable.ic_dollar, stringId = R.string.free_trial_feature_multiple_payment_options)
-        FeatureRow(iconId = R.drawable.ic_gift, stringId = R.string.free_trial_feature_subscription_product_kits)
-        FeatureRow(iconId = R.drawable.ic_megaphone, stringId = R.string.free_trial_feature_social_advertising)
-        FeatureRow(iconId = R.drawable.ic_letter, stringId = R.string.free_trial_feature_email_marketing)
-        FeatureRow(iconId = R.drawable.ic_two_persons, stringId = R.string.free_trial_feature_247_support)
-        FeatureRow(iconId = R.drawable.ic_update_clock, stringId = R.string.free_trial_feature_auto_updates_backups)
-        FeatureRow(iconId = R.drawable.ic_cloud, stringId = R.string.free_trial_feature_site_security)
-        FeatureRow(iconId = R.drawable.ic_globe_2, stringId = R.string.free_trial_feature_fast_to_launch)
+        FeatureRow(stringId = R.string.free_trial_feature_premium_themes)
+        FeatureRow(stringId = R.string.free_trial_feature_unlimited_products)
+        FeatureRow(stringId = R.string.free_trial_feature_shipping_labels)
+        FeatureRow(stringId = R.string.free_trial_feature_ecommerce_reports)
+        FeatureRow(stringId = R.string.free_trial_feature_multiple_payment_options)
+        FeatureRow(stringId = R.string.free_trial_feature_subscription_product_kits)
+        FeatureRow(stringId = R.string.free_trial_feature_social_advertising)
+        FeatureRow(stringId = R.string.free_trial_feature_email_marketing)
+        FeatureRow(stringId = R.string.free_trial_feature_247_support)
+        FeatureRow(stringId = R.string.free_trial_feature_auto_updates_backups)
+        FeatureRow(stringId = R.string.free_trial_feature_site_security)
+        FeatureRow(stringId = R.string.free_trial_feature_fast_to_launch)
     }
 }
 
 @Composable
-private fun FeatureRow(
-    iconId: Int,
-    stringId: Int
-) {
+private fun FeatureRow(@StringRes stringId: Int) {
     Row(
         modifier = Modifier
             .padding(bottom = dimensionResource(id = R.dimen.major_75))
     ) {
         Icon(
-            painter = painterResource(id = iconId),
+            painter = painterResource(id = R.drawable.ic_free_trial_item_check),
             contentDescription = null,
             tint = colorResource(id = R.color.color_primary),
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(end = dimensionResource(id = R.dimen.minor_100))
-                .size(dimensionResource(id = R.dimen.major_150))
+                .size(dimensionResource(id = R.dimen.major_100))
         )
         Text(
             text = stringResource(id = stringId),

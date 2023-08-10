@@ -3233,8 +3233,8 @@
     Free trial Summary
     -->
     <string name="free_trial_summary_title">Launch in days, grow for years</string>
-    <string name="free_trial_summary_advertise">We offer everything you need to build and grow an online store, powered by WooCommerce and hosted on WordPress.com.</string>
-    <string name="free_trial_summary_try_it">Try it for 14 days.</string>
+    <string name="free_trial_summary_advertise">We offer everything you need to build\nand grow an online store, powered by\nWooCommerce and hosted on\nWordPress.com.</string>
+    <string name="free_trial_summary_try_it">Try it free for 14 days.</string>
     <string name="free_trial_summary_try_button">Try For Free</string>
     <string name="free_trial_summary_credit_card_message">No credit card required.</string>
     <string name="free_trial_feature_premium_themes">Premium themes</string>
@@ -3252,7 +3252,6 @@
     <string name="free_trial_summary_store_creation_error_title">Something went wrong</string>
     <string name="free_trial_summary_store_creation_error_message">Sorry, we cannot create your store right now, please try again later.</string>
     <string name="free_trial_summary_store_creation_error_dialog_action">Got It!</string>
-
 
     <!--
     Upgrades
