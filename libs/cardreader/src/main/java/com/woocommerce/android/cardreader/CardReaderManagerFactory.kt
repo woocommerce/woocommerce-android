@@ -53,7 +53,6 @@ object CardReaderManagerFactory {
                 CreatePaymentAction(
                     PaymentIntentParametersFactory(PaymentMethodTypeMapper()),
                     terminal,
-                    PaymentUtils(),
                     logWrapper,
                     cardReaderConfigFactory
                 ),

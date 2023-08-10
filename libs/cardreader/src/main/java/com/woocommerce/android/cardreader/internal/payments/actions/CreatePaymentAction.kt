@@ -9,9 +9,9 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
-import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
+import com.woocommerce.android.cardreader.internal.payments.convertInCurrencyScaleOf2ToLongInCents
 import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.callbackFlow
 internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
     private val terminal: TerminalWrapper,
-    private val paymentUtils: PaymentUtils,
     private val logWrapper: LogWrapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory
 ) {
@@ -55,7 +54,7 @@ internal class CreatePaymentAction(
     }
 
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
-        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToLongInCents(paymentInfo.amount)
+        val amountInSmallestCurrencyUnit = paymentInfo.amount.convertInCurrencyScaleOf2ToLongInCents()
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
             as CardReaderConfigForSupportedCountry
         val builder = paymentIntentParametersFactory.createBuilder(

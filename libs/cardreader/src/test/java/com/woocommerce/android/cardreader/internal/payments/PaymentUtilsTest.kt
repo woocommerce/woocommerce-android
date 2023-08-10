@@ -31,28 +31,28 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when amount $1, then it gets converted to 100 cents`() = testBlocking {
-        val result = paymentUtils.convertBigDecimalInDollarsToLongInCents(BigDecimal(1))
+        val result = BigDecimal(1).convertInCurrencyScaleOf2ToLongInCents()
 
         assertThat(result).isEqualTo(100)
     }
 
     @Test
     fun `when amount $1 005cents, then it gets rounded down to 100 cents`() = testBlocking {
-        val result = paymentUtils.convertBigDecimalInDollarsToLongInCents(BigDecimal(1.005))
+        val result = BigDecimal(1.005).convertInCurrencyScaleOf2ToLongInCents()
 
         assertThat(result).isEqualTo(100)
     }
 
     @Test
     fun `when amount $1 006cents, then it gets rounded up to 101 cents`() = testBlocking {
-        val result = paymentUtils.convertBigDecimalInDollarsToLongInCents(BigDecimal(1.006))
+        val result = BigDecimal(1.006).convertInCurrencyScaleOf2ToLongInCents()
 
         assertThat(result).isEqualTo(101)
     }
 
     @Test
     fun `when amount $1 99 cents, then it gets converted to 199 cents`() = testBlocking {
-        val result = paymentUtils.convertBigDecimalInDollarsToLongInCents(BigDecimal(1.99))
+        val result = BigDecimal(1.99).convertInCurrencyScaleOf2ToLongInCents()
 
         assertThat(result).isEqualTo(199)
     }

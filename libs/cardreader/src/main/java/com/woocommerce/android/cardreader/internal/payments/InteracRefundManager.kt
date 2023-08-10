@@ -24,7 +24,7 @@ internal class InteracRefundManager(
     ) {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
-            refundParameters.toStripeRefundParameters(paymentUtils)
+            refundParameters.toStripeRefundParameters()
         ).collect { refundStatus ->
             when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {

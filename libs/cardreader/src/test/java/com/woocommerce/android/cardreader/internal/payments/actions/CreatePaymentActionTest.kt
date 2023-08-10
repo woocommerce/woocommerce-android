@@ -9,7 +9,6 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
-import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -35,7 +34,6 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: CreatePaymentAction
     private val paymentIntentParametersFactory = mock<PaymentIntentParametersFactory>()
     private val terminal: TerminalWrapper = mock()
-    private val paymentUtils: PaymentUtils = PaymentUtils()
     private val intentParametersBuilder = mock<PaymentIntentParameters.Builder>()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
 
@@ -44,7 +42,6 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         action = CreatePaymentAction(
             paymentIntentParametersFactory,
             terminal,
-            paymentUtils,
             mock(),
             cardReaderConfigFactory
         )
