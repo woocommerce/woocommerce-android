@@ -194,7 +194,9 @@ private fun GenerationFlow(
             } else {
                 OutlinedTextField(
                     value = state.productTitle,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimensionResource(id = dimen.minor_100)),
                     maxLines = 1,
                     enabled = enableTextFields,
                     isError = state.shouldShowErrorOutlineIfEmpty && state.productTitle.isEmpty(),

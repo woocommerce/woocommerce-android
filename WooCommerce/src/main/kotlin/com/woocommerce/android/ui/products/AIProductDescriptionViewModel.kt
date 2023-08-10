@@ -169,7 +169,7 @@ class AIProductDescriptionViewModel @Inject constructor(
             return
         }
 
-        val isRetry = when(postClickUIState) {
+        val isRetry = when (postClickUIState) {
             Regenerating -> true
             Generating -> false
             else -> false // default to false if other states are added in the future
