@@ -70,6 +70,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { paymentUrl }.thenReturn(PAYMENT_URL)
         on { total }.thenReturn(BigDecimal(1L))
         on { id }.thenReturn(1L)
+        on { currency }.thenReturn("USD")
     }
     private val orderEntity: OrderEntity = mock()
 
@@ -595,10 +596,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
-                    AnalyticsTracker.KEY_AMOUNT to "100$",
+                    "payment_method" to "card",
                     "order_id" to 1L,
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
+                    "amount" to "100$",
+                    "amount_normalized" to 100L,
+                    "currency" to "USD",
+                    "flow" to "order_payment",
                 )
             )
         }
@@ -617,10 +620,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
-                    AnalyticsTracker.KEY_AMOUNT to "100$",
+                    "payment_method" to "card",
                     "order_id" to 1L,
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                    "amount" to "100$",
+                    "amount_normalized" to 100L,
+                    "currency" to "USD",
+                    "flow" to "simple_payment",
                 )
             )
         }
@@ -768,9 +773,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "payment_method" to "payment_link",
                     "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                    "amount" to "100$",
+                    "amount_normalized" to 100L,
+                    "currency" to "USD",
+                    "flow" to "simple_payment",
                 )
             )
         }
@@ -788,9 +796,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "payment_method" to "payment_link",
                     "order_id" to 1L,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
+                    "amount" to "100$",
+                    "amount_normalized" to 100L,
+                    "currency" to "USD",
+                    "flow" to "order_payment",
                 )
             )
         }
@@ -1139,6 +1150,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             mapOf(
                 "payment_method" to "scan_to_pay",
                 "order_id" to 1L,
+                "amount" to "100$",
+                "amount_normalized" to 100L,
+                "currency" to "USD",
                 "flow" to "order_payment",
             )
         )

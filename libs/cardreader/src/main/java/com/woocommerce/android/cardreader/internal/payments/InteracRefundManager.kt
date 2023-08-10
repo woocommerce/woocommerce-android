@@ -13,7 +13,6 @@ internal class InteracRefundManager(
     private val collectInteracRefundAction: CollectInteracRefundAction,
     private val processInteracRefundAction: ProcessInteracRefundAction,
     private val refundErrorMapper: RefundErrorMapper,
-    private val paymentUtils: PaymentUtils,
 ) {
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
         collectInteracRefund(refundParameters)
