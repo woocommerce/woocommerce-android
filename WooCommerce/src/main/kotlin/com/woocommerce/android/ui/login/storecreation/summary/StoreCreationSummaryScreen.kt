@@ -7,8 +7,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -88,7 +90,7 @@ private fun StoreCreationSummaryScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_125))
                         .padding(
-                            top = dimensionResource(id = R.dimen.major_350),
+                            top = dimensionResource(id = R.dimen.major_300),
                             bottom = dimensionResource(id = R.dimen.major_75)
                         )
                 )
@@ -145,18 +147,35 @@ private fun SummaryBody(modifier: Modifier) {
 @Composable
 private fun SummaryFreeTrialFeatureList() {
     Column {
+        Text(
+            text = stringResource(id = R.string.free_trial_summary_start_selling_quickly),
+            style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
         FeatureRow(stringId = R.string.free_trial_feature_premium_themes)
-        FeatureRow(stringId = R.string.free_trial_feature_unlimited_products)
-        FeatureRow(stringId = R.string.free_trial_feature_shipping_labels)
-        FeatureRow(stringId = R.string.free_trial_feature_ecommerce_reports)
-        FeatureRow(stringId = R.string.free_trial_feature_multiple_payment_options)
-        FeatureRow(stringId = R.string.free_trial_feature_subscription_product_kits)
+        FeatureRow(stringId = R.string.free_trial_feature_store_management)
+        FeatureRow(stringId = R.string.free_trial_feature_design_editing)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+
+        Text(
+            text = stringResource(id = R.string.free_trial_summary_grow_your_business),
+            style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
+        FeatureRow(stringId = R.string.free_trial_feature_built_in_seo)
         FeatureRow(stringId = R.string.free_trial_feature_social_advertising)
-        FeatureRow(stringId = R.string.free_trial_feature_email_marketing)
-        FeatureRow(stringId = R.string.free_trial_feature_247_support)
-        FeatureRow(stringId = R.string.free_trial_feature_auto_updates_backups)
-        FeatureRow(stringId = R.string.free_trial_feature_site_security)
-        FeatureRow(stringId = R.string.free_trial_feature_fast_to_launch)
+        FeatureRow(stringId = R.string.free_trial_feature_automated_customer_emails)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+
+        Text(
+            text = stringResource(id = R.string.free_trial_summary_hassle_free_store_ownership),
+            style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
+        FeatureRow(stringId = R.string.free_trial_feature_hosting)
+        FeatureRow(stringId = R.string.free_trial_feature_backups)
+        FeatureRow(stringId = R.string.free_trial_feature_support)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
     }
 }
 
@@ -177,6 +196,7 @@ private fun FeatureRow(@StringRes stringId: Int) {
         )
         Text(
             text = stringResource(id = stringId),
+            style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Start,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
