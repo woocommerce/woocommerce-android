@@ -74,7 +74,7 @@ private fun StoreCreationSummaryScreen(
                     .weight(5f)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.free_trial_summary_illustration),
+                    painter = painterResource(id = R.drawable.store_free_trial_summary_top_background),
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
