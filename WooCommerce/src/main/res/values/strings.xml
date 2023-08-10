@@ -3127,7 +3127,7 @@
     <string name="store_creation_profiler_options_search_empty">No available results for this search</string>
     <string name="store_creation_store_profiler_journey_title">Which one of these best\ndescribes you?</string>
     <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
-    <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
+    <string name="store_creation_store_profiler_platforms_title">Which platform(s) are\nyou currently using?</string>
     <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
 
     <string name="store_creation_country_picker_title">Confirm your location</string>
