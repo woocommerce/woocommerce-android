@@ -47,7 +47,9 @@ class OrderCreateCouponEditFragment : BaseFragment() {
                 is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
                     val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
                         mode = args.orderCreationMode,
-                        couponEditResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon(it.couponCode),
+                        couponEditResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon(
+                            it.couponCode
+                        ),
                         sku = null,
                         barcodeFormat = null
                     )
