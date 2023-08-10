@@ -153,19 +153,26 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onRegenerateButtonClicked() {
-        handleGenerateButtonClick(isRetry = true, postClickUIState = Regenerating)
+        handleGenerateButtonClick(postClickUIState = Regenerating)
     }
 
     fun onGenerateButtonClicked() {
-        handleGenerateButtonClick(isRetry = false, postClickUIState = Generating)
+        handleGenerateButtonClick(postClickUIState = Generating)
     }
 
-    private fun handleGenerateButtonClick(isRetry: Boolean, postClickUIState: ViewState.GenerationState) {
+    // For now function only handles `postClickUIState` of `Regenerating` and `Generating`.
+    private fun handleGenerateButtonClick(postClickUIState: ViewState.GenerationState) {
         if (!_viewState.value.canGenerateWithAI) {
             _viewState.update {
                 _viewState.value.copy(shouldShowErrorOutlineIfEmpty = true)
             }
             return
+        }
+
+        val isRetry = when(postClickUIState) {
+            Regenerating -> true
+            Generating -> false
+            else -> false // default to false if other states are added in the future
         }
 
         tracker.track(
