@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -1096,8 +1096,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("abc")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -1110,7 +1109,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc")
+        val couponEditResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("abc")
         sut.onCouponEditResult(couponEditResult)
 
         verify(tracker).track(
@@ -1140,8 +1139,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("abc")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("abc")
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
@@ -1151,7 +1149,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `given products and coupon applied, when going to product details, then should disable discount editing`() {
         createSut()
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onCouponAdded("abc")
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
         sut.onProductClicked(sut.currentDraft.items.first())
         var lastReceivedEvent: Event? = null

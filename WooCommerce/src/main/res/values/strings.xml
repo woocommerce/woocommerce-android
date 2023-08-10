@@ -535,6 +535,7 @@
     <string name="coupon_selector_empty_list_message">You haven\'t created any coupons yet. Create a coupon to apply it to this order.</string>
     <string name="coupon_selector_empty_list_title">Everyone loves a deal</string>
     <string name="order_creation_remove_coupon">Remove coupon from order</string>
+    <string name="order_creation_remove_this_coupon">Remove coupon</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>

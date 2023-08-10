@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -157,8 +157,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("new_code")
 
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
@@ -176,21 +175,18 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        val couponEditResult = OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code")
-        sut.onCouponEditResult(couponEditResult)
+        sut.onCouponAdded("new_code")
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
             assertEquals(1, size)
         }
 
         // when
-        val couponRemoveResult = OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code")
+        val couponRemoveResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("new_code")
         sut.onCouponEditResult(couponRemoveResult)
 
         // then
-        latestOrderDraft!!.couponLines.apply {
-            assertTrue(isEmpty())
-        }
+        latestOrderDraft!!.couponLines.apply { assertTrue(isEmpty()) }
     }
 
     @Test
@@ -202,11 +198,11 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             latestOrderDraft = it
         }
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code"))
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("new_code2"))
+        sut.onCouponAdded("new_code")
+        sut.onCouponAdded("new_code2")
 
         // when
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("new_code"))
+        sut.onCouponEditResult(OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("new_code"))
 
         // then
         latestOrderDraft!!.couponLines.apply {
@@ -241,7 +237,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onCouponAdded("new_code")
 
         // when
         sut.onCouponButtonClicked()
@@ -334,7 +330,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode("code"))
+        sut.onCouponAdded("code ")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -347,7 +343,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponEditResult(OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon("abc"))
+        sut.onCouponEditResult(OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("abc"))
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_REMOVE,
