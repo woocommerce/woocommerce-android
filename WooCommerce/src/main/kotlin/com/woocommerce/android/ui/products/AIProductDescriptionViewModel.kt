@@ -153,14 +153,14 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onRegenerateButtonClicked() {
-        handleGenerateButtonClick(isRetry = true, generationState = Regenerating)
+        handleGenerateButtonClick(isRetry = true, postClickUIState = Regenerating)
     }
 
     fun onGenerateButtonClicked() {
-        handleGenerateButtonClick(isRetry = false, generationState = Generating)
+        handleGenerateButtonClick(isRetry = false, postClickUIState = Generating)
     }
 
-    private fun handleGenerateButtonClick(isRetry: Boolean, generationState: ViewState.GenerationState) {
+    private fun handleGenerateButtonClick(isRetry: Boolean, postClickUIState: ViewState.GenerationState) {
         if (!_viewState.value.canGenerateWithAI) {
             _viewState.update {
                 _viewState.value.copy(shouldShowErrorOutlineIfEmpty = true)
@@ -175,7 +175,7 @@ class AIProductDescriptionViewModel @Inject constructor(
             )
         )
 
-        _viewState.update { _viewState.value.copy(generationState = generationState) }
+        _viewState.update { _viewState.value.copy(generationState = postClickUIState) }
 
         launch {
             val languageISOCode = _viewState.value.identifiedLanguageISOCode ?: identifyLanguage().getOrNull()
