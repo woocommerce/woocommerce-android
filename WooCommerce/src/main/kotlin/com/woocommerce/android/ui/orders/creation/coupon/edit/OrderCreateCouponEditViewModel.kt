@@ -10,7 +10,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -28,14 +27,8 @@ class OrderCreateCouponEditViewModel @Inject constructor(
         "key_coupon_code"
     )
 
-    val viewState = combine(
-        couponCode,
-        couponCode.map { it.isNotNullOrEmpty() }
-    ) { couponCode, isRemoveButtonVisible ->
-        ViewState(
-            couponCode = couponCode ?: "",
-            isRemoveButtonVisible = isRemoveButtonVisible
-        )
+    val viewState = couponCode.map {
+        ViewState(couponCode = it ?: "")
     }.asLiveData()
 
     fun onCouponRemoved() {
@@ -46,7 +39,7 @@ class OrderCreateCouponEditViewModel @Inject constructor(
 
     data class ViewState(
         val couponCode: String = "",
-        val isRemoveButtonVisible: Boolean = false,
+        val isRemoveButtonVisible: Boolean = couponCode.isNotNullOrEmpty(),
     )
 
     @Parcelize
