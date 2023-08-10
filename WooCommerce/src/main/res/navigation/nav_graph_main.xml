@@ -14,6 +14,7 @@
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
     <include app:graph="@navigation/nav_graph_site_picker" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -118,7 +119,10 @@
         </action>
         <action
             android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
-            app:destination="@id/barcodeScanningFragment"/>
+            app:destination="@id/barcodeScanningFragment" />
+        <action
+            android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
+            app:destination="@id/createTestOrderDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -552,7 +556,6 @@
         android:id="@+id/aboutYourStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
-    <include app:graph="@navigation/nav_graph_domain_change" />
     <fragment
         android:id="@+id/planUpgradeStartFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment"
@@ -574,6 +577,10 @@
             app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
             app:nullable="false" />
     </fragment>
+    <fragment
+        android:id="@+id/freeTrialSurveyFragment"
+        android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
+        android:label="FreeTrialSurveyFragment" />
     <action
         android:id="@+id/action_global_blazeWebViewFragment"
         app:destination="@id/BlazeWebViewFragment" />
@@ -583,8 +590,20 @@
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
+    <action
+        android:id="@+id/action_global_freeTrialSurveyFragment"
+        app:destination="@id/freeTrialSurveyFragment" />
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
         android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"
         android:label="AIProductDescriptionDialogFragment" />
+    <dialog
+        android:id="@+id/createTestOrderDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
+        android:label="CreateTestOrderDialogFragment" >
+        <argument
+            android:name="siteUrl"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
 </navigation>

@@ -36,7 +36,7 @@
         </action>
         <action
             android:id="@+id/action_orderCreationFragment_to_customerListFragment"
-            app:destination="@id/customerListFragmentNew" />
+            app:destination="@id/customerListFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
             app:destination="@id/orderCreationProductDetailsFragment"
@@ -121,12 +121,16 @@
             app:nullable="true"/>
         <argument
             android:name="couponEditResult"
-            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
             app:nullable="true"
             android:defaultValue="@null"/>
         <action
             android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
             app:destination="@id/barcodeScanningFragment"/>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_couponSelectorFragment"
+            app:destination="@id/couponSelectorFragment" >
+        </action>
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -281,26 +285,15 @@
             >
             <argument
                 android:name="couponEditResult"
-                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>
     </fragment>
 
-    <action
-        android:id="@+id/action_global_customerListFragment"
-        app:destination="@id/customerListFragment"
-        app:enterAnim="@null"
-        app:exitAnim="@null"
-        app:popEnterAnim="@null"
-        app:popExitAnim="@null" />
     <fragment
         android:id="@+id/customerListFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
-        android:label="customerListFragment" />
-    <fragment
-        android:id="@+id/customerListFragmentNew"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlistnew.CustomerListFragment"
         android:label="customerListFragment" >
 
         <action
@@ -310,4 +303,13 @@
     </fragment>
 
     <include app:graph="@navigation/nav_graph_product_selector" />
+    <fragment
+        android:id="@+id/couponSelectorFragment"
+        android:name="com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment"
+        android:label="CouponSelectorFragment">
+        <action
+            android:id="@+id/action_couponSelectorFragment_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
+    </fragment>
+    <include app:graph="@navigation/nav_graph_coupons" />
 </navigation>

@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.8
+Exciting news! You can now create coupons directly within the app - provide exclusive discounts and special offers to your customers! We've enhanced the process of linking customers to their orders, making it quicker and more efficient. Update your app to experience these new enhancements!
+
+## 14.7
+We've been working on making shipping configuration available in the app. Your Shipping Zones are now viewable from the Settings screen. Stay tuned for more updates on this in the future!
+
 ## 14.6
 We're back with some new updates to improve your experience with our app! It's easy for you to generate product descriptions with a click of a button. As always, we're here to make your app journey smoother and more enjoyable. Thanks for sticking with us!
 

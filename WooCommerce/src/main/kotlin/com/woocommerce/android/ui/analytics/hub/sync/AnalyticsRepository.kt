@@ -8,10 +8,13 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.MONTH_TO_DATE
@@ -19,6 +22,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -46,10 +50,8 @@ class AnalyticsRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
 ) {
     private val getCurrentRevenueMutex = Mutex()
-    private var currentRevenueStats: AnalyticsStatsResultWrapper? = null
-
     private val getPreviousRevenueMutex = Mutex()
-    private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
+    private var revenueStatsCache: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
 
     suspend fun fetchRevenueData(
         rangeSelection: StatsTimeRangeSelection,
@@ -206,18 +208,19 @@ class AnalyticsRepository @Inject constructor(
         val currentPeriod = rangeSelection.currentRange
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+        val statsIdentifier = RevenueRangeId(currentPeriod, rangeSelection.selectionType).id
+        val cachedRevenueStat = revenueStatsCache[statsIdentifier]
 
         getCurrentRevenueMutex.withLock {
-            if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
-                currentRevenueStats =
-                    AnalyticsStatsResultWrapper(
-                        startDate = startDate,
-                        endDate = endDate,
-                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    )
+            if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
+                AnalyticsStatsResultWrapper(
+                    startDate = startDate,
+                    endDate = endDate,
+                    result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
+                ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
-        return@coroutineScope currentRevenueStats!!.result.await()
+        return@coroutineScope revenueStatsCache.getValue(statsIdentifier).result.await()
     }
 
     private suspend fun getPreviousPeriodStats(
@@ -228,18 +231,19 @@ class AnalyticsRepository @Inject constructor(
         val previousPeriod = rangeSelection.previousRange
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+        val statsIdentifier = RevenueRangeId(previousPeriod, rangeSelection.selectionType).id
+        val cachedRevenueStat = revenueStatsCache[statsIdentifier]
 
         getPreviousRevenueMutex.withLock {
-            if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
-                previousRevenueStats =
-                    AnalyticsStatsResultWrapper(
-                        startDate = startDate,
-                        endDate = endDate,
-                        result = async { fetchNetworkStats(startDate, endDate, granularity, fetchStrategy) }
-                    )
+            if (cachedRevenueStat.shouldBeUpdated(fetchStrategy)) {
+                AnalyticsStatsResultWrapper(
+                    startDate = startDate,
+                    endDate = endDate,
+                    result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
+                ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
-        return@coroutineScope previousRevenueStats!!.result.await()
+        return@coroutineScope revenueStatsCache.getValue(statsIdentifier).result.await()
     }
 
     private suspend fun getProductStats(
@@ -252,7 +256,7 @@ class AnalyticsRepository @Inject constructor(
         val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
 
         return statsRepository.fetchTopPerformerProducts(
-            forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
+            forceRefresh = fetchStrategy is ForceNew,
             startDate = startDate,
             endDate = endDate,
             quantity = quantity
@@ -267,7 +271,7 @@ class AnalyticsRepository @Inject constructor(
     ): Result<Map<String, Int>> = coroutineScope {
         statsRepository.fetchVisitorStats(
             getGranularity(rangeSelection.selectionType),
-            fetchStrategy is FetchStrategy.ForceNew,
+            fetchStrategy is ForceNew,
             rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
             rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
         ).single()
@@ -290,26 +294,31 @@ class AnalyticsRepository @Inject constructor(
             .let { DeltaPercentage.Value(it.toInt()) }
     }
 
-    private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
-        previousRevenueStats?.startDate != startDate || previousRevenueStats?.endDate != endDate ||
-            (forceUpdate && previousRevenueStats?.result?.isCompleted == true)
+    private fun AnalyticsStatsResultWrapper?.shouldBeUpdated(fetchStrategy: FetchStrategy) =
+        this?.let { fetchStrategy == ForceNew && it.result.isCompleted } ?: true
 
-    private fun shouldUpdateCurrentStats(startDate: String, endDate: String, forceUpdate: Boolean) =
-        currentRevenueStats?.startDate != startDate || currentRevenueStats?.endDate != endDate ||
-            (forceUpdate && currentRevenueStats?.result?.isCompleted == true)
-
-    private suspend fun fetchNetworkStats(
+    private suspend fun loadRevenueStats(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
+        revenueRangeId: Int,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel?> =
-        statsRepository.fetchRevenueStats(
+    ): Result<WCRevenueStatsModel?> {
+        if (fetchStrategy == Saved) {
+            statsRepository.getRevenueStatsById(revenueRangeId)
+                .flowOn(dispatchers.io).single()
+                .takeIf { it.isSuccess && it.getOrNull() != null }
+                ?.let { return it }
+        }
+
+        return statsRepository.fetchRevenueStats(
             granularity,
-            fetchStrategy is FetchStrategy.ForceNew,
+            fetchStrategy is ForceNew,
             startDate,
-            endDate
+            endDate,
+            revenueRangeId
         ).flowOn(dispatchers.io).single().mapCatching { it }
+    }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrlOrDefault
@@ -356,4 +365,11 @@ class AnalyticsRepository @Inject constructor(
         val endDate: String,
         val result: Deferred<Result<WCRevenueStatsModel?>>
     )
+
+    private data class RevenueRangeId(
+        private val timeRange: AnalyticsHubTimeRange,
+        private val selectionType: SelectionType
+    ) {
+        val id: Int = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
+    }
 }

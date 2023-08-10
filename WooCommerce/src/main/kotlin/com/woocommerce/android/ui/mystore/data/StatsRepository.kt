@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -30,6 +31,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
+import java.util.Date
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -54,11 +56,19 @@ class StatsRepository @Inject constructor(
         granularity: StatsGranularity,
         forced: Boolean,
         startDate: String = "",
-        endDate: String = ""
+        endDate: String = "",
+        revenueRangeId: Int = 0
     ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
             val result = wcStatsStore.fetchRevenueStats(
-                FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
+                FetchRevenueStatsPayload(
+                    site = selectedSite.get(),
+                    granularity = granularity,
+                    startDate = startDate,
+                    endDate = endDate,
+                    forced = forced,
+                    revenueRangeId = revenueRangeId
+                )
             )
 
             if (!result.isError) {
@@ -77,6 +87,14 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(exception))
             }
         }
+
+    suspend fun getRevenueStatsById(
+        revenueRangeId: Int
+    ): Flow<Result<WCRevenueStatsModel?>> = flow {
+        wcStatsStore.getRawRevenueStatsFromRangeId(
+            selectedSite.get(), revenueRangeId
+        ).let { emit(Result.success(it)) }
+    }
 
     suspend fun fetchVisitorStats(
         granularity: StatsGranularity,
@@ -183,7 +201,7 @@ class StatsRepository @Inject constructor(
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            wcOrderStore.fetchHasOrders(selectedSite.get(), status = null)
+            wcOrderStore.hasOrders(selectedSite.get())
         }
 
         when (result) {
@@ -349,4 +367,13 @@ class StatsRepository @Inject constructor(
             message = this.message
         )
     }
+}
+
+fun String.asRevenueRangeId(
+    startDate: Date,
+    endDate: Date
+): Int {
+    val startDateString = startDate.formatToYYYYmmDD()
+    val endDateString = endDate.formatToYYYYmmDD()
+    return "$this$startDateString$endDateString".hashCode()
 }

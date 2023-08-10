@@ -1,9 +1,13 @@
 pluginManagement {
-    gradle.ext.agpVersion = '7.2.1'
+    gradle.ext.agpVersion = '8.1.0'
+    gradle.ext.googleServicesVersion = '4.3.15'
     gradle.ext.daggerVersion = '2.45'
     gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.8.21'
     gradle.ext.navigationVersion = '2.5.3'
+    gradle.ext.sentryVersion = '3.5.0'
+    gradle.ext.violationCommentsVersion = '1.69.0'
+    gradle.ext.wziebaTracksVersion = '1.0.0'
 
     repositories {
         google()
@@ -24,15 +28,15 @@ pluginManagement {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
-        id 'com.google.gms.google-services' version '4.3.10'
-        id 'io.github.wzieba.tracks.plugin' version '1.0.0'
+        id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
+        id 'io.github.wzieba.tracks.plugin' version gradle.ext.wziebaTracksVersion
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version '3.5.0'
+        id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
-        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
+        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version gradle.ext.violationCommentsVersion
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
     }
 }
@@ -56,6 +60,7 @@ gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
+gradle.ext.wooCommerceSharedBinaryPath = "com.woocommerce.shared:library"
 
 gradle.ext {
     compileSdkVersion = 34

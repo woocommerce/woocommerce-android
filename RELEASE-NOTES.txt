@@ -1,7 +1,22 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-14.8
+
+14.9
 -----
+- [*] Orders with Coupons: Users can now select a coupon from a list when adding it to an order. [https://github.com/woocommerce/woocommerce-android/pull/9510]
 - [*] [Internal] Refactor product restrictions logic into it's own class to make it more reusable [https://github.com/woocommerce/woocommerce-android/pull/9480]
+
+14.8
+- [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
+- [*] Added a "Create test order" screen for published sites with existing product(s) and payment gateway(s) and no orders yet. [https://github.com/woocommerce/woocommerce-android/pull/9508]
+- [*] Added coupon creation feature [https://github.com/woocommerce/woocommerce-android/pull/9474]
+- [*] [Internal] now add `was_ecommerce_trial` and `plan_product_slug` for default tracking on logged-in state [https://github.com/woocommerce/woocommerce-android/pull/9514]
+- [*] [Internal] Fixed logic disabling editable controls in order creation/edit form [https://github.com/woocommerce/woocommerce-android/pull/9515]
+- [**] Improvements have been made to the process of adding customer details to an order [https://github.com/woocommerce/woocommerce-android/pull/9477]
+
+14.7
+-----
+- [*] [Internal] Changed the way how we get WCPay and Stripe plugin's info from the API response [https://github.com/woocommerce/woocommerce-android/pull/9460]
+- [**] You can now see your shipping zone list from Settings. [https://github.com/woocommerce/woocommerce-android/pull/9496]
 
 14.7
 -----

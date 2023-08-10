@@ -16,11 +16,13 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
         val restrictions: List<ProductRestriction>
     ) : OrderCreateEditNavigationTarget()
+
     data class ShowProductDetails(
         val item: Order.Item,
         val currency: String,
         val discountEditEnabled: Boolean,
     ) : OrderCreateEditNavigationTarget()
+
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreateEditNavigationTarget()
     data class EditFee(
@@ -32,6 +34,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val orderCreationMode: OrderCreateEditViewModel.Mode,
         val couponCode: String? = null
     ) : OrderCreateEditNavigationTarget()
+
+    object AddCoupon : OrderCreateEditNavigationTarget()
 
     data class CouponList(
         val orderCreationMode: OrderCreateEditViewModel.Mode,

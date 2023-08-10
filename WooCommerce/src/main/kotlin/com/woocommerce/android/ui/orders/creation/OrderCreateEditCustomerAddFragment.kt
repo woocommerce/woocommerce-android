@@ -47,8 +47,7 @@ class OrderCreateEditCustomerAddFragment :
         const val SELECT_BILLING_STATE_REQUEST = "select_billing_state_request"
         const val SELECT_SHIPPING_COUNTRY_REQUEST = "select_shipping_country_request"
         const val SELECT_SHIPPING_STATE_REQUEST = "select_shipping_state_request"
-        private const val MENU_ITEM_SEARCH_ID = Int.MAX_VALUE
-        private const val MENU_ITEM_DELETE_ID = MENU_ITEM_SEARCH_ID - 1
+        private const val MENU_ITEM_DELETE_ID = Int.MAX_VALUE
     }
 
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
@@ -131,17 +130,12 @@ class OrderCreateEditCustomerAddFragment :
                         shippingAddress = event.addresses.getValue(SHIPPING)
                     )
 
-                    if (FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
-                        findNavController().popBackStack(R.id.orderCreationFragment, false)
-                    } else {
-                        findNavController().navigateUp()
-                    }
+                    findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
                 is AddressViewModel.DeleteCustomer -> {
                     sharedViewModel.onCustomerAddressDeleted()
                     findNavController().navigateUp()
                 }
-                is AddressViewModel.SearchCustomers -> showCustomerSearchScreen()
             }
         }
     }
@@ -280,17 +274,9 @@ class OrderCreateEditCustomerAddFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
 
-        if (!FeatureFlag.CUSTOMER_LIST_SEARCH_2.isEnabled()) {
-            menu.add(
-                Menu.NONE,
-                MENU_ITEM_SEARCH_ID,
-                Menu.NONE,
-                android.R.string.search_go
-            ).also {
-                it.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                it.setIcon(R.drawable.ic_search_24dp)
-            }
-        } else if (editingOfAddedCustomer.editingOfAddedCustomer) {
+        if (editingOfAddedCustomer.editingOfAddedCustomer &&
+            FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.isEnabled()
+        ) {
             menu.add(
                 Menu.NONE,
                 MENU_ITEM_DELETE_ID,
@@ -315,10 +301,6 @@ class OrderCreateEditCustomerAddFragment :
                 )
                 true
             }
-            MENU_ITEM_SEARCH_ID -> {
-                addressViewModel.onCustomerSearchClicked()
-                true
-            }
             MENU_ITEM_DELETE_ID -> {
                 addressViewModel.onDeleteCustomerClicked()
                 true
@@ -335,11 +317,5 @@ class OrderCreateEditCustomerAddFragment :
         shippingBinding = null
         billingBinding = null
         showShippingAddressFormSwitch = null
-    }
-
-    private fun showCustomerSearchScreen() {
-        findNavController().navigateSafely(
-            OrderCreateEditCustomerAddFragmentDirections.actionGlobalCustomerListFragment()
-        )
     }
 }

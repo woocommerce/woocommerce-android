@@ -4,16 +4,21 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
+import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -27,14 +32,34 @@ class GetStats @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
-    suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
-        merge(
+    suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
+        val selectionRange = granularity.asRangeSelection(localeProvider.provideLocale())
+        val shouldRefreshRevenue =
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+        val shouldRefreshVisitors =
+            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+        return merge(
             hasOrders(),
-            revenueStats(refresh, granularity),
-            visitorStats(refresh, granularity)
-        ).flowOn(coroutineDispatchers.computation)
+            revenueStats(shouldRefreshRevenue, granularity),
+            visitorStats(shouldRefreshVisitors, granularity)
+        ).onEach { result ->
+            if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection = selectionRange,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                )
+            }
+            if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
+                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection = selectionRange,
+                    analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            }
+        }.flowOn(coroutineDispatchers.computation)
+    }
 
     private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
@@ -47,12 +72,27 @@ class GetStats @Inject constructor(
             }
 
     private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val (startDate, endDate) = granularity.statsDateRange
+        val rangeSelection = granularity.asRangeSelection(localeProvider.provideLocale())
+        val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
+            startDate = rangeSelection.currentRange.start,
+            endDate = rangeSelection.currentRange.end
+        )
+        if (forceRefresh.not()) {
+            statsRepository.getRevenueStatsById(revenueRangeId)
+                .single()
+                .takeIf { it.isSuccess && it.getOrNull() != null }
+                ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
+        }
+
+        val startDate = rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss()
+        val endDate = rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
+
         return statsRepository.fetchRevenueStats(
             granularity,
             forceRefresh,
             startDate,
-            endDate
+            endDate,
+            revenueRangeId
         ).transform { result ->
             result.fold(
                 onSuccess = { stats ->
@@ -84,6 +124,7 @@ class GetStats @Inject constructor(
                         )
                     }
             }
+
             else -> selectedSite.connectionType?.let {
                 flowOf(LoadStatsResult.VisitorStatUnavailable(it))
             } ?: emptyFlow()
@@ -94,16 +135,26 @@ class GetStats @Inject constructor(
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
     private val StatsGranularity.statsDateRange
-        get() = StatsTimeRangeSelection.SelectionType.from(this)
-            .generateSelectionData(
-                calendar = Calendar.getInstance(),
-                locale = localeProvider.provideLocale() ?: Locale.getDefault()
-            ).let {
-                Pair(
-                    it.currentRange.start.formatToYYYYmmDDhhmmss(),
-                    it.currentRange.end.formatToYYYYmmDDhhmmss()
-                )
-            }
+        get() = asRangeSelection(localeProvider.provideLocale()).let {
+            Pair(
+                it.currentRange.start.formatToYYYYmmDDhhmmss(),
+                it.currentRange.end.formatToYYYYmmDDhhmmss()
+            )
+        }
+
+    private suspend fun shouldUpdateStats(
+        selectionRange: StatsTimeRangeSelection,
+        refresh: Boolean,
+        analyticData: AnalyticsUpdateDataStore.AnalyticData
+    ): Boolean {
+        if (refresh) return true
+        return analyticsUpdateDataStore
+            .shouldUpdateAnalytics(
+                rangeSelection = selectionRange,
+                analyticData = analyticData
+            )
+            .firstOrNull() ?: true
+    }
 
     sealed class LoadStatsResult {
         data class RevenueStatsSuccess(
@@ -126,3 +177,9 @@ class GetStats @Inject constructor(
         ) : LoadStatsResult()
     }
 }
+
+fun StatsGranularity.asRangeSelection(locale: Locale? = null) = StatsTimeRangeSelection.SelectionType.from(this)
+    .generateSelectionData(
+        calendar = Calendar.getInstance(),
+        locale = locale ?: Locale.getDefault()
+    )

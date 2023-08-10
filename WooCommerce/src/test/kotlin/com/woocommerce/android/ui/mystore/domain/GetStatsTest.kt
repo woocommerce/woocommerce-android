@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.mystore.domain
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -11,13 +12,16 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -31,19 +35,22 @@ class GetStatsTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val statsRepository: StatsRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val getStats = GetStats(
         selectedSite,
         mock(),
         statsRepository,
         appPrefsWrapper,
-        coroutinesTestRule.testDispatchers
+        coroutinesTestRule.testDispatchers,
+        analyticsUpdateDataStore
     )
 
     @Before
     fun setup() = testBlocking {
         givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
         givenIsJetpackConnected(false)
+        givenShouldUpdateAnalyticsReturns(true)
         givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
         givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
     }
@@ -168,6 +175,116 @@ class GetStatsTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `Given refresh is false, then check if analytic should update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
+                any(),
+                any(),
+                eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            )
+            verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
+                any(),
+                any(),
+                eq(AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+            )
+        }
+
+    @Test
+    fun `Given refresh is true, then don't check if analytic should update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore, never())
+                .shouldUpdateAnalytics(any(), any(), any())
+        }
+
+    @Test
+    fun `Given refresh is forced, then update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore)
+                .storeLastAnalyticsUpdate(
+                    any(),
+                    eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                )
+        }
+
+    @Test
+    fun `Given should update is true, then update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
+            givenShouldUpdateAnalyticsReturns(true)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
+                any(),
+                eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            )
+        }
+
+    @Test
+    fun `Given should update is false, then don't update last analytic update`() =
+        testBlocking {
+            getRevenueStatsById(Result.success(ANY_REVENUE_STATS))
+            givenShouldUpdateAnalyticsReturns(false)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore, never())
+                .storeLastAnalyticsUpdate(
+                    any(),
+                    eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                )
+        }
+
+    @Test
+    fun `Given should update is false and the revenue is on local cache then don't call fetch`() =
+        testBlocking {
+            getRevenueStatsById(Result.success(ANY_REVENUE_STATS))
+            givenShouldUpdateAnalyticsReturns(false)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `Given should update is false and the revenue is NOT on local cache then call fetch with refresh false`() =
+        testBlocking {
+            getRevenueStatsById(Result.success(null))
+            givenShouldUpdateAnalyticsReturns(false)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(statsRepository).fetchRevenueStats(any(), eq(false), any(), any(), any())
+        }
+
+    @Test
+    fun `Given should update is true and result fail, then don't update last analytic update`() =
+        testBlocking {
+            givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
+            givenShouldUpdateAnalyticsReturns(true)
+
+            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+
+            verify(analyticsUpdateDataStore, never())
+                .storeLastAnalyticsUpdate(
+                    any(),
+                    eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                )
+        }
+
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
         whenever(
             statsRepository.checkIfStoreHasNoOrders()
@@ -175,8 +292,11 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString()))
+        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString(), any()))
             .thenReturn(flow { emit(result) })
+    }
+    private suspend fun getRevenueStatsById(result: Result<WCRevenueStatsModel?>) {
+        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(flow { emit(result) })
     }
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
@@ -189,6 +309,17 @@ class GetStatsTest : BaseUnitTest() {
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {
         whenever(statsRepository.fetchVisitorStats(any(), anyBoolean(), anyString(), anyString()))
             .thenReturn(flow { emit(result) })
+    }
+
+    private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
+        whenever(
+            analyticsUpdateDataStore.shouldUpdateAnalytics(
+                rangeSelection = any(),
+                maxOutdatedTime = any(),
+                analyticData = any()
+            )
+        )
+            .thenReturn(flowOf(shouldUpdateAnalytics))
     }
 
     private companion object {

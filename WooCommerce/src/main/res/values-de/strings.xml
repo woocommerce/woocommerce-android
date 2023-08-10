@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-19 10:54:27+0000
+Translation-Revision-Date: 2023-08-02 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="shipping_classes_zones">Versandklassen und -zonen</string>
+    <string name="free_trial_survey_free_text">Sonstiger Grund (bitte angeben)</string>
+    <string name="free_trial_survey_option4">Ich bin Mitglied eines Teams und wir treffen die Entscheidung gemeinsam.</string>
+    <string name="free_trial_survey_option3">Der Preis des Dienstes spielt bei meiner Entscheidung eine bedeutende Rolle.</string>
+    <string name="free_trial_survey_option2">Ich bewerte den Dienst gerade und vergleiche ihn mit anderen auf dem Markt.</string>
+    <string name="free_trial_survey_option1">Ich erkunde die App noch und sehe mir ihre Funktionen und Vorzüge an.</string>
+    <string name="free_trial_survey_title">Hilf uns, deine Abonnemententscheidungen nachzuvollziehen. Dein Feedback ist uns wichtig.</string>
+    <string name="local_notification_still_exploring_description">Es eilt nicht. Nimm dir ruhig Zeit. Wenn du Fragen hast oder Unterstützung benötigst, helfen wir dir stets gerne weiter. Viel Spaß beim Erkunden!</string>
+    <string name="local_notification_still_exploring_title">🧭 Erkundest du WooCommerce noch?</string>
+    <string name="free_trial_survey_screen_title">Hilf uns, deine Abonnemententscheidung nachzuvollziehen</string>
+    <string name="local_notification_survey_after_24_hours_description">Wir würden gerne wissen, wie du deine Entscheidung triffst. Würdest du uns mitteilen, wie der aktuelle Stand bei deiner Entscheidungsfindung ist?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡Hilf uns, deine Abonnemententscheidung nachzuvollziehen</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Entdecke erweiterte Funktionen und personalisierte Empfehlungen für deinen Shop! Tippe, um einen passenden Tarif für dich auszuwählen.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Halte dein Geschäft am Laufen!</string>
+    <string name="order_creation_customer_search_empty_email">Keine E-Mail-Adresse</string>
+    <string name="order_creation_customer_search_empty_name">Kein Name</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Suche verwenden, um bestehende Kunden zu finden</string>
+    <string name="last_update_with_frequency">Letzte Aktualisierung: %s (wird alle 30 Minuten aktualisiert)</string>
+    <string name="last_update">Letzte Aktualisierung: %s</string>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; dazu, wie du Zahlungen über Tap To Pay auf Android empfangen kannst</string>
+    <string name="card_reader_hub_collect_payment">Zahlung empfangen</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Es können keine Produkte hinzugefügt werden, für die kein Preis angegeben ist</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Es können keine Produkte hinzugefügt werden, die nicht veröffentlicht sind</string>
+    <string name="order_creation_add_customer_content_description">Kunde hinzufügen</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">Zu den Einstellungen</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">Abbrechen</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">Gewähren</string>
@@ -67,8 +91,6 @@ Language: de
     <string name="order_creation_customer_search_username">Benutzername</string>
     <string name="order_creation_customer_search_name">Name</string>
     <string name="order_creation_customer_search_email">E-Mail</string>
-    <string name="order_creation_customer_search_everything">Alles</string>
-    <string name="order_creation_customer_filter_hint">Kunden filtern nach</string>
     <string name="order_creation_coupons_title">Gutscheine angewendet</string>
     <string name="more_settings">Weitere Einstellungen</string>
     <string name="maybe_later">Vielleicht später</string>
@@ -138,6 +160,7 @@ Language: de
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kannst variable Produkte nicht direkt hinzufügen. Bitte gib eine bestimmte Variante an</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scannen fehlgeschlagen. Bitte versuche es später erneut</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Das Produkt mit der SKU %s wurde nicht gefunden. Hinzufügen zu neuer Bestellung nicht möglich</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scannen fehlgeschlagen. Bitte versuche es später erneut</string>
     <string name="scan_barcode">Barcode scannen</string>
     <string name="shipping_notice_banner_instructions_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union (EU) unterliegen, musst du jeden Artikel ab sofort klar und deutlich beschreiben. Beispiel: Wenn du Bekleidung versendest, musst du die Art der Bekleidung angeben (z. B. Shirts für Männer, Weste für Mädchen, Jacke für Jungen), damit die Beschreibung akzeptiert wird. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
@@ -802,7 +825,7 @@ Language: de
     <string name="order_editing_locked_content_description">gesperrt</string>
     <string name="order_editing_non_editable_message">Um Produkte oder Zahlungsdetails zu bearbeiten, ändere den Status zu „Zahlung ausstehend“.</string>
     <string name="order_editing_non_editable_title">Teile dieser Bestellung können derzeit nicht bearbeitet werden</string>
-    <string name="order_creation_customer_search_hint">Suche nach Kunden</string>
+    <string name="order_creation_customer_search_hint">Nach Kunden suchen</string>
     <string name="order_creation_customer_search_empty">Keine Kunden gefunden</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Nicht jetzt</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Erweiterung zum Shop hinzufügen</string>

@@ -8,9 +8,20 @@
         android:name="com.woocommerce.android.ui.coupons.CouponListFragment"
         android:label="CouponListFragment">
         <action
+            android:id="@+id/action_couponListFragment_to_couponTypePickerFragment"
+            app:destination="@id/couponTypePickerFragment" />
+        <action
             android:id="@+id/action_couponListFragment_to_couponDetailsFragment"
             app:destination="@id/couponDetailsFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/couponTypePickerFragment"
+        android:name="com.woocommerce.android.ui.coupons.create.CouponTypePickerFragment"
+        android:label="CouponTypePickerFragment">
+        <action
+            android:id="@+id/action_couponTypePickerFragment_to_editCouponFragment"
+            app:destination="@id/editCouponFragment" />
+    </dialog>
     <fragment
         android:id="@+id/couponDetailsFragment"
         android:name="com.woocommerce.android.ui.coupons.details.CouponDetailsFragment"
@@ -27,8 +38,8 @@
         android:name="com.woocommerce.android.ui.coupons.edit.EditCouponFragment"
         android:label="EditCouponFragment">
         <argument
-            android:name="couponId"
-            app:argType="long" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.coupons.edit.EditCouponViewModel$Mode" />
         <action
             android:id="@+id/action_editCouponFragment_to_productSelectorFragment"
             app:destination="@id/nav_graph_product_selector" >

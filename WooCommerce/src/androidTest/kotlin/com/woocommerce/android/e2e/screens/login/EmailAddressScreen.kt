@@ -4,16 +4,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 
 class EmailAddressScreen : Screen {
-    companion object {
-        const val EMAIL_ADDRESS_FIELD = org.wordpress.android.login.R.id.input
-        const val NEXT_BUTTON = R.id.login_continue_button
-    }
-
-    constructor() : super(EMAIL_ADDRESS_FIELD)
+    constructor() : super(org.wordpress.android.login.R.id.input)
 
     fun proceedWith(emailAddress: String): PasswordScreen {
-        typeTextInto(EMAIL_ADDRESS_FIELD, emailAddress)
-        clickOn(NEXT_BUTTON)
+        typeTextInto(org.wordpress.android.login.R.id.input, emailAddress)
+        clickOn(R.id.login_continue_button)
 
         return PasswordScreen()
     }

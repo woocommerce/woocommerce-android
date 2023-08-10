@@ -253,4 +253,9 @@
     -->
     <color name="highlights_tooltip_background">@color/woo_gray_80</color>
     <color name="highlights_tooltip_title">@color/woo_white</color>
+
+    <!--
+    Test order step number
+    -->
+    <color name="try_test_order_step">#F7F5FB</color>
 </resources>

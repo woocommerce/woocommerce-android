@@ -58,12 +58,20 @@ class AnalyticsTracker private constructor(private val context: Context) {
         return uuid
     }
 
+    private fun track(stat: String) {
+        track(stat, false, emptyMap<String, String>())
+    }
+
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
+        track(stat.name, stat.siteless, properties)
+    }
+
+    private fun track(statName: String, isSiteless: Boolean, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
 
-        val eventName = stat.name.lowercase(Locale.getDefault())
+        val eventName = statName.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -75,10 +83,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val finalProperties = properties.toMutableMap()
 
-        if (!stat.siteless) {
+        if (!isSiteless) {
             site?.let {
                 finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
+                finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
+                finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -269,6 +279,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_COUPONS_COUNT = "coupons_count"
 
+        const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
+        const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
@@ -426,6 +439,16 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
         const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
         const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
+        const val KEY_COUPON_DISCOUNT_TYPE = "discount_type"
+        const val VALUE_COUPON_DISCOUNT_TYPE_PERCENTAGE = "percent"
+        const val VALUE_COUPON_DISCOUNT_TYPE_FIXED_CART = "fixed_cart"
+        const val VALUE_COUPON_DISCOUNT_TYPE_FIXED_PRODUCT = "fixed_product"
+        const val VALUE_COUPON_DISCOUNT_TYPE_CUSTOM = "custom"
+        const val KEY_HAS_EXPIRY_DATE = "has_expiry_date"
+        const val KEY_INCLUDES_FREE_SHIPPING = "includes_free_shipping"
+        const val KEY_HAS_DESCRIPTION = "has_description"
+        const val KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS = "has_product_or_category_restrictions"
+        const val KEY_HAS_USAGE_RESTRICTIONS = "has_usage_restrictions"
 
         // -- Onboarding
         const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
@@ -521,6 +544,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
 
         // -- Free Trial
+        const val KEY_FREE_TRIAL_SOURCE = "source"
+        const val KEY_SURVEY_OPTION = "survey_option"
+        const val KEY_SURVEY_FREE_TEXT = "free_text"
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
         const val VALUE_NOTIFICATION = "notification"
@@ -574,6 +600,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
             instance = AnalyticsTracker(context.applicationContext)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
+        }
+
+        fun track(stat: String) {
+            if (sendUsageStats) {
+                instance?.track(stat)
+            }
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {

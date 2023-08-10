@@ -332,6 +332,11 @@ class DateUtils @Inject constructor(
      */
     fun getCurrentTime(): String = friendlyTimeFormat.format(Date())
 
+    /**
+     * Returns date millis in the format h:mm a
+     */
+    fun getDateMillisInFriendlyTimeFormat(dateMillis: Long): String = friendlyTimeFormat.format(Date(dateMillis))
+
     fun toIso8601Format(dateMillis: Long): String? =
         try {
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
@@ -358,6 +363,25 @@ class DateUtils @Inject constructor(
             "Date string argument is not a valid format".reportAsError(e)
             null
         }
+
+    /***
+     * Will generate a formatted date string in two possible formats:
+     * 1. If the date is today, it will return the time in the format h:mm a
+     * 2. If the date is not today, it will return the date in the format MMM dd, yyyy
+     */
+    fun getDateOrTimeFromMillis(millis: Long): String? {
+        val date = Date(millis)
+        return if (isToday(date)) {
+            getDateMillisInFriendlyTimeFormat(millis)
+        } else {
+            getDayMonthDateString(date.formatToYYYYmmDD())
+        }
+    }
+
+    private fun isToday(date: Date): Boolean {
+        val todayStart = getDateForTodayAtTheStartOfTheDay()
+        return DateUtils.isSameDay(date, Date(todayStart))
+    }
 
     companion object {
         const val ZERO = 0

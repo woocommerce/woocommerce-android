@@ -115,7 +115,7 @@ fun EditCouponScreen(
         UsageRestrictionsSection(onUsageRestrictionsClick)
         WCColoredButton(
             onClick = onSaveClick,
-            text = stringResource(id = R.string.coupon_edit_save_button),
+            text = stringResource(id = viewState.saveButtonText),
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
@@ -389,10 +389,11 @@ private fun EditCouponPreview() {
                         restrictedEmails = emptyList()
                     )
                 ),
-                localizedType = "Fixed Rate Discount",
+                screenTitle = "Fixed Rate Discount",
                 amountUnit = "%",
                 hasChanges = true,
-                isSaving = true
+                isSaving = true,
+                saveButtonText = R.string.coupon_edit_save_button
             )
         )
     }

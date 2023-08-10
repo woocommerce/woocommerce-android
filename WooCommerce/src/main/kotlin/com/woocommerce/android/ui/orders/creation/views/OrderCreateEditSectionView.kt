@@ -28,8 +28,18 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
     var isEachAddButtonEnabled
         get() = binding.addButtonsLayout.children.all { it.isEnabled }
         set(value) {
+            fun View.adjustState(isEnabled: Boolean) {
+                if (this is ViewGroup) {
+                    this.children.forEach {
+                        it.adjustState(isEnabled)
+                    }
+                } else {
+                    this.isEnabled = isEnabled
+                }
+            }
+
             binding.addButtonsLayout.children.forEach {
-                it.isEnabled = value
+                it.adjustState(value)
             }
         }
 

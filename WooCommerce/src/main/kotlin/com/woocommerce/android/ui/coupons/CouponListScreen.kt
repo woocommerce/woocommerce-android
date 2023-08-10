@@ -37,7 +37,6 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
-import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListItem
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
@@ -57,7 +56,7 @@ fun CouponListScreen(viewModel: CouponListViewModel) {
 @Composable
 fun CouponListScreen(
     state: CouponListState,
-    onCouponClick: (Long) -> Unit,
+    onCouponClick: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
@@ -105,7 +104,7 @@ private fun EmptyCouponList() {
 private fun CouponList(
     coupons: List<CouponListItem>,
     loadingState: LoadingState,
-    onCouponClick: (Long) -> Unit,
+    onCouponClick: (CouponListItem) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit
 ) {
@@ -156,9 +155,9 @@ private fun CouponList(
 }
 
 @Composable
-private fun CouponListItem(
+fun CouponListItem(
     coupon: CouponListItem,
-    onCouponClick: (Long) -> Unit
+    onCouponClick: (CouponListItem) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
@@ -168,7 +167,7 @@ private fun CouponListItem(
                 enabled = true,
                 onClickLabel = stringResource(id = R.string.coupon_list_view_coupon),
                 role = Role.Button,
-                onClick = { onCouponClick(coupon.id) }
+                onClick = { onCouponClick(coupon) }
             )
             .padding(dimensionResource(id = R.dimen.major_100)),
     ) {
@@ -198,7 +197,7 @@ private fun CouponListItemInfo(
 }
 
 @Composable
-private fun CouponListSkeleton() {
+fun CouponListSkeleton() {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
         repeat(numberOfInboxSkeletonRows) {

@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-20 23:54:04+0000
+Translation-Revision-Date: 2023-08-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_classes_zones">סיווגים ואזורים של משלוחים</string>
+    <string name="free_trial_survey_free_text">סיבה אחרת (יש לפרט)</string>
+    <string name="free_trial_survey_option4">אני חלק מצוות וההחלטה צריכה להיות משותפת לכולם.</string>
+    <string name="free_trial_survey_option3">המחיר של השירות הוא שיקול משמעותי בהחלטה שלי.</string>
+    <string name="free_trial_survey_option2">אני עדיין בתהליך של בדיקה והשוואה של השירות שלכם לעומת שירותים דומים בשוק.</string>
+    <string name="free_trial_survey_option1">אני רוצה עוד לבדוק ולהעריך את האפשרויות והיתרונות של האפליקציה עבורי.</string>
+    <string name="free_trial_survey_title">נשמח להבין את ההחלטות שלך לגבי המינוי. המשוב שלך חשוב לנו.</string>
+    <string name="local_notification_still_exploring_description">אין צורך למהר! אם יש לך שאלות או אם נדרשת לך עזרה, אנחנו תמיד כאן לעזור. שיטוט נעים!</string>
+    <string name="local_notification_still_exploring_title">🧭 עדיין מנסה את WooCommerce?</string>
+    <string name="free_trial_survey_screen_title">נשמח להבין את ההחלטה שלך לגבי המינוי</string>
+    <string name="local_notification_survey_after_24_hours_description">אנחנו רוצים להבין את השיקולים שלך. האם יש לך אפשרות להגיד לנו מה הסטטוס הנוכחי שלך?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡נשמח להבין את ההחלטה שלך לגבי המינוי</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">רוצה לבדוק אפשרויות מתקדמות והמלצות מותאמות אישית עבור החנות שלך? יש להקיש כדי לבחור את התוכנית שמתאימה לך.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 להמשיך לתפעל את העסק!</string>
+    <string name="order_creation_customer_search_empty_email">כתובת אימייל לא קיימת</string>
+    <string name="order_creation_customer_search_empty_name">ללא שם</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">יש להשתמש בחיפוש כדי למצוא לקוחות קיימים</string>
+    <string name="last_update_with_frequency">העדכון האחרון %s (מתעדכן כל 30 דקות)</string>
+    <string name="last_update">העדכון האחרון %s</string>
+    <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;למידע נוסף בנושא&lt;/a&gt; קבלת תשלומים עם Tap To Pay ב-Android</string>
+    <string name="card_reader_hub_collect_payment">לקבל תשלום</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">אין אפשרות להוסיף מוצרים שלא מצוין בהם מחיר</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_draft_product">אין אפשרות להוסיף מוצרים שלא פורסמו</string>
+    <string name="order_creation_add_customer_content_description">להוסיף לקוח</string>
     <string name="barcode_scanning_alert_dialog_permanently_denied_cta_label">לעבור להגדרות</string>
     <string name="barcode_scanning_alert_dialog_dismiss_label">ביטול</string>
     <string name="barcode_scanning_alert_dialog_rationale_cta_label">אישור</string>
@@ -67,8 +91,6 @@ Language: he_IL
     <string name="order_creation_customer_search_username">שם משתמש</string>
     <string name="order_creation_customer_search_name">שם</string>
     <string name="order_creation_customer_search_email">אימייל</string>
-    <string name="order_creation_customer_search_everything">הכול</string>
-    <string name="order_creation_customer_filter_hint">לסנן לקוחות לפי</string>
     <string name="order_creation_coupons_title">קופונים שהוחלו</string>
     <string name="more_settings">הגדרות נוספות</string>
     <string name="maybe_later">אולי מאוחר יותר</string>
@@ -138,6 +160,7 @@ Language: he_IL
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">לא ניתן להוסיף ישירות מוצר עם סוגים. יש לבחור סוג ספציפי</string>
     <string name="order_creation_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">לא ניתן למצוא מוצר עם SKU %s. לא ניתן להוסיף להזמנה</string>
     <string name="order_list_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="scan_barcode">לסרוק את הברקוד</string>
     <string name="shipping_notice_banner_instructions_content">במשלוחים למדינות שעונות על כללי המכס של האיחוד האירופי חובה לספק כעת תיאור ברור וספציפי לגבי כל פריט. לדוגמה, אם המשלוח כולל בגדים, יש לציין את סוגי הבגדים במשלוח (למשל, חולצות גברים, אפודות של נשים, ג\'קטים של ילדים) כדי שהתיאור יענה על הדרישות. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
@@ -802,7 +825,7 @@ Language: he_IL
     <string name="order_editing_locked_content_description">נעול</string>
     <string name="order_editing_non_editable_message">כדי לערוך פרטים של מוצרים או תשלומים, יש לשנות את הסטטוס ל\'בהמתנה לתשלום\'.</string>
     <string name="order_editing_non_editable_title">חלקים בהזמנה הזאת לא ניתנים לעריכה כרגע</string>
-    <string name="order_creation_customer_search_hint">חיפוש לקוחות</string>
+    <string name="order_creation_customer_search_hint">לחפש לקוחות</string>
     <string name="order_creation_customer_search_empty">לא נמצאו לקוחות</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">לא עכשיו</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">להוסיף הרחבה לחנות</string>
