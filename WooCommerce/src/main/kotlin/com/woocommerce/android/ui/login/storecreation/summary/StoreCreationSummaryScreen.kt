@@ -20,9 +20,11 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -39,7 +41,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.ui.compose.autoMirror
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -62,39 +66,40 @@ private fun StoreCreationSummaryScreen(
     onTryForFreeButtonPressed: () -> Unit,
     isLoading: Boolean
 ) {
-    Scaffold(topBar = {
-        Toolbar(onNavigationButtonClick = onCancelPressed)
-    }) {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = drawable.store_free_trial_summary_top_background),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = dimensionResource(id = dimen.major_150))
+                .scale(scaleX = if (isSystemInRTL()) -1f else 1f, scaleY = 1f)
+        )
         Column(
-            modifier = modifier
-                .padding(it)
-                .background(MaterialTheme.colors.surface)
-                .fillMaxSize()
+            modifier = modifier.fillMaxWidth()
         ) {
-            Box(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .weight(5f)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.store_free_trial_summary_top_background),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = dimensionResource(id = R.dimen.major_150))
-                        .scale(scaleX = if (isSystemInRTL()) -1f else 1f, scaleY = 1f)
-                )
-
-                SummaryBody(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_125))
-                        .padding(
-                            top = dimensionResource(id = R.dimen.major_300),
-                            bottom = dimensionResource(id = R.dimen.major_75)
-                        )
+            IconButton(onClick = onCancelPressed) {
+                Icon(
+                    imageVector = Filled.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back),
+                    modifier = Modifier.autoMirror()
                 )
             }
+            SummaryBody(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(5f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimensionResource(id = dimen.major_125))
+                    .padding(
+                        top = dimensionResource(id = dimen.major_300),
+                        bottom = dimensionResource(id = dimen.major_75)
+                    )
+            )
             SummaryBottom(
                 modifier = Modifier
                     .fillMaxWidth()

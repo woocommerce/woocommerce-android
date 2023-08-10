@@ -3232,7 +3232,7 @@
     <!--
     Free trial Summary
     -->
-    <string name="free_trial_summary_title">Launch in days, grow for years</string>
+    <string name="free_trial_summary_title">Launch in days,\ngrow for years</string>
     <string name="free_trial_summary_advertise">We offer everything you need to build\nand grow an online store, powered by\nWooCommerce and hosted on\nWordPress.com.</string>
     <string name="free_trial_summary_try_it">Try it free for 14 days.</string>
     <string name="free_trial_summary_start_selling_quickly">Start selling quickly</string>
