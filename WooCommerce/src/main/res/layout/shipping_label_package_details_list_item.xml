@@ -205,6 +205,21 @@
                 android:text="@string/shipping_label_package_details_hazmat_content_checkbox_title"
                 tools:text="Contains Hazardous Materials" />
 
+            <LinearLayout
+                android:id="@+id/hazmatContentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Hazmat Content" />
+
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
