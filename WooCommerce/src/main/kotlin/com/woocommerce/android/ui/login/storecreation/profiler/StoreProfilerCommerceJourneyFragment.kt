@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToEcommercePlatformsStep
@@ -47,7 +46,6 @@ class StoreProfilerCommerceJourneyFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> navigateToCountryPickerStep()
                 is NavigateToEcommercePlatformsStep -> navigateToProfilerEcommercePlatformsStep()
-                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }
