@@ -204,6 +204,7 @@
                 android:minHeight="@dimen/minor_00"
                 android:textColor="@color/checkbox_shipping_rate_bg_selector"
                 app:layout_goneMarginTop="@dimen/major_75"
+                android:text="@string/shipping_label_package_details_hazmat_content_checkbox_title"
                 tools:text="Contains Hazardous Materials" />
 
         </LinearLayout>
