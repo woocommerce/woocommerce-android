@@ -123,7 +123,9 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.hazmatCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                binding.hazmatContent.isVisible = isChecked
+                with(binding.hazmatContent) {
+                    if (isChecked) expand() else collapse()
+                }
             }
         }
 
