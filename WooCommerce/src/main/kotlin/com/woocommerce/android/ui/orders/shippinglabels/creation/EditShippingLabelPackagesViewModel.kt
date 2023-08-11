@@ -337,7 +337,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     data class ViewState(
         val packagesUiModels: List<ShippingLabelPackageUiModel> = emptyList(),
         val showSkeletonView: Boolean = false,
-        val packagesWithEditedWeight: Set<String> = setOf()
+        val packagesWithEditedWeight: Set<String> = setOf(),
+        val hazmatContentIsChecked: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val packages: List<ShippingLabelPackage>
