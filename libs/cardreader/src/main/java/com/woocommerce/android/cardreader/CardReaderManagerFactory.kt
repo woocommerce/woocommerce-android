@@ -67,7 +67,6 @@ object CardReaderManagerFactory {
                 CollectInteracRefundAction(terminal),
                 ProcessInteracRefundAction(terminal),
                 RefundErrorMapper(),
-                PaymentUtils(),
             ),
             ConnectionManager(
                 terminal,
