@@ -1,0 +1,2 @@
+14.7 :
+Nous avons fait en sorte de rendre la configuration de la livraison disponible dans l’application. Vos zones de livraison sont désormais accessibles depuis l’écran Réglages. Restez à l’affût pour plus d’informations à ce sujet à l’avenir !

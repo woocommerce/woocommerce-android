@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ShowStateSelector
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.searchfilter.SearchFilterItem
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -273,7 +274,9 @@ class OrderCreateEditCustomerAddFragment :
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
 
-        if (editingOfAddedCustomer.editingOfAddedCustomer) {
+        if (editingOfAddedCustomer.editingOfAddedCustomer &&
+            FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.isEnabled()
+        ) {
             menu.add(
                 Menu.NONE,
                 MENU_ITEM_DELETE_ID,

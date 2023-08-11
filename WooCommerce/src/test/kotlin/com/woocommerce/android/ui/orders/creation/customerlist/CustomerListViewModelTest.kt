@@ -77,6 +77,32 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given advanced search mode, when viewmodel init, then loadCountries is called`() = testBlocking {
+        // GIVEN
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+
+        // WHEN
+        initViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(customerListRepository).loadCountries()
+    }
+
+    @Test
+    fun `given non advanced search mode, when viewmodel init, then loadCountries is called`() = testBlocking {
+        // GIVEN
+        whenever(isAdvancedSearchSupported.invoke()).thenReturn(false)
+
+        // WHEN
+        initViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(customerListRepository).loadCountries()
+    }
+
+    @Test
     fun `when viewmodel init, then viewstate is updated with search modes`() = testBlocking {
         // WHEN
         val viewModel = initViewModel()
@@ -920,7 +946,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onAddCustomerClicked, then AddCustomer event triggered`() {
+    fun `when onAddCustomerClicked, then AddCustomer event triggered and event tracked`() {
         // GIVEN
         val viewModel = initViewModel()
 
@@ -928,6 +954,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         viewModel.onAddCustomerClicked()
 
         // THEN
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
         assertThat(viewModel.event.value).isEqualTo(AddCustomer)
     }
 

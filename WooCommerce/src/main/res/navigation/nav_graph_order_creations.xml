@@ -26,9 +26,6 @@
                 android:name="selectedItems"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
             <argument
-                android:name="restrictions"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
-            <argument
                 android:name="productSelectorFlow"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
         </action>
@@ -124,12 +121,16 @@
             app:nullable="true"/>
         <argument
             android:name="couponEditResult"
-            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
             app:nullable="true"
             android:defaultValue="@null"/>
         <action
             android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
             app:destination="@id/barcodeScanningFragment"/>
+        <action
+            android:id="@+id/action_orderCreationFragment_to_couponSelectorFragment"
+            app:destination="@id/couponSelectorFragment" >
+        </action>
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -284,7 +285,7 @@
             >
             <argument
                 android:name="couponEditResult"
-                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>
@@ -302,4 +303,13 @@
     </fragment>
 
     <include app:graph="@navigation/nav_graph_product_selector" />
+    <fragment
+        android:id="@+id/couponSelectorFragment"
+        android:name="com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment"
+        android:label="CouponSelectorFragment">
+        <action
+            android:id="@+id/action_couponSelectorFragment_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
+    </fragment>
+    <include app:graph="@navigation/nav_graph_coupons" />
 </navigation>

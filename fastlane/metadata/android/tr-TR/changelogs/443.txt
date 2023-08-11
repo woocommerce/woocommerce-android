@@ -1,0 +1,2 @@
+14.7:
+Gönderim yapılandırmasını uygulamada kullanılabilir hale getirmek için çalışıyoruz. Gönderim Bölgeleriniz artık Ayarlar ekranından görüntülenebilir. Gelecekte bu konuda daha fazla güncelleme için bizi takip etmeye devam edin!

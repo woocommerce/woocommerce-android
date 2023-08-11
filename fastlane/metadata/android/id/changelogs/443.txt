@@ -1,0 +1,2 @@
+14.7:
+Kami telah berusaha menghadirkan konfigurasi pengiriman di aplikasi. Zona Pengiriman Anda sekarang dapat dilihat dari layar Pengaturan. Tunggu kabar terbaru tentang pengembangan fitur ini selanjutnya!

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
@@ -23,6 +22,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -370,12 +370,6 @@ class AnalyticsRepository @Inject constructor(
         private val timeRange: AnalyticsHubTimeRange,
         private val selectionType: SelectionType
     ) {
-        val id: Int
-
-        init {
-            val startDateString = timeRange.start.formatToYYYYmmDD()
-            val endDateString = timeRange.end.formatToYYYYmmDD()
-            id = "${selectionType.identifier}$startDateString$endDateString".hashCode()
-        }
+        val id: Int = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
     }
 }

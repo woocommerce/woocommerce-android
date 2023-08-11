@@ -267,6 +267,7 @@ class AddressViewModel @Inject constructor(
             AddressType.BILLING to Address.EMPTY,
             AddressType.SHIPPING to Address.EMPTY,
         )
+        viewState = ViewState()
         initialize(initialState)
     }
 

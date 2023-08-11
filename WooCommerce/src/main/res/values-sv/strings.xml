@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-07-26 14:54:06+0000
+Translation-Revision-Date: 2023-08-04 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="shipping_classes_zones">Fraktklasser och -zoner</string>
+    <string name="free_trial_survey_free_text">Annat skäl (vänligen specificera)</string>
+    <string name="free_trial_survey_option4">Jag är en del av ett team och vi måste fatta beslutet kollektivt.</string>
+    <string name="free_trial_survey_option3">Jag anser att priset på tjänsten är en viktig faktor i mitt beslut.</string>
+    <string name="free_trial_survey_option2">Jag utvärderar och jämför din tjänst med andra på marknaden.</string>
+    <string name="free_trial_survey_option1">Jag utforskar och utvärderar fortfarande funktionerna och fördelarna med appen.</string>
+    <string name="free_trial_survey_title">Hjälp oss att förstå dina prenumerationsbeslut. Din feedback är viktig.</string>
+    <string name="local_notification_still_exploring_description">Det är ingen brådska, ta den tid du behöver! Vi finns alltid här om du har några frågor eller behöver hjälp. Trevligt utforskande!</string>
+    <string name="local_notification_still_exploring_title">🧭 Utforskar du fortfarande WooCommerce?</string>
+    <string name="free_trial_survey_screen_title">Hjälp oss att förstå ditt prenumerationsbeslut.</string>
+    <string name="local_notification_survey_after_24_hours_description">Vi är intresserade av din beslutsresa. Kan du vänligen berätta för oss om din nuvarande status?</string>
+    <string name="local_notification_survey_after_24_hours_title">💡Hjälp oss att förstå ditt prenumerationsbeslut.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Upptäck avancerade funktioner och personliga rekommendationer för din butik. Tryck för att välja ett paket som passar dig.</string>
+    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Håll igång din verksamhet!</string>
+    <string name="order_creation_customer_search_empty_email">Ingen e-postadress</string>
+    <string name="order_creation_customer_search_empty_name">Inget namn</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Använd sök för att hitta befintliga kunder</string>
+    <string name="last_update_with_frequency">Senast uppdaterat %s (Uppdateras var 30:e minut)</string>
+    <string name="last_update">Senast uppdaterat %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med Tryck för att betala på Android</string>
     <string name="card_reader_hub_collect_payment">Ta emot betalning</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Du kan inte lägga till produkter som inte har något specificerat pris</string>
@@ -72,8 +91,6 @@ Language: sv_SE
     <string name="order_creation_customer_search_username">Användarnamn</string>
     <string name="order_creation_customer_search_name">Namn</string>
     <string name="order_creation_customer_search_email">E-post</string>
-    <string name="order_creation_customer_search_everything">Allt</string>
-    <string name="order_creation_customer_filter_hint">Filtrera kunder efter</string>
     <string name="order_creation_coupons_title">Tillämpade rabattkoder</string>
     <string name="more_settings">Fler inställningar</string>
     <string name="maybe_later">Kanske senare</string>
@@ -143,6 +160,7 @@ Language: sv_SE
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan försöka använda den igen.</string>
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product">Produkten med SKU %s hittades inte. Det gick inte att lägga till i beställningen</string>
     <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="scan_barcode">Skanna streckkod</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
@@ -807,7 +825,7 @@ Language: sv_SE
     <string name="order_editing_locked_content_description">låst</string>
     <string name="order_editing_non_editable_message">För att redigera produkter eller betalningsinformation, ändra statusen till Inväntar betalning.</string>
     <string name="order_editing_non_editable_title">Delar av denna beställning är för närvarande inte redigerbara</string>
-    <string name="order_creation_customer_search_hint">Sök kunder</string>
+    <string name="order_creation_customer_search_hint">Sök efter kunder</string>
     <string name="order_creation_customer_search_empty">Inga kunder hittades.</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Inte nu</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Lägg till utökningar till butik</string>
