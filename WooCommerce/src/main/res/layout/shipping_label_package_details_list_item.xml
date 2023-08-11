@@ -195,7 +195,7 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/hazmatCheckbox"
+                android:id="@+id/hazmat_checkbox"
                 style="@style/Woo.CheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_300"
@@ -206,7 +206,7 @@
                 tools:text="Contains Hazardous Materials" />
 
             <LinearLayout
-                android:id="@+id/hazmatContentLayout"
+                android:id="@+id/hazmat_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
