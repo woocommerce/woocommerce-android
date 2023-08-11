@@ -121,6 +121,10 @@ class ShippingLabelPackagesAdapter(
                     onExpandedChanged(bindingAdapterPosition, true)
                 }
             }
+
+            binding.hazmatCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                binding.hazmatContent.isVisible = isChecked
+            }
         }
 
         @SuppressLint("SetTextI18n")
