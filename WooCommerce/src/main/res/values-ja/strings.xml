@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-04 09:54:04+0000
+Translation-Revision-Date: 2023-08-10 11:54:24+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">クーポンの作成に失敗しました</string>
+    <string name="coupon_create_coupon_created">クーポンを作成しました</string>
+    <string name="coupon_create_save_button">作成</string>
+    <string name="coupon_create_screen_title_default">クーポンを作成する</string>
+    <string name="coupon_create_screen_title">%1$s を作成する</string>
+    <string name="coupon_edit_screen_title_default">クーポンを編集する</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">選択した商品の割引合計金額を作成します</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">お買い物カゴ全体の割引合計金額を作成します</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">選択した商品の割引率を作成します</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">商品毎に割引</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">お買い物カゴごとに割引</string>
+    <string name="coupon_type_picker_percentage_discount_title">割引率</string>
+    <string name="coupon_type_picker_fixed_product_content_description">クーポンの種類 - 固定商品</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">クーポンの種類 - 固定お買い物カゴ</string>
+    <string name="coupon_type_picker_percentage_content_description">クーポンの種類 - 割引率</string>
+    <string name="coupon_type_picker_title">クーポンを作成する</string>
+    <string name="coupon_list_add_coupon_content_description">クーポンを追加します</string>
+    <string name="try_test_order_button">テスト注文を開始</string>
+    <string name="try_test_order_step_4">アプリを使用してテスト注文の返金を処理します。</string>
+    <string name="try_test_order_step_3">支払いを完了し、注文に関するプッシュ通知が WooCommerce アプリに届くのを待ちます。</string>
+    <string name="try_test_order_step_2">テスト商品を選択し、カートに追加して、実際の顧客として Web ストアで購入手続きを完了します。</string>
+    <string name="try_test_order_step_1">下のボタンをタップすると、Web ブラウザー経由でオンラインストアにリダイレクトされます。</string>
+    <string name="try_test_order_heading">テスト注文を試す</string>
+    <string name="empty_order_test_order_button">テスト注文を試す</string>
+    <string name="empty_order_test_order_message">テスト注文を実行して、WooCommerce のプロセスがシームレスなカスタマーエクスペリエンスを提供していることを確認します</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">手動で詳細を追加します</string>
+    <string name="order_creation_customer_search_old_wc_hint">顧客を検索する</string>
     <string name="shipping_classes_zones">配送クラス &amp; 配送地域</string>
     <string name="free_trial_survey_free_text">その他の理由 (具体的にご記入ください)</string>
     <string name="free_trial_survey_option4">自分はチームの一員であり、全体で決定を下す必要がある。</string>
@@ -22,7 +49,7 @@ Language: ja_JP
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟ビジネスを推し進めていきましょう !</string>
     <string name="order_creation_customer_search_empty_email">メールアドレスなし</string>
     <string name="order_creation_customer_search_empty_name">名前</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">検索を使用して既存の顧客を見つける</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">既存の顧客を検索する、または</string>
     <string name="last_update_with_frequency">最終更新 %s (30分ごとに更新)</string>
     <string name="last_update">最終更新 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android の Tap To Pay による支払いの受け取りについて&lt;a href=\'\'&gt;詳しくはこちら&lt;/a&gt;をご覧ください</string>

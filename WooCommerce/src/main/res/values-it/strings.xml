@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 09:54:25+0000
+Translation-Revision-Date: 2023-08-09 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">Impossibile creare il codice promozionale</string>
+    <string name="coupon_create_coupon_created">Codice promozionale creato</string>
+    <string name="coupon_create_save_button">Crea</string>
+    <string name="coupon_create_screen_title_default">Crea codice promozionale</string>
+    <string name="coupon_create_screen_title">Crea %1$s</string>
+    <string name="coupon_edit_screen_title_default">Modifica il codice promozionale</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Crea uno sconto totale fisso per i prodotti selezionati</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Crea uno sconto totale fisso per l\'intero carrello</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Crea uno sconto percentuale per i prodotti selezionati</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Sconto fisso sul prodotto</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Sconto fisso sul carrello</string>
+    <string name="coupon_type_picker_percentage_discount_title">Sconto in percentuale</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Tipo di codice promozionale - Prodotto fisso</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Tipo di codice promozionale - Carrello fisso</string>
+    <string name="coupon_type_picker_percentage_content_description">Tipo di codice promozionale - Sconto percentuale</string>
+    <string name="coupon_type_picker_title">Crea codice promozionale</string>
+    <string name="coupon_list_add_coupon_content_description">Aggiungi codice promozionale</string>
+    <string name="try_test_order_button">Inizia l\'ordine di prova</string>
+    <string name="try_test_order_step_4">Usa l\'app per elaborare il rimborso per l\'ordine di prova</string>
+    <string name="try_test_order_step_3">Completa il pagamento e attendi una notifica push sull\'ordine sulla tua app WooCommerce.</string>
+    <string name="try_test_order_step_2">Seleziona il tuo prodotto di prova, aggiungilo al carrello e completa il pagamento su quel negozio web come un vero cliente.</string>
+    <string name="try_test_order_step_1">Tocca il pulsante sottostante per essere reindirizzato al tuo negozio online tramite un browser web.</string>
+    <string name="try_test_order_heading">Prova un ordine di prova</string>
+    <string name="empty_order_test_order_button">Prova un ordine di prova</string>
+    <string name="empty_order_test_order_message">Esegui un ordine di prova per assicurarti che il processo WooCommerce offra un\'esperienza cliente fluida</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Aggiungi dettagli manualmente</string>
+    <string name="order_creation_customer_search_old_wc_hint">Cerca clienti per</string>
     <string name="shipping_classes_zones">Classi e zone di spedizione</string>
     <string name="free_trial_survey_free_text">Altro motivo (specificare)</string>
     <string name="free_trial_survey_option4">Faccio parte di una team e la decisione va presa insieme a tutti i membri.</string>
@@ -22,7 +49,7 @@ Language: it
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Fai crescere il tuo business.</string>
     <string name="order_creation_customer_search_empty_email">Nessun indirizzo e-mail</string>
     <string name="order_creation_customer_search_empty_name">Nessun nome</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Usa la ricerca per trovare i clienti esistenti</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Cerca un cliente esistente o</string>
     <string name="last_update_with_frequency">Ultimo aggiornamento: %s (aggiornamenti ogni 30 minuti)</string>
     <string name="last_update">Ultimo aggiornamento: %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Scopri di più&lt;/a&gt; sull\'accettazione di pagamenti con Tocca per pagare su Android</string>
