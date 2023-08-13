@@ -1,2 +1,0 @@
-14.7:
-We zijn bezig met een verzendconfiguratie voor in de app. Je verzendzones kunnen nu worden bekeken in het Instellingenscherm. Blijf ons volgen voor meer updates hierover in de toekomst!
