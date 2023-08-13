@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 11:54:03+0000
+Translation-Revision-Date: 2023-08-09 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">Gagal membuat kupon</string>
+    <string name="coupon_create_coupon_created">Kupon dibuat</string>
+    <string name="coupon_create_save_button">Buat</string>
+    <string name="coupon_create_screen_title_default">Buat Kupon</string>
+    <string name="coupon_create_screen_title">Buat %1$s</string>
+    <string name="coupon_edit_screen_title_default">Edit Kupon</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Buat diskon dengan besaran tetap untuk produk terpilih</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Buat diskon dengan besaran tetap untuk semua produk di keranjang</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Tentukan persentase diskon untuk produk terpilih</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Diskon Produk Tetap</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Diskon Keranjang Tetap</string>
+    <string name="coupon_type_picker_percentage_discount_title">Persentase Diskon</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Jenis kupon - produk tetap</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Jenis kupon - keranjang tetap</string>
+    <string name="coupon_type_picker_percentage_content_description">Jenis kupon - persentase diskon</string>
+    <string name="coupon_type_picker_title">Buat Kupon</string>
+    <string name="coupon_list_add_coupon_content_description">Tambah kupon</string>
+    <string name="try_test_order_button">Mulai pesanan uji coba</string>
+    <string name="try_test_order_step_4">Pakai aplikasi guna memproses pengembalian dana untuk pesanan uji coba.</string>
+    <string name="try_test_order_step_3">Selesaikan pembayaran, lalu tunggu pemberitahuan push mengenai pesanan tersebut di aplikasi WooCommerce.</string>
+    <string name="try_test_order_step_2">Pilih produk uji coba Anda, tambahkan ke keranjang, lalu selesaikan proses checkout di toko web tersebut sebagai pelanggan sungguhan.</string>
+    <string name="try_test_order_step_1">Ketuk tombol di bawah ini untuk dialihkan ke toko online Anda melalui browser web.</string>
+    <string name="try_test_order_heading">Coba pesanan uji coba</string>
+    <string name="empty_order_test_order_button">Coba pesanan uji coba</string>
+    <string name="empty_order_test_order_message">Buat pesanan uji coba untuk menjamin kelancaran pengalaman pelanggan di toko Anda di WooCommerce</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Tambahkan detail secara manual</string>
+    <string name="order_creation_customer_search_old_wc_hint">Cari pelanggan berdasarkan</string>
     <string name="shipping_classes_zones">Zona &amp; kelas pengiriman</string>
     <string name="free_trial_survey_free_text">Alasan lain (sebutkan)</string>
     <string name="free_trial_survey_option4">Saya adalah bagian dari sebuah tim, dan keputusan harus dibuat secara kolektif.</string>
@@ -22,7 +49,7 @@ Language: id
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Terus jalankan bisnis Anda!</string>
     <string name="order_creation_customer_search_empty_email">Tidak ada alamat email</string>
     <string name="order_creation_customer_search_empty_name">Tidak ada nama</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Gunakan pencarian untuk menemukan pelanggan yang sudah ada</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Cari pelanggan yang sudah ada atau</string>
     <string name="last_update_with_frequency">Pembaruan terakhir %s (Diperbarui setiap 30 menit)</string>
     <string name="last_update">Pembaruan terakhir %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang menerima pembayaran dengan Tap To Tap di Android</string>

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 09:54:25+0000
+Translation-Revision-Date: 2023-08-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">Aanmaken van coupon mislukt</string>
+    <string name="coupon_create_coupon_created">Coupon aangemaakt</string>
+    <string name="coupon_create_save_button">Aanmaken</string>
+    <string name="coupon_create_screen_title_default">Coupon aanmaken</string>
+    <string name="coupon_create_screen_title">%1$s aanmaken</string>
+    <string name="coupon_edit_screen_title_default">Coupon bewerken</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Maak een korting van een vast bedrag voor de geselecteerde producten</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Maak een korting van een vast bedrag voor de gehele winkelwagen</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Maak een procentuele korting voor de geselecteerde producten</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Vaste productkorting</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Vaste winkelwagenkorting</string>
+    <string name="coupon_type_picker_percentage_discount_title">Procentuele korting</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Type coupon - vast product</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Type coupon - vast winkelwagen</string>
+    <string name="coupon_type_picker_percentage_content_description">Type coupon - procentuele korting</string>
+    <string name="coupon_type_picker_title">Coupon aanmaken</string>
+    <string name="coupon_list_add_coupon_content_description">Coupon toevoegen</string>
+    <string name="try_test_order_button">Proefbestelling starten</string>
+    <string name="try_test_order_step_4">Gebruik de app om de restitutie voor de proefbestelling te verwerken</string>
+    <string name="try_test_order_step_3">Voltooi de betaling en wacht op een pushbericht over de bestelling in je WooCommerce-app.</string>
+    <string name="try_test_order_step_2">Selecteer jouw testproduct, voeg deze toe aan de winkelwagen en voltooi het afrekenscherm in die webwinkel als een echte klant.</string>
+    <string name="try_test_order_step_1">Druk op de knop hieronder om doorgestuurd te worden naar jouw webwinkel via een webbrowser.</string>
+    <string name="try_test_order_heading">Probeer een proefbestelling</string>
+    <string name="empty_order_test_order_button">Probeer een proefbestelling</string>
+    <string name="empty_order_test_order_message">Voer een proefbestelling uit om je ervan te verzekeren dat jouw WooCommerce-proces een naadloze klantervaring levert</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Details handmatig toevoegen</string>
+    <string name="order_creation_customer_search_old_wc_hint">Klanten zoeken op</string>
     <string name="shipping_classes_zones">Verzendklasses en -zones</string>
     <string name="free_trial_survey_free_text">Andere reden (hier opgeven)</string>
     <string name="free_trial_survey_option4">Ik ben onderdeel van een team en we nemen de beslissing samen.</string>
@@ -22,7 +49,7 @@ Language: nl
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Blijf aan de slag!</string>
     <string name="order_creation_customer_search_empty_email">Geen e-mailadres</string>
     <string name="order_creation_customer_search_empty_name">Geen naam</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Gebruik de zoekfunctie om bestaande klanten te vinden</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Een bestaande klant zoeken op</string>
     <string name="last_update_with_frequency">Laatst bijgewerkt %s (wordt elke 30 minuten bijgewerkt)</string>
     <string name="last_update">Laatst bijgewerkt %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het accepteren van betalingen met Tap to Pay op Android</string>

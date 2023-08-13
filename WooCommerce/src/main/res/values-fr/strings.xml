@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 15:54:04+0000
+Translation-Revision-Date: 2023-08-11 08:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">La création du code promo a échoué</string>
+    <string name="coupon_create_coupon_created">Code promo créé</string>
+    <string name="coupon_create_save_button">Créer</string>
+    <string name="coupon_create_screen_title_default">Créer un code promo</string>
+    <string name="coupon_create_screen_title">Créer %1$s</string>
+    <string name="coupon_edit_screen_title_default">Modifier le code promo</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Créer une remise totale fixe pour les produits sélectionnés</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Créer une remise totale fixe pour l’ensemble du panier</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Créer une remise en pourcentage pour les produits sélectionnés</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Remise produit fixe</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Remise panier fixe</string>
+    <string name="coupon_type_picker_percentage_discount_title">Remise en pourcentage</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Type de code promo - produits fixes</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Type de code promo - panier fixe</string>
+    <string name="coupon_type_picker_percentage_content_description">Type de code promo - remise en pourcentage</string>
+    <string name="coupon_type_picker_title">Créer un code promo</string>
+    <string name="coupon_list_add_coupon_content_description">Ajouter un code promo</string>
+    <string name="try_test_order_button">Lancer la commande de test</string>
+    <string name="try_test_order_step_4">Utilisez l’application pour effectuer le remboursement de la commande de test.</string>
+    <string name="try_test_order_step_3">Finalisez le paiement. Vous recevrez une notification push concernant la commande dans votre application WooCommerce.</string>
+    <string name="try_test_order_step_2">Sélectionnez votre produit de test, ajoutez-le au panier et finalisez la commande dans cette boutique en ligne comme un vrai client.</string>
+    <string name="try_test_order_step_1">Appuyez sur le bouton ci-dessous pour être redirigé vers votre boutique en ligne via un navigateur Web.</string>
+    <string name="try_test_order_heading">Essayer une commande de test</string>
+    <string name="empty_order_test_order_button">Essayer une commande de test</string>
+    <string name="empty_order_test_order_message">Effectuez une commande de test pour vous assurer de la qualité de votre processus WooCommerce et de l’expérience de vos clients.</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Ajouter des détails manuellement</string>
+    <string name="order_creation_customer_search_old_wc_hint">Rechercher des clients selon</string>
     <string name="shipping_classes_zones">Classes et zones de livraison</string>
     <string name="free_trial_survey_free_text">Autre raison (préciser)</string>
     <string name="free_trial_survey_option4">Je fais partie d’une équipe, et nous devons décider tous ensemble.</string>
@@ -22,7 +49,7 @@ Language: fr
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Faites tourner votre activité !</string>
     <string name="order_creation_customer_search_empty_email">Pas d’adresse e-mail</string>
     <string name="order_creation_customer_search_empty_name">Pas de nom</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Utiliser la fonction de recherche pour trouver des clients existants</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Rechercher un client existant ou</string>
     <string name="last_update_with_frequency">Dernière mise à jour %s (Mises à jour toutes les 30 minutes)</string>
     <string name="last_update">Dernière mise à jour %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec la fonctionnalité Appuyer pour payer sur Android</string>

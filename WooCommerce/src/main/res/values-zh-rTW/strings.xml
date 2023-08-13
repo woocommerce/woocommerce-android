@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-04 13:54:04+0000
+Translation-Revision-Date: 2023-08-11 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">建立優惠券失敗</string>
+    <string name="coupon_create_coupon_created">已建立優惠券</string>
+    <string name="coupon_create_save_button">建立</string>
+    <string name="coupon_create_screen_title_default">建立優惠券</string>
+    <string name="coupon_create_screen_title">建立 %1$s</string>
+    <string name="coupon_edit_screen_title_default">編輯優惠券</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">為選取的產品建立固定總折扣</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">為整個購物車建立固定總折扣</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">為選取的產品建立百分比折扣</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">固定產品折扣</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">固定的購物車折扣</string>
+    <string name="coupon_type_picker_percentage_discount_title">百分比折扣</string>
+    <string name="coupon_type_picker_fixed_product_content_description">優惠券類型：固定的產品</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">優惠券類型：固定的購物車</string>
+    <string name="coupon_type_picker_percentage_content_description">優惠券折扣：百分比折扣</string>
+    <string name="coupon_type_picker_title">建立優惠券</string>
+    <string name="coupon_list_add_coupon_content_description">新增優惠券</string>
+    <string name="try_test_order_button">開始使用測試訂單</string>
+    <string name="try_test_order_step_4">使用應用程式處理測試訂單的退款流程</string>
+    <string name="try_test_order_step_3">完成付款流程，並等候 WooCommerce 應用程式的訂單推播通知。</string>
+    <string name="try_test_order_step_2">選取測試商品並新增至購物車，然後像真的顧客一樣在網路商店完成結帳。</string>
+    <string name="try_test_order_step_1">點選下方按鈕，系統會透過網頁瀏覽器重新導向至你的網路商店。</string>
+    <string name="try_test_order_heading">試用測試訂單</string>
+    <string name="empty_order_test_order_button">試用測試訂單</string>
+    <string name="empty_order_test_order_message">執行測試訂單，確認你的 WooCommerce 流程能提供流暢的顧客體驗</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">手動新增詳情</string>
+    <string name="order_creation_customer_search_old_wc_hint">依條件搜尋顧客</string>
     <string name="shipping_classes_zones">運送類別與區域</string>
     <string name="free_trial_survey_free_text">其他原因 (請說明)。</string>
     <string name="free_trial_survey_option4">我需要和團隊成員一起決定。</string>
@@ -22,7 +49,7 @@ Language: zh_TW
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 讓業務蒸蒸日上！</string>
     <string name="order_creation_customer_search_empty_email">沒有電子郵件地址</string>
     <string name="order_creation_customer_search_empty_name">沒有名稱</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">使用搜尋功能，找到現有顧客</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">搜尋現有顧客，或</string>
     <string name="last_update_with_frequency">最近更新時間 %s (每 30 分鐘更新一次)</string>
     <string name="last_update">最近更新時間 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;如何在 Android 使用「iPhone卡緊收」收受付款</string>
