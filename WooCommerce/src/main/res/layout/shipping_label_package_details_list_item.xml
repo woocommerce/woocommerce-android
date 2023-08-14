@@ -198,8 +198,8 @@
                 android:id="@+id/hazmat_toggle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_300"
-                android:layout_marginTop="@dimen/minor_00"
                 android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_00"
                 android:minHeight="@dimen/minor_00"
                 android:text="@string/shipping_label_package_details_hazmat_content_checkbox_title"
                 tools:text="Contains Hazardous Materials" />
@@ -208,8 +208,9 @@
                 android:id="@+id/hazmat_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
