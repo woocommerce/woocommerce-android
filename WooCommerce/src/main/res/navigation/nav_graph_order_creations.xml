@@ -26,9 +26,6 @@
                 android:name="selectedItems"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
             <argument
-                android:name="restrictions"
-                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
-            <argument
                 android:name="productSelectorFlow"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
         </action>
@@ -124,7 +121,7 @@
             app:nullable="true"/>
         <argument
             android:name="couponEditResult"
-            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
             app:nullable="true"
             android:defaultValue="@null"/>
         <action
@@ -288,7 +285,7 @@
             >
             <argument
                 android:name="couponEditResult"
-                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel$CouponEditResult"
+                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>

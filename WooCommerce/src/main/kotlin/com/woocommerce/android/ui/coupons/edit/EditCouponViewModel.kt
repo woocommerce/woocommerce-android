@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIn
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
+import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
@@ -204,8 +204,8 @@ class EditCouponViewModel @Inject constructor(
                     EditIncludedProducts(
                         selectedItems,
                         listOf(
-                            ProductSelectorRestriction.OnlyPublishedProducts,
-                            ProductSelectorRestriction.NoVariableProductsWithNoVariations
+                            ProductRestriction.NonPublishedProducts,
+                            ProductRestriction.VariableProductsWithNoVariations
                         )
                     )
                 )

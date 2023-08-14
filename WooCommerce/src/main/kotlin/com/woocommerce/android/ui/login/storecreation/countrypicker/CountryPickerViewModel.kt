@@ -13,7 +13,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -33,9 +32,7 @@ class CountryPickerViewModel @Inject constructor(
 
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
 
-    val countryPickerState = availableCountries
-        .map { CountryPickerState(newStore.data.name.orEmpty(), it) }
-        .asLiveData()
+    val countryPickerState = availableCountries.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -106,11 +103,6 @@ class CountryPickerViewModel @Inject constructor(
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
-
-    data class CountryPickerState(
-        val storeName: String,
-        val countries: List<StoreCreationCountry>
-    )
 
     data class StoreCreationCountry(
         val name: String,

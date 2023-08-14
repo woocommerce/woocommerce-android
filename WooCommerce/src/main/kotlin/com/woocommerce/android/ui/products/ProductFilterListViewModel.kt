@@ -12,7 +12,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.OnlyPublishedProducts
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -36,7 +35,8 @@ class ProductFilterListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val productRestrictions: ProductFilterProductRestrictions,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -266,7 +266,7 @@ class ProductFilterListViewModel @Inject constructor(
                 )
             )
         )
-        if (arguments.restrictions?.contains(OnlyPublishedProducts) != true) {
+        if (!productRestrictions.restrictions.contains(ProductRestriction.NonPublishedProducts)) {
             filterListItems.add(
                 FilterListItemUiModel(
                     STATUS,

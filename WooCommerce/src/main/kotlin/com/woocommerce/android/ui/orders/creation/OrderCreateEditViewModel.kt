@@ -12,7 +12,6 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_UPDATE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
@@ -66,7 +65,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
@@ -80,12 +79,13 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
@@ -131,6 +131,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
+    private val productRestrictions: OrderCreationProductRestrictions,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -232,23 +233,15 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun handleCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+    private fun handleCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         when (couponEditResult) {
-            is OrderCreateCouponEditViewModel.CouponEditResult.RemoveCoupon -> {
+            is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
                 onCouponRemoved(couponEditResult.couponCode)
-            }
-
-            is OrderCreateCouponEditViewModel.CouponEditResult.AddNewCouponCode -> {
-                onCouponAdded(couponEditResult.couponCode)
-            }
-
-            is OrderCreateCouponEditViewModel.CouponEditResult.UpdateCouponCode -> {
-                onCouponUpdated(couponEditResult.oldCode, couponEditResult.newCode)
             }
         }
     }
 
-    fun onCouponEditResult(couponEditResult: OrderCreateCouponEditViewModel.CouponEditResult) {
+    fun onCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         handleCouponEditResult(couponEditResult)
     }
 
@@ -521,6 +514,63 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
+        if (productRestrictions.isProductRestricted(product)) {
+            handleProductRestrictions(product, source, barcodeFormat)
+        } else if (product.isVariable()) {
+            handleVariableProduct(product, source, barcodeFormat, selectedItems)
+        } else {
+            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
+                null -> onProductsSelected(
+                    selectedItems = selectedItems + Product(productId = product.remoteId),
+                    source = source,
+                    addedVia = ProductAddedVia.SCANNING,
+                )
+                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+            }
+            trackProductSearchViaSKUSuccessEvent(source)
+        }
+    }
+
+    private fun handleVariableProduct(
+        product: com.woocommerce.android.model.Product,
+        source: ScanningSource,
+        barcodeFormat: BarcodeFormat,
+        selectedItems: List<SelectedItem>
+    ) {
+        if (product.parentId == 0L) {
+            sendAddingProductsViaScanningFailedEvent(
+                message = resourceProvider.getString(
+                    string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            )
+            trackProductSearchViaSKUFailureEvent(
+                source,
+                barcodeFormat,
+                "Instead of specific variations, user tried to add parent variable product."
+            )
+        } else {
+            when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                null -> onProductsSelected(
+                    selectedItems = selectedItems +
+                        SelectedItem.ProductVariation(
+                            productId = product.parentId,
+                            variationId = product.remoteId
+                        ),
+                    source = source,
+                    addedVia = ProductAddedVia.SCANNING,
+                )
+
+                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+            }
+            trackProductSearchViaSKUSuccessEvent(source)
+        }
+    }
+
+    private fun handleProductRestrictions(
+        product: ModelProduct,
+        source: ScanningSource,
+        barcodeFormat: BarcodeFormat
+    ) {
         when {
             product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
@@ -533,7 +583,6 @@ class OrderCreateEditViewModel @Inject constructor(
                     barcodeFormat,
                     "Failed to add a product that is not published"
                 )
-                return
             }
             product.hasNoPrice() -> {
                 sendAddingProductsViaScanningFailedEvent(
@@ -546,48 +595,8 @@ class OrderCreateEditViewModel @Inject constructor(
                     barcodeFormat,
                     "Failed to add a product whose price is not specified"
                 )
-                return
-            }
-            product.isVariable() -> {
-                if (product.parentId == 0L) {
-                    sendAddingProductsViaScanningFailedEvent(
-                        message = resourceProvider.getString(
-                            string.order_creation_barcode_scanning_unable_to_add_variable_product
-                        )
-                    )
-                    trackProductSearchViaSKUFailureEvent(
-                        source,
-                        barcodeFormat,
-                        "Instead of specific variations, user tried to add parent variable product."
-                    )
-                    return
-                } else {
-                    when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
-                        null -> onProductsSelected(
-                            selectedItems = selectedItems +
-                                SelectedItem.ProductVariation(
-                                    productId = product.parentId,
-                                    variationId = product.remoteId
-                                ),
-                            source = source,
-                            addedVia = ProductAddedVia.SCANNING,
-                        )
-                        else -> onIncreaseProductsQuantity(alreadySelectedItemId)
-                    }
-                }
-            }
-            else -> {
-                when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                    null -> onProductsSelected(
-                        selectedItems = selectedItems + Product(productId = product.remoteId),
-                        source = source,
-                        addedVia = ProductAddedVia.SCANNING,
-                    )
-                    else -> onIncreaseProductsQuantity(alreadySelectedItemId)
-                }
             }
         }
-        trackProductSearchViaSKUSuccessEvent(source)
     }
 
     private fun trackProductSearchViaSKUSuccessEvent(source: ScanningSource) {
@@ -711,8 +720,8 @@ class OrderCreateEditViewModel @Inject constructor(
             SelectItems(
                 selectedItems,
                 listOf(
-                    ProductSelectorRestriction.OnlyPublishedProducts,
-                    ProductSelectorRestriction.NoVariableProductsWithNoVariations
+                    ProductRestriction.NonPublishedProducts,
+                    ProductRestriction.VariableProductsWithNoVariations
                 )
             )
         )
@@ -1005,21 +1014,6 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onCouponUpdated(oldCode: String, newCode: String) {
-        _orderDraft.value.couponLines.run {
-            if (oldCode == newCode || any { it.code == newCode } || none { it.code == oldCode }) return
-        }
-
-        _orderDraft.update { draft ->
-            val couponLines = draft.couponLines
-            val updatedCouponLines =
-                couponLines.filter { it.code != oldCode } + Order.CouponLine(code = newCode)
-            draft.copy(couponLines = updatedCouponLines)
-        }.also {
-            trackCouponUpdated()
-        }
-    }
-
     private fun onCouponRemoved(couponCode: String) {
         trackCouponRemoved()
         _orderDraft.update { draft ->
@@ -1034,10 +1028,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun trackCouponRemoved() {
         tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
-    }
-
-    private fun trackCouponUpdated() {
-        tracker.track(ORDER_COUPON_UPDATE, mapOf(KEY_FLOW to flow))
     }
 
     fun onProductDetailsEditResult(result: ProductDetailsEditResult) {

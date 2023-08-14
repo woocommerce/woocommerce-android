@@ -11,9 +11,9 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
-import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
@@ -70,7 +70,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
-    private val productsMapper: ProductsMapper
+    private val productsMapper: ProductsMapper,
+    private val productRestrictions: OrderCreationProductRestrictions,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -93,9 +94,8 @@ class ProductSelectorViewModel @Inject constructor(
         "key_selected_items"
     )
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
-    private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
-        products.filter { product -> isProductRestricted(product = product) }
+        products.filterNot { product -> productRestrictions.isProductRestricted(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -165,20 +165,14 @@ class ProductSelectorViewModel @Inject constructor(
         }
         return productsList.map { it.toUiModel(selectedIds) }
     }
-
-    private fun isProductRestricted(product: Product): Boolean {
-        return productsRestrictions.map { restriction -> restriction(product) }
-            .fold(true) { acc, result -> acc && result }
-    }
-
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             ).distinctBy { it }
-        ).filter { product ->
-            isProductRestricted(product = product)
+        ).filterNot { product ->
+            productRestrictions.isProductRestricted(product = product)
         }
     }
 
@@ -194,8 +188,8 @@ class ProductSelectorViewModel @Inject constructor(
             .toMap()
         popularProducts.value = productsMapper.mapProductIdsToProduct(
             topPopularProductsSorted.keys.toList()
-        ).filter { product ->
-            isProductRestricted(product = product)
+        ).filterNot { product ->
+            productRestrictions.isProductRestricted(product = product)
         }
     }
 
@@ -287,7 +281,7 @@ class ProductSelectorViewModel @Inject constructor(
                 filterState.value.filterOptions[ProductFilterOption.STATUS],
                 filterState.value.filterOptions[ProductFilterOption.CATEGORY],
                 filterState.value.productCategoryName,
-                productsRestrictions.toList()
+                productRestrictions.restrictions
             )
         )
     }
@@ -622,24 +616,6 @@ class ProductSelectorViewModel @Inject constructor(
             val variationId: Long,
         ) : SelectedItem(variationId)
     }
-
-    @Parcelize
-    sealed class ProductSelectorRestriction : (Product) -> Boolean, Parcelable {
-        @Parcelize
-        object OnlyPublishedProducts : ProductSelectorRestriction() {
-            override fun invoke(product: Product): Boolean {
-                return product.status == ProductStatus.PUBLISH
-            }
-        }
-
-        @Parcelize
-        object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
-            override fun invoke(product: Product): Boolean {
-                return !(product.isVariable() && product.numVariations == 0)
-            }
-        }
-    }
-
     enum class ProductSelectorFlow {
         OrderCreation, CouponEdition, Undefined
     }

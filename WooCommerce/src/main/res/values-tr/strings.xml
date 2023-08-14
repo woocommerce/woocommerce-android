@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 15:54:04+0000
+Translation-Revision-Date: 2023-08-10 16:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">Kupon oluşturulamadı</string>
+    <string name="coupon_create_coupon_created">Kupon oluşturuldu</string>
+    <string name="coupon_create_save_button">Oluştur</string>
+    <string name="coupon_create_screen_title_default">Kupon Oluştur</string>
+    <string name="coupon_create_screen_title">Oluştur %1$s</string>
+    <string name="coupon_edit_screen_title_default">Kuponu Düzenle</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Seçilen ürünler için sabit bir toplam indirim oluşturun</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Tüm sepet için sabit bir toplam indirim oluşturun</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Seçilen ürünler için indirim yüzdesini oluşturun</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Sabit Ürün İndirimi</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Sabit Sepet İndirimi</string>
+    <string name="coupon_type_picker_percentage_discount_title">İndirim Yüzdesi</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Kupon türü - sabit ürün</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Kupon türü - sabit sepet</string>
+    <string name="coupon_type_picker_percentage_content_description">Kupon türü - yüzde indirimi</string>
+    <string name="coupon_type_picker_title">Kupon Oluştur</string>
+    <string name="coupon_list_add_coupon_content_description">Kupon ekle</string>
+    <string name="try_test_order_button">Test siparişini başlatın</string>
+    <string name="try_test_order_step_4">Test siparişinin geri ödemesini işlemek için uygulamayı kullanın</string>
+    <string name="try_test_order_step_3">Ödemeyi tamamlayın ve WooCommerce uygulamanızda siparişle ilgili bir anlık bildirim almayı bekleyin.</string>
+    <string name="try_test_order_step_2">Test ürününüzü seçin, sepete ekleyin ve ilgili web mağazasından gerçek bir müşteri olarak ödemeyi tamamlayın.</string>
+    <string name="try_test_order_step_1">Web tarayıcısı yoluyla çevrimiçi mağazanıza yeniden yönlendirilmek için aşağıdaki düğmeye dokunun.</string>
+    <string name="try_test_order_heading">Bir test siparişi deneyin</string>
+    <string name="empty_order_test_order_button">Bir test siparişi deneyin</string>
+    <string name="empty_order_test_order_message">WooCommerce işleminizin kusursuz bir müşteri deneyimi sağladığından emin olmak için bir test siparişi gerçekleştirin</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Ayrıntıları el ile ekle</string>
+    <string name="order_creation_customer_search_old_wc_hint">Müşterilerde şuna göre ara</string>
     <string name="shipping_classes_zones">Gönderim sınıfları ve bölgeleri</string>
     <string name="free_trial_survey_free_text">Diğer sebep (lütfen belirtin)</string>
     <string name="free_trial_survey_option4">Bir ekibin parçasıyım ve kararı toplu olarak almamız gerekiyor.</string>
@@ -22,7 +49,7 @@ Language: tr
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 İşinizi ilerletin!</string>
     <string name="order_creation_customer_search_empty_email">E-posta adresi yok</string>
     <string name="order_creation_customer_search_empty_name">Ad yok</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Mevcut müşterileri bulmak için arama özelliğini kullanın</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Mevcut müşteri ara veya</string>
     <string name="last_update_with_frequency">Son güncelleme %s (Her 30 dakikada bir güncellenir)</string>
     <string name="last_update">Son güncelleme %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android\'de Tap To Pay ile ödemeleri kabul etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi alın&lt;/a&gt;</string>

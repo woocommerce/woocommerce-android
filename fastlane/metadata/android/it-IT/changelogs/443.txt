@@ -1,2 +1,0 @@
-14.7:
-Abbiamo lavorato per rendere disponibile la configurazione della spedizione nell'app. Le tue zone di spedizione sono ora visualizzabili dalla schermata Impostazioni. Rimani aggiornato per avere ulteriori aggiornamenti su questo argomento in futuro.

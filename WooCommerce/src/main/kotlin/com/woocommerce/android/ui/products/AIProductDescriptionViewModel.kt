@@ -51,29 +51,11 @@ class AIProductDescriptionViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         ViewState(
             productTitle = navArgs.productTitle,
-            features = navArgs.productDescription ?: ""
+            features = navArgs.productDescription ?: "",
+            isProductTitleInitiallyPresent = navArgs.productTitle.isNotEmpty()
         )
     )
     val viewState = _viewState.asLiveData()
-
-    fun onGenerateButtonClicked() {
-        tracker.track(
-            stat = PRODUCT_DESCRIPTION_AI_GENERATE_BUTTON_TAPPED,
-            properties = mapOf(
-                KEY_IS_RETRY to false
-            )
-        )
-
-        _viewState.update { _viewState.value.copy(generationState = Generating) }
-
-        launch {
-            val languageISOCode = _viewState.value.identifiedLanguageISOCode
-                ?: identifyLanguage().getOrNull()
-            if (languageISOCode != null) {
-                generateProductDescriptionText(languageISOCode = languageISOCode)
-            }
-        }
-    }
 
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
@@ -124,7 +106,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     private suspend fun generateProductDescriptionText(languageISOCode: String) {
         val result = aiRepository.generateProductDescription(
             site = selectedSite.get(),
-            productName = navArgs.productTitle ?: "",
+            productName = navArgs.productTitle,
             features = _viewState.value.features,
             languageISOCode = languageISOCode
         )
@@ -171,26 +153,59 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onRegenerateButtonClicked() {
+        handleGenerateButtonClick(postClickUIState = Regenerating)
+    }
+
+    fun onGenerateButtonClicked() {
+        handleGenerateButtonClick(postClickUIState = Generating)
+    }
+
+    // For now function only handles `postClickUIState` of `Regenerating` and `Generating`.
+    private fun handleGenerateButtonClick(postClickUIState: ViewState.GenerationState) {
+        if (!_viewState.value.canGenerateWithAI) {
+            _viewState.update {
+                _viewState.value.copy(shouldShowErrorOutlineIfEmpty = true)
+            }
+            return
+        }
+
+        val isRetry = when (postClickUIState) {
+            Regenerating -> true
+            Generating -> false
+            else -> false // default to false if other states are added in the future
+        }
+
         tracker.track(
             stat = PRODUCT_DESCRIPTION_AI_GENERATE_BUTTON_TAPPED,
             properties = mapOf(
-                KEY_IS_RETRY to true
+                KEY_IS_RETRY to isRetry
             )
         )
 
-        _viewState.update { _viewState.value.copy(generationState = Regenerating) }
+        _viewState.update { _viewState.value.copy(generationState = postClickUIState) }
 
         launch {
-            val languageISOCode = _viewState.value.identifiedLanguageISOCode
-                ?: identifyLanguage().getOrNull()
-            if (languageISOCode != null) {
-                generateProductDescriptionText(languageISOCode = languageISOCode)
-            }
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode ?: identifyLanguage().getOrNull()
+            languageISOCode?.let { generateProductDescriptionText(it) }
         }
     }
 
     fun onFeaturesChanged(features: String) {
-        _viewState.update { _viewState.value.copy(features = features) }
+        _viewState.update {
+            _viewState.value.copy(
+                features = features,
+                shouldShowErrorOutlineIfEmpty = features.isEmpty()
+            )
+        }
+    }
+
+    fun onTitleChanged(title: String) {
+        _viewState.update {
+            _viewState.value.copy(
+                productTitle = title,
+                shouldShowErrorOutlineIfEmpty = title.isEmpty()
+            )
+        }
     }
 
     fun onApplyButtonClicked() {
@@ -230,12 +245,21 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val productTitle: String? = null,
+        val productTitle: String = "",
         val features: String = "",
         val description: String = "",
         val identifiedLanguageISOCode: String? = null,
-        val generationState: GenerationState = Start()
+        val generationState: GenerationState = Start(),
+        val isProductTitleInitiallyPresent: Boolean,
+        val shouldShowErrorOutlineIfEmpty: Boolean = false
     ) {
+        val canGenerateWithAI: Boolean
+            get() = if (isProductTitleInitiallyPresent) {
+                features.isNotEmpty()
+            } else {
+                productTitle.isNotEmpty() && features.isNotEmpty()
+            }
+
         sealed class GenerationState {
             data class Start(val showError: Boolean = false) : GenerationState()
             object Generating : GenerationState()

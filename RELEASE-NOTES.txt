@@ -3,6 +3,8 @@
 14.9
 -----
 - [*] Orders with Coupons: Users can now select a coupon from a list when adding it to an order. [https://github.com/woocommerce/woocommerce-android/pull/9510]
+- [*] [Internal] Refactor product restrictions logic into it's own class to make it more reusable [https://github.com/woocommerce/woocommerce-android/pull/9480]
+- [*] AI: For better results, product description generation now require both product title and features [https://github.com/woocommerce/woocommerce-android/pull/9522]
 
 14.8
 - [*] [Internal] Fix crash happening while collecting IPP when switching payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9492]
@@ -17,6 +19,8 @@
 - [*] [Internal] Changed the way how we get WCPay and Stripe plugin's info from the API response [https://github.com/woocommerce/woocommerce-android/pull/9460]
 - [**] You can now see your shipping zone list from Settings. [https://github.com/woocommerce/woocommerce-android/pull/9496]
 
+14.7
+-----
 
 14.6
 -----
