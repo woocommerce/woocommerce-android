@@ -195,7 +195,7 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/hazmat_checkbox"
+                android:id="@+id/hazmat_toggle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_300"
                 android:layout_marginTop="@dimen/minor_00"

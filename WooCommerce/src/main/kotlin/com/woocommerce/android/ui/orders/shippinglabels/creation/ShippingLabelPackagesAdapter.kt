@@ -122,7 +122,7 @@ class ShippingLabelPackagesAdapter(
                 }
             }
 
-            binding.hazmatCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            binding.hazmatToggle.setOnCheckedChangeListener { _, isChecked ->
                 with(binding.hazmatContent) {
                     if (isChecked) expand() else collapse()
                 }
