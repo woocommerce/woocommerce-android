@@ -40,8 +40,8 @@ class SendTelemetryTest : BaseUnitTest() {
     private val selectedSite = mock<SelectedSite> {
         on { observe() } doReturn flowOf(site)
     }
-    private val appsPrefsWrapper: AppPrefsWrapper = mock<AppPrefsWrapper> {
-        on { getAppInstallationDate() } doReturn SOME_APP_INSTALLATION_DATE
+    private val appsPrefsWrapper = mock<AppPrefsWrapper> {
+        on { getAppInstallationDate() } doReturn APP_INSTALLATION_DATE
     }
 
     @Before
@@ -65,7 +65,7 @@ class SendTelemetryTest : BaseUnitTest() {
                 verify(trackerStore).sendTelemetry(
                     appVersion = "321",
                     site = site,
-                    installationDate = SOME_APP_INSTALLATION_DATE
+                    installationDateIso8601 = APP_INSTALLATION_DATE_ISO_8601
                 )
             }
     }
@@ -105,7 +105,7 @@ class SendTelemetryTest : BaseUnitTest() {
                 verify(trackerStore).sendTelemetry(
                     appVersion = "123",
                     site = site,
-                    installationDate = SOME_APP_INSTALLATION_DATE
+                    installationDateIso8601 = APP_INSTALLATION_DATE_ISO_8601
                 )
 
                 fakeSite.emit(siteB)
@@ -113,7 +113,7 @@ class SendTelemetryTest : BaseUnitTest() {
                 verify(trackerStore).sendTelemetry(
                     appVersion = "123",
                     site = siteB,
-                    installationDate = SOME_APP_INSTALLATION_DATE
+                    installationDateIso8601 = APP_INSTALLATION_DATE_ISO_8601
                 )
             }
     }
@@ -176,6 +176,7 @@ class SendTelemetryTest : BaseUnitTest() {
     private companion object {
         val site = SiteModel().apply { id = 123 }
         val siteB = SiteModel().apply { id = 321 }
-        val SOME_APP_INSTALLATION_DATE = Date(1692011562123) // 14 2023 11:12:42 UTC
+        val APP_INSTALLATION_DATE = Date(1692011562123) // 14 2023 11:12:42 UTC
+        const val APP_INSTALLATION_DATE_ISO_8601 = "2023-08-14T11:12:42Z"
     }
 }
