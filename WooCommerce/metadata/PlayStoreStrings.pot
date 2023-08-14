@@ -11,16 +11,19 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_149"
+msgid ""
+"14.9:\n"
+"- [*] Orders with Coupons: Users can now select a coupon from a list when adding it to an order. [https://github.com/woocommerce/woocommerce-android/pull/9510]\n"
+"- [*] [Internal] Refactor product restrictions logic into it's own class to make it more reusable [https://github.com/woocommerce/woocommerce-android/pull/9480]\n"
+"- [*] AI: For better results, product description generation now require both product title and features [https://github.com/woocommerce/woocommerce-android/pull/9522]\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_148"
 msgid ""
 "14.8:\n"
 "Exciting news! You can now create coupons directly within the app - provide exclusive discounts and special offers to your customers! We've enhanced the process of linking customers to their orders, making it quicker and more efficient. Update your app to experience these new enhancements!\n"
-msgstr ""
-
-msgctxt "release_note_147"
-msgid ""
-"14.7:\n"
-"We've been working on making shipping configuration available in the app. Your Shipping Zones are now viewable from the Settings screen. Stay tuned for more updates on this in the future!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
