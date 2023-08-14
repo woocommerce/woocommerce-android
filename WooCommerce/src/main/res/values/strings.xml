@@ -962,6 +962,7 @@
     <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contains Hazardous Materials</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
