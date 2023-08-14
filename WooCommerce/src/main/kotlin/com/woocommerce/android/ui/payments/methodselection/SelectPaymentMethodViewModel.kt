@@ -390,7 +390,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 AnalyticsTracker.KEY_AMOUNT_NORMALIZED to
                     paymentsUtils.convertToSmallestCurrencyUnit(
                         order.first().total,
-                        paymentsUtils.fromCurrencyCode(order.first().currency)
+                        order.first().currency,
                     ),
                 AnalyticsTracker.KEY_CURRENCY to order.first().currency,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),

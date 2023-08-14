@@ -100,9 +100,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
-    private val paymentsUtils: PaymentUtils = mock {
-        on { fromCurrencyCode("USD") }.thenReturn(mock())
-    }
+    private val paymentsUtils: PaymentUtils = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {

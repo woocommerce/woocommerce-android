@@ -57,7 +57,7 @@ internal class CreatePaymentAction(
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
         val amountInSmallestCurrencyUnit = paymentUtils.convertToSmallestCurrencyUnit(
             paymentInfo.amount,
-            paymentUtils.fromCurrencyCode(paymentInfo.currency)
+            paymentInfo.currency,
         )
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
             as CardReaderConfigForSupportedCountry

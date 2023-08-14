@@ -342,8 +342,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
         val amount = BigDecimal(1)
-        whenever(paymentUtils.fromCurrencyCode("USD")).thenReturn(mock())
-        whenever(paymentUtils.convertToSmallestCurrencyUnit(eq(amount), any())).thenReturn(100L)
+        whenever(paymentUtils.convertToSmallestCurrencyUnit(eq(amount), eq("USD"))).thenReturn(100L)
 
         action.createPaymentIntent(createPaymentInfo(amount = amount)).toList()
 

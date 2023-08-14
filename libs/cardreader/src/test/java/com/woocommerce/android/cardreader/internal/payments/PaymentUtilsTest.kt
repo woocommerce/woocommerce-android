@@ -33,7 +33,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `whenAmount$1ThenItGetsConvertedTo100Cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(1),
-            paymentUtils.fromCurrencyCode(TWO_DECIMAL_CURRENCY_CODE)
+            TWO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(100)
@@ -43,7 +43,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount $100 5cents, then it gets rounded down to 100 cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(1.005),
-            paymentUtils.fromCurrencyCode(TWO_DECIMAL_CURRENCY_CODE)
+            TWO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(100)
@@ -53,7 +53,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount $100 6 cents, then gets rounded up to 101 cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(1.006),
-            paymentUtils.fromCurrencyCode(TWO_DECIMAL_CURRENCY_CODE)
+            TWO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(101)
@@ -63,7 +63,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount $1 99 cents, then it gets converted to 199 cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(1.99),
-            paymentUtils.fromCurrencyCode(TWO_DECIMAL_CURRENCY_CODE)
+            TWO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(199)
@@ -73,7 +73,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount 300 and zero decimal currency, then it gets converted to 300`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(300),
-            paymentUtils.fromCurrencyCode(ZERO_DECIMAL_CURRENCY_CODE)
+            ZERO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(300)
@@ -83,7 +83,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount 100 and 5 nd zero decimal currency, then it gets converted to 101`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(100.5),
-            paymentUtils.fromCurrencyCode(ZERO_DECIMAL_CURRENCY_CODE)
+            ZERO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(101)
@@ -93,7 +93,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount 100 and 4 and zero decimal currency, then it gets converted to 100`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(100.4),
-            paymentUtils.fromCurrencyCode(ZERO_DECIMAL_CURRENCY_CODE)
+            ZERO_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(100)
@@ -103,7 +103,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount 1000 and three decimal currency, then it gets converted to 1000`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(1.000),
-            paymentUtils.fromCurrencyCode(THREE_DECIMAL_CURRENCY_CODE)
+            THREE_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(1000)
@@ -113,7 +113,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount 1001 and three decimal currency, then it gets converted to 1001`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(1.001),
-            paymentUtils.fromCurrencyCode(THREE_DECIMAL_CURRENCY_CODE)
+            THREE_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(1001)
@@ -123,7 +123,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     fun `when amount 100 decimal currency, then it gets converted to 100000`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
             BigDecimal(100),
-            paymentUtils.fromCurrencyCode(THREE_DECIMAL_CURRENCY_CODE)
+            THREE_DECIMAL_CURRENCY_CODE,
         )
 
         assertThat(result).isEqualTo(100000)

@@ -11,10 +11,9 @@ data class RefundParams(
 )
 
 internal fun RefundParams.toStripeRefundParameters(paymentUtils: PaymentUtils): RefundParameters {
-    val currencyObj = paymentUtils.fromCurrencyCode(this.currency)
     return RefundParameters.Builder(
         chargeId = this.chargeId,
-        amount = paymentUtils.convertToSmallestCurrencyUnit(this.amount, currencyObj),
+        amount = paymentUtils.convertToSmallestCurrencyUnit(this.amount, this.currency),
         currency = this.currency
     ).build()
 }
