@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
@@ -199,6 +200,8 @@ object AppPrefs {
         USER_SEEN_NEW_FEATURE_MORE_SCREEN,
 
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
+
+        APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
     }
 
     fun init(context: Context) {
@@ -1054,6 +1057,30 @@ object AppPrefs {
             key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
             default = false
         )
+
+    fun setApplicationStoreSnapshotTrackedForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setBoolean(
+            key = PrefKeyString(
+                "${APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+            ),
+            value = true
+        )
+    }
+
+    fun isApplicationStoreSnapshotTrackedForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        key = PrefKeyString(
+            "${APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+        ),
+        default = false
+    )
 
     /**
      * Remove all user and site-related preferences.
