@@ -104,7 +104,7 @@ class PaymentUtilsTest {
             paymentUtils.fromCurrencyCode(THREE_DECIMAL_CURRENCY_CODE)
         )
 
-        assertThat(result).isEqualTo(100000)
+        assertThat(result).isEqualTo(10000)
     }
 
     private companion object {
