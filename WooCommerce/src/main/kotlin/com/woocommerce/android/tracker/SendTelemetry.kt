@@ -1,5 +1,6 @@
 package com.woocommerce.android.tracker
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ class SendTelemetry @Inject constructor(
     private val trackerRepository: TrackerRepository,
     private val currentTimeProvider: CurrentTimeProvider,
     private val selectedSite: SelectedSite,
+    private val appsPrefsWrapper: AppPrefsWrapper
 ) {
     operator fun invoke(appVersion: String): Flow<Result> {
         return combine(
@@ -26,7 +28,11 @@ class SendTelemetry @Inject constructor(
                     val currentTime = currentTimeProvider.currentDate().time
 
                     if (lastUpdate == 0L || currentTime >= lastUpdate + UPDATE_INTERVAL) {
-                        trackerStore.sendTelemetry(appVersion, siteModel)
+                        trackerStore.sendTelemetry(
+                            appVersion,
+                            siteModel,
+                            appsPrefsWrapper.getAppInstallationDate()
+                        )
                         trackerRepository.updateLastSendingDate(siteModel, currentTime)
                         Result.SENT
                     } else {
