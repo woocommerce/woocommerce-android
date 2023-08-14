@@ -44,6 +44,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
     private val collectInteracRefundAction: CollectInteracRefundAction = mock()
     private val processInteracRefundAction: ProcessInteracRefundAction = mock()
     private val refundErrorMapper: RefundErrorMapper = mock()
+    private val paymentsUtils: PaymentUtils = mock()
 
     private val expectedInteracRefundSequence = listOf(
         CardInteracRefundStatus.CollectingInteracRefund::class,
@@ -57,6 +58,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
             collectInteracRefundAction,
             processInteracRefundAction,
             refundErrorMapper,
+            paymentsUtils,
         )
     }
 

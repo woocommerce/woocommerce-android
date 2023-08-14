@@ -9,9 +9,9 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
-import com.woocommerce.android.cardreader.internal.payments.convertInCurrencyScaleOf2ToLongInCents
 import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -24,7 +24,8 @@ internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
     private val terminal: TerminalWrapper,
     private val logWrapper: LogWrapper,
-    private val cardReaderConfigFactory: CardReaderConfigFactory
+    private val cardReaderConfigFactory: CardReaderConfigFactory,
+    private val paymentUtils: PaymentUtils,
 ) {
     sealed class CreatePaymentStatus {
         data class Success(val paymentIntent: PaymentIntent) : CreatePaymentStatus()
@@ -54,7 +55,10 @@ internal class CreatePaymentAction(
     }
 
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
-        val amountInSmallestCurrencyUnit = paymentInfo.amount.convertInCurrencyScaleOf2ToLongInCents()
+        val amountInSmallestCurrencyUnit = paymentUtils.convertToSmallestCurrencyUnit(
+            paymentInfo.amount,
+            paymentUtils.fromCurrencyCode(paymentInfo.currency)
+        )
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
             as CardReaderConfigForSupportedCountry
         val builder = paymentIntentParametersFactory.createBuilder(

@@ -1,26 +1,22 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import android.icu.util.Currency
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-private const val CURRENCY_SCALE = 2
-
-class PaymentUtils {
+object PaymentUtils {
     fun isSupportedCurrency(
         currency: String,
         cardReaderConfigFor: CardReaderConfigForSupportedCountry
     ): Boolean = currency.equals(
         cardReaderConfigFor.currency, ignoreCase = true
     )
-}
 
-// TODO cardreader Add support for other currencies
-fun BigDecimal.convertInCurrencyScaleOf2ToLongInCents(): Long {
-    return this
-        // round to USD_TO_CENTS_DECIMAL_PLACES decimal places
-        .setScale(CURRENCY_SCALE, RoundingMode.HALF_UP)
-        // convert dollars to cents
-        .movePointRight(CURRENCY_SCALE)
-        .longValueExact()
+    fun convertToSmallestCurrencyUnit(value: BigDecimal, currency: Currency): Long {
+        val smallestCurrencyUnit = BigDecimal.TEN.pow(currency.defaultFractionDigits)
+        return value.multiply(smallestCurrencyUnit).setScale(0, RoundingMode.HALF_UP).toLong()
+    }
+
+    fun fromCurrencyCode(currencyCode: String): Currency = Currency.getInstance(currencyCode)
 }
