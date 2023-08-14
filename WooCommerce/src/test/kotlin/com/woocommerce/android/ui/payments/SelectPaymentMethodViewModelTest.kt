@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -99,6 +100,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
+    private val paymentsUtils: PaymentUtils = mock {
+        on { fromCurrencyCode("USD") }.thenReturn(mock())
+    }
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -588,6 +592,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
             val viewModel = initViewModel(Payment(1L, ORDER))
+            whenever(paymentsUtils.convertToSmallestCurrencyUnit(any(), any())).thenReturn(100L)
 
             // WHEN
             viewModel.onCardReaderPaymentCompleted()
@@ -612,6 +617,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
             val viewModel = initViewModel(Payment(1L, SIMPLE))
+            whenever(paymentsUtils.convertToSmallestCurrencyUnit(any(), any())).thenReturn(100L)
 
             // WHEN
             viewModel.onCardReaderPaymentCompleted()
@@ -765,6 +771,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, SIMPLE))
+            whenever(paymentsUtils.convertToSmallestCurrencyUnit(any(), any())).thenReturn(100L)
 
             // WHEN
             viewModel.onSharePaymentUrlCompleted()
@@ -788,6 +795,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, ORDER))
+            whenever(paymentsUtils.convertToSmallestCurrencyUnit(any(), any())).thenReturn(100L)
 
             // WHEN
             viewModel.onSharePaymentUrlCompleted()
@@ -1140,6 +1148,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val orderId = 1L
         val param = Payment(orderId = orderId, paymentType = ORDER)
         val viewModel = initViewModel(param)
+        whenever(paymentsUtils.convertToSmallestCurrencyUnit(any(), any())).thenReturn(100L)
 
         // WHEN
         viewModel.onScanToPayCompleted()
@@ -1190,6 +1199,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             tapToPayAvailabilityStatus,
             appPrefs,
+            paymentsUtils,
         )
     }
 }
