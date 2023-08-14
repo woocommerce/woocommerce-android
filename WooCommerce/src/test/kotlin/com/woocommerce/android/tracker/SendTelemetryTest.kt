@@ -176,6 +176,6 @@ class SendTelemetryTest : BaseUnitTest() {
     private companion object {
         val site = SiteModel().apply { id = 123 }
         val siteB = SiteModel().apply { id = 321 }
-        val SOME_APP_INSTALLATION_DATE = Date(1692011562123) //14 2023 11:12:42 UTC
+        val SOME_APP_INSTALLATION_DATE = Date(1692011562123) // 14 2023 11:12:42 UTC
     }
 }
