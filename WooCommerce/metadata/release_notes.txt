@@ -1,4 +1,1 @@
-- [*] Orders with Coupons: Users can now select a coupon from a list when adding it to an order. [https://github.com/woocommerce/woocommerce-android/pull/9510]
-- [*] [Internal] Refactor product restrictions logic into it's own class to make it more reusable [https://github.com/woocommerce/woocommerce-android/pull/9480]
-- [*] AI: For better results, product description generation now require both product title and features [https://github.com/woocommerce/woocommerce-android/pull/9522]
-
+Adding coupons to your orders has never been easier. Simply select one from the list of existing coupons. Please continue to send us feedback – we are listening!
