@@ -52,7 +52,7 @@ class ShippingLabelPackagesAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return ShippingLabelPackageViewHolder(
             ShippingLabelPackageDetailsListItemBinding.inflate(layoutInflater, parent, false)
-                .also { it.hazmatCheckbox.isVisible = FeatureFlag.HAZMAT_SHIPPING.isEnabled() }
+                .also { it.hazmatToggle.isVisible = FeatureFlag.HAZMAT_SHIPPING.isEnabled() }
         )
     }
 
