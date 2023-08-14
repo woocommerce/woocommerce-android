@@ -194,13 +194,12 @@
                 style="@style/Woo.Divider"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/hazmat_checkbox"
-                style="@style/Woo.CheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_300"
                 android:layout_marginTop="@dimen/minor_00"
-                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginHorizontal="@dimen/major_100"
                 android:minHeight="@dimen/minor_00"
                 android:text="@string/shipping_label_package_details_hazmat_content_checkbox_title"
                 tools:text="Contains Hazardous Materials" />
