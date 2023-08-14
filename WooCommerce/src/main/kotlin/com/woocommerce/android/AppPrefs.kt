@@ -1065,7 +1065,7 @@ object AppPrefs {
     ) {
         setBoolean(
             key = PrefKeyString(
-                "${APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+                "$APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
             ),
             value = true
         )
@@ -1077,7 +1077,7 @@ object AppPrefs {
         selfHostedSiteId: Long
     ) = getBoolean(
         key = PrefKeyString(
-            "${APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE}:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+            "$APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
         ),
         default = false
     )
