@@ -4,6 +4,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun CountryPickerSelectorBottomSheet(viewModel: CountryPickerSelectorViewModel) {
+fun CountryPickerSelectorBottomSheet(viewModel: CountryListPickerViewModel) {
     Text(text = viewModel.toString())
 }

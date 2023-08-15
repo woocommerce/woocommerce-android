@@ -93,8 +93,8 @@
             android:id="@+id/action_countryPickerFragment_to_summaryFragment"
             app:destination="@id/summaryFragment" />
         <action
-            android:id="@+id/action_countryPickerFragment_to_countryPickerSelectorFragment"
-            app:destination="@id/countryPickerSelectorFragment">
+            android:id="@+id/action_countryPickerFragment_to_countryListPickerFragment"
+            app:destination="@id/countryListPickerFragment">
             <argument
                 android:name="currentLocationCode"
                 app:argType="string" />
@@ -147,11 +147,11 @@
             app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
     <dialog
-        android:id="@+id/countryPickerSelectorFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerSelectorFragment"
-        android:label="CountryPickerSelectorFragment">
+        android:id="@+id/countryListPickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerFragment"
+        android:label="CountryListPickerFragment">
         <action
-            android:id="@+id/action_countryPickerSelectorFragment_to_countryPickerFragment"
+            android:id="@+id/action_countryListPickerFragment_to_countryPickerFragment"
             app:destination="@id/countryPickerFragment">
             <argument
                 android:name="locationCode"
