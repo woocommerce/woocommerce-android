@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class StoreProfilerChallengesFragment : BaseFragment() {
     private val viewModel: StoreProfilerChallengesViewModel by viewModels()
