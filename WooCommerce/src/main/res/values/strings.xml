@@ -975,6 +975,33 @@
     <string name="shipping_label_multi_packages_items_count">%1$d items in %2$d packages</string>
     <string name="shipping_label_multi_packages_total_weight">Total packages weight: %1$s %2$s</string>
     <string name="shipping_label_create_new_package_button">Create new package</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">Air Eligible Ethanol Package - (authorized fragrance and hand sanitizer shipments)</string>
+    <string name="shipping_label_hazmat_option_class_1">Class 1 – Toy Propellant/Safety Fuse Package</string>
+    <string name="shipping_label_hazmat_option_class_3">Class 3 - Package (Hand sanitizer, rubbing alcohol, ethanol base products, flammable liquids etc.)</string>
+    <string name="shipping_label_hazmat_option_class_4">Class 4 - Package (Flammable solids)</string>
+    <string name="shipping_label_hazmat_option_class_5">Class 5 - Package (Oxidizers)</string>
+    <string name="shipping_label_hazmat_option_class_6">Class 6 - Package (Poisonous materials)</string>
+    <string name="shipping_label_hazmat_option_class_7">Class 7 – Radioactive Materials Package (e.g., smoke detectors, minerals, gun sights, etc.)</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">Class 8 – Corrosive Materials Package - Air Eligible Corrosive Materials (certain cleaning or tree/weed killing compounds, etc.)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">Class 8 – Nonspillable Wet Battery Package - Sealed lead acid batteries</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">Class 9 - Lithium Battery Marked – Ground Only Package - New Individual or spare lithium batteries (marked UN3480 or UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">Class 9 - Lithium Battery – Returns Package - Used electronic devices containing or packaged with lithium batteries (markings required)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">Class 9 - Lithium batteries, marked package - New electronic devices packaged with lithium batteries (marked UN3481 or UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">Class 9 – Dry Ice Package (limited to 5 lbs. if shipped via Air)</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Class 9 – Lithium batteries, unmarked package - New electronic devices installed or packaged with lithium batteries (no marking)</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">Class 9 – Magnetized Materials Package</string>
+    <string name="shipping_label_hazmat_option_division_4_1">Division 4.1 – Mailable flammable solids and Safety Matches Package - Safety/strike on box matches, book matches, mailable flammable solids</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Division 5.1 – Oxidizers Package - Hydrogen peroxide (8 to 20% concentration)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">Division 5.2 – Organic Peroxides Package</string>
+    <string name="shipping_label_hazmat_option_division_6_1">Division 6.1 – Toxic Materials Package (with an LD50 of 50 mg/kg or less) - (pesticides, herbicides, etc.)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">Division 6.2 - Hazardous Materials - Biological Materials (e.g., lab test kits, authorized COVID test kit returns)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">Excepted Quantity Provision Package (e.g., small volumes of flammable liquids, corrosive, toxic or environmentally hazardous materials - marking required)</string>
+    <string name="shipping_label_hazmat_option_ground_only">Ground Only Hazardous Materials (For items that are not listed, but are restricted to surface only)</string>
+    <string name="shipping_label_hazmat_option_id8000">ID8000 Consumer Commodity Package - Air Eligible ID8000 Consumer Commodity (Non-flammableaerosols, Flammable combustible liquids, Toxic Substance, Miscellaneious hazardous materials)</string>
+    <string name="shipping_label_hazmat_option_lighters">Lighters Package - Authorized Lighters</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY Ground Package - Aerosols, spray disinfectants, spray paint, hair spray, propane, butane, cleaning products, etc. - Fragrances, nail polish, nail polish remover, solvents, hand sanitizer, rubbing alcohol, ethanol base products, etc. - Other limited quantity surface materials (cosmetics, cleaning products, paints, etc.)</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">Small Quantity Provision Package (markings required)</string>
+
     <!--
     Shipping label package creation labels
     -->
