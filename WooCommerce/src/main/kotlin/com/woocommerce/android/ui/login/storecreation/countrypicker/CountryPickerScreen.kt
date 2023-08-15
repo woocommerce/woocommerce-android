@@ -49,6 +49,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
                 state = viewState,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCountrySelected = viewModel::onCountrySelected,
+                onCurrentCountryClicked = viewModel::onCurrentCountryClicked,
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
@@ -62,6 +63,7 @@ private fun CountryPickerForm(
     state: CountryPickerState,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
+    onCurrentCountryClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -76,12 +78,12 @@ private fun CountryPickerForm(
         ) {
             val configuration = LocalConfiguration.current
             if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                CountryPickerHeaderContent(state.countries, state.storeName)
+                CountryPickerHeaderContent(state.countries, state.storeName, onCurrentCountryClicked)
             }
             LazyColumn {
                 if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     item {
-                        CountryPickerHeaderContent(state.countries, state.storeName)
+                        CountryPickerHeaderContent(state.countries, state.storeName, onCurrentCountryClicked)
                     }
                 }
                 itemsIndexed(state.countries) { _, country ->
@@ -113,7 +115,8 @@ private fun CountryPickerForm(
 @Composable
 private fun CountryPickerHeaderContent(
     availableCountries: List<StoreCreationCountry>,
-    storeName: String
+    storeName: String,
+    onCurrentCountryClicked: () -> Unit,
 ) {
     Column {
         Text(
@@ -138,9 +141,9 @@ private fun CountryPickerHeaderContent(
             style = MaterialTheme.typography.caption,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
         )
-        CountryItem(
+        CurrentCountryItem(
             country = availableCountries.first { it.isSelected },
-            onCountrySelected = {},
+            onCurrentCountryClicked = onCurrentCountryClicked,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(id = R.dimen.major_200))
@@ -150,6 +153,54 @@ private fun CountryPickerHeaderContent(
             style = MaterialTheme.typography.caption,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
         )
+    }
+}
+
+@Composable
+private fun CurrentCountryItem(
+    country: StoreCreationCountry,
+    onCurrentCountryClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .border(
+                width = dimensionResource(id = if (country.isSelected) R.dimen.minor_25 else R.dimen.minor_10),
+                color = colorResource(
+                    if (country.isSelected) R.color.color_primary else R.color.divider_color
+                ),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            )
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(
+                color = colorResource(
+                    id = if (country.isSelected)
+                        if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
+                    else R.color.color_surface
+                )
+            )
+            .clickable { onCurrentCountryClicked() }
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_75),
+                bottom = dimensionResource(id = R.dimen.major_75),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
+        ) {
+            Text(
+                text = country.emojiFlag,
+                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
+            )
+            Text(
+                text = country.name,
+                color = colorResource(
+                    id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
+                    else R.color.color_on_surface
+                )
+            )
+        }
     }
 }
 
@@ -242,6 +293,7 @@ fun CountryPickerPreview() {
             ),
             onContinueClicked = {},
             onCountrySelected = {},
+            onCurrentCountryClicked = {},
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
         )

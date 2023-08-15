@@ -33,6 +33,8 @@ class CountryPickerViewModel @Inject constructor(
 
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
 
+    private var currentCountryCode: String = ""
+
     val countryPickerState = availableCountries
         .map { CountryPickerState(newStore.data.name.orEmpty(), it) }
         .asLiveData()
@@ -46,7 +48,7 @@ class CountryPickerViewModel @Inject constructor(
         )
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
-            val defaultCountryCode = when {
+            currentCountryCode = when {
                 !newStore.data.country?.code.isNullOrEmpty() -> newStore.data.country?.code!!
                 loadedCountriesMap.containsKey(Locale.getDefault().country) -> Locale.getDefault().country
                 else -> DEFAULT_LOCATION_CODE
@@ -57,7 +59,7 @@ class CountryPickerViewModel @Inject constructor(
                         name = name,
                         code = code,
                         emojiFlag = emojiUtils.countryCodeToEmojiFlag(code),
-                        isSelected = defaultCountryCode == code
+                        isSelected = currentCountryCode == code
                     )
                 }.sortedBy { it.name }
             }
@@ -98,12 +100,18 @@ class CountryPickerViewModel @Inject constructor(
         newStore.update(country = country.toNewStoreCountry())
     }
 
+    fun onCurrentCountryClicked() {
+        triggerEvent(NavigateToDomainListPicker(currentCountryCode))
+    }
+
     private fun StoreCreationCountry.toNewStoreCountry() =
+
         NewStore.Country(
             name = name,
             code = code,
         )
 
+    data class NavigateToDomainListPicker(val locationCode: String): MultiLiveEvent.Event()
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 
