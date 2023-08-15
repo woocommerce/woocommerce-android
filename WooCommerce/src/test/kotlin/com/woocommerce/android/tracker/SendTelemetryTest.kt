@@ -1,6 +1,7 @@
 package com.woocommerce.android.tracker
 
 import app.cash.turbine.test
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry.Result.NOT_SENT
 import com.woocommerce.android.tracker.SendTelemetry.Result.SENT
@@ -39,6 +40,9 @@ class SendTelemetryTest : BaseUnitTest() {
     private val selectedSite = mock<SelectedSite> {
         on { observe() } doReturn flowOf(site)
     }
+    private val appsPrefsWrapper = mock<AppPrefsWrapper> {
+        on { getAppInstallationDate() } doReturn APP_INSTALLATION_DATE
+    }
 
     @Before
     fun setUp() {
@@ -47,6 +51,7 @@ class SendTelemetryTest : BaseUnitTest() {
             trackerRepository = trackerRepository,
             currentTimeProvider = currentTimeProvider,
             selectedSite = selectedSite,
+            appsPrefsWrapper = appsPrefsWrapper
         )
     }
 
@@ -57,7 +62,11 @@ class SendTelemetryTest : BaseUnitTest() {
             // then
             .test {
                 assertThat(awaitItem()).isEqualTo(SENT)
-                verify(trackerStore).sendTelemetry("321", site)
+                verify(trackerStore).sendTelemetry(
+                    appVersion = "321",
+                    site = site,
+                    installationDateIso8601 = APP_INSTALLATION_DATE_ISO_8601
+                )
             }
     }
 
@@ -72,7 +81,7 @@ class SendTelemetryTest : BaseUnitTest() {
             // then
             .test {
                 assertThat(awaitItem()).isEqualTo(NOT_SENT)
-                verify(trackerStore, never()).sendTelemetry(any(), any())
+                verify(trackerStore, never()).sendTelemetry(any(), any(), any())
             }
     }
 
@@ -93,11 +102,19 @@ class SendTelemetryTest : BaseUnitTest() {
 
                 fakeSite.emit(site)
                 assertThat(awaitItem()).isEqualTo(SENT)
-                verify(trackerStore).sendTelemetry("123", site)
+                verify(trackerStore).sendTelemetry(
+                    appVersion = "123",
+                    site = site,
+                    installationDateIso8601 = APP_INSTALLATION_DATE_ISO_8601
+                )
 
                 fakeSite.emit(siteB)
                 assertThat(awaitItem()).isEqualTo(SENT)
-                verify(trackerStore).sendTelemetry("123", siteB)
+                verify(trackerStore).sendTelemetry(
+                    appVersion = "123",
+                    site = siteB,
+                    installationDateIso8601 = APP_INSTALLATION_DATE_ISO_8601
+                )
             }
     }
 
@@ -156,8 +173,10 @@ class SendTelemetryTest : BaseUnitTest() {
         assertThat(results).containsExactly(SENT, NOT_SENT, SENT)
     }
 
-    companion object {
+    private companion object {
         val site = SiteModel().apply { id = 123 }
         val siteB = SiteModel().apply { id = 321 }
+        val APP_INSTALLATION_DATE = Date(1692011562123) // 14 Aug 2023 11:12:42 UTC
+        const val APP_INSTALLATION_DATE_ISO_8601 = "2023-08-14T11:12:42Z"
     }
 }
