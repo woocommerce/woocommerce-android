@@ -31,7 +31,8 @@ enum class FeatureFlag {
     PRODUCT_DESCRIPTION_AI_GENERATOR,
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     SHIPPING_ZONES,
-    BETTER_CUSTOMER_SEARCH_M2;
+    BETTER_CUSTOMER_SEARCH_M2,
+    HAZMAT_SHIPPING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -64,6 +65,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
+            HAZMAT_SHIPPING
             -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
