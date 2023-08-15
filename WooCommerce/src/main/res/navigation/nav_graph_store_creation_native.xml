@@ -142,7 +142,7 @@
             app:destination="@id/installationFragment"
             app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
-    <dialog
+    <fragment
         android:id="@+id/countryListPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerFragment"
         android:label="CountryListPickerFragment">
@@ -157,5 +157,5 @@
                 android:name="locationCode"
                 app:argType="string" />
         </action>
-    </dialog>
+    </fragment>
 </navigation>
