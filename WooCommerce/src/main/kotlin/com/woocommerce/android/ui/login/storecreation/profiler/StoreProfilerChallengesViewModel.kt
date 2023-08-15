@@ -75,6 +75,17 @@ class StoreProfilerChallengesViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_profiler_challenge_description)
 
     override fun onContinueClicked() {
-        TODO("Not yet implemented")
+
+    }
+
+    override fun onSkipPressed() {
+        super.onSkipPressed()
+        // TODO()
+        analyticsTracker.track(
+            AnalyticsEvent.SITE_CREATION_PROFILER_QUESTION_SKIPPED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_CHALLENGES
+            )
+        )
     }
 }
