@@ -3134,6 +3134,13 @@
     <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
     <string name="store_creation_store_profiler_platforms_title">Which platform(s) are\nyou currently using?</string>
     <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
+    <string name="store_profiler_challenge_title">What challenges you in\nstarting or running an\nonline Store?</string>
+    <string name="store_profiler_challenge_description">Choose your concerns or difficulties below. You can select more than one option.</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Setting up the online store</string>
+    <string name="store_profiler_challenge_finding_customers">Finding customers</string>
+    <string name="store_profiler_challenge_managing_inventory">Managing inventory</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
+    <string name="store_profiler_challenge_other">Other</string>
 
     <string name="store_creation_country_picker_title">Confirm your location</string>
     <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
