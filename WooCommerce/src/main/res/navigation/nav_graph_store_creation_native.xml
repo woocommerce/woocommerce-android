@@ -94,11 +94,7 @@
             app:destination="@id/summaryFragment" />
         <action
             android:id="@+id/action_countryPickerFragment_to_countryListPickerFragment"
-            app:destination="@id/countryListPickerFragment">
-            <argument
-                android:name="currentLocationCode"
-                app:argType="string" />
-        </action>
+            app:destination="@id/countryListPickerFragment" />
     </fragment>
 
     <fragment
@@ -150,6 +146,10 @@
         android:id="@+id/countryListPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerFragment"
         android:label="CountryListPickerFragment">
+        <argument
+            android:name="currentLocationCode"
+            app:argType="string" />
+
         <action
             android:id="@+id/action_countryListPickerFragment_to_countryPickerFragment"
             app:destination="@id/countryPickerFragment">
