@@ -9,6 +9,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     APPLICATION_VERSION_CHECK_FAILED(siteless = true),
     BACK_PRESSED(siteless = true),
     VIEW_SHOWN(siteless = true),
+    APPLICATION_STORE_SNAPSHOT(siteless = false),
 
     // -- Login
     SIGNED_IN(siteless = true),
