@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHALLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHALLENGE_SHIPPING_AND_LOGISTICS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.NewStore.ProfilerData
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -75,17 +76,21 @@ class StoreProfilerChallengesViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_profiler_challenge_description)
 
     override fun onContinueClicked() {
-
+        val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
+        newStore.update(
+            profilerData = (newStore.data.profilerData ?: ProfilerData())
+                .copy(storeSetupChallengeKey = selectedOption?.key)
+        )
     }
 
     override fun onSkipPressed() {
         super.onSkipPressed()
-        // TODO()
         analyticsTracker.track(
             AnalyticsEvent.SITE_CREATION_PROFILER_QUESTION_SKIPPED,
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_CHALLENGES
             )
         )
+        // TODO("Navigate to the next step: Features interested in")
     }
 }
