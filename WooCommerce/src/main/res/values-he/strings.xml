@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 15:54:04+0000
+Translation-Revision-Date: 2023-08-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">יצירת הקופון נכשלה</string>
+    <string name="coupon_create_coupon_created">הקופון נוצר</string>
+    <string name="coupon_create_save_button">ליצור</string>
+    <string name="coupon_create_screen_title_default">ליצור קופון</string>
+    <string name="coupon_create_screen_title">ליצור ⁦%1$s⁩</string>
+    <string name="coupon_edit_screen_title_default">לערוך קופון</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">ליצור הנחה של סכום כולל קבוע עבור מוצרים נבחרים</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">ליצור הנחה של סכום כולל קבוע עבור עגלת הקניות במלואה</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">ליצור הנחה באחוזים עבור המוצרים הנבחרים</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">הנחת מוצר קבועה</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">הנחה קבועה לעגלת הקניות</string>
+    <string name="coupon_type_picker_percentage_discount_title">אחוזי הנחה</string>
+    <string name="coupon_type_picker_fixed_product_content_description">סוג הקופון – מוצר קבוע</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">סוג הקופון – עגלת קניות קבועה</string>
+    <string name="coupon_type_picker_percentage_content_description">סוג הקופון – הנחה לפי אחוזים</string>
+    <string name="coupon_type_picker_title">ליצור קופון</string>
+    <string name="coupon_list_add_coupon_content_description">להוסיף קופון</string>
+    <string name="try_test_order_button">להתחיל הזמנה לבדיקה</string>
+    <string name="try_test_order_step_4">ניתן להשתמש באפליקציה כדי לעבד את ההחזר הכספי של ההזמנה לבדיקה</string>
+    <string name="try_test_order_step_3">יש להשלים את התשלום ולהמתין להודעה בדחיפה לגבי ההזמנה שלך באפליקציה של WooCommerce.</string>
+    <string name="try_test_order_step_2">יש לבחור את המוצר לבדיקה, להוסיף אותו לעגלה ולהשלים את תהליך התשלום בקופה בחנות המקוונת, בדיוק כמו לקוח אמיתי.</string>
+    <string name="try_test_order_step_1">יש להקיש על הכפתור שלמטה כדי לעבור אל החנות המקוונת שלך דרך הדפדפן.</string>
+    <string name="try_test_order_heading">לנסות הזמנה לבדיקה</string>
+    <string name="empty_order_test_order_button">לנסות הזמנה לבדיקה</string>
+    <string name="empty_order_test_order_message">יש לבצע הזמנה לבדיקה כדי לוודא שתהליך של WooCommerce שהגדרת מאפשר חוויית שימוש חלקה ללקוחות</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">להוסיף פרטים ידנית</string>
+    <string name="order_creation_customer_search_old_wc_hint">לחפש לקוחות לפי</string>
     <string name="shipping_classes_zones">סיווגים ואזורים של משלוחים</string>
     <string name="free_trial_survey_free_text">סיבה אחרת (יש לפרט)</string>
     <string name="free_trial_survey_option4">אני חלק מצוות וההחלטה צריכה להיות משותפת לכולם.</string>
@@ -22,7 +49,7 @@ Language: he_IL
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 להמשיך לתפעל את העסק!</string>
     <string name="order_creation_customer_search_empty_email">כתובת אימייל לא קיימת</string>
     <string name="order_creation_customer_search_empty_name">ללא שם</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">יש להשתמש בחיפוש כדי למצוא לקוחות קיימים</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">לחפש לקוח קיים או</string>
     <string name="last_update_with_frequency">העדכון האחרון %s (מתעדכן כל 30 דקות)</string>
     <string name="last_update">העדכון האחרון %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;למידע נוסף בנושא&lt;/a&gt; קבלת תשלומים עם Tap To Pay ב-Android</string>

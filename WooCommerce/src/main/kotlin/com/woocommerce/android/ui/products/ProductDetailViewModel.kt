@@ -444,7 +444,7 @@ class ProductDetailViewModel @Inject constructor(
 
         triggerEvent(
             ShowAIProductDescriptionBottomSheet(
-                viewState.productDraft?.name,
+                viewState.productDraft?.name ?: "",
                 chosenDescription
             )
         )
@@ -2418,7 +2418,7 @@ class ProductDetailViewModel @Inject constructor(
     data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
     data class ShowAIProductDescriptionBottomSheet(
-        val productTitle: String?,
+        val productTitle: String,
         val productDescription: String?
     ) : Event()
 

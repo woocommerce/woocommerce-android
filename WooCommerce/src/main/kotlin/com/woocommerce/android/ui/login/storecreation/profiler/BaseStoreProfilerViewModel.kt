@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login.storecreation.profiler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,10 +64,6 @@ abstract class BaseStoreProfilerViewModel(
                 else it.copy(isSelected = false)
             }
         }
-    }
-
-    fun onHelpPressed() {
-        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.STORE_CREATION))
     }
 
     data class StoreProfilerState(

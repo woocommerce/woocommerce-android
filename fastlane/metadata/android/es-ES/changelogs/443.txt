@@ -1,2 +1,0 @@
-14.7:
-Hemos estado trabajando para que puedas acceder a la configuración de envío desde la aplicación. Ahora puedes ver tus zonas de envío desde la pantalla Ajustes. No te pierdas las próximas actualizaciones relacionadas con este asunto.

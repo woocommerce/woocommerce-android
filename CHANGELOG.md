@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 14.9
+Adding coupons to your orders has never been easier. Simply select one from the list of existing coupons. Please continue to send us feedback – we are listening!
+
 ## 14.8
 Exciting news! You can now create coupons directly within the app - provide exclusive discounts and special offers to your customers! We've enhanced the process of linking customers to their orders, making it quicker and more efficient. Update your app to experience these new enhancements!
 
