@@ -200,7 +200,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                     "woocommerce-gateway-stripe" to "not_installed",
                     "woocommerce-gateway-stripe" to "not_installed",
                     "woocommerce-square" to "not_installed",
-                    "woocommerce-gateway-paypal-express-checkout" to "not_installed",
+                    "woocommerce-paypal-payments" to "not_installed",
                 )
             )
         }
@@ -237,7 +237,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                             setIsActive(false)
                         },
                         SitePluginModel().apply {
-                            name = "woocommerce-gateway-paypal-express-checkout"
+                            name = "woocommerce-paypal-payments"
                             setIsActive(false)
                         },
                     )
@@ -257,7 +257,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                     "woocommerce-gateway-stripe" to "installed_and_not_activated",
                     "woocommerce-gateway-stripe" to "installed_and_not_activated",
                     "woocommerce-square" to "installed_and_not_activated",
-                    "woocommerce-gateway-paypal-express-checkout" to "installed_and_not_activated",
+                    "woocommerce-paypal-payments" to "installed_and_not_activated",
                 )
             )
         }
@@ -294,7 +294,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                             setIsActive(true)
                         },
                         SitePluginModel().apply {
-                            name = "woocommerce-gateway-paypal-express-checkout"
+                            name = "woocommerce-paypal-payments"
                             setIsActive(true)
                         },
                     )
@@ -314,7 +314,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                     "woocommerce-gateway-stripe" to "installed_and_activated",
                     "woocommerce-gateway-stripe" to "installed_and_activated",
                     "woocommerce-square" to "installed_and_activated",
-                    "woocommerce-gateway-paypal-express-checkout" to "installed_and_activated",
+                    "woocommerce-paypal-payments" to "installed_and_activated",
                 )
             )
         }
@@ -351,7 +351,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                             setIsActive(true)
                         },
                         SitePluginModel().apply {
-                            name = "woocommerce-gateway-paypal-express-checkout-1"
+                            name = "woocommerce-paypal-payments-1"
                             setIsActive(true)
                         },
                     )
@@ -371,7 +371,7 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                     "woocommerce-gateway-stripe" to "installed_and_activated",
                     "woocommerce-gateway-stripe" to "installed_and_activated",
                     "woocommerce-square" to "installed_and_activated",
-                    "woocommerce-gateway-paypal-express-checkout" to "not_installed",
+                    "woocommerce-paypal-payments" to "not_installed",
                 )
             )
         }
