@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.callbackFlow
 internal class CreatePaymentAction(
     private val paymentIntentParametersFactory: PaymentIntentParametersFactory,
     private val terminal: TerminalWrapper,
-    private val paymentUtils: PaymentUtils,
     private val logWrapper: LogWrapper,
-    private val cardReaderConfigFactory: CardReaderConfigFactory
+    private val cardReaderConfigFactory: CardReaderConfigFactory,
+    private val paymentUtils: PaymentUtils,
 ) {
     sealed class CreatePaymentStatus {
         data class Success(val paymentIntent: PaymentIntent) : CreatePaymentStatus()
@@ -55,7 +55,10 @@ internal class CreatePaymentAction(
     }
 
     private fun createParams(paymentInfo: PaymentInfo): PaymentIntentParameters {
-        val amountInSmallestCurrencyUnit = paymentUtils.convertBigDecimalInDollarsToLongInCents(paymentInfo.amount)
+        val amountInSmallestCurrencyUnit = paymentUtils.convertToSmallestCurrencyUnit(
+            paymentInfo.amount,
+            paymentInfo.currency,
+        )
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
             as CardReaderConfigForSupportedCountry
         val builder = paymentIntentParametersFactory.createBuilder(

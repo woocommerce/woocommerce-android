@@ -216,6 +216,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/major_100"
                     android:text="@string/shipping_label_package_details_hazmat_content_description" />
 
             </LinearLayout>

@@ -508,4 +508,26 @@ class AppPrefsTest {
     fun givenIppWasNotUsedWhenGetCardReaderLastSuccessfulPaymentThenTimeReturnedZero() {
         assertThat(AppPrefs.getCardReaderLastSuccessfulPaymentTime()).isEqualTo(0L)
     }
+
+    @Test
+    fun givenSetApplicationStoreSnapshotTrackedForSiteNotCalledThenGetterReturnsFalse() {
+        assertThat(
+            AppPrefs.isApplicationStoreSnapshotTrackedForSite(
+                0, 0L, 0L
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenSetApplicationStoreSnapshotTrackedForSiteCalledThenGetterReturnsTrue() {
+        AppPrefs.setApplicationStoreSnapshotTrackedForSite(
+            0, 0L, 0L
+        )
+
+        assertThat(
+            AppPrefs.isApplicationStoreSnapshotTrackedForSite(
+                0, 0L, 0L
+            )
+        ).isTrue
+    }
 }
