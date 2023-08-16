@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 
 @Composable
-fun CountryPickerSelectorBottomSheet(viewModel: CountryListPickerViewModel) {
+fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
     viewModel.countryListPickerState.observeAsState().value?.let { viewState ->
         LazyColumn {
             itemsIndexed(viewState.countries) { _, country ->

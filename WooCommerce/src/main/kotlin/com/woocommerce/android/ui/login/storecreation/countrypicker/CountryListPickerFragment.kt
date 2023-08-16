@@ -22,7 +22,7 @@ class CountryListPickerFragment: BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    CountryPickerSelectorBottomSheet(viewModel = viewModel)
+                    CountryListPickerScreen(viewModel = viewModel)
                 }
             }
         }
