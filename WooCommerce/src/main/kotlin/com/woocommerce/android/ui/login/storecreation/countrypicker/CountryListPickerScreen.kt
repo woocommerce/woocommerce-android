@@ -41,50 +41,63 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
             )
         }) { padding ->
-            Column(
+            CountryListPickerForm(
+                countries = viewState.countries,
+                onCountrySelected = viewModel::onCountrySelected,
+                onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
-            ) {
-                val configuration = LocalConfiguration.current
-                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    CountryListPickerHeader(viewState.countries.first { it.isSelected })
-                }
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        item {
-                            CountryListPickerHeader(viewState.countries.first { it.isSelected })
-                        }
-                    }
+            )
+        }
+    }
+}
 
-                    itemsIndexed(viewState.countries) { _, country ->
-                        CountryItem(
-                            country = country,
-                            onCountrySelected = viewModel::onCountrySelected,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                        )
-                    }
-                }
-
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
-                )
-                WCColoredButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.major_100)),
-                    onClick = viewModel::onContinueClicked,
-                ) {
-                    Text(text = stringResource(id = R.string.continue_button))
+@Composable
+fun CountryListPickerForm(
+    countries: List<StoreCreationCountry>,
+    onCountrySelected: (StoreCreationCountry) -> Unit,
+    onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        val configuration = LocalConfiguration.current
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            CountryListPickerHeader(countries.first { it.isSelected })
+        }
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        ) {
+            if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                item {
+                    CountryListPickerHeader(countries.first { it.isSelected })
                 }
             }
+
+            itemsIndexed(countries) { _, country ->
+                CountryItem(
+                    country = country,
+                    onCountrySelected = onCountrySelected,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                )
+            }
+        }
+
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            onClick = onContinueClicked,
+        ) {
+            Text(text = stringResource(id = R.string.continue_button))
         }
     }
 }
