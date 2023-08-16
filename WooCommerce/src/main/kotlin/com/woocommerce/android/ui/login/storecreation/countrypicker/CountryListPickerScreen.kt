@@ -5,34 +5,50 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
 fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
     viewModel.countryListPickerState.observeAsState().value?.let { viewState ->
-        LazyColumn {
-            itemsIndexed(viewState.countries) { _, country ->
-                CountryItem(
-                    country = country,
-                    onCountrySelected = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                )
+        Scaffold(topBar = {
+            Toolbar(
+                title = { Text(stringResource(id = R.string.store_creation_country_list_picker_toolbar_title)) },
+                navigationIcon = Icons.Filled.ArrowBack,
+                onNavigationButtonClick = viewModel::onArrowBackPressed,
+            )
+        }) { padding ->
+            Column(modifier = Modifier.padding(padding)) {
+                LazyColumn {
+                    itemsIndexed(viewState.countries) { _, country ->
+                        CountryItem(
+                            country = country,
+                            onCountrySelected = { },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                        )
+                    }
+                }
             }
         }
     }

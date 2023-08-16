@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.countrypicker
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.util.EmojiUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,7 @@ class CountryListPickerViewModel @Inject constructor(
     val countryListPickerState = availableCountries
         .map { CountryListPickerState(it) }
         .asLiveData()
-    
+
     init {
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
@@ -40,6 +41,10 @@ class CountryListPickerViewModel @Inject constructor(
                 }.sortedBy { it.name }
             }
         }
+    }
+
+    fun onArrowBackPressed() {
+        triggerEvent(Exit)
     }
 
     data class CountryListPickerState(

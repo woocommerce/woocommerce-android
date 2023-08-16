@@ -3138,6 +3138,7 @@
     <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
     <string name="store_creation_country_picker_current_location">Current location</string>
     <string name="store_creation_country_picker_countries_header">Countries</string>
+    <string name="store_creation_country_list_picker_toolbar_title">Select a country</string>
 
     <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
