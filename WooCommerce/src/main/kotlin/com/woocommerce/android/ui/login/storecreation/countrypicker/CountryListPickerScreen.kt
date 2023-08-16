@@ -44,7 +44,10 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
             ) {
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.major_100))
+                ) {
                     item {
                         Text(
                             text = stringResource(id = R.string.store_creation_country_picker_current_location),
