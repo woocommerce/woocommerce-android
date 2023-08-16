@@ -262,11 +262,10 @@ fun CountryListPickerPreview() {
                     isSelected = false
                 )
             ),
-        onCountrySelected = {},
-        onContinueClicked = {},
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
+            onCountrySelected = {},
+            onContinueClicked = {},
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
         )
     }
-
 }
