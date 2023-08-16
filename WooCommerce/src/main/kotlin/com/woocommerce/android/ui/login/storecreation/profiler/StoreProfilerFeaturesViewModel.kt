@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.NewStore.ProfilerData
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -13,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StoreProfilerViewModel @Inject constructor(
+class StoreProfilerFeaturesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
     private val analyticsTracker: AnalyticsTrackerWrapper,
@@ -84,7 +85,11 @@ class StoreProfilerViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_profiler_features_description)
 
     override fun onContinueClicked() {
-        TODO("Not yet implemented")
+        val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
+        newStore.update(
+            profilerData = (newStore.data.profilerData ?: ProfilerData())
+                .copy(featuresKey = selectedOption?.key)
+        )
     }
 
     override fun onSkipPressed() {

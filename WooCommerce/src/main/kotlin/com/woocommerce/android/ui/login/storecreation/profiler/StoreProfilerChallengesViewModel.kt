@@ -79,7 +79,7 @@ class StoreProfilerChallengesViewModel @Inject constructor(
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
         newStore.update(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
-                .copy(storeSetupChallengeKey = selectedOption?.key)
+                .copy(challengeKey = selectedOption?.key)
         )
     }
 

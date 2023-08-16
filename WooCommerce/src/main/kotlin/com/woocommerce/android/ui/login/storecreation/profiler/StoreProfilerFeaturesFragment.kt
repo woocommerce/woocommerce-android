@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class StoreProfilerFeaturesFragment : BaseFragment() {
-    private val viewModel: StoreProfilerViewModel by viewModels()
+    private val viewModel: StoreProfilerFeaturesViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
