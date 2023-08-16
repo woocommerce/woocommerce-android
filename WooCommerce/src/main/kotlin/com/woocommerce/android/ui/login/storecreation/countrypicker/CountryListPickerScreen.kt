@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 
 @Composable
 fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
@@ -51,6 +53,7 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                 }
                 LazyColumn(
                     modifier = Modifier
+                        .weight(1f)
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
                     if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -68,6 +71,19 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                                 .padding(bottom = dimensionResource(id = R.dimen.major_100))
                         )
                     }
+                }
+
+                Divider(
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = dimensionResource(id = R.dimen.minor_10)
+                )
+                WCColoredButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.major_100)),
+                    onClick = { },
+                ) {
+                    Text(text = stringResource(id = R.string.continue_button))
                 }
             }
         }
