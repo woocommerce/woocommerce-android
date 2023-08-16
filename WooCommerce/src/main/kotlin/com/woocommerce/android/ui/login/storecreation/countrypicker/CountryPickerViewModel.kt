@@ -97,7 +97,6 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     private fun StoreCreationCountry.toNewStoreCountry() =
-
         NewStore.Country(
             name = name,
             code = code,

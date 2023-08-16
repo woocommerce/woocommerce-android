@@ -80,7 +80,7 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimensionResource(id = R.dimen.major_100)),
-                    onClick = { },
+                    onClick = viewModel::onContinueClicked,
                 ) {
                     Text(text = stringResource(id = R.string.continue_button))
                 }
