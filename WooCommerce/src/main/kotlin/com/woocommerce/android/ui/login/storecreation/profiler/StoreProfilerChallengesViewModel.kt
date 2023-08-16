@@ -38,7 +38,7 @@ class StoreProfilerChallengesViewModel @Inject constructor(
         )
         launch {
             profilerOptions.update {
-                listOf(
+                val options = listOf(
                     StoreProfilerOptionUi(
                         key = VALUE_CHALLENGE_SETTING_UP_ONLINE_STORE,
                         name = resourceProvider.getString(R.string.store_profiler_challenge_setting_up_online_store),
@@ -65,6 +65,9 @@ class StoreProfilerChallengesViewModel @Inject constructor(
                         isSelected = false
                     ),
                 )
+                options.map { option ->
+                    option.copy(isSelected = option.key == newStore.data.profilerData?.challengeKey)
+                }
             }
         }
     }

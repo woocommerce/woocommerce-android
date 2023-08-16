@@ -32,7 +32,7 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
         )
         launch {
             profilerOptions.update {
-                listOf(
+                val options = listOf(
                     StoreProfilerOptionUi(
                         key = AnalyticsTracker.VALUE_FEATURES_PRODUCT_MANAGEMENT_AND_INVENTORY,
                         name = resourceProvider.getString(R.string.store_profiler_features_product_management),
@@ -74,6 +74,9 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
                         isSelected = false
                     ),
                 )
+                options.map { option ->
+                    option.copy(isSelected = option.key == newStore.data.profilerData?.featuresKey)
+                }
             }
         }
     }
