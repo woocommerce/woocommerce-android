@@ -98,7 +98,9 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onCurrentCountryClicked() {
-        triggerEvent(NavigateToDomainListPicker(currentCountryCode))
+        triggerEvent(NavigateToDomainListPicker(
+            locationCode = currentCountryCode.takeIf { it.isNotEmpty() } ?: DEFAULT_LOCATION_CODE
+        ))
     }
 
     private fun StoreCreationCountry.toNewStoreCountry() =
