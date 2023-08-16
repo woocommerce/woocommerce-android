@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -38,39 +40,23 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
             )
         }) { padding ->
-
             Column(
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
             ) {
+                val configuration = LocalConfiguration.current
+                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    CountryListPickerHeader(viewState.countries.first { it.isSelected })
+                }
                 LazyColumn(
                     modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.major_100))
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
-                    item {
-                        Text(
-                            text = stringResource(id = R.string.store_creation_country_picker_current_location),
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
-                        )
-                    }
-
-                    item {
-                        CurrentCountryItem(
-                            country = viewState.countries.first { it.isSelected },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = dimensionResource(id = R.dimen.major_200))
-                        )
-                    }
-
-                    item {
-                        Text(
-                            text = stringResource(id = R.string.store_creation_country_picker_countries_header),
-                            style = MaterialTheme.typography.caption,
-                            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
-                        )
+                    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        item {
+                            CountryListPickerHeader(viewState.countries.first { it.isSelected })
+                        }
                     }
 
                     itemsIndexed(viewState.countries) { _, country ->
@@ -85,6 +71,32 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CountryListPickerHeader(selectedCountry: CountryListPickerViewModel.StoreCreationCountry) {
+    Column(
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = stringResource(id = R.string.store_creation_country_picker_current_location),
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
+
+        CurrentCountryItem(
+            country = selectedCountry,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimensionResource(id = R.dimen.major_200))
+        )
+
+        Text(
+            text = stringResource(id = R.string.store_creation_country_picker_countries_header),
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
     }
 }
 
