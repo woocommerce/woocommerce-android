@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+15.1
+-----
+- [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
+
 15.0
 -----
 

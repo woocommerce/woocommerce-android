@@ -252,8 +252,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         ).pastTimeDeltaFromNowInDays lesserThan CARD_READER_USAGE_THIRTY_DAYS
 
                         if (isIPPUser) {
-                            cardReaderOnboardingChecker.invalidateCache()
-                            add(async { cardReaderOnboardingChecker.getOnboardingState() })
+                            add(
+                                async {
+                                    cardReaderOnboardingChecker.invalidateCache()
+                                    cardReaderOnboardingChecker.getOnboardingState()
+                                }
+                            )
                         }
 
                         add(async { jitmStoreInMemoryCache.init() })
