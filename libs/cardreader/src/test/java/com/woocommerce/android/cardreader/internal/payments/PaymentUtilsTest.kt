@@ -42,9 +42,9 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given two decimal currency, when amount $1 005cents, then it gets rounded down to 100 cents`() {
+    fun `given two decimal currency, when amount $1 004cents, then it gets rounded down to 100 cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(1.005),
+            BigDecimal("1.004"),
             TWO_DECIMAL_CURRENCY_CODE,
         )
 
@@ -52,9 +52,19 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given two decimal currency, when amount $1 005cents, then it gets rounded down to 101 cents`() {
+        val result = paymentUtils.convertToSmallestCurrencyUnit(
+            BigDecimal("1.005"),
+            TWO_DECIMAL_CURRENCY_CODE,
+        )
+
+        assertThat(result).isEqualTo(101)
+    }
+
+    @Test
     fun `given two decimal currency, when amount $1 06 cents, then gets rounded up to 101 cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(1.006),
+            BigDecimal("1.006"),
             TWO_DECIMAL_CURRENCY_CODE,
         )
 
@@ -64,7 +74,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     @Test
     fun `given two decimal currency, when amount $1 99 cents, then it gets converted to 199 cents`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(1.99),
+            BigDecimal("1.99"),
             TWO_DECIMAL_CURRENCY_CODE,
         )
 
@@ -84,7 +94,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     @Test
     fun `given zero decimal currency, when amount 100 and 5, then it gets converted to 101`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(100.5),
+            BigDecimal("100.5"),
             ZERO_DECIMAL_CURRENCY_CODE,
         )
 
@@ -94,7 +104,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     @Test
     fun `given zero decimal currency, when amount 100 and 4, then it gets converted to 100`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(100.4),
+            BigDecimal("100.4"),
             ZERO_DECIMAL_CURRENCY_CODE,
         )
 
@@ -104,7 +114,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     @Test
     fun `given three decimal currency, when amount 1000, then it gets converted to 1000`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(1.000),
+            BigDecimal("1.000"),
             THREE_DECIMAL_CURRENCY_CODE,
         )
 
@@ -114,7 +124,7 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
     @Test
     fun `given three decimal currency, when amount 1001, then it gets converted to 1001`() {
         val result = paymentUtils.convertToSmallestCurrencyUnit(
-            BigDecimal(1.001),
+            BigDecimal("1.001"),
             THREE_DECIMAL_CURRENCY_CODE,
         )
 
