@@ -90,7 +90,7 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
 }
 
 @Composable
-private fun CountryListPickerHeader(selectedCountry: CountryListPickerViewModel.StoreCreationCountry) {
+private fun CountryListPickerHeader(selectedCountry: StoreCreationCountry) {
     Column(
         modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
@@ -117,8 +117,8 @@ private fun CountryListPickerHeader(selectedCountry: CountryListPickerViewModel.
 
 @Composable
 private fun CountryItem(
-    country: CountryListPickerViewModel.StoreCreationCountry,
-    onCountrySelected: (CountryListPickerViewModel.StoreCreationCountry) -> Unit,
+    country: StoreCreationCountry,
+    onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -165,7 +165,7 @@ private fun CountryItem(
 
 @Composable
 private fun CurrentCountryItem(
-    country: CountryListPickerViewModel.StoreCreationCountry,
+    country: StoreCreationCountry,
     modifier: Modifier = Modifier
 ) {
     Box(

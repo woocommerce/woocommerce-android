@@ -96,20 +96,7 @@ class CountryPickerViewModel @Inject constructor(
         )
     }
 
-    private fun StoreCreationCountry.toNewStoreCountry() =
-        NewStore.Country(
-            name = name,
-            code = code,
-        )
-
     data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
-
-    data class StoreCreationCountry(
-        val name: String,
-        val code: String,
-        val emojiFlag: String,
-        val isSelected: Boolean = false
-    )
 }
