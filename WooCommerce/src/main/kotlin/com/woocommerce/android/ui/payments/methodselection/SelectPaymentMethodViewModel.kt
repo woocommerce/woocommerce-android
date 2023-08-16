@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
@@ -75,6 +76,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs = AppPrefs,
+    private val paymentsUtils: PaymentUtils,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -248,10 +250,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
             launch {
-                trackPaymentMethodCompletion(
-                    VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                    extraField = AnalyticsTracker.KEY_AMOUNT to formatOrderTotal(order.first().total)
-                )
+                trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
                 updateOrderStatus(Order.Status.Completed.value).handleOrderUpdateResultBeforeExit()
             }
         } else {
@@ -308,10 +307,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             // status of the order to determine whether payment succeeded
             val status = orderStore.getOrderByIdAndSite(cardReaderPaymentFlowParam.orderId, selectedSite.get())?.status
             if (status == CoreOrderStatus.COMPLETED.value) {
-                trackPaymentMethodCompletion(
-                    VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                    extraField = AnalyticsTracker.KEY_AMOUNT to formatOrderTotal(order.first().total)
-                )
+                trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD)
                 delay(DELAY_MS)
                 exitFlow()
             } else {
@@ -384,19 +380,21 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private suspend fun trackPaymentMethodCompletion(
-        paymentMethodType: String,
-        extraField: Pair<String, String>? = null
-    ) {
+    private suspend fun trackPaymentMethodCompletion(paymentMethodType: String) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
             mutableMapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
                 AnalyticsTracker.KEY_ORDER_ID to order.first().id,
+                AnalyticsTracker.KEY_AMOUNT to formatOrderTotal(order.first().total),
+                AnalyticsTracker.KEY_AMOUNT_NORMALIZED to
+                    paymentsUtils.convertToSmallestCurrencyUnit(
+                        order.first().total,
+                        order.first().currency,
+                    ),
+                AnalyticsTracker.KEY_CURRENCY to order.first().currency,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-            ).apply {
-                extraField?.let { put(it.first, it.second) }
-            }
+            )
         )
     }
 
