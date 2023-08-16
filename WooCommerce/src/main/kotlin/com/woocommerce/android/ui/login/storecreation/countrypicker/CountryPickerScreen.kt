@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPicke
 
 @Composable
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
-    viewModel.countryPickerState.observeAsState().value?.let { countries ->
+    viewModel.countryPickerState.observeAsState().value?.let { selectedCountry ->
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
@@ -40,7 +40,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
             )
         }) { padding ->
             CountryPickerForm(
-                countries = countries,
+                selectedCountry = selectedCountry,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCurrentCountryClicked = viewModel::onCurrentCountryClicked,
                 modifier = Modifier
@@ -53,7 +53,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    countries: List<StoreCreationCountry>,
+    selectedCountry: StoreCreationCountry,
     onContinueClicked: () -> Unit,
     onCurrentCountryClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -68,7 +68,7 @@ private fun CountryPickerForm(
                     end = dimensionResource(id = R.dimen.major_100)
                 )
         ) {
-            CountryPickerHeaderContent(countries, onCurrentCountryClicked)
+            CountryPickerHeaderContent(selectedCountry, onCurrentCountryClicked)
         }
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -87,7 +87,7 @@ private fun CountryPickerForm(
 
 @Composable
 private fun CountryPickerHeaderContent(
-    availableCountries: List<StoreCreationCountry>,
+    selectedCountry: StoreCreationCountry,
     onCurrentCountryClicked: () -> Unit,
 ) {
     Column {
@@ -110,7 +110,7 @@ private fun CountryPickerHeaderContent(
         )
 
         CurrentCountryItem(
-            country = availableCountries.first { it.isSelected },
+            country = selectedCountry,
             onCurrentCountryClicked = onCurrentCountryClicked,
             modifier = Modifier
                 .fillMaxWidth()
@@ -177,31 +177,11 @@ private fun CurrentCountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            countries = listOf(
-                StoreCreationCountry(
-                    name = "Canada",
-                    code = "CA",
-                    emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6",
-                    isSelected = false
-                ),
-                StoreCreationCountry(
-                    name = "Spain",
-                    code = "ES",
-                    emojiFlag = "\uD83C\uDDEA\uD83C\uDDF8",
-                    isSelected = false
-                ),
-                StoreCreationCountry(
-                    name = "United States",
-                    code = "US",
-                    emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
-                    isSelected = true
-                ),
-                StoreCreationCountry(
-                    name = "Italy",
-                    code = "IT",
-                    emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
-                    isSelected = false
-                )
+            StoreCreationCountry(
+                name = "United States",
+                code = "US",
+                emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
+                isSelected = true
             ),
             onContinueClicked = {},
             onCurrentCountryClicked = {},
