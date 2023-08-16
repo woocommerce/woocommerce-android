@@ -27,6 +27,7 @@ import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
+import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
@@ -50,6 +51,8 @@ import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.Lazy
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -116,6 +119,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
     @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
+    @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
 
     private var connectionReceiverRegistered = false
 
@@ -242,16 +246,19 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         }
                     }
 
-                    val isIPPUser = Date(
-                        prefs.getCardReaderLastSuccessfulPaymentTime()
-                    ).pastTimeDeltaFromNowInDays lesserThan CARD_READER_USAGE_THIRTY_DAYS
+                    buildList {
+                        val isIPPUser = Date(
+                            prefs.getCardReaderLastSuccessfulPaymentTime()
+                        ).pastTimeDeltaFromNowInDays lesserThan CARD_READER_USAGE_THIRTY_DAYS
 
-                    if (isIPPUser) {
-                        cardReaderOnboardingChecker.invalidateCache()
-                        cardReaderOnboardingChecker.getOnboardingState()
-                    }
+                        if (isIPPUser) {
+                            cardReaderOnboardingChecker.invalidateCache()
+                            add(async { cardReaderOnboardingChecker.getOnboardingState() })
+                        }
 
-                    jitmStoreInMemoryCache.init()
+                        add(async { jitmStoreInMemoryCache.init() })
+                        add(async { trackStoreSnapshot() })
+                    }.awaitAll()
                 }
             }
         }

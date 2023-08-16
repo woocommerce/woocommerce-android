@@ -32,7 +32,7 @@ class TrackStoreSnapshot @Inject constructor(
                 val wasTrackedForSite = appPrefs.isApplicationStoreSnapshotTrackedForSite(
                     localSiteId = site.id,
                     remoteSiteId = site.siteId,
-                    selfHostedSiteId = site.selfHostedSiteId
+                    selfHostedSiteId = site.selfHostedSiteId,
                 )
                 if (!wasTrackedForSite) {
                     val (productCounts, ordersCount, sitePlugins) = fetchRequiredData(site)
@@ -43,9 +43,13 @@ class TrackStoreSnapshot @Inject constructor(
                         trackEvent(productCounts, ordersCount as WCOrderStore.OrdersCountResult.Success, sitePlugins)
 
                         appPrefs.setApplicationStoreSnapshotTrackedForSite(
-                            localSiteId = site.id, remoteSiteId = site.siteId, selfHostedSiteId = site.selfHostedSiteId
+                            localSiteId = site.id,
+                            remoteSiteId = site.siteId,
+                            selfHostedSiteId = site.selfHostedSiteId,
                         )
                     }
+                } else {
+                    WooLog.i(WooLog.T.UTILS, "Store snapshot was already tracked for site.")
                 }
             } else {
                 WooLog.i(WooLog.T.UTILS, "Site is not selected - not tracking store snapshot.")
@@ -108,7 +112,7 @@ class TrackStoreSnapshot @Inject constructor(
         private const val KEY_WOOCOMMERCE = "woocommerce-payments"
         private const val KEY_STRIPE_PLUGIN = "woocommerce-gateway-stripe"
         private const val KEY_SQUARE_PLUGIN = "woocommerce-square"
-        private const val KEY_PAYPAL_PLUGIN = "woocommerce-gateway-paypal-express-checkout"
+        private const val KEY_PAYPAL_PLUGIN = "woocommerce-paypal-payments"
 
         private const val VALUE_PLUGIN_NOT_INSTALLED = "not_installed"
         private const val VALUE_PLUGIN_INSTALLED_AND_NOT_ACTIVATED = "installed_and_not_activated"
