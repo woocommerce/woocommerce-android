@@ -15,7 +15,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CountryListPickerFragment: BaseFragment() {
+class CountryListPickerFragment : BaseFragment() {
 
     private val viewModel: CountryListPickerViewModel by viewModels()
 

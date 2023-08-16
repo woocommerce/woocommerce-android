@@ -111,7 +111,7 @@ class CountryPickerViewModel @Inject constructor(
             code = code,
         )
 
-    data class NavigateToDomainListPicker(val locationCode: String): MultiLiveEvent.Event()
+    data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 
