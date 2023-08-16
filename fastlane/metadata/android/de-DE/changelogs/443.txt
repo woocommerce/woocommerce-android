@@ -1,2 +1,0 @@
-14.7:
-Wir haben daran gearbeitet, das Konfigurieren der Versandeinstellungen in der App zu ermöglichen. Du kannst dir deine Versandzonen jetzt auf der Einstellungsseite ansehen. Also bleib dran, hierzu wird es bald weitere Updates geben!

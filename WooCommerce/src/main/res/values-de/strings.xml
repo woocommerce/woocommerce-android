@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-02 15:54:04+0000
+Translation-Revision-Date: 2023-08-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">Erstellen des Gutscheins fehlgeschlagen</string>
+    <string name="coupon_create_coupon_created">Gutschein erstellt</string>
+    <string name="coupon_create_save_button">Erstellen</string>
+    <string name="coupon_create_screen_title_default">Gutschein erstellen</string>
+    <string name="coupon_create_screen_title">%1$s erstellen</string>
+    <string name="coupon_edit_screen_title_default">Gutschein bearbeiten</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Festen Rabatt auf Endpreis ausgewählter Produkte erstellen</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Festen Rabatt auf Endpreis des gesamten Warenkorbs erstellen</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Prozentualen Rabatt auf ausgewählte Produkte erstellen</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Fester Produkt-Rabatt</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Fester Warenkorb-Rabatt</string>
+    <string name="coupon_type_picker_percentage_discount_title">Prozentualer Rabatt</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Gutscheintyp – festes Produkt</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Gutscheintyp – fester Warenkorb</string>
+    <string name="coupon_type_picker_percentage_content_description">Gutscheintyp – prozentualer Rabatt</string>
+    <string name="coupon_type_picker_title">Gutschein erstellen</string>
+    <string name="coupon_list_add_coupon_content_description">Gutschein hinzufügen</string>
+    <string name="try_test_order_button">Testbestellung starten</string>
+    <string name="try_test_order_step_4">Verwende die App, um die Rückerstattung für die Testbestellung zu bearbeiten</string>
+    <string name="try_test_order_step_3">Schließe die Zahlung ab und warte auf die Push-Benachrichtigung über die Bestellung in deiner WooCommerce-App.</string>
+    <string name="try_test_order_step_2">Wähle dein Testprodukt aus, füge es zum Warenkorb hinzu und schließe wie ein echter Kunde den Bezahlvorgang in diesem Onlineshop ab.</string>
+    <string name="try_test_order_step_1">Tippe unten auf den Button, um über einen Webbrowser zu deinem Onlineshop weitergeleitet zu werden.</string>
+    <string name="try_test_order_heading">Testbestellung ausprobieren</string>
+    <string name="empty_order_test_order_button">Testbestellung ausprobieren</string>
+    <string name="empty_order_test_order_message">Führe eine Testbestellung durch, um sicherzugehen, dass die Kunden in deinem WooCommerce-Shop ein reibungsloses Einkauferlebnis genießen</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Details manuell hinzufügen</string>
+    <string name="order_creation_customer_search_old_wc_hint">Suche nach Kunden anhand von</string>
     <string name="shipping_classes_zones">Versandklassen und -zonen</string>
     <string name="free_trial_survey_free_text">Sonstiger Grund (bitte angeben)</string>
     <string name="free_trial_survey_option4">Ich bin Mitglied eines Teams und wir treffen die Entscheidung gemeinsam.</string>
@@ -22,7 +49,7 @@ Language: de
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Halte dein Geschäft am Laufen!</string>
     <string name="order_creation_customer_search_empty_email">Keine E-Mail-Adresse</string>
     <string name="order_creation_customer_search_empty_name">Kein Name</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Suche verwenden, um bestehende Kunden zu finden</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Suche nach bestehendem Kunden oder</string>
     <string name="last_update_with_frequency">Letzte Aktualisierung: %s (wird alle 30 Minuten aktualisiert)</string>
     <string name="last_update">Letzte Aktualisierung: %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; dazu, wie du Zahlungen über Tap To Pay auf Android empfangen kannst</string>

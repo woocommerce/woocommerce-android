@@ -746,8 +746,7 @@
         android:label="AIProductDescriptionBottomSheetFragment" >
         <argument
             android:name="productTitle"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="string" />
         <argument
             android:name="productDescription"
             app:argType="string"

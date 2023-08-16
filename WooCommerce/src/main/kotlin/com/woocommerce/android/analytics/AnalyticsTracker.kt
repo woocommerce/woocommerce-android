@@ -382,6 +382,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_REFUND_TYPE = "method"
         const val KEY_REFUND_METHOD = "gateway"
         const val KEY_AMOUNT = "amount"
+        const val KEY_AMOUNT_NORMALIZED = "amount_normalized"
+        const val KEY_CURRENCY = "currency"
 
         const val KEY_PAYMENT_METHOD = "payment_method"
         const val KEY_PAYMENT_GATEWAY = "payment_gateway"

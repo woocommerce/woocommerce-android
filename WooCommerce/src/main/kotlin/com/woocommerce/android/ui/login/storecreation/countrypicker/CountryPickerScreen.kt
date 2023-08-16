@@ -33,12 +33,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.CountryPickerState
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.StoreCreationCountry
 
 @Composable
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
-    viewModel.countryPickerState.observeAsState().value?.let { viewState ->
+    viewModel.countryPickerState.observeAsState().value?.let { countries ->
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
@@ -46,7 +45,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
             )
         }) { padding ->
             CountryPickerForm(
-                state = viewState,
+                countries = countries,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCountrySelected = viewModel::onCountrySelected,
                 modifier = Modifier
@@ -59,7 +58,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    state: CountryPickerState,
+    countries: List<StoreCreationCountry>,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier,
@@ -76,15 +75,15 @@ private fun CountryPickerForm(
         ) {
             val configuration = LocalConfiguration.current
             if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                CountryPickerHeaderContent(state.countries, state.storeName)
+                CountryPickerHeaderContent(countries)
             }
             LazyColumn {
                 if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     item {
-                        CountryPickerHeaderContent(state.countries, state.storeName)
+                        CountryPickerHeaderContent(countries)
                     }
                 }
-                itemsIndexed(state.countries) { _, country ->
+                itemsIndexed(countries) { _, country ->
                     CountryItem(
                         country = country,
                         onCountrySelected = onCountrySelected,
@@ -112,12 +111,11 @@ private fun CountryPickerForm(
 
 @Composable
 private fun CountryPickerHeaderContent(
-    availableCountries: List<StoreCreationCountry>,
-    storeName: String
+    availableCountries: List<StoreCreationCountry>
 ) {
     Column {
         Text(
-            text = storeName.uppercase(),
+            text = stringResource(id = R.string.store_creation_store_profiler_industries_header).uppercase(),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium),
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
@@ -211,34 +209,31 @@ private fun CountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            state = CountryPickerState(
-                countries = listOf(
-                    StoreCreationCountry(
-                        name = "Canada",
-                        code = "CA",
-                        emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6",
-                        isSelected = false
-                    ),
-                    StoreCreationCountry(
-                        name = "Spain",
-                        code = "ES",
-                        emojiFlag = "\uD83C\uDDEA\uD83C\uDDF8",
-                        isSelected = false
-                    ),
-                    StoreCreationCountry(
-                        name = "United States",
-                        code = "US",
-                        emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
-                        isSelected = false
-                    ),
-                    StoreCreationCountry(
-                        name = "Italy",
-                        code = "IT",
-                        emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
-                        isSelected = false
-                    )
+            countries = listOf(
+                StoreCreationCountry(
+                    name = "Canada",
+                    code = "CA",
+                    emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6",
+                    isSelected = false
                 ),
-                storeName = "Store name"
+                StoreCreationCountry(
+                    name = "Spain",
+                    code = "ES",
+                    emojiFlag = "\uD83C\uDDEA\uD83C\uDDF8",
+                    isSelected = false
+                ),
+                StoreCreationCountry(
+                    name = "United States",
+                    code = "US",
+                    emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
+                    isSelected = false
+                ),
+                StoreCreationCountry(
+                    name = "Italy",
+                    code = "IT",
+                    emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
+                    isSelected = false
+                )
             ),
             onContinueClicked = {},
             onCountrySelected = {},

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 15:54:03+0000
+Translation-Revision-Date: 2023-08-09 12:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">فشل إنشاء القسيمة</string>
+    <string name="coupon_create_coupon_created">تم إنشاء القسيمة</string>
+    <string name="coupon_create_save_button">إنشاء</string>
+    <string name="coupon_create_screen_title_default">إنشاء قسيمة</string>
+    <string name="coupon_create_screen_title">إنشاء ⁦%1$s⁩</string>
+    <string name="coupon_edit_screen_title_default">تحرير القسيمة</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">إنشاء إجمالي خصم ثابت لمنتجات محدَّدة</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">إنشاء إجمالي خصم ثابت لعربة التسوق بالكامل</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">إنشاء خصم بالنسبة المئوية لمنتجات محدَّدة</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">خصم ثابت للمنتجات</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">خصم ثابت لعربة التسوق</string>
+    <string name="coupon_type_picker_percentage_discount_title">الخصم بالنسبة المئوية</string>
+    <string name="coupon_type_picker_fixed_product_content_description">نوع القسيمة - منتج ثابت</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">نوع القسيمة - عربة تسوق ثابتة</string>
+    <string name="coupon_type_picker_percentage_content_description">نوع القسيمة - النسبة المئوية للخصم</string>
+    <string name="coupon_type_picker_title">إنشاء قسيمة</string>
+    <string name="coupon_list_add_coupon_content_description">إضافة قسيمة</string>
+    <string name="try_test_order_button">بدء طلب الاختبار</string>
+    <string name="try_test_order_step_4">استخدم التطبيق لمعالجة رد الأموال الخاص بطلب الاختبار</string>
+    <string name="try_test_order_step_3">أكمل السداد وانتظر تلقي تنبيه حول الطلب على تطبيق WooCommerce الخاص بك.</string>
+    <string name="try_test_order_step_2">حدد منتج الاختبار الخاص بك وأضفه إلى عربة التسوق وأكمل السداد على متجر الويب ذلك كعميل حقيقي.</string>
+    <string name="try_test_order_step_1">انقر على الزر أدناه المراد إعادة توجيهه إلى متجرك على الإنترنت عبر متصفح الويب.</string>
+    <string name="try_test_order_heading">تجربة طلب الاختبار</string>
+    <string name="empty_order_test_order_button">تجربة طلب الاختبار</string>
+    <string name="empty_order_test_order_message">تشغيل طلب الاختبار لضمان تقديم معالجة WooCommerce التي تقوم بها تجربة عملاء سلسة</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">إضافة التفاصيل يدويًا</string>
+    <string name="order_creation_customer_search_old_wc_hint">البحث عن العملاء حسب</string>
     <string name="shipping_classes_zones">فئات ومناطق الشحن</string>
     <string name="free_trial_survey_free_text">سبب آخر (يرجى التحديد)</string>
     <string name="free_trial_survey_option4">أنا جزء من فريق، ويتعين علينا اتخاذ القرار بشكل جماعي.</string>
@@ -22,7 +49,7 @@ Language: ar
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 واصل القيام بأعمالك!</string>
     <string name="order_creation_customer_search_empty_email">لا يوجد عنوان بريد إلكتروني</string>
     <string name="order_creation_customer_search_empty_name">(بلا اسم)</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">استخدام البحث للعثور على عملاء موجودين</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">البحث عن عميل موجود أو</string>
     <string name="last_update_with_frequency">آخر تحديث %s (يتم التحديث كل 30 دقيقة)</string>
     <string name="last_update">آخر تحديث %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;التعرّف على المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام Tap To Pay على Android</string>
