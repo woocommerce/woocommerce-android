@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -210,16 +209,3 @@ private fun CurrentCountryItem(
     }
 }
 
-@Preview
-@Composable
-fun CountryItemPreview() {
-    CountryItem(
-        country = CountryListPickerViewModel.StoreCreationCountry(
-            name = "United States",
-            code = "US",
-            emojiFlag = "🇺🇸",
-            isSelected = true
-        ),
-        onCountrySelected = { }
-    )
-}
