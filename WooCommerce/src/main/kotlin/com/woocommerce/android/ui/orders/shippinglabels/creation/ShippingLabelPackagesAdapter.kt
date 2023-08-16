@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.transition.TransitionManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
@@ -123,9 +124,8 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.hazmatToggle.setOnCheckedChangeListener { _, isChecked ->
-                with(binding.hazmatContent) {
-                    if (isChecked) expand() else collapse()
-                }
+                TransitionManager.beginDelayedTransition(binding.root)
+                binding.hazmatContent.isVisible = isChecked
             }
         }
 
