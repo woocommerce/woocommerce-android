@@ -149,13 +149,5 @@
         <argument
             android:name="currentLocationCode"
             app:argType="string" />
-
-        <action
-            android:id="@+id/action_countryListPickerFragment_to_countryPickerFragment"
-            app:destination="@id/countryPickerFragment">
-            <argument
-                android:name="locationCode"
-                app:argType="string" />
-        </action>
     </fragment>
 </navigation>
