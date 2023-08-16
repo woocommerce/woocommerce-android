@@ -79,7 +79,7 @@ private fun CountryPickerForm(
                 .padding(dimensionResource(id = R.dimen.major_100)),
             onClick = onContinueClicked,
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            Text(text = stringResource(id = R.string.next))
         }
     }
 }
