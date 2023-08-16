@@ -81,6 +81,7 @@ class StoreProfilerChallengesViewModel @Inject constructor(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(challengeKey = selectedOption?.key)
         )
+        triggerEvent(NavigateToNextStep)
     }
 
     override fun onSkipPressed() {
