@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -69,7 +68,7 @@ private fun CountryPickerForm(
                     end = dimensionResource(id = R.dimen.major_100)
                 )
         ) {
-            CountryPickerHeaderContent(state.countries, state.storeName, onCurrentCountryClicked)
+            CountryPickerHeaderContent(countries, onCurrentCountryClicked)
         }
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -148,19 +147,13 @@ private fun CurrentCountryItem(
                     Text(
                         fontWeight = FontWeight.Bold,
                         text = country.name,
-                        color = colorResource(
-                            id = if (isSystemInDarkTheme()) R.color.color_primary
-                            else R.color.color_on_surface
-                        ),
+                        color = colorResource(R.color.color_on_surface_medium),
                         modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_50))
                     )
 
                     Text(
                         text = stringResource(id = R.string.store_creation_country_picker_current_location_description),
-                        color = colorResource(
-                            id = if (isSystemInDarkTheme()) R.color.color_primary
-                            else R.color.color_on_surface
-                        )
+                        color = colorResource(R.color.color_on_surface_medium)
                     )
                 }
             }
