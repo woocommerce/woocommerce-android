@@ -194,7 +194,7 @@ fun CountryPickerPreview() {
                     name = "United States",
                     code = "US",
                     emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
-                    isSelected = false
+                    isSelected = true
                 ),
                 StoreCreationCountry(
                     name = "Italy",
