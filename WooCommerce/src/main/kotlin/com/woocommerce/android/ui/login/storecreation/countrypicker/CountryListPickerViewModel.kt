@@ -2,7 +2,10 @@ package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -17,6 +20,7 @@ import javax.inject.Inject
 class CountryListPickerViewModel @Inject constructor(
     private val localCountriesRepository: LocalCountriesRepository,
     private val emojiUtils: EmojiUtils,
+    private val newStore: NewStore,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
@@ -47,14 +51,33 @@ class CountryListPickerViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onCountrySelected(selectedCountry: StoreCreationCountry) {
+        availableCountries.update {
+            it.map { country ->
+                country.copy(isSelected = country.code == selectedCountry.code)
+            }
+        }
+    }
+
+    fun onContinueClicked() {
+        val selectedCountry = availableCountries.value.first { it.isSelected }
+        newStore.update(
+            country = selectedCountry.toNewStoreCountry()
+        )
+
+        launch {
+            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+                triggerEvent(NavigateToSummaryStep)
+            } else {
+                triggerEvent(NavigateToDomainPickerStep)
+            }
+        }
+    }
+
+    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
+    object NavigateToSummaryStep : MultiLiveEvent.Event()
+
     data class CountryListPickerState(
         val countries: List<StoreCreationCountry>
-    )
-
-    data class StoreCreationCountry(
-        val name: String,
-        val code: String,
-        val emojiFlag: String,
-        val isSelected: Boolean = false
     )
 }

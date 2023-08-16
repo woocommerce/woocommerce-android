@@ -28,7 +28,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.StoreCreationCountry
 
 @Composable
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
@@ -80,7 +79,7 @@ private fun CountryPickerForm(
                 .padding(dimensionResource(id = R.dimen.major_100)),
             onClick = onContinueClicked,
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            Text(text = stringResource(id = R.string.next))
         }
     }
 }

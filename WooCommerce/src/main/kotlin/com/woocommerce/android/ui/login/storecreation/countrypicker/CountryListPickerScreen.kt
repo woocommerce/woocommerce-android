@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,9 +28,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
@@ -41,56 +45,69 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
             )
         }) { padding ->
-            Column(
+            CountryListPickerForm(
+                countries = viewState.countries,
+                onCountrySelected = viewModel::onCountrySelected,
+                onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
-            ) {
-                val configuration = LocalConfiguration.current
-                if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    CountryListPickerHeader(viewState.countries.first { it.isSelected })
-                }
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        item {
-                            CountryListPickerHeader(viewState.countries.first { it.isSelected })
-                        }
-                    }
-
-                    itemsIndexed(viewState.countries) { _, country ->
-                        CountryItem(
-                            country = country,
-                            onCountrySelected = { },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                        )
-                    }
-                }
-
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
-                )
-                WCColoredButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.major_100)),
-                    onClick = { },
-                ) {
-                    Text(text = stringResource(id = R.string.continue_button))
-                }
-            }
+            )
         }
     }
 }
 
 @Composable
-private fun CountryListPickerHeader(selectedCountry: CountryListPickerViewModel.StoreCreationCountry) {
+fun CountryListPickerForm(
+    countries: List<StoreCreationCountry>,
+    onCountrySelected: (StoreCreationCountry) -> Unit,
+    onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        val configuration = LocalConfiguration.current
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            CountryListPickerHeader(countries.first { it.isSelected })
+        }
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        ) {
+            if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                item {
+                    CountryListPickerHeader(countries.first { it.isSelected })
+                }
+            }
+
+            itemsIndexed(countries) { _, country ->
+                CountryItem(
+                    country = country,
+                    onCountrySelected = onCountrySelected,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                )
+            }
+        }
+
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            onClick = onContinueClicked,
+        ) {
+            Text(text = stringResource(id = R.string.continue_button))
+        }
+    }
+}
+
+@Composable
+private fun CountryListPickerHeader(selectedCountry: StoreCreationCountry) {
     Column(
         modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
@@ -117,8 +134,8 @@ private fun CountryListPickerHeader(selectedCountry: CountryListPickerViewModel.
 
 @Composable
 private fun CountryItem(
-    country: CountryListPickerViewModel.StoreCreationCountry,
-    onCountrySelected: (CountryListPickerViewModel.StoreCreationCountry) -> Unit,
+    country: StoreCreationCountry,
+    onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -165,7 +182,7 @@ private fun CountryItem(
 
 @Composable
 private fun CurrentCountryItem(
-    country: CountryListPickerViewModel.StoreCreationCountry,
+    country: StoreCreationCountry,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -206,5 +223,49 @@ private fun CurrentCountryItem(
                 )
             )
         }
+    }
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+fun CountryListPickerPreview() {
+    WooThemeWithBackground {
+        CountryListPickerForm(
+            countries = listOf(
+                StoreCreationCountry(
+                    name = "Canada",
+                    code = "CA",
+                    emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6",
+                    isSelected = false
+                ),
+                StoreCreationCountry(
+                    name = "Spain",
+                    code = "ES",
+                    emojiFlag = "\uD83C\uDDEA\uD83C\uDDF8",
+                    isSelected = true
+                ),
+                StoreCreationCountry(
+                    name = "United States",
+                    code = "US",
+                    emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
+                    isSelected = false
+                ),
+                StoreCreationCountry(
+                    name = "Italy",
+                    code = "IT",
+                    emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
+                    isSelected = false
+                )
+            ),
+            onCountrySelected = {},
+            onContinueClicked = {},
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+        )
     }
 }
