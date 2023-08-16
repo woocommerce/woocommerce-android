@@ -1,12 +1,15 @@
 package com.woocommerce.android.ui.login.storecreation.profiler
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,15 +29,59 @@ class StoreProfilerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_FEATURES
             )
         )
+        launch {
+            profilerOptions.update {
+                listOf(
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_PRODUCT_MANAGEMENT_AND_INVENTORY,
+                        name = resourceProvider.getString(R.string.store_profiler_features_product_management),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_SALES_AND_ANALYTICS,
+                        name = resourceProvider.getString(R.string.store_profiler_features_sales_analytics),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_PAYMENT_OPTIONS,
+                        name = resourceProvider.getString(R.string.store_profiler_features_payment_options),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_IN_PERSON_PAYMENTS,
+                        name = resourceProvider.getString(R.string.store_profiler_features_ipp),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_SCALE_AS_BUSINESS_GROWS,
+                        name = resourceProvider.getString(R.string.store_profiler_features_scale_business),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_CUSTOMIZATION_OPTIONS_FOR_STORE_DESIGN,
+                        name = resourceProvider.getString(R.string.store_profiler_features_store_customization),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_ACCESS_PLUGIN_AND_EXTENSIONS,
+                        name = resourceProvider.getString(R.string.store_profiler_features_plugins_and_extensions),
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        key = AnalyticsTracker.VALUE_FEATURES_OTHERS,
+                        name = resourceProvider.getString(R.string.store_profiler_features_others),
+                        isSelected = false
+                    ),
+                )
+            }
+        }
     }
 
-    override fun getProfilerStepDescription(): String {
-        TODO("Not yet implemented")
-    }
+    override fun getProfilerStepTitle(): String =
+        resourceProvider.getString(R.string.store_profiler_features_title)
 
-    override fun getProfilerStepTitle(): String {
-        TODO("Not yet implemented")
-    }
+    override fun getProfilerStepDescription(): String =
+        resourceProvider.getString(R.string.store_profiler_features_description)
 
     override fun onContinueClicked() {
         TODO("Not yet implemented")

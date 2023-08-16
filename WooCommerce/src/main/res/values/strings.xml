@@ -3142,6 +3142,17 @@
     <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
     <string name="store_profiler_challenge_other">Other</string>
 
+    <string name="store_profiler_features_title">Which features are you\nmost interested in?</string>
+    <string name="store_profiler_features_description">Let us know what you are looking\nforward to using in our app.</string>
+    <string name="store_profiler_features_product_management">Easy product management and inventory tracking</string>
+    <string name="store_profiler_features_sales_analytics">Comprehensive sales and analytics reports</string>
+    <string name="store_profiler_features_payment_options">Flexible and secure payment options</string>
+    <string name="store_profiler_features_ipp">In-person payment</string>
+    <string name="store_profiler_features_scale_business">Ability to scale as my business grows</string>
+    <string name="store_profiler_features_store_customization">Customization options for my store design</string>
+    <string name="store_profiler_features_plugins_and_extensions">Access to a wide range of plugins and extensions</string>
+    <string name="store_profiler_features_others">Others</string>
+
     <string name="store_creation_country_picker_title">Confirm your location</string>
     <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
     <string name="store_creation_country_picker_current_location">Current location</string>

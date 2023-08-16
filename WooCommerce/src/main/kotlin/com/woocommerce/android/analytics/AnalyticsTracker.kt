@@ -524,6 +524,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_CHALLENGE_MANAGING_INVENTORY = "managing_inventory"
         const val VALUE_CHALLENGE_SHIPPING_AND_LOGISTICS = "shipping_and_logistics"
         const val VALUE_CHALLENGE_OTHER = "other"
+        const val VALUE_FEATURES_PRODUCT_MANAGEMENT_AND_INVENTORY = "product_management_and_inventory"
+        const val VALUE_FEATURES_SALES_AND_ANALYTICS = "sales_and_analytics"
+        const val VALUE_FEATURES_PAYMENT_OPTIONS = "payment_options"
+        const val VALUE_FEATURES_IN_PERSON_PAYMENTS = "in_person_payments"
+        const val VALUE_FEATURES_SCALE_AS_BUSINESS_GROWS = "scale_as_business_grows"
+        const val VALUE_FEATURES_CUSTOMIZATION_OPTIONS_FOR_STORE_DESIGN = "customization_options_for_store_design"
+        const val VALUE_FEATURES_ACCESS_PLUGIN_AND_EXTENSIONS = "access_plugin_and_extensions"
+        const val VALUE_FEATURES_OTHERS = "others"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"
