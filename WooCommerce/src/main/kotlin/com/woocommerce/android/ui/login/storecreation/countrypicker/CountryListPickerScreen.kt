@@ -64,7 +64,7 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                     itemsIndexed(viewState.countries) { _, country ->
                         CountryItem(
                             country = country,
-                            onCountrySelected = { },
+                            onCountrySelected = viewModel::onCountrySelected,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = dimensionResource(id = R.dimen.major_100))

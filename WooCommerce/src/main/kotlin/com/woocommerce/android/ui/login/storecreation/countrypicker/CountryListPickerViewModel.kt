@@ -47,6 +47,14 @@ class CountryListPickerViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onCountrySelected(storeCreationCountry: StoreCreationCountry) {
+        availableCountries.update {
+            it.map { country ->
+                country.copy(isSelected = country.code == storeCreationCountry.code)
+            }
+        }
+    }
+
     data class CountryListPickerState(
         val countries: List<StoreCreationCountry>
     )
