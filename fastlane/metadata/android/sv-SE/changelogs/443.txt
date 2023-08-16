@@ -1,2 +1,0 @@
-14.7:
-Vi har arbetat med att göra fraktkonfiguration tillgänglig i appen. Dina fraktzoner kan nu förhandsgranskas från skärmen Inställningar. Håll utkik efter fler uppdateringar om detta i framtiden!

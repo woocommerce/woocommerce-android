@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-03 09:54:35+0000
+Translation-Revision-Date: 2023-08-09 12:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">쿠폰 생성 실패</string>
+    <string name="coupon_create_coupon_created">쿠폰 생성됨</string>
+    <string name="coupon_create_save_button">생성</string>
+    <string name="coupon_create_screen_title_default">쿠폰 생성</string>
+    <string name="coupon_create_screen_title">%1$s 생성</string>
+    <string name="coupon_edit_screen_title_default">쿠폰 편집</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">선택한 상품에 대한 고정된 할인 합계 설정</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">장바구니 전체에 대한 고정된 할인 합계 설정</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">선택한 상품에 대한 할인 백분율 설정</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">고정된 상품 할인</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">고정된 장바구니 할인</string>
+    <string name="coupon_type_picker_percentage_discount_title">할인 백분율</string>
+    <string name="coupon_type_picker_fixed_product_content_description">쿠폰 유형 - 고정된 상품</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">쿠폰 유형 - 고정된 장바구니</string>
+    <string name="coupon_type_picker_percentage_content_description">쿠폰 유형 - 할인 백분율</string>
+    <string name="coupon_type_picker_title">쿠폰 생성</string>
+    <string name="coupon_list_add_coupon_content_description">쿠폰 추가</string>
+    <string name="try_test_order_button">테스트 주문 시작</string>
+    <string name="try_test_order_step_4">앱을 사용하여 테스트 주문 환불 처리</string>
+    <string name="try_test_order_step_3">우커머스 앱에서 결제를 완료하고 주문에 관한 푸시 알림을 기다립니다.</string>
+    <string name="try_test_order_step_2">해당 웹 스토어에서 실제 고객처럼 테스트 상품을 선택하고, 장바구니에 추가하고, 계산을 완료합니다.</string>
+    <string name="try_test_order_step_1">아래 버튼을 누르면 웹 브라우저를 통해 온라인 스토어로 리디렉팅됩니다.</string>
+    <string name="try_test_order_heading">테스트 주문 체험</string>
+    <string name="empty_order_test_order_button">테스트 주문 체험</string>
+    <string name="empty_order_test_order_message">테스트 주문을 실행하여 우커머스 프로세스에서 원활한 고객 경험이 제공되는지 확인</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">수동으로 상세 정보 추가</string>
+    <string name="order_creation_customer_search_old_wc_hint">고객 검색 기준</string>
     <string name="shipping_classes_zones">배송 클래스 및 구역</string>
     <string name="free_trial_survey_free_text">기타 사유(직접 입력)</string>
     <string name="free_trial_survey_option4">나는 팀의 일원이며 팀에서 단체적으로 결정해야 합니다.</string>
@@ -22,7 +49,7 @@ Language: ko_KR
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 비즈니스를 계속 발전시키세요!</string>
     <string name="order_creation_customer_search_empty_email">이메일 주소 없음</string>
     <string name="order_creation_customer_search_empty_name">이름 없음</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">검색을 사용하여 기존 고객 찾기</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">기존 고객 검색 또는</string>
     <string name="last_update_with_frequency">최근 업데이트 %s(30분마다 업데이트)</string>
     <string name="last_update">최근 업데이트 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android에서 Tap To Pay로 결제 수락 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>

@@ -385,7 +385,7 @@
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Get Started</string>
+    <string name="signup_get_started_button">Create a new store</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_create_password_label">Create your password</string>
     <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
@@ -2925,8 +2925,8 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
-    <string name="simplified_login_prologue_intro">Sell anything, anywhere.</string>
-    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
+    <string name="simplified_login_prologue_intro">The ecommerce platform that grows with you</string>
+    <string name="simplified_login_prologue_title">Start with our 15-day free trial, no credit card needed. Join 3.4M stores thriving with Woo, from first sale to millions.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -3125,13 +3125,14 @@
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
 
-    <string name="store_creation_store_profiler_industries_title">What will you be selling?</string>
-    <string name="store_creation_store_profiler_industries_description">Choose a category that best fits your business.</string>
+    <string name="store_creation_store_profiler_industries_header">About your store</string>
+    <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
+    <string name="store_creation_store_profiler_industries_description">Choose a category that defines\nyour business the best.</string>
     <string name="store_creation_store_profiler_industries_search_hint">Type a category</string>
     <string name="store_creation_profiler_options_search_empty">No available results for this search</string>
-    <string name="store_creation_store_profiler_journey_title">Where are you on your commerce journey?</string>
-    <string name="store_creation_store_profiler_journey_description">To speed things up, we’ll tailor your WooCommerce experience for you based on your response.</string>
-    <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
+    <string name="store_creation_store_profiler_journey_title">Which one of these best\ndescribes you?</string>
+    <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
+    <string name="store_creation_store_profiler_platforms_title">Which platform(s) are\nyou currently using?</string>
     <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
 
     <string name="store_creation_country_picker_title">Confirm your location</string>
@@ -3238,27 +3239,26 @@
     <!--
     Free trial Summary
     -->
-    <string name="free_trial_summary_title">Launch in days, grow for years</string>
-    <string name="free_trial_summary_advertise">We offer everything you need to build and grow an online store, powered by WooCommerce and hosted on WordPress.com.</string>
-    <string name="free_trial_summary_try_it">Try it for 14 days.</string>
-    <string name="free_trial_summary_try_button">Try For Free</string>
+    <string name="free_trial_summary_title">Launch in days,\ngrow for years</string>
+    <string name="free_trial_summary_advertise">We offer everything you need to build\nand grow an online store, powered by\nWooCommerce and hosted on\nWordPress.com.</string>
+    <string name="free_trial_summary_try_it">Try it free for 14 days.</string>
+    <string name="free_trial_summary_start_selling_quickly">Start selling quickly</string>
+    <string name="free_trial_summary_grow_your_business">Grow your business</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Hassle-free store ownership</string>
+    <string name="free_trial_summary_try_button">Create your store</string>
     <string name="free_trial_summary_credit_card_message">No credit card required.</string>
     <string name="free_trial_feature_premium_themes">Premium themes</string>
-    <string name="free_trial_feature_unlimited_products">Unlimited products</string>
-    <string name="free_trial_feature_shipping_labels">Shipping labels</string>
-    <string name="free_trial_feature_ecommerce_reports">Ecommerce reports</string>
-    <string name="free_trial_feature_multiple_payment_options">Multiple payment options</string>
-    <string name="free_trial_feature_subscription_product_kits">Subscription &amp; product kits</string>
+    <string name="free_trial_feature_store_management">Store management tools</string>
+    <string name="free_trial_feature_design_editing">Code-free design and editing</string>
+    <string name="free_trial_feature_built_in_seo">Built-in SEO</string>
     <string name="free_trial_feature_social_advertising">Social advertising</string>
-    <string name="free_trial_feature_email_marketing">Email marketing</string>
-    <string name="free_trial_feature_247_support">24/7 support</string>
-    <string name="free_trial_feature_auto_updates_backups">Auto updates &amp; backups</string>
-    <string name="free_trial_feature_site_security">Site security</string>
-    <string name="free_trial_feature_fast_to_launch">Fast to launch</string>
+    <string name="free_trial_feature_automated_customer_emails">Automated customer emails</string>
+    <string name="free_trial_feature_hosting">Best-in-class hosting</string>
+    <string name="free_trial_feature_backups">Automated site backups</string>
+    <string name="free_trial_feature_support">24/7 priority support</string>
     <string name="free_trial_summary_store_creation_error_title">Something went wrong</string>
     <string name="free_trial_summary_store_creation_error_message">Sorry, we cannot create your store right now, please try again later.</string>
     <string name="free_trial_summary_store_creation_error_dialog_action">Got It!</string>
-
 
     <!--
     Upgrades
@@ -3450,6 +3450,7 @@
     <string name="ai_product_description_product_name">Enter your product name</string>
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
+    <string name="ai_product_description_title_hint">Enter product title.</string>
     <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>

@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
@@ -66,6 +65,7 @@ fun AIProductDescriptionBottomSheet(
     viewModel.viewState.observeAsState().value?.let { state ->
         DescriptionGenerationForm(
             viewState = state,
+            onTitleChanged = viewModel::onTitleChanged,
             onFeaturesChanged = viewModel::onFeaturesChanged,
             onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
             onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
@@ -79,8 +79,10 @@ fun AIProductDescriptionBottomSheet(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
+@Suppress("LongParameterList")
 fun DescriptionGenerationForm(
     viewState: ViewState,
+    onTitleChanged: (String) -> Unit,
     onFeaturesChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onRegenerateButtonClicked: () -> Unit,
@@ -95,9 +97,8 @@ fun DescriptionGenerationForm(
                 if (generationState.showError) {
                     Error()
                 }
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     GeneratedDescription(
-                        isRegenerateEnabled = viewState.features.isNotEmpty(),
                         description = viewState.description,
                         onRegenerateButtonClicked = onRegenerateButtonClicked,
                         onApplyButtonClicked = onApplyButtonClicked,
@@ -107,18 +108,17 @@ fun DescriptionGenerationForm(
                 }
             }
             GenerationState.Generating -> {
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged, enableTextFields = false) {
                     ProductDescriptionSkeletonView()
                 }
             }
             is Start -> {
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     if (generationState.showError) {
                         Error()
                     }
 
                     WCColoredButton(
-                        enabled = viewState.features.isNotEmpty(),
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(id = string.product_sharing_write_with_ai),
@@ -133,7 +133,7 @@ fun DescriptionGenerationForm(
                 }
             }
             Regenerating -> {
-                GenerationFlow(viewState, onFeaturesChanged) {
+                GenerationFlow(viewState, onTitleChanged, onFeaturesChanged, enableTextFields = true) {
                     RegenerationInProgress(onApplyButtonClicked)
                 }
             }
@@ -164,7 +164,13 @@ private fun Error() {
 }
 
 @Composable
-private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit, content: @Composable () -> Unit) {
+private fun GenerationFlow(
+    state: ViewState,
+    onTitleChanged: (String) -> Unit,
+    onFeaturesChanged: (String) -> Unit,
+    enableTextFields: Boolean = true,
+    content: @Composable () -> Unit
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
@@ -178,11 +184,28 @@ private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit
                 text = stringResource(id = string.ai_product_description_title),
                 style = MaterialTheme.typography.h6
             )
-            Text(
-                text = state.productTitle ?: stringResource(id = string.ai_product_description_product_name),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = color.color_on_surface_medium)
-            )
+
+            if (state.isProductTitleInitiallyPresent) {
+                Text(
+                    text = state.productTitle,
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(id = color.color_on_surface_medium)
+                )
+            } else {
+                OutlinedTextField(
+                    value = state.productTitle,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimensionResource(id = dimen.minor_100)),
+                    maxLines = 1,
+                    enabled = enableTextFields,
+                    isError = state.shouldShowErrorOutlineIfEmpty && state.productTitle.isEmpty(),
+                    onValueChange = onTitleChanged,
+                    placeholder = {
+                        Text(stringResource(id = string.ai_product_description_title_hint))
+                    }
+                )
+            }
         }
         Divider(
             color = colorResource(id = color.divider_color),
@@ -197,13 +220,15 @@ private fun GenerationFlow(state: ViewState, onFeaturesChanged: (String) -> Unit
                 value = state.features,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = onFeaturesChanged,
+                enabled = enableTextFields,
+                isError = state.shouldShowErrorOutlineIfEmpty && state.features.isEmpty(),
                 placeholder = {
                     Text(stringResource(id = string.ai_product_description_hint))
                 }
             )
 
             Text(
-                text = stringResource(id = R.string.ai_product_description_example),
+                text = stringResource(id = string.ai_product_description_example),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = color.color_on_surface_medium)
             )
@@ -244,8 +269,8 @@ private fun RegenerationInProgress(onApplyButtonClicked: () -> Unit) {
 }
 
 @Composable
+@Suppress("LongParameterList")
 private fun GeneratedDescription(
-    isRegenerateEnabled: Boolean,
     description: String,
     onRegenerateButtonClicked: () -> Unit,
     onApplyButtonClicked: () -> Unit,
@@ -367,7 +392,6 @@ private fun GeneratedDescription(
             .fillMaxWidth()
     ) {
         WCTextButton(
-            enabled = isRegenerateEnabled,
             onClick = onRegenerateButtonClicked,
             modifier = Modifier.align(Alignment.CenterStart),
             colors = ButtonDefaults.textButtonColors(
@@ -405,7 +429,7 @@ fun ProductDescriptionSkeletonView() {
                 color = MaterialTheme.colors.background,
                 shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
             )
-            .padding(dimensionResource(id = R.dimen.major_110))
+            .padding(dimensionResource(id = dimen.major_110))
             .fillMaxWidth()
     ) {
         SkeletonView(
@@ -447,7 +471,7 @@ fun CelebrationDialog(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
-            .padding(all = dimensionResource(id = R.dimen.major_100))
+            .padding(all = dimensionResource(id = dimen.major_100))
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -455,22 +479,22 @@ fun CelebrationDialog(
             painter = painterResource(id = drawable.img_ai_generated_content),
             contentDescription = null,
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.ai_product_description_note_dialog_heading),
+            text = stringResource(id = string.ai_product_description_note_dialog_heading),
             style = MaterialTheme.typography.h6,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.ai_product_description_note_dialog_message),
+            text = stringResource(id = string.ai_product_description_note_dialog_message),
             style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
 
         WCColoredButton(onClick = onConfirmClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.ai_product_description_note_dialog_confirmation))
+            Text(text = stringResource(id = string.ai_product_description_note_dialog_confirmation))
         }
     }
 }
@@ -484,8 +508,10 @@ fun PreviewAIDescriptionGenerationForm() {
             generationState = Start(true),
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
-                "make a statement with the \"Fit Fashionista\" activewear set."
+                "make a statement with the \"Fit Fashionista\" activewear set.",
+            isProductTitleInitiallyPresent = true
         ),
+        onTitleChanged = {},
         onFeaturesChanged = {},
         onGenerateButtonClicked = {},
         onRegenerateButtonClicked = {},

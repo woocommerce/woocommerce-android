@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-04 11:54:04+0000
+Translation-Revision-Date: 2023-08-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="coupon_create_coupon_creation_failed">Misslyckades skapa rabattkod</string>
+    <string name="coupon_create_coupon_created">Rabattkod skapad</string>
+    <string name="coupon_create_save_button">Skapa</string>
+    <string name="coupon_create_screen_title_default">Skapa rabattkod</string>
+    <string name="coupon_create_screen_title">Skapa %1$s</string>
+    <string name="coupon_edit_screen_title_default">Redigera rabattkod</string>
+    <string name="coupon_type_picker_fixed_product_discount_subtitle">Skapa en fast totalrabatt för valda produkter</string>
+    <string name="coupon_type_picker_fixed_cart_discount_subtitle">Skapa en fast totalrabatt för hela varukorgen</string>
+    <string name="coupon_type_picker_percentage_discount_subtitle">Skapa en procentuell rabatt för valda produkter</string>
+    <string name="coupon_type_picker_fixed_product_discount_title">Fast produktrabatt</string>
+    <string name="coupon_type_picker_fixed_cart_discount_title">Fast varukorgsrabatt</string>
+    <string name="coupon_type_picker_percentage_discount_title">Procentuell rabatt</string>
+    <string name="coupon_type_picker_fixed_product_content_description">Kupongtyp – fast produkt</string>
+    <string name="coupon_type_picker_fixed_cart_content_description">Kupongtyp – fast kundvagn</string>
+    <string name="coupon_type_picker_percentage_content_description">Kupongtyp – procentuell rabatt</string>
+    <string name="coupon_type_picker_title">Skapa rabattkod</string>
+    <string name="coupon_list_add_coupon_content_description">Lägg till rabattkod</string>
+    <string name="try_test_order_button">Starta testbeställning</string>
+    <string name="try_test_order_step_4">Använd appen för att behandla återbetalningen för testbeställningen</string>
+    <string name="try_test_order_step_3">Slutför betalningen och vänta på en push-avisering om beställningen i din WooCommerce-app.</string>
+    <string name="try_test_order_step_2">Välj din testprodukt, lägg till i kundvagn och slutför i kassan på den webbutiken som en riktig kund.</string>
+    <string name="try_test_order_step_1">Tryck på knappen nedan för att bli vidarebefordrad till din onlinebutik via en webbläsare.</string>
+    <string name="try_test_order_heading">Prova en testbeställning</string>
+    <string name="empty_order_test_order_button">Prova en testbeställning</string>
+    <string name="empty_order_test_order_message">Kör en testbeställning för att kontrollera att din WooCommerce-process levererar en sömlös kundupplevelse</string>
+    <string name="order_creation_customer_search_empty_add_details_manually">Lägg till detaljer manuellt</string>
+    <string name="order_creation_customer_search_old_wc_hint">Sök efter kunder efter</string>
     <string name="shipping_classes_zones">Fraktklasser och -zoner</string>
     <string name="free_trial_survey_free_text">Annat skäl (vänligen specificera)</string>
     <string name="free_trial_survey_option4">Jag är en del av ett team och vi måste fatta beslutet kollektivt.</string>
@@ -22,7 +49,7 @@ Language: sv_SE
     <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Håll igång din verksamhet!</string>
     <string name="order_creation_customer_search_empty_email">Ingen e-postadress</string>
     <string name="order_creation_customer_search_empty_name">Inget namn</string>
-    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Använd sök för att hitta befintliga kunder</string>
+    <string name="order_creation_customer_search_empty_on_old_version_wcpay">Sök efter en befintlig kund eller</string>
     <string name="last_update_with_frequency">Senast uppdaterat %s (Uppdateras var 30:e minut)</string>
     <string name="last_update">Senast uppdaterat %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med Tryck för att betala på Android</string>
