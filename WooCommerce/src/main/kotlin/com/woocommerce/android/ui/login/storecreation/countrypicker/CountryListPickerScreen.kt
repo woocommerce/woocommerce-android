@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -37,8 +38,38 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
             )
         }) { padding ->
-            Column(modifier = Modifier.padding(padding)) {
+
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface)
+                    .padding(padding)
+            ) {
                 LazyColumn {
+                    item {
+                        Text(
+                            text = stringResource(id = R.string.store_creation_country_picker_current_location),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+                        )
+                    }
+
+                    item {
+                        CurrentCountryItem(
+                            country = viewState.countries.first { it.isSelected },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = dimensionResource(id = R.dimen.major_200))
+                        )
+                    }
+
+                    item {
+                        Text(
+                            text = stringResource(id = R.string.store_creation_country_picker_countries_header),
+                            style = MaterialTheme.typography.caption,
+                            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+                        )
+                    }
+
                     itemsIndexed(viewState.countries) { _, country ->
                         CountryItem(
                             country = country,
@@ -78,6 +109,52 @@ private fun CountryItem(
                 )
             )
             .clickable { onCountrySelected(country) }
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_75),
+                bottom = dimensionResource(id = R.dimen.major_75),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
+        ) {
+            Text(
+                text = country.emojiFlag,
+                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
+            )
+            Text(
+                text = country.name,
+                color = colorResource(
+                    id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
+                    else R.color.color_on_surface
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun CurrentCountryItem(
+    country: CountryListPickerViewModel.StoreCreationCountry,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .border(
+                width = dimensionResource(id = if (country.isSelected) R.dimen.minor_25 else R.dimen.minor_10),
+                color = colorResource(
+                    if (country.isSelected) R.color.color_primary else R.color.divider_color
+                ),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            )
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(
+                color = colorResource(
+                    id = if (country.isSelected)
+                        if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
+                    else R.color.color_surface
+                )
+            )
     ) {
         Row(
             modifier = Modifier.padding(
