@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,9 +28,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
@@ -220,4 +224,49 @@ private fun CurrentCountryItem(
             )
         }
     }
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+fun CountryListPickerPreview() {
+    WooThemeWithBackground {
+        CountryListPickerForm(
+            countries = listOf(
+                StoreCreationCountry(
+                    name = "Canada",
+                    code = "CA",
+                    emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6",
+                    isSelected = false
+                ),
+                StoreCreationCountry(
+                    name = "Spain",
+                    code = "ES",
+                    emojiFlag = "\uD83C\uDDEA\uD83C\uDDF8",
+                    isSelected = true
+                ),
+                StoreCreationCountry(
+                    name = "United States",
+                    code = "US",
+                    emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
+                    isSelected = false
+                ),
+                StoreCreationCountry(
+                    name = "Italy",
+                    code = "IT",
+                    emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
+                    isSelected = false
+                )
+            ),
+        onCountrySelected = {},
+        onContinueClicked = {},
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+        )
+    }
+
 }
