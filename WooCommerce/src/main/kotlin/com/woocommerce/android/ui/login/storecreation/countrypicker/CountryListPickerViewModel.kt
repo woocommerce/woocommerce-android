@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -62,7 +64,19 @@ class CountryListPickerViewModel @Inject constructor(
         newStore.update(
             country = selectedCountry.toNewStoreCountry()
         )
+
+        launch {
+            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+                triggerEvent(NavigateToSummaryStep)
+            } else {
+                triggerEvent(NavigateToDomainPickerStep)
+            }
+        }
     }
+
+    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
+    object NavigateToSummaryStep : MultiLiveEvent.Event()
+
 
     private fun StoreCreationCountry.toNewStoreCountry() =
         NewStore.Country(
