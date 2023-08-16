@@ -991,7 +991,7 @@
     <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Class 9 – Lithium batteries, unmarked package - New electronic devices installed or packaged with lithium batteries (no marking)</string>
     <string name="shipping_label_hazmat_option_class_9_magnetized">Class 9 – Magnetized Materials Package</string>
     <string name="shipping_label_hazmat_option_division_4_1">Division 4.1 – Mailable flammable solids and Safety Matches Package - Safety/strike on box matches, book matches, mailable flammable solids</string>
-    <string name="shipping_label_hazmat_option_division_5_1">Division 5.1 – Oxidizers Package - Hydrogen peroxide (8 to 20% concentration)</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Division 5.1 – Oxidizers Package - Hydrogen peroxide (8 to 20%% concentration)</string>
     <string name="shipping_label_hazmat_option_division_5_2">Division 5.2 – Organic Peroxides Package</string>
     <string name="shipping_label_hazmat_option_division_6_1">Division 6.1 – Toxic Materials Package (with an LD50 of 50 mg/kg or less) - (pesticides, herbicides, etc.)</string>
     <string name="shipping_label_hazmat_option_division_6_2">Division 6.2 - Hazardous Materials - Biological Materials (e.g., lab test kits, authorized COVID test kit returns)</string>
