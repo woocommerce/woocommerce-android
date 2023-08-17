@@ -88,7 +88,7 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_profiler_features_description)
 
     override fun getMainButtonText(): String =
-        resourceProvider.getString(R.string.continue_button)
+        resourceProvider.getString(R.string.store_profiler_features_main_button)
 
     override fun onMainButtonClicked() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }

@@ -3144,6 +3144,7 @@
 
     <string name="store_profiler_features_title">Which features are you\nmost interested in?</string>
     <string name="store_profiler_features_description">Let us know what you are looking\nforward to using in our app.</string>
+    <string name="store_profiler_features_main_button">Create my store</string>
     <string name="store_profiler_features_product_management">Easy product management and inventory tracking</string>
     <string name="store_profiler_features_sales_analytics">Comprehensive sales and analytics reports</string>
     <string name="store_profiler_features_payment_options">Flexible and secure payment options</string>
