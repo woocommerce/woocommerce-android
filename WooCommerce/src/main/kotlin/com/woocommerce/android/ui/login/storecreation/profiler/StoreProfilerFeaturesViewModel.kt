@@ -69,8 +69,8 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        key = AnalyticsTracker.VALUE_FEATURES_OTHERS,
-                        name = resourceProvider.getString(R.string.store_profiler_features_others),
+                        key = AnalyticsTracker.VALUE_FEATURES_OTHER,
+                        name = resourceProvider.getString(R.string.store_profiler_features_other),
                         isSelected = false
                     ),
                 )

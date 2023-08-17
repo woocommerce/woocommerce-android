@@ -531,7 +531,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_FEATURES_SCALE_AS_BUSINESS_GROWS = "scale_as_business_grows"
         const val VALUE_FEATURES_CUSTOMIZATION_OPTIONS_FOR_STORE_DESIGN = "customization_options_for_store_design"
         const val VALUE_FEATURES_ACCESS_PLUGIN_AND_EXTENSIONS = "access_plugin_and_extensions"
-        const val VALUE_FEATURES_OTHERS = "others"
+        const val VALUE_FEATURES_OTHER = "other˚"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"

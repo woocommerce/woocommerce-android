@@ -3151,7 +3151,7 @@
     <string name="store_profiler_features_scale_business">Ability to scale as my business grows</string>
     <string name="store_profiler_features_store_customization">Customization options for my store design</string>
     <string name="store_profiler_features_plugins_and_extensions">Access to a wide range of plugins and extensions</string>
-    <string name="store_profiler_features_others">Others</string>
+    <string name="store_profiler_features_other">Other</string>
 
     <string name="store_creation_country_picker_title">Confirm your location</string>
     <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
