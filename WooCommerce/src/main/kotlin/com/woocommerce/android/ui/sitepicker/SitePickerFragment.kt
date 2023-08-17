@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -331,16 +330,9 @@ class SitePickerFragment :
     }
 
     private fun navigateToStoreCreation() {
-        when {
-            FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
-                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
-            )
-
-            else -> findNavController()
-                .navigateSafely(
-                    SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
-                )
-        }
+        findNavController().navigateSafely(
+            SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
+        )
     }
 
     private fun navigateToNeedHelpFindingEmailScreen() {
