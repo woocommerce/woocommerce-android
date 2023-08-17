@@ -74,7 +74,7 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
                 state.isLoading -> ProgressIndicator()
                 else -> ProfilerContent(
                     profilerStepContent = state,
-                    onContinueClicked = viewModel::onContinueClicked,
+                    onContinueClicked = viewModel::onMainButtonClicked,
                     onCategorySelected = viewModel::onOptionSelected,
                     onSearchQueryChanged = viewModel::onSearchQueryChanged,
                     modifier = Modifier
@@ -149,7 +149,7 @@ private fun ProfilerContent(
             onClick = onContinueClicked,
             enabled = profilerStepContent.options.any { it.isSelected }
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            Text(text = profilerStepContent.mainButtonText)
         }
     }
 }
@@ -302,7 +302,8 @@ fun CategoriesContentPreview() {
                 ),
                 isSearchableContent = true,
                 isLoading = false,
-                searchQuery = ""
+                searchQuery = "",
+                mainButtonText = "Continue"
             ),
             onContinueClicked = {},
             onCategorySelected = {},

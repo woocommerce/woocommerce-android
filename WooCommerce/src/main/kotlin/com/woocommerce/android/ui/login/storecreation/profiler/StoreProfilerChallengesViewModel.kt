@@ -78,7 +78,10 @@ class StoreProfilerChallengesViewModel @Inject constructor(
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_profiler_challenge_description)
 
-    override fun onContinueClicked() {
+    override fun getMainButtonText(): String =
+        resourceProvider.getString(R.string.continue_button)
+
+    override fun onMainButtonClicked() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
         newStore.update(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
