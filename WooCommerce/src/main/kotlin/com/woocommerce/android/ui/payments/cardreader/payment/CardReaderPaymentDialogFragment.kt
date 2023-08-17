@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.payments.cardreader.payment
 
 import android.app.Dialog
 import android.content.ContentResolver
+import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.provider.Settings.ACTION_NFC_SETTINGS
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +42,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_payment_dialog) {
@@ -93,6 +96,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                 ).show()
                 is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()
+                is EnableNfc -> openEnableNfcScreen()
                 is PurchaseCardReader -> openPurchaseCardReaderScreen(event.url)
                 else -> event.isHandled = false
             }
@@ -147,6 +151,10 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             origin = HelpOrigin.CARD_READER_PAYMENT_ERROR,
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
+    }
+
+    private fun openEnableNfcScreen() {
+        startActivity(Intent(ACTION_NFC_SETTINGS))
     }
 
     private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {

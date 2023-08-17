@@ -557,6 +557,17 @@ class CardReaderPaymentViewModel
                     onSecondaryActionClicked = { onBackPressed() }
                 )
 
+            is PaymentFlowError.BuiltInReader.NfcDisabled ->
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
+                    errorType = errorType,
+                    amountLabel = amountLabel,
+                    primaryLabel = R.string.card_reader_payment_failed_nfc_disabled_enable_nfc,
+                    onPrimaryActionClicked = { onEnableNfcClicked() },
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
+                )
+
             is PaymentFlowError.NonRetryableError ->
                 cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
                     cardReaderType = arguments.cardReaderType,
@@ -763,6 +774,12 @@ class CardReaderPaymentViewModel
         tracker.trackPaymentFailedContactSupportTapped()
         onCancelPaymentFlow()
         triggerEvent(ContactSupport)
+    }
+
+    private fun onEnableNfcClicked() {
+        tracker.trackPaymentFailedEnabledNfcTapped()
+        onCancelPaymentFlow()
+        triggerEvent(EnableNfc)
     }
 
     private fun onPurchaseCardReaderClicked() {
