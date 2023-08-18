@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment
+import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -125,8 +125,10 @@ class AztecEditorFragment :
     }
 
     private fun handleResults() {
-        handleResult<String>(AIProductDescriptionBottomSheetFragment.KEY_AI_GENERATED_DESCRIPTION_RESULT) {
-            aztec.visualEditor.setText(it)
+        handleResult<Pair<String,String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { pairResult ->
+            aztec.visualEditor.setText(pairResult.first)
+
+            // todo handle product title in pairResult.second
         }
     }
 
