@@ -31,6 +31,33 @@ enum class ShippingLabelHazmatCategory(val stringResourceID: Int) {
     LIMITED_QUANTITY(R.string.shipping_label_hazmat_option_limited_quantity),
     SMALL_QUANTITY_PROVISION(R.string.shipping_label_hazmat_option_small_quantity_provision);
 
+    fun toHazmatCategory() = when (this) {
+        AIR_ELIGIBLE_ETHANOL -> HazmatCategory.AIR_ELIGIBLE_ETHANOL
+        CLASS_1 -> HazmatCategory.CLASS_1
+        CLASS_3 -> HazmatCategory.CLASS_3
+        CLASS_7 -> HazmatCategory.CLASS_7
+        CLASS_8_CORROSIVE -> HazmatCategory.CLASS_8_CORROSIVE
+        CLASS_8_WET_BATTERY -> HazmatCategory.CLASS_8_WET_BATTERY
+        CLASS_9_NEW_LITHIUM_INDIVIDUAL -> HazmatCategory.CLASS_9_NEW_LITHIUM_INDIVIDUAL
+        CLASS_9_USED_LITHIUM -> HazmatCategory.CLASS_9_USED_LITHIUM
+        CLASS_9_NEW_LITHIUM_DEVICE -> HazmatCategory.CLASS_9_NEW_LITHIUM_DEVICE
+        CLASS_9_DRY_ICE -> HazmatCategory.CLASS_9_DRY_ICE
+        CLASS_9_UNMARKED_LITHIUM -> HazmatCategory.CLASS_9_UNMARKED_LITHIUM
+        CLASS_9_MAGNETIZED -> HazmatCategory.CLASS_9_MAGNETIZED
+        DIVISION_4_1 -> HazmatCategory.DIVISION_4_1
+        DIVISION_5_1 -> HazmatCategory.DIVISION_5_1
+        DIVISION_5_2 -> HazmatCategory.DIVISION_5_2
+        DIVISION_6_1 -> HazmatCategory.DIVISION_6_1
+        DIVISION_6_2 -> HazmatCategory.DIVISION_6_2
+        EXCEPTED_QUANTITY_PROVISION -> HazmatCategory.EXCEPTED_QUANTITY_PROVISION
+        GROUND_ONLY -> HazmatCategory.GROUND_ONLY
+        ID8000 -> HazmatCategory.ID8000
+        LIGHTERS -> HazmatCategory.LIGHTERS
+        LIMITED_QUANTITY -> HazmatCategory.LIMITED_QUANTITY
+        SMALL_QUANTITY_PROVISION -> HazmatCategory.SMALL_QUANTITY_PROVISION
+        else -> throw IllegalArgumentException("Unknown HazmatCategory: $this")
+    }
+
     companion object {
         fun from(hazmatCategory: HazmatCategory) =
             when (hazmatCategory) {
