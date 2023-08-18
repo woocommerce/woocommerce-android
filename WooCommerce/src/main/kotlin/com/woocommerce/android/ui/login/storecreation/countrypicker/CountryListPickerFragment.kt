@@ -9,32 +9,32 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainListPicker
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainPickerStep
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToSummaryStep
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerViewModel.NavigateToDomainPickerStep
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerViewModel.NavigateToSummaryStep
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CountryPickerFragment : BaseFragment() {
-    private val viewModel: CountryPickerViewModel by viewModels()
+class CountryListPickerFragment : BaseFragment() {
+    private val viewModel: CountryListPickerViewModel by viewModels()
     @Inject lateinit var newStore: NewStore
 
-    override val activityAppBarStatus: AppBarStatus
+    override
+    val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
             setContent {
                 WooThemeWithBackground {
-                    CountryPickerScreen(viewModel)
+                    CountryListPickerScreen(viewModel = viewModel)
                 }
             }
         }
@@ -48,32 +48,22 @@ class CountryPickerFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
+                is Exit -> findNavController().popBackStack()
                 is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
                 is NavigateToSummaryStep -> navigateToInstallationStep()
-                is NavigateToDomainListPicker -> navigateToDomainListPicker(event.locationCode)
             }
         }
     }
 
-    private fun navigateToDomainListPicker(locationCode: String) {
-        findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToCountryListPickerFragment(
-                currentLocationCode = locationCode
-            )
-        )
-    }
-
     private fun navigateToInstallationStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToSummaryFragment()
+            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToSummaryFragment()
         )
     }
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment(
+            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToDomainPickerFragment(
                 initialQuery = newStore.data.name ?: ""
             )
         )
