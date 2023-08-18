@@ -41,7 +41,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     private val args =
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
-    private val orderItem: MutableStateFlow<Order.Item> =
+    val orderItem: MutableStateFlow<Order.Item> =
         savedStateHandle.getStateFlow(scope = this, initialValue = args.item, key = "key_item")
 
     private val discount = savedStateHandle.getNullableStateFlow(
