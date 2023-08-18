@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteIn
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES
@@ -83,7 +82,7 @@ class StoreInstallationViewModel @Inject constructor(
 
     val viewState = _viewState
         .onEach {
-            if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+            if (it is SuccessState) {
                 triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
@@ -111,7 +110,7 @@ class StoreInstallationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
                     AnalyticsTracker.KEY_URL to newStore.data.domain!!,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
-                    AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                    AnalyticsTracker.KEY_IS_FREE_TRIAL to true
                 )
                 installationTransactionLauncher.onStoreInstalled(properties)
 
@@ -130,7 +129,7 @@ class StoreInstallationViewModel @Inject constructor(
                         mapOf(
                             AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
                             AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
-                            AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                            AnalyticsTracker.KEY_IS_FREE_TRIAL to true
                         )
                     )
                 }

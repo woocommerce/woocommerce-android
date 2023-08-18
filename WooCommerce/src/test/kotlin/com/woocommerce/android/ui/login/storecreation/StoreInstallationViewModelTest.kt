@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.login.storecreation.installation.StoreInstalla
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -222,7 +221,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_SOURCE to null,
                     AnalyticsTracker.KEY_URL to newStore.data.domain,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
-                    AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                    AnalyticsTracker.KEY_IS_FREE_TRIAL to true
                 )
             )
         }

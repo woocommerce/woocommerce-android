@@ -53,8 +53,7 @@ class StoreNamePickerViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private val canCreateFreeTrialStore
-        get() = FeatureFlag.FREE_TRIAL_M2.isEnabled() &&
-            FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
+        get() = FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
 
     private val navArgs: StoreNamePickerFragmentArgs by savedStateHandle.navArgs()
 
@@ -80,7 +79,7 @@ class StoreNamePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
                 AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                 AnalyticsTracker.KEY_SOURCE to prefsWrapper.getStoreCreationSource(),
-                AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                AnalyticsTracker.KEY_IS_FREE_TRIAL to true
             )
         )
         triggerEvent(Exit)
