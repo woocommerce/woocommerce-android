@@ -72,6 +72,11 @@
     </fragment>
 
     <fragment
+        android:id="@+id/storeProfilerChallengesFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerChallengesFragment"
+        android:label="fragment_store_profiler_challenges" />
+
+    <fragment
         android:id="@+id/countryPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerFragment"
         android:label="fragment_country_picker">
@@ -85,6 +90,9 @@
         <action
             android:id="@+id/action_countryPickerFragment_to_summaryFragment"
             app:destination="@id/summaryFragment" />
+        <action
+            android:id="@+id/action_countryPickerFragment_to_storeProfilerChallengesFragment"
+            app:destination="@id/storeProfilerChallengesFragment" />
         <action
             android:id="@+id/action_countryPickerFragment_to_countryListPickerFragment"
             app:destination="@id/countryListPickerFragment" />
