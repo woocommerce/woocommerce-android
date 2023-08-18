@@ -35,6 +35,9 @@ enum class ShippingLabelHazmatCategory(val stringResourceID: Int) {
         AIR_ELIGIBLE_ETHANOL -> HazmatCategory.AIR_ELIGIBLE_ETHANOL
         CLASS_1 -> HazmatCategory.CLASS_1
         CLASS_3 -> HazmatCategory.CLASS_3
+        CLASS_4 -> HazmatCategory.CLASS_4
+        CLASS_5 -> HazmatCategory.CLASS_5
+        CLASS_6 -> HazmatCategory.CLASS_6
         CLASS_7 -> HazmatCategory.CLASS_7
         CLASS_8_CORROSIVE -> HazmatCategory.CLASS_8_CORROSIVE
         CLASS_8_WET_BATTERY -> HazmatCategory.CLASS_8_WET_BATTERY
