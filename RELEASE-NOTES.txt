@@ -6,6 +6,7 @@
 
 15.0
 -----
+- [*] Store creation: Country selector screen is now more intuitive and easier to use. [https://github.com/woocommerce/woocommerce-android/issues/9606]
 
 
 14.9
