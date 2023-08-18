@@ -961,6 +961,8 @@
     <string name="shipping_label_package_details_individual_package_dimensions">Item Dimensions</string>
     <string name="shipping_label_package_details_individual_package_title">Original packaging</string>
     <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contains Hazardous Materials</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
@@ -3142,10 +3144,12 @@
     <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
     <string name="store_profiler_challenge_other">Other</string>
 
-    <string name="store_creation_country_picker_title">Confirm your location</string>
-    <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
+    <string name="store_creation_country_picker_title">Where is your business located?</string>
+    <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping, and taxes.</string>
     <string name="store_creation_country_picker_current_location">Current location</string>
+    <string name="store_creation_country_picker_current_location_description">We\'ve detected your location automatically. Please change it here if it\'s incorrect.</string>
     <string name="store_creation_country_picker_countries_header">Countries</string>
+    <string name="store_creation_country_list_picker_toolbar_title">Select a country</string>
 
     <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
