@@ -429,7 +429,8 @@ class OrderCreateEditFormFragment :
                         currencyFormatter = currencyFormatter,
                         currencyCode = viewModel.currentDraft.currency,
                         onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
-                        onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
+                        onDecreaseQuantity = viewModel::onDecreaseProductsQuantity,
+                        editOrderUrl = viewModel.orderEditUrlWpAdmin
                     )
                     itemAnimator = animator
                     isNestedScrollingEnabled = false

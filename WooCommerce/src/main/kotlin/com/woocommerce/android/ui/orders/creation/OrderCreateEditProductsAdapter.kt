@@ -9,14 +9,18 @@ import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditProductsAdapter.ProductViewHolder
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreateEditProductsAdapter(
     private val onProductClicked: (Order.Item) -> Unit,
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String?,
+    private val editOrderUrl: String? = null,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
@@ -58,6 +62,11 @@ class OrderCreateEditProductsAdapter(
                 plusMinusContentDescription = R.string.order_creation_change_product_quantity
             )
             binding.productItemView.binding.divider.visibility = View.GONE
+            binding.configureButton.setOnClickListener {
+                editOrderUrl?.let { url ->
+                    ChromeCustomTabUtils.launchUrl(binding.root.context, url)
+                }
+            }
         }
 
         fun bind(productModel: ProductUIModel) {

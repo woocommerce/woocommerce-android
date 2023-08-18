@@ -54,12 +54,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -132,9 +134,10 @@ class OrderCreateEditViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
+    private val selectedSite: SelectedSite,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
-    parameterRepository: ParameterRepository
+    parameterRepository: ParameterRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
@@ -155,6 +158,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private val _orderDraft = savedState.getStateFlow(viewModelScope, Order.EMPTY)
     val orderDraft = _orderDraft
         .asLiveData()
+
+    val orderEditUrlWpAdmin
+        get() = selectedSite.getIfExists()
+            ?.let { it.adminUrlOrDefault + "post.php?post=${_orderDraft.value.id}&action=edit" }
+
 
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
@@ -208,6 +216,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                 handleCouponEditResult()
             }
+
             is Mode.Edit -> {
                 viewModelScope.launch {
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
@@ -399,6 +408,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     resourceProvider.getString(string.order_creation_barcode_scanning_scanning_failed)
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
                 viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -525,6 +535,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     source = source,
                     addedVia = ProductAddedVia.SCANNING,
                 )
+
                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
             trackProductSearchViaSKUSuccessEvent(source)
@@ -584,6 +595,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Failed to add a product that is not published"
                 )
             }
+
             product.hasNoPrice() -> {
                 sendAddingProductsViaScanningFailedEvent(
                     message = resourceProvider.getString(
@@ -782,6 +794,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 )
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -820,6 +833,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -845,8 +859,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     when (updateStatus) {
                         OrderUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
+
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
@@ -856,6 +872,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
+
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
