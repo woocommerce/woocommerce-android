@@ -42,6 +42,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -243,6 +244,12 @@ class ProductDetailFragment :
                 RequestCodes.AZTEC_EDITOR_PRODUCT_SHORT_DESCRIPTION -> {
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
+            }
+
+            if (result.containsKey(ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION)) {
+                viewModel.updateProductDraft(
+                    title = result.getString(ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION)
+                )
             }
         }
 

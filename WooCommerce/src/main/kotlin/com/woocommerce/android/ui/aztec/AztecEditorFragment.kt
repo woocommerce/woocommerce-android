@@ -42,6 +42,7 @@ class AztecEditorFragment :
         const val ARG_AZTEC_REQUEST_CODE = "aztec-request-code"
         const val ARG_AZTEC_EDITOR_TEXT = "editor-text"
         const val ARG_AZTEC_HAS_CHANGES = "editor-has-changes"
+        const val ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION = "title-from-ai-description"
 
         private const val FIELD_IS_HTML_EDITOR_ENABLED = "is_html_editor_enabled"
     }
@@ -54,6 +55,8 @@ class AztecEditorFragment :
     private val navArgs: AztecEditorFragmentArgs by navArgs()
 
     private var isHtmlEditorEnabled: Boolean = false
+
+    private var titleFromProductAIDescriptionDialog: String? = null
 
     override fun getFragmentTitle() = navArgs.aztecTitle
 
@@ -125,10 +128,10 @@ class AztecEditorFragment :
     }
 
     private fun handleResults() {
-        handleResult<Pair<String,String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { pairResult ->
+        handleResult<Pair<String, String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { pairResult ->
             aztec.visualEditor.setText(pairResult.first)
 
-            // todo handle product title in pairResult.second
+            titleFromProductAIDescriptionDialog = pairResult.second
         }
     }
 
@@ -201,6 +204,9 @@ class AztecEditorFragment :
             it.putInt(ARG_AZTEC_REQUEST_CODE, navArgs.requestCode)
             it.putString(ARG_AZTEC_EDITOR_TEXT, getEditorText())
             it.putBoolean(ARG_AZTEC_HAS_CHANGES, hasChanges)
+            titleFromProductAIDescriptionDialog?.let { title ->
+                it.putString(ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION, title)
+            }
         }
         navigateBackWithResult(AZTEC_EDITOR_RESULT, bundle)
     }
