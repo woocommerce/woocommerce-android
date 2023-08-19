@@ -131,10 +131,7 @@ fun OrderCreateEditProductDiscountScreen(
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-                CalculatedAmount(
-                    state = state.value,
-                    discountType = state.value.discountType
-                )
+                CalculatedAmount(state = state.value)
 
                 PriceAfterDiscount(
                     priceAfterDiscount = "20"
@@ -288,18 +285,12 @@ data class DiscountInputFieldConfig(
 @Composable
 fun CalculatedAmount(
     state: ViewState,
-    discountType: OrderCreateEditProductDiscountViewModel.DiscountType,
 ) {
-    val discountAmountText = when (discountType) {
-        is Percentage -> "${state.discountAmount}%"
-        is Amount -> "$${state.discountAmount}"
+    val discountAmount = when (state.discountType) {
+        is Percentage -> "${state.currency}${state.discountAmount}"
+        is Amount -> "${state.discountAmount}%"
     }
 
-    val discountLabelText = when(discountType) {
-        is Percentage -> stringResource(id = R.string.order_creation_discount_amount_label)
-        is Amount -> stringResource(id = R.string.order_creation_discount_percentage_label)
-
-    }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -312,12 +303,16 @@ fun CalculatedAmount(
         verticalAlignment = Alignment.CenterVertically
     ){
         Text(
-            text = discountLabelText,
+            text = when(state.discountType) {
+                is Percentage -> stringResource(id = R.string.order_creation_discount_amount_label)
+                is Amount -> stringResource(id = R.string.order_creation_discount_percentage_label)
+
+            },
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = discountAmountText,
+            text = if(state.discountAmount == null) "0.00" else discountAmount,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
