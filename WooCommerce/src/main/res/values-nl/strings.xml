@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-09 14:54:04+0000
+Translation-Revision-Date: 2023-08-17 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="ai_product_description_title_hint">Voer een producttitel in.</string>
+    <string name="free_trial_feature_support">24/7 ondersteuning met prioriteit</string>
+    <string name="free_trial_feature_backups">Automatische site back-ups</string>
+    <string name="free_trial_feature_hosting">De beste hosting</string>
+    <string name="free_trial_feature_automated_customer_emails">Geautomatiseerde mails naar klanten</string>
+    <string name="free_trial_feature_built_in_seo">Ingebouwde SEO</string>
+    <string name="free_trial_feature_design_editing">Ontwerpen en bewerken zonder coderen</string>
+    <string name="free_trial_feature_store_management">Tools voor winkelbeheer</string>
+    <string name="free_trial_summary_try_button">Maak je winkel aan</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Moeiteloze winkeleigendom</string>
+    <string name="free_trial_summary_grow_your_business">Laat je bedrijf groeien</string>
+    <string name="free_trial_summary_start_selling_quickly">Begin snel met verkopen</string>
+    <string name="store_creation_store_profiler_journey_description">Vertel ons op welk punt van je\nwebwinkeltraject je je bevindt, zodat we\nje Woo-ervaring op je aan kunnen passen.</string>
+    <string name="store_creation_store_profiler_journey_title">Welk van de volgende\nbeschrijft jou het beste?</string>
+    <string name="store_creation_store_profiler_industries_title">Wat wil je gaan verkopen\nin je winkel?</string>
+    <string name="store_creation_store_profiler_industries_header">Over je winkel</string>
+    <string name="simplified_login_prologue_title">Begin met ons gratis proefabonnement van 15 dagen. Geen creditcard nodig. Sluit je aan bij 3,4 miljoen winkels die floreren met Woo, vanaf de eerste verkoop tot de in de miljoenen.</string>
+    <string name="simplified_login_prologue_intro">Het e-commerceplatform dat met je meegroeit.</string>
+    <string name="product_type_variable_subscription">Variabel abonnement</string>
+    <string name="order_creation_remove_this_coupon">Kortingsbon verwijderen</string>
+    <string name="coupon_selector_empty_list_title">Iedereen houdt van een goede deal</string>
+    <string name="coupon_selector_empty_list_message">Je hebt nog geen kortingsbonnen aangemaakt. Maak een kortingsbon aan en pas die toe op deze bestelling.</string>
+    <string name="coupon_selector_empty_list_button">Naar kortingsbonnen</string>
+    <string name="order_creation_select_coupon">Selecteer een kortingsbon</string>
+    <string name="signup_get_started_button">Een nieuwe winkel aanmaken</string>
     <string name="coupon_create_coupon_creation_failed">Aanmaken van coupon mislukt</string>
     <string name="coupon_create_coupon_created">Coupon aangemaakt</string>
     <string name="coupon_create_save_button">Aanmaken</string>
@@ -281,21 +306,10 @@ Language: nl
     <string name="product_quantity_rules_title">Regels Aantal</string>
     <string name="gift_cards">Cadeaubonnen</string>
     <string name="order_gift_card">Cadeaubon</string>
-    <string name="free_trial_feature_fast_to_launch">Snelle lancering</string>
-    <string name="free_trial_feature_site_security">Sitebeveiliging</string>
-    <string name="free_trial_feature_auto_updates_backups">Automatische updates &amp; back-ups</string>
-    <string name="free_trial_feature_247_support">24/7 ondersteuning</string>
-    <string name="free_trial_feature_email_marketing">E-mailmarketing</string>
     <string name="free_trial_feature_social_advertising">Sociale reclame</string>
-    <string name="free_trial_feature_subscription_product_kits">Abonnementproducten</string>
-    <string name="free_trial_feature_multiple_payment_options">Meerdere betaalopties</string>
-    <string name="free_trial_feature_ecommerce_reports">Ecommerce-rapporten</string>
-    <string name="free_trial_feature_shipping_labels">Verzendlabels</string>
-    <string name="free_trial_feature_unlimited_products">Onbeperkte producten</string>
     <string name="free_trial_feature_premium_themes">Premium-thema\'s</string>
     <string name="free_trial_summary_credit_card_message">Geen creditcard vereist</string>
-    <string name="free_trial_summary_try_button">Probeer gratis</string>
-    <string name="free_trial_summary_try_it">Probeer het 14 dagen gratis of</string>
+    <string name="free_trial_summary_try_it">Probeer het 14 dagen gratis.</string>
     <string name="free_trial_summary_advertise">Wij bieden alles wat je nodig hebt om een online winkel op te bouwen en te laten groeien, mogelijk gemaakt door WooCommerce en gehost door WordPress.com.</string>
     <string name="free_trial_summary_title">Lanceer snel en blijf jaren groeien</string>
     <string name="product_selector_products_heading">Producten</string>
@@ -334,8 +348,6 @@ Language: nl
     <string name="subscription_id">Abonnementnummer%1$d</string>
     <string name="order_subscription">Abonnement</string>
     <string name="store_onboarding_launch_store_ok">OK</string>
-    <string name="simplified_login_prologue_title">Vanaf je eerste verkoop tot miljoenen in omzet, Woo is bij je. Zie waarom handelaren ons vertrouwen met het mogelijk maken van 3,4 miljoen webwinkels.</string>
-    <string name="simplified_login_prologue_intro">Alles verkopen, overal.</string>
     <string name="product_type_subscription">Abonnement</string>
     <string name="otp_incorrect">De OTP-code is niet correct. Controleer je gegevens en probeer het nogmaals.</string>
     <string name="requesting_sms_otp_failure">Sms-aaanvraag mislukt. Probeer het nog eens.</string>
@@ -547,11 +559,8 @@ Language: nl
     <string name="store_creation_country_picker_description">We gebruiken deze gegevens om betalingen, verzending en belasting in te stellen.</string>
     <string name="store_creation_country_picker_title">Bevestig je locatie</string>
     <string name="store_creation_store_profiler_platforms_description">Je kan er meerdere kiezen.</string>
-    <string name="store_creation_store_profiler_platforms_title">Op welk platform verkoop je momenteel?</string>
-    <string name="store_creation_store_profiler_journey_description">Om alles een beetje te versnellen, zullen we je WooCommerce-ervaring aanpassen aan de hand van je antwoord.</string>
-    <string name="store_creation_store_profiler_journey_title">Hoe vordert je reis omtrent handelen?</string>
-    <string name="store_creation_store_profiler_industries_description">Kies een categorie die bij je bedrijf past.</string>
-    <string name="store_creation_store_profiler_industries_title">Wat ga je verkopen?</string>
+    <string name="store_creation_store_profiler_platforms_title">Welk(e) platform(s)\ngebruik je op dit moment?</string>
+    <string name="store_creation_store_profiler_industries_description">Kies een categorie die je bedrijf\nhet beste weergeeft.</string>
     <string name="login_application_passwords_unavailable">Het lijkt erop dat de functie Applicatiewachtwoorden is uitgeschakeld op je site %1$s.\n Schakel dit in om de WooCommerce-app te kunnen gebruiken.</string>
     <string name="login_open_installation_page">Installatiepagina openen</string>
     <string name="not_a_valid_qr_code">De ingescande QR-code is geen WooCommerce code</string>
@@ -716,7 +725,6 @@ Language: nl
     <string name="signup_password_hint">Kies een wachtwoord</string>
     <string name="signup_email_address_hint">Je e-mailadres</string>
     <string name="signup_get_started_label">Aan de slag \nin minuten</string>
-    <string name="signup_get_started_button">Aan de slag</string>
     <string name="login_jetpack_connection_consent">Door op de knop Jetpack verbinden te klikken, ga je akkoord met onze &lt;a href=\'terms\'&gt;Servicevoorwaarden&lt;/a&gt; en met het &lt;a href=\'sync\'&gt;delen van informatie&lt;/a&gt; met WordPress.com.</string>
     <string name="enable_card_reader">Gesimuleerde kaartlezer inschakelen</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Neem contact op met de eigenaar van de site voor een uitnodiging om als winkelmanager of beheerder de app te gebruiken.</string>
@@ -1436,7 +1444,7 @@ Language: nl
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het aannemen van betalingen met je mobiele apparaat en het bestellen van kaartlezers</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Hulp nodig? &lt;a href=\'\'&gt;Neem contact op met support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">Je kunt nog altijd fysieke cashbetalingen door de betaalmethode \'Contant betalen bij ontvangst\' in te schakelen in je winkel</string>
-    <string name="card_reader_onboarding_country_not_supported_header">We ondersteunen fysieke betalingen niet in %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_header">We ondersteunen geen fysieke kaaartbetalingen in %1$s</string>
     <string name="card_reader_onboarding_loading">Je account koppelen</string>
     <string name="card_reader_onboarding_title">Fysieke betalingen</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Controleer uitvoerig de afmetingen en het gewicht van je pakket of probeer een ander pakket bij Pakketgegevens</string>
