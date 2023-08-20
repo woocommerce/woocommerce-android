@@ -1,1 +1,3 @@
-Adding coupons to your orders has never been easier. Simply select one from the list of existing coupons. Please continue to send us feedback – we are listening!
+- [*] Store creation: Country selector screen is now more intuitive and easier to use. [https://github.com/woocommerce/woocommerce-android/issues/9606]
+
+
