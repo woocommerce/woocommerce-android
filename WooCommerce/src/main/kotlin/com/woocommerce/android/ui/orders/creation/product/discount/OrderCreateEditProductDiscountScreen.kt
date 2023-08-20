@@ -86,6 +86,7 @@ fun OrderCreateEditProductDiscountScreen(
                     productPrice = productItem.value.price,
                     productQuantity = productItem.value.quantity,
                     totalPerProduct = productItem.value.total,
+                    state = state.value
                 )
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
@@ -194,6 +195,7 @@ private fun ProductCard(
     productPrice: BigDecimal,
     productQuantity: Float,
     totalPerProduct: BigDecimal,
+    state: ViewState
 ) {
     Row(
         modifier = Modifier
@@ -234,7 +236,7 @@ private fun ProductCard(
         }
 
         Text(
-            text = "$$totalPerProduct",
+            text = "${state.currency}$totalPerProduct",
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.major_100)),
             style = MaterialTheme.typography.body1
@@ -340,7 +342,7 @@ private fun PriceAfterDiscount(
             style = MaterialTheme.typography.body1,
         )
         Text(
-            text = "$${state.priceAfterDiscount}",
+            text = "${state.currency}${state.priceAfterDiscount}",
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -369,7 +371,7 @@ private fun OrderTotal(
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = "$${state.orderTotal}",
+            text = "${state.currency}${state.orderTotal}",
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_80)
         )
@@ -432,6 +434,12 @@ fun ProductCardPreview() {
         productName = "Product Name",
         productPrice = BigDecimal.ZERO,
         productQuantity = 1f,
-        totalPerProduct = BigDecimal.ZERO
+        totalPerProduct = BigDecimal.ZERO,
+        state = ViewState(
+            "$",
+            BigDecimal.ZERO,
+            isRemoveButtonVisible = true,
+            calculatedDiscount = BigDecimal.ZERO
+        )
     )
 }
