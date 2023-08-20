@@ -48,6 +48,13 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         scope = this, initialValue = getInitialDiscountAmount(), key = "key_discount", clazz = BigDecimal::class.java
     )
 
+    private val calculatedDiscount = savedStateHandle.getNullableStateFlow(
+        scope = this,
+        initialValue = getInitialDiscountAmount(),
+        key = "key_calculated_percentage",
+        clazz = BigDecimal::class.java
+    )
+
     private val discountType: MutableStateFlow<DiscountType> = savedStateHandle.getStateFlow(
         scope = this, initialValue = DiscountType.Amount(currency), key = "key_discount_type"
     )
@@ -65,15 +72,18 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     )
 
     val viewState: StateFlow<ViewState> =
-        combine(discount, discountType) { discount, type ->
+        combine(discount, discountType, calculatedDiscount) { discount, type, calculatedDiscount ->
             ViewState(
                 currency = currency,
                 discountAmount = discount,
                 discountValidationState = checkDiscountValidationState(discount, type),
                 isRemoveButtonVisible = getRemoveButtonVisibility(),
-                discountType = type
+                discountType = type,
+                calculatedDiscount = calculatedDiscount,
+                priceAfterDiscount = getPriceAfterDiscount(),
+                orderTotal = orderItem.value.total,
             )
-        }.toStateFlow(ViewState(currency, null))
+        }.toStateFlow(ViewState(currency = currency, null, calculatedDiscount = null))
 
     private fun getRemoveButtonVisibility() = with(getInitialDiscountAmount()) {
         this != null && this > BigDecimal.ZERO
@@ -138,7 +148,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             DiscountType.Percentage -> {
                 orderItem.value.pricePreDiscount * discountAmount / PERCENTAGE_BASE
             }
-
             is DiscountType.Amount -> {
                 discountAmount
             }
@@ -152,6 +161,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountAmount = discount.value
         if (discountAmount != null) {
             val pricePreDiscount = orderItem.value.pricePreDiscount
+            calculatedDiscount.value = discountAmount
             val discountPercentage =
                 PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
                     pricePreDiscount,
@@ -169,6 +179,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         if (previousDiscountType == DiscountType.Amount(currency)) return
 
         val discountPercentage = discount.value
+        calculatedDiscount.value = discountPercentage
         if (discountPercentage != null) {
             val pricePreDiscount = orderItem.value.pricePreDiscount
             val discountAmount = pricePreDiscount
@@ -191,6 +202,10 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         }
     }
 
+    private fun getPriceAfterDiscount(): BigDecimal {
+      return if (discount.value == null) BigDecimal.ZERO else orderItem.value.total - getDiscountAmount()
+    }
+
     fun onDiscountAmountChange(newDiscount: BigDecimal?) {
         discount.value = newDiscount
     }
@@ -202,6 +217,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val isDoneButtonEnabled: Boolean = discountValidationState is DiscountAmountValidationState.Valid,
         val isRemoveButtonVisible: Boolean = false,
         val discountType: DiscountType = DiscountType.Amount(currency),
+        val calculatedDiscount: BigDecimal?,
+        val priceAfterDiscount: BigDecimal? = null,
+        val orderTotal: BigDecimal? = null,
     )
 
     @Parcelize

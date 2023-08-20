@@ -72,9 +72,11 @@ fun OrderCreateEditProductDiscountScreen(
     val state = viewState.collectAsState()
     Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
         val focusRequester = remember { FocusRequester() }
-        Box(modifier = Modifier
-            .padding(padding)
-            .background(MaterialTheme.colors.surface)) {
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .background(MaterialTheme.colors.surface)
+        ) {
             Column(Modifier.padding(dimensionResource(id = R.dimen.minor_100))) {
                 val discountValidationState = state.value.discountValidationState
 
@@ -88,7 +90,7 @@ fun OrderCreateEditProductDiscountScreen(
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-                Row (
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimensionResource(id = R.dimen.minor_100)),
@@ -131,15 +133,13 @@ fun OrderCreateEditProductDiscountScreen(
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-                CalculatedAmount(state = state.value)
+                CalculatedAmount(viewState.value)
 
-                PriceAfterDiscount(
-                    priceAfterDiscount = "20"
-                )
+                PriceAfterDiscount(viewState.value)
 
                 Divider()
 
-                OrderTotal(orderTotal = "20")
+                OrderTotal(viewState.value)
 
                 if (state.value.isRemoveButtonVisible) {
                     WCColoredButton(
@@ -195,7 +195,7 @@ private fun ProductCard(
     productQuantity: Float,
     totalPerProduct: BigDecimal,
 ) {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(dimensionResource(id = R.dimen.major_400))
@@ -207,16 +207,16 @@ private fun ProductCard(
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Image(
             painter = painterResource(id = image),
             contentDescription = null,
             modifier = Modifier
                 .padding(
-                    end = dimensionResource(id = R.dimen.minor_100,)
+                    end = dimensionResource(id = R.dimen.minor_100)
                 )
         )
-        Column (
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(dimensionResource(id = R.dimen.minor_100)),
@@ -287,11 +287,11 @@ fun CalculatedAmount(
     state: ViewState,
 ) {
     val discountAmount = when (state.discountType) {
-        is Percentage -> "${state.currency}${state.discountAmount}"
-        is Amount -> "${state.discountAmount}%"
+        is Percentage -> "${state.currency}${state.calculatedDiscount}"
+        is Amount -> "${state.calculatedDiscount}%"
     }
 
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
@@ -301,9 +301,9 @@ fun CalculatedAmount(
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
-            text = when(state.discountType) {
+            text = when (state.discountType) {
                 is Percentage -> stringResource(id = R.string.order_creation_discount_amount_label)
                 is Amount -> stringResource(id = R.string.order_creation_discount_percentage_label)
 
@@ -312,7 +312,7 @@ fun CalculatedAmount(
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = if(state.discountAmount == null) "0.00" else discountAmount,
+            text = if (state.discountAmount == null) "0.00" else discountAmount,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -320,8 +320,10 @@ fun CalculatedAmount(
 }
 
 @Composable
-private fun PriceAfterDiscount(priceAfterDiscount: String) {
-    Row (
+private fun PriceAfterDiscount(
+    state: ViewState,
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
@@ -332,13 +334,13 @@ private fun PriceAfterDiscount(priceAfterDiscount: String) {
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             text = stringResource(id = R.string.order_creation_price_after_discount_label),
             style = MaterialTheme.typography.body1,
         )
         Text(
-            text = priceAfterDiscount,
+            text = "$${state.priceAfterDiscount}",
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -346,8 +348,10 @@ private fun PriceAfterDiscount(priceAfterDiscount: String) {
 }
 
 @Composable
-private fun OrderTotal (orderTotal: String?){
-    Row (
+private fun OrderTotal(
+    state: ViewState,
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
@@ -358,14 +362,14 @@ private fun OrderTotal (orderTotal: String?){
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             text = stringResource(id = R.string.order_creation_total_label),
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = orderTotal ?: "",
+            text = "$${state.orderTotal}",
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_80)
         )
@@ -378,13 +382,21 @@ fun ToolbarPreview() = Toolbar({}, {}, true)
 
 @Preview
 @Composable
-fun SwitchPreview() = Switch(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true), {}, {})
+fun SwitchPreview() =
+    Switch(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true, calculatedDiscount = BigDecimal.ZERO), {}, {})
 
 @Preview
 @Composable
 fun OrderCreateEditProductDiscountScreenPreview() =
     OrderCreateEditProductDiscountScreen(
-        MutableStateFlow(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true)),
+        MutableStateFlow(
+            ViewState(
+                "$",
+                BigDecimal.ZERO,
+                isRemoveButtonVisible = true,
+                calculatedDiscount = BigDecimal.ZERO
+            )
+        ),
         {},
         {},
         {},
@@ -414,7 +426,7 @@ fun OrderCreateEditProductDiscountScreenPreview() =
 
 @Preview
 @Composable
-fun ProductCardPreview () {
+fun ProductCardPreview() {
     ProductCard(
         image = R.drawable.ic_product,
         productName = "Product Name",
