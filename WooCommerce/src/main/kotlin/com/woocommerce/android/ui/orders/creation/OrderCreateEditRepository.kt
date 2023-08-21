@@ -11,12 +11,17 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCTaxBasedOnSettingsModel
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -155,6 +160,31 @@ class OrderCreateEditRepository @Inject constructor(
             }
         }
     }
+
+    fun getTaxBasedOnSetting(): TaxBasedOnSetting? {
+        return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
+    }
+
+    suspend fun fetchTaxBasedOnSetting(): TaxBasedOnSetting? {
+        return wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
+    }
+
+    private fun WCTaxBasedOnSettingsModel.getTaxBasedOnSetting() =
+        when (selectedOption) {
+            "shipping" -> {
+                ShippingAddress(selectedOption, availableOptionList.find { it.key == selectedOption }?.label ?: "")
+            }
+
+            "billing" -> {
+                BillingAddress(selectedOption, availableOptionList.find { it.key == selectedOption }?.label ?: "")
+            }
+
+            "base" -> {
+                StoreAddress(selectedOption, availableOptionList.find { it.key == selectedOption }?.label ?: "")
+            }
+
+            else -> null
+        }
 
     private var isAutoDraftSupported: Boolean? = null
     private suspend fun isAutoDraftSupported(): Boolean {

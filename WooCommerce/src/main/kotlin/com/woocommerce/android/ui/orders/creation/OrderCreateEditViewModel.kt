@@ -225,6 +225,11 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+        launch {
+            orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+                viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
+            }
+        }
     }
 
     private fun handleCouponEditResult() {
@@ -1050,7 +1055,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
-        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
+        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
+        val taxBasedOnSettingLabel: String = "",
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
