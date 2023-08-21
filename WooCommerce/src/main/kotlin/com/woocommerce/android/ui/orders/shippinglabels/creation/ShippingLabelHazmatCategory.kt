@@ -58,7 +58,6 @@ enum class ShippingLabelHazmatCategory(val stringResourceID: Int) {
         LIGHTERS -> HazmatCategory.LIGHTERS
         LIMITED_QUANTITY -> HazmatCategory.LIMITED_QUANTITY
         SMALL_QUANTITY_PROVISION -> HazmatCategory.SMALL_QUANTITY_PROVISION
-        else -> throw IllegalArgumentException("Unknown HazmatCategory: $this")
     }
 
     companion object {
