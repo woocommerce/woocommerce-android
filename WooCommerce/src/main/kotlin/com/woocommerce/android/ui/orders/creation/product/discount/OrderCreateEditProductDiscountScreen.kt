@@ -140,8 +140,6 @@ fun OrderCreateEditProductDiscountScreen(
 
                 Divider()
 
-                OrderTotal(viewState.value)
-
                 if (state.value.isRemoveButtonVisible) {
                     WCColoredButton(
                         modifier = Modifier
@@ -345,35 +343,6 @@ private fun PriceAfterDiscount(
             text = "${state.currency}${state.priceAfterDiscount}",
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40)
-        )
-    }
-}
-
-@Composable
-private fun OrderTotal(
-    state: ViewState,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = dimensionResource(id = R.dimen.minor_100),
-                end = dimensionResource(id = R.dimen.minor_100),
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.major_100)
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(id = R.string.order_creation_total_label),
-            style = MaterialTheme.typography.body2,
-            color = colorResource(id = R.color.woo_gray_40)
-        )
-        Text(
-            text = "${state.currency}${state.orderTotal}",
-            style = MaterialTheme.typography.body1,
-            color = colorResource(id = R.color.woo_gray_80)
         )
     }
 }
