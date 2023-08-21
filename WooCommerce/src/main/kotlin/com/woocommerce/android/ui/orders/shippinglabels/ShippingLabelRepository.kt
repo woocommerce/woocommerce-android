@@ -120,7 +120,8 @@ class ShippingLabelRepository @Inject constructor(
                     width = pack.dimensions.width,
                     length = pack.dimensions.length,
                     weight = box.weight,
-                    isLetter = pack.isLetter
+                    isLetter = pack.isLetter,
+                    hazmat = pack.hazmatCategory?.toHazmatCategory()
                 )
             },
             customsData = customsPackages?.map { it.toDataModel() }
