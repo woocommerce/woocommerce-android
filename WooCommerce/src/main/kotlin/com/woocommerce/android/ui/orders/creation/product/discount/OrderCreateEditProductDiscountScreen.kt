@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -77,7 +79,10 @@ fun OrderCreateEditProductDiscountScreen(
                 .padding(padding)
                 .background(MaterialTheme.colors.surface)
         ) {
-            Column(Modifier.padding(dimensionResource(id = R.dimen.minor_100))) {
+            Column(Modifier
+                .padding(dimensionResource(id = R.dimen.minor_100))
+                .verticalScroll(rememberScrollState())
+            ) {
                 val discountValidationState = state.value.discountValidationState
 
                 ProductCard(
