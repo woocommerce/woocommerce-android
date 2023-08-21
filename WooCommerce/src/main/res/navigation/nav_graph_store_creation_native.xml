@@ -83,7 +83,7 @@
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerChallengesFragment"
         android:label="fragment_store_profiler_challenges">
         <action
-            android:id="@+id/action_countryPickerFragment_to_storeProfilerFeaturesFragment"
+            android:id="@+id/action_storeProfilerChallengesFragment_to_storeProfilerFeaturesFragment"
             app:destination="@id/storeProfilerFeaturesFragment" />
     </fragment>
 

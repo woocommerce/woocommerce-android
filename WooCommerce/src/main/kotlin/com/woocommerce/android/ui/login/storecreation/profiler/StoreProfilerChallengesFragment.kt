@@ -50,7 +50,7 @@ class StoreProfilerChallengesFragment : BaseFragment() {
     private fun navigateToStoreFeaturesProfilerStep() {
         findNavController().navigateSafely(
             StoreProfilerChallengesFragmentDirections
-                .actionCountryPickerFragmentToStoreProfilerFeaturesFragment()
+                .actionStoreProfilerChallengesFragmentToStoreProfilerFeaturesFragment()
         )
     }
 }
