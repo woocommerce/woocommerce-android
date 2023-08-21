@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -74,6 +75,20 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
         verify(createUpdateOrderUseCase).invoke(any(), any())
+    }
+
+    @Test
+    fun `when initializing the view model, then fetch current tax setting`() = testBlocking {
+        verify(orderCreateEditRepository).fetchTaxBasedOnSetting()
+    }
+
+    @Test
+    fun `when initializing the view model, then update view state with current tax setting`() = testBlocking {
+        val currentTaxSetting = TaxBasedOnSetting.BillingAddress("billing", "billing address of the store")
+        whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(currentTaxSetting)
+        createSut()
+        val viewState = sut.viewStateData.liveData.value!!
+        assertThat(viewState.taxBasedOnSettingLabel).isEqualTo(currentTaxSetting.label)
     }
 
     @Test
