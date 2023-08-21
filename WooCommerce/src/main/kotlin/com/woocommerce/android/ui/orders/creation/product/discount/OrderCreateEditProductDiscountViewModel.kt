@@ -81,7 +81,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 discountType = type,
                 calculatedDiscount = calculatedDiscount,
                 priceAfterDiscount = getPriceAfterDiscount(),
-                orderTotal = orderItem.value.total,
             )
         }.toStateFlow(ViewState(currency = currency, null, calculatedDiscount = null))
 
@@ -220,7 +219,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountType: DiscountType = DiscountType.Amount(currency),
         val calculatedDiscount: BigDecimal?,
         val priceAfterDiscount: BigDecimal? = null,
-        val orderTotal: BigDecimal? = null,
     )
 
     @Parcelize
