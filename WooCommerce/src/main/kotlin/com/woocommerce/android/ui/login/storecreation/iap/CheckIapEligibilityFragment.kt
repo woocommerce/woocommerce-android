@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.iap.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNextStep
-import com.woocommerce.android.ui.login.storecreation.iap.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -49,7 +48,6 @@ class CheckIapEligibilityFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToWebStoreCreation -> navigateToStoreCreationWeb()
                 is NavigateToNextStep -> navigateToStoreCreationNative()
                 is Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
@@ -59,13 +57,6 @@ class CheckIapEligibilityFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    private fun navigateToStoreCreationWeb() {
-        findNavController()
-            .navigateSafely(
-                CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToWebViewStoreCreationFragment()
-            )
     }
 
     private fun navigateToStoreCreationNative() {
