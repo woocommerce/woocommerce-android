@@ -287,8 +287,8 @@ fun CalculatedAmount(
     state: ViewState,
 ) {
     val discountAmount = when (state.discountType) {
-        is Percentage -> "${state.currency}${state.calculatedDiscount}"
-        is Amount -> "${state.calculatedDiscount}%"
+        is Percentage -> "${state.currency}${state.calculatedAmount}"
+        is Amount -> "${state.calculatedPercentage}%"
     }
 
     Row(
@@ -354,7 +354,7 @@ fun ToolbarPreview() = Toolbar({}, {}, true)
 @Preview
 @Composable
 fun SwitchPreview() =
-    Switch(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true, calculatedDiscount = BigDecimal.ZERO), {}, {})
+    Switch(ViewState("$", BigDecimal.ZERO, isRemoveButtonVisible = true), {}, {})
 
 @Preview
 @Composable
@@ -365,7 +365,6 @@ fun OrderCreateEditProductDiscountScreenPreview() =
                 "$",
                 BigDecimal.ZERO,
                 isRemoveButtonVisible = true,
-                calculatedDiscount = BigDecimal.ZERO
             )
         ),
         {},
@@ -408,7 +407,6 @@ fun ProductCardPreview() {
             "$",
             BigDecimal.ZERO,
             isRemoveButtonVisible = true,
-            calculatedDiscount = BigDecimal.ZERO
         )
     )
 }
