@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.onboarding
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
@@ -22,7 +23,8 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val isLocalTaskNameYourStoreCompleted: IsLocalTaskNameYourStoreCompleted
 ) {
 
     private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
@@ -41,21 +43,7 @@ class StoreOnboardingRepository @Inject constructor(
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
                     ?.toMutableList()
-                    ?.apply {
-                        if (
-                            selectedSite.get().isFreeTrial &&
-                            !this.any { it.type == LAUNCH_YOUR_STORE }
-                        ) {
-                            add(
-                                OnboardingTask(
-                                    type = LAUNCH_YOUR_STORE,
-                                    isComplete = false,
-                                    isVisible = true,
-                                    isVisited = false
-                                )
-                            )
-                        }
-                    }
+                    ?.apply { addLocalOnboardingTasks(this) }
                     ?.map {
                         if (shouldMarkLaunchStoreAsCompleted(it)) it.copy(isComplete = true)
                         else it
@@ -67,6 +55,28 @@ class StoreOnboardingRepository @Inject constructor(
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
         }
+    }
+
+    private fun addLocalOnboardingTasks(onboardingTasks: MutableList<OnboardingTask>) {
+        if (!selectedSite.get().isFreeTrial) return
+        if (!onboardingTasks.any { it.type == LAUNCH_YOUR_STORE }) {
+            onboardingTasks.add(
+                OnboardingTask(
+                    type = LAUNCH_YOUR_STORE,
+                    isComplete = false,
+                    isVisible = true,
+                    isVisited = false
+                )
+            )
+        }
+        onboardingTasks.add(
+            OnboardingTask(
+                type = LOCAL_NAME_STORE,
+                isComplete = isLocalTaskNameYourStoreCompleted(),
+                isVisible = true,
+                isVisited = false
+            )
+        )
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
@@ -113,12 +123,13 @@ class StoreOnboardingRepository @Inject constructor(
     )
 
     enum class OnboardingTaskType(val id: String, val order: Int) {
-        ABOUT_YOUR_STORE(id = "store_details", order = 1),
-        ADD_FIRST_PRODUCT(id = "products", order = 2),
-        LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
-        CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
-        WC_PAYMENTS(id = "woocommerce-payments", order = 5),
-        PAYMENTS(id = "payments", order = 5), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
+        LOCAL_NAME_STORE(id = "local_name_store", order = 1),
+        ABOUT_YOUR_STORE(id = "store_details", order = 2),
+        ADD_FIRST_PRODUCT(id = "products", order = 3),
+        LAUNCH_YOUR_STORE(id = "launch_site", order = 4),
+        CUSTOMIZE_DOMAIN(id = "add_domain", order = 5),
+        WC_PAYMENTS(id = "woocommerce-payments", order = 6),
+        PAYMENTS(id = "payments", order = 6), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 
