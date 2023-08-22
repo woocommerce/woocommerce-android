@@ -61,7 +61,9 @@ class StoreOnboardingViewModel @Inject constructor(
                     _viewState.value = OnboardingState(
                         show = shouldShowOnboarding.showForTasks(tasks),
                         title = R.string.store_onboarding_title,
-                        tasks = tasks.map { mapToOnboardingTaskState(it) },
+                        tasks = tasks
+                            .filter { it.type != LOCAL_NAME_STORE } // temporary, to hide it from UI.
+                            .map { mapToOnboardingTaskState(it) },
                     )
                 }
         }
@@ -84,8 +86,8 @@ class StoreOnboardingViewModel @Inject constructor(
                 isCompleted = task.isComplete,
                 isLabelVisible = isAIProductDescriptionEnabled()
             )
-            LOCAL_NAME_STORE -> TODO()
 
+            LOCAL_NAME_STORE,
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
