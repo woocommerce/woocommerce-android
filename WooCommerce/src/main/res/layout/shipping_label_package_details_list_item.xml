@@ -233,14 +233,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="0dp"
-                            android:text="Hazardous material category" />
+                            android:text="@string/shipping_label_package_details_hazmat_selection_title" />
 
                         <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/hazmat_category"
                             style="@style/Woo.ListItem.Body"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="0dp"
-                            android:text="select a category" />
+                            android:text="@string/shipping_label_package_details_hazmat_select_category_action" />
 
                     </LinearLayout>
 
