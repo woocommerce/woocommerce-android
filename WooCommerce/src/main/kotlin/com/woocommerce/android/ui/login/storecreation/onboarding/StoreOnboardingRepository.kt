@@ -22,14 +22,15 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val isLocalTaskNameYourStoreCompleted: IsLocalTaskNameYourStoreCompleted
 ) {
 
     private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
 
     private val localNameStoreTask = OnboardingTask(
         type = OnboardingTaskType.LOCAL_NAME_STORE,
-        isComplete = false,
+        isComplete = isLocalTaskNameYourStoreCompleted(),
         isVisible = true,
         isVisited = false
     )
