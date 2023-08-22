@@ -42,12 +42,12 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
@@ -79,6 +79,7 @@ class MainActivityViewModel @Inject constructor(
         }
 
         launch(dispatchers.io) {
+            if (!FeatureFlag.OPTIMIZE_PROFILER_QUESTIONS.isEnabled()) return@launch
             if (selectedSite.exists()) {
                 // Upload any pending store profiler answers
                 storeProfilerRepository.uploadAnswers()
