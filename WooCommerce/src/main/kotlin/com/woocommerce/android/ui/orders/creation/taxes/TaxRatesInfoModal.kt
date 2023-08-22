@@ -21,7 +21,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,27 +28,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-
-data class TaxRateInfoModalState(
-    val taxSetting: TaxBasedOnSetting,
-    val taxLines: Collection<Order.TaxLine> = emptyList(),
-)
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TaxRateInfoModal(
+    dialogState: TaxRatesInfoDialogViewState,
+    onDismissButtonClicked: () -> Unit,
 ) {
     Dialog(
         onDismissRequest = { },
         properties = DialogProperties(
             usePlatformDefaultWidth = true,
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false,
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
         ),
         content = {
             Surface(
@@ -68,7 +62,7 @@ fun TaxRateInfoModal(
 
                     Text(
                         text = "Taxes & Tax Rates",
-                        style = MaterialTheme.typography.h5,
+                        style = MaterialTheme.typography.h6,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -95,11 +89,17 @@ fun TaxRateInfoModal(
 
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
+                    Text(
+                        text = dialogState.taxBasedOnSettingText,
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                     WCColoredButton(
                         onClick = { },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                        modifier = Modifier.fillMaxWidth(),
                         leadingIcon = {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_redirect),
@@ -110,11 +110,11 @@ fun TaxRateInfoModal(
                         text = "Edit Tax Rates in Admin"
                     )
 
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                     WCOutlinedButton(
-                        onClick = { },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                        onClick = onDismissButtonClicked,
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(text = "Done")
                     }
@@ -130,7 +130,6 @@ fun TaxRateInfoModal(
 @Composable
 fun TaxRateInfoModalPreview() {
     WooThemeWithBackground {
-        TaxRateInfoModal(
-        )
+        TaxRateInfoModal(TaxRatesInfoDialogViewState("Tax", emptyList())) {}
     }
 }

@@ -115,6 +115,8 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -1045,6 +1047,17 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onProductDiscountEditResult(modifiedItem: Order.Item) {
         _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
+    }
+
+    fun onTaxHelpButtonClicked() {
+        val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
+            is TaxBasedOnSetting.StoreAddress -> "Your tax rate is currently calculated based on your shop address:"
+            is TaxBasedOnSetting.BillingAddress -> "Your tax rate is currently calculated based on your billing address:"
+            is TaxBasedOnSetting.ShippingAddress -> "Your tax rate is currently calculated based on your shipping address:"
+            else -> ""
+        }
+        val taxLines: List<Pair<String, String>> = _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
+        triggerEvent(OrderCreateEditNavigationTarget.TaxRatesInfoDialog(TaxRatesInfoDialogViewState(settingText, taxLines)))
     }
 
     @Parcelize
