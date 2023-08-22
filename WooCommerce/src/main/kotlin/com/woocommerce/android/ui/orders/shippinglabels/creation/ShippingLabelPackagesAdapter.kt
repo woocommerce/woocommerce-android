@@ -30,7 +30,8 @@ class ShippingLabelPackagesAdapter(
     val onWeightEdited: (Int, Float) -> Unit,
     val onExpandedChanged: (Int, Boolean) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit,
-    val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit
+    val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit,
+    val onHazmatCategoryClicked: () -> Unit,
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var uiModels: List<ShippingLabelPackageUiModel> = emptyList()
         set(value) {
@@ -126,6 +127,10 @@ class ShippingLabelPackagesAdapter(
             binding.hazmatToggle.setOnCheckedChangeListener { _, isChecked ->
                 TransitionManager.beginDelayedTransition(binding.root)
                 binding.hazmatContent.isVisible = isChecked
+            }
+
+            binding.hazmatCategoryContainer.setOnClickListener {
+                onHazmatCategoryClicked()
             }
         }
 
