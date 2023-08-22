@@ -511,6 +511,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_STORE_PROFILER_COMMERCE_JOURNEY = "store_profiler_commerce_journey"
         const val VALUE_STEP_STORE_PROFILER_ECOMMERCE_PLATFORMS = "store_profiler_ecommerce_platforms"
         const val VALUE_STEP_STORE_PROFILER_COUNTRY = "store_profiler_country"
+        const val VALUE_STEP_STORE_PROFILER_CHALLENGES = "store_profiler_challenges"
+        const val VALUE_STEP_STORE_PROFILER_FEATURES = "store_profiler_features"
         const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
         const val VALUE_STEP_STORE_SUMMARY = "store_summary"
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
@@ -518,6 +520,20 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
         const val KEY_NEW_SITE_ID = "new_site_id"
         const val KEY_INITIAL_DOMAIN = "initial_domain"
+        const val KEY_CHALLENGE = "challenges"
+        const val VALUE_CHALLENGE_SETTING_UP_ONLINE_STORE = "setting_up_online_store"
+        const val VALUE_CHALLENGE_FINDING_CUSTOMERS = "finding_customers"
+        const val VALUE_CHALLENGE_MANAGING_INVENTORY = "managing_inventory"
+        const val VALUE_CHALLENGE_SHIPPING_AND_LOGISTICS = "shipping_and_logistics"
+        const val VALUE_CHALLENGE_OTHER = "other"
+        const val VALUE_FEATURES_PRODUCT_MANAGEMENT_AND_INVENTORY = "product_management_and_inventory"
+        const val VALUE_FEATURES_SALES_AND_ANALYTICS = "sales_and_analytics"
+        const val VALUE_FEATURES_PAYMENT_OPTIONS = "payment_options"
+        const val VALUE_FEATURES_IN_PERSON_PAYMENTS = "in_person_payments"
+        const val VALUE_FEATURES_SCALE_AS_BUSINESS_GROWS = "scale_as_business_grows"
+        const val VALUE_FEATURES_CUSTOMIZATION_OPTIONS_FOR_STORE_DESIGN = "customization_options_for_store_design"
+        const val VALUE_FEATURES_ACCESS_PLUGIN_AND_EXTENSIONS = "access_plugin_and_extensions"
+        const val VALUE_FEATURES_OTHER = "other˚"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"
@@ -563,6 +579,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ADD_DOMAIN = "add_domain"
         const val VALUE_LAUNCH_SITE = "launch_site"
         const val VALUE_PAYMENTS = "payments"
+        const val VALUE_LOCAL_NAME_STORE = "store_name"
 
         // -- Product Selector
         const val VALUE_PRODUCT_SELECTOR = "product_selector"

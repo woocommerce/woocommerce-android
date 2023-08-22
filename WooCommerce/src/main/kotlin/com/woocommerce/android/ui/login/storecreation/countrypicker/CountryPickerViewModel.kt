@@ -30,9 +30,15 @@ class CountryPickerViewModel @Inject constructor(
         const val DEFAULT_LOCATION_CODE = "US"
     }
 
-    private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
-
-    val countryPickerState = availableCountries.asLiveData()
+    private val detectedCountry = MutableStateFlow(
+        StoreCreationCountry(
+            name = "",
+            code = "",
+            emojiFlag = "",
+            isSelected = false
+        )
+    )
+    val countryPickerState = detectedCountry.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -43,24 +49,23 @@ class CountryPickerViewModel @Inject constructor(
         )
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
-            val defaultCountryCode = when {
+            val currentCountryCode = when {
                 !newStore.data.country?.code.isNullOrEmpty() -> newStore.data.country?.code!!
                 loadedCountriesMap.containsKey(Locale.getDefault().country) -> Locale.getDefault().country
                 else -> DEFAULT_LOCATION_CODE
             }
-            availableCountries.update {
-                loadedCountriesMap.map { (code, name) ->
-                    StoreCreationCountry(
-                        name = name,
-                        code = code,
-                        emojiFlag = emojiUtils.countryCodeToEmojiFlag(code),
-                        isSelected = defaultCountryCode == code
-                    )
-                }.sortedBy { it.name }
-            }
+
+            val selectedCountry = StoreCreationCountry(
+                name = loadedCountriesMap[currentCountryCode] ?: "",
+                code = currentCountryCode,
+                emojiFlag = emojiUtils.countryCodeToEmojiFlag(currentCountryCode),
+                isSelected = true
+            )
+
+            detectedCountry.update { selectedCountry }
+
             newStore.update(
-                country = availableCountries.value.first { it.isSelected }
-                    .toNewStoreCountry()
+                country = selectedCountry.toNewStoreCountry()
             )
         }
     }
@@ -83,31 +88,15 @@ class CountryPickerViewModel @Inject constructor(
         }
     }
 
-    fun onCountrySelected(country: StoreCreationCountry) {
-        availableCountries.update { currentCountryList ->
-            currentCountryList.map {
-                when (it.code) {
-                    country.code -> it.copy(isSelected = true)
-                    else -> it.copy(isSelected = false)
-                }
-            }
-        }
-        newStore.update(country = country.toNewStoreCountry())
+    fun onCurrentCountryClicked() {
+        triggerEvent(
+            NavigateToDomainListPicker(
+                locationCode = detectedCountry.value.code.takeIf { it.isNotEmpty() } ?: DEFAULT_LOCATION_CODE
+            )
+        )
     }
 
-    private fun StoreCreationCountry.toNewStoreCountry() =
-        NewStore.Country(
-            name = name,
-            code = code,
-        )
-
+    data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
-
-    data class StoreCreationCountry(
-        val name: String,
-        val code: String,
-        val emojiFlag: String,
-        val isSelected: Boolean = false
-    )
 }

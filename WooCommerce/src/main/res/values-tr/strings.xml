@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-10 16:54:03+0000
+Translation-Revision-Date: 2023-08-16 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="ai_product_description_title_hint">Ürün başlığını girin.</string>
+    <string name="free_trial_feature_support">7/24 öncelikli destek</string>
+    <string name="free_trial_feature_backups">Otomatik site yedeklemeleri</string>
+    <string name="free_trial_feature_hosting">Birinci sınıf barındırma</string>
+    <string name="free_trial_feature_automated_customer_emails">Otomatik müşteri e-postaları</string>
+    <string name="free_trial_feature_built_in_seo">Yerleşik SEO</string>
+    <string name="free_trial_feature_design_editing">Kodsuz tasarım ve düzenleme</string>
+    <string name="free_trial_feature_store_management">Mağaza yönetimi araçları</string>
+    <string name="free_trial_summary_try_button">Mağazanızı oluşturun</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Sorunsuz mağaza sahipliği</string>
+    <string name="free_trial_summary_grow_your_business">İşletmenizi büyütün</string>
+    <string name="free_trial_summary_start_selling_quickly">Hızlıca satış yapmaya başlayın</string>
+    <string name="store_creation_store_profiler_journey_description">Woo deneyiminizi sizlere özel olarak düzenleyebilmemiz için\nticaret yolculuğunuzun neresinde\nolduğunuzu bize bildirin.</string>
+    <string name="store_creation_store_profiler_journey_title">Bunlardan hangisi\nsizi en iyi şekilde tanımlıyor?</string>
+    <string name="store_creation_store_profiler_industries_title">Mağazanızda ne satmayı\nplanlıyorsunuz?</string>
+    <string name="store_creation_store_profiler_industries_header">Mağazanız hakkında</string>
+    <string name="simplified_login_prologue_title">15 günlük ücretsiz denemenizi başlatın. Kredi kartı gerekmez. Woo ile ilk satıştan itibaren milyonlara ulaşarak büyüyen 3,4 milyon mağaza arasına katılın.</string>
+    <string name="simplified_login_prologue_intro">Sizinle birlikte büyüyen e-ticaret platformu</string>
+    <string name="product_type_variable_subscription">Değişken abonelik</string>
+    <string name="order_creation_remove_this_coupon">Kuponu kaldır</string>
+    <string name="coupon_selector_empty_list_title">Herkes iyi alışverişi sever</string>
+    <string name="coupon_selector_empty_list_message">Henüz hiçbir kupon oluşturmadınız. Bu siparişe uygulamak için bir kupon oluşturun.</string>
+    <string name="coupon_selector_empty_list_button">Kuponlara Git</string>
+    <string name="order_creation_select_coupon">Bir kupon seçin</string>
+    <string name="signup_get_started_button">Yeni bir mağaza oluştur</string>
     <string name="coupon_create_coupon_creation_failed">Kupon oluşturulamadı</string>
     <string name="coupon_create_coupon_created">Kupon oluşturuldu</string>
     <string name="coupon_create_save_button">Oluştur</string>
@@ -281,21 +306,10 @@ Language: tr
     <string name="product_quantity_rules_title">Miktar Kuralları</string>
     <string name="gift_cards">Hediye Kartları</string>
     <string name="order_gift_card">Hediye Kartı</string>
-    <string name="free_trial_feature_fast_to_launch">Başlatması hızlı</string>
-    <string name="free_trial_feature_site_security">Site güvenliği</string>
-    <string name="free_trial_feature_auto_updates_backups">Otomatik güncellemeler ve yedeklemeler</string>
-    <string name="free_trial_feature_247_support">7/24 destek</string>
-    <string name="free_trial_feature_email_marketing">E-posta ile pazarlama</string>
     <string name="free_trial_feature_social_advertising">Sosyal reklam</string>
-    <string name="free_trial_feature_subscription_product_kits">Abonelik ve ürün kitleri</string>
-    <string name="free_trial_feature_multiple_payment_options">Çoklu ödeme seçenekleri</string>
-    <string name="free_trial_feature_ecommerce_reports">E-ticaret raporları</string>
-    <string name="free_trial_feature_shipping_labels">Gönderim etiketleri</string>
-    <string name="free_trial_feature_unlimited_products">Sınırsız ürünler</string>
     <string name="free_trial_feature_premium_themes">Premium temalar</string>
     <string name="free_trial_summary_credit_card_message">Kredi kartı gerekmez.</string>
-    <string name="free_trial_summary_try_button">Ücretsiz Deneyin</string>
-    <string name="free_trial_summary_try_it">14 gün boyunca deneyin.</string>
+    <string name="free_trial_summary_try_it">14 gün boyunca ücretsiz deneyin.</string>
     <string name="free_trial_summary_advertise">WooCommerce tarafından desteklenen ve WordPress.com\'da barındırılan bir çevrimiçi mağaza oluşturmak ve bu mağazayı büyütmek için ihtiyacınız olan her şeyi sunuyoruz.</string>
     <string name="free_trial_summary_title">Günler içinde başlatın, yıllar boyunca büyütün</string>
     <string name="product_selector_products_heading">Ürünler</string>
@@ -334,8 +348,6 @@ Language: tr
     <string name="subscription_id"># aboneliği%1$d</string>
     <string name="order_subscription">Abonelik</string>
     <string name="store_onboarding_launch_store_ok">Tamam</string>
-    <string name="simplified_login_prologue_title">İlk satışınızdan milyonlarca gelire kadar Woo yanınızda. Satıcıların neden 3,4 milyon çevrimiçi mağazayı desteklemek için bize güvendiğini öğrenin.</string>
-    <string name="simplified_login_prologue_intro">İstediğiniz yerde istediğinizi satın.</string>
     <string name="product_type_subscription">Abonelik</string>
     <string name="otp_incorrect">OTP kodu yanlış. Lütfen bilgilerinizi tekrar kontrol edip yeniden deneyin.</string>
     <string name="requesting_sms_otp_failure">SMS talebi başarısız oldu. Lütfen tekrar deneyin.</string>
@@ -547,11 +559,8 @@ Language: tr
     <string name="store_creation_country_picker_description">Bu bilgileri ödemeleri, teslimatı ve vergileri ayarlamak için kullanacağız.</string>
     <string name="store_creation_country_picker_title">Konumunuzu onaylayın</string>
     <string name="store_creation_store_profiler_platforms_description">Birden çok seçebilirsiniz.</string>
-    <string name="store_creation_store_profiler_platforms_title">Şu anda hangi platformda satış yapıyorsunuz?</string>
-    <string name="store_creation_store_profiler_journey_description">İşleri hızlandırmak için yanıtınıza göre WooCommerce deneyiminizi size göre uyarlarız.</string>
-    <string name="store_creation_store_profiler_journey_title">Ticaret yolculuğunuzun neresindesiniz?</string>
-    <string name="store_creation_store_profiler_industries_description">İşletmenize en uygun kategoriyi seçin.</string>
-    <string name="store_creation_store_profiler_industries_title">Ne satacaksınız?</string>
+    <string name="store_creation_store_profiler_platforms_title">Şu anda hangi platformları\nkullanıyorsunuz?</string>
+    <string name="store_creation_store_profiler_industries_description">İşletmenizi en iyi şekilde\ntanımlayan bir kategori seçin.</string>
     <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
     <string name="login_open_installation_page">Kurulum sayfasını açın</string>
     <string name="not_a_valid_qr_code">Taranan Qr kodu bir WooCommerce kodu değil.</string>
@@ -716,7 +725,6 @@ Language: tr
     <string name="signup_password_hint">Bir şifre seçin</string>
     <string name="signup_email_address_hint">E-posta adresiniz</string>
     <string name="signup_get_started_label">Hemen başlayın: \ndakikalar içinde</string>
-    <string name="signup_get_started_button">Hemen başlayın</string>
     <string name="login_jetpack_connection_consent">Jetpack\'i Bağla düğmesine dokunarak &lt;a href=\'terms\'&gt;Hizmet Şartlarımızı&lt;/a&gt; ve &lt;a href=\'sync\'&gt;ayrıntıları WordPress.com ile paylaşmayı&lt;/a&gt; kabul etmiş olursunuz.</string>
     <string name="enable_card_reader">Kart Okuyucuyu Simülatörünü Etkinleştir</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Uygulamayı kullanmak için mağaza yöneticisi veya yönetici olarak siteye davet için lütfen site sahibiyle iletişime geçin.</string>
@@ -1436,7 +1444,7 @@ Language: tr
     <string name="card_reader_onboarding_country_not_supported_learn_more">Mobil cihazınızla ödeme kabul etme ve kart okuyucu sipariş etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin &lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Biraz yardıma mı ihtiyacınız var? &lt;a href=\'\'&gt;Destek ile iletişim kur&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">Mağazanızda \"kağıda nakit\" ödeme yöntemini etkinleştirerek, Şahsen Nakit Ödemeleri kabul edebilirsiniz.</string>
-    <string name="card_reader_onboarding_country_not_supported_header">%1$s için Şahsen Ödemeleri desteklemiyoruz</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s için Kartla Şahsen Ödemeleri desteklemiyoruz</string>
     <string name="card_reader_onboarding_loading">Hesabınıza bağlanılıyor</string>
     <string name="card_reader_onboarding_title">Şahsen ödemeler</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Lütfen paketinizin boyutlarını ve ağırlığını bir daha kontrol edin veya Paket Ayrıntıları\'nda farklı bir paket kullanmayı deneyin.</string>

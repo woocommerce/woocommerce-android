@@ -149,6 +149,5 @@ class IapEligibilityViewModel @Inject constructor(
 
     sealed class IapEligibilityEvent : MultiLiveEvent.Event() {
         object NavigateToNextStep : IapEligibilityEvent()
-        object NavigateToWebStoreCreation : IapEligibilityEvent()
     }
 }

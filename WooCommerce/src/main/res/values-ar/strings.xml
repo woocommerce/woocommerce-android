@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-09 12:54:04+0000
+Translation-Revision-Date: 2023-08-16 19:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="ai_product_description_title_hint">أدخل عنوان المنتج.</string>
+    <string name="free_trial_feature_support">دعم ذو أولوية على مدار الساعة وطوال أيام الأسبوع</string>
+    <string name="free_trial_feature_backups">عمليات النسخ الاحتياطي التلقائية في الموقع</string>
+    <string name="free_trial_feature_hosting">أفضل استضافة</string>
+    <string name="free_trial_feature_automated_customer_emails">رسائل البريد الإلكتروني التلقائية إلى العملاء</string>
+    <string name="free_trial_feature_built_in_seo">تحسين محركات البحث مدمج</string>
+    <string name="free_trial_feature_design_editing">تصميم خالٍ من الرموز والتحرير</string>
+    <string name="free_trial_feature_store_management">أدوات إدارة المتجر</string>
+    <string name="free_trial_summary_try_button">إنشاء متجرك</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">ملكية متجر خال من العقبات</string>
+    <string name="free_trial_summary_grow_your_business">نمو أعمالك</string>
+    <string name="free_trial_summary_start_selling_quickly">بدء البيع بسرعة</string>
+    <string name="store_creation_store_profiler_journey_description">دعنا نعرف مكانك في\nرحلة التجارة التي تقوم بها حتى نتمكن من تخصيص\nتجربتك في Woo من أجلك.</string>
+    <string name="store_creation_store_profiler_journey_title">أي من هذه الأشياء تصفك\nعلى أفضل نحو؟</string>
+    <string name="store_creation_store_profiler_industries_title">ما الذي تنوي بيعه\nفي متجرك؟</string>
+    <string name="store_creation_store_profiler_industries_header">نبذة عن متجرك</string>
+    <string name="simplified_login_prologue_title">ابدأ إصدارك التجريبي المجاني لمدة 15 يومًا، لا تلزم بطاقة الائتمان. انضم إلى 3.4 ملايين متجر يحقق ازدهارًا مع Woo، بدءًا من عملية البيع الأولى وحتى ملايين عمليات البيع.</string>
+    <string name="simplified_login_prologue_intro">منصة للتجارة الإلكترونية تتطور معك</string>
+    <string name="product_type_variable_subscription">اشتراك متغير</string>
+    <string name="order_creation_remove_this_coupon">إزالة القسيمة</string>
+    <string name="coupon_selector_empty_list_title">يحب الجميع الصفقات</string>
+    <string name="coupon_selector_empty_list_message">لم تنشئ أي قسائم حتى الآن. أنشئ قسيمة لتطبيقها على هذا الطلب.</string>
+    <string name="coupon_selector_empty_list_button">الانتقال إلى القسائم</string>
+    <string name="order_creation_select_coupon">تحديد قسيمة</string>
+    <string name="signup_get_started_button">إنشاء متجر جديد</string>
     <string name="coupon_create_coupon_creation_failed">فشل إنشاء القسيمة</string>
     <string name="coupon_create_coupon_created">تم إنشاء القسيمة</string>
     <string name="coupon_create_save_button">إنشاء</string>
@@ -281,21 +306,10 @@ Language: ar
     <string name="product_quantity_rules_title">قواعد الكميات</string>
     <string name="gift_cards">بطاقات الهدايا</string>
     <string name="order_gift_card">بطاقة الهدايا</string>
-    <string name="free_trial_feature_fast_to_launch">سرعة في البدء</string>
-    <string name="free_trial_feature_site_security">أمان الموقع</string>
-    <string name="free_trial_feature_auto_updates_backups">التحديثات وعمليات النسخ الاحتياطي التلقائية</string>
-    <string name="free_trial_feature_247_support">دعم على مدار الساعة طوال أيام الأسبوع</string>
-    <string name="free_trial_feature_email_marketing">التسويق عبر البريد الإلكتروني</string>
     <string name="free_trial_feature_social_advertising">الإعلانات الاجتماعية</string>
-    <string name="free_trial_feature_subscription_product_kits">الاشتراكات ومجموعات أدوات المنتجات</string>
-    <string name="free_trial_feature_multiple_payment_options">خيارات الدفع المتعددة</string>
-    <string name="free_trial_feature_ecommerce_reports">تقارير التجارة الإلكترونية</string>
-    <string name="free_trial_feature_shipping_labels">بطاقات الشحن</string>
-    <string name="free_trial_feature_unlimited_products">منتجات غير محدودة</string>
     <string name="free_trial_feature_premium_themes">قوالب مميزة</string>
     <string name="free_trial_summary_credit_card_message">لن يلزم بطاقة ائتمان.</string>
-    <string name="free_trial_summary_try_button">التجربة مجانًا</string>
-    <string name="free_trial_summary_try_it">جرِّبه لمدة 14 يومًا.</string>
+    <string name="free_trial_summary_try_it">جرِّبه مجانًا لمدة 14 يومًا.</string>
     <string name="free_trial_summary_advertise">نقدّم كل ما تحتاج إليه لإنشاء متجر على الإنترنت وتطويره، ويكون مدعومًا من WooCommerce ومستضافًا على ووردبريس.كوم.</string>
     <string name="free_trial_summary_title">البدء في غضون أيام، والتطوير لمدة أعوام</string>
     <string name="product_selector_products_heading">المنتجات</string>
@@ -334,8 +348,6 @@ Language: ar
     <string name="subscription_id">رقم الاشتراك⁦%1$d⁩</string>
     <string name="order_subscription">الاشتراك</string>
     <string name="store_onboarding_launch_store_ok">موافق</string>
-    <string name="simplified_login_prologue_title">بدءًا من أول عملية بيع لك وصولاً إلى الملايين في الإيرادات، يكون Woo بجوارك. تعرّف على سبب ثقة التجار بنا لتشغيل 3.4 ملايين متجر على الإنترنت.</string>
-    <string name="simplified_login_prologue_intro">يمكنك بيع أي شيء في أي مكان.</string>
     <string name="product_type_subscription">الاشتراك</string>
     <string name="otp_incorrect">رمز OTP غير صالح. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
     <string name="requesting_sms_otp_failure">فشل طلب الرسالة النصية القصيرة. ترجى المحاولة مجددًا.</string>
@@ -547,11 +559,8 @@ Language: ar
     <string name="store_creation_country_picker_description">سنستخدم هذه المعلومات لإعداد المدفوعات والشحن والضرائب.</string>
     <string name="store_creation_country_picker_title">تأكيد موقعك</string>
     <string name="store_creation_store_profiler_platforms_description">يمكنك اختيار العديد منها.</string>
-    <string name="store_creation_store_profiler_platforms_title">ما المنصة التي تبيع عليها حاليًا.</string>
-    <string name="store_creation_store_profiler_journey_description">لتسريع الأمور، قمنا بمواءمة تجربتك في WooCommerce لكي تناسبك حسب الردود التي أرسلتها.</string>
-    <string name="store_creation_store_profiler_journey_title">أين تتمركز في رحلتك التجارية؟</string>
-    <string name="store_creation_store_profiler_industries_description">اختر تصنيفًا يلائم أعمالك على أفضل نحو.</string>
-    <string name="store_creation_store_profiler_industries_title">ما الذي ستبيعه؟</string>
+    <string name="store_creation_store_profiler_platforms_title">ما المنصة (المنصات) التي\nتستخدمها حاليًا؟</string>
+    <string name="store_creation_store_profiler_industries_description">اختر تصنيفًا يُعرِّف\nعملك على أفضل وجه.</string>
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
     <string name="login_open_installation_page">فتح صفحة التثبيت</string>
     <string name="not_a_valid_qr_code">رمز Qr الذي تم مسحه ضوئيًا ليس رمز WooCommerce</string>
@@ -716,7 +725,6 @@ Language: ar
     <string name="signup_password_hint">اختر كلمة مرور</string>
     <string name="signup_email_address_hint">عنوان بريدك الإلكتروني</string>
     <string name="signup_get_started_label">بدء \nفي غضون دقائق</string>
-    <string name="signup_get_started_button">بدء</string>
     <string name="login_jetpack_connection_consent">يعني النقر على زر Connect Jetpack أنك توافق على &lt;a href=\'terms\'&gt;شروط الخدمة&lt;/a&gt; لدينا وعلى &lt;a href=\'sync\'&gt;مشاركة التفاصيل&lt;/a&gt; مع ووردبريس.كوم.</string>
     <string name="enable_card_reader">تمكين قارئ البطاقات المحاكي</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">يُرجى الاتصال بمالك الموقع للحصول على دعوة إلى الموقع كمدير متجر أو مسؤول استخدام التطبيق.</string>
@@ -1436,7 +1444,7 @@ Language: ar
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام جهازك المحمول وطلب قارئ البطاقات</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">هل تحتاج المساعدة؟ &lt;a href=\'\'&gt;الاتصال بالدعم&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">لا يزال بإمكانك قبول المدفوعات النقدية الشخصية عن طريق تمكين طريقة الدفع \"الدفع عند الاستلام\" على مخزنك</string>
-    <string name="card_reader_onboarding_country_not_supported_header">لا ندعم المدفوعات الشخصية في ⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_country_not_supported_header">لا ندعم المدفوعات الشخصية عبر البطاقة في ⁦%1$s⁩</string>
     <string name="card_reader_onboarding_loading">الربط بحسابك</string>
     <string name="card_reader_onboarding_title">المدفوعات الشخصية</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">يرجى التحقُّق مرة أخرى من أبعاد حزمتك ووزنها، أو حاول استخدام حزمة مختلفة في تفاصيل الحزمة</string>
