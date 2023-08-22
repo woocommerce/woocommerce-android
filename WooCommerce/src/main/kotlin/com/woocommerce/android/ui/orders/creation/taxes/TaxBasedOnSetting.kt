@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.tax
+package com.woocommerce.android.ui.orders.creation.taxes
 
 sealed class TaxBasedOnSetting(open val key: String, open val label: String) {
     data class StoreAddress(override val key: String, override val label: String) :
