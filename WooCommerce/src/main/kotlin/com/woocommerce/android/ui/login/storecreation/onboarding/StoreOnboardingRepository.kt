@@ -27,6 +27,13 @@ class StoreOnboardingRepository @Inject constructor(
 
     private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
 
+    private val localNameStoreTask = OnboardingTask(
+        type = OnboardingTaskType.LOCAL_NAME_STORE,
+        isComplete = false,
+        isVisible = true,
+        isVisited = false
+    )
+
     fun observeOnboardingTasks(): SharedFlow<List<OnboardingTask>> = onboardingTasksCacheFlow
 
     suspend fun fetchOnboardingTasks() {
@@ -113,12 +120,13 @@ class StoreOnboardingRepository @Inject constructor(
     )
 
     enum class OnboardingTaskType(val id: String, val order: Int) {
-        ABOUT_YOUR_STORE(id = "store_details", order = 1),
-        ADD_FIRST_PRODUCT(id = "products", order = 2),
-        LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
-        CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
-        WC_PAYMENTS(id = "woocommerce-payments", order = 5),
-        PAYMENTS(id = "payments", order = 5), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
+        LOCAL_NAME_STORE(id = "local_name_store", order = 1),
+        ABOUT_YOUR_STORE(id = "store_details", order = 2),
+        ADD_FIRST_PRODUCT(id = "products", order = 3),
+        LAUNCH_YOUR_STORE(id = "launch_site", order = 4),
+        CUSTOMIZE_DOMAIN(id = "add_domain", order = 5),
+        WC_PAYMENTS(id = "woocommerce-payments", order = 6),
+        PAYMENTS(id = "payments", order = 6), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 
