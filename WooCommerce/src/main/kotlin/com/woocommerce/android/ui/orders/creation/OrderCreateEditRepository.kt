@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.orders.creation
 
+import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
+import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
+import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -30,9 +33,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
-import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
-import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 class OrderCreateEditRepository @Inject constructor(
     private val selectedSite: SelectedSite,
