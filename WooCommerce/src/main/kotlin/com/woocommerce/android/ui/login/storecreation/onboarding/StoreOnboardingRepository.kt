@@ -43,27 +43,7 @@ class StoreOnboardingRepository @Inject constructor(
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
                     ?.toMutableList()
-                    ?.apply {
-                        if (!selectedSite.get().isFreeTrial) return@apply
-                        if (!this.any { it.type == LAUNCH_YOUR_STORE }) {
-                            add(
-                                OnboardingTask(
-                                    type = LAUNCH_YOUR_STORE,
-                                    isComplete = false,
-                                    isVisible = true,
-                                    isVisited = false
-                                )
-                            )
-                        }
-                        add(
-                            OnboardingTask(
-                                type = LOCAL_NAME_STORE,
-                                isComplete = isLocalTaskNameYourStoreCompleted(),
-                                isVisible = true,
-                                isVisited = false
-                            )
-                        )
-                    }
+                    ?.apply { addLocalOnboardingTasks(this) }
                     ?.map {
                         if (shouldMarkLaunchStoreAsCompleted(it)) it.copy(isComplete = true)
                         else it
@@ -75,6 +55,28 @@ class StoreOnboardingRepository @Inject constructor(
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
         }
+    }
+
+    private fun addLocalOnboardingTasks(onboardingTasks: MutableList<OnboardingTask>) {
+        if (!selectedSite.get().isFreeTrial) return
+        if (!onboardingTasks.any { it.type == LAUNCH_YOUR_STORE }) {
+            onboardingTasks.add(
+                OnboardingTask(
+                    type = LAUNCH_YOUR_STORE,
+                    isComplete = false,
+                    isVisible = true,
+                    isVisited = false
+                )
+            )
+        }
+        onboardingTasks.add(
+            OnboardingTask(
+                type = LOCAL_NAME_STORE,
+                isComplete = isLocalTaskNameYourStoreCompleted(),
+                isVisible = true,
+                isVisited = false
+            )
+        )
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
