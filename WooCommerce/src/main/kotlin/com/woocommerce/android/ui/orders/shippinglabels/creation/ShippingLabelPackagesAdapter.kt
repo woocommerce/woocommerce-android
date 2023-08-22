@@ -31,7 +31,7 @@ class ShippingLabelPackagesAdapter(
     val onExpandedChanged: (Int, Boolean) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit,
     val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit,
-    val onHazmatCategoryClicked: () -> Unit,
+    val onHazmatCategoryClicked: () -> ShippingLabelHazmatCategory,
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var uiModels: List<ShippingLabelPackageUiModel> = emptyList()
         set(value) {
@@ -131,6 +131,8 @@ class ShippingLabelPackagesAdapter(
 
             binding.hazmatCategoryContainer.setOnClickListener {
                 onHazmatCategoryClicked()
+                    .let { binding.root.context.getString(it.stringResourceID) }
+                    .let { binding.hazmatCategory.text = it }
             }
         }
 
