@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.onboarding
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
@@ -28,13 +29,6 @@ class StoreOnboardingRepository @Inject constructor(
 
     private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
 
-    private val localNameStoreTask = OnboardingTask(
-        type = OnboardingTaskType.LOCAL_NAME_STORE,
-        isComplete = isLocalTaskNameYourStoreCompleted(),
-        isVisible = true,
-        isVisited = false
-    )
-
     fun observeOnboardingTasks(): SharedFlow<List<OnboardingTask>> = onboardingTasksCacheFlow
 
     suspend fun fetchOnboardingTasks() {
@@ -57,6 +51,17 @@ class StoreOnboardingRepository @Inject constructor(
                             add(
                                 OnboardingTask(
                                     type = LAUNCH_YOUR_STORE,
+                                    isComplete = false,
+                                    isVisible = true,
+                                    isVisited = false
+                                )
+                            )
+                        }
+
+                        if (!isLocalTaskNameYourStoreCompleted()) {
+                            add(
+                                OnboardingTask(
+                                    type = LOCAL_NAME_STORE,
                                     isComplete = false,
                                     isVisible = true,
                                     isVisited = false
