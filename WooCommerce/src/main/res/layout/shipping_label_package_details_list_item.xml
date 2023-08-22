@@ -210,7 +210,52 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/major_100"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
+
+                <View
+                    style="@style/Woo.Divider"
+                    android:layout_marginTop="@dimen/minor_100" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/minor_100"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/Woo.ListItem.Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:text="Hazardous material category" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/Woo.ListItem.Body"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:text="select a category" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/major_75"
+                        android:contentDescription="@string/product_property_edit"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </LinearLayout>
+
+                <View
+                    style="@style/Woo.Divider" />
 
                 <TextView
                     android:layout_width="wrap_content"
