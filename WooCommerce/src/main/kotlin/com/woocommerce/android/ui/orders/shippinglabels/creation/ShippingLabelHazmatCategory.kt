@@ -31,6 +31,7 @@ enum class ShippingLabelHazmatCategory(val stringResourceID: Int) {
     LIMITED_QUANTITY(R.string.shipping_label_hazmat_option_limited_quantity),
     SMALL_QUANTITY_PROVISION(R.string.shipping_label_hazmat_option_small_quantity_provision);
 
+    @Suppress("ComplexMethod")
     fun toHazmatCategory() = when (this) {
         AIR_ELIGIBLE_ETHANOL -> HazmatCategory.AIR_ELIGIBLE_ETHANOL
         CLASS_1 -> HazmatCategory.CLASS_1
