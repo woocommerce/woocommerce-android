@@ -209,7 +209,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         sut.fetchTaxBasedOnSetting().also { setting ->
             assertThat(setting).isNotNull
-            assertThat(setting).isInstanceOf(TaxBasedOnSetting.StoreAddress::class.java)
+            assertThat(setting).isInstanceOf(TaxBasedOnSetting.ShippingAddress::class.java)
             assertThat(setting?.key).isEqualTo("shipping")
             assertThat(setting?.label).isEqualTo("Customer shipping address")
         }
@@ -224,14 +224,14 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         whenever(wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get())).thenReturn(
             WooResult(
                 WCTaxBasedOnSettingsModel(
-                    availableOptions = availableOptions, selectedOption = "shipping"
+                    availableOptions = availableOptions, selectedOption = "billing"
                 )
             )
         )
 
         sut.fetchTaxBasedOnSetting().also { setting ->
             assertThat(setting).isNotNull
-            assertThat(setting).isInstanceOf(TaxBasedOnSetting.StoreAddress::class.java)
+            assertThat(setting).isInstanceOf(TaxBasedOnSetting.BillingAddress::class.java)
             assertThat(setting?.key).isEqualTo("billing")
             assertThat(setting?.label).isEqualTo("Customer billing address")
         }
