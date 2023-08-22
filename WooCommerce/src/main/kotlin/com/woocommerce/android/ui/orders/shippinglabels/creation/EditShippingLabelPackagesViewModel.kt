@@ -179,6 +179,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
+    fun onHazmatCategoryClicked(): ShippingLabelHazmatCategory {
+        return ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
+    }
+
     // all the logic is inside local functions, so it should be OK, but detekt complains still
     @Suppress("ComplexMethod")
     fun handleMoveItemResult(result: MoveItemResult) {
