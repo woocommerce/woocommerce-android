@@ -169,10 +169,6 @@ class OrderCreateEditRepository @Inject constructor(
         }
     }
 
-    fun getTaxBasedOnSetting(): TaxBasedOnSetting? {
-        return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
-    }
-
     suspend fun fetchTaxBasedOnSetting(): TaxBasedOnSetting? {
         return wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
     }
