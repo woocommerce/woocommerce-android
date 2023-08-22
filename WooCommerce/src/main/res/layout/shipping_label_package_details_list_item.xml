@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Woo.Card.WithoutPadding"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/Woo.Card.WithoutPadding">
+    android:layout_height="wrap_content">
 
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -212,51 +212,58 @@
                 android:orientation="vertical"
                 android:visibility="visible">
 
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_marginTop="@dimen/minor_100" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="@dimen/minor_100"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="vertical">
+
+                    <View style="@style/Woo.Divider" />
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="5"
-                        android:orientation="vertical">
+                        android:layout_marginVertical="@dimen/minor_100"
+                        android:orientation="horizontal">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="@style/Woo.ListItem.Title"
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="0dp"
-                            android:text="@string/shipping_label_package_details_hazmat_selection_title" />
+                            android:layout_weight="5"
+                            android:orientation="vertical">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/hazmat_category"
-                            style="@style/Woo.ListItem.Body"
-                            android:layout_width="match_parent"
+                            <com.google.android.material.textview.MaterialTextView
+                                style="@style/Woo.ListItem.Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:text="@string/shipping_label_package_details_hazmat_selection_title" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/hazmat_category"
+                                style="@style/Woo.ListItem.Body"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:text="@string/shipping_label_package_details_hazmat_select_category_action" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="0dp"
-                            android:text="@string/shipping_label_package_details_hazmat_select_category_action" />
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/major_75"
+                            android:contentDescription="@string/product_property_edit"
+                            android:src="@drawable/ic_arrow_right" />
 
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="@dimen/major_75"
-                        android:contentDescription="@string/product_property_edit"
-                        android:src="@drawable/ic_arrow_right" />
+                    <View style="@style/Woo.Divider" />
 
                 </LinearLayout>
-
-                <View
-                    style="@style/Woo.Divider" />
 
                 <TextView
                     android:layout_width="wrap_content"
