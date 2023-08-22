@@ -1,17 +1,75 @@
 package com.woocommerce.android.ui.login.storecreation.profiler
 
 import com.google.gson.Gson
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.admin.WooAdminStore
 import javax.inject.Inject
 
 class StoreProfilerRepository @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val wooAdminStore: WooAdminStore,
     private val gson: Gson,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val appPrefs: AppPrefsWrapper
 ) {
     suspend fun fetchProfilerOptions(): ProfilerOptions = withContext(coroutineDispatchers.io) {
         gson.fromJson(PROFILER_OPTIONS_JSON, ProfilerOptions::class.java)
     }
+
+    fun storeAnswers(countryCode: String, profilerAnswers: NewStore.ProfilerData) {
+        appPrefs.storeCreationProfilerAnswers = gson.toJson(
+            ProfilerAnswersCache(
+                countryCode = countryCode,
+                answers = profilerAnswers
+            )
+        )
+    }
+
+    suspend fun uploadAnswers() {
+        val storedAnswers = appPrefs.storeCreationProfilerAnswers?.let {
+            gson.fromJson(it, ProfilerAnswersCache::class.java)
+        } ?: run {
+            WooLog.w(WooLog.T.STORE_CREATION, "Profiler Answers missing")
+            return
+        }
+
+        wooAdminStore.updateOptions(
+            site = selectedSite.get(),
+            options = mapOf(
+                "woocommerce_default_country" to storedAnswers.countryCode,
+                "woocommerce_onboarding_profile" to mapOf(
+                    "business_choice" to storedAnswers.answers.userCommerceJourneyKey,
+                    "selling_platforms" to storedAnswers.answers.eCommercePlatformKeys,
+                    "industry" to storedAnswers.answers.industryKey?.let { listOf(it) },
+                    "is_store_country_set" to true,
+                )
+            )
+        ).let { result ->
+            when {
+                result.isError -> {
+                    WooLog.w(
+                        tag = WooLog.T.STORE_CREATION,
+                        message = "Uploading Profiler Answers failed ${result.error.type}-${result.error.message}"
+                    )
+                }
+
+                else -> {
+                    WooLog.d(WooLog.T.STORE_CREATION, "Profiler Answers uploaded successfully")
+                    appPrefs.storeCreationProfilerAnswers = null
+                }
+            }
+        }
+    }
+
+    private data class ProfilerAnswersCache(
+        val countryCode: String,
+        val answers: NewStore.ProfilerData
+    )
 }
 
 private const val PROFILER_OPTIONS_JSON = """{

@@ -123,6 +123,7 @@ object AppPrefs {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
         AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        STORE_CREATION_PROFILER_ANSWERS
     }
 
     /**
@@ -261,6 +262,16 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
+
+    var storeCreationProfilerAnswers: String?
+        get() = getString(DeletableSitePrefKey.STORE_CREATION_PROFILER_ANSWERS, "")
+        set(value) {
+            if (value != null) {
+                setString(DeletableSitePrefKey.STORE_CREATION_PROFILER_ANSWERS, value)
+            } else {
+                remove(DeletableSitePrefKey.STORE_CREATION_PROFILER_ANSWERS)
+            }
+        }
 
     fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
         setBoolean(getBlazeBannerKey(currentSiteId), hidden)

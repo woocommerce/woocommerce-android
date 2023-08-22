@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
+    var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
