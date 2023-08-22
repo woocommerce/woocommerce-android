@@ -44,10 +44,8 @@ class StoreOnboardingRepository @Inject constructor(
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
                     ?.toMutableList()
                     ?.apply {
-                        if (
-                            selectedSite.get().isFreeTrial &&
-                            !this.any { it.type == LAUNCH_YOUR_STORE }
-                        ) {
+                        if (!selectedSite.get().isFreeTrial) return@apply
+                        if (!this.any { it.type == LAUNCH_YOUR_STORE }) {
                             add(
                                 OnboardingTask(
                                     type = LAUNCH_YOUR_STORE,
@@ -57,17 +55,14 @@ class StoreOnboardingRepository @Inject constructor(
                                 )
                             )
                         }
-
-                        if (!isLocalTaskNameYourStoreCompleted()) {
-                            add(
-                                OnboardingTask(
-                                    type = LOCAL_NAME_STORE,
-                                    isComplete = false,
-                                    isVisible = true,
-                                    isVisited = false
-                                )
+                        add(
+                            OnboardingTask(
+                                type = LOCAL_NAME_STORE,
+                                isComplete = isLocalTaskNameYourStoreCompleted(),
+                                isVisible = true,
+                                isVisited = false
                             )
-                        }
+                        )
                     }
                     ?.map {
                         if (shouldMarkLaunchStoreAsCompleted(it)) it.copy(isComplete = true)
