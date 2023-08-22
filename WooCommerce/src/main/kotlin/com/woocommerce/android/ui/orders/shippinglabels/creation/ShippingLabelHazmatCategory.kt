@@ -60,6 +60,9 @@ enum class ShippingLabelHazmatCategory(val stringResourceID: Int) {
         SMALL_QUANTITY_PROVISION -> HazmatCategory.SMALL_QUANTITY_PROVISION
     }
 
+    val requestFieldValue
+        get() = toHazmatCategory().toString()
+
     companion object {
         fun from(hazmatCategory: HazmatCategory) =
             when (hazmatCategory) {

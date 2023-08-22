@@ -199,6 +199,7 @@ class ShippingLabelRepository @Inject constructor(
                 length = labelPackage.selectedPackage.dimensions.length,
                 width = labelPackage.selectedPackage.dimensions.width,
                 height = labelPackage.selectedPackage.dimensions.height,
+                hazmat = labelPackage.selectedPackage.hazmatCategory?.requestFieldValue,
                 weight = labelPackage.weight,
                 shipmentId = rate.shipmentId,
                 rateId = rate.rateId,
