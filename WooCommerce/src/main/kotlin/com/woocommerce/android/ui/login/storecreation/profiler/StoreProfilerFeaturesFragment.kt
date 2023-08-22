@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -16,8 +15,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreProfilerChallengesFragment : BaseFragment() {
-    private val viewModel: StoreProfilerChallengesViewModel by viewModels()
+class StoreProfilerFeaturesFragment : BaseFragment() {
+    private val viewModel: StoreProfilerFeaturesViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -42,15 +41,10 @@ class StoreProfilerChallengesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is BaseStoreProfilerViewModel.NavigateToNextStep -> navigateToStoreFeaturesProfilerStep()
+                is BaseStoreProfilerViewModel.NavigateToNextStep -> {
+                    TODO()
+                }
             }
         }
-    }
-
-    private fun navigateToStoreFeaturesProfilerStep() {
-        findNavController().navigateSafely(
-            StoreProfilerChallengesFragmentDirections
-                .actionStoreProfilerChallengesFragmentToStoreProfilerFeaturesFragment()
-        )
     }
 }

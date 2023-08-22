@@ -74,7 +74,16 @@
     <fragment
         android:id="@+id/storeProfilerChallengesFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerChallengesFragment"
-        android:label="fragment_store_profiler_challenges" />
+        android:label="fragment_store_profiler_challenges">
+        <action
+            android:id="@+id/action_storeProfilerChallengesFragment_to_storeProfilerFeaturesFragment"
+            app:destination="@id/storeProfilerFeaturesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storeProfilerFeaturesFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerFeaturesFragment"
+        android:label="fragment_store_profiler_features" />
 
     <fragment
         android:id="@+id/countryPickerFragment"
