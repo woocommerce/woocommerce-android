@@ -114,6 +114,7 @@ object AppPrefs {
         BLAZE_BANNER_HIDDEN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
+        STORE_CREATION_PROFILER_ANSWERS,
     }
 
     /**
@@ -122,8 +123,7 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
-        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
-        STORE_CREATION_PROFILER_ANSWERS
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN
     }
 
     /**
@@ -264,12 +264,12 @@ object AppPrefs {
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
     var storeCreationProfilerAnswers: String?
-        get() = getString(DeletableSitePrefKey.STORE_CREATION_PROFILER_ANSWERS, "")
+        get() = getString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, "")
         set(value) {
             if (value != null) {
-                setString(DeletableSitePrefKey.STORE_CREATION_PROFILER_ANSWERS, value)
+                setString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, value)
             } else {
-                remove(DeletableSitePrefKey.STORE_CREATION_PROFILER_ANSWERS)
+                remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
             }
         }
 

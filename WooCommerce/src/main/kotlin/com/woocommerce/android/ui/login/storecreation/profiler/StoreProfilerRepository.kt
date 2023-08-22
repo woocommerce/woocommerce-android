@@ -21,9 +21,14 @@ class StoreProfilerRepository @Inject constructor(
         gson.fromJson(PROFILER_OPTIONS_JSON, ProfilerOptions::class.java)
     }
 
-    fun storeAnswers(countryCode: String, profilerAnswers: NewStore.ProfilerData) {
+    fun storeAnswers(
+        siteId: Long,
+        countryCode: String,
+        profilerAnswers: NewStore.ProfilerData
+    ) {
         appPrefs.storeCreationProfilerAnswers = gson.toJson(
             ProfilerAnswersCache(
+                siteId = siteId,
                 countryCode = countryCode,
                 answers = profilerAnswers
             )
@@ -33,10 +38,9 @@ class StoreProfilerRepository @Inject constructor(
     suspend fun uploadAnswers() {
         val storedAnswers = appPrefs.storeCreationProfilerAnswers?.let {
             gson.fromJson(it, ProfilerAnswersCache::class.java)
-        } ?: run {
-            WooLog.w(WooLog.T.STORE_CREATION, "Profiler Answers missing")
-            return
         }
+            ?.takeIf { selectedSite.get().siteId == it.siteId }
+            ?: return
 
         wooAdminStore.updateOptions(
             site = selectedSite.get(),
@@ -67,6 +71,7 @@ class StoreProfilerRepository @Inject constructor(
     }
 
     private data class ProfilerAnswersCache(
+        val siteId: Long,
         val countryCode: String,
         val answers: NewStore.ProfilerData
     )
