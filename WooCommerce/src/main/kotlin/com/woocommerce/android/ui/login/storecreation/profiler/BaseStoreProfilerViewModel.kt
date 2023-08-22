@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.update
 
 abstract class BaseStoreProfilerViewModel(
     savedStateHandle: SavedStateHandle,
-    private val newStore: NewStore
+    private val newStore: NewStore,
+    private val storeProfilerRepository: StoreProfilerRepository,
 ) : ScopedViewModel(savedStateHandle) {
     abstract val hasSearchableContent: Boolean
     protected val profilerOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
@@ -46,7 +47,9 @@ abstract class BaseStoreProfilerViewModel(
 
     protected abstract fun getMainButtonText(): String
 
-    abstract fun onMainButtonClicked()
+    protected abstract fun saveStepAnswer()
+
+    protected abstract fun moveForward()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
@@ -58,6 +61,19 @@ abstract class BaseStoreProfilerViewModel(
 
     fun onArrowBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onMainButtonClicked() {
+        saveStepAnswer()
+        newStore.data.profilerData?.let {
+            storeProfilerRepository.storeAnswers(
+                siteId = newStore.data.siteId ?: 0L,
+                countryCode = newStore.data.country?.code.orEmpty(),
+                profilerAnswers = it
+            )
+        }
+
+        moveForward()
     }
 
     open fun onOptionSelected(option: StoreProfilerOptionUi) {
