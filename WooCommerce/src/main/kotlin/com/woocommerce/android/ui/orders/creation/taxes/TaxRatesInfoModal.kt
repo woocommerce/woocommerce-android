@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun TaxRateInfoModal(
     dialogState: TaxRatesInfoDialogViewState,
     onDismissButtonClicked: () -> Unit,
+    onEditTaxRatesClicked: () -> Unit,
 ) {
     Dialog(
         onDismissRequest = { },
@@ -98,7 +99,7 @@ fun TaxRateInfoModal(
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                     WCColoredButton(
-                        onClick = { },
+                        onClick = onEditTaxRatesClicked,
                         modifier = Modifier.fillMaxWidth(),
                         leadingIcon = {
                             Icon(
@@ -130,6 +131,6 @@ fun TaxRateInfoModal(
 @Composable
 fun TaxRateInfoModalPreview() {
     WooThemeWithBackground {
-        TaxRateInfoModal(TaxRatesInfoDialogViewState("Tax", emptyList())) {}
+        TaxRateInfoModal(TaxRatesInfoDialogViewState("Tax", emptyList(), ""), {}, {})
     }
 }

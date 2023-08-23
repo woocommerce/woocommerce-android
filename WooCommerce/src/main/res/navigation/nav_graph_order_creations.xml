@@ -306,6 +306,8 @@
         <argument
             android:name="dialogState"
             app:argType="com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState"/>
+        <action android:id="@+id/action_orderCreationFragment_to_WPComWebViewFragment"
+            app:destination="@+id/WPComWebViewFragment"/>
     </dialog>
     <include app:graph="@navigation/nav_graph_product_selector" />
     <fragment
@@ -317,4 +319,39 @@
             app:destination="@id/nav_graph_coupons" />
     </fragment>
     <include app:graph="@navigation/nav_graph_coupons" />
+    <fragment
+        android:id="@+id/WPComWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
+        android:label="WPComWebViewFragment"
+        tools:layout="@layout/fragment_wpcom_webview">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

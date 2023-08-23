@@ -115,8 +115,10 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -134,6 +136,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
+    private val selectedSite: SelectedSite,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -1057,7 +1060,17 @@ class OrderCreateEditViewModel @Inject constructor(
             else -> ""
         }
         val taxLines: List<Pair<String, String>> = _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
-        triggerEvent(OrderCreateEditNavigationTarget.TaxRatesInfoDialog(TaxRatesInfoDialogViewState(settingText, taxLines)))
+        val taxRatesSettingsUrl = selectedSite.getIfExists()?.url
+                ?.slashJoin("/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard")
+        triggerEvent(
+            OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
+                TaxRatesInfoDialogViewState(
+                    settingText,
+                    taxLines,
+                    taxRatesSettingsUrl
+                )
+            )
+        )
     }
 
     @Parcelize
