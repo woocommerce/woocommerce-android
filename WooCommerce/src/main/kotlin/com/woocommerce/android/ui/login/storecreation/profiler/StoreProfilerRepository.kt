@@ -125,32 +125,32 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 0,
       "label": "Clothing and accessories",
-      "key": "clothing_accessories"
+      "key": "clothing_and_accessories"
     },
     {
       "id": 1,
       "label": "Health and beauty",
-      "key": "health_beauty"
+      "key": "health_and_beauty"
     },
     {
       "id": 2,
       "label": "Food and drink",
-      "key": "food_drink"
+      "key": "food_and_drink"
     },
     {
       "id": 3,
       "label": "Home, furniture, and garden",
-      "key": "home_furniture_garden"
+      "key": "home_furniture_and_garden"
     },
     {
       "id": 4,
       "label": "Education and learning",
-      "key": "education_learning"
+      "key": "education_and_learning"
     },
     {
       "id": 5,
       "label": "Electronics and computers",
-      "key": "electronic_computers"
+      "key": "electronics_and_computers"
     },
     {
       "id": 6,
