@@ -43,6 +43,7 @@ class EditShippingLabelPackagesFragment :
     companion object {
         const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"
         const val EDIT_PACKAGES_RESULT = "edit_packages_result"
+        const val KEY_HAZMAT_CATEGORY_SELECTOR_RESULT = "hazmat_category_selector_result"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -180,15 +181,15 @@ class EditShippingLabelPackagesFragment :
 
     private fun showHazmatCategoryPicker(onHazmatCategorySelected: OnHazmatCategorySelected) {
         handleDialogResult<String>(
-            key = "test",
+            key = KEY_HAZMAT_CATEGORY_SELECTOR_RESULT,
             entryId = R.id.editShippingLabelPackagesFragment
         ) { hazmatSelection ->
             onHazmatCategorySelected(ShippingLabelHazmatCategory.valueOf(hazmatSelection))
         }
         EditShippingLabelPackagesFragmentDirections
             .actionEditShippingLabelPaymentFragmentToHazmatCategorySelector(
-                title = "Select Category",
-                requestKey = "test",
+                title = getString(R.string.shipping_label_package_details_hazmat_select_category_action),
+                requestKey = KEY_HAZMAT_CATEGORY_SELECTOR_RESULT,
                 keys = ShippingLabelHazmatCategory.values()
                     .map { getString(it.stringResourceID) }
                     .toTypedArray(),
