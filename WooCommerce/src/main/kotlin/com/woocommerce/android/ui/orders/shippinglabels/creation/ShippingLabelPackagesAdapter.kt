@@ -85,6 +85,8 @@ class ShippingLabelPackagesAdapter(
         val isExpanded
             get() = binding.expandIcon.rotation == 180f
 
+        var currentHazmatSelection: ShippingLabelHazmatCategory? = null
+
         init {
             with(binding.itemsList) {
                 layoutManager =
@@ -133,10 +135,8 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.hazmatCategoryContainer.setOnClickListener {
-                val currentCategory = binding.hazmatCategory.text.toString()
-                    .takeIf { it.isNotNullOrEmpty() }
-                    ?.let { ShippingLabelHazmatCategory.valueOf(it) }
-                onHazmatCategoryClicked(currentCategory) {
+                onHazmatCategoryClicked(currentHazmatSelection) {
+                    currentHazmatSelection = it
                     binding.hazmatCategory.text = binding.root.context.getString(it.stringResourceID)
                 }
             }
