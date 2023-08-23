@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -84,9 +83,10 @@ fun OrderCreateEditProductDiscountScreen(
                 .padding(padding)
                 .background(MaterialTheme.colors.surface)
         ) {
-            Column(Modifier
-                .padding(dimensionResource(id = R.dimen.minor_100))
-                .verticalScroll(rememberScrollState())
+            Column(
+                Modifier
+                    .padding(dimensionResource(id = R.dimen.minor_100))
+                    .verticalScroll(rememberScrollState())
             ) {
                 val discountValidationState = state.value.discountValidationState
 
@@ -320,7 +320,6 @@ fun CalculatedAmount(
             text = when (state.discountType) {
                 is Percentage -> stringResource(id = R.string.order_creation_discount_amount_label)
                 is Amount -> stringResource(id = R.string.order_creation_discount_percentage_label)
-
             },
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)

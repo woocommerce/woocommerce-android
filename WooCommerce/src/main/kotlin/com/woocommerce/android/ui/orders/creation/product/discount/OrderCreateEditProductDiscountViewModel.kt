@@ -22,9 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -83,7 +80,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 calculatedAmount = getCalculatedAmount(),
                 productDetailsState = ProductDetailsState(
                     imageUrl = productUiModel.imageUrl
-            ))
+                )
+            )
         }.toStateFlow(ViewState(currency = currency, null))
 
     private fun getRemoveButtonVisibility() = with(getInitialDiscountAmount()) {
