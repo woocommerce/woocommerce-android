@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_DISCOUNT_TYPE_PERCENTAGE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -21,6 +22,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -35,6 +39,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val calculateItemDiscountAmount: CalculateItemDiscountAmount,
     private val tracker: AnalyticsTrackerWrapper,
+    private val mapItemToProductUiModel: MapItemToProductUiModel,
     siteParamsRepo: ParameterRepository,
     currencySymbolFinder: CurrencySymbolFinder,
 ) : ScopedViewModel(savedStateHandle) {
@@ -66,6 +71,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     val viewState: StateFlow<ViewState> =
         combine(discount, discountType) { discount, type ->
+            val productUiModel = mapItemToProductUiModel(orderItem.value)
             ViewState(
                 currency = currency,
                 discountAmount = discount,
@@ -75,7 +81,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 priceAfterDiscount = getPriceAfterDiscount(),
                 calculatedPercentage = getCalculatedPercentage(),
                 calculatedAmount = getCalculatedAmount(),
-            )
+                productDetailsState = ProductDetailsState(
+                    imageUrl = productUiModel.imageUrl
+            ))
         }.toStateFlow(ViewState(currency = currency, null))
 
     private fun getRemoveButtonVisibility() = with(getInitialDiscountAmount()) {
@@ -231,7 +239,12 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountType: DiscountType = DiscountType.Amount(currency),
         val priceAfterDiscount: BigDecimal = BigDecimal.ZERO,
         val calculatedPercentage: BigDecimal = BigDecimal.ZERO,
-        val calculatedAmount: BigDecimal = BigDecimal.ZERO
+        val calculatedAmount: BigDecimal = BigDecimal.ZERO,
+        val productDetailsState: ProductDetailsState? = null,
+    )
+
+    data class ProductDetailsState(
+        val imageUrl: String,
     )
 
     @Parcelize
