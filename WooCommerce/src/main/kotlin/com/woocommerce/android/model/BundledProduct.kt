@@ -22,4 +22,4 @@ data class BundleProductRules(
     val quantityMax: Long? = null,
     val isOptional: Boolean = false,
     val quantityDefault: Long = 0
-): Parcelable
+) : Parcelable
