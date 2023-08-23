@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -69,14 +70,16 @@ class StoreOnboardingRepository @Inject constructor(
                 )
             )
         }
-        onboardingTasks.add(
-            OnboardingTask(
-                type = LOCAL_NAME_STORE,
-                isComplete = isLocalTaskNameYourStoreCompleted(),
-                isVisible = true,
-                isVisited = false
+        if (FeatureFlag.NAME_YOUR_STORE_DIALOG.isEnabled()) {
+            onboardingTasks.add(
+                OnboardingTask(
+                    type = LOCAL_NAME_STORE,
+                    isComplete = isLocalTaskNameYourStoreCompleted(),
+                    isVisible = true,
+                    isVisited = false
+                )
             )
-        )
+        }
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
