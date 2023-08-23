@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -22,6 +23,7 @@ import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_NUDGE_F
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -41,6 +43,7 @@ class StoreNamePickerViewModel @Inject constructor(
     private val prefsWrapper: AppPrefsWrapper,
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val resourceProvider: ResourceProvider,
     private val accountStore: AccountStore
 ) : ScopedViewModel(savedStateHandle) {
     override val _event = SingleLiveEvent<Event>()
@@ -69,6 +72,8 @@ class StoreNamePickerViewModel @Inject constructor(
 
         if (navArgs.storeName != null) {
             onStoreNameChanged(navArgs.storeName!!)
+        } else {
+            onStoreNameChanged(resourceProvider.getString(R.string.store_creation_store_name_default))
         }
     }
 

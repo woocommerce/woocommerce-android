@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-11 08:54:03+0000
+Translation-Revision-Date: 2023-08-17 18:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="ai_product_description_title_hint">請輸入商品標題。</string>
+    <string name="free_trial_feature_support">全天候優先支援服務</string>
+    <string name="free_trial_feature_backups">網站自動備份</string>
+    <string name="free_trial_feature_hosting">一流的託管服務</string>
+    <string name="free_trial_feature_automated_customer_emails">自動向顧客傳送電子郵件</string>
+    <string name="free_trial_feature_built_in_seo">內建 SEO</string>
+    <string name="free_trial_feature_design_editing">設計與編輯無須程式碼</string>
+    <string name="free_trial_feature_store_management">商店管理工具</string>
+    <string name="free_trial_summary_try_button">建立你的商店</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">輕鬆擁有商店</string>
+    <string name="free_trial_summary_grow_your_business">拓展業務</string>
+    <string name="free_trial_summary_start_selling_quickly">快速開始銷售</string>
+    <string name="store_creation_store_profiler_journey_description">請說明你的商務旅程\n進展到了哪個階段，\n讓我們為你量身打造 Woo 體驗。</string>
+    <string name="store_creation_store_profiler_journey_title">下列哪項描述\n最符合你的情況？</string>
+    <string name="store_creation_store_profiler_industries_title">你打算在商店內\n銷售什麼商品？</string>
+    <string name="store_creation_store_profiler_industries_header">關於你的商店</string>
+    <string name="simplified_login_prologue_title">用 15 天免費試用入門，無須信用卡。 加入 Woo 旗下 340 萬家商店，從賣出第一份商品開始，朝暢銷商店之路邁進。</string>
+    <string name="simplified_login_prologue_intro">我們的電子商務平台會與你一同成長</string>
+    <string name="product_type_variable_subscription">多款式訂閱</string>
+    <string name="order_creation_remove_this_coupon">移除優惠券</string>
+    <string name="coupon_selector_empty_list_title">划算交易人人愛</string>
+    <string name="coupon_selector_empty_list_message">你尚未建立任何優惠券。 建立優惠券並套用至這份訂單。</string>
+    <string name="coupon_selector_empty_list_button">前往優惠券</string>
+    <string name="order_creation_select_coupon">選取優惠券</string>
+    <string name="signup_get_started_button">建立新商店</string>
     <string name="coupon_create_coupon_creation_failed">建立優惠券失敗</string>
     <string name="coupon_create_coupon_created">已建立優惠券</string>
     <string name="coupon_create_save_button">建立</string>
@@ -281,21 +306,10 @@ Language: zh_TW
     <string name="product_quantity_rules_title">數量規則</string>
     <string name="gift_cards">禮物卡</string>
     <string name="order_gift_card">禮物卡</string>
-    <string name="free_trial_feature_fast_to_launch">快速上線</string>
-    <string name="free_trial_feature_site_security">網站安全</string>
-    <string name="free_trial_feature_auto_updates_backups">自動更新和備份</string>
-    <string name="free_trial_feature_247_support">24 小時全年無休的支援</string>
-    <string name="free_trial_feature_email_marketing">電子郵件行銷</string>
     <string name="free_trial_feature_social_advertising">社群媒體廣告</string>
-    <string name="free_trial_feature_subscription_product_kits">訂購和產品套件</string>
-    <string name="free_trial_feature_multiple_payment_options">多種付款選項</string>
-    <string name="free_trial_feature_ecommerce_reports">電子商務報告</string>
-    <string name="free_trial_feature_shipping_labels">運送標籤</string>
-    <string name="free_trial_feature_unlimited_products">不限制產品數量</string>
     <string name="free_trial_feature_premium_themes">進階版佈景主題</string>
     <string name="free_trial_summary_credit_card_message">無需使用信用卡。</string>
-    <string name="free_trial_summary_try_button">免費試用</string>
-    <string name="free_trial_summary_try_it">立即試用 14 天。</string>
+    <string name="free_trial_summary_try_it">立即免費試用 14 天。</string>
     <string name="free_trial_summary_advertise">我們提供打造和經營線上商店所需的一切工具，由 WooCommerce 提供技術支援，並託管於 WordPress.com。</string>
     <string name="free_trial_summary_title">幾天內上線，經營好幾年</string>
     <string name="product_selector_products_heading">產品</string>
@@ -334,8 +348,6 @@ Language: zh_TW
     <string name="subscription_id">訂閱 #%1$d</string>
     <string name="order_subscription">訂閱</string>
     <string name="store_onboarding_launch_store_ok">確定</string>
-    <string name="simplified_login_prologue_title">從完成第一筆銷售到實現百萬收益，讓 Woo 一路陪伴你。  瞭解商家為何信賴我們為 340 萬間線上商店提供支援。</string>
-    <string name="simplified_login_prologue_intro">銷售任何商品，不受地域限制。</string>
     <string name="product_type_subscription">訂閱</string>
     <string name="otp_incorrect">OTP 代碼不正確。 請重新確認你的資訊，然後再試一次。</string>
     <string name="requesting_sms_otp_failure">簡訊要求失敗。 請再試一次。</string>
@@ -547,11 +559,8 @@ Language: zh_TW
     <string name="store_creation_country_picker_description">我們會使用這些資訊完成付款、運送和稅務設定。</string>
     <string name="store_creation_country_picker_title">確認你的位置</string>
     <string name="store_creation_store_profiler_platforms_description">可複選。</string>
-    <string name="store_creation_store_profiler_platforms_title">你目前使用哪個平台進行銷售？</string>
-    <string name="store_creation_store_profiler_journey_description">為提升效率，我們會根據你的回應為你量身打造 WooCommerce 體驗。</string>
-    <string name="store_creation_store_profiler_journey_title">你的商務旅程進展到了哪個階段？</string>
-    <string name="store_creation_store_profiler_industries_description">選擇最符合你業務的類別。</string>
-    <string name="store_creation_store_profiler_industries_title">你要銷售什麼商品？</string>
+    <string name="store_creation_store_profiler_platforms_title">你目前使用\n哪些平台？</string>
+    <string name="store_creation_store_profiler_industries_description">選擇最符合\n你業務定義的類別。</string>
     <string name="login_application_passwords_unavailable">你的網站 %1$s 似乎已停用應用程式密碼功能。\n 若要使用 WooCommerce 應用程式，請啟用此功能。</string>
     <string name="login_open_installation_page">開啟安裝頁面</string>
     <string name="not_a_valid_qr_code">掃進來的 QR code 不是 WooCommerce 代碼</string>
@@ -716,7 +725,6 @@ Language: zh_TW
     <string name="signup_password_hint">選擇密碼</string>
     <string name="signup_email_address_hint">你的電子郵件地址</string>
     <string name="signup_get_started_label">開始使用 \n設定只要幾分鐘</string>
-    <string name="signup_get_started_button">開始使用</string>
     <string name="login_jetpack_connection_consent">點選「連結 Jetpack」按鈕，即表示你同意我們的&lt;a href=\'terms\'&gt;服務條款&lt;/a&gt;，並同意與 WordPress.com &lt;a href=\'sync\'&gt;分享詳細資訊&lt;/a&gt;。</string>
     <string name="enable_card_reader">啟用模擬讀卡機</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">請聯絡網站管理員以獲得網站邀請，成為商店經理或管理員後即可使用應用程式。</string>
@@ -1436,7 +1444,7 @@ Language: zh_TW
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;瞭解更多&lt;/a&gt;有關使用行動裝置接受付款及訂購讀卡機的資訊</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">需要幫助嗎？ &lt;a href=\'\'&gt;聯絡支援團隊&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">你仍可採用「親自收取現金」，只要為商店啟用「貨到付款」付款方式即可</string>
-    <string name="card_reader_onboarding_country_not_supported_header">%1$s不支援親自收款功能</string>
+    <string name="card_reader_onboarding_country_not_supported_header">我們不支援在 %1$s 使用親自刷卡付款功能</string>
     <string name="card_reader_onboarding_loading">連結你的帳號</string>
     <string name="card_reader_onboarding_title">親自收款</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">請再次檢查包裹尺寸和重量，或嘗試使用「包裹詳細資訊」中的其他包裹</string>

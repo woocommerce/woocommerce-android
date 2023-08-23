@@ -47,10 +47,14 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
 
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_description)
+
+    override fun getMainButtonText(): String =
+        resourceProvider.getString(R.string.continue_button)
+
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
-    override fun onContinueClicked() {
+    override fun onMainButtonClicked() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
         val selectedIndustry = industries.firstOrNull { selectedOption?.key == it.key }
         newStore.update(

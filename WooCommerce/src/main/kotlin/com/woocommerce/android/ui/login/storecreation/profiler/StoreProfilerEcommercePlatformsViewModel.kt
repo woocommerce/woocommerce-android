@@ -51,6 +51,9 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_platforms_description)
 
+    override fun getMainButtonText(): String =
+        resourceProvider.getString(R.string.continue_button)
+
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_platforms_title)
 
@@ -63,7 +66,7 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
         }
     }
 
-    override fun onContinueClicked() {
+    override fun onMainButtonClicked() {
         newStore.update(
             profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
                 .copy(

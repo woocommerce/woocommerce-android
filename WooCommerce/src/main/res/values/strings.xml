@@ -3124,8 +3124,9 @@
     <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
-    <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
+    <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
+    <string name="store_creation_store_name_default">Store name</string>
 
     <string name="store_creation_store_profiler_industries_header">About your store</string>
     <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
@@ -3136,6 +3137,25 @@
     <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
     <string name="store_creation_store_profiler_platforms_title">Which platform(s) are\nyou currently using?</string>
     <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
+    <string name="store_profiler_challenge_title">What challenges you in\nstarting or running an\nonline Store?</string>
+    <string name="store_profiler_challenge_description">Choose your concerns or difficulties below. You can select more than one option.</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Setting up the online store</string>
+    <string name="store_profiler_challenge_finding_customers">Finding customers</string>
+    <string name="store_profiler_challenge_managing_inventory">Managing inventory</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
+    <string name="store_profiler_challenge_other">Other</string>
+
+    <string name="store_profiler_features_title">Which features are you\nmost interested in?</string>
+    <string name="store_profiler_features_description">Let us know what you are looking\nforward to using in our app.</string>
+    <string name="store_profiler_features_main_button">Create my store</string>
+    <string name="store_profiler_features_product_management">Easy product management and inventory tracking</string>
+    <string name="store_profiler_features_sales_analytics">Comprehensive sales and analytics reports</string>
+    <string name="store_profiler_features_payment_options">Flexible and secure payment options</string>
+    <string name="store_profiler_features_ipp">In-person payment</string>
+    <string name="store_profiler_features_scale_business">Ability to scale as my business grows</string>
+    <string name="store_profiler_features_store_customization">Customization options for my store design</string>
+    <string name="store_profiler_features_plugins_and_extensions">Access to a wide range of plugins and extensions</string>
+    <string name="store_profiler_features_other">Other</string>
 
     <string name="store_creation_country_picker_title">Where is your business located?</string>
     <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping, and taxes.</string>
@@ -3247,7 +3267,7 @@
     <string name="free_trial_summary_start_selling_quickly">Start selling quickly</string>
     <string name="free_trial_summary_grow_your_business">Grow your business</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Hassle-free store ownership</string>
-    <string name="free_trial_summary_try_button">Create your store</string>
+    <string name="free_trial_summary_try_button">Try for free</string>
     <string name="free_trial_summary_credit_card_message">No credit card required.</string>
     <string name="free_trial_feature_premium_themes">Premium themes</string>
     <string name="free_trial_feature_store_management">Store management tools</string>
