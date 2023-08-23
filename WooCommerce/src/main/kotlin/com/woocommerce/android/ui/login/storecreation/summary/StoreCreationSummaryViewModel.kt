@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.summary
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -17,6 +18,7 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +35,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
-    private val accountStore: AccountStore
+    private val accountStore: AccountStore,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val _isLoading = savedStateHandle.getStateFlow(scope = this, initialValue = false)
     val isLoading = _isLoading.asLiveData()
@@ -45,7 +48,6 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_SUMMARY
             )
         )
-
         val newStoreProfilerData = newStore.data.profilerData
         tracker.track(
             stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
@@ -64,6 +66,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
 
     fun onTryForFreeButtonPressed() {
         tracker.track(AnalyticsEvent.SITE_CREATION_TRY_FOR_FREE_TAPPED)
+        newStore.update(name = resourceProvider.getString(R.string.store_creation_store_name_default))
 
         launch {
             createStore(
