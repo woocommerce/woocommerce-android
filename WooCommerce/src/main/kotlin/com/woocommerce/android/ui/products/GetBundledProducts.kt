@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.model.BundleProductRules
 import com.woocommerce.android.model.BundledProduct
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -32,7 +33,13 @@ class GetBundledProducts @Inject constructor(
                         title = entity.title,
                         stockStatus = ProductStockStatus.fromString(entity.stockStatus.replace("_", "")),
                         imageUrl = image,
-                        sku = product?.sku
+                        sku = product?.sku,
+                        rules = BundleProductRules(
+                            quantityMin = entity.quantityMin,
+                            quantityMax = entity.quantityMax,
+                            isOptional = entity.isOptional,
+                            quantityDefault = entity.quantityDefault
+                        )
                     )
                 }
             }
