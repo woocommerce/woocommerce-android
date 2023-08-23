@@ -190,10 +190,10 @@ class EditShippingLabelPackagesFragment :
                 title = "Select Category",
                 requestKey = "test",
                 keys = ShippingLabelHazmatCategory.values()
-                    .map { it.toString() }
+                    .map { getString(it.stringResourceID) }
                     .toTypedArray(),
                 values = ShippingLabelHazmatCategory.values()
-                    .map { getString(it.stringResourceID) }
+                    .map { it.toString() }
                     .toTypedArray(),
                 selectedItem = null
             ).let { findNavController().navigateSafely(it) }
