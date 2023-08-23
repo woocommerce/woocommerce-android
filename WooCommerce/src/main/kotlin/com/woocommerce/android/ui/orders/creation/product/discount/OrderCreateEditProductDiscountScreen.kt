@@ -148,8 +148,6 @@ fun OrderCreateEditProductDiscountScreen(
 
                 PriceAfterDiscount(viewState.value)
 
-                Divider()
-
                 if (state.value.isRemoveButtonVisible) {
                     WCColoredButton(
                         modifier = Modifier
