@@ -196,6 +196,6 @@ class EditShippingLabelPackagesFragment :
                     .map { getString(it.stringResourceID) }
                     .toTypedArray(),
                 selectedItem = null
-            )
+            ).let { findNavController().navigateSafely(it) }
     }
 }
