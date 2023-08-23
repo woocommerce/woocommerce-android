@@ -11,4 +11,6 @@ object InteracRefundSuccessful : Event()
 
 object ContactSupport : Event()
 
+object EnableNfc : Event()
+
 data class PurchaseCardReader(val url: String) : Event()
