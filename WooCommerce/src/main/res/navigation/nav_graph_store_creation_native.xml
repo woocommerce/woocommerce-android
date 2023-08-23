@@ -90,9 +90,6 @@
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerFragment"
         android:label="fragment_country_picker">
         <action
-            android:id="@+id/action_countryPickerFragment_to_domainPickerFragment"
-            app:destination="@id/domainPickerFragment" />
-        <action
             android:id="@+id/action_countryPickerFragment_to_installationFragment"
             app:destination="@id/installationFragment"
             app:popUpTo="@id/nav_graph_store_creation" />
@@ -156,9 +153,6 @@
         android:id="@+id/countryListPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerFragment"
         android:label="CountryListPickerFragment">
-        <action
-            android:id="@+id/action_countryListPickerFragment_to_domainPickerFragment"
-            app:destination="@id/domainPickerFragment" />
         <action
             android:id="@+id/action_countryListPickerFragment_to_summaryFragment"
             app:destination="@id/summaryFragment" />
