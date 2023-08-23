@@ -73,19 +73,16 @@
     <fragment
         android:id="@+id/storeProfilerFeaturesFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerFeaturesFragment"
-        android:label="fragment_store_profiler_features" />
+        android:label="fragment_store_profiler_features">
+        <action
+            android:id="@+id/action_storeProfilerFeaturesFragment_to_storeCreationInstallationFragment"
+            app:destination="@id/storeCreationInstallationFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/countryPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerFragment"
         android:label="fragment_country_picker">
-        <action
-            android:id="@+id/action_countryPickerFragment_to_installationFragment"
-            app:destination="@id/installationFragment"
-            app:popUpTo="@id/nav_graph_store_creation" />
-        <action
-            android:id="@+id/action_countryPickerFragment_to_summaryFragment"
-            app:destination="@id/storeCreationSummaryFragment" />
         <action
             android:id="@+id/action_countryPickerFragment_to_storeProfilerChallengesFragment"
             app:destination="@id/storeProfilerChallengesFragment" />
@@ -121,12 +118,12 @@
         android:label="PlansFragment">
         <action
             android:id="@+id/action_plansFragment_to_installationFragment"
-            app:destination="@id/installationFragment"
+            app:destination="@id/storeCreationInstallationFragment"
             app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
 
     <fragment
-        android:id="@+id/installationFragment"
+        android:id="@+id/storeCreationInstallationFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationFragment"
         android:label="InstallationFragment" />
 
@@ -135,17 +132,16 @@
         android:name="com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryFragment"
         android:label="SummaryFragment">
         <action
-            android:id="@+id/action_summaryFragment_to_installationFragment"
-            app:destination="@id/installationFragment"
-            app:popUpTo="@id/nav_graph_store_creation" />
+            android:id="@+id/action_summaryFragment_to_storeProfilerIndustriesFragment"
+            app:destination="@id/storeProfilerIndustriesFragment" />
     </fragment>
     <fragment
         android:id="@+id/countryListPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerFragment"
         android:label="CountryListPickerFragment">
         <action
-            android:id="@+id/action_countryListPickerFragment_to_summaryFragment"
-            app:destination="@id/storeCreationSummaryFragment" />
+            android:id="@+id/action_countryListPickerFragment_to_challengesFragment"
+            app:destination="@id/storeProfilerChallengesFragment" />
         <argument
             android:name="currentLocationCode"
             app:argType="string" />
