@@ -599,4 +599,27 @@
         android:id="@+id/installWcShippingFlowFragment"
         android:name="com.woocommerce.android.ui.shipping.InstallWCShippingFragment"
         android:label="InstallWcShippingFlowFragment" />
+    <dialog
+        android:id="@+id/hazmatCategorySelectorDialog"
+        android:name="com.woocommerce.android.ui.ItemSelectorDialog"
+        android:label="ItemSelectorDialog">
+        <argument
+            android:name="selectedItem"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="keys"
+            app:argType="string[]" />
+        <argument
+            android:name="values"
+            app:argType="string[]" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 </navigation>
