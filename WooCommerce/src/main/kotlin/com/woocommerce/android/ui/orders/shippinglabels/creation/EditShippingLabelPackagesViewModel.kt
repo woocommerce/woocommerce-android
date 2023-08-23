@@ -179,9 +179,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
-    fun onHazmatCategoryClicked(): ShippingLabelHazmatCategory {
-        triggerEvent(OpenHazmatCategorySelector)
-        return ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
+    fun onHazmatCategoryClicked(onHazmatCategorySelected: OnHazmatCategorySelected) {
+        triggerEvent(OpenHazmatCategorySelector(onHazmatCategorySelected))
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
@@ -375,5 +374,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val packagesList: List<ShippingLabelPackage>
     ) : MultiLiveEvent.Event()
 
-    object OpenHazmatCategorySelector: MultiLiveEvent.Event()
+    data class OpenHazmatCategorySelector(
+        val onHazmatCategorySelected: OnHazmatCategorySelected
+    ): MultiLiveEvent.Event()
 }

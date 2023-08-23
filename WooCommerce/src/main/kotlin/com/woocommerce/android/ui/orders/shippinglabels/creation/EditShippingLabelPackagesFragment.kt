@@ -32,6 +32,8 @@ import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+typealias OnHazmatCategorySelected = (ShippingLabelHazmatCategory) -> Unit
+
 @AndroidEntryPoint
 class EditShippingLabelPackagesFragment :
     BaseFragment(R.layout.fragment_edit_shipping_label_packages),
@@ -175,7 +177,7 @@ class EditShippingLabelPackagesFragment :
         return false
     }
 
-    private fun showHazmatCategoryPicker() {
+    private fun showHazmatCategoryPicker(onHazmatCategorySelected: OnHazmatCategorySelected) {
         EditShippingLabelPackagesFragmentDirections
             .actionEditShippingLabelPaymentFragmentToHazmatCategorySelector(
                 title = "",
