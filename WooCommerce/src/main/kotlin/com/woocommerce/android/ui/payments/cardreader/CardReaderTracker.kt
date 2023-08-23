@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_PAYMENT_FAI
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_PAYMENT_FAILED_ENABLE_NFC_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTOMATIC_DISCONNECT
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_FAILED
@@ -488,6 +489,10 @@ class CardReaderTracker @Inject constructor(
 
     fun trackPaymentFailedContactSupportTapped() {
         track(CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED)
+    }
+
+    fun trackPaymentFailedEnabledNfcTapped() {
+        track(CARD_PRESENT_TAP_TO_PAY_PAYMENT_FAILED_ENABLE_NFC_TAPPED)
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {
