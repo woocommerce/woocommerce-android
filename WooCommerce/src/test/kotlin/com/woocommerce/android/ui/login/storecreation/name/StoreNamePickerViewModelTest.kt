@@ -42,12 +42,12 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         analyticsTracker = mock()
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
+            resourceProvider = resourceProvider,
             newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
             prefsWrapper = prefsWrapper,
             localNotificationScheduler,
             isRemoteFeatureFlagEnabled,
-            resourceProvider,
             accountStore
         )
     }
@@ -77,12 +77,12 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
+            resourceProvider = resourceProvider,
             newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
             prefsWrapper = prefsWrapper,
             localNotificationScheduler,
             isRemoteFeatureFlagEnabled,
-            resourceProvider,
             accountStore
         )
 

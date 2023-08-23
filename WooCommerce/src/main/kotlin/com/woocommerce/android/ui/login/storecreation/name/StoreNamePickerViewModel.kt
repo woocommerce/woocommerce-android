@@ -27,7 +27,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.getStateFlow
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,12 +37,12 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    resourceProvider: ResourceProvider,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper,
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
-    private val resourceProvider: ResourceProvider,
     private val accountStore: AccountStore
 ) : ScopedViewModel(savedStateHandle) {
     override val _event = SingleLiveEvent<Event>()
@@ -58,8 +57,6 @@ class StoreNamePickerViewModel @Inject constructor(
     private val canCreateFreeTrialStore
         get() = FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
 
-    private val navArgs: StoreNamePickerFragmentArgs by savedStateHandle.navArgs()
-
     init {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -69,12 +66,7 @@ class StoreNamePickerViewModel @Inject constructor(
         )
 
         triggerEvent(CheckNotificationsPermission(::onCheckNotificationsPermissionResult))
-
-        if (navArgs.storeName != null) {
-            onStoreNameChanged(navArgs.storeName!!)
-        } else {
-            onStoreNameChanged(resourceProvider.getString(R.string.store_creation_store_name_default))
-        }
+        onStoreNameChanged(resourceProvider.getString(R.string.store_creation_store_name_default))
     }
 
     fun onCancelPressed() {
