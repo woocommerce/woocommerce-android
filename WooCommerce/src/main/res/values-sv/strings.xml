@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-09 14:54:04+0000
+Translation-Revision-Date: 2023-08-17 12:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="ai_product_description_title_hint">Ange produktrubrik.</string>
+    <string name="free_trial_feature_support">Prioriterad support dygnet runt</string>
+    <string name="free_trial_feature_backups">Automatiska webbplatssäkerhetskopieringar</string>
+    <string name="free_trial_feature_hosting">Marknadens bästa webbhotell</string>
+    <string name="free_trial_feature_automated_customer_emails">Automatiska e-postmeddelanden till kunder</string>
+    <string name="free_trial_feature_built_in_seo">Inbyggd SEO</string>
+    <string name="free_trial_feature_design_editing">Designa och redigera utan kod</string>
+    <string name="free_trial_feature_store_management">Butikshanteringsverktyg</string>
+    <string name="free_trial_summary_try_button">Skapa din butik</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Problemfritt butiksägarskap</string>
+    <string name="free_trial_summary_grow_your_business">Få ditt företag att växa</string>
+    <string name="free_trial_summary_start_selling_quickly">Börja sälja snabbt</string>
+    <string name="store_creation_store_profiler_journey_description">Låt oss veta var du är på din\nhandelsresa, så att vi kan skräddarsy\ndin Woo-upplevelse åt dig.</string>
+    <string name="store_creation_store_profiler_journey_title">Vilken av dessa\nbeskriver dig bäst?</string>
+    <string name="store_creation_store_profiler_industries_title">Vad planerar du att sälja\ni din butik?</string>
+    <string name="store_creation_store_profiler_industries_header">Om din butik</string>
+    <string name="simplified_login_prologue_title">Börja med vår kostnadsfria provperiod på 15 dagar. Inget kreditkort behövs. Bli en av 3,4 miljoner butiker som växer med Woo, från din första försäljning till miljoner i intäkter.</string>
+    <string name="simplified_login_prologue_intro">E-handelsplattformen som växer tillsammans med dig</string>
+    <string name="product_type_variable_subscription">Variabel prenumeration</string>
+    <string name="order_creation_remove_this_coupon">Ta bort rabattkod</string>
+    <string name="coupon_selector_empty_list_title">Alla gillar ett erbjudande</string>
+    <string name="coupon_selector_empty_list_message">Du har inte skapat några rabattkoder ännu. Skapa en rabattkod för att tillämpa den på denna beställning.</string>
+    <string name="coupon_selector_empty_list_button">Gå till rabattkoder</string>
+    <string name="order_creation_select_coupon">Välj en rabattkod</string>
+    <string name="signup_get_started_button">Skapa en ny butik</string>
     <string name="coupon_create_coupon_creation_failed">Misslyckades skapa rabattkod</string>
     <string name="coupon_create_coupon_created">Rabattkod skapad</string>
     <string name="coupon_create_save_button">Skapa</string>
@@ -281,21 +306,10 @@ Language: sv_SE
     <string name="product_quantity_rules_title">Kvantitetsregler</string>
     <string name="gift_cards">Presentkort</string>
     <string name="order_gift_card">Presentkort</string>
-    <string name="free_trial_feature_fast_to_launch">Snabb lansering</string>
-    <string name="free_trial_feature_site_security">Webbplatssäkerhet</string>
-    <string name="free_trial_feature_auto_updates_backups">Automatiska uppdateringar och säkerhetskopieringar</string>
-    <string name="free_trial_feature_247_support">Support dygnet runt</string>
-    <string name="free_trial_feature_email_marketing">E-postmarknadsföring</string>
     <string name="free_trial_feature_social_advertising">Social annonsering</string>
-    <string name="free_trial_feature_subscription_product_kits">Prenumeration och produktkit</string>
-    <string name="free_trial_feature_multiple_payment_options">Flera betalningsalternativ</string>
-    <string name="free_trial_feature_ecommerce_reports">E-handelsrapporter</string>
-    <string name="free_trial_feature_shipping_labels">Fraktsedlar</string>
-    <string name="free_trial_feature_unlimited_products">Obegränsat antal produkter</string>
     <string name="free_trial_feature_premium_themes">Premiumteman</string>
     <string name="free_trial_summary_credit_card_message">Inget kreditkort krävs.</string>
-    <string name="free_trial_summary_try_button">Prova gratis</string>
-    <string name="free_trial_summary_try_it">Prova det i 14 dagar.</string>
+    <string name="free_trial_summary_try_it">Prova det gratis i 14 dagar.</string>
     <string name="free_trial_summary_advertise">Vi tillhandahåller allt du behöver för att bygga och utveckla en onlinebutik som drivs med WooCommerce och har WordPress.com som webbhotell.</string>
     <string name="free_trial_summary_title">Lansering på några dagar, med åratal av tillväxtmöjligheter</string>
     <string name="product_selector_products_heading">Produkter</string>
@@ -334,8 +348,6 @@ Language: sv_SE
     <string name="subscription_id">Prenumeration #%1$d</string>
     <string name="order_subscription">Prenumeration</string>
     <string name="store_onboarding_launch_store_ok">OK</string>
-    <string name="simplified_login_prologue_title">Woo finns med dig hela vägen från din första försäljning till miljoner i intäkter. Se varför handlare förlitar sig på oss för att driva 3,4 miljoner onlinebutiker.</string>
-    <string name="simplified_login_prologue_intro">Sälj vad som helst var som helst</string>
     <string name="product_type_subscription">Prenumeration</string>
     <string name="otp_incorrect">OTP-koden är felaktig. Dubbelkontrollera din information och försök igen.</string>
     <string name="requesting_sms_otp_failure">SMS-begäran misslyckades. Försök igen.</string>
@@ -547,11 +559,8 @@ Language: sv_SE
     <string name="store_creation_country_picker_description">Vi använder den här informationen för att konfigurera betalningar, frakt och moms.</string>
     <string name="store_creation_country_picker_title">Bekräfta din plats</string>
     <string name="store_creation_store_profiler_platforms_description">Du kan välja flera stycken.</string>
-    <string name="store_creation_store_profiler_platforms_title">Vilken plattform säljer du på för närvarande?</string>
-    <string name="store_creation_store_profiler_journey_description">För att snabba upp saker och ting skräddarsyr vi din WooCommerce-upplevelse baserat på ditt svar.</string>
-    <string name="store_creation_store_profiler_journey_title">Var är du på din handelsresa?</string>
-    <string name="store_creation_store_profiler_industries_description">Välj en kategori som stämmer in på ditt företag.</string>
-    <string name="store_creation_store_profiler_industries_title">Vad kommer du att sälja?</string>
+    <string name="store_creation_store_profiler_platforms_title">Vilken eller vilka plattformar\nanvänder du för närvarande?</string>
+    <string name="store_creation_store_profiler_industries_description">Välj en kategori som definierar\nditt företag bäst.</string>
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
     <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
@@ -716,7 +725,6 @@ Language: sv_SE
     <string name="signup_password_hint">Välj ett lösenord</string>
     <string name="signup_email_address_hint">Din e-postadress</string>
     <string name="signup_get_started_label">Kom igång \npå några minuter</string>
-    <string name="signup_get_started_button">Kom igång</string>
     <string name="login_jetpack_connection_consent">Genom att klicka på knappen Anslut Jetpack godkänner du våra &lt;a href=\'terms\'&gt;användarvillkor&lt;/a&gt; och samtycker till att &lt;a href=\'sync\'&gt;dela information&lt;/a&gt; med WordPress.com.</string>
     <string name="enable_card_reader">Aktivera simulerad kortläsare</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Kontakta webbplatsens ägare för en inbjudan till webbplatsen som butikschef eller administratör för att använda appen.</string>
@@ -1436,7 +1444,7 @@ Language: sv_SE
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om att ta emot betalningar med din mobila enhet och att beställa kortläsare</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Behöver du lite hjälp? &lt;a href=\'\'&gt;Kontakta support&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">Du kan fortfarande ta emot personliga kontanta betalningar genom att aktivera betalningsmetoden \"Postförskott\" i din butik</string>
-    <string name="card_reader_onboarding_country_not_supported_header">Vi stöder inte personliga betalningar i %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Vi stöder inte personliga kortbetalningar i %1$s</string>
     <string name="card_reader_onboarding_loading">Ansluter till ditt konto</string>
     <string name="card_reader_onboarding_title">Personliga betalningar</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Dubbelkolla måtten eller vikten på ditt paket eller prova att använda ett annat paket i Paketinformation</string>

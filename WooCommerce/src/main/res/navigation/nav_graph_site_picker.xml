@@ -5,7 +5,6 @@
     app:startDestination="@id/sitePickerFragment">
 
     <include app:graph="@navigation/nav_graph_store_creation_native" />
-    <include app:graph="@navigation/nav_graph_store_creation_web" />
     <include app:graph="@navigation/nav_graph_jetpack_activation" />
 
     <fragment
@@ -30,9 +29,6 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
             app:destination="@id/addStoreBottomSheetFragment" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/nav_graph_store_creation_web" />
         <action
             android:id="@+id/action_sitePickerFragment_to_storeCreationNativeFlow"
             app:destination="@id/nav_graph_store_creation">
@@ -87,9 +83,6 @@
         <action
             android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
             app:destination="@id/sitePickerSiteDiscoveryFragment" />
-        <action
-            android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/nav_graph_store_creation_web" />
         <action
             android:id="@+id/action_addStoreBottomSheetFragment_to_storeCreationNativeFlow"
             app:destination="@id/nav_graph_store_creation" />
