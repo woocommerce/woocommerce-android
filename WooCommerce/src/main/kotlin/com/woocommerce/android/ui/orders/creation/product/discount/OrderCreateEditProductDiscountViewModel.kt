@@ -82,7 +82,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                     imageUrl = productUiModel.imageUrl
                 )
             )
-        }.toStateFlow(ViewState(currency = currency, null))
+        }.toStateFlow(ViewState(currency, null))
 
     private fun getRemoveButtonVisibility() = with(getInitialDiscountAmount()) {
         this != null && this > BigDecimal.ZERO
