@@ -174,7 +174,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }.asLiveData()
 
     val products: LiveData<List<ProductUIModel>> = _orderDraft
-        .map { order -> order.items.filter { it.quantity > 0 } }
+        .map { order -> order.items.filter { it.quantity > 0  && it.parent == null } }
         .distinctUntilChanged()
         .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
