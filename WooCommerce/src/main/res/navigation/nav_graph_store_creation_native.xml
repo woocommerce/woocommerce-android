@@ -9,15 +9,10 @@
         android:name="com.woocommerce.android.ui.login.storecreation.iap.CheckIapEligibilityFragment"
         android:label="InstallationFragment">
         <action
-            android:id="@+id/action_checkIapEligibilityFragment_to_storeNamePickerFragment"
-            app:destination="@id/storeNamePickerFragment"
+            android:id="@+id/action_checkIapEligibilityFragment_to_storeCreationSummaryFragment"
+            app:destination="@id/storeCreationSummaryFragment"
             app:popUpTo="@+id/sitePickerFragment"
             app:popUpToInclusive="false" />
-        <argument
-            android:name="storeName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -32,7 +27,7 @@
             app:destination="@id/domainPickerFragment" />
         <action
             android:id="@+id/action_storeNamePickerFragment_to_summaryFragment"
-            app:destination="@id/summaryFragment"
+            app:destination="@id/storeCreationSummaryFragment"
             app:popUpTo="@id/nav_graph_store_creation" />
         <argument
             android:name="storeName"
@@ -95,7 +90,7 @@
             app:popUpTo="@id/nav_graph_store_creation" />
         <action
             android:id="@+id/action_countryPickerFragment_to_summaryFragment"
-            app:destination="@id/summaryFragment" />
+            app:destination="@id/storeCreationSummaryFragment" />
         <action
             android:id="@+id/action_countryPickerFragment_to_storeProfilerChallengesFragment"
             app:destination="@id/storeProfilerChallengesFragment" />
@@ -141,7 +136,7 @@
         android:label="InstallationFragment" />
 
     <fragment
-        android:id="@+id/summaryFragment"
+        android:id="@+id/storeCreationSummaryFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryFragment"
         android:label="SummaryFragment">
         <action
@@ -155,7 +150,7 @@
         android:label="CountryListPickerFragment">
         <action
             android:id="@+id/action_countryListPickerFragment_to_summaryFragment"
-            app:destination="@id/summaryFragment" />
+            app:destination="@id/storeCreationSummaryFragment" />
         <argument
             android:name="currentLocationCode"
             app:argType="string" />
