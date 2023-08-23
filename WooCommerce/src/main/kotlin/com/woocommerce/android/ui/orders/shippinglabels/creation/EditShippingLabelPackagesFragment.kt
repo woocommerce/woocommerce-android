@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPackagesBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -178,6 +179,12 @@ class EditShippingLabelPackagesFragment :
     }
 
     private fun showHazmatCategoryPicker(onHazmatCategorySelected: OnHazmatCategorySelected) {
+        handleDialogResult<String>(
+            key = "",
+            entryId = R.id.editShippingLabelPackagesFragment
+        ) { hazmatSelection ->
+            onHazmatCategorySelected(ShippingLabelHazmatCategory.valueOf(hazmatSelection))
+        }
         EditShippingLabelPackagesFragmentDirections
             .actionEditShippingLabelPaymentFragmentToHazmatCategorySelector(
                 title = "",
@@ -185,6 +192,6 @@ class EditShippingLabelPackagesFragment :
                 keys = emptyArray(),
                 values = emptyArray(),
                 selectedItem = ""
-        )
+            )
     }
 }
