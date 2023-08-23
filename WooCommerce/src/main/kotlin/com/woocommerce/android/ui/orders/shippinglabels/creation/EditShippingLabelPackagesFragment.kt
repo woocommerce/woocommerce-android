@@ -172,4 +172,15 @@ class EditShippingLabelPackagesFragment :
         viewModel.onBackButtonClicked()
         return false
     }
+
+    private fun showHazmatCategoryPicker() {
+        EditShippingLabelPackagesFragmentDirections
+            .actionEditShippingLabelPaymentFragmentToHazmatCategorySelector(
+                title = "",
+                requestKey = "",
+                keys = emptyArray(),
+                values = emptyArray(),
+                selectedItem = ""
+        )
+    }
 }
