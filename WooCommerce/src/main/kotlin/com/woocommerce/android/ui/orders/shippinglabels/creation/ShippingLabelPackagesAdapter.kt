@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
@@ -25,13 +26,15 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
+typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, OnHazmatCategorySelected) -> Unit
+
 class ShippingLabelPackagesAdapter(
     val siteParameters: SiteParameters,
     val onWeightEdited: (Int, Float) -> Unit,
     val onExpandedChanged: (Int, Boolean) -> Unit,
     val onPackageSpinnerClicked: (Int) -> Unit,
     val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit,
-    val onHazmatCategoryClicked: (OnHazmatCategorySelected) -> Unit,
+    val onHazmatCategoryClicked: OnHazmatCategoryClicked,
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var uiModels: List<ShippingLabelPackageUiModel> = emptyList()
         set(value) {
@@ -130,7 +133,10 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.hazmatCategoryContainer.setOnClickListener {
-                onHazmatCategoryClicked {
+                val currentCategory = binding.hazmatCategory.text.toString()
+                    .takeIf { it.isNotNullOrEmpty() }
+                    ?.let { ShippingLabelHazmatCategory.valueOf(it) }
+                onHazmatCategoryClicked(currentCategory) {
                     binding.hazmatCategory.text = binding.root.context.getString(it.stringResourceID)
                 }
             }
