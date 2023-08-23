@@ -180,6 +180,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onHazmatCategoryClicked(): ShippingLabelHazmatCategory {
+        triggerEvent(OpenHazmatCategorySelector)
         return ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
     }
 
@@ -373,4 +374,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val currentPackage: ShippingLabelPackage,
         val packagesList: List<ShippingLabelPackage>
     ) : MultiLiveEvent.Event()
+
+    object OpenHazmatCategorySelector: MultiLiveEvent.Event()
 }
