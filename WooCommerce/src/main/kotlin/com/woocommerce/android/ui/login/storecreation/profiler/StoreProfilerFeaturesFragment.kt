@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.countrypicker
+package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,32 +8,25 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerViewModel.NavigateToSummaryStep
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class CountryListPickerFragment : BaseFragment() {
-    private val viewModel: CountryListPickerViewModel by viewModels()
-    @Inject lateinit var newStore: NewStore
+class StoreProfilerFeaturesFragment : BaseFragment() {
+    private val viewModel: StoreProfilerFeaturesViewModel by viewModels()
 
-    override
-    val activityAppBarStatus: AppBarStatus
+    override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
             setContent {
                 WooThemeWithBackground {
-                    CountryListPickerScreen(viewModel = viewModel)
+                    StoreProfilerScreen(viewModel)
                 }
             }
         }
@@ -47,15 +40,11 @@ class CountryListPickerFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Exit -> findNavController().popBackStack()
-                is NavigateToSummaryStep -> navigateToInstallationStep()
+                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is BaseStoreProfilerViewModel.NavigateToNextStep -> {
+                    TODO()
+                }
             }
         }
-    }
-
-    private fun navigateToInstallationStep() {
-        findNavController().navigateSafely(
-            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToSummaryFragment()
-        )
     }
 }

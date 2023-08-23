@@ -74,7 +74,7 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
                 state.isLoading -> ProgressIndicator()
                 else -> ProfilerContent(
                     profilerStepContent = state,
-                    onContinueClicked = viewModel::onContinueClicked,
+                    onContinueClicked = viewModel::onMainButtonClicked,
                     onCategorySelected = viewModel::onOptionSelected,
                     onSearchQueryChanged = viewModel::onSearchQueryChanged,
                     modifier = Modifier
@@ -126,7 +126,7 @@ private fun ProfilerContent(
                 }
                 itemsIndexed(profilerStepContent.options) { index, category ->
                     if (index == 0)
-                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
 
                     ProfilerOptionItem(
                         category = category,
@@ -149,7 +149,7 @@ private fun ProfilerContent(
             onClick = onContinueClicked,
             enabled = profilerStepContent.options.any { it.isSelected }
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            Text(text = profilerStepContent.mainButtonText)
         }
     }
 }
@@ -161,7 +161,7 @@ private fun HeaderContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
         Text(
@@ -302,7 +302,8 @@ fun CategoriesContentPreview() {
                 ),
                 isSearchableContent = true,
                 isLoading = false,
-                searchQuery = ""
+                searchQuery = "",
+                mainButtonText = "Continue"
             ),
             onContinueClicked = {},
             onCategorySelected = {},

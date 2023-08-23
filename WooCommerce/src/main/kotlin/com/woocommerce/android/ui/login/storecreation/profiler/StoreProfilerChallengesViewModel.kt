@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHALLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHALLENGE_SHIPPING_AND_LOGISTICS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.NewStore.ProfilerData
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -37,7 +38,7 @@ class StoreProfilerChallengesViewModel @Inject constructor(
         )
         launch {
             profilerOptions.update {
-                listOf(
+                val options = listOf(
                     StoreProfilerOptionUi(
                         key = VALUE_CHALLENGE_SETTING_UP_ONLINE_STORE,
                         name = resourceProvider.getString(R.string.store_profiler_challenge_setting_up_online_store),
@@ -64,6 +65,9 @@ class StoreProfilerChallengesViewModel @Inject constructor(
                         isSelected = false
                     ),
                 )
+                options.map { option ->
+                    option.copy(isSelected = option.key == newStore.data.profilerData?.challengeKey)
+                }
             }
         }
     }
@@ -74,7 +78,26 @@ class StoreProfilerChallengesViewModel @Inject constructor(
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_profiler_challenge_description)
 
-    override fun onContinueClicked() {
-        TODO("Not yet implemented")
+    override fun getMainButtonText(): String =
+        resourceProvider.getString(R.string.continue_button)
+
+    override fun onMainButtonClicked() {
+        val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
+        newStore.update(
+            profilerData = (newStore.data.profilerData ?: ProfilerData())
+                .copy(challengeKey = selectedOption?.key)
+        )
+        triggerEvent(NavigateToNextStep)
+    }
+
+    override fun onSkipPressed() {
+        super.onSkipPressed()
+        analyticsTracker.track(
+            AnalyticsEvent.SITE_CREATION_PROFILER_QUESTION_SKIPPED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_CHALLENGES
+            )
+        )
+        // TODO("Navigate to the next step: Features interested in")
     }
 }
