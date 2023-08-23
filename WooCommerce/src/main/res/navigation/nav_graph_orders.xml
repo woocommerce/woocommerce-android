@@ -394,6 +394,9 @@
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingLabelCreatePackageFragment"
             app:destination="@id/shippingLabelCreatePackageFragment" />
+        <action
+            android:id="@+id/action_editShippingLabelPaymentFragment_to_hazmatCategorySelector"
+            app:destination="@id/hazmatCategorySelectorDialog" />
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"
@@ -420,11 +423,7 @@
         android:id="@+id/editShippingLabelPaymentFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
         android:label="EditShippingLabelPaymentFragment"
-        tools:layout="@layout/fragment_edit_shipping_label_payment">
-        <action
-            android:id="@+id/action_editShippingLabelPaymentFragment_to_hazmatCategorySelector"
-            app:destination="@id/hazmatCategorySelectorDialog" />
-    </fragment>
+        tools:layout="@layout/fragment_edit_shipping_label_payment"/>
     <fragment
         android:id="@+id/shippingCarrierRatesFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"
