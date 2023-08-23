@@ -376,5 +376,5 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     data class OpenHazmatCategorySelector(
         val onHazmatCategorySelected: OnHazmatCategorySelected
-    ): MultiLiveEvent.Event()
+    ) : MultiLiveEvent.Event()
 }
