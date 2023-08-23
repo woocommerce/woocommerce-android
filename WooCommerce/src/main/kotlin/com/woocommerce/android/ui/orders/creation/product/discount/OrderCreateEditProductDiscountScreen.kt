@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.product.discount
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,8 +34,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -43,6 +46,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
@@ -86,7 +91,7 @@ fun OrderCreateEditProductDiscountScreen(
                 val discountValidationState = state.value.discountValidationState
 
                 ProductCard(
-                    image = R.drawable.ic_launcher_foreground,
+                    imageUrl = viewState.value.productDetailsState?.imageUrl,
                     productName = productItem.value.name,
                     productPrice = productItem.value.price,
                     productQuantity = productItem.value.quantity,
@@ -193,7 +198,7 @@ private fun Toolbar(
 
 @Composable
 private fun ProductCard(
-    image: Int,
+    imageUrl: String?,
     productName: String,
     productPrice: BigDecimal,
     productQuantity: Float,
@@ -213,13 +218,19 @@ private fun ProductCard(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = null,
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_product),
+            error = painterResource(R.drawable.ic_product),
+            contentDescription = stringResource(R.string.product_image_content_description),
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .padding(
-                    end = dimensionResource(id = R.dimen.minor_100)
-                )
+                .size(dimensionResource(R.dimen.major_300))
+                .clip(RoundedCornerShape(3.dp))
+                .padding(dimensionResource(id = R.dimen.minor_100))
         )
         Column(
             modifier = Modifier
@@ -403,7 +414,7 @@ fun OrderCreateEditProductDiscountScreenPreview() =
 @Composable
 fun ProductCardPreview() {
     ProductCard(
-        image = R.drawable.ic_product,
+        imageUrl = "",
         productName = "Product Name",
         productPrice = BigDecimal.ZERO,
         productQuantity = 1f,
