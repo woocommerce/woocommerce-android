@@ -208,7 +208,6 @@
                 android:id="@+id/hazmat_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -217,16 +216,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/minor_100"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical">
 
-                    <View style="@style/Woo.Divider" />
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_marginStart="@dimen/major_100" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="@dimen/minor_100"
+                        android:layout_marginStart="@dimen/major_100"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -262,19 +265,20 @@
 
                     </LinearLayout>
 
-                    <View style="@style/Woo.Divider" />
+                    <View
+                        style="@style/Woo.Divider"
+                        android:layout_marginStart="@dimen/major_100" />
 
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
                     android:layout_marginVertical="@dimen/major_100"
-                    android:layout_marginEnd="@dimen/major_100"
                     android:text="@string/shipping_label_package_details_hazmat_content_description" />
 
             </LinearLayout>
-
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
