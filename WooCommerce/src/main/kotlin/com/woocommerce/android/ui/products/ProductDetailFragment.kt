@@ -42,10 +42,12 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
@@ -243,6 +245,12 @@ class ProductDetailFragment :
                     viewModel.updateProductDraft(shortDescription = result.getString(ARG_AZTEC_EDITOR_TEXT))
                 }
             }
+
+            if (result.containsKey(ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION)) {
+                viewModel.updateProductDraft(
+                    title = result.getString(ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION)
+                )
+            }
         }
 
         handleResult<VariationListData>(VariationListFragment.KEY_VARIATION_LIST_RESULT) { data ->
@@ -253,8 +261,8 @@ class ProductDetailFragment :
             viewModel.refreshProduct()
         }
 
-        handleResult<String>(AIProductDescriptionBottomSheetFragment.KEY_AI_GENERATED_DESCRIPTION_RESULT) { desc ->
-            viewModel.updateProductDraft(description = desc)
+        handleResult<Pair<String, String>>(KEY_AI_GENERATED_DESCRIPTION_RESULT) { resultPair ->
+            viewModel.updateProductDraft(description = resultPair.first, title = resultPair.second)
         }
     }
 
