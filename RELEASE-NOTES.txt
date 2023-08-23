@@ -3,6 +3,7 @@
 15.1
 -----
 - [*] [Internal] Tap To Pay: Enable NFC button to the NFC disabled error state to help merchants to enable NFC on their devices [https://github.com/woocommerce/woocommerce-android/pull/9611]
+- [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
 
 
 15.0
