@@ -157,7 +157,10 @@ class EditShippingLabelPackagesFragment :
 
                     findNavController().navigateSafely(action)
                 }
-                is OpenHazmatCategorySelector -> showHazmatCategoryPicker(event.onHazmatCategorySelected)
+                is OpenHazmatCategorySelector -> showHazmatCategoryPicker(
+                    event.currentSelection,
+                    event.onHazmatCategorySelected
+                )
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PACKAGES_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
@@ -179,7 +182,10 @@ class EditShippingLabelPackagesFragment :
         return false
     }
 
-    private fun showHazmatCategoryPicker(onHazmatCategorySelected: OnHazmatCategorySelected) {
+    private fun showHazmatCategoryPicker(
+        currentSelection: ShippingLabelHazmatCategory?,
+        onHazmatCategorySelected: OnHazmatCategorySelected
+    ) {
         handleDialogResult<String>(
             key = KEY_HAZMAT_CATEGORY_SELECTOR_RESULT,
             entryId = R.id.editShippingLabelPackagesFragment
@@ -196,7 +202,7 @@ class EditShippingLabelPackagesFragment :
                 values = ShippingLabelHazmatCategory.values()
                     .map { it.toString() }
                     .toTypedArray(),
-                selectedItem = null
+                selectedItem = currentSelection.toString()
             ).let { findNavController().navigateSafely(it) }
     }
 }
