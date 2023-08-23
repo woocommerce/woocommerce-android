@@ -16,7 +16,6 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
@@ -85,7 +84,7 @@ class ShippingLabelPackagesAdapter(
         val isExpanded
             get() = binding.expandIcon.rotation == 180f
 
-        var currentHazmatSelection: ShippingLabelHazmatCategory? = null
+        private var currentHazmatSelection: ShippingLabelHazmatCategory? = null
 
         init {
             with(binding.itemsList) {
