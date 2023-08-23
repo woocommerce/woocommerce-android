@@ -26,6 +26,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.appwidgets.getWidgetName
@@ -133,7 +135,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it).let {
-                        if (it.model?.hasWooCommerce == false) {
+                        if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
+                            // The previously selected site doesn't have Woo anymore, take the user to the login screen
+                            WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
+                            selectedSite.reset()
                             restartMainActivity()
                         }
                     }
