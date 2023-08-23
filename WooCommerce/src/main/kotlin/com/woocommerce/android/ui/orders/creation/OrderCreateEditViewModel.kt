@@ -54,19 +54,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
+import com.woocommerce.android.ui.orders.creation.bundle.OrderItemRules
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
@@ -134,7 +133,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
-    private val selectedSite: SelectedSite,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -159,11 +157,6 @@ class OrderCreateEditViewModel @Inject constructor(
     val orderDraft = _orderDraft
         .asLiveData()
 
-    val orderEditUrlWpAdmin
-        get() = selectedSite.getIfExists()
-            ?.let { it.adminUrlOrDefault + "post.php?post=${_orderDraft.value.id}&action=edit" }
-
-
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
         .distinctUntilChanged()
@@ -174,7 +167,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }.asLiveData()
 
     val products: LiveData<List<ProductUIModel>> = _orderDraft
-        .map { order -> order.items.filter { it.quantity > 0  && it.parent == null } }
+        .map { order -> order.items.filter { it.quantity > 0 && it.parent == null } }
         .distinctUntilChanged()
         .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
@@ -1118,7 +1111,8 @@ data class ProductUIModel(
     val imageUrl: String,
     val isStockManaged: Boolean,
     val stockQuantity: Double,
-    val stockStatus: ProductStockStatus
+    val stockStatus: ProductStockStatus,
+    val rules: OrderItemRules? = null
 )
 
 enum class ScanningSource(val source: String) {

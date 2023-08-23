@@ -430,7 +430,7 @@ class OrderCreateEditFormFragment :
                         currencyCode = viewModel.currentDraft.currency,
                         onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
                         onDecreaseQuantity = viewModel::onDecreaseProductsQuantity,
-                        editOrderUrl = viewModel.orderEditUrlWpAdmin
+                        onConfigureItem = { ToastUtils.showToast(requireContext(), "configure the item") }
                     )
                     itemAnimator = animator
                     isNestedScrollingEnabled = false
