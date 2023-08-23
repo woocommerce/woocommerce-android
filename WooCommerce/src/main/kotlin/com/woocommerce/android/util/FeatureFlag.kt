@@ -34,7 +34,6 @@ enum class FeatureFlag {
     HAZMAT_SHIPPING,
     NAME_YOUR_STORE_DIALOG;
 
-
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
