@@ -12,10 +12,13 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -30,6 +33,9 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val accountStore: AccountStore = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+    }
 
     @Before
     fun setUp() {
@@ -42,6 +48,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             prefsWrapper = prefsWrapper,
             localNotificationScheduler,
             isRemoteFeatureFlagEnabled,
+            resourceProvider,
             accountStore
         )
     }
@@ -76,6 +83,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             prefsWrapper = prefsWrapper,
             localNotificationScheduler,
             isRemoteFeatureFlagEnabled,
+            resourceProvider,
             accountStore
         )
 

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 15.0
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
 ## 14.9
 Adding coupons to your orders has never been easier. Simply select one from the list of existing coupons. Please continue to send us feedback – we are listening!
 

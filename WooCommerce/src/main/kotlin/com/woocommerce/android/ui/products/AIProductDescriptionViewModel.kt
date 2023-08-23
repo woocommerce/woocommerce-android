@@ -212,7 +212,7 @@ class AIProductDescriptionViewModel @Inject constructor(
         tracker.track(PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED)
 
         if (appPrefsWrapper.wasAIProductDescriptionCelebrationShown) {
-            triggerEvent(ExitWithResult(_viewState.value.description))
+            triggerEvent(ExitWithResult(Pair(_viewState.value.description, _viewState.value.productTitle)))
         } else {
             _viewState.update { _viewState.value.copy(generationState = Celebration) }
             appPrefsWrapper.wasAIProductDescriptionCelebrationShown = true
@@ -226,7 +226,7 @@ class AIProductDescriptionViewModel @Inject constructor(
     }
 
     fun onCelebrationButtonClicked() {
-        triggerEvent(ExitWithResult(_viewState.value.description))
+        triggerEvent(ExitWithResult(Pair(_viewState.value.description, _viewState.value.productTitle)))
     }
 
     fun onDescriptionFeedbackReceived(isUseful: Boolean) {

@@ -51,10 +51,13 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_journey_description)
 
+    override fun getMainButtonText(): String =
+        resourceProvider.getString(R.string.continue_button)
+
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_journey_title)
 
-    override fun onContinueClicked() {
+    override fun onMainButtonClicked() {
         newStore.update(
             profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
                 .copy(
