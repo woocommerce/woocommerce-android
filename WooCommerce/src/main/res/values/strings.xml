@@ -45,6 +45,7 @@
     <string name="continue_button">Continue</string>
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
+    <string name="dialog_ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
@@ -3223,6 +3224,8 @@
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
+    <string name="store_onboarding_task_name_store_title">Name your store</string>
+    <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
@@ -3250,6 +3253,7 @@
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
 
     <!--
     Support Request
