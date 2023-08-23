@@ -420,7 +420,11 @@
         android:id="@+id/editShippingLabelPaymentFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
         android:label="EditShippingLabelPaymentFragment"
-        tools:layout="@layout/fragment_edit_shipping_label_payment" />
+        tools:layout="@layout/fragment_edit_shipping_label_payment">
+        <action
+            android:id="@+id/action_editShippingLabelPaymentFragment_to_hazmatCategorySelector"
+            app:destination="@id/hazmatCategorySelectorDialog" />
+    </fragment>
     <fragment
         android:id="@+id/shippingCarrierRatesFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"
