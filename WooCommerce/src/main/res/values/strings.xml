@@ -45,6 +45,7 @@
     <string name="continue_button">Continue</string>
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
+    <string name="dialog_ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
@@ -3213,6 +3214,7 @@
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
 
     <!--
     Support Request
