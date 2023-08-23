@@ -60,6 +60,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -78,6 +79,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -112,13 +115,10 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
-import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
-import org.wordpress.android.fluxc.utils.extensions.slashJoin
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -1054,14 +1054,18 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onTaxHelpButtonClicked() {
         val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
-            is TaxBasedOnSetting.StoreAddress -> "Your tax rate is currently calculated based on your shop address:"
-            is TaxBasedOnSetting.BillingAddress -> "Your tax rate is currently calculated based on your billing address:"
-            is TaxBasedOnSetting.ShippingAddress -> "Your tax rate is currently calculated based on your shipping address:"
+            is TaxBasedOnSetting.StoreAddress ->
+                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_store_address)
+            is TaxBasedOnSetting.BillingAddress ->
+                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_billing_address)
+            is TaxBasedOnSetting.ShippingAddress ->
+                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_shipping_address)
             else -> ""
         }
-        val taxLines: List<Pair<String, String>> = _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
+        val taxLines: List<Pair<String, String>> =
+            _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
         val taxRatesSettingsUrl = selectedSite.getIfExists()?.url
-                ?.slashJoin("/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard")
+            ?.slashJoin("/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard")
         triggerEvent(
             OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
                 TaxRatesInfoDialogViewState(

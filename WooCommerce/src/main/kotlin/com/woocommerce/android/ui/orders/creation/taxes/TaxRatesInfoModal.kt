@@ -21,6 +21,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,11 +37,11 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun TaxRateInfoModal(
     dialogState: TaxRatesInfoDialogViewState,
-    onDismissButtonClicked: () -> Unit,
+    onDismissed: () -> Unit,
     onEditTaxRatesClicked: () -> Unit,
 ) {
     Dialog(
-        onDismissRequest = { },
+        onDismissRequest = onDismissed,
         properties = DialogProperties(
             usePlatformDefaultWidth = true,
             dismissOnBackPress = true,
@@ -62,7 +63,7 @@ fun TaxRateInfoModal(
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                     Text(
-                        text = "Taxes & Tax Rates",
+                        text = stringResource(R.string.tax_rates_info_dialog_title),
                         style = MaterialTheme.typography.h6,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
@@ -71,7 +72,7 @@ fun TaxRateInfoModal(
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                     Text(
-                        text = "Taxes are calculated by matching your customer’s billing or shipping address, or your shop address to a tax rate location.",
+                        text = stringResource(R.string.tax_rates_info_dialog_primary_text),
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -79,7 +80,7 @@ fun TaxRateInfoModal(
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                     Text(
-                        text = "Tax rates for different locations can be managed in your store’s admin.",
+                        text = stringResource(R.string.tax_rates_info_dialog_secondary_text),
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -105,19 +106,20 @@ fun TaxRateInfoModal(
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_redirect),
                                 modifier = Modifier.size(20.dp),
-                                contentDescription = "Edit Tax Rates in Admin Button",
+                                contentDescription =
+                                stringResource(R.string.tax_rates_redirect_to_admin_content_description),
                             )
                         },
-                        text = "Edit Tax Rates in Admin"
+                        text = stringResource(R.string.tax_rates_redirect_to_admin_button_label)
                     )
 
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                     WCOutlinedButton(
-                        onClick = onDismissButtonClicked,
+                        onClick = onDismissed,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text(text = "Done")
+                        Text(text = stringResource(R.string.done))
                     }
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 }

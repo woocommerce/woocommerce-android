@@ -3497,6 +3497,18 @@
     Shipping zones
     -->
     <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
+
+    <!--
+    Tax rates info dialog
+    -->
     <string name="tax_rates_information_content_description">Tax rates information</string>
+    <string name="tax_rates_info_dialog_primary_text">Taxes are calculated by matching your customer’s billing or shipping address, or your shop address to a tax rate location.</string>
+    <string name="tax_rates_info_dialog_secondary_text">Tax rates for different locations can be managed in your store’s admin.</string>
+    <string name="tax_rates_info_dialog_title"><![CDATA[Taxes & Tax Rates]]></string>
+    <string name="tax_rates_redirect_to_admin_content_description">Edit Tax Rates in Admin Button</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Edit Tax Rates in Admin</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Your tax rate is currently calculated based on your shop address:</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Your tax rate is currently calculated based on your billing address:</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Your tax rate is currently calculated based on your shipping address:</string>
 
 </resources>
