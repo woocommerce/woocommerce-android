@@ -119,6 +119,8 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.*
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -236,6 +238,13 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
+
+    private val TaxBasedOnSetting.label: String
+        get() = when (this) {
+            StoreAddress -> resourceProvider.getString(string.order_creation_tax_based_on_store_address)
+            BillingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_billing_address)
+            ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
+        }
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
