@@ -2341,17 +2341,14 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
-        if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getProductQuantityRules(productRemoteID)
     }
 
     suspend fun getBundledProductsSize(remoteId: Long): Int {
-        if (FeatureFlag.BUNDLED_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return 0
         return getBundledProductsCount(remoteId)
     }
 
     suspend fun getComponents(remoteId: Long): List<Component>? {
-        if (FeatureFlag.COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getComponentProducts(remoteId)
     }
 
