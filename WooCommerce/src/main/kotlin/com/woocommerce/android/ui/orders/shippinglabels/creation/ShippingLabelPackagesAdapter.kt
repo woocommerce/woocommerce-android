@@ -156,6 +156,32 @@ class ShippingLabelPackagesAdapter(
                         R.string.shipping_label_package_details_hazmat_content_usps_instructions_1_text_link
                     ))
                 }
+
+            binding.hazmatUspsInstructionsSecondSection.text = SpannableStringBuilder()
+                .append(context.getString(R.string.shipping_label_package_details_hazmat_content_usps_instructions_2))
+                .inSpans(
+                    WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
+                        // trigger webview with USPS link
+                    },
+                    UnderlineSpan()
+                ) {
+                    append(context.getString(
+                        R.string.shipping_label_package_details_hazmat_content_usps_instructions_2_text_link
+                    ))
+                }
+
+            binding.hazmatDhlInstructions.text = SpannableStringBuilder()
+                .append(context.getString(R.string.shipping_label_package_details_hazmat_content_dhl_instructions))
+                .inSpans(
+                    WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
+                        // trigger webview with USPS link
+                    },
+                    UnderlineSpan()
+                ) {
+                    append(context.getString(
+                        R.string.shipping_label_package_details_hazmat_content_dhl_instructions_text_link
+                    ))
+                }
         }
 
         @SuppressLint("SetTextI18n")
