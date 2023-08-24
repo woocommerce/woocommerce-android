@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
@@ -76,6 +77,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     lateinit var productListRepository: ProductListRepository
     private lateinit var resourceProvider: ResourceProvider
     private lateinit var productRestrictions: OrderCreationProductRestrictions
+    private lateinit var selectedSite: SelectedSite
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -145,6 +147,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             } doReturn "Scanning failed. Please try again later"
         }
         productRestrictions = mock()
+        selectedSite = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2153,6 +2156,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             checkDigitRemoverFactory = checkDigitRemoverFactory,
             resourceProvider = resourceProvider,
             productRestrictions = productRestrictions,
+            selectedSite = selectedSite,
         )
     }
 
