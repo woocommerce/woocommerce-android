@@ -327,4 +327,24 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `when onHazmatCategorySelected, then update the packages info`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onHazmatCategorySelected(
+            packagePosition = 0,
+            newSelection = ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL)
+    }
 }
