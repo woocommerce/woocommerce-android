@@ -53,7 +53,11 @@ class RefreshBundledProductsTest : BaseUnitTest() {
                 bundledProductId = 20L + it,
                 menuOrder = it,
                 title = "Bundled product $it",
-                stockStatus = "in_stock"
+                stockStatus = "in_stock",
+                quantityMin = null,
+                quantityMax = null,
+                quantityDefault = 0,
+                isOptional = false
             )
         }
     }

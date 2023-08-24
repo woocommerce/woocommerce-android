@@ -124,21 +124,33 @@ class GetBundledProductsTest : BaseUnitTest() {
             bundledProductId = 25,
             menuOrder = 1,
             title = "Bundled product",
-            stockStatus = "in_stock"
+            stockStatus = "in_stock",
+            quantityMin = null,
+            quantityMax = null,
+            quantityDefault = 0,
+            isOptional = false
         ),
         WCBundledProduct(
             id = 2,
             bundledProductId = 26,
             menuOrder = 2,
             title = "Another bundled product",
-            stockStatus = "out_of_stock"
+            stockStatus = "out_of_stock",
+            quantityMin = null,
+            quantityMax = null,
+            quantityDefault = 0,
+            isOptional = false
         ),
         WCBundledProduct(
             id = 3,
             bundledProductId = 27,
             menuOrder = 3,
             title = "Awesome bundled product",
-            stockStatus = "in_stock____"
+            stockStatus = "in_stock____",
+            quantityMin = null,
+            quantityMax = null,
+            quantityDefault = 0,
+            isOptional = false
         )
     )
 }
