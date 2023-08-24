@@ -80,6 +80,9 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
@@ -119,7 +122,6 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.R
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -239,13 +241,11 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private val TaxBasedOnSetting.label: String
-        get() {
-        return when (this) {
-            TaxBasedOnSetting.StoreAddress -> resourceProvider.getString(string.order_creation_tax_based_on_store_address)
-            TaxBasedOnSetting.BillingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_billing_address)
-            TaxBasedOnSetting.ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
+        get() = when (this) {
+            StoreAddress -> resourceProvider.getString(string.order_creation_tax_based_on_store_address)
+            BillingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_billing_address)
+            ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
         }
-    }
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
@@ -1064,11 +1064,11 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onTaxHelpButtonClicked() {
         val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
-            TaxBasedOnSetting.StoreAddress ->
+            StoreAddress ->
                 resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_store_address)
-            TaxBasedOnSetting.BillingAddress ->
+            BillingAddress ->
                 resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_billing_address)
-            TaxBasedOnSetting.ShippingAddress ->
+            ShippingAddress ->
                 resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_shipping_address)
             else -> ""
         }
