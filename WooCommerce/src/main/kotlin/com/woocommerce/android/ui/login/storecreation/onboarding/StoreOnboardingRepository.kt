@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
@@ -106,6 +107,22 @@ class StoreOnboardingRepository @Inject constructor(
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Site launched successfully")
                 Success
+            }
+        }
+    }
+
+    suspend fun saveSiteTitle(siteTitle: String): Result<Boolean> {
+        val site = selectedSite.get()
+        val result = onboardingStore.saveSiteTitle(site, siteTitle)
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.ONBOARDING, "Error while saving site title. Message: ${result.error.message} ")
+                Result.failure(WooException(result.error))
+            }
+
+            else -> {
+                WooLog.d(WooLog.T.ONBOARDING, "Site title saved successfully")
+                Result.success(true)
             }
         }
     }
