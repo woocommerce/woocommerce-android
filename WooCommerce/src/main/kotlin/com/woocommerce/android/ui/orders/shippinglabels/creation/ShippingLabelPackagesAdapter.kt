@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
 import android.text.SpannableStringBuilder
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.inSpans
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPa
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.widgets.WooClickableSpan
 
 typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, OnHazmatCategorySelected) -> Unit
 
@@ -140,6 +143,19 @@ class ShippingLabelPackagesAdapter(
                     binding.hazmatCategory.text = context.getString(it.stringResourceID)
                 }
             }
+
+            binding.hazmatUspsInstructionsFirstSection.text = SpannableStringBuilder()
+                .append(context.getString(R.string.shipping_label_package_details_hazmat_content_usps_instructions_1))
+                .inSpans(
+                    WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
+                        // trigger webview with USPS link
+                    },
+                    UnderlineSpan()
+                ) {
+                    append(context.getString(
+                        R.string.shipping_label_package_details_hazmat_content_usps_instructions_1_text_link
+                    ))
+                }
         }
 
         @SuppressLint("SetTextI18n")
