@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation.taxes
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,7 +32,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -119,7 +117,8 @@ fun TaxRateInfoModal(
                                         bottom.linkTo(parent.bottom)
                                         end.linkTo(taxRate.start)
                                         width = Dimension.fillToConstraints
-                                    })
+                                    }
+                                )
                                 Text(
                                     text = it.second,
                                     fontWeight = FontWeight.Bold,
@@ -128,7 +127,8 @@ fun TaxRateInfoModal(
                                         start.linkTo(taxName.end)
                                         end.linkTo(parent.end)
                                         bottom.linkTo(parent.bottom)
-                                    })
+                                    }
+                                )
                             }
                         }
                     }
