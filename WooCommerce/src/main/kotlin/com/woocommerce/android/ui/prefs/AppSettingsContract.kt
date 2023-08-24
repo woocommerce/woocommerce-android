@@ -11,7 +11,6 @@ interface AppSettingsContract {
     }
 
     interface View : BaseView<Presenter> {
-        fun close()
         fun finishLogout()
         fun confirmLogout()
     }
