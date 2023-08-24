@@ -15,13 +15,8 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     IPP_UK,
     STORE_CREATION_ONBOARDING,
-    FREE_TRIAL_M2,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
-    GIFT_CARD_READ_ONLY_SUPPORT,
-    QUANTITY_RULES_READ_ONLY_SUPPORT,
-    BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
-    COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
     PRIVACY_CHOICES,
@@ -31,7 +26,8 @@ enum class FeatureFlag {
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     SHIPPING_ZONES,
     BETTER_CUSTOMER_SEARCH_M2,
-    HAZMAT_SHIPPING;
+    HAZMAT_SHIPPING,
+    NAME_YOUR_STORE_DIALOG;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -42,16 +38,11 @@ enum class FeatureFlag {
             COUPONS_M2,
             JETPACK_CP,
             UNIFIED_ORDER_EDITING,
-            FREE_TRIAL_M2,
             STORE_CREATION_ONBOARDING,
             REST_API_I2,
-            GIFT_CARD_READ_ONLY_SUPPORT,
-            QUANTITY_RULES_READ_ONLY_SUPPORT,
-            BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             STORE_CREATION_PROFILER,
-            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
             EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
             BLAZE,
@@ -63,7 +54,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            HAZMAT_SHIPPING
+            HAZMAT_SHIPPING,
+            NAME_YOUR_STORE_DIALOG
             -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false

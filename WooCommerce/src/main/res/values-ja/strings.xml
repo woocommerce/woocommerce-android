@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-10 11:54:24+0000
+Translation-Revision-Date: 2023-08-17 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="ai_product_description_title_hint">商品名を入力します。</string>
+    <string name="free_trial_feature_support">常時稼動の優先サポート</string>
+    <string name="free_trial_feature_backups">サイトの自動バックアップ</string>
+    <string name="free_trial_feature_hosting">優れたホスティングサービス</string>
+    <string name="free_trial_feature_automated_customer_emails">顧客への自動メール</string>
+    <string name="free_trial_feature_built_in_seo">組み込み SEO</string>
+    <string name="free_trial_feature_design_editing">コーディング不要のデザインと編集機能</string>
+    <string name="free_trial_feature_store_management">ストア管理ツール</string>
+    <string name="free_trial_summary_try_button">ストアを作成</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">手間のかからないストア所有権</string>
+    <string name="free_trial_summary_grow_your_business">ビジネスを成長させる</string>
+    <string name="free_trial_summary_start_selling_quickly">すぐに販売を開始する</string>
+    <string name="store_creation_store_profiler_journey_description">ストア販売プロセスのどの段階にいるのかを\nお知らせいただくことで、個々に応じて\nWoo エクスペリエンスをカスタマイズできます。</string>
+    <string name="store_creation_store_profiler_journey_title">ご自身を最もよく表しているものは\n次のうちどれですか ?</string>
+    <string name="store_creation_store_profiler_industries_title">ストアでは何を\n販売する予定ですか ?</string>
+    <string name="store_creation_store_profiler_industries_header">ストアについて</string>
+    <string name="simplified_login_prologue_title">15日間のお試し期間を始めましょう。クレジットカードは不要です。 最初の売上から数百万に至るまで、Woo で繁盛する340万店舗になりましょう。</string>
+    <string name="simplified_login_prologue_intro">ともに成長する eコマースプラットフォーム</string>
+    <string name="product_type_variable_subscription">バリエーションのある定期購入</string>
+    <string name="order_creation_remove_this_coupon">クーポンを削除</string>
+    <string name="coupon_selector_empty_list_title">誰もがお得な情報を求めています</string>
+    <string name="coupon_selector_empty_list_message">クーポンはまだ作成されていません。 クーポンを作成してこの注文に適用します。</string>
+    <string name="coupon_selector_empty_list_button">クーポンに移動</string>
+    <string name="order_creation_select_coupon">クーポンを選択</string>
+    <string name="signup_get_started_button">新しいストアを作成</string>
     <string name="coupon_create_coupon_creation_failed">クーポンの作成に失敗しました</string>
     <string name="coupon_create_coupon_created">クーポンを作成しました</string>
     <string name="coupon_create_save_button">作成</string>
@@ -281,21 +306,10 @@ Language: ja_JP
     <string name="product_quantity_rules_title">数量ルール</string>
     <string name="gift_cards">ギフトカード</string>
     <string name="order_gift_card">ギフトカード</string>
-    <string name="free_trial_feature_fast_to_launch">公開までが速い</string>
-    <string name="free_trial_feature_site_security">サイトセキュリティ</string>
-    <string name="free_trial_feature_auto_updates_backups">自動的に更新とバックアップを実行</string>
-    <string name="free_trial_feature_247_support">24時間体制のサポート</string>
-    <string name="free_trial_feature_email_marketing">メールマーケティング</string>
     <string name="free_trial_feature_social_advertising">ソーシャル広告</string>
-    <string name="free_trial_feature_subscription_product_kits">定期購入商品キット</string>
-    <string name="free_trial_feature_multiple_payment_options">複数の支払いオプション</string>
-    <string name="free_trial_feature_ecommerce_reports">eコマースレポート</string>
-    <string name="free_trial_feature_shipping_labels">配送ラベル</string>
-    <string name="free_trial_feature_unlimited_products">無制限の製品</string>
     <string name="free_trial_feature_premium_themes">プレミアムテーマ</string>
     <string name="free_trial_summary_credit_card_message">クレジットカードは不要です。</string>
-    <string name="free_trial_summary_try_button">無料でお試し</string>
-    <string name="free_trial_summary_try_it">14日間お試しください。</string>
+    <string name="free_trial_summary_try_it">無料で14日間お試しください。</string>
     <string name="free_trial_summary_advertise">WooCommerce を使用し WordPress.com でホスティングされるオンラインストアの構築と拡大に必要なすべてを提供します。</string>
     <string name="free_trial_summary_title">数日で公開、長期的に成長</string>
     <string name="product_selector_products_heading">商品</string>
@@ -334,8 +348,6 @@ Language: ja_JP
     <string name="subscription_id">定期購入 #%1$d</string>
     <string name="order_subscription">サブスクリプション</string>
     <string name="store_onboarding_launch_store_ok">OK</string>
-    <string name="simplified_login_prologue_title">はじめての販売から数百万ドルの収益まで、Woo はあなたと共にあります。 Woo がなぜマーチャントから支持され、340 にのぼるオンラインストアに利用されているかがお分かりいただけます。</string>
-    <string name="simplified_login_prologue_intro">あらゆるものを売り、あらゆる場所へ届ける</string>
     <string name="product_type_subscription">サブスクリプション</string>
     <string name="otp_incorrect">OTP コードが正しくありません。 入力した情報をもう一度確認してから、やり直してください。</string>
     <string name="requesting_sms_otp_failure">SMS リクエストが失敗しました。 もう一度お試しください。</string>
@@ -547,11 +559,8 @@ Language: ja_JP
     <string name="store_creation_country_picker_description">この情報を使用して、支払い、配送、税金を設定します。</string>
     <string name="store_creation_country_picker_title">場所を確認</string>
     <string name="store_creation_store_profiler_platforms_description">複数選択できます。</string>
-    <string name="store_creation_store_profiler_platforms_title">現在どのプラットフォームで販売していますか ?</string>
-    <string name="store_creation_store_profiler_journey_description">作業がスピードアップするように、回答いただいた内容に基づき WooCommerce を自動的にカスタマイズします。</string>
-    <string name="store_creation_store_profiler_journey_title">現在、ストア販売プロセスのどの段階ですか ?</string>
-    <string name="store_creation_store_profiler_industries_description">あなたのビジネスに相応しいカテゴリーを選択してください。</string>
-    <string name="store_creation_store_profiler_industries_title">何を販売する予定ですか ?</string>
+    <string name="store_creation_store_profiler_platforms_title">現在どのプラットフォームを\n使用していますか ?</string>
+    <string name="store_creation_store_profiler_industries_description">あなたのビジネスに相応しい\nカテゴリーを選択してください。</string>
     <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
     <string name="login_open_installation_page">インストールページを開く</string>
     <string name="not_a_valid_qr_code">スキャンされた QR コードは WooCommerce コードではありません</string>
@@ -716,7 +725,6 @@ Language: ja_JP
     <string name="signup_password_hint">パスワードを選択</string>
     <string name="signup_email_address_hint">あなたのメールアドレス</string>
     <string name="signup_get_started_label">数分で\n新規登録</string>
-    <string name="signup_get_started_button">新規登録</string>
     <string name="login_jetpack_connection_consent">「Jetpack に接続」ボタンをタップすると、利用規約および WordPress.com と詳細情報を共有することに同意したものとみなされます。&lt;a href=\'terms\'&gt;&lt;/a&gt;&lt;a href=\'sync\'&gt;&lt;/a&gt;</string>
     <string name="enable_card_reader">シミュレートされたカードリーダーを有効にする</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">アプリを使用するには、サイトの所有者に連絡し、ショップ運営者または管理者としてサイトへの招待を受けてください。</string>
@@ -1436,7 +1444,7 @@ Language: ja_JP
     <string name="card_reader_onboarding_country_not_supported_learn_more">モバイルデバイスや注文用カードリーダーでの支払いの受領方法について&lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">ヘルプが必要ですか ? &lt;a href=\'\'&gt;サポートに問い合わせる&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">ストアで「代金引換」の支払い方法を有効にすれば、オフラインでの現金支払いを受け取ることもできます。</string>
-    <string name="card_reader_onboarding_country_not_supported_header">%1$s ではオフラインでの支払いがサポートされていません</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s ではカードによるオフラインでの支払いがサポートされていません</string>
     <string name="card_reader_onboarding_loading">アカウントへの接続</string>
     <string name="card_reader_onboarding_title">オフラインでの支払い</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">荷物の寸法と重量を再度ご確認いただくか、「荷物の詳細」で別の荷物のご利用をお試しください。</string>

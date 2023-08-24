@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-10 13:54:04+0000
+Translation-Revision-Date: 2023-08-16 16:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="ai_product_description_title_hint">Введите название товара.</string>
+    <string name="free_trial_feature_support">Круглосуточная приоритетная поддержка</string>
+    <string name="free_trial_feature_backups">Автоматическое резервное копирование сайта</string>
+    <string name="free_trial_feature_hosting">Лучший хостинг</string>
+    <string name="free_trial_feature_automated_customer_emails">Автоматическая рассылка по эл. почте</string>
+    <string name="free_trial_feature_built_in_seo">Встроенные инструменты поисковой оптимизации</string>
+    <string name="free_trial_feature_design_editing">Оформление и настройка без написания кода</string>
+    <string name="free_trial_feature_store_management">Инструменты управления магазином</string>
+    <string name="free_trial_summary_try_button">Создайте свой магазин</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Управление магазином без хлопот</string>
+    <string name="free_trial_summary_grow_your_business">Развивайте бизнес</string>
+    <string name="free_trial_summary_start_selling_quickly">Ускорьте запуск продаж</string>
+    <string name="store_creation_store_profiler_journey_description">Расскажите, на каком вы этапе\nсоздания магазина, и мы возьмём на себя\nнастройку среды Woo.</string>
+    <string name="store_creation_store_profiler_journey_title">Что из перечисленного наиболее точно\nхарактеризует вас?</string>
+    <string name="store_creation_store_profiler_industries_title">Что вы планируете продавать\nв магазине?</string>
+    <string name="store_creation_store_profiler_industries_header">О магазине</string>
+    <string name="simplified_login_prologue_title">Воспользуйтесь бесплатной пробной 15-дневной версией. Реквизиты банковской карты не требуются. На платформе Woo процветает уже 3,4 млн магазинов. Присоединяйтесь и развивайтесь: от первой продажи до миллионных доходов.</string>
+    <string name="simplified_login_prologue_intro">Платформа электронной коммерции, которая растёт вместе с вами</string>
+    <string name="product_type_variable_subscription">Переменная подписка</string>
+    <string name="order_creation_remove_this_coupon">Удалить купон</string>
+    <string name="coupon_selector_empty_list_title">Все любят скидки</string>
+    <string name="coupon_selector_empty_list_message">Вы не создали ни одного купона. Создайте купон, чтобы применить его к этому заказу.</string>
+    <string name="coupon_selector_empty_list_button">Перейти к купонам</string>
+    <string name="order_creation_select_coupon">Выберите купон</string>
+    <string name="signup_get_started_button">Создать магазин</string>
     <string name="coupon_create_coupon_creation_failed">Не удалось создать купон</string>
     <string name="coupon_create_coupon_created">Купон создан</string>
     <string name="coupon_create_save_button">Создать</string>
@@ -281,20 +306,9 @@ Language: ru
     <string name="product_quantity_rules_title">Правила количества</string>
     <string name="gift_cards">Подарочные карты</string>
     <string name="order_gift_card">Подарочная карта</string>
-    <string name="free_trial_feature_fast_to_launch">Быстрый запуск</string>
-    <string name="free_trial_feature_site_security">Безопасность сайта</string>
-    <string name="free_trial_feature_auto_updates_backups">Автоматическое обновление и резервное копирование</string>
-    <string name="free_trial_feature_247_support">Круглосуточная поддержка</string>
-    <string name="free_trial_feature_email_marketing">Рассылки по эл. почте</string>
     <string name="free_trial_feature_social_advertising">Реклама в социальных сетях</string>
-    <string name="free_trial_feature_subscription_product_kits">Комплекты подписок и товаров</string>
-    <string name="free_trial_feature_multiple_payment_options">Несколько способов оплаты</string>
-    <string name="free_trial_feature_ecommerce_reports">Отчёты eCommerce</string>
-    <string name="free_trial_feature_shipping_labels">Транспортные этикетки</string>
-    <string name="free_trial_feature_unlimited_products">Неограниченное количество продуктов</string>
     <string name="free_trial_feature_premium_themes">Премиум-темы</string>
     <string name="free_trial_summary_credit_card_message">Кредитная карта не требуется.</string>
-    <string name="free_trial_summary_try_button">Попробуйте бесплатно</string>
     <string name="free_trial_summary_try_it">Пользуйтесь бесплатно в течение 14 дней.</string>
     <string name="free_trial_summary_advertise">Мы предлагаем все для создания и развития интернет-магазина на платформе WooCommerce с хостингом на WordPress.com.</string>
     <string name="free_trial_summary_title">Запуск за несколько дней и бесконечные возможности развития</string>
@@ -334,8 +348,6 @@ Language: ru
     <string name="subscription_id">Номер подписки%1$d</string>
     <string name="order_subscription">Подписка</string>
     <string name="store_onboarding_launch_store_ok">OK</string>
-    <string name="simplified_login_prologue_title">От первой продажи до миллионной выручки: Woo — ваш помощник. Узнайте, почему продавцы построили на нашей платформе 3,4 млн. онлайн-магазинов.</string>
-    <string name="simplified_login_prologue_intro">Продавайте что угодно и где угодно.</string>
     <string name="product_type_subscription">Подписка</string>
     <string name="otp_incorrect">Неправильный одноразовый код. Проверьте правильность введенных данных и повторите попытку.</string>
     <string name="requesting_sms_otp_failure">Сбой запроса SMS. Повторите попытку.</string>
@@ -547,11 +559,8 @@ Language: ru
     <string name="store_creation_country_picker_description">Эти данные позволят быстрее настроить платежи, доставку и расчёт налогов.</string>
     <string name="store_creation_country_picker_title">Подтвердите местоположение</string>
     <string name="store_creation_store_profiler_platforms_description">Можно выбрать несколько вариантов.</string>
-    <string name="store_creation_store_profiler_platforms_title">Какую платформу вы используете для продажи товаров сейчас?</string>
-    <string name="store_creation_store_profiler_journey_description">Мы настроим WooCommerce с учётом вашего ответа, чтобы ускорить процесс.</string>
-    <string name="store_creation_store_profiler_journey_title">На каком этапе развития находится ваш бизнес?</string>
-    <string name="store_creation_store_profiler_industries_description">Выберите наиболее подходящую категорию.</string>
-    <string name="store_creation_store_profiler_industries_title">Что вы планируете продавать?</string>
+    <string name="store_creation_store_profiler_platforms_title">Какие платформы\nвы используете сейчас?</string>
+    <string name="store_creation_store_profiler_industries_description">Выберите категорию, которая лучше всего\nхарактеризует ваш бизнес.</string>
     <string name="login_application_passwords_unavailable">Кажется, на вашем сайте %1$s отключена функция паролей приложения.\n Включите её, чтобы использовать приложение WooCommerce.</string>
     <string name="login_open_installation_page">Открыть страницу установки</string>
     <string name="not_a_valid_qr_code">Просканированный QR-код не является кодом WooCommerce</string>
@@ -716,7 +725,6 @@ Language: ru
     <string name="signup_password_hint">Выберите пароль</string>
     <string name="signup_email_address_hint">Ваш адрес электронной почты</string>
     <string name="signup_get_started_label">Начало работы \nчерез несколько минут</string>
-    <string name="signup_get_started_button">Начало работы</string>
     <string name="login_jetpack_connection_consent">Нажимая кнопку «Подключить Jetpack», вы принимаете &lt;a href=\'terms\'&gt;Условия предоставления услуг&lt;/a&gt; и разрешаете &lt;a href=\'sync\'&gt;обмен данными&lt;/a&gt; с WordPress.com.</string>
     <string name="enable_card_reader">Включить симуляцию устройства чтения карт</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Чтобы использовать приложение, получите приглашение у владельца сайта, например у директора магазина или администратора.</string>
@@ -1436,7 +1444,7 @@ Language: ru
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Подробнее&lt;/a&gt; о приёме платежей с помощью мобильного устройства и заказе устройств чтения карт</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Нужна какая-то помощь? &lt;a href=\'\'&gt;Обратиться в службу поддержки&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">Вы можете по-прежнему принимать очные наличные платежи, если включите способ оплаты \"Оплата при доставке\" в магазине.</string>
-    <string name="card_reader_onboarding_country_not_supported_header">Мы не поддерживаем очные платежи в %1$s.</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Очные платежи по карте не поддерживаются в %1$s</string>
     <string name="card_reader_onboarding_loading">Подключение к вашей учётной записи</string>
     <string name="card_reader_onboarding_title">Очные платежи</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Проверьте размеры и вес посылки или выберите другую посылку в разделе сведений о посылках.</string>

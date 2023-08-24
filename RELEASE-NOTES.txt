@@ -1,5 +1,11 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+15.1
+-----
+- [*] [Internal] Tap To Pay: Enable NFC button to the NFC disabled error state to help merchants to enable NFC on their devices [https://github.com/woocommerce/woocommerce-android/pull/9611]
+- [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
+
+
 15.0
 -----
 - [*] Store creation: Country selector screen is now more intuitive and easier to use. [https://github.com/woocommerce/woocommerce-android/issues/9606]
