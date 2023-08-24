@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.login.storecreation.profiler
 
 import com.google.gson.Gson
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -15,7 +18,8 @@ class StoreProfilerRepository @Inject constructor(
     private val wooAdminStore: WooAdminStore,
     private val gson: Gson,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val tracker: AnalyticsTrackerWrapper
 ) {
     suspend fun fetchProfilerOptions(): ProfilerOptions = withContext(coroutineDispatchers.io) {
         gson.fromJson(PROFILER_OPTIONS_JSON, ProfilerOptions::class.java)
@@ -41,6 +45,17 @@ class StoreProfilerRepository @Inject constructor(
         }
             ?.takeIf { selectedSite.get().siteId == it.siteId }
             ?: return
+
+        tracker.track(
+            stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
+            properties = mapOf(
+                AnalyticsTracker.KEY_INDUSTRY_SLUG to storedAnswers.answers?.industryKey,
+                AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to storedAnswers.answers?.userCommerceJourneyKey,
+                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to
+                    storedAnswers.answers?.eCommercePlatformKeys?.joinToString(),
+                AnalyticsTracker.KEY_COUNTRY_CODE to storedAnswers.countryCode,
+            )
+        )
 
         wooAdminStore.updateOptions(
             site = selectedSite.get(),

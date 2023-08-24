@@ -45,17 +45,6 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_SUMMARY
             )
         )
-
-        val newStoreProfilerData = newStore.data.profilerData
-        tracker.track(
-            stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
-            properties = mapOf(
-                AnalyticsTracker.KEY_INDUSTRY_SLUG to newStoreProfilerData?.industryKey,
-                AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
-                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKeys?.joinToString(),
-                AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,
-            )
-        )
     }
 
     fun onCancelPressed() {
