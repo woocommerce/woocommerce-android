@@ -39,6 +39,7 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_FRAUD
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_LISTED
@@ -361,7 +362,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_OTHER
 
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status != COMPLETE
+        paymentAccount.status != COMPLETE && paymentAccount.status != ENABLED
 
     private fun updateSharedPreferences(
         status: CardReaderOnboardingStatus,
