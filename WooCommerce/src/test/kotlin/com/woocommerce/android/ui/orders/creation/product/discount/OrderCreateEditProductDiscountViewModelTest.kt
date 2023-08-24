@@ -12,11 +12,9 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
-import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Valid
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -307,22 +305,6 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             currencySymbolFinder,
         )
     }
-
-    private fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
-        if (withVariationId != null) {
-            Order.Item.EMPTY.copy(
-                productId = withProductId,
-                itemId = (1L..1000000000L).random(),
-                variationId = withVariationId,
-                quantity = 1F,
-            )
-        } else {
-            Order.Item.EMPTY.copy(
-                productId = withProductId,
-                itemId = (1L..1000000000L).random(),
-                quantity = 1F,
-            )
-        }
 
     private companion object {
         val item = Order.Item.EMPTY.copy(
