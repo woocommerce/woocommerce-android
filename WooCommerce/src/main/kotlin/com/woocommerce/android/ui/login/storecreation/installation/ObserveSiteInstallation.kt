@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STO
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationConst.INITIAL_STORE_CREATION_DELAY
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationConst.SITE_CHECK_DEBOUNCE
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationConst.STORE_LOAD_RETRIES_LIMIT
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -29,7 +28,6 @@ class ObserveSiteInstallation @Inject constructor(
     ): Flow<InstallationState> {
         return flow {
             emit(InstallationState.InProgress)
-            delay(INITIAL_STORE_CREATION_DELAY)
 
             repeat(STORE_LOAD_RETRIES_LIMIT) { retryIteration ->
 
