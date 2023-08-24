@@ -170,24 +170,30 @@ fun CreateStoreState(
     viewState: StoreCreationLoadingState,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.background(MaterialTheme.colors.surface)) {
-        Image(
-            modifier = Modifier.align(Alignment.TopEnd),
-            painter = painterResource(id = R.drawable.store_creation_loading_image_top_end),
-            contentDescription = null,
-        )
-        Image(
-            modifier = Modifier.align(Alignment.BottomStart),
-            painter = painterResource(id = R.drawable.store_creation_loading_image_bottom_start),
-            contentDescription = null,
-        )
+    Box(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize(),
+    ) {
         ConstraintLayout(
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.major_250))
-                .fillMaxSize(),
+                .align(Alignment.Center)
         ) {
-            val (title, progress, description) = createRefs()
+            val (image, title, progress, description) = createRefs()
             val margin = dimensionResource(id = R.dimen.major_150)
+            Image(
+                modifier = Modifier.constrainAs(image) {
+                    centerHorizontallyTo(parent)
+                    centerVerticallyTo(parent)
+                    bottom.linkTo(
+                        anchor = title.top,
+                        margin = margin
+                    )
+                },
+                painter = painterResource(id = viewState.image),
+                contentDescription = null,
+            )
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -233,7 +239,7 @@ private fun AnimatedProgress(
 ) {
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
     ).value
     LinearProgressIndicator(
         progress = animatedProgress,
@@ -294,7 +300,8 @@ private fun CreateStoreStatePreview() {
             viewState = StoreCreationLoadingState(
                 progress = 0F,
                 title = R.string.store_creation_in_progress_title_3,
-                description = R.string.store_creation_in_progress_description_1
+                description = R.string.store_creation_in_progress_description_1,
+                image = R.drawable.store_creation_loading_almost_there
             ),
             modifier = Modifier
                 .fillMaxSize()
