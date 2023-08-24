@@ -33,6 +33,7 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
+import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 
 class OrderCreateEditRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -170,32 +171,14 @@ class OrderCreateEditRepository @Inject constructor(
     }
 
     suspend fun fetchTaxBasedOnSetting(): TaxBasedOnSetting? {
-        return wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
+        return wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
     }
 
-    private fun WCTaxBasedOnSettingsModel.getTaxBasedOnSetting() =
+    private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
         when (selectedOption) {
-            "shipping" -> {
-                ShippingAddress(
-                    selectedOption,
-                    availableOptionList.find { it.key == selectedOption }?.label ?: ""
-                )
-            }
-
-            "billing" -> {
-                BillingAddress(
-                    selectedOption,
-                    availableOptionList.find { it.key == selectedOption }?.label ?: ""
-                )
-            }
-
-            "base" -> {
-                StoreAddress(
-                    selectedOption,
-                    availableOptionList.find { it.key == selectedOption }?.label ?: ""
-                )
-            }
-
+            "shipping" -> ShippingAddress
+            "billing" -> BillingAddress
+            "base" -> StoreAddress
             else -> null
         }
 
