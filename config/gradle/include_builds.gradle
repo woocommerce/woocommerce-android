@@ -48,7 +48,7 @@ if (localBuilds.exists()) {
         includeBuild(ext.localWooCommerceSharedPath) {
             dependencySubstitution {
                 println "Substituting WooCommerce-Shared with the local build"
-                substitute module("$gradle.ext.wooCommerceSharedBinaryPath") with project(':library')
+                substitute module("$gradle.ext.wooCommerceSharedBinaryPath") using project(':library')
             }
         }
     }
