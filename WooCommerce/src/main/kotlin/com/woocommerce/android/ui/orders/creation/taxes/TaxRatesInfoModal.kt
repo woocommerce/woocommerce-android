@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.orders.creation.taxes
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,11 +25,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -99,6 +105,40 @@ fun TaxRateInfoModal(
 
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
+                    Column {
+                        dialogState.taxLineTexts.forEach {
+                            ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+                                val (taxName, taxRate) = createRefs()
+                                Text(
+                                    text = it.first,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.body1,
+                                    modifier = Modifier.constrainAs(taxName) {
+                                        start.linkTo(parent.start)
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        end.linkTo(taxRate.start)
+                                        width = Dimension.fillToConstraints
+                                    })
+                                Text(
+                                    text = it.second,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.body1,
+                                    modifier = Modifier.constrainAs(taxRate) {
+                                        start.linkTo(taxName.end)
+                                        end.linkTo(parent.end)
+                                        bottom.linkTo(parent.bottom)
+                                    })
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+                    Divider()
+
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                     WCColoredButton(
                         onClick = onEditTaxRatesClicked,
                         modifier = Modifier.fillMaxWidth(),
@@ -133,6 +173,7 @@ fun TaxRateInfoModal(
 @Composable
 fun TaxRateInfoModalPreview() {
     WooThemeWithBackground {
-        TaxRateInfoModal(TaxRatesInfoDialogViewState("Tax", emptyList(), ""), {}, {})
+        val taxRates = listOf(Pair("Tax 1", "10%"), Pair("Tax 2", "20%"))
+        TaxRateInfoModal(TaxRatesInfoDialogViewState("Tax", taxRates, ""), {}, {})
     }
 }
