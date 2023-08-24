@@ -10,11 +10,12 @@ import javax.inject.Inject
 
 class StoreInstallationLoadingTimer @Inject constructor() {
     private companion object {
-        private const val LOADING_TOTAL_TIME = 40000L
+        private const val LOADING_TOTAL_TIME = 70000L
         const val DELAY_BETWEEN_PROGRESS_UPDATES = 200L
+        const val INITIAL_BAR_PROGRESS = 0.4F
     }
 
-    private var progress = 0.6F
+    private var progress = INITIAL_BAR_PROGRESS
     private val loadingState: MutableStateFlow<StoreCreationLoadingState> = MutableStateFlow(
         StoreCreationLoadingState(
             progress = progress,
@@ -44,9 +45,9 @@ class StoreInstallationLoadingTimer @Inject constructor() {
     ) {
         @Suppress("MagicNumber")
         override fun onTick(millisUntilFinished: Long) {
-            progress += 0.003F
+            progress += 0.0025F
             val updatedState = when {
-                millisUntilFinished > 30000 ->
+                millisUntilFinished > 45000 ->
                     StoreCreationLoadingState(
                         progress = progress,
                         title = string.store_creation_in_progress_title_1,
@@ -54,7 +55,7 @@ class StoreInstallationLoadingTimer @Inject constructor() {
                         image = R.drawable.store_creation_loading_almost_there
                     )
 
-                millisUntilFinished > 20000 ->
+                millisUntilFinished > 30000 ->
                     StoreCreationLoadingState(
                         progress = progress,
                         title = string.store_creation_in_progress_title_2,
@@ -62,7 +63,7 @@ class StoreInstallationLoadingTimer @Inject constructor() {
                         image = R.drawable.store_creation_loading_extending_capabilities
                     )
 
-                millisUntilFinished > 10000 ->
+                millisUntilFinished > 15000 ->
                     StoreCreationLoadingState(
                         progress = progress,
                         title = string.store_creation_in_progress_title_3,
