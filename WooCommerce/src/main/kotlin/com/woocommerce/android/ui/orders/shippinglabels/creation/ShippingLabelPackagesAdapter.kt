@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -87,12 +88,13 @@ class ShippingLabelPackagesAdapter(
         private var currentHazmatSelection: ShippingLabelHazmatCategory? = null
 
         init {
+            val context = binding.root.context
             with(binding.itemsList) {
                 layoutManager =
-                    LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
+                    LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = PackageProductsAdapter(weightUnit)
             }
-            binding.weightEditText.hint = binding.root.context.getString(
+            binding.weightEditText.hint = context.getString(
                 R.string.shipping_label_package_details_weight_hint,
                 weightUnit
             )
@@ -104,7 +106,6 @@ class ShippingLabelPackagesAdapter(
                 onWeightEdited(bindingAdapterPosition, weight)
 
                 if (weight <= 0.0) {
-                    val context = binding.root.context
                     binding.weightEditText.error =
                         context.getString(R.string.shipping_label_package_details_weight_error)
                 } else {
@@ -136,7 +137,7 @@ class ShippingLabelPackagesAdapter(
             binding.hazmatCategoryContainer.setOnClickListener {
                 onHazmatCategoryClicked(currentHazmatSelection) {
                     currentHazmatSelection = it
-                    binding.hazmatCategory.text = binding.root.context.getString(it.stringResourceID)
+                    binding.hazmatCategory.text = context.getString(it.stringResourceID)
                 }
             }
         }
