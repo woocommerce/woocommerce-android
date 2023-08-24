@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.text.SpannableStringBuilder
 import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
@@ -144,44 +145,26 @@ class ShippingLabelPackagesAdapter(
                 }
             }
 
-            binding.hazmatUspsInstructionsFirstSection.text = SpannableStringBuilder()
-                .append(context.getString(R.string.shipping_label_package_details_hazmat_content_usps_instructions_1))
-                .inSpans(
-                    WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
-                        // trigger webview with USPS link
-                    },
-                    UnderlineSpan()
-                ) {
-                    append(context.getString(
-                        R.string.shipping_label_package_details_hazmat_content_usps_instructions_1_text_link
-                    ))
-                }
+            binding.hazmatUspsInstructionsFirstSection.text = generateStringWithClickableSpan(
+                context = context,
+                content = R.string.shipping_label_package_details_hazmat_content_usps_instructions_1,
+                clickableSpan = R.string.shipping_label_package_details_hazmat_content_usps_instructions_1_text_link,
+                clickAction = {}
+            )
 
-            binding.hazmatUspsInstructionsSecondSection.text = SpannableStringBuilder()
-                .append(context.getString(R.string.shipping_label_package_details_hazmat_content_usps_instructions_2))
-                .inSpans(
-                    WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
-                        // trigger webview with USPS link
-                    },
-                    UnderlineSpan()
-                ) {
-                    append(context.getString(
-                        R.string.shipping_label_package_details_hazmat_content_usps_instructions_2_text_link
-                    ))
-                }
+            binding.hazmatUspsInstructionsSecondSection.text = generateStringWithClickableSpan(
+                context = context,
+                content = R.string.shipping_label_package_details_hazmat_content_usps_instructions_2,
+                clickableSpan = R.string.shipping_label_package_details_hazmat_content_usps_instructions_2_text_link,
+                clickAction = {}
+            )
 
-            binding.hazmatDhlInstructions.text = SpannableStringBuilder()
-                .append(context.getString(R.string.shipping_label_package_details_hazmat_content_dhl_instructions))
-                .inSpans(
-                    WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
-                        // trigger webview with USPS link
-                    },
-                    UnderlineSpan()
-                ) {
-                    append(context.getString(
-                        R.string.shipping_label_package_details_hazmat_content_dhl_instructions_text_link
-                    ))
-                }
+            binding.hazmatDhlInstructions.text = generateStringWithClickableSpan(
+                context = context,
+                content = R.string.shipping_label_package_details_hazmat_content_dhl_instructions,
+                clickableSpan = R.string.shipping_label_package_details_hazmat_content_dhl_instructions_text_link,
+                clickAction = {}
+            )
         }
 
         @SuppressLint("SetTextI18n")
@@ -242,6 +225,20 @@ class ShippingLabelPackagesAdapter(
                 List(item.quantity) { item }
             }.flatten()
         }
+
+        private fun generateStringWithClickableSpan(
+            context: Context,
+            content: Int,
+            clickableSpan: Int,
+            clickAction: () -> Unit
+        ) = SpannableStringBuilder()
+            .append(context.getString(content))
+            .inSpans(
+                WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
+                    clickAction()
+                },
+                UnderlineSpan()
+            ) { append(context.getString(clickableSpan)) }
     }
 
     private class ShippingLabelPackageDiffCallback(
