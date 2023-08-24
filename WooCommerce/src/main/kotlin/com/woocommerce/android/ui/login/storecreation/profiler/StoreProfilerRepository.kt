@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.login.storecreation.profiler
 
 import com.google.gson.Gson
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -15,7 +18,8 @@ class StoreProfilerRepository @Inject constructor(
     private val wooAdminStore: WooAdminStore,
     private val gson: Gson,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val tracker: AnalyticsTrackerWrapper
 ) {
     suspend fun fetchProfilerOptions(): ProfilerOptions = withContext(coroutineDispatchers.io) {
         gson.fromJson(PROFILER_OPTIONS_JSON, ProfilerOptions::class.java)
@@ -23,8 +27,8 @@ class StoreProfilerRepository @Inject constructor(
 
     fun storeAnswers(
         siteId: Long,
-        countryCode: String,
-        profilerAnswers: NewStore.ProfilerData
+        countryCode: String?,
+        profilerAnswers: NewStore.ProfilerData?
     ) {
         appPrefs.storeCreationProfilerAnswers = gson.toJson(
             ProfilerAnswersCache(
@@ -44,15 +48,22 @@ class StoreProfilerRepository @Inject constructor(
 
         wooAdminStore.updateOptions(
             site = selectedSite.get(),
-            options = mapOf(
-                "woocommerce_default_country" to storedAnswers.countryCode,
-                "woocommerce_onboarding_profile" to mapOf(
-                    "business_choice" to storedAnswers.answers.userCommerceJourneyKey,
-                    "selling_platforms" to storedAnswers.answers.eCommercePlatformKeys,
-                    "industry" to storedAnswers.answers.industryKey?.let { listOf(it) },
-                    "is_store_country_set" to true,
-                )
-            )
+            options = buildMap {
+                storedAnswers.countryCode?.let {
+                    put("woocommerce_default_country", it)
+                }
+                storedAnswers.answers?.let {
+                    put(
+                        key = "woocommerce_onboarding_profile",
+                        value = mapOf(
+                            "business_choice" to storedAnswers.answers.userCommerceJourneyKey,
+                            "selling_platforms" to storedAnswers.answers.eCommercePlatformKeys,
+                            "industry" to storedAnswers.answers.industryKey?.let { listOf(it) },
+                            "is_store_country_set" to (storedAnswers.countryCode != null),
+                        )
+                    )
+                }
+            }
         ).let { result ->
             when {
                 result.isError -> {
@@ -64,6 +75,16 @@ class StoreProfilerRepository @Inject constructor(
 
                 else -> {
                     WooLog.d(WooLog.T.STORE_CREATION, "Profiler Answers uploaded successfully")
+                    tracker.track(
+                        stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_INDUSTRY_SLUG to storedAnswers.answers?.industryKey,
+                            AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to storedAnswers.answers?.userCommerceJourneyKey,
+                            AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to
+                                storedAnswers.answers?.eCommercePlatformKeys?.joinToString(),
+                            AnalyticsTracker.KEY_COUNTRY_CODE to storedAnswers.countryCode,
+                        )
+                    )
                     appPrefs.storeCreationProfilerAnswers = null
                 }
             }
@@ -72,8 +93,8 @@ class StoreProfilerRepository @Inject constructor(
 
     private data class ProfilerAnswersCache(
         val siteId: Long,
-        val countryCode: String,
-        val answers: NewStore.ProfilerData
+        val countryCode: String?,
+        val answers: NewStore.ProfilerData?
     )
 }
 
@@ -125,32 +146,32 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 0,
       "label": "Clothing and accessories",
-      "key": "clothing_accessories"
+      "key": "clothing_and_accessories"
     },
     {
       "id": 1,
       "label": "Health and beauty",
-      "key": "health_beauty"
+      "key": "health_and_beauty"
     },
     {
       "id": 2,
       "label": "Food and drink",
-      "key": "food_drink"
+      "key": "food_and_drink"
     },
     {
       "id": 3,
       "label": "Home, furniture, and garden",
-      "key": "home_furniture_garden"
+      "key": "home_furniture_and_garden"
     },
     {
       "id": 4,
       "label": "Education and learning",
-      "key": "education_learning"
+      "key": "education_and_learning"
     },
     {
       "id": 5,
       "label": "Electronics and computers",
-      "key": "electronic_computers"
+      "key": "electronics_and_computers"
     },
     {
       "id": 6,

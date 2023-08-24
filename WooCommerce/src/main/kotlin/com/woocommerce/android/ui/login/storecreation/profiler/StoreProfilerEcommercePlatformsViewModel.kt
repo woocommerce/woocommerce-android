@@ -19,7 +19,7 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
-) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
     override val hasSearchableContent: Boolean
         get() = false
 
@@ -66,7 +66,7 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
         }
     }
 
-    override fun onMainButtonClicked() {
+    override fun saveStepAnswer() {
         newStore.update(
             profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
                 .copy(
@@ -75,6 +75,9 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
                         .map { it.key }
                 )
         )
+    }
+
+    override fun moveForward() {
         triggerEvent(NavigateToNextStep)
     }
 
