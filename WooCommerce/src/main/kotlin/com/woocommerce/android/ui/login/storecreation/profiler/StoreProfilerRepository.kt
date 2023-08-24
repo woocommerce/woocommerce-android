@@ -23,8 +23,8 @@ class StoreProfilerRepository @Inject constructor(
 
     fun storeAnswers(
         siteId: Long,
-        countryCode: String,
-        profilerAnswers: NewStore.ProfilerData
+        countryCode: String?,
+        profilerAnswers: NewStore.ProfilerData?
     ) {
         appPrefs.storeCreationProfilerAnswers = gson.toJson(
             ProfilerAnswersCache(
@@ -44,15 +44,22 @@ class StoreProfilerRepository @Inject constructor(
 
         wooAdminStore.updateOptions(
             site = selectedSite.get(),
-            options = mapOf(
-                "woocommerce_default_country" to storedAnswers.countryCode,
-                "woocommerce_onboarding_profile" to mapOf(
-                    "business_choice" to storedAnswers.answers.userCommerceJourneyKey,
-                    "selling_platforms" to storedAnswers.answers.eCommercePlatformKeys,
-                    "industry" to storedAnswers.answers.industryKey?.let { listOf(it) },
-                    "is_store_country_set" to true,
-                )
-            )
+            options = buildMap {
+                storedAnswers.countryCode?.let {
+                    put("woocommerce_default_country", it)
+                }
+                storedAnswers.answers?.let {
+                    put(
+                        key = "woocommerce_onboarding_profile",
+                        value = mapOf(
+                            "business_choice" to storedAnswers.answers.userCommerceJourneyKey,
+                            "selling_platforms" to storedAnswers.answers.eCommercePlatformKeys,
+                            "industry" to storedAnswers.answers.industryKey?.let { listOf(it) },
+                            "is_store_country_set" to (storedAnswers.countryCode != null),
+                        )
+                    )
+                }
+            }
         ).let { result ->
             when {
                 result.isError -> {
@@ -72,8 +79,8 @@ class StoreProfilerRepository @Inject constructor(
 
     private data class ProfilerAnswersCache(
         val siteId: Long,
-        val countryCode: String,
-        val answers: NewStore.ProfilerData
+        val countryCode: String?,
+        val answers: NewStore.ProfilerData?
     )
 }
 

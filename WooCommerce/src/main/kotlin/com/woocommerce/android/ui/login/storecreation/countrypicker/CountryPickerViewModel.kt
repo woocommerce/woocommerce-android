@@ -80,13 +80,11 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        newStore.data.profilerData?.let {
-            storeProfilerRepository.storeAnswers(
-                siteId = newStore.data.siteId ?: 0L,
-                countryCode = newStore.data.country?.code.orEmpty(),
-                profilerAnswers = it
-            )
-        }
+        storeProfilerRepository.storeAnswers(
+            siteId = newStore.data.siteId ?: 0L,
+            countryCode = newStore.data.country?.code,
+            profilerAnswers = newStore.data.profilerData
+        )
 
         triggerEvent(NavigateToSummaryStep)
     }
