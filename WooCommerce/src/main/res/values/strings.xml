@@ -562,7 +562,7 @@
     <string name="order_creation_loading_dialog_message">Please wait…</string>
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
-    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_payment_tax">Taxes Total</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -591,6 +591,9 @@
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <string name="order_creation_coupon_invalid_code">We couldn\'t find a coupon with that code. Please try again</string>
     <string name="order_creation_coupon_network_error">Something went wrong when validating your coupon code. Please try again</string>
+    <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
+    <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
+    <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
 
     <!--
          Barcode Scanning

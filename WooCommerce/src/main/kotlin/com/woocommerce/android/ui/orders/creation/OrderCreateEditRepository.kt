@@ -171,18 +171,9 @@ class OrderCreateEditRepository @Inject constructor(
 
     private fun WCTaxBasedOnSettingsModel.getTaxBasedOnSetting() =
         when (selectedOption) {
-            "shipping" -> {
-                ShippingAddress(selectedOption, availableOptionList.find { it.key == selectedOption }?.label ?: "")
-            }
-
-            "billing" -> {
-                BillingAddress(selectedOption, availableOptionList.find { it.key == selectedOption }?.label ?: "")
-            }
-
-            "base" -> {
-                StoreAddress(selectedOption, availableOptionList.find { it.key == selectedOption }?.label ?: "")
-            }
-
+            "shipping" -> ShippingAddress
+            "billing" -> BillingAddress
+            "base" -> StoreAddress
             else -> null
         }
 

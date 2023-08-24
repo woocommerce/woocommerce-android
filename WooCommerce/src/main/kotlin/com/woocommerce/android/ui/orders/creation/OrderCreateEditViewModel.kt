@@ -119,6 +119,7 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.R
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -234,6 +235,15 @@ class OrderCreateEditViewModel @Inject constructor(
             orderCreateEditRepository.fetchTaxBasedOnSetting().also {
                 viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
             }
+        }
+    }
+
+    private val TaxBasedOnSetting.label: String
+        get() {
+        return when (this) {
+            TaxBasedOnSetting.StoreAddress -> resourceProvider.getString(string.order_creation_tax_based_on_store_address)
+            TaxBasedOnSetting.BillingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_billing_address)
+            TaxBasedOnSetting.ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
         }
     }
 
@@ -1054,15 +1064,15 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onTaxHelpButtonClicked() {
         val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
-            is TaxBasedOnSetting.StoreAddress ->
+            TaxBasedOnSetting.StoreAddress ->
                 resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_store_address)
-            is TaxBasedOnSetting.BillingAddress ->
+            TaxBasedOnSetting.BillingAddress ->
                 resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_billing_address)
-            is TaxBasedOnSetting.ShippingAddress ->
+            TaxBasedOnSetting.ShippingAddress ->
                 resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_shipping_address)
             else -> ""
         }
-        val taxLines: List<Pair<String, String>> =
+        val taxLinesTable: List<Pair<String, String>> =
             _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
         val taxRatesSettingsUrl = selectedSite.getIfExists()?.url
             ?.slashJoin("/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard")
@@ -1070,7 +1080,7 @@ class OrderCreateEditViewModel @Inject constructor(
             OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
                 TaxRatesInfoDialogViewState(
                     settingText,
-                    taxLines,
+                    taxLinesTable,
                     taxRatesSettingsUrl
                 )
             )

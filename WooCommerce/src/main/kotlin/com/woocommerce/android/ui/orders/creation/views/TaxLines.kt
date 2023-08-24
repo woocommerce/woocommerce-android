@@ -10,18 +10,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.model.Order
 
 @Composable
-fun TaxLines(taxLines: List<Order.TaxLine>?, taxSettingLabel: String?) {
+fun TaxLines(taxLines: List<TaxLineUiModel>?) {
     Column {
         taxLines?.forEach { taxLine ->
             Row(
@@ -32,18 +27,14 @@ fun TaxLines(taxLines: List<Order.TaxLine>?, taxSettingLabel: String?) {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = Bold)) {
-                            append(taxLine.label)
-                        }
-                        if (taxSettingLabel.isNotNullOrEmpty()) append(" ($taxSettingLabel)")
-                    },
+                    text = "${taxLine.label} · ${taxLine.ratePercent}",
                     style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.color_on_surface_medium),
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "${taxLine.ratePercent}%",
+                    text = taxLine.taxTotal,
                     style = MaterialTheme.typography.body2,
                     color = colorResource(id = R.color.color_on_surface_medium),
                 )
@@ -51,3 +42,9 @@ fun TaxLines(taxLines: List<Order.TaxLine>?, taxSettingLabel: String?) {
         }
     }
 }
+
+data class TaxLineUiModel(
+    val label: String,
+    val ratePercent: String,
+    val taxTotal: String,
+)
