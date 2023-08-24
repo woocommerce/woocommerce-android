@@ -28,12 +28,14 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -162,6 +164,20 @@ class StoreOnboardingViewModel @Inject constructor(
             }
         } else {
             _viewState.value = _viewState.value?.copy(show = false)
+        }
+    }
+
+    fun saveSiteTitle(siteTitle: String) {
+        launch {
+            onboardingRepository.saveSiteTitle(siteTitle).fold(
+                onSuccess = {
+                    refreshOnboardingList()
+                    triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_success))
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_failure))
+                }
+            )
         }
     }
 
