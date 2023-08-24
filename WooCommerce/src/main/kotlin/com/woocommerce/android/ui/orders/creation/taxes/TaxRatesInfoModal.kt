@@ -68,7 +68,7 @@ fun TaxRateInfoModal(
 
                     Text(
                         text = stringResource(R.string.tax_rates_info_dialog_title),
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.h5,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
