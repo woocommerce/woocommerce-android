@@ -276,7 +276,7 @@ private fun Switch(
             text = "%",
             isSelected = state.discountType is Percentage,
             contentPadding = PaddingValues(0.5.dp),
-            shape = RoundedCornerShape(2)
+            shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
         )
         WCSelectableChip(
             modifier = Modifier
@@ -286,7 +286,7 @@ private fun Switch(
             text = "$",
             isSelected = state.discountType is Amount,
             contentPadding = PaddingValues(0.5.dp),
-            shape = RoundedCornerShape(5),
+            shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
         )
     }
 }
