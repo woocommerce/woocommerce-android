@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,11 +79,7 @@ class CountryPickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         launch {
-            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                triggerEvent(NavigateToSummaryStep)
-            } else {
-                triggerEvent(NavigateToDomainPickerStep)
-            }
+            triggerEvent(NavigateToSummaryStep)
         }
     }
 
@@ -97,6 +92,5 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
-    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 }

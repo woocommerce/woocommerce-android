@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -66,15 +65,10 @@ class CountryListPickerViewModel @Inject constructor(
         )
 
         launch {
-            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                triggerEvent(NavigateToSummaryStep)
-            } else {
-                triggerEvent(NavigateToDomainPickerStep)
-            }
+            triggerEvent(NavigateToSummaryStep)
         }
     }
 
-    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 
     data class CountryListPickerState(
