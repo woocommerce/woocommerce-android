@@ -174,6 +174,11 @@ fun TaxRateInfoModal(
 fun TaxRateInfoModalPreview() {
     WooThemeWithBackground {
         val taxRates = listOf(Pair("Tax 1", "10%"), Pair("Tax 2", "20%"))
-        TaxRateInfoModal(TaxRatesInfoDialogViewState("Tax", taxRates, ""), {}, {})
+        TaxRateInfoModal(
+            TaxRatesInfoDialogViewState(
+                "Your tax rate is currently calculated based on your shop address:",
+                taxRates,
+                ""
+            ), {}, {})
     }
 }
