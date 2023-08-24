@@ -184,7 +184,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         packagePosition: Int,
         onHazmatCategorySelected: OnHazmatCategorySelected
     ) {
-        triggerEvent(OpenHazmatCategorySelector(currentSelection, onHazmatCategorySelected))
+        triggerEvent(OpenHazmatCategorySelector(packagePosition, currentSelection, onHazmatCategorySelected))
     }
 
     fun onHazmatCategorySelected(
@@ -390,6 +390,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class OpenHazmatCategorySelector(
+        val packagePosition: Int,
         val currentSelection: ShippingLabelHazmatCategory?,
         val onHazmatCategorySelected: OnHazmatCategorySelected
     ) : MultiLiveEvent.Event()
