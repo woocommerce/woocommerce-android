@@ -157,6 +157,6 @@
     <include app:graph="@navigation/nav_graph_domain_change" />
     <dialog
         android:id="@+id/closeAccountDialogFragment"
-        android:name="com.woocommerce.android.ui.prefs.CloseAccountDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
         android:label="CloseAccountDialogFragment" />
 </navigation>
