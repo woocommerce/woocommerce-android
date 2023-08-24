@@ -122,7 +122,9 @@ class SitePlanRestClient @Inject constructor(
             .plan_slug("ecommerce-trial-bundle-monthly")
             .urlV1_1
 
-        val body = if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
+        val body = if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled() &&
+            !FeatureFlag.OPTIMIZE_PROFILER_QUESTIONS.isEnabled()
+        ) {
             siteData.toAPIBody()
         } else {
             emptyMap()

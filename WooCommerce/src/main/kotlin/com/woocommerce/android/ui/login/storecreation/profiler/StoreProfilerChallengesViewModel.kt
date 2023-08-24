@@ -24,7 +24,8 @@ class StoreProfilerChallengesViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val resourceProvider: ResourceProvider,
-) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+    storeProfilerRepository: StoreProfilerRepository
+) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
 
     override val hasSearchableContent: Boolean
         get() = false
@@ -81,12 +82,16 @@ class StoreProfilerChallengesViewModel @Inject constructor(
     override fun getMainButtonText(): String =
         resourceProvider.getString(R.string.continue_button)
 
-    override fun onMainButtonClicked() {
+    override fun saveStepAnswer() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
+
         newStore.update(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(challengeKey = selectedOption?.key)
         )
+    }
+
+    override fun moveForward() {
         triggerEvent(NavigateToNextStep)
     }
 
