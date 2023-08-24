@@ -3255,6 +3255,8 @@
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
     <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Site title saved successfully.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Unable to save site title. Please try again.</string>
 
     <!--
     Support Request
