@@ -20,7 +20,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
-) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
     private companion object {
         const val DEFAULT_INDUSTRY_STRING_KEY_PREFIX = "store_creation_profiler_industry_"
     }
@@ -54,7 +54,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
-    override fun onMainButtonClicked() {
+    override fun saveStepAnswer() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
         val selectedIndustry = industries.firstOrNull { selectedOption?.key == it.key }
         newStore.update(
@@ -64,6 +64,9 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
                     industryKey = selectedIndustry?.key
                 )
         )
+    }
+
+    override fun moveForward() {
         triggerEvent(NavigateToNextStep)
     }
 

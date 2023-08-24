@@ -19,7 +19,8 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val resourceProvider: ResourceProvider,
-) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+    storeProfilerRepository: StoreProfilerRepository
+) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
     override val hasSearchableContent: Boolean
         get() = false
 
@@ -90,12 +91,16 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
     override fun getMainButtonText(): String =
         resourceProvider.getString(R.string.store_profiler_features_main_button)
 
-    override fun onMainButtonClicked() {
+    override fun saveStepAnswer() {
         val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
         newStore.update(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(featuresKey = selectedOption?.key)
         )
+    }
+
+    override fun moveForward() {
+        // TODO("Navigate to store creation loading")
     }
 
     override fun onSkipPressed() {

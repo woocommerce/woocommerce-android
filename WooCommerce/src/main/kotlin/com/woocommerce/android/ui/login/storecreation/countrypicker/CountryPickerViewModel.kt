@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,7 +24,8 @@ class CountryPickerViewModel @Inject constructor(
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils
+    private val emojiUtils: EmojiUtils,
+    private val storeProfilerRepository: StoreProfilerRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
@@ -78,9 +80,13 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        launch {
-            triggerEvent(NavigateToSummaryStep)
-        }
+        storeProfilerRepository.storeAnswers(
+            siteId = newStore.data.siteId ?: 0L,
+            countryCode = newStore.data.country?.code,
+            profilerAnswers = newStore.data.profilerData
+        )
+
+        triggerEvent(NavigateToSummaryStep)
     }
 
     fun onCurrentCountryClicked() {
