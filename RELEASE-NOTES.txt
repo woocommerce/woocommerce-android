@@ -6,6 +6,7 @@
 - [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
 - [*] Fix a crash that occurs when using Magic Link to login during the Jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/9642]
 - [**] [Internal] Handle "enabled" WCPay account status the same way as "completed" [https://github.com/woocommerce/woocommerce-android/pull/9637]
+- [*] Settings: Close Account option is moved to a new section Account Settings. [https://github.com/woocommerce/woocommerce-android/pull/9659]
 
 15.0
 -----
