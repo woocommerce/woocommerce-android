@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
@@ -19,8 +18,7 @@ class OrderCreateEditProductsAdapter(
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String?,
     private val onIncreaseQuantity: (Long) -> Unit,
-    private val onDecreaseQuantity: (Long) -> Unit,
-    private val onConfigureItem: () -> Unit
+    private val onDecreaseQuantity: (Long) -> Unit
 ) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
     var areProductsEditable = false
         set(value) {
@@ -71,11 +69,6 @@ class OrderCreateEditProductsAdapter(
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
-            }
-
-            binding.configureButton.apply {
-                isVisible = productModel.rules?.needsConfiguration() ?: false
-                setOnClickListener { onConfigureItem() }
             }
         }
     }

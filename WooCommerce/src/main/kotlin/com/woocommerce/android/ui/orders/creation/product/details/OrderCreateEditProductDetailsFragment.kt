@@ -20,6 +20,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.PhotonUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,12 +45,14 @@ class OrderCreateEditProductDetailsFragment :
             }
             addDiscountButton.setOnClickListener { viewModel.onAddDiscountClicked() }
             discountEditButton.setOnClickListener { viewModel.onEditDiscountClicked() }
+            configureButton.setOnClickListener { ToastUtils.showToast(requireContext(), "configure the item") }
         }
 
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
             binding.productItemView.binding.renderProductItemView(state)
             binding.renderDiscountSection(state)
             binding.renderAddDiscountButton(state)
+            binding.configureButton.isVisible = state.configurationButtonVisible
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleNavEvent)

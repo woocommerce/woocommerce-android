@@ -57,7 +57,8 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
             discountSectionState = DiscountSectionState(
                 isVisible = item.isDiscounted(),
                 discountAmountText = getItemDiscountAmountText(calculateItemDiscountAmount(uiModel.item), currency),
-            )
+            ),
+            configurationButtonVisible = uiModel.rules?.needsConfiguration() ?: false
         )
     }.asLiveData()
 
@@ -120,7 +121,8 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
         val productDetailsState: ProductDetailsState,
         val discountSectionState: DiscountSectionState,
         val addDiscountButtonVisible: Boolean = !discountSectionState.isVisible,
-        val discountEditButtonsEnabled: Boolean
+        val discountEditButtonsEnabled: Boolean,
+        val configurationButtonVisible: Boolean
     )
 
     data class ProductDetailsState(
