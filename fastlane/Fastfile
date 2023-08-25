@@ -385,8 +385,6 @@ platform :android do
     skip_upload_images: true,
     skip_upload_screenshots: true,
     json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
-    # Retain the build for v10.9.2 which is the latest one supporting Android 5/6
-    version_codes_to_retain: [356],
   )
 
   create_gh_release(version: version) if options[:create_release]
