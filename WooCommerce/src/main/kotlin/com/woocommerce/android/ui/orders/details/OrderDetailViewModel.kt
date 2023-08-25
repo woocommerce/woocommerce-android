@@ -609,12 +609,16 @@ class OrderDetailViewModel @Inject constructor(
     ): ListInfo<OrderProduct> {
         val products = refunds.list.getNonRefundedProducts(order.items)
         checkAddonAvailability(products)
-        val orderProducts = orderProductMapper.toOrderProducts(_productList.value ?: emptyList(),
+        val orderProducts = orderProductMapper.toOrderProducts(
+            _productList.value ?: emptyList(),
             newProductsWithAddons = products.map { product ->
-                product to (addonsRepository.loadItemAddons(
-                    orderID = order.id, orderItemID = product.itemId, productID = product.productId
-                ).orEmpty())
-            })
+                product to (
+                    addonsRepository.loadItemAddons(
+                        orderID = order.id, orderItemID = product.itemId, productID = product.productId
+                    ).orEmpty()
+                    )
+            }
+        )
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
     }
 
