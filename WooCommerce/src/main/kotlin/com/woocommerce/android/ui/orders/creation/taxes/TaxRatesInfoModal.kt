@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -62,7 +64,10 @@ fun TaxRateInfoModal(
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.major_150), dimensionResource(id = R.dimen.major_100)),
+                        .padding(
+                            dimensionResource(id = R.dimen.major_150),
+                            dimensionResource(id = R.dimen.major_100)
+                        ),
                 ) {
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                     Text(
@@ -145,10 +150,11 @@ fun TaxRateInfoModal(
                         modifier = Modifier.fillMaxWidth(),
                         leadingIcon = {
                             Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_redirect),
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_external),
                                 modifier = Modifier.size(20.dp),
                                 contentDescription =
                                 stringResource(R.string.tax_rates_redirect_to_admin_content_description),
+                                tint = colorResource(id = R.color.woo_white)
                             )
                         },
                         text = stringResource(R.string.tax_rates_redirect_to_admin_button_label)
@@ -157,6 +163,9 @@ fun TaxRateInfoModal(
                     WCOutlinedButton(
                         onClick = onDismissed,
                         modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = colorResource(id = R.color.color_on_surface)
+                        ),
                     ) {
                         Text(text = stringResource(R.string.done))
                     }
