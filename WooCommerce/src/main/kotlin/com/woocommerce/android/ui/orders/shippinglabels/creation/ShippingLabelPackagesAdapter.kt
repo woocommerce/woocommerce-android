@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.transition.TransitionManager
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
@@ -39,6 +40,7 @@ class ShippingLabelPackagesAdapter(
     val onPackageSpinnerClicked: (Int) -> Unit,
     val onMoveItemClicked: (ShippingLabelPackage.Item, ShippingLabelPackage) -> Unit,
     val onHazmatCategoryClicked: OnHazmatCategoryClicked,
+    val onURLClick: (String) -> Unit
 ) : RecyclerView.Adapter<ShippingLabelPackageViewHolder>() {
     var uiModels: List<ShippingLabelPackageUiModel> = emptyList()
         set(value) {
@@ -149,21 +151,21 @@ class ShippingLabelPackagesAdapter(
                 context = context,
                 content = R.string.shipping_label_package_details_hazmat_content_usps_instructions_1,
                 clickableSpan = R.string.shipping_label_package_details_hazmat_content_usps_instructions_1_text_link,
-                clickAction = {}
+                clickAction = { onURLClick(AppUrls.USPS_HAZMAT_INSTRUCTIONS) }
             )
 
             binding.hazmatUspsInstructionsSecondSection.text = generateStringWithClickableSpan(
                 context = context,
                 content = R.string.shipping_label_package_details_hazmat_content_usps_instructions_2,
                 clickableSpan = R.string.shipping_label_package_details_hazmat_content_usps_instructions_2_text_link,
-                clickAction = {}
+                clickAction = { onURLClick(AppUrls.USPS_HAZMAT_SEARCH_TOOL) }
             )
 
             binding.hazmatDhlInstructions.text = generateStringWithClickableSpan(
                 context = context,
                 content = R.string.shipping_label_package_details_hazmat_content_dhl_instructions,
                 clickableSpan = R.string.shipping_label_package_details_hazmat_content_dhl_instructions_text_link,
-                clickAction = {}
+                clickAction = { onURLClick(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
             )
         }
 
