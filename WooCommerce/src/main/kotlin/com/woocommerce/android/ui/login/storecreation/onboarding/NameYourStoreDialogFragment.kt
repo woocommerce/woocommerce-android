@@ -32,7 +32,7 @@ class NameYourStoreDialogFragment : DialogFragment() {
         builder.setTitle(resources.getString(R.string.store_onboarding_name_your_store_dialog_title))
             .setView(frameLayout)
             .setPositiveButton(resources.getString(R.string.dialog_ok)) { dialog, _ ->
-                viewModel.saveSiteTitle(inputField.text.toString())
+                viewModel.saveSiteTitle(inputField.text.toString(), fromOnboarding = false)
                 dialog.dismiss()
             }
             .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ ->
