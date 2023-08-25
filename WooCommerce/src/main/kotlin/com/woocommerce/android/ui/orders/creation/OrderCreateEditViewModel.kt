@@ -147,6 +147,8 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        private const val TAX_BASED_ON_SETTING_ADMIN_URL =
+            "/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -1074,8 +1076,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         val taxLines: List<Pair<String, String>> =
             _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
-        val taxRatesSettingsUrl = selectedSite.getIfExists()?.url
-            ?.slashJoin("/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard")
+        val taxRatesSettingsUrl = selectedSite.get().url.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
         triggerEvent(
             OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
                 TaxRatesInfoDialogViewState(
