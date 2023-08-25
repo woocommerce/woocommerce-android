@@ -84,7 +84,8 @@ abstract class BaseAddressEditingFragment :
         }
 
         addressViewModel.start(
-            mapOf(addressType to storedAddress)
+            mapOf(addressType to storedAddress),
+            sharedViewModel.currentDraft.taxLines
         )
 
         setupObservers()

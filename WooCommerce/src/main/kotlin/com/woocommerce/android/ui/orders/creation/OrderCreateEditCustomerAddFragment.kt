@@ -80,7 +80,8 @@ class OrderCreateEditCustomerAddFragment :
                         it != sharedViewModel.currentDraft.billingAddress
                     } ?: Address.EMPTY
                     )
-            )
+            ),
+            sharedViewModel.currentDraft.taxLines,
         )
     }
 

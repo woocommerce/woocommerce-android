@@ -79,7 +79,8 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         testBlocking {
             addressViewModel.start(
-                mapOf(SHIPPING to shippingAddress)
+                mapOf(SHIPPING to shippingAddress),
+                emptyList()
             )
             verify(dataStore).fetchCountriesAndStates(selectedSite.get())
         }
@@ -90,10 +91,12 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         testBlocking {
             addressViewModel.start(
-                mapOf(SHIPPING to shippingAddress)
+                mapOf(SHIPPING to shippingAddress),
+                emptyList()
             )
             addressViewModel.start(
-                mapOf(SHIPPING to shippingAddress)
+                mapOf(SHIPPING to shippingAddress),
+                emptyList()
             )
             verify(dataStore).fetchCountriesAndStates(selectedSite.get())
         }
@@ -104,11 +107,13 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         testBlocking {
             addressViewModel.start(
-                mapOf(SHIPPING to shippingAddress)
+                mapOf(SHIPPING to shippingAddress),
+                emptyList()
             )
             addressViewModel.onScreenDetached()
             addressViewModel.start(
-                mapOf(SHIPPING to shippingAddress)
+                mapOf(SHIPPING to shippingAddress),
+                emptyList()
             )
             verify(dataStore, times(2)).fetchCountriesAndStates(selectedSite.get())
         }
@@ -126,7 +131,8 @@ class AddressViewModelTest : BaseUnitTest() {
     fun `Should NOT fetch countries and states on start if countries have already been fetched`() {
         testBlocking {
             addressViewModel.start(
-                mapOf(SHIPPING to shippingAddress)
+                mapOf(SHIPPING to shippingAddress),
+                emptyList()
             )
             verify(dataStore, times(0)).fetchCountriesAndStates(selectedSite.get())
         }
@@ -136,7 +142,8 @@ class AddressViewModelTest : BaseUnitTest() {
     fun `Should apply country and state changes to view state safely on start if countries list is empty`() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         addressViewModel.start(
-            mapOf(SHIPPING to shippingAddress)
+            mapOf(SHIPPING to shippingAddress),
+            emptyList()
         )
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
             ViewState(
@@ -152,7 +159,10 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should update viewState with selected country, reset state and enable state selection on country selection`() {
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress.copy(country = Location.EMPTY)))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress.copy(country = Location.EMPTY)),
+            emptyList()
+        )
         addressViewModel.onCountrySelected(SHIPPING, newCountry.code)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
@@ -175,7 +185,10 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getCountries()).thenReturn(emptyList())
         val missingCountryCode = "countryCode"
 
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress),
+            emptyList()
+        )
         addressViewModel.onCountrySelected(SHIPPING, missingCountryCode)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
@@ -195,7 +208,10 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should update viewState with selected state on state selection`() {
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress),
+            emptyList()
+        )
 
         addressViewModel.onCountrySelected(SHIPPING, newCountry.code)
         addressViewModel.onStateSelected(SHIPPING, newState.code)
@@ -220,7 +236,10 @@ class AddressViewModelTest : BaseUnitTest() {
         whenever(dataStore.getStates(any())).thenReturn(emptyList())
         val stateCode = "stateCode"
 
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress),
+            emptyList()
+        )
         addressViewModel.onStateSelected(SHIPPING, stateCode)
 
         assertThat(addressViewModel.viewStateData.liveData.value).isEqualTo(
@@ -249,7 +268,10 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should trigger state selection event if state selector clicked`() {
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress),
+            emptyList()
+        )
         addressViewModel.onCountrySelected(SHIPPING, countryCode = newCountry.code)
         addressViewModel.onStateSpinnerClicked(SHIPPING)
 
@@ -258,7 +280,10 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should show done button if billing address has been edited`() {
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress),
+            emptyList()
+        )
 
         assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse
         addressViewModel.onFieldEdited(BILLING, Field.FirstName, "new first name")
@@ -267,7 +292,10 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should show done button if shipping address has been edited`() {
-        addressViewModel.start(mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress))
+        addressViewModel.start(
+            mapOf(SHIPPING to shippingAddress, BILLING to shippingAddress),
+            emptyList()
+        )
 
         assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse
         addressViewModel.onFieldEdited(SHIPPING, Field.FirstName, "new first name")
@@ -280,7 +308,8 @@ class AddressViewModelTest : BaseUnitTest() {
             mapOf(
                 SHIPPING to shippingAddress.copy(firstName = "Different shipping"),
                 BILLING to shippingAddress.copy(firstName = "Different billing")
-            )
+            ),
+            emptyList()
         )
 
         assertThat(addressViewModel.shouldEnableDoneButton.value).isFalse

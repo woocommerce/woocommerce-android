@@ -10,6 +10,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
@@ -79,16 +80,16 @@ class AddressViewModel @Inject constructor(
      * search and back) we don't want this method to be called again, otherwise the ViewModel will replace the newly
      * selected country or state with the previously saved values.
      */
-    fun start(initialState: Map<AddressType, Address>) {
+    fun start(initialState: Map<AddressType, Address>, taxLines: List<Order.TaxLine>) {
         if (hasStarted) {
             return
         }
         hasStarted = true
         this.initialState = initialState
-        initialize(initialState)
+        initialize(initialState, taxLines)
     }
 
-    private fun initialize(initialState: Map<AddressType, Address>) {
+    private fun initialize(initialState: Map<AddressType, Address>, taxLines: List<Order.TaxLine>) {
         launch {
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
@@ -103,7 +104,12 @@ class AddressViewModel @Inject constructor(
                             initialSingleAddressState.value.country.code
                         )
                     )
-                }
+                },
+                taxesInfoState = TaxesInfoState(
+                    taxNamesWithRates = taxLines.map { taxLine ->
+                        taxLine.label to "${taxLine.ratePercent}%"
+                    }
+                )
             )
         }
     }
@@ -268,7 +274,7 @@ class AddressViewModel @Inject constructor(
             AddressType.SHIPPING to Address.EMPTY,
         )
         viewState = ViewState()
-        initialize(initialState)
+        initialize(initialState, emptyList())
     }
 
     @Parcelize
@@ -276,7 +282,14 @@ class AddressViewModel @Inject constructor(
         val customerId: Long? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
+        val taxesInfoState: TaxesInfoState = TaxesInfoState(),
     ) : Parcelable
+
+    @Parcelize
+    data class TaxesInfoState(
+        val taxNamesWithRates: List<Pair<String, String>> = emptyList(),
+        val isVisible: Boolean = taxNamesWithRates.isNotEmpty(),
+    ): Parcelable
 
     enum class AddressType {
         SHIPPING, BILLING
