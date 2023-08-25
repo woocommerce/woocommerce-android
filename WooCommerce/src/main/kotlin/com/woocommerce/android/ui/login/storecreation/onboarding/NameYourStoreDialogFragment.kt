@@ -9,10 +9,15 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NameYourStoreDialogFragment : DialogFragment() {
+    @Inject
+    internal lateinit var selectedSite: SelectedSite
+
     private val viewModel: StoreOnboardingViewModel by viewModels()
     companion object {
         const val TAG: String = "NameYourStoreDialogFragment"
@@ -26,6 +31,7 @@ class NameYourStoreDialogFragment : DialogFragment() {
             val horizontalPadding = resources.getDimensionPixelSize(R.dimen.major_100)
             setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
             addView(inputField)
+            inputField.setText(selectedSite.get().name)
         }
 
         val builder = MaterialAlertDialogBuilder(requireContext())
