@@ -9,7 +9,9 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NameYourStoreDialogFragment : DialogFragment() {
     private val viewModel: StoreOnboardingViewModel by viewModels()
     companion object {
