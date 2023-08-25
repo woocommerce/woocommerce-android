@@ -11,7 +11,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.PRODUCT_ADDONS
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -23,9 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.domain.Addon
-import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted
-import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.FlatFee
-import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.PercentageBased
 import javax.inject.Inject
 
 @HiltViewModel
@@ -67,7 +63,7 @@ class OrderedAddonViewModel @Inject constructor(
     ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
         launch(dispatchers.computation) {
             addonsRepository.updateGlobalAddonsSuccessfully()
-            loadOrderAddonsData(orderID, orderItemID, productID)
+            addonsRepository.loadItemAddons(orderID, orderItemID, productID)
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { dispatchResult(it) }
                 ?: handleFailure()
@@ -95,87 +91,6 @@ class OrderedAddonViewModel @Inject constructor(
 
         viewState = viewState.copy(shouldDisplayFeedbackCard = false)
     }
-
-    private suspend fun loadOrderAddonsData(
-        orderID: Long,
-        orderItemID: Long,
-        productID: Long
-    ) = addonsRepository.getOrderAddonsData(orderID, orderItemID, productID)
-        ?.let { mapAddonsFromOrderAttributes(it.first, it.second) }
-
-    private fun mapAddonsFromOrderAttributes(
-        productAddons: List<Addon>,
-        orderAttributes: List<Order.Item.Attribute>
-    ): List<Addon> = orderAttributes.mapNotNull { findMatchingAddon(it, productAddons) }
-
-    private fun findMatchingAddon(matchingTo: Order.Item.Attribute, addons: List<Addon>): Addon? =
-        addons.firstOrNull { it.name == matchingTo.addonName }
-            ?.asAddonWithSingleSelectedOption(matchingTo)
-
-    private fun Addon.asAddonWithSingleSelectedOption(
-        attribute: Order.Item.Attribute
-    ): Addon {
-        return when (this) {
-            is Addon.HasOptions -> options.find { it.label == attribute.value }
-                ?.takeIf { (this is Addon.MultipleChoice) or (this is Addon.Checkbox) }
-                ?.handleOptionPriceType(attribute)
-                ?.let { this.asSelectableAddon(it) }
-                ?: mergeOrderAttributeWithAddon(this, attribute)
-            else -> this
-        }
-    }
-
-    /**
-     * When displaying the price of an Ordered addon with the PercentageBased price
-     * we don't want to display the percentage itself, but the price applied through the percentage.
-     *
-     * In this method we verify if that's the scenario and replace the percentage value with the price
-     * defined by the Order Attribute, if it's not the case, the Addon is returned untouched.
-     */
-    private fun Addon.HasOptions.Option.handleOptionPriceType(
-        attribute: Order.Item.Attribute
-    ) = takeIf { it.price.priceType == PercentageBased }
-        ?.copy(price = Adjusted(FlatFee, attribute.asAddonPrice))
-        ?: this
-
-    private fun Addon.asSelectableAddon(selectedOption: Addon.HasOptions.Option): Addon? =
-        when (this) {
-            is Addon.Checkbox -> this.copy(options = listOf(selectedOption))
-            is Addon.MultipleChoice -> this.copy(options = listOf(selectedOption))
-            else -> null
-        }
-
-    /**
-     * If it isn't possible to find the respective option
-     * through [Order.Item.Attribute.value] matching we will
-     * have to merge the [Addon] data with the Attribute in order
-     * to display the Ordered addon correctly, which is exactly
-     * what this method does.
-     *
-     * Also, in this scenario there's no way to infer the image
-     * information since it's something contained inside the options only
-     */
-    private fun mergeOrderAttributeWithAddon(
-        addon: Addon,
-        attribute: Order.Item.Attribute
-    ): Addon {
-        return when (addon) {
-            is Addon.Checkbox -> addon.copy(options = prepareAddonOptionBasedOnAttribute(attribute))
-            is Addon.MultipleChoice -> addon.copy(options = prepareAddonOptionBasedOnAttribute(attribute))
-            else -> addon
-        }
-    }
-
-    private fun prepareAddonOptionBasedOnAttribute(attribute: Order.Item.Attribute) = listOf(
-        Addon.HasOptions.Option(
-            label = attribute.value,
-            price = Adjusted(
-                priceType = FlatFee,
-                value = attribute.asAddonPrice
-            ),
-            image = ""
-        )
-    )
 
     private suspend fun dispatchResult(result: List<Addon>) {
         withContext(dispatchers.main) {
