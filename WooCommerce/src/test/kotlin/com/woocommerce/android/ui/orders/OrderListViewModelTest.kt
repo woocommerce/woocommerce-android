@@ -491,7 +491,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         // Reset as we're no interested in previous invocations in this test
         reset(viewModel.activePagedListWrapper)
         viewModel.onNotificationReceived(
-            NotificationReceivedEvent(NotificationChannelType.NEW_ORDER)
+            NotificationReceivedEvent(0L, NotificationChannelType.NEW_ORDER)
         )
 
         verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
