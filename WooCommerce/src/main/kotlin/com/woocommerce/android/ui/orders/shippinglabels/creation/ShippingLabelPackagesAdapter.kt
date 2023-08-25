@@ -233,6 +233,7 @@ class ShippingLabelPackagesAdapter(
             clickAction: () -> Unit
         ) = SpannableStringBuilder()
             .append(context.getString(content))
+            .append(" ")
             .inSpans(
                 WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
                     clickAction()
