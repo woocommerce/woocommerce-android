@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-18 09:54:07+0000
+Translation-Revision-Date: 2023-08-22 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">국가 선택</string>
+    <string name="store_creation_country_picker_current_location_description">회원님의 위치가 자동으로 감지되었습니다. 올바르지 않은 경우 여기에서 변경하세요.</string>
+    <string name="store_creation_country_picker_title">비즈니스 소재지가 어디인가요?</string>
+    <string name="store_profiler_challenge_other">기타</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">배송 및 물류</string>
+    <string name="store_profiler_challenge_managing_inventory">재고 관리</string>
+    <string name="store_profiler_challenge_finding_customers">고객 찾기</string>
+    <string name="store_profiler_challenge_setting_up_online_store">온라인 스토어 설정</string>
+    <string name="store_profiler_challenge_description">아래에서 우려 사항 또는 어려운 점을 선택하세요. 옵션을 2개 이상 선택할 수 있습니다.</string>
+    <string name="store_profiler_challenge_title">온라인 스토어를\n시작하거나 운영하는 데\n어떤 어려움이 있나요?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">잠재적 위험 물질에는 배터리, 드라이아이스, 가연성 액체, 에어로졸, 탄약, 폭죽, 매니큐어, 향수, 페인트, 용제 등과 같은 품목이 포함됩니다. 위험 품목은 별도의 패키지로 배송되어야 합니다.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">위험 물질 포함</string>
     <string name="ai_product_description_title_hint">제품명을 입력하세요.</string>
     <string name="free_trial_feature_support">연중무휴 우선 지원</string>
     <string name="free_trial_feature_backups">자동 사이트 백업</string>
@@ -557,7 +569,6 @@ Language: ko_KR
     <string name="store_creation_country_picker_countries_header">국가</string>
     <string name="store_creation_country_picker_current_location">현재 위치</string>
     <string name="store_creation_country_picker_description">이 정보는 결제, 배송 및 세금 설정에 사용됩니다.</string>
-    <string name="store_creation_country_picker_title">위치 확인</string>
     <string name="store_creation_store_profiler_platforms_description">여러 개를 선택할 수 있습니다.</string>
     <string name="store_creation_store_profiler_platforms_title">현재 어떤 플랫폼을\n사용하고 계신가요?</string>
     <string name="store_creation_store_profiler_industries_description">비즈니스를 가장 잘 정의하는\n카테고리를 선택하세요.</string>

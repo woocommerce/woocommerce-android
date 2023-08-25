@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-16 14:54:04+0000
+Translation-Revision-Date: 2023-08-22 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">יש לבחור ארץ</string>
+    <string name="store_creation_country_picker_current_location_description">זיהינו את המיקום שלך באופן אוטומטי. אם הוא שגוי, ניתן ללחוץ כאן לשינוי.</string>
+    <string name="store_creation_country_picker_title">איפה נמצא העסק שלך?</string>
+    <string name="store_profiler_challenge_other">אחר</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">משלוחים ולוגיסטיקה</string>
+    <string name="store_profiler_challenge_managing_inventory">ניהול מלאי</string>
+    <string name="store_profiler_challenge_finding_customers">מציאת לקוחות</string>
+    <string name="store_profiler_challenge_setting_up_online_store">הגדרת החנות המקוונת</string>
+    <string name="store_profiler_challenge_description">יש לבחור את החששות או הקשיים למטה. אפשר לבחור יותר מאפשרות אחת.</string>
+    <string name="store_profiler_challenge_title">אילו אתגרים מקשים עליך\nבמהלך ההקמה וההפעלה\nשל חנות מקוונת?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">חומרים שעלולים להיות מסוכנים כוללים פריטים כגון סוללות, קרח יבש, נוזלים דליקים, תרסיסים, תחמושת, זיקוקים, לק לציפורניים, בושם, צבע, חומרים ממסים ועוד. יש לשלוח חומרים מסוכנים באריזות נפרדות.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">מכיל חומרים מסוכנים</string>
     <string name="ai_product_description_title_hint">יש להזין את שם המוצר.</string>
     <string name="free_trial_feature_support">עדיפות בקבלת תמיכה מסביב לשעון</string>
     <string name="free_trial_feature_backups">גיבויים אוטומטיים של האתר</string>
@@ -557,7 +569,6 @@ Language: he_IL
     <string name="store_creation_country_picker_countries_header">ארצות</string>
     <string name="store_creation_country_picker_current_location">מיקום נוכחי</string>
     <string name="store_creation_country_picker_description">אנחנו נשתמש בפרטים האלה כדי להגדיר את התשלומים, המשלוח והמיסים.</string>
-    <string name="store_creation_country_picker_title">עליך לאשר את המיקום שלך</string>
     <string name="store_creation_store_profiler_platforms_description">ניתן לבחור מספר אפשרויות.</string>
     <string name="store_creation_store_profiler_platforms_title">אילו פלטפורמות\nמשמשות אותך כרגע?</string>
     <string name="store_creation_store_profiler_industries_description">יש לבחור קטגוריה שמגדירה\nאת העסק שלך בצורה הכי מדויקת.</string>

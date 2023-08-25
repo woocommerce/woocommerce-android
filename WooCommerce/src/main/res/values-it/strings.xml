@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-16 14:54:04+0000
+Translation-Revision-Date: 2023-08-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Seleziona un Paese</string>
+    <string name="store_creation_country_picker_current_location_description">Abbiamo rilevato la tua posizione automaticamente. Cambiala qui se non è corretta.</string>
+    <string name="store_creation_country_picker_title">Dove si trova la tua attività?</string>
+    <string name="store_profiler_challenge_other">Altro</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Spedizione e logistica</string>
+    <string name="store_profiler_challenge_managing_inventory">Gestione dell\'inventario</string>
+    <string name="store_profiler_challenge_finding_customers">Ricerca dei clienti</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Configurazione del negozio online</string>
+    <string name="store_profiler_challenge_description">Seleziona di seguito le tue preoccupazioni o difficoltà. Puoi selezionare più di una opzione.</string>
+    <string name="store_profiler_challenge_title">Cosa ti stimola ad\navviare o gestire un\nnegozio online?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">I materiali potenzialmente pericolosi includono articoli come batterie, ghiaccio secco, liquidi infiammabili, aerosol, munizioni, fuochi d\'artificio, smalto per unghie, profumi, vernici, solventi e altro ancora. I materiali pericolosi devono essere spediti in pacchi separati.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contiene materiali pericolosi</string>
     <string name="ai_product_description_title_hint">Inserisci il titolo del prodotto.</string>
     <string name="free_trial_feature_support">Supporto prioritario 24/7</string>
     <string name="free_trial_feature_backups">Backup del sito automatizzati</string>
@@ -557,7 +569,6 @@ Language: it
     <string name="store_creation_country_picker_countries_header">Paesi</string>
     <string name="store_creation_country_picker_current_location">Posizione corrente</string>
     <string name="store_creation_country_picker_description">Utilizzeremo queste informazioni per impostare pagamenti, spedizioni e imposte.</string>
-    <string name="store_creation_country_picker_title">Conferma la tua posizione</string>
     <string name="store_creation_store_profiler_platforms_description">Puoi scegliere più di una opzione.</string>
     <string name="store_creation_store_profiler_platforms_title">Quali piattaforme stai\nutilizzando al momento?</string>
     <string name="store_creation_store_profiler_industries_description">Scegli una categoria che definisce\nal meglio il tuo business.</string>
