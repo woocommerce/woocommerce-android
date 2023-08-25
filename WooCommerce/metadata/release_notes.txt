@@ -1,5 +1,1 @@
-- [*] [Internal] Tap To Pay: Enable NFC button to the NFC disabled error state to help merchants to enable NFC on their devices [https://github.com/woocommerce/woocommerce-android/pull/9611]
-- [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
-- [*] Fix a crash that occurs when using Magic Link to login during the Jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/9642]
-- [**] [Internal] Handle "enabled" WCPay account status the same way as "completed" [https://github.com/woocommerce/woocommerce-android/pull/9637]
-
+Did you know that with Tap to Pay, you can accept card payments with your phone? We've enhanced the initial experience to make it even easier. This release also includes stability fixes for the login. Thank you for choosing WooCommerce!
