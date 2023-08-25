@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders
 
 import android.content.Context
+import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.text.bold
 import androidx.core.view.isVisible
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -50,7 +52,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             attributes, item.quantity.formatToString(), productPrice
         )
 
-        binding.productInfoAddonsDescription.text = addons.formatToString()
+        if (addons.isNotEmpty()) {
+            binding.productInfoAddonsDescription.visibility = VISIBLE
+            binding.productInfoAddonsDescription.text = addons.formatToString()
+        }
 
         with(binding.productInfoSKU) {
             isVisible = item.sku.isNotEmpty()
@@ -79,9 +84,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
     }
 
-    private fun List<Addon>.formatToString(): String {
-        return this.groupBy(Addon::name)
+    private fun List<Addon>.formatToString(): SpannableStringBuilder {
+        val addonsList = this.groupBy(Addon::name)
             .map { (addonName, addons): Map.Entry<String, List<Addon>> ->
+                val spannableAddon = SpannableStringBuilder()
 
                 val allOptionsForGivenAddon = addons.flatMap {
                     if (it is Addon.HasOptions) {
@@ -91,17 +97,26 @@ class OrderDetailProductItemView @JvmOverloads constructor(
                     }
                 }
 
+                spannableAddon.append(addonName)
+
                 if (allOptionsForGivenAddon.isEmpty()) {
-                    "$addonName ${addons.first().description}"
+                    addons.first().description?.let {
+                        spannableAddon.bold {
+                            append(" $it")
+                        }
+                    }
                 } else {
                     val options = allOptionsForGivenAddon.joinToString(
-                        separator = "•",
+                        separator = " \u2981 ",
                         transform = { option -> option.label.orEmpty() }
                     )
-                    "$addonName \t $options"
+                    spannableAddon.bold {
+                        append(" $options")
+                    }
                 }
-            }.joinToString(separator = "\n") {
-                it
+                spannableAddon
             }
+
+        return addonsList.joinTo(SpannableStringBuilder(), separator = "\n")
     }
 }
