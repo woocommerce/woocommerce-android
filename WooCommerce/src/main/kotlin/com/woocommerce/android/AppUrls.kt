@@ -102,5 +102,7 @@ object AppUrls {
 
     const val USPS_HAZMAT_INSTRUCTIONS = "https://www.uspsdelivers.com/hazmat-shipping-safety"
     const val USPS_HAZMAT_SEARCH_TOOL = "https://pe.usps.com/HAZMAT/Index"
-    const val DHL_EXPRESS_HAZMAT_INSTRUCTIONS = "https://www.dhl.com/global-en/home/our-divisions/freight/customer-service/dangerous-goods-and-prohibited-items.html"
+    const val DHL_EXPRESS_HAZMAT_INSTRUCTIONS =
+        "https://www.dhl.com/global-en/home/our-divisions/freight/customer-service/" +
+            "dangerous-goods-and-prohibited-items.html"
 }

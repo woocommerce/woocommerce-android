@@ -30,6 +30,7 @@ import com.woocommerce.android.widgets.WooClickableSpan
 
 typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, OnHazmatCategorySelected) -> Unit
 
+@Suppress("LongParameterList")
 class ShippingLabelPackagesAdapter(
     val siteParameters: SiteParameters,
     val onWeightEdited: (Int, Float) -> Unit,
