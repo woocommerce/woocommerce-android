@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -75,6 +76,48 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `when initializing the view model, then register the orderDraft flowState`() {
         verify(createUpdateOrderUseCase).invoke(any(), any())
     }
+
+    @Test
+    fun `when initializing the view model, then fetch current tax setting`() = testBlocking {
+        verify(orderCreateEditRepository).fetchTaxBasedOnSetting()
+    }
+
+    @Test
+    fun `given tax based on store when initializing the view model, then update view state with current tax setting`() =
+        testBlocking {
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(
+                TaxBasedOnSetting.StoreAddress
+            )
+            whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_store_address))
+                .thenReturn("Calculated on store address")
+            createSut()
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on store address")
+        }
+
+    @Test
+    fun `given tax based on shipping when initializing the view model, then update view state with current tax setting`() =
+        testBlocking {
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(
+                TaxBasedOnSetting.ShippingAddress
+            )
+            whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_shipping_address))
+                .thenReturn("Calculated on shipping address")
+            createSut()
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on shipping address")
+        }
+
+    @Test
+    fun `given tax based on billing when initializing the view model, then update view state with current tax setting`() =
+        testBlocking {
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+            whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address))
+                .thenReturn("Calculated on billing address")
+            createSut()
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on billing address")
+        }
 
     @Test
     fun `when submitting customer note, then update orderDraft liveData`() {

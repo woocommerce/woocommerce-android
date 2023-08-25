@@ -11,5 +11,5 @@ import kotlinx.parcelize.Parcelize
 data class TaxRatesInfoDialogViewState(
     val taxBasedOnSettingText: String,
     val taxLineTexts: List<Pair<String, String>>,
-    val taxRatesSettingsUrl: String?
+    val taxRatesSettingsUrl: String
 ) : Parcelable

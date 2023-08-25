@@ -54,6 +54,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
@@ -147,6 +148,8 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        private const val TAX_BASED_ON_SETTING_ADMIN_URL =
+            "admin.php?page=wc-settings&tab=tax&section=standard"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -235,6 +238,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         launch {
             orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+
                 viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
             }
         }
@@ -1062,25 +1066,38 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
     }
 
-    fun onTaxHelpButtonClicked() {
+    fun onTaxHelpButtonClicked() = launch {
+        val taxLines: List<Pair<String, String>> =
+            _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
+        val settingTextPostFix = if (taxLines.isNotEmpty()) ":" else "."
         val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
             StoreAddress ->
-                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_store_address)
+                resourceProvider.getString(
+                    string.tax_rates_info_dialog_tax_based_on_store_address,
+                    settingTextPostFix
+                )
+
             BillingAddress ->
-                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_billing_address)
+                resourceProvider.getString(
+                    string.tax_rates_info_dialog_tax_based_on_billing_address,
+                    settingTextPostFix
+                )
+
             ShippingAddress ->
-                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_shipping_address)
+                resourceProvider.getString(
+                    string.tax_rates_info_dialog_tax_based_on_shipping_address,
+                    settingTextPostFix
+                )
+
             else -> ""
         }
-        val taxLinesTable: List<Pair<String, String>> =
-            _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
-        val taxRatesSettingsUrl = selectedSite.getIfExists()?.url
-            ?.slashJoin("/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard")
+        val taxRatesSettingsUrl =
+            selectedSite.get().adminUrlOrDefault.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
         triggerEvent(
             OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
                 TaxRatesInfoDialogViewState(
                     settingText,
-                    taxLinesTable,
+                    taxLines,
                     taxRatesSettingsUrl
                 )
             )
