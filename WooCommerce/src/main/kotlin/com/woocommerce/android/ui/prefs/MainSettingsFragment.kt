@@ -242,6 +242,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             binding.optionDomain.isVisible ||
             binding.optionStoreOnboardingListVisibility.isVisible ||
             binding.shippingClasses.isVisible
+
+        binding.optionStoreName.setOnClickListener {
+            // implementation coming soon
+        }
     }
 
     private fun showDomainDashboard() {
