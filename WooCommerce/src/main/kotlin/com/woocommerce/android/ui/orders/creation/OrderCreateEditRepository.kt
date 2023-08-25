@@ -173,6 +173,10 @@ class OrderCreateEditRepository @Inject constructor(
         return wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
     }
 
+    suspend fun getTaxBasedOnSetting(): TaxBasedOnSetting? {
+        return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
+    }
+
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
         when (selectedOption) {
             "shipping" -> ShippingAddress
