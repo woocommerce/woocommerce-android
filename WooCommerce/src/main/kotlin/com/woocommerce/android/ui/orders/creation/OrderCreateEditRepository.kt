@@ -21,9 +21,9 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCTaxBasedOnSettingsModel
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
+import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -33,7 +33,6 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
-import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 
 class OrderCreateEditRepository @Inject constructor(
     private val selectedSite: SelectedSite,

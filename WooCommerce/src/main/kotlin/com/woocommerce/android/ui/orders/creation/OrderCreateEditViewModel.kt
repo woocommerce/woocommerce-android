@@ -116,7 +116,9 @@ import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.*
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
 
 @HiltViewModel
 @Suppress("LargeClass")
