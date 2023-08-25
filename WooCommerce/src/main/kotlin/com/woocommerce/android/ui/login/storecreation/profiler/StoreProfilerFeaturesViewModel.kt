@@ -111,6 +111,6 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_FEATURES
             )
         )
-        // TODO("Navigate to store creation loading")
+        triggerEvent(NavigateToNextStep)
     }
 }

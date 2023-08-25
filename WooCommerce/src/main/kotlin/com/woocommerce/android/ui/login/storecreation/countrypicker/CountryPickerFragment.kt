@@ -49,7 +49,7 @@ class CountryPickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToSummaryStep -> navigateToInstallationStep()
+                is NavigateToSummaryStep -> navigateToStoreChallengesStep()
                 is NavigateToDomainListPicker -> navigateToDomainListPicker(event.locationCode)
             }
         }
@@ -63,9 +63,9 @@ class CountryPickerFragment : BaseFragment() {
         )
     }
 
-    private fun navigateToInstallationStep() {
+    private fun navigateToStoreChallengesStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToSummaryFragment()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToStoreProfilerChallengesFragment()
         )
     }
 }

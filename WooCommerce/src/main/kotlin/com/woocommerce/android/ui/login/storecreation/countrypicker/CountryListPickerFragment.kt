@@ -48,14 +48,14 @@ class CountryListPickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
-                is NavigateToSummaryStep -> navigateToInstallationStep()
+                is NavigateToSummaryStep -> navigateToStoreChallengesStep()
             }
         }
     }
 
-    private fun navigateToInstallationStep() {
+    private fun navigateToStoreChallengesStep() {
         findNavController().navigateSafely(
-            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToSummaryFragment()
+            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToChallengesFragment()
         )
     }
 }
