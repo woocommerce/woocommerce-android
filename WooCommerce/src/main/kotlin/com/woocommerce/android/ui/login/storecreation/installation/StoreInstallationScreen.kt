@@ -239,7 +239,8 @@ private fun AnimatedProgress(
 ) {
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = "progressBarAnimation"
     ).value
     LinearProgressIndicator(
         progress = animatedProgress,
