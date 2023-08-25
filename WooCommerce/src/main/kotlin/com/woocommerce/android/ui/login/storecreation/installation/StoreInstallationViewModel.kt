@@ -1,12 +1,13 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.os.Parcelable
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -75,8 +76,9 @@ class StoreInstallationViewModel @Inject constructor(
         this,
         StoreCreationLoadingState(
             progress = 0F,
-            title = string.store_creation_in_progress_title_1,
-            description = string.store_creation_in_progress_description_1
+            title = R.string.store_creation_in_progress_title_1,
+            description = R.string.store_creation_in_progress_description_1,
+            image = R.drawable.store_creation_loading_almost_there
         )
     )
 
@@ -235,7 +237,8 @@ class StoreInstallationViewModel @Inject constructor(
         data class StoreCreationLoadingState(
             val progress: Float,
             @StringRes val title: Int,
-            @StringRes val description: Int
+            @StringRes val description: Int,
+            @DrawableRes val image: Int
         ) : ViewState
 
         @Parcelize

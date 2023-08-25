@@ -97,6 +97,7 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(featuresKey = selectedOption?.key)
         )
+        triggerEvent(NavigateToNextStep)
     }
 
     override fun moveForward() {
