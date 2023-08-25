@@ -3510,8 +3510,8 @@
     <string name="tax_rates_info_dialog_title"><![CDATA[Taxes & Tax Rates]]></string>
     <string name="tax_rates_redirect_to_admin_content_description">Edit Tax Rates in Admin Button</string>
     <string name="tax_rates_redirect_to_admin_button_label">Edit Tax Rates in Admin</string>
-    <string name="tax_rates_info_dialog_tax_based_on_store_address">Your tax rate is currently calculated based on your shop address:</string>
-    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Your tax rate is currently calculated based on your billing address:</string>
-    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Your tax rate is currently calculated based on your shipping address:</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Your tax rate is currently calculated based on your shop address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Your tax rate is currently calculated based on your billing address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Your tax rate is currently calculated based on your shipping address%1$s</string>
 
 </resources>

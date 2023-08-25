@@ -108,37 +108,15 @@ fun TaxRateInfoDialog(
 
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-                    Column {
-                        dialogState.taxLineTexts.forEach {
-                            ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-                                val (taxName, taxRate) = createRefs()
-                                Text(
-                                    text = it.first,
-                                    fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.body1,
-                                    modifier = Modifier.constrainAs(taxName) {
-                                        start.linkTo(parent.start)
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        end.linkTo(taxRate.start)
-                                        width = Dimension.fillToConstraints
-                                    }
-                                )
-                                Text(
-                                    text = it.second,
-                                    fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.body1,
-                                    modifier = Modifier.constrainAs(taxRate) {
-                                        start.linkTo(taxName.end)
-                                        end.linkTo(parent.end)
-                                        bottom.linkTo(parent.bottom)
-                                    }
-                                )
+                    val taxLines = dialogState.taxLineTexts
+                    if (taxLines.isNotEmpty()) {
+                        Column {
+                            taxLines.forEach {
+                                TaxLine(it)
                             }
                         }
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                     }
-
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                     Divider()
 
@@ -172,6 +150,35 @@ fun TaxRateInfoDialog(
             }
         }
     )
+}
+
+@Composable
+private fun TaxLine(it: Pair<String, String>) {
+    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        val (taxName, taxRate) = createRefs()
+        Text(
+            text = it.first,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.constrainAs(taxName) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(taxRate.start)
+                width = Dimension.fillToConstraints
+            }
+        )
+        Text(
+            text = it.second,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.constrainAs(taxRate) {
+                start.linkTo(taxName.end)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            }
+        )
+    }
 }
 
 @Preview(name = "Light mode")

@@ -1066,18 +1066,32 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onTaxHelpButtonClicked() = launch {
-        val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
-            StoreAddress ->
-                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_store_address)
-            BillingAddress ->
-                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_billing_address)
-            ShippingAddress ->
-                resourceProvider.getString(string.tax_rates_info_dialog_tax_based_on_shipping_address)
-            else -> ""
-        }
         val taxLines: List<Pair<String, String>> =
             _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
-        val taxRatesSettingsUrl = selectedSite.get().adminUrlOrDefault.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
+        val settingTextPostFix = if (taxLines.isNotEmpty()) ":" else "."
+        val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
+            StoreAddress ->
+                resourceProvider.getString(
+                    string.tax_rates_info_dialog_tax_based_on_store_address,
+                    settingTextPostFix
+                )
+
+            BillingAddress ->
+                resourceProvider.getString(
+                    string.tax_rates_info_dialog_tax_based_on_billing_address,
+                    settingTextPostFix
+                )
+
+            ShippingAddress ->
+                resourceProvider.getString(
+                    string.tax_rates_info_dialog_tax_based_on_shipping_address,
+                    settingTextPostFix
+                )
+
+            else -> ""
+        }
+        val taxRatesSettingsUrl =
+            selectedSite.get().adminUrlOrDefault.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
         triggerEvent(
             OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
                 TaxRatesInfoDialogViewState(
