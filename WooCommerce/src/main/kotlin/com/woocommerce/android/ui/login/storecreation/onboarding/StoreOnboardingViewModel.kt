@@ -171,11 +171,10 @@ class StoreOnboardingViewModel @Inject constructor(
         launch {
             onboardingRepository.saveSiteTitle(siteTitle).fold(
                 onSuccess = {
-                    if(fromOnboarding) {
+                    if (fromOnboarding) {
                         refreshOnboardingList()
                         triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_success))
-                    }
-                    else {
+                    } else {
                         triggerEvent(ShowSnackbar(R.string.settings_name_your_store_dialog_success))
                     }
                 },
