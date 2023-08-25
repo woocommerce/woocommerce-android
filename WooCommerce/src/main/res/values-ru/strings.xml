@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-16 16:54:04+0000
+Translation-Revision-Date: 2023-08-22 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Выберите страну</string>
+    <string name="store_creation_country_picker_current_location_description">Местоположение определено автоматически. В случае ошибки выберите здесь верный вариант.</string>
+    <string name="store_creation_country_picker_title">Где находится ваша компания?</string>
+    <string name="store_profiler_challenge_other">Другое</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Перевозки и логистика</string>
+    <string name="store_profiler_challenge_managing_inventory">Управление запасами</string>
+    <string name="store_profiler_challenge_finding_customers">Привлечение клиентов</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Настройка онлайн-магазина</string>
+    <string name="store_profiler_challenge_description">Выберите аспекты, вызывающие сложности, ниже. Можно выбрать несколько вариантов.</string>
+    <string name="store_profiler_challenge_title">С какими проблемами вы столкнулись\nпри создании интернет-магазина\nили управлении им?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">К потенциально опасным материалам относятся батарейки и аккумуляторы, сухой лёд, воспламеняющиеся жидкости, аэрозоли, боеприпасы, фейерверки, лаки для ногтей, парфюм, краски, растворители и т. д. Опасные товары должны находиться в отдельных упаковках.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Содержит опасные вещества</string>
     <string name="ai_product_description_title_hint">Введите название товара.</string>
     <string name="free_trial_feature_support">Круглосуточная приоритетная поддержка</string>
     <string name="free_trial_feature_backups">Автоматическое резервное копирование сайта</string>
@@ -557,7 +569,6 @@ Language: ru
     <string name="store_creation_country_picker_countries_header">Страны</string>
     <string name="store_creation_country_picker_current_location">Текущее местоположение</string>
     <string name="store_creation_country_picker_description">Эти данные позволят быстрее настроить платежи, доставку и расчёт налогов.</string>
-    <string name="store_creation_country_picker_title">Подтвердите местоположение</string>
     <string name="store_creation_store_profiler_platforms_description">Можно выбрать несколько вариантов.</string>
     <string name="store_creation_store_profiler_platforms_title">Какие платформы\nвы используете сейчас?</string>
     <string name="store_creation_store_profiler_industries_description">Выберите категорию, которая лучше всего\nхарактеризует ваш бизнес.</string>

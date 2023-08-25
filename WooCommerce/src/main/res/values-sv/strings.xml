@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-17 12:54:21+0000
+Translation-Revision-Date: 2023-08-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Välj ett land</string>
+    <string name="store_creation_country_picker_current_location_description">Vi har identifierat din plats automatiskt. Ändra den här om den är felaktig.</string>
+    <string name="store_creation_country_picker_title">Var finns ditt företag?</string>
+    <string name="store_profiler_challenge_other">Annat</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Frakt och logistik</string>
+    <string name="store_profiler_challenge_managing_inventory">Hantering av lager</string>
+    <string name="store_profiler_challenge_finding_customers">Hitta kunder</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Konfigurera onlinebutiken</string>
+    <string name="store_profiler_challenge_description">Välj dina orosmoment eller svårigheter nedan. Du kan välja mer än ett alternativ.</string>
+    <string name="store_profiler_challenge_title">Vilka utmaningar ser du med att\nstarta eller driva en\nonlinebutik?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Potentiellt farligt material inkluderar varor såsom batterier, torris, brandfarliga vätskor, aerosoler, ammunition, fyrverkerier, nagellack, parfym, färg, lösningsmedel med mera. Farliga varor måste skickas i separata paket.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Innehåller farliga material</string>
     <string name="ai_product_description_title_hint">Ange produktrubrik.</string>
     <string name="free_trial_feature_support">Prioriterad support dygnet runt</string>
     <string name="free_trial_feature_backups">Automatiska webbplatssäkerhetskopieringar</string>
@@ -557,7 +569,6 @@ Language: sv_SE
     <string name="store_creation_country_picker_countries_header">Länder</string>
     <string name="store_creation_country_picker_current_location">Nuvarande plats</string>
     <string name="store_creation_country_picker_description">Vi använder den här informationen för att konfigurera betalningar, frakt och moms.</string>
-    <string name="store_creation_country_picker_title">Bekräfta din plats</string>
     <string name="store_creation_store_profiler_platforms_description">Du kan välja flera stycken.</string>
     <string name="store_creation_store_profiler_platforms_title">Vilken eller vilka plattformar\nanvänder du för närvarande?</string>
     <string name="store_creation_store_profiler_industries_description">Välj en kategori som definierar\nditt företag bäst.</string>
