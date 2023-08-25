@@ -228,6 +228,60 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given enabled account status and wcpay installed and activated, when getOnboardingState, then onboarding complete with wcpay`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildWCPayPluginInfo(isActive = true)
+                    )
+                )
+            )
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    wcPayPluginVersion,
+                    countryCode
+                )
+            )
+        }
+
+    @Test
+    fun `given enabled account status and stripe installed and activated, when getOnboardingState, then onboarding complete with stripe`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildStripeExtensionPluginInfo(isActive = true)
+                    )
+                )
+            )
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    STRIPE_EXTENSION_GATEWAY,
+                    stripePluginVersion,
+                    countryCode
+                )
+            )
+        }
+
+    @Test
     fun `given stripe installed and activated, when wcpay is not installed, then onboarding complete with stripe`() =
         testBlocking {
             whenever(wooStore.fetchSitePlugins(site)).thenReturn(
