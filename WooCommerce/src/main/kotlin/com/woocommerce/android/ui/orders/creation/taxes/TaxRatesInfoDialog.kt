@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +41,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TaxRateInfoModal(
+fun TaxRateInfoDialog(
     dialogState: TaxRatesInfoDialogViewState,
     onDismissed: () -> Unit,
     onEditTaxRatesClicked: () -> Unit,
@@ -181,7 +180,7 @@ fun TaxRateInfoModal(
 fun TaxRateInfoModalPreview() {
     WooThemeWithBackground {
         val taxRates = listOf(Pair("Tax 1", "10%"), Pair("Tax 2", "20%"))
-        TaxRateInfoModal(
+        TaxRateInfoDialog(
             TaxRatesInfoDialogViewState(
                 "Your tax rate is currently calculated based on your shop address:",
                 taxRates,

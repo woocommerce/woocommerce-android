@@ -119,6 +119,7 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
@@ -148,7 +149,7 @@ class OrderCreateEditViewModel @Inject constructor(
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
         private const val TAX_BASED_ON_SETTING_ADMIN_URL =
-            "/wp-admin/admin.php?page=wc-settings&tab=tax&section=standard"
+            "admin.php?page=wc-settings&tab=tax&section=standard"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -1076,7 +1077,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         val taxLines: List<Pair<String, String>> =
             _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
-        val taxRatesSettingsUrl = selectedSite.get().url.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
+        val taxRatesSettingsUrl = selectedSite.get().adminUrlOrDefault.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
         triggerEvent(
             OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
                 TaxRatesInfoDialogViewState(

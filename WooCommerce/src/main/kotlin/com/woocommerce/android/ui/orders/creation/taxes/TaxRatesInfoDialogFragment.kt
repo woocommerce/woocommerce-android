@@ -19,7 +19,7 @@ class TaxRatesInfoDialogFragment : DialogFragment() {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     WooThemeWithBackground {
-                        TaxRateInfoModal(args.dialogState, ::dismiss, ::goToTaxRatesSettings)
+                        TaxRateInfoDialog(args.dialogState, ::dismiss, ::goToTaxRatesSettings)
                     }
                 }
             }
@@ -29,7 +29,7 @@ class TaxRatesInfoDialogFragment : DialogFragment() {
     }
 
     private fun goToTaxRatesSettings() {
-        args.dialogState.taxRatesSettingsUrl?.let {
+        args.dialogState.taxRatesSettingsUrl.let {
             ChromeCustomTabUtils.launchUrl(requireContext(), it)
             dismiss()
         }
