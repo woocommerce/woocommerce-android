@@ -90,10 +90,10 @@ class OrderDetailShippingLabelsAdapter(
                 with(viewBinding.shippingLabelListProducts) {
                     layoutManager = LinearLayoutManager(context)
                     adapter = OrderDetailProductListAdapter(
-                        shippingLabel.products,
+                        shippingLabel.products.map { it to emptyList() },
                         productImageMap,
                         formatCurrencyForDisplay,
-                        productClickListener
+                        productClickListener,
                     )
 
                     if (itemDecorationCount == 0) {

@@ -9,11 +9,12 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
+import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductListAdapter(
-    private val orderItems: List<Order.Item>,
+    private val orderItems: List<Pair<Order.Item, List<Addon>>>,
     private val productImageMap: ProductImageMap,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
@@ -29,14 +30,15 @@ class OrderDetailProductListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = orderItems[position]
+        val (item, addons) = orderItems[position]
         val imageSize = holder.itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
         val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
         (holder as ProductViewHolder).view.initView(
-            orderItems[position],
+            item,
             productImage,
             formatCurrencyForDisplay,
-            onViewAddonsClick
+            onViewAddonsClick,
+            addons,
         )
         holder.view.setOnClickListener {
             if (item.isVariation) {
@@ -51,7 +53,7 @@ class OrderDetailProductListAdapter(
 
     fun notifyProductChanged(productId: Long) {
         for (position in orderItems.indices) {
-            if (orderItems[position].productId == productId) {
+            if (orderItems[position].first.productId == productId) {
                 notifyItemChanged(position)
             }
         }

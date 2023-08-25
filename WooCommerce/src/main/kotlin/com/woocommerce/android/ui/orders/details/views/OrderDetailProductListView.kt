@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductItemL
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
+import org.wordpress.android.fluxc.domain.Addon
 import java.math.BigDecimal
 
 class OrderDetailProductListView @JvmOverloads constructor(
@@ -54,7 +55,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     }
 
     fun updateProductList(
-        orderItems: List<Order.Item>,
+        orderItems: List<Pair<Order.Item, List<Addon>>>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,

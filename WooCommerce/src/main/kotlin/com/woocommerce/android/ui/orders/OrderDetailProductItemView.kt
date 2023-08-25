@@ -14,6 +14,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.StringUtils
+import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
@@ -24,13 +25,15 @@ class OrderDetailProductItemView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(ctx, attrs, defStyleAttr) {
-    private val binding = OrderDetailProductItemBinding.inflate(LayoutInflater.from(ctx), this, true)
+    private val binding =
+        OrderDetailProductItemBinding.inflate(LayoutInflater.from(ctx), this, true)
 
     fun initView(
         item: Order.Item,
         productImage: String?,
         formatCurrencyForDisplay: (BigDecimal) -> String,
-        onViewAddonsClick: ViewAddonClickListener?
+        onViewAddonsClick: ViewAddonClickListener?,
+        addons: List<Addon>,
     ) {
         binding.productInfoName.text = item.name
 
@@ -47,9 +50,12 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             attributes, item.quantity.formatToString(), productPrice
         )
 
+        binding.productInfoAddonsDescription.text = addons.formatToString()
+
         with(binding.productInfoSKU) {
             isVisible = item.sku.isNotEmpty()
-            val productSku = context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
+            val productSku =
+                context.getString(R.string.orderdetail_product_lineitem_sku_value, item.sku)
             binding.productInfoSKU.text = productSku
         }
 
@@ -62,7 +68,8 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-            val imageCornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
+            val imageCornerRadius =
+                context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             GlideApp.with(context)
                 .load(imageUrl)
@@ -70,5 +77,31 @@ class OrderDetailProductItemView @JvmOverloads constructor(
                 .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                 .into(binding.productInfoIcon)
         } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
+    }
+
+    private fun List<Addon>.formatToString(): String {
+        return this.groupBy(Addon::name)
+            .map { (addonName, addons): Map.Entry<String, List<Addon>> ->
+
+                val allOptionsForGivenAddon = addons.flatMap {
+                    if (it is Addon.HasOptions) {
+                        it.options
+                    } else {
+                        emptyList()
+                    }
+                }
+
+                if (allOptionsForGivenAddon.isEmpty()) {
+                    "$addonName ${addons.first().description}"
+                } else {
+                    val options = allOptionsForGivenAddon.joinToString(
+                        separator = "•",
+                        transform = { option -> option.label.orEmpty() }
+                    )
+                    "$addonName \t $options"
+                }
+            }.joinToString(separator = "\n") {
+                it
+            }
     }
 }

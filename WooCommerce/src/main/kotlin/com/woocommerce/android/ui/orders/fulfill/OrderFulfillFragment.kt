@@ -32,6 +32,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.domain.Addon
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -139,7 +140,7 @@ class OrderFulfillFragment :
     }
 
     private fun showOrderProducts(
-        products: List<Order.Item>,
+        products: List<Pair<Order.Item, List<Addon>>>,
         currency: String,
         binding: FragmentOrderFulfillBinding
     ) {

@@ -71,6 +71,17 @@
         tools:visibility="visible" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productInfo_addonsDescription"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_SKU"
+        tools:text="Topping: Extra cheese • Salami\nDelivery: Yes" />
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_addons"
         style="@style/Woo.ListItem.Body"
         android:layout_width="wrap_content"
@@ -83,7 +94,7 @@
         android:visibility="gone"
         app:drawableTint="@color/color_on_surface_medium"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_SKU"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_addonsDescription"
         tools:text="View Add-ons"
         tools:visibility="visible" />
     <android.widget.Space

@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -33,6 +34,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 
@@ -44,6 +46,7 @@ class OrderFulfillViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val repository: OrderDetailRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val addonRepository: AddonRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         const val KEY_ORDER_FULFILL_RESULT = "key_order_fulfill_result"
@@ -55,8 +58,8 @@ class OrderFulfillViewModel @Inject constructor(
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    private val _productList = MutableLiveData<List<Item>>()
-    val productList: LiveData<List<Item>> = _productList
+    private val _productList = MutableLiveData<List<Pair<Item, List<Addon>>>>()
+    val productList: LiveData<List<Pair<Item, List<Addon>>>> = _productList
 
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
@@ -97,8 +100,18 @@ class OrderFulfillViewModel @Inject constructor(
     }
 
     private fun displayOrderProducts(order: Order) {
-        val products = repository.getOrderRefunds(navArgs.orderId).getNonRefundedProducts(order.items)
-        _productList.value = products
+        launch {
+            val products = repository.getOrderRefunds(navArgs.orderId).getNonRefundedProducts(order.items)
+            _productList.value = products.map { product ->
+                val addons = addonRepository.loadItemAddons(
+                    orderID = order.id,
+                    orderItemID = product.itemId,
+                    productID = product.productId,
+                ).orEmpty()
+
+                Pair(product, addons)
+            }
+        }
     }
 
     private fun displayShipmentTrackings() {

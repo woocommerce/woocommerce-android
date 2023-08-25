@@ -34,7 +34,7 @@ class OrderDetailProductItemListAdapter(
             val item = productItem.product
             val imageSize = view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
-            view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
+            view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick, productItem.addons)
             itemView.setOnClickListener {
                 if (item.isVariation) {
                     productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
@@ -59,7 +59,13 @@ class OrderDetailProductItemListAdapter(
             val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
 
-            binding.productInfoGroupedProduct.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
+            binding.productInfoGroupedProduct.initView(
+                item,
+                productImage,
+                formatCurrencyForDisplay,
+                onViewAddonsClick,
+                addons = emptyList()
+            )
             binding.productInfoGroupedProduct.setOnClickListener {
                 if (item.isVariation) {
                     productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
