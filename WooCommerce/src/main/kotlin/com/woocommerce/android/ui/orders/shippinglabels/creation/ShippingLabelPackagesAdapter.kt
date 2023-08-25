@@ -1,12 +1,8 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.text.SpannableStringBuilder
-import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.text.inSpans
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -237,20 +233,6 @@ class ShippingLabelPackagesAdapter(
                 List(item.quantity) { item }
             }.flatten()
         }
-
-        private fun generateStringWithClickableSpan(
-            context: Context,
-            content: Int,
-            clickableSpan: Int,
-            clickAction: () -> Unit
-        ) = SpannableStringBuilder()
-            .append(context.getString(content))
-            .append(" ")
-            .inSpans(
-                WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
-                    clickAction()
-                }
-            ) { append(context.getString(clickableSpan)) }
     }
 
     private class ShippingLabelPackageDiffCallback(
