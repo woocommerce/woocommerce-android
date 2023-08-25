@@ -123,6 +123,7 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -1102,6 +1103,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
             )
         )
+        tracker.track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED, mapOf(
+            KEY_SOURCE to "order_creation"
+        ))
     }
 
     @Parcelize
