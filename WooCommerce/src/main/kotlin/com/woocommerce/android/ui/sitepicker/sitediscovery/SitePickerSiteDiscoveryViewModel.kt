@@ -145,7 +145,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
     private suspend fun startSiteDiscovery() {
         // If the site is already connected to the account, go back to site picker
-        if (sitePickRepository.getSiteBySiteUrl(siteAddressFlow.value) != null) {
+        if (sitePickRepository.getSiteBySiteUrl(urlUtils.sanitiseUrl(siteAddressFlow.value)) != null) {
             fetchedSiteUrl = siteAddressFlow.value
             navigateBackToSitePicker()
             return
