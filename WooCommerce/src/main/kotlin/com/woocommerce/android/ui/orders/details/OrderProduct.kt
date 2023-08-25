@@ -41,7 +41,7 @@ class OrderProductMapper @Inject constructor() {
                 children.add(OrderProduct.ProductItem(item, addons))
                 null
             }
-        }.filter { (item, addons) ->
+        }.filter { (item, _) ->
             (item.itemId in childrenMap.keys).not()
         }.map<Pair<Order.Item, List<Addon>>, OrderProduct> { (item, addons) -> OrderProduct.ProductItem(item, addons) }
             .toMutableList()
