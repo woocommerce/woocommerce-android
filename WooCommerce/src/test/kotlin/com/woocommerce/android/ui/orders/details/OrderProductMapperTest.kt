@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Condition
 import org.junit.Test
+import org.wordpress.android.fluxc.domain.Addon
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -79,7 +80,7 @@ class OrderProductMapperTest : BaseUnitTest() {
         assertThat(result).areExactly(numberOfParentsExpanded, groupedItemExpandedCondition)
     }
 
-    private fun createItemsList(items: Int, parents: Int = 0): List<Order.Item> {
+    private fun createItemsList(items: Int, parents: Int = 0): List<Pair<Order.Item, List<Addon>>> {
         if (items < parents * 2) error("the number of items must be greater than the number of parents")
         val parentsList = List(parents) { n -> createItemFromNumber(n) }
         val childrenList = List(items - parents) { n ->
@@ -91,7 +92,7 @@ class OrderProductMapperTest : BaseUnitTest() {
         return parentsList + childrenList
     }
 
-    private fun createItemFromNumber(n: Int, parent: Long? = null): Order.Item {
+    private fun createItemFromNumber(n: Int, parent: Long? = null): Pair<Order.Item, List<Addon>> {
         val total = BigDecimal.TEN * (n + 1).toBigDecimal()
         return Order.Item(
             itemId = n.toLong(),
@@ -106,7 +107,7 @@ class OrderProductMapperTest : BaseUnitTest() {
             variationId = -1,
             attributesList = emptyList(),
             parent = parent
-        )
+        ) to emptyList()
     }
 
     private fun expandItems(products: List<OrderProduct>, numberOfItemsToExpand: Int) {

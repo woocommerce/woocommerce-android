@@ -32,6 +32,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
@@ -83,7 +84,8 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
                 networkStatus,
                 resources,
                 repository,
-                analyticsTrackerWrapper
+                analyticsTrackerWrapper,
+                mock(),
             )
         )
 
@@ -118,7 +120,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         }
 
         // product list should not be empty when products are not refunded
-        val products = ArrayList<Order.Item>()
+        val products = ArrayList<Pair<Order.Item, List<Addon>>>()
         viewModel.productList.observeForever {
             it?.let { products.addAll(it) }
         }
@@ -181,7 +183,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             doReturn(testOrderRefunds).whenever(repository).getOrderRefunds(any())
 
             // product list should not be empty when products are not refunded
-            val products = ArrayList<Order.Item>()
+            val products = ArrayList<Pair<Order.Item, List<Addon>>>()
             viewModel.productList.observeForever {
                 it?.let { products.addAll(it) }
             }
