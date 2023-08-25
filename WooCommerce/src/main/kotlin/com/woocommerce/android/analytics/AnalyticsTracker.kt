@@ -175,6 +175,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_CHANGED_DATA = "has_changed_data"
         const val KEY_STATUS = "status"
         const val KEY_TOTAL_DURATION = "total_duration"
+        const val KEY_TOTAL_COMPLETED_ORDERS = "total_completed_orders"
         const val KEY_SEARCH = "search"
         const val KEY_SEARCH_FILTER = "filter"
         const val KEY_SEARCH_TYPE = "search_filter"
