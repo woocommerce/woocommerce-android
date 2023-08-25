@@ -54,6 +54,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
@@ -80,6 +81,9 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
@@ -119,10 +123,6 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
-import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
-import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
 
 @HiltViewModel
 @Suppress("LargeClass")

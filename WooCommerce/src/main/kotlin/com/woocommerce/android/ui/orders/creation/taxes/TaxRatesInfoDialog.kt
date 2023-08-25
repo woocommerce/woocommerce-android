@@ -192,6 +192,8 @@ fun TaxRateInfoModalPreview() {
                 "Your tax rate is currently calculated based on your shop address:",
                 taxRates,
                 ""
-            ), {}, {})
+            ),
+            {}, {}
+        )
     }
 }
