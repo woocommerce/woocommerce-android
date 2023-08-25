@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -61,15 +62,15 @@ fun TaxRateInfoModal(
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.major_150)),
+                        .padding(dimensionResource(id = R.dimen.major_150), dimensionResource(id = R.dimen.major_100)),
                 ) {
-
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                     Text(
                         text = stringResource(R.string.tax_rates_info_dialog_title),
-                        style = MaterialTheme.typography.h5,
                         textAlign = TextAlign.Center,
+                        fontWeight = FontWeight(700),
+                        fontSize = 22.sp,
+                        lineHeight = 28.sp,
                         modifier = Modifier.fillMaxWidth(),
                     )
 
@@ -137,7 +138,7 @@ fun TaxRateInfoModal(
 
                     Divider()
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
                     WCColoredButton(
                         onClick = onEditTaxRatesClicked,
@@ -153,15 +154,12 @@ fun TaxRateInfoModal(
                         text = stringResource(R.string.tax_rates_redirect_to_admin_button_label)
                     )
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
                     WCOutlinedButton(
                         onClick = onDismissed,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(text = stringResource(R.string.done))
                     }
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 }
             }
         }
