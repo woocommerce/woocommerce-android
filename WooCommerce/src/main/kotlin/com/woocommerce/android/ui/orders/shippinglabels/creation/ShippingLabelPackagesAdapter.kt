@@ -21,6 +21,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
+import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShippingLabelPackageUiModel
@@ -147,25 +148,34 @@ class ShippingLabelPackagesAdapter(
                 }
             }
 
-            binding.hazmatUspsInstructionsFirstSection.text = generateStringWithClickableSpan(
-                context = context,
-                content = R.string.shipping_label_package_details_hazmat_content_usps_instructions_1,
-                clickableSpan = R.string.shipping_label_package_details_hazmat_content_usps_instructions_1_text_link,
-                clickAction = { onURLClick(AppUrls.USPS_HAZMAT_INSTRUCTIONS) }
+            val uspsHazmatLink = context.getString(R.string.shipping_label_usps_instructions_link_text)
+            binding.hazmatUspsInstructionsFirstSection.setClickableText(
+                content = context.getString(R.string.shipping_label_usps_hazmat_instructions, uspsHazmatLink),
+                clickableContent = uspsHazmatLink,
+                clickAction = WooClickableSpan(
+                    customLinkColor = context.getColor(R.color.free_trial_component_text),
+                    onClickListener = { onURLClick(AppUrls.USPS_HAZMAT_INSTRUCTIONS) }
+                )
             )
 
-            binding.hazmatUspsInstructionsSecondSection.text = generateStringWithClickableSpan(
-                context = context,
-                content = R.string.shipping_label_package_details_hazmat_content_usps_instructions_2,
-                clickableSpan = R.string.shipping_label_package_details_hazmat_content_usps_instructions_2_text_link,
-                clickAction = { onURLClick(AppUrls.USPS_HAZMAT_SEARCH_TOOL) }
+            val searchToolLink = context.getString(R.string.shipping_label_usps_search_tool_link_text)
+            binding.hazmatUspsInstructionsSecondSection.setClickableText(
+                content = context.getString(R.string.shipping_label_usps_search_tool, searchToolLink),
+                clickableContent = searchToolLink,
+                clickAction = WooClickableSpan(
+                    customLinkColor = context.getColor(R.color.free_trial_component_text),
+                    onClickListener = { onURLClick(AppUrls.USPS_HAZMAT_SEARCH_TOOL) }
+                )
             )
 
-            binding.hazmatDhlInstructions.text = generateStringWithClickableSpan(
-                context = context,
-                content = R.string.shipping_label_package_details_hazmat_content_dhl_instructions,
-                clickableSpan = R.string.shipping_label_package_details_hazmat_content_dhl_instructions_text_link,
-                clickAction = { onURLClick(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
+            val dhlHazmatLink = context.getString(R.string.shipping_label_hazmat_content_dhl_instructions_link_text)
+            binding.hazmatDhlInstructions.setClickableText(
+                content = context.getString(R.string.shipping_label_hazmat_content_dhl_instructions, dhlHazmatLink),
+                clickableContent = dhlHazmatLink,
+                clickAction = WooClickableSpan(
+                    customLinkColor = context.getColor(R.color.free_trial_component_text),
+                    onClickListener = { onURLClick(AppUrls.DHL_EXPRESS_HAZMAT_INSTRUCTIONS) }
+                )
             )
         }
 
@@ -239,8 +249,7 @@ class ShippingLabelPackagesAdapter(
             .inSpans(
                 WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
                     clickAction()
-                },
-                UnderlineSpan()
+                }
             ) { append(context.getString(clickableSpan)) }
     }
 
