@@ -2,22 +2,18 @@ package com.woocommerce.android.ui.main
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
@@ -28,10 +24,8 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,19 +37,10 @@ class MainPresenterTest : BaseUnitTest() {
 
     private val dispatcher: Dispatcher = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val selectedSite: SelectedSite = mock {
-        val siteModel = SiteModel()
-        on { get() } doReturn siteModel
-        on { getIfExists() } doReturn siteModel
-        on { exists() } doReturn true
-    }
     private val productImageMap: ProductImageMap = mock()
     private val appPrefs: AppPrefsWrapper = mock()
     private val clearCardReaderDataAction: ClearCardReaderDataAction = mock()
 
-    private val wcOrderStore: WCOrderStore = mock {
-        on { observeOrderCountForSite(any(), any()) } doReturn emptyFlow()
-    }
     private val accountRepository: AccountRepository = mock()
     private val processingOrdersCount = MutableStateFlow<Int?>(null)
     private val observeProcessingOrdersCount: ObserveProcessingOrdersCount = mock {
@@ -128,27 +113,6 @@ class MainPresenterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays unfilled orders count correctly`() {
-        val totalOrders = 25
-        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
-            .doReturn(flowOf(totalOrders))
-
-        mainPresenter.takeView(mainContractView)
-
-        verify(mainContractView).showOrderBadge(totalOrders)
-    }
-
-    @Test
-    fun `Hides orders badge correctly`() {
-        whenever(wcOrderStore.observeOrderCountForSite(any(), eq(listOf(CoreOrderStatus.PROCESSING.value))))
-            .doReturn(flowOf(0))
-
-        mainPresenter.takeView(mainContractView)
-
-        verify(mainContractView).hideOrderBadge()
-    }
-
-    @Test
     fun `Handles database downgrade correctly`() = testBlocking {
         if (FeatureFlag.DB_DOWNGRADE.isEnabled()) {
             whenever(wooCommerceStore.fetchWooCommerceSites()).thenReturn(WooResult())
@@ -161,7 +125,7 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `when selected site changes, then card reader data is cleared`() = testBlocking {
-        mainPresenter.selectedSiteChanged(site = selectedSite.get())
+        mainPresenter.selectedSiteChanged(site = SiteModel())
 
         verify(clearCardReaderDataAction).invoke()
     }
