@@ -5,10 +5,11 @@ import android.os.Bundle
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class TaxRatesInfoDialogFragment : DialogFragment() {
     private val args: TaxRatesInfoDialogFragmentArgs by navArgs()
@@ -30,8 +31,10 @@ class TaxRatesInfoDialogFragment : DialogFragment() {
 
     private fun goToTaxRatesSettings() {
         args.dialogState.taxRatesSettingsUrl.let {
-            ChromeCustomTabUtils.launchUrl(requireContext(), it)
-            dismiss()
+            val directions = NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = it,
+            )
+            findNavController().navigate(directions)
         }
     }
 }
