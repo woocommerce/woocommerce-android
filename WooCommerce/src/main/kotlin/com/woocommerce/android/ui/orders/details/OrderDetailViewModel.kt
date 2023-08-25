@@ -604,14 +604,20 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(list = orderDetailRepository.getOrderRefunds(navArgs.orderId))
     }
 
-    private fun loadOrderProducts(
+    private suspend fun loadOrderProducts(
         refunds: ListInfo<Refund>
     ): ListInfo<OrderProduct> {
         val products = refunds.list.getNonRefundedProducts(order.items)
         checkAddonAvailability(products)
-        val orderProducts = orderProductMapper.toOrderProducts(_productList.value ?: emptyList(), products)
+        val orderProducts = orderProductMapper.toOrderProducts(_productList.value ?: emptyList(),
+            newProductsWithAddons = products.map { product ->
+                product to (addonsRepository.loadItemAddons(
+                    orderID = order.id, orderItemID = product.itemId, productID = product.productId
+                ).orEmpty())
+            })
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
     }
+
     private fun checkAddonAvailability(products: List<Order.Item>) {
         launch(coroutineDispatchers.computation) {
             products.forEach { it.containsAddons = addonsRepository.containsAddonsFrom(it) }
@@ -706,7 +712,7 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(isVisible = false)
     }
 
-    private fun displayProductAndShippingDetails() {
+    private suspend fun displayProductAndShippingDetails() {
         val shippingLabels = loadOrderShippingLabels()
         val shipmentTracking = loadShipmentTracking(shippingLabels)
         val orderRefunds = loadOrderRefunds()

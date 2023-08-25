@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.model.Order
+import org.wordpress.android.fluxc.domain.Addon
 import javax.inject.Inject
 
 sealed class OrderProduct {
-    data class ProductItem(val product: Order.Item) : OrderProduct()
+    data class ProductItem(val product: Order.Item, val addons: List<Addon>) : OrderProduct()
 
     data class GroupedProductItem(
         val product: Order.Item,
@@ -14,8 +15,13 @@ sealed class OrderProduct {
 }
 
 class OrderProductMapper @Inject constructor() {
-    fun toOrderProducts(currentProducts: List<OrderProduct>, newProducts: List<Order.Item>): List<OrderProduct> {
-        if (newProducts.isEmpty()) return emptyList()
+    fun toOrderProducts(
+        currentProducts: List<OrderProduct>,
+        newProductsWithAddons: List<Pair<Order.Item, List<Addon>>>
+    ): List<OrderProduct> {
+        if (newProductsWithAddons.isEmpty()) return emptyList()
+
+        val newProducts = newProductsWithAddons.map { it.first }
 
         val isExpanded = currentProducts
             .filterIsInstance<OrderProduct.GroupedProductItem>()
@@ -24,20 +30,20 @@ class OrderProductMapper @Inject constructor() {
         val itemsMap = newProducts.associateBy { item -> item.itemId }
         val childrenMap = mutableMapOf<Long, MutableList<OrderProduct.ProductItem>>()
 
-        val result = newProducts.mapNotNull { item ->
+        val result = newProductsWithAddons.mapNotNull { (item, addons) ->
             if (item.parent == null) {
-                item
+                item to addons
             } else {
                 val children = childrenMap.getOrPut(
                     item.parent
                 ) { mutableListOf() }
 
-                children.add(OrderProduct.ProductItem(item))
+                children.add(OrderProduct.ProductItem(item, addons))
                 null
             }
-        }.filter { item ->
+        }.filter { (item, addons) ->
             (item.itemId in childrenMap.keys).not()
-        }.map<Order.Item, OrderProduct> { OrderProduct.ProductItem(it) }
+        }.map<Pair<Order.Item, List<Addon>>, OrderProduct> { (item, addons) -> OrderProduct.ProductItem(item, addons) }
             .toMutableList()
 
         for (parentId in childrenMap.keys) {
