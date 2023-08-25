@@ -57,6 +57,9 @@ class StoreOnboardingViewModel @Inject constructor(
     )
     val viewState = _viewState
 
+    private val _isSavingSiteTitle = MutableLiveData(NameYourStoreDialogState.START)
+    val isSavingSiteTitle = _isSavingSiteTitle
+
     init {
         launch {
             onboardingRepository.observeOnboardingTasks()
@@ -169,6 +172,7 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun saveSiteTitle(siteTitle: String, fromOnboarding: Boolean = true) {
         launch {
+            _isSavingSiteTitle.value = NameYourStoreDialogState.LOADING
             onboardingRepository.saveSiteTitle(siteTitle).fold(
                 onSuccess = {
                     if (fromOnboarding) {
@@ -177,9 +181,11 @@ class StoreOnboardingViewModel @Inject constructor(
                     } else {
                         triggerEvent(ShowSnackbar(R.string.settings_name_your_store_dialog_success))
                     }
+                    _isSavingSiteTitle.value = NameYourStoreDialogState.SUCCESS
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_failure))
+                    _isSavingSiteTitle.value = NameYourStoreDialogState.FAILURE
                 }
             )
         }
@@ -251,4 +257,11 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
     object ShowNameYourStoreDialog : MultiLiveEvent.Event()
+
+    enum class NameYourStoreDialogState {
+        START,
+        LOADING,
+        SUCCESS,
+        FAILURE
+    }
 }
