@@ -167,12 +167,17 @@ class StoreOnboardingViewModel @Inject constructor(
         }
     }
 
-    fun saveSiteTitle(siteTitle: String) {
+    fun saveSiteTitle(siteTitle: String, fromOnboarding: Boolean = true) {
         launch {
             onboardingRepository.saveSiteTitle(siteTitle).fold(
                 onSuccess = {
-                    refreshOnboardingList()
-                    triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_success))
+                    if(fromOnboarding) {
+                        refreshOnboardingList()
+                        triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_success))
+                    }
+                    else {
+                        triggerEvent(ShowSnackbar(R.string.settings_name_your_store_dialog_success))
+                    }
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_failure))
