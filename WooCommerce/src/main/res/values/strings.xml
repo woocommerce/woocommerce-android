@@ -3152,6 +3152,7 @@
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
     <string name="store_creation_store_name_default">Store name</string>
+    <string name="store_creation_store_name_settings_option">Store name</string>
 
     <string name="store_creation_store_profiler_industries_header">About your store</string>
     <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
@@ -3251,8 +3252,8 @@
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
     <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
-    <string name="store_onboarding_name_your_store_dialog_success">Site title saved successfully.</string>
-    <string name="store_onboarding_name_your_store_dialog_failure">Unable to save site title. Please try again.</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Store name set! \n To change again, visit Store Settings.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Unable to save store name. Please try again.</string>
 
     <!--
     Support Request
