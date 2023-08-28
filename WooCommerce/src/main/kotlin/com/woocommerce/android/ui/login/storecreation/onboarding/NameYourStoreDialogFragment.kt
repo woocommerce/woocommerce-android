@@ -94,7 +94,7 @@ class NameYourStoreDialogFragment : DialogFragment() {
                     .padding(dimensionResource(id = R.dimen.major_100)),
                 value = state.enteredSiteTitle,
                 onValueChange = { viewModel.onSiteTitleInputChanged(it) },
-                label = stringResource(id = R.string.store_onboarding_name_your_store_dialog_title),
+                label = stringResource(id = R.string.store_onboarding_name_your_store_dialog_label),
                 singleLine = true
             )
 

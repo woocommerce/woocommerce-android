@@ -3252,6 +3252,7 @@
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
     <string name="store_onboarding_name_your_store_dialog_title">Update store name</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Store name</string>
     <string name="store_onboarding_name_your_store_dialog_success">Store name set! \n To change again, visit Store Settings.</string>
     <string name="settings_name_your_store_dialog_success">Store name set!</string>
     <string name="settings_name_your_store_dialog_loading">Saving new store name…</string>
