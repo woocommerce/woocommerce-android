@@ -53,14 +53,14 @@ object CardReaderManagerFactory {
                 CreatePaymentAction(
                     PaymentIntentParametersFactory(PaymentMethodTypeMapper()),
                     terminal,
-                    PaymentUtils(),
                     logWrapper,
-                    cardReaderConfigFactory
+                    cardReaderConfigFactory,
+                    PaymentUtils
                 ),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
-                PaymentUtils(),
+                PaymentUtils,
                 PaymentErrorMapper(),
                 cardReaderConfigFactory
             ),
@@ -68,7 +68,7 @@ object CardReaderManagerFactory {
                 CollectInteracRefundAction(terminal),
                 ProcessInteracRefundAction(terminal),
                 RefundErrorMapper(),
-                PaymentUtils(),
+                PaymentUtils
             ),
             ConnectionManager(
                 terminal,

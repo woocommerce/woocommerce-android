@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-09 12:54:04+0000
+Translation-Revision-Date: 2023-08-22 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">국가 선택</string>
+    <string name="store_creation_country_picker_current_location_description">회원님의 위치가 자동으로 감지되었습니다. 올바르지 않은 경우 여기에서 변경하세요.</string>
+    <string name="store_creation_country_picker_title">비즈니스 소재지가 어디인가요?</string>
+    <string name="store_profiler_challenge_other">기타</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">배송 및 물류</string>
+    <string name="store_profiler_challenge_managing_inventory">재고 관리</string>
+    <string name="store_profiler_challenge_finding_customers">고객 찾기</string>
+    <string name="store_profiler_challenge_setting_up_online_store">온라인 스토어 설정</string>
+    <string name="store_profiler_challenge_description">아래에서 우려 사항 또는 어려운 점을 선택하세요. 옵션을 2개 이상 선택할 수 있습니다.</string>
+    <string name="store_profiler_challenge_title">온라인 스토어를\n시작하거나 운영하는 데\n어떤 어려움이 있나요?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">잠재적 위험 물질에는 배터리, 드라이아이스, 가연성 액체, 에어로졸, 탄약, 폭죽, 매니큐어, 향수, 페인트, 용제 등과 같은 품목이 포함됩니다. 위험 품목은 별도의 패키지로 배송되어야 합니다.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">위험 물질 포함</string>
+    <string name="ai_product_description_title_hint">제품명을 입력하세요.</string>
+    <string name="free_trial_feature_support">연중무휴 우선 지원</string>
+    <string name="free_trial_feature_backups">자동 사이트 백업</string>
+    <string name="free_trial_feature_hosting">최고의 호스팅</string>
+    <string name="free_trial_feature_automated_customer_emails">자동 고객 이메일</string>
+    <string name="free_trial_feature_built_in_seo">내장 SEO</string>
+    <string name="free_trial_feature_design_editing">코드 작성 없는 디자인 및 편집</string>
+    <string name="free_trial_feature_store_management">스토어 관리 도구</string>
+    <string name="free_trial_summary_try_button">나만의 스토어 제작</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">간편한 스토어 소유</string>
+    <string name="free_trial_summary_grow_your_business">비즈니스 성장</string>
+    <string name="free_trial_summary_start_selling_quickly">빠른 판매 시작</string>
+    <string name="store_creation_store_profiler_journey_description">상거래 여정에서 현재\n어느 단계에 있는지 알려주시면\n맞춤형 Woo 환경을 제공해 드립니다.</string>
+    <string name="store_creation_store_profiler_journey_title">회원님의 상황과 가장 가까운\n설명은 무엇인가요?</string>
+    <string name="store_creation_store_profiler_industries_title">스토어에서 무엇을\n 판매할 계획이신가요?</string>
+    <string name="store_creation_store_profiler_industries_header">스토어 소개</string>
+    <string name="simplified_login_prologue_title">신용카드가 필요하지 않은 15일 무료 평가판으로 시작해 보세요. 첫 판매부터 수백만 개 판매까지 Woo와 함께 성장하는 340만 개 스토어와 함께하세요.</string>
+    <string name="simplified_login_prologue_intro">회원님과 함께 성장하는 전자상거래 플랫폼</string>
+    <string name="product_type_variable_subscription">가변 구독</string>
+    <string name="order_creation_remove_this_coupon">쿠폰 제거</string>
+    <string name="coupon_selector_empty_list_title">누구나 좋아하는 딜</string>
+    <string name="coupon_selector_empty_list_message">아직 생성한 쿠폰이 없습니다. 이 주문에 적용할 쿠폰을 생성하세요.</string>
+    <string name="coupon_selector_empty_list_button">쿠폰으로 이동</string>
+    <string name="order_creation_select_coupon">쿠폰 선택</string>
+    <string name="signup_get_started_button">새 스토어 생성</string>
     <string name="coupon_create_coupon_creation_failed">쿠폰 생성 실패</string>
     <string name="coupon_create_coupon_created">쿠폰 생성됨</string>
     <string name="coupon_create_save_button">생성</string>
@@ -281,21 +318,10 @@ Language: ko_KR
     <string name="product_quantity_rules_title">수량 규칙</string>
     <string name="gift_cards">상품권</string>
     <string name="order_gift_card">상품권</string>
-    <string name="free_trial_feature_fast_to_launch">빠르게 시작</string>
-    <string name="free_trial_feature_site_security">사이트 보안</string>
-    <string name="free_trial_feature_auto_updates_backups">자동 업데이트 및 백업</string>
-    <string name="free_trial_feature_247_support">연중무휴 지원</string>
-    <string name="free_trial_feature_email_marketing">이메일 마케팅</string>
     <string name="free_trial_feature_social_advertising">소셜 광고</string>
-    <string name="free_trial_feature_subscription_product_kits">구독 및 상품 키트</string>
-    <string name="free_trial_feature_multiple_payment_options">여러 가지 결제 옵션</string>
-    <string name="free_trial_feature_ecommerce_reports">전자상거래 보고서</string>
-    <string name="free_trial_feature_shipping_labels">배송 레이블</string>
-    <string name="free_trial_feature_unlimited_products">무제한 상품</string>
     <string name="free_trial_feature_premium_themes">프리미엄 테마</string>
     <string name="free_trial_summary_credit_card_message">신용카드가 필요 없습니다.</string>
-    <string name="free_trial_summary_try_button">무료 체험</string>
-    <string name="free_trial_summary_try_it">14일 동안 사용해 보세요.</string>
+    <string name="free_trial_summary_try_it">14일 동안 무료로 사용해 보세요.</string>
     <string name="free_trial_summary_advertise">온라인 스토어 구축과 성장에 필요한 모든 것이 제공됩니다. 우커머스에서 지원하고 워드프레스닷컴에서 호스팅합니다.</string>
     <string name="free_trial_summary_title">며칠 만에 시작, 몇 년 동안 성장</string>
     <string name="product_selector_products_heading">상품</string>
@@ -334,8 +360,6 @@ Language: ko_KR
     <string name="subscription_id">구독 #%1$d</string>
     <string name="order_subscription">구독</string>
     <string name="store_onboarding_launch_store_ok">확인</string>
-    <string name="simplified_login_prologue_title">첫 번째 판매부터 수백만 상당의 수익까지 Woo가 함께합니다. 340만 개의 온라인 스토어 판매자가 신뢰하는 이유를 확인하세요.</string>
-    <string name="simplified_login_prologue_intro">무엇이든 어디서나 판매하세요.</string>
     <string name="product_type_subscription">구독</string>
     <string name="otp_incorrect">OTP 코드가 올바르지 않습니다. 정보를 다시 확인하고 다시 시도하세요.</string>
     <string name="requesting_sms_otp_failure">SMS 요청에 실패했습니다. 다시 시도하세요.</string>
@@ -545,13 +569,9 @@ Language: ko_KR
     <string name="store_creation_country_picker_countries_header">국가</string>
     <string name="store_creation_country_picker_current_location">현재 위치</string>
     <string name="store_creation_country_picker_description">이 정보는 결제, 배송 및 세금 설정에 사용됩니다.</string>
-    <string name="store_creation_country_picker_title">위치 확인</string>
     <string name="store_creation_store_profiler_platforms_description">여러 개를 선택할 수 있습니다.</string>
-    <string name="store_creation_store_profiler_platforms_title">현재 어떤 플랫폼에서 판매 중이신가요?</string>
-    <string name="store_creation_store_profiler_journey_description">빠르게 진행되도록 응답에 따라 우커머스 경험이 알맞게 조정됩니다.</string>
-    <string name="store_creation_store_profiler_journey_title">상거래 여정의 어디쯤 계시는가요?</string>
-    <string name="store_creation_store_profiler_industries_description">비즈니스에 가장 알맞은 카테고리를 선택하세요.</string>
-    <string name="store_creation_store_profiler_industries_title">무엇을 판매하실 예정인가요?</string>
+    <string name="store_creation_store_profiler_platforms_title">현재 어떤 플랫폼을\n사용하고 계신가요?</string>
+    <string name="store_creation_store_profiler_industries_description">비즈니스를 가장 잘 정의하는\n카테고리를 선택하세요.</string>
     <string name="login_application_passwords_unavailable">%1$s 사이트에서 애플리케이션 비밀번호가 비활성화된 것 같습니다.\n 우커머스 앱을 사용하려면 활성화하세요.</string>
     <string name="login_open_installation_page">설치 페이지 열기</string>
     <string name="not_a_valid_qr_code">스캔한 QR 코드는 WooCommerce 코드가 아닙니다</string>
@@ -716,7 +736,6 @@ Language: ko_KR
     <string name="signup_password_hint">비밀번호 선택</string>
     <string name="signup_email_address_hint">사용 중인 이메일 주소</string>
     <string name="signup_get_started_label">시작하기 \n분 단위</string>
-    <string name="signup_get_started_button">시작하기</string>
     <string name="login_jetpack_connection_consent">젯팩 연결 버튼을 누르면 &lt;a href=\'terms\'&gt;서비스 약관&lt;/a&gt; 및 워드프레스닷컴과 &lt;a href=\'sync\'&gt;상세 정보&lt;/a&gt; 공유에 동의하는 것입니다.</string>
     <string name="enable_card_reader">시뮬레이션한 카드 리더 활성화</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">상점 관리자 또는 앱을 사용하는 관리자로 사이트에 초대받으려면 사이트 소유자에게 문의하세요.</string>
@@ -1436,7 +1455,7 @@ Language: ko_KR
     <string name="card_reader_onboarding_country_not_supported_learn_more">모바일 장치로 결제 수락 및 카드 리더 주문에 대해 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">도움이 필요하세요? &lt;a href=\'\'&gt;지원 문의&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">스토어에서 \"배송 시 현금 결제\"를 결제 수단으로 활성화하면 대면 현금 결제를 계속 수락할 수 있습니다.</string>
-    <string name="card_reader_onboarding_country_not_supported_header">%1$s에서는 대면 결제가 지원되지 않습니다.</string>
+    <string name="card_reader_onboarding_country_not_supported_header">%1$s에서는 카드 대면 결제가 지원되지 않습니다.</string>
     <string name="card_reader_onboarding_loading">계정에 연결 중</string>
     <string name="card_reader_onboarding_title">대면 결제</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">패키지 규격과 무게를 다시 확인하거나 패키지 상세 정보의 다른 패키지를 사용해 보세요.</string>

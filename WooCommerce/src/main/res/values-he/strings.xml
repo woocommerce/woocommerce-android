@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-09 14:54:04+0000
+Translation-Revision-Date: 2023-08-22 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">יש לבחור ארץ</string>
+    <string name="store_creation_country_picker_current_location_description">זיהינו את המיקום שלך באופן אוטומטי. אם הוא שגוי, ניתן ללחוץ כאן לשינוי.</string>
+    <string name="store_creation_country_picker_title">איפה נמצא העסק שלך?</string>
+    <string name="store_profiler_challenge_other">אחר</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">משלוחים ולוגיסטיקה</string>
+    <string name="store_profiler_challenge_managing_inventory">ניהול מלאי</string>
+    <string name="store_profiler_challenge_finding_customers">מציאת לקוחות</string>
+    <string name="store_profiler_challenge_setting_up_online_store">הגדרת החנות המקוונת</string>
+    <string name="store_profiler_challenge_description">יש לבחור את החששות או הקשיים למטה. אפשר לבחור יותר מאפשרות אחת.</string>
+    <string name="store_profiler_challenge_title">אילו אתגרים מקשים עליך\nבמהלך ההקמה וההפעלה\nשל חנות מקוונת?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">חומרים שעלולים להיות מסוכנים כוללים פריטים כגון סוללות, קרח יבש, נוזלים דליקים, תרסיסים, תחמושת, זיקוקים, לק לציפורניים, בושם, צבע, חומרים ממסים ועוד. יש לשלוח חומרים מסוכנים באריזות נפרדות.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">מכיל חומרים מסוכנים</string>
+    <string name="ai_product_description_title_hint">יש להזין את שם המוצר.</string>
+    <string name="free_trial_feature_support">עדיפות בקבלת תמיכה מסביב לשעון</string>
+    <string name="free_trial_feature_backups">גיבויים אוטומטיים של האתר</string>
+    <string name="free_trial_feature_hosting">האחסון הטוב ביותר</string>
+    <string name="free_trial_feature_automated_customer_emails">אוטומציה של אימיילים ללקוחות</string>
+    <string name="free_trial_feature_built_in_seo">כלי SEO מובנים</string>
+    <string name="free_trial_feature_design_editing">עיצוב ועריכה של תוכן ללא כתיבת קוד</string>
+    <string name="free_trial_feature_store_management">כלים לניהול החנות</string>
+    <string name="free_trial_summary_try_button">ליצור את החנות שלך</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">בעלות על חנות ללא מאמץ</string>
+    <string name="free_trial_summary_grow_your_business">להגדיל את העסק שלך</string>
+    <string name="free_trial_summary_start_selling_quickly">להתחיל למכור במהירות</string>
+    <string name="store_creation_store_profiler_journey_description">נשמח לשמוע מה המיקום שלך\nלאורך מסע המסחר כדי שנוכל להתאים לך\nבאופן אישי את חוויית WooCommerce.</string>
+    <string name="store_creation_store_profiler_journey_title">איזו מהאפשרויות הבאות\nמתארת אותך באופן הטוב ביותר?</string>
+    <string name="store_creation_store_profiler_industries_title">אילו סוגי מוצרים ברצונך למכור\nבחנות שלך?</string>
+    <string name="store_creation_store_profiler_industries_header">מידע לגבי החנות שלך</string>
+    <string name="simplified_login_prologue_title">ניתן להתחיל עם תקופת ניסיון למשך 15 ימים, אין צורך בכרטיס אשראי. להצטרף אל 3.4 מיליון חנויות שמצליחות עם WooCommerce, מהמכירה הראשונה ועד מיליוני מכירות.</string>
+    <string name="simplified_login_prologue_intro">זוהי פלטפורמה למסחר אלקטרוני שגדלה איתך</string>
+    <string name="product_type_variable_subscription">מינוי משתנה</string>
+    <string name="order_creation_remove_this_coupon">להסיר קופון</string>
+    <string name="coupon_selector_empty_list_title">מי לא רוצה לקבל מבצע</string>
+    <string name="coupon_selector_empty_list_message">עדיין לא יצרת קופונים. יש ליצור קופון שיוחל על ההזמנה הנוכחית.</string>
+    <string name="coupon_selector_empty_list_button">מעבר אל \'קופונים\'</string>
+    <string name="order_creation_select_coupon">יש לבחור קופון</string>
+    <string name="signup_get_started_button">ליצור חנות חדשה</string>
     <string name="coupon_create_coupon_creation_failed">יצירת הקופון נכשלה</string>
     <string name="coupon_create_coupon_created">הקופון נוצר</string>
     <string name="coupon_create_save_button">ליצור</string>
@@ -281,21 +318,10 @@ Language: he_IL
     <string name="product_quantity_rules_title">כללי כמות</string>
     <string name="gift_cards">שוברי מתנה</string>
     <string name="order_gift_card">שובר מתנה</string>
-    <string name="free_trial_feature_fast_to_launch">השקה במהירות</string>
-    <string name="free_trial_feature_site_security">אבטחת אתרים</string>
-    <string name="free_trial_feature_auto_updates_backups">עדכונים וגיבויים אוטומטיים</string>
-    <string name="free_trial_feature_247_support">תמיכה מסביב לשעון</string>
-    <string name="free_trial_feature_email_marketing">שיווק באימייל</string>
     <string name="free_trial_feature_social_advertising">פרסום ברשתות חברתיות</string>
-    <string name="free_trial_feature_subscription_product_kits">ערכות מינויים ומוצרים</string>
-    <string name="free_trial_feature_multiple_payment_options">מספר אפשרויות תשלומים</string>
-    <string name="free_trial_feature_ecommerce_reports">דוחות של מסחר אלקטרוני</string>
-    <string name="free_trial_feature_shipping_labels">תוויות משלוח</string>
-    <string name="free_trial_feature_unlimited_products">מוצרים ללא הגבלה</string>
     <string name="free_trial_feature_premium_themes">ערכות פרימיום</string>
     <string name="free_trial_summary_credit_card_message">אין צורך בכרטיס אשראי.</string>
-    <string name="free_trial_summary_try_button">ניסיון בחינם</string>
-    <string name="free_trial_summary_try_it">ניתן לנסות למשך 14 ימים.</string>
+    <string name="free_trial_summary_try_it">ניתן לנסות בחינם למשך 14 יום.</string>
     <string name="free_trial_summary_advertise">אנחנו מציעים כל מה שצריך כדי לבנות ולפתח את החנות המקוונת שלך. השירות מופעל על ידי WooCommerce באחסון של WordPress.com.</string>
     <string name="free_trial_summary_title">להשיק חנות תוך ימים ספורים ולצמוח במשך השנים</string>
     <string name="product_selector_products_heading">מוצרים</string>
@@ -334,8 +360,6 @@ Language: he_IL
     <string name="subscription_id">מינוי מספר ⁦%1$d⁩</string>
     <string name="order_subscription">מינוי</string>
     <string name="store_onboarding_launch_store_ok">אישור</string>
-    <string name="simplified_login_prologue_title">מהמכירה הראשונה עד מחזור רווחים של מיליונים, השירות של WooCommerce עומד לצדך. כדאי להתרשם למה סוחרים סומכים עלינו בהפעלת 3.4 מיליון חנויות מקוונות.</string>
-    <string name="simplified_login_prologue_intro">למכור כל דבר, בכל מקום.</string>
     <string name="product_type_subscription">מינוי</string>
     <string name="otp_incorrect">קוד ה-OTP שגוי. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
     <string name="requesting_sms_otp_failure">הבקשה של הודעת הטקסט (SMS) נכשלה. יש לנסות שוב.</string>
@@ -545,13 +569,9 @@ Language: he_IL
     <string name="store_creation_country_picker_countries_header">ארצות</string>
     <string name="store_creation_country_picker_current_location">מיקום נוכחי</string>
     <string name="store_creation_country_picker_description">אנחנו נשתמש בפרטים האלה כדי להגדיר את התשלומים, המשלוח והמיסים.</string>
-    <string name="store_creation_country_picker_title">עליך לאשר את המיקום שלך</string>
     <string name="store_creation_store_profiler_platforms_description">ניתן לבחור מספר אפשרויות.</string>
-    <string name="store_creation_store_profiler_platforms_title">באיזו פלטפורמה המכירות שלך מתבצעות כרגע?</string>
-    <string name="store_creation_store_profiler_journey_description">כדי לזרז את העניינים, נתאים את לך החוויה ב-WooCommerce על בסיס התגובה שלך.</string>
-    <string name="store_creation_store_profiler_journey_title">מה המיקום שלך במסע המסחרי שלך?</string>
-    <string name="store_creation_store_profiler_industries_description">יש לבחור קטגוריה שמגדירה את העסק שלך בצורה הטובה ביותר.</string>
-    <string name="store_creation_store_profiler_industries_title">מה בכוונתך למכור?</string>
+    <string name="store_creation_store_profiler_platforms_title">אילו פלטפורמות\nמשמשות אותך כרגע?</string>
+    <string name="store_creation_store_profiler_industries_description">יש לבחור קטגוריה שמגדירה\nאת העסק שלך בצורה הכי מדויקת.</string>
     <string name="login_application_passwords_unavailable">נראה שהאפשרות \'סיסמאות אפליקציה\' מושבתת באתר ⁦%1$s⁩.\n יש להפעיל אותה כדי להשתמש באפליקציית WooCommerce.</string>
     <string name="login_open_installation_page">יש לפתוח את עמוד ההתקנה</string>
     <string name="not_a_valid_qr_code">קוד Qr סרוק אינו קוד WooCommerce</string>
@@ -716,7 +736,6 @@ Language: he_IL
     <string name="signup_password_hint">בחירת סיסמה</string>
     <string name="signup_email_address_hint">כתובת האימייל שלך</string>
     <string name="signup_get_started_label">להתחיל כעת › \nin minutes</string>
-    <string name="signup_get_started_button">להתחיל כעת ›</string>
     <string name="login_jetpack_connection_consent">לחיצה על הכפתור הגדרת Jetpack מהווה את הסכמתך לתנאי השימוש שלנו ולשיתוף המידע עם WordPress.com.&lt;a href=\'terms\'&gt;&lt;/a&gt;&lt;a href=\'sync\'&gt;&lt;/a&gt;</string>
     <string name="enable_card_reader">להפעיל את הסימולציה של קורא הכרטיסים</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">כדי להשתמש באפליקציה, יש לפנות לבעלי האתר כדי לקבל הזמנה לאתר זה כמנהל חנות או כמנהל מערכת.</string>
@@ -1436,7 +1455,7 @@ Language: he_IL
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; על קבלת תשלומים באמצעות המכשיר הנייד והזמנה של קוראי כרטיסים</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">נדרשת לך עזרה? &lt;a href=\'\'&gt;כדאי לפנות לתמיכה&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">עדיין אפשר לקבל תשלומי מזומן באופן אישי על ידי הפעלת אמצעי התשלום \"מזומן בעת מסירה\" בחנות שלך</string>
-    <string name="card_reader_onboarding_country_not_supported_header">איננו תומכים בתשלומים באופן אישי ב-⁦%1$s⁩</string>
+    <string name="card_reader_onboarding_country_not_supported_header">איננו תומכים בתשלומים באופן אישי באמצעות כרטיסים במדינת ⁦%1$s⁩</string>
     <string name="card_reader_onboarding_loading">התחברות לחשבונך</string>
     <string name="card_reader_onboarding_title">תשלומים באופן אישי</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">כדאי לבדוק שוב את מידות האריזה ומשקלה או לנסות להשתמש באריזה שונה ב\'פרטי החבילה\'</string>
