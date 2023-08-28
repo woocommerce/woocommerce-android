@@ -38,7 +38,6 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.OpenReactNative
-import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -245,7 +244,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             binding.shippingClasses.isVisible
 
         binding.optionStoreName.setOnClickListener {
-            NameYourStoreDialogFragment().show(childFragmentManager, NameYourStoreDialogFragment.TAG)
+            // todo replace with navigation to NameYourStoreDialogFragment
         }
     }
 

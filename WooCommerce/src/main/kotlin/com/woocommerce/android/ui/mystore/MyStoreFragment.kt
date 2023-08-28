@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
-import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -307,7 +306,7 @@ class MyStoreFragment :
                     )
 
                 is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
-                    NameYourStoreDialogFragment().show(childFragmentManager, NameYourStoreDialogFragment.TAG)
+                    // todo replace with navigation to NameYourStoreDialogFragment
                 }
 
                 is ShowDialog -> event.showDialog()

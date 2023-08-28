@@ -3254,6 +3254,7 @@
     <string name="store_onboarding_name_your_store_dialog_title">Store name</string>
     <string name="store_onboarding_name_your_store_dialog_success">Store name set! \n To change again, visit Store Settings.</string>
     <string name="settings_name_your_store_dialog_success">Store name set!</string>
+    <string name="settings_name_your_store_dialog_loading">Saving new store name…</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Unable to save store name. Please try again.</string>
 
     <!--
