@@ -18,6 +18,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
@@ -49,7 +50,6 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     @Before
     fun setUp() {
         trackerWrapper = mock()
-
         selectedSite = mock {
             on { get() } doReturn defaultSiteModel
         }
@@ -172,10 +172,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when tax based on store address fetched, then it should be parsed correctly`() = testBlocking {
-        whenever(wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get())).thenReturn(
-            WooResult(
-                TaxBasedOnSettingEntity(localSiteId = selectedSite.get().localId(), selectedOption = "base")
-            )
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(any())).thenReturn(
+            WooResult(TaxBasedOnSettingEntity(localSiteId = LocalOrRemoteId.LocalId(1), selectedOption = "base"))
         )
         sut.fetchTaxBasedOnSetting().also { setting ->
             assertThat(setting).isNotNull
@@ -185,9 +183,9 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when tax based on shipping address fetched, then it should be parsed correctly`() = testBlocking {
-        whenever(wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get())).thenReturn(
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(any())).thenReturn(
             WooResult(
-                TaxBasedOnSettingEntity(localSiteId = selectedSite.get().localId(), selectedOption = "shipping")
+                TaxBasedOnSettingEntity(localSiteId = LocalOrRemoteId.LocalId(1), selectedOption = "shipping")
             )
         )
 
@@ -199,9 +197,9 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when tax based on billing address fetched, then it should be parsed correctly`() = testBlocking {
-        whenever(wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get())).thenReturn(
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(any())).thenReturn(
             WooResult(
-                TaxBasedOnSettingEntity(localSiteId = selectedSite.get().localId(), selectedOption = "billing")
+                TaxBasedOnSettingEntity(localSiteId = LocalOrRemoteId.LocalId(1), selectedOption = "billing")
             )
         )
 
