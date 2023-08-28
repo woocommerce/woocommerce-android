@@ -122,9 +122,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when tax help clicked, then should track event`() {
         sut.onTaxHelpButtonClicked()
-        verify(tracker).track(
-            AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED, mapOf(AnalyticsTracker.KEY_SOURCE to "order_creation")
-        )
+        verify(tracker).track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED)
     }
 
     @Test

@@ -1103,9 +1103,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
             )
         )
-        tracker.track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED, mapOf(
-            KEY_SOURCE to "order_creation"
-        ))
+        tracker.track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED)
     }
 
     @Parcelize
