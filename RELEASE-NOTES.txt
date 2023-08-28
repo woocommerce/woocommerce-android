@@ -7,6 +7,8 @@
 - [*] Fix a crash that occurs when using Magic Link to login during the Jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/9642]
 - [**] [Internal] Handle "enabled" WCPay account status the same way as "completed" [https://github.com/woocommerce/woocommerce-android/pull/9637]
 - [*] Onboarding: A new onboarding item, "Name Your Store", is added. Also, changing store name is now possible in Settings. [https://github.com/woocommerce/woocommerce-android/issues/9621]
+- [**] Store creation: Store creation flow has been revamped and now profiler steps are shown while the site is being created [https://github.com/woocommerce/woocommerce-android/issues/9587]
+
 15.0
 -----
 - [*] Store creation: Country selector screen is now more intuitive and easier to use. [https://github.com/woocommerce/woocommerce-android/issues/9606]
