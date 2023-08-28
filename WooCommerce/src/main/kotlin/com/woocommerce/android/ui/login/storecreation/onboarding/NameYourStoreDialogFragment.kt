@@ -1,18 +1,43 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
-import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ProgressBar
-import androidx.appcompat.app.AlertDialog
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreViewModel.NameYourStoreDialogState
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -21,80 +46,106 @@ class NameYourStoreDialogFragment : DialogFragment() {
     @Inject
     internal lateinit var selectedSite: SelectedSite
 
-    private val viewModel: StoreOnboardingViewModel by viewModels()
-
-    private lateinit var dialog: AlertDialog
-    private lateinit var layout: FrameLayout
-    private lateinit var inputField: EditText
-    private lateinit var progressBar: ProgressBar
-
+    private val viewModel: NameYourStoreViewModel by viewModels()
 
     companion object {
         const val TAG: String = "NameYourStoreDialogFragment"
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 
-        inputField = EditText(context)
-        progressBar = ProgressBar(context)
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-        progressBar.visibility = ProgressBar.GONE
-
-        layout = FrameLayout(requireContext()).apply {
-            val verticalPadding = resources.getDimensionPixelSize(R.dimen.major_150)
-            val horizontalPadding = resources.getDimensionPixelSize(R.dimen.major_100)
-            setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
-            addView(inputField)
-            inputField.setText(selectedSite.get().name)
-            addView(progressBar)
-        }
-
-        val builder = MaterialAlertDialogBuilder(requireContext())
-        builder.setTitle(resources.getString(R.string.store_onboarding_name_your_store_dialog_title))
-            .setView(layout)
-            .setPositiveButton(resources.getString(R.string.dialog_ok), null)
-            .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ ->
-                dialog.cancel()
-            }
-
-        dialog = builder.create()
-
-        dialog.setOnShowListener {
-            // Setting here to prevent automatic dismissal
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                viewModel.saveSiteTitle(inputField.text.toString(), fromOnboarding = false)
+            setContent {
+                WooThemeWithBackground {
+                    viewModel.viewState.observeAsState().value?.let { state ->
+                        val focusRequester = remember { FocusRequester() }
+                        Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {
+                            if (state.isLoading) {
+                                LoadingDialog()
+                            } else
+                                NameYourStoreDialog(state, focusRequester, state.isError)
+                        }
+                    }
+                }
             }
         }
-        return dialog
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    @Composable
+    private fun NameYourStoreDialog(
+        state: NameYourStoreDialogState,
+        focusRequester: FocusRequester,
+        isError: Boolean
+    ) {
+        Column {
+            Text(
+                text = stringResource(id = R.string.store_onboarding_name_your_store_dialog_title),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_150))
+            )
+            Spacer(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
+            WCOutlinedTextField(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .padding(top = dimensionResource(id = R.dimen.minor_100)),
+                value = state.enteredSiteTitle,
+                onValueChange = { viewModel.onSiteTitleInputChanged(it) },
+                label = stringResource(id = R.string.store_onboarding_name_your_store_dialog_title),
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
 
-        viewModel.isSavingSiteTitle.observe(viewLifecycleOwner) { isSavingSiteTitle ->
-            when (isSavingSiteTitle) {
-                StoreOnboardingViewModel.NameYourStoreDialogState.START,
-                StoreOnboardingViewModel.NameYourStoreDialogState.FAILURE,
-                null -> {
-                    progressBar.visibility = ProgressBar.INVISIBLE
-                    inputField.visibility = EditText.VISIBLE
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = true
-                    dialog.setCancelable(true)
-                }
+            Text(
+                text = stringResource(id = R.string.store_onboarding_name_your_store_dialog_failure),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .alpha(if (isError) 1f else 0f)
+            )
 
-                StoreOnboardingViewModel.NameYourStoreDialogState.LOADING -> {
-                    progressBar.visibility = ProgressBar.VISIBLE
-                    inputField.visibility = EditText.INVISIBLE
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = false
-                    dialog.setCancelable(false)
-                }
-
-                StoreOnboardingViewModel.NameYourStoreDialogState.SUCCESS -> {
-                    dialog.dismiss()
-                }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.major_150)),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                WCTextButton(
+                    text = stringResource(id = R.string.cancel),
+                    modifier = Modifier
+                        .weight(weight = 1f)
+                        .padding(end = dimensionResource(id = R.dimen.major_150)),
+                    onClick = viewModel::onNameYourStoreDismissed
+                )
+                WCTextButton(
+                    text = stringResource(id = R.string.dialog_ok),
+                    modifier = Modifier
+                        .weight(weight = 1f)
+                        .padding(start = dimensionResource(id = R.dimen.major_150)),
+                    onClick = {
+                        viewModel.saveSiteTitle(state.enteredSiteTitle, fromOnboarding = false)
+                    }
+                )
             }
+        }
+    }
+
+    @Composable
+    private fun LoadingDialog() {
+        Column(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_150))
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.settings_name_your_store_dialog_loading),
+                style = MaterialTheme.typography.h6
+            )
+            Spacer(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
+            CircularProgressIndicator(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
         }
     }
 
