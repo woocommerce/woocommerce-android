@@ -86,46 +86,42 @@ class NameYourStoreDialogFragment : DialogFragment() {
             Text(
                 text = stringResource(id = R.string.store_onboarding_name_your_store_dialog_title),
                 style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_150))
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
             )
-            Spacer(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
             WCOutlinedTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
-                    .padding(top = dimensionResource(id = R.dimen.minor_100)),
+                    .padding(dimensionResource(id = R.dimen.major_100)),
                 value = state.enteredSiteTitle,
                 onValueChange = { viewModel.onSiteTitleInputChanged(it) },
                 label = stringResource(id = R.string.store_onboarding_name_your_store_dialog_title),
                 singleLine = true
             )
-            Spacer(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
 
             Text(
                 text = stringResource(id = R.string.store_onboarding_name_your_store_dialog_failure),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     .alpha(if (isError) 1f else 0f)
             )
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_150)),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100))
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 WCTextButton(
                     text = stringResource(id = R.string.cancel),
-                    modifier = Modifier
-                        .weight(weight = 1f)
-                        .padding(end = dimensionResource(id = R.dimen.major_150)),
                     onClick = viewModel::onNameYourStoreDismissed
                 )
                 WCTextButton(
                     text = stringResource(id = R.string.dialog_ok),
-                    modifier = Modifier
-                        .weight(weight = 1f)
-                        .padding(start = dimensionResource(id = R.dimen.major_150)),
                     onClick = {
                         viewModel.saveSiteTitle(state.enteredSiteTitle)
                     }
