@@ -375,6 +375,7 @@ class OrderCreateEditFormFragment :
             newOrderData,
             viewModel.viewStateData.liveData.value?.taxBasedOnSettingLabel
         )
+        paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
     }
 
     private fun bindTaxLinesSection(

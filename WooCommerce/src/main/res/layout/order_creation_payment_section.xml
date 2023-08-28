@@ -186,14 +186,30 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tax_label"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:paddingLeft="@dimen/minor_00"
+                android:paddingRight="@dimen/minor_50"
                 android:text="@string/order_creation_payment_tax"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/tax_value"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="RtlHardcoded" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/tax_help_button"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:src="@drawable/ic_help_24dp"
+                android:tint="@color/color_primary"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/minor_25"
+                android:contentDescription="@string/tax_rates_information_content_description"
+                android:background="?selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/tax_label"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
