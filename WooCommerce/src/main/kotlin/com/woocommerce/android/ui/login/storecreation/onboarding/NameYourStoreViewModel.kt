@@ -23,8 +23,7 @@ class NameYourStoreViewModel @Inject constructor(
 
     private val _viewState = MutableLiveData(
         NameYourStoreDialogState(
-            currentSiteTitle = selectedSite.get().name,
-            enteredSiteTitle = "",
+            enteredSiteTitle = selectedSite.get().name,
             isLoading = false,
             isError = false
         )
@@ -62,7 +61,6 @@ class NameYourStoreViewModel @Inject constructor(
     }
 
     data class NameYourStoreDialogState(
-        val currentSiteTitle: String,
         val enteredSiteTitle: String,
         val isLoading: Boolean,
         val isError: Boolean
