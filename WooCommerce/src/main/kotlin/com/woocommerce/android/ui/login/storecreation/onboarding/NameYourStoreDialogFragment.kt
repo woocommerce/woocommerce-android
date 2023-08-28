@@ -33,7 +33,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -43,14 +42,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NameYourStoreDialogFragment : DialogFragment() {
-    @Inject
-    internal lateinit var selectedSite: SelectedSite
 
     private val viewModel: NameYourStoreViewModel by viewModels()
-
-    companion object {
-        const val TAG: String = "NameYourStoreDialogFragment"
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
