@@ -78,6 +78,10 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -225,7 +229,19 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+        launch {
+            orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+                viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
+            }
+        }
     }
+
+    private val TaxBasedOnSetting.label: String
+        get() = when (this) {
+            StoreAddress -> resourceProvider.getString(string.order_creation_tax_based_on_store_address)
+            BillingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_billing_address)
+            ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
+        }
 
     private fun handleCouponEditResult() {
         args.couponEditResult?.let {
@@ -1050,7 +1066,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
-        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
+        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
+        val taxBasedOnSettingLabel: String = "",
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
