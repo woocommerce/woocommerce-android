@@ -303,7 +303,7 @@ private fun Switch(
                 .width(dimensionResource(id = R.dimen.major_250))
                 .height(dimensionResource(id = R.dimen.major_250)),
             onClick = onManualDiscountClicked,
-            text = "$",
+            text = state.currency,
             isSelected = state.discountType is Amount,
             contentPadding = PaddingValues(0.5.dp),
             shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp),
