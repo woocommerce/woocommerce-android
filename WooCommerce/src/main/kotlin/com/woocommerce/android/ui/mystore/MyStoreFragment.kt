@@ -411,6 +411,9 @@ class MyStoreFragment :
         myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
             binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
         }
+        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+            ((activity) as MainActivity).setSubtitle(storeName)
+        }
     }
 
     private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
@@ -574,8 +577,6 @@ class MyStoreFragment :
     }
 
     override fun getFragmentTitle() = getString(R.string.my_store)
-
-    override fun getFragmentSubtitle(): String = myStoreViewModel.getSelectedSiteName()
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
