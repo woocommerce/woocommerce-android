@@ -45,6 +45,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
@@ -58,6 +60,7 @@ import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEd
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
+import kotlinx.coroutines.NonDisposableHandle.parent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.math.BigDecimal
@@ -203,7 +206,7 @@ private fun ProductCard(
     totalPerProduct: BigDecimal,
     state: ViewState
 ) {
-    Row(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .height(dimensionResource(id = R.dimen.major_400))
@@ -212,27 +215,39 @@ private fun ProductCard(
                 width = dimensionResource(id = R.dimen.minor_10),
                 color = colorResource(id = R.color.woo_gray_5),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            )
     ) {
+        val (asyncImage, column, text) = createRefs()
+
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageUrl)
                 .crossfade(true)
                 .build(),
-            placeholder = painterResource(R.drawable.ic_product),
-            error = painterResource(R.drawable.ic_product),
             contentDescription = stringResource(R.string.product_image_content_description),
             contentScale = ContentScale.FillWidth,
+            placeholder = painterResource(R.drawable.ic_product),
+            error = painterResource(R.drawable.ic_product),
             modifier = Modifier
+                .constrainAs(asyncImage) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
                 .size(dimensionResource(R.dimen.major_300))
                 .clip(RoundedCornerShape(3.dp))
                 .padding(dimensionResource(id = R.dimen.minor_100))
         )
+
         Column(
             modifier = Modifier
-                .weight(1f)
+                .constrainAs(column) {
+                    start.linkTo(asyncImage.end)
+                    end.linkTo(text.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                }
                 .padding(dimensionResource(id = R.dimen.minor_100)),
             verticalArrangement = Arrangement.Center
         ) {
@@ -250,6 +265,11 @@ private fun ProductCard(
         Text(
             text = "${state.currency}$totalPerProduct",
             modifier = Modifier
+                .constrainAs(text) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
                 .padding(dimensionResource(id = R.dimen.major_100)),
             style = MaterialTheme.typography.body1
         )
@@ -407,7 +427,7 @@ fun OrderCreateEditProductDiscountScreenPreview() =
         )
     )
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ProductCardPreview() {
     ProductCard(
