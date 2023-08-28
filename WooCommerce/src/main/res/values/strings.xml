@@ -2108,6 +2108,7 @@
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
+    <string name="settings_account">Account Settings</string>
 
     <!--
         Developer Options Screen

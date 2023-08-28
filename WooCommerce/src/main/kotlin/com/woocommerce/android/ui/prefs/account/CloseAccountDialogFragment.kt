@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.prefs
+package com.woocommerce.android.ui.prefs.account
 
 import android.content.Intent
 import android.os.Bundle
@@ -43,9 +43,9 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.prefs.CloseAccountViewModel.CloseAccountState
-import com.woocommerce.android.ui.prefs.CloseAccountViewModel.ContactSupport
-import com.woocommerce.android.ui.prefs.CloseAccountViewModel.OnAccountClosed
+import com.woocommerce.android.ui.prefs.account.CloseAccountViewModel.CloseAccountState
+import com.woocommerce.android.ui.prefs.account.CloseAccountViewModel.ContactSupport
+import com.woocommerce.android.ui.prefs.account.CloseAccountViewModel.OnAccountClosed
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
