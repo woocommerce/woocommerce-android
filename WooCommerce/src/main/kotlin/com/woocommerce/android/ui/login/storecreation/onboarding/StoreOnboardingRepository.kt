@@ -119,6 +119,12 @@ class StoreOnboardingRepository @Inject constructor(
 
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Site title saved successfully")
+
+                // Update selectedSite to reflect the newly saved store name.
+                siteStore.getSiteByLocalId(selectedSite.get().id)?.let { updatedSite ->
+                    selectedSite.set(updatedSite)
+                }
+
                 Result.success(true)
             }
         }
