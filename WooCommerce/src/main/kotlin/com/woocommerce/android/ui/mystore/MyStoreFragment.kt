@@ -306,7 +306,10 @@ class MyStoreFragment :
                     )
 
                 is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
-                    // todo replace with navigation to NameYourStoreDialogFragment
+                    findNavController()
+                        .navigateSafely(
+                            NavGraphMainDirections.actionGlobalNameYourStoreDialogFragment(fromOnboarding = true)
+                        )
                 }
 
                 is ShowDialog -> event.showDialog()
