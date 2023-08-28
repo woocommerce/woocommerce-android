@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -41,7 +40,7 @@ class NameYourStoreViewModel @Inject constructor(
                         triggerEvent(ShowSnackbar(R.string.settings_name_your_store_dialog_success))
                     }
 
-                    triggerEvent(OnSiteTitleSaved)
+                    triggerEvent(Exit)
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_failure))
@@ -65,6 +64,4 @@ class NameYourStoreViewModel @Inject constructor(
         val isLoading: Boolean,
         val isError: Boolean
     )
-
-    object OnSiteTitleSaved : MultiLiveEvent.Event()
 }

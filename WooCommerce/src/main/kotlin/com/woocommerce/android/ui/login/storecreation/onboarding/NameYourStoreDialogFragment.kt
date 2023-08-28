@@ -31,14 +31,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreViewModel.NameYourStoreDialogState
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class NameYourStoreDialogFragment : DialogFragment() {
@@ -66,6 +67,16 @@ class NameYourStoreDialogFragment : DialogFragment() {
             }
         }
     }
+
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+            }
+        }
+    }
+
 
     @Composable
     private fun NameYourStoreDialog(
