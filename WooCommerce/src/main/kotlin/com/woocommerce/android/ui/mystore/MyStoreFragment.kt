@@ -578,6 +578,8 @@ class MyStoreFragment :
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
+    override fun getFragmentSubtitle(): String = myStoreViewModel.storeName.value ?: ""
+
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
