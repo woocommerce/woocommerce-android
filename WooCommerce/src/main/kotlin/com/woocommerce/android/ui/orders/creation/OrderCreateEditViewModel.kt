@@ -78,6 +78,10 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -115,10 +119,6 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
 
 @HiltViewModel
 @Suppress("LargeClass")
