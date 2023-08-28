@@ -16,7 +16,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
@@ -247,7 +246,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionStoreName.setOnClickListener {
             findNavController()
                 .navigateSafely(
-                    NavGraphMainDirections.actionGlobalNameYourStoreDialogFragment()
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToNameYourStoreDialogFragment()
                 )
         }
     }

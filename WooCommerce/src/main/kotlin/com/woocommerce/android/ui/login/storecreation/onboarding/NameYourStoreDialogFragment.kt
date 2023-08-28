@@ -68,15 +68,13 @@ class NameYourStoreDialogFragment : DialogFragment() {
         }
     }
 
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
             }
         }
     }
-
 
     @Composable
     private fun NameYourStoreDialog(
