@@ -24,6 +24,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -35,18 +36,18 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: CreatePaymentAction
     private val paymentIntentParametersFactory = mock<PaymentIntentParametersFactory>()
     private val terminal: TerminalWrapper = mock()
-    private val paymentUtils: PaymentUtils = PaymentUtils()
     private val intentParametersBuilder = mock<PaymentIntentParameters.Builder>()
     private val cardReaderConfigFactory: CardReaderConfigFactory = mock()
+    private val paymentUtils: PaymentUtils = mock()
 
     @Before
     fun setUp() {
         action = CreatePaymentAction(
             paymentIntentParametersFactory,
             terminal,
-            paymentUtils,
             mock(),
-            cardReaderConfigFactory
+            cardReaderConfigFactory,
+            paymentUtils,
         )
         whenever(paymentIntentParametersFactory.createBuilder(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setAmount(any())).thenReturn(intentParametersBuilder)
@@ -341,6 +342,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
         }
         val amount = BigDecimal(1)
+        whenever(paymentUtils.convertToSmallestCurrencyUnit(eq(amount), eq("USD"))).thenReturn(100L)
 
         action.createPaymentIntent(createPaymentInfo(amount = amount)).toList()
 

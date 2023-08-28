@@ -19,7 +19,7 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
-) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
     private companion object {
         const val STARTING_BUSINESS_KEY = "im_just_starting_my_business"
         const val NOT_SELLING_ONLINE_KEY = "im_already_selling_but_not_online"
@@ -51,16 +51,22 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_journey_description)
 
+    override fun getMainButtonText(): String =
+        resourceProvider.getString(R.string.continue_button)
+
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_journey_title)
 
-    override fun onContinueClicked() {
+    override fun saveStepAnswer() {
         newStore.update(
             profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
                 .copy(
                     userCommerceJourneyKey = profilerOptions.value.firstOrNull { it.isSelected }?.key
                 )
         )
+    }
+
+    override fun moveForward() {
         when (alreadySellingOnlineSelected()) {
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
             false -> triggerEvent(NavigateToNextStep)

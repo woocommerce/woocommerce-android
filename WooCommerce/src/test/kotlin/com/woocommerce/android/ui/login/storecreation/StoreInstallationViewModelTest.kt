@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.login.storecreation
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.login.storecreation.installation.StoreInstalla
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,8 +56,9 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         const val SITE_ID = 123L
         val INITIAL_LOADING_STATE = StoreCreationLoadingState(
             progress = 0F,
-            title = string.store_creation_in_progress_title_1,
-            description = string.store_creation_in_progress_description_1
+            title = R.string.store_creation_in_progress_title_1,
+            description = R.string.store_creation_in_progress_description_1,
+            image = R.drawable.store_creation_loading_almost_there
         )
     }
 
@@ -222,7 +222,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_SOURCE to null,
                     AnalyticsTracker.KEY_URL to newStore.data.domain,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
-                    AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                    AnalyticsTracker.KEY_IS_FREE_TRIAL to true
                 )
             )
         }

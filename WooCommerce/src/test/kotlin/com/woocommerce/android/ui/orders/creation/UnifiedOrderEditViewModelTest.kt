@@ -69,10 +69,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
-    protected lateinit var resourceProvider: ResourceProvider
     protected lateinit var parameterRepository: ParameterRepository
-    protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
+    protected lateinit var tracker: AnalyticsTrackerWrapper
+    protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     private lateinit var productRestrictions: OrderCreationProductRestrictions

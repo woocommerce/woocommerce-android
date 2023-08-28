@@ -9,6 +9,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     APPLICATION_VERSION_CHECK_FAILED(siteless = true),
     BACK_PRESSED(siteless = true),
     VIEW_SHOWN(siteless = true),
+    APPLICATION_STORE_SNAPSHOT(siteless = false),
 
     // -- Login
     SIGNED_IN(siteless = true),
@@ -367,6 +368,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_PRESENT_COLLECT_PAYMENT_CANCELLED,
     CARD_PRESENT_COLLECT_PAYMENT_SUCCESS,
     CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED,
+    CARD_PRESENT_TAP_TO_PAY_PAYMENT_FAILED_ENABLE_NFC_TAPPED,
 
     // --Card Present Payments - Interac refund
     CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS,
