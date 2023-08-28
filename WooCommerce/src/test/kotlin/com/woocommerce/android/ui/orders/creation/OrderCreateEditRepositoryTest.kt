@@ -20,9 +20,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCTaxBasedOnSettingsModel
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -172,68 +172,42 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when tax based on store address fetched, then it should be parsed correctly`() = testBlocking {
-        val availableOptions =
-            "{\"shipping\":\"Customer shipping address\",\"billing\":\"Customer billing address\"," +
-                "\"base\":\"Shop base address\"}"
-
-        whenever(wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get())).thenReturn(
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get())).thenReturn(
             WooResult(
-                WCTaxBasedOnSettingsModel(
-                    availableOptions = availableOptions, selectedOption = "base"
-                )
+                TaxBasedOnSettingEntity(localSiteId = selectedSite.get().localId(), selectedOption = "base")
             )
         )
-
         sut.fetchTaxBasedOnSetting().also { setting ->
             assertThat(setting).isNotNull
             assertThat(setting).isInstanceOf(TaxBasedOnSetting.StoreAddress::class.java)
-            assertThat(setting?.key).isEqualTo("base")
-            assertThat(setting?.label).isEqualTo("Shop base address")
         }
     }
 
     @Test
     fun `when tax based on shipping address fetched, then it should be parsed correctly`() = testBlocking {
-        val availableOptions =
-            "{\"shipping\":\"Customer shipping address\",\"billing\":\"Customer billing address\"," +
-                "\"base\":\"Shop base address\"}"
-
-        whenever(wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get())).thenReturn(
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get())).thenReturn(
             WooResult(
-                WCTaxBasedOnSettingsModel(
-                    availableOptions = availableOptions,
-                    selectedOption = "shipping"
-                )
+                TaxBasedOnSettingEntity(localSiteId = selectedSite.get().localId(), selectedOption = "shipping")
             )
         )
 
         sut.fetchTaxBasedOnSetting().also { setting ->
             assertThat(setting).isNotNull
             assertThat(setting).isInstanceOf(TaxBasedOnSetting.ShippingAddress::class.java)
-            assertThat(setting?.key).isEqualTo("shipping")
-            assertThat(setting?.label).isEqualTo("Customer shipping address")
         }
     }
 
     @Test
     fun `when tax based on billing address fetched, then it should be parsed correctly`() = testBlocking {
-        val availableOptions =
-            "{\"shipping\":\"Customer shipping address\",\"billing\":\"Customer billing address\"," +
-                "\"base\":\"Shop base address\"}"
-
-        whenever(wooCommerceStore.fetchSiteTaxBasedOnSettings(selectedSite.get())).thenReturn(
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get())).thenReturn(
             WooResult(
-                WCTaxBasedOnSettingsModel(
-                    availableOptions = availableOptions, selectedOption = "billing"
-                )
+                TaxBasedOnSettingEntity(localSiteId = selectedSite.get().localId(), selectedOption = "billing")
             )
         )
 
         sut.fetchTaxBasedOnSetting().also { setting ->
             assertThat(setting).isNotNull
             assertThat(setting).isInstanceOf(TaxBasedOnSetting.BillingAddress::class.java)
-            assertThat(setting?.key).isEqualTo("billing")
-            assertThat(setting?.label).isEqualTo("Customer billing address")
         }
     }
 }
