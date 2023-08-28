@@ -80,8 +80,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 isRemoveButtonVisible = getRemoveButtonVisibility(),
                 discountType = type,
                 priceAfterDiscount = getPriceAfterDiscount(),
-                calculatedPercentage = getCalculatedPercentage(),
-                calculatedAmount = getCalculatedAmount(),
+                calculatedPriceAfterDiscount = getCalculatedPriceAfterDiscount(),
                 productDetailsState = ProductDetailsState(
                     imageUrl = productUiModel.imageUrl
                 )
@@ -194,20 +193,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             .stripTrailingZeros()
     }
 
-    private fun getCalculatedPercentage(): BigDecimal {
-        return discount.value?.let {
-            calculateDiscountPercentage(it)
-                .setScale(2, RoundingMode.HALF_UP)
-        } ?: BigDecimal.ZERO
-    }
-
-    private fun getCalculatedAmount(): BigDecimal {
-        return discount.value?.let {
-            calculateDiscountAmount(it)
-                .setScale(2, RoundingMode.HALF_UP)
-        } ?: BigDecimal.ZERO
-    }
-
     fun onDiscountRemoveClicked() {
         orderItem.updateAndGet {
             it.copy(total = it.subtotal)
@@ -222,6 +207,20 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             .setScale(2, RoundingMode.HALF_UP)
     }
 
+    private fun getCalculatedPriceAfterDiscount(): BigDecimal {
+        return if (discount.value == null) BigDecimal.ZERO else if (discountType.value == DiscountType.Percentage) {
+            discount.value?.let {
+                calculateDiscountAmount(it)
+                    .setScale(2, RoundingMode.HALF_UP)
+            } ?: BigDecimal.ZERO
+        } else {
+            discount.value?.let {
+                calculateDiscountPercentage(it)
+                    .setScale(2, RoundingMode.HALF_UP)
+            } ?: BigDecimal.ZERO
+        }
+    }
+
     fun onDiscountAmountChange(newDiscount: BigDecimal?) {
         discount.value = newDiscount
     }
@@ -234,8 +233,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val isRemoveButtonVisible: Boolean = false,
         val discountType: DiscountType = DiscountType.Amount(currency),
         val priceAfterDiscount: BigDecimal = BigDecimal.ZERO,
-        val calculatedPercentage: BigDecimal = BigDecimal.ZERO,
-        val calculatedAmount: BigDecimal = BigDecimal.ZERO,
+        val calculatedPriceAfterDiscount: BigDecimal = BigDecimal.ZERO,
         val productDetailsState: ProductDetailsState? = null,
     )
 

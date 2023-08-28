@@ -60,7 +60,6 @@ import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEd
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
-import kotlinx.coroutines.NonDisposableHandle.parent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.math.BigDecimal
@@ -321,8 +320,8 @@ fun CalculatedAmount(
     state: ViewState,
 ) {
     val discountAmount = when (state.discountType) {
-        is Percentage -> "${state.currency}${state.calculatedAmount}"
-        is Amount -> "${state.calculatedPercentage}%"
+        is Percentage -> "${state.currency}${state.calculatedPriceAfterDiscount}"
+        is Amount -> "${state.calculatedPriceAfterDiscount}%"
     }
 
     Row(
@@ -345,7 +344,7 @@ fun CalculatedAmount(
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = if (state.discountAmount == null) "0.00" else discountAmount,
+            text = discountAmount,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
