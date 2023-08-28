@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-11 08:54:04+0000
+Translation-Revision-Date: 2023-08-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Sélectionner un pays</string>
+    <string name="store_creation_country_picker_current_location_description">Nous avons détecté votre emplacement automatiquement. N’hésitez pas à modifier si besoin.</string>
+    <string name="store_creation_country_picker_title">Où se situe votre entreprise ?</string>
+    <string name="store_profiler_challenge_other">Autre</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Expédition et logistique</string>
+    <string name="store_profiler_challenge_managing_inventory">Gérer les stocks</string>
+    <string name="store_profiler_challenge_finding_customers">Rechercher des clients</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Configurer la boutique en ligne</string>
+    <string name="store_profiler_challenge_description">Sélectionnez vos préoccupations ou difficultés ci-dessous. Plusieurs réponses possibles.</string>
+    <string name="store_profiler_challenge_title">Quelle(s) difficulté(s) rencontrez-vous dans le cadre du\nlancement ou de la gestion d’une\nboutique en ligne ?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Parmi les produits potentiellement dangereux figurent notamment les batteries, la neige carbonique, les liquides inflammables, les aérosols, les munitions, les feux d’artifice, le vernis à ongles, le parfum, la peinture et les solvants. Les articles dangereux doivent être expédiés séparément.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contient des produits dangereux</string>
+    <string name="ai_product_description_title_hint">Entrez le nom du produit.</string>
+    <string name="free_trial_feature_support">Assistance prioritaire 24 h/24 et 7 j/7</string>
+    <string name="free_trial_feature_backups">Sauvegardes automatiques du site</string>
+    <string name="free_trial_feature_hosting">Service d’hébergement de premier ordre</string>
+    <string name="free_trial_feature_automated_customer_emails">E-mails automatiques aux clients</string>
+    <string name="free_trial_feature_built_in_seo">Fonctionnalité SEO intégrée</string>
+    <string name="free_trial_feature_design_editing">Conception et modification sans code</string>
+    <string name="free_trial_feature_store_management">Outils de gestion de boutique</string>
+    <string name="free_trial_summary_try_button">Créer votre boutique</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Exploitation de boutique simple</string>
+    <string name="free_trial_summary_grow_your_business">Développer votre activité</string>
+    <string name="free_trial_summary_start_selling_quickly">Commencer à vendre rapidement</string>
+    <string name="store_creation_store_profiler_journey_description">Dites-nous à quel stade commercial\nvous vous trouvez, afin que nous puissions\npersonnaliser votre expérience Woo.</string>
+    <string name="store_creation_store_profiler_journey_title">Laquelle de ces propositions\nvous correspond le mieux ?</string>
+    <string name="store_creation_store_profiler_industries_title">Quels types de produits prévoyez-vous\nde vendre dans votre boutique ?</string>
+    <string name="store_creation_store_profiler_industries_header">À propos de votre boutique</string>
+    <string name="simplified_login_prologue_title">Profitez d’un essai gratuit de 15 jours. Aucune carte de crédit n’est nécessaire. Rejoignez les 3,4 millions de boutiques qui avancent avec Woo, de la première vente à plusieurs millions de transactions.</string>
+    <string name="simplified_login_prologue_intro">La plateforme d’eCommerce qui grandit avec vous !</string>
+    <string name="product_type_variable_subscription">Abonnement variable</string>
+    <string name="order_creation_remove_this_coupon">Supprimer le code promo</string>
+    <string name="coupon_selector_empty_list_title">On ne dit jamais non aux bonnes affaires.</string>
+    <string name="coupon_selector_empty_list_message">Vous n’avez encore créé aucun code promo. Créez un code promo à appliquer à cette commande.</string>
+    <string name="coupon_selector_empty_list_button">Accéder aux codes promo</string>
+    <string name="order_creation_select_coupon">Sélectionner un code promo</string>
+    <string name="signup_get_started_button">Créer une nouvelle boutique</string>
     <string name="coupon_create_coupon_creation_failed">La création du code promo a échoué</string>
     <string name="coupon_create_coupon_created">Code promo créé</string>
     <string name="coupon_create_save_button">Créer</string>
@@ -281,21 +318,10 @@ Language: fr
     <string name="product_quantity_rules_title">Règles de quantité</string>
     <string name="gift_cards">Cartes-cadeaux</string>
     <string name="order_gift_card">Carte-cadeau</string>
-    <string name="free_trial_feature_fast_to_launch">Lancement rapide</string>
-    <string name="free_trial_feature_site_security">Sécurité du site</string>
-    <string name="free_trial_feature_auto_updates_backups">Mises à jour et sauvegardes automatiques</string>
-    <string name="free_trial_feature_247_support">Assistance 24h/24, 7j/7</string>
-    <string name="free_trial_feature_email_marketing">Marketing par e-mail</string>
     <string name="free_trial_feature_social_advertising">Publicité sur les réseaux sociaux</string>
-    <string name="free_trial_feature_subscription_product_kits">Abonnements et kits de produits</string>
-    <string name="free_trial_feature_multiple_payment_options">Options de paiement multiples</string>
-    <string name="free_trial_feature_ecommerce_reports">Rapports eCommerce</string>
-    <string name="free_trial_feature_shipping_labels">Étiquettes de livraison</string>
-    <string name="free_trial_feature_unlimited_products">Produits illimités</string>
     <string name="free_trial_feature_premium_themes">Thèmes premium</string>
     <string name="free_trial_summary_credit_card_message">Aucune carte de crédit requise.</string>
-    <string name="free_trial_summary_try_button">Faites un essai gratuit</string>
-    <string name="free_trial_summary_try_it">Faites un essai pendant 14 jours.</string>
+    <string name="free_trial_summary_try_it">Profitez d’un essai gratuit de 14 jours.</string>
     <string name="free_trial_summary_advertise">Nous vous proposons tout ce dont vous avez besoin pour créer et développer une boutique en ligne propulsée par WooCommerce et hébergée sur WordPress.com.</string>
     <string name="free_trial_summary_title">Un lancement en quelques jours pour une croissance pendant des années</string>
     <string name="product_selector_products_heading">Produits</string>
@@ -334,8 +360,6 @@ Language: fr
     <string name="subscription_id">Abonnement n° %1$d</string>
     <string name="order_subscription">Abonnement</string>
     <string name="store_onboarding_launch_store_ok">OK</string>
-    <string name="simplified_login_prologue_title">Woo vous accompagne, de votre toute première vente au développement colossal de votre chiffre d’affaires. Découvrez pourquoi les commerçants nous font confiance pour faire fonctionner 3,4 millions de boutiques en ligne.</string>
-    <string name="simplified_login_prologue_intro">Vendre tout, partout.</string>
     <string name="product_type_subscription">Abonnement</string>
     <string name="otp_incorrect">Le code OTP est incorrect. Veuillez vérifier vos informations et réessayer.</string>
     <string name="requesting_sms_otp_failure">La demande de SMS a échoué. Veuillez réessayer.</string>
@@ -545,13 +569,9 @@ Language: fr
     <string name="store_creation_country_picker_countries_header">Pays</string>
     <string name="store_creation_country_picker_current_location">Emplacement actuel</string>
     <string name="store_creation_country_picker_description">Nous utiliserons ces informations pour configurer rapidement les paiements, les expéditions et les taxes.</string>
-    <string name="store_creation_country_picker_title">Confirmer votre position</string>
     <string name="store_creation_store_profiler_platforms_description">Vous pouvez en choisir plusieurs.</string>
-    <string name="store_creation_store_profiler_platforms_title">Quelle plateforme utilisez-vous actuellement pour vendre vos produits ou services ?</string>
-    <string name="store_creation_store_profiler_journey_description">Pour accélérer le processus, nous allons personnaliser votre expérience WooCommerce en fonction de votre réponse.</string>
-    <string name="store_creation_store_profiler_journey_title">À quel stade commercial vous trouvez-vous ?</string>
-    <string name="store_creation_store_profiler_industries_description">Choisissez la catégorie qui correspond au mieux à votre activité.</string>
-    <string name="store_creation_store_profiler_industries_title">Qu\'allez-vous vendre ?</string>
+    <string name="store_creation_store_profiler_platforms_title">Quelle(s) plateforme(s)\nutilisez-vous actuellement ?</string>
+    <string name="store_creation_store_profiler_industries_description">Choisissez la catégorie qui définit\nle mieux votre activité.</string>
     <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
     <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
     <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
@@ -716,7 +736,6 @@ Language: fr
     <string name="signup_password_hint">Choisir un mot de passe</string>
     <string name="signup_email_address_hint">Votre adresse e-mail</string>
     <string name="signup_get_started_label">Commencer \nen quelques minutes</string>
-    <string name="signup_get_started_button">Commencer</string>
     <string name="login_jetpack_connection_consent">En appuyant sur le bouton « Connecter Jetpack », vous acceptez nos &lt;a href=\'terms\'&gt;Conditions d’utilisation&lt;/a&gt; et de &lt;a href=\'sync\'&gt;partager des informations&lt;/a&gt; avec WordPress.com.</string>
     <string name="enable_card_reader">Activer le lecteur de carte simulé</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Contactez le propriétaire du site pour obtenir une invitation d\'accès au site en tant que gérant ou administrateur de boutique pour utiliser l\'application.</string>
@@ -1436,7 +1455,7 @@ Language: fr
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec votre appareil mobile et la commande de lecteurs de carte</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Besoin d’aide ? &lt;a href=\'\'&gt;Contacter l’assistance&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">Vous pouvez toujours accepter des paiements en personne en activant le moyen de paiement « Paiement à la livraison » dans votre boutique.</string>
-    <string name="card_reader_onboarding_country_not_supported_header">Nous ne prenons pas en charge les paiements en personne dans le pays suivant : %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Nous ne prenons pas en charge les paiements en personne dans le pays suivant : %1$s.</string>
     <string name="card_reader_onboarding_loading">Connexion à votre compte</string>
     <string name="card_reader_onboarding_title">Paiements en personne</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Veuillez vérifier les dimensions et le poids de votre colis, ou essayez d’utiliser un autre colis dans Détails du colis.</string>

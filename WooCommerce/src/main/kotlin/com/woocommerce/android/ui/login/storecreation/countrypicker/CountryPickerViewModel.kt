@@ -7,8 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.util.EmojiUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,15 +24,22 @@ class CountryPickerViewModel @Inject constructor(
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils
+    private val emojiUtils: EmojiUtils,
+    private val storeProfilerRepository: StoreProfilerRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
     }
 
-    private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
-
-    val countryPickerState = availableCountries.asLiveData()
+    private val detectedCountry = MutableStateFlow(
+        StoreCreationCountry(
+            name = "",
+            code = "",
+            emojiFlag = "",
+            isSelected = false
+        )
+    )
+    val countryPickerState = detectedCountry.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -43,24 +50,23 @@ class CountryPickerViewModel @Inject constructor(
         )
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
-            val defaultCountryCode = when {
+            val currentCountryCode = when {
                 !newStore.data.country?.code.isNullOrEmpty() -> newStore.data.country?.code!!
                 loadedCountriesMap.containsKey(Locale.getDefault().country) -> Locale.getDefault().country
                 else -> DEFAULT_LOCATION_CODE
             }
-            availableCountries.update {
-                loadedCountriesMap.map { (code, name) ->
-                    StoreCreationCountry(
-                        name = name,
-                        code = code,
-                        emojiFlag = emojiUtils.countryCodeToEmojiFlag(code),
-                        isSelected = defaultCountryCode == code
-                    )
-                }.sortedBy { it.name }
-            }
+
+            val selectedCountry = StoreCreationCountry(
+                name = loadedCountriesMap[currentCountryCode] ?: "",
+                code = currentCountryCode,
+                emojiFlag = emojiUtils.countryCodeToEmojiFlag(currentCountryCode),
+                isSelected = true
+            )
+
+            detectedCountry.update { selectedCountry }
+
             newStore.update(
-                country = availableCountries.value.first { it.isSelected }
-                    .toNewStoreCountry()
+                country = selectedCountry.toNewStoreCountry()
             )
         }
     }
@@ -74,40 +80,23 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        launch {
-            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                triggerEvent(NavigateToSummaryStep)
-            } else {
-                triggerEvent(NavigateToDomainPickerStep)
-            }
-        }
-    }
-
-    fun onCountrySelected(country: StoreCreationCountry) {
-        availableCountries.update { currentCountryList ->
-            currentCountryList.map {
-                when (it.code) {
-                    country.code -> it.copy(isSelected = true)
-                    else -> it.copy(isSelected = false)
-                }
-            }
-        }
-        newStore.update(country = country.toNewStoreCountry())
-    }
-
-    private fun StoreCreationCountry.toNewStoreCountry() =
-        NewStore.Country(
-            name = name,
-            code = code,
+        storeProfilerRepository.storeAnswers(
+            siteId = newStore.data.siteId ?: 0L,
+            countryCode = newStore.data.country?.code,
+            profilerAnswers = newStore.data.profilerData
         )
 
-    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
-    object NavigateToSummaryStep : MultiLiveEvent.Event()
+        triggerEvent(NavigateToSummaryStep)
+    }
 
-    data class StoreCreationCountry(
-        val name: String,
-        val code: String,
-        val emojiFlag: String,
-        val isSelected: Boolean = false
-    )
+    fun onCurrentCountryClicked() {
+        triggerEvent(
+            NavigateToDomainListPicker(
+                locationCode = detectedCountry.value.code.takeIf { it.isNotEmpty() } ?: DEFAULT_LOCATION_CODE
+            )
+        )
+    }
+
+    data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
+    object NavigateToSummaryStep : MultiLiveEvent.Event()
 }

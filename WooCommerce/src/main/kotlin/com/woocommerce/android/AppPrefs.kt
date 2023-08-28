@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
@@ -113,6 +114,7 @@ object AppPrefs {
         BLAZE_BANNER_HIDDEN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
+        STORE_CREATION_PROFILER_ANSWERS,
     }
 
     /**
@@ -121,7 +123,7 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
-        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN
     }
 
     /**
@@ -199,6 +201,8 @@ object AppPrefs {
         USER_SEEN_NEW_FEATURE_MORE_SCREEN,
 
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
+
+        APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
     }
 
     fun init(context: Context) {
@@ -258,6 +262,16 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
+
+    var storeCreationProfilerAnswers: String?
+        get() = getString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, "")
+        set(value) {
+            if (value != null) {
+                setString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, value)
+            } else {
+                remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
+            }
+        }
 
     fun setBlazeBannerHidden(currentSiteId: Int, hidden: Boolean) {
         setBoolean(getBlazeBannerKey(currentSiteId), hidden)
@@ -1054,6 +1068,30 @@ object AppPrefs {
             key = PrefKeyString("$siteId$localTimezone$storeTimezone"),
             default = false
         )
+
+    fun setApplicationStoreSnapshotTrackedForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setBoolean(
+            key = PrefKeyString(
+                "$APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+            ),
+            value = true
+        )
+    }
+
+    fun isApplicationStoreSnapshotTrackedForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        key = PrefKeyString(
+            "$APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+        ),
+        default = false
+    )
 
     /**
      * Remove all user and site-related preferences.

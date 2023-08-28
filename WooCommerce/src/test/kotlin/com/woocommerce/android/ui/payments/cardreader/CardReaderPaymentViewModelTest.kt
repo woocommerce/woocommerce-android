@@ -62,6 +62,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentR
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReceiptHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
+import com.woocommerce.android.ui.payments.cardreader.payment.EnableNfc
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
@@ -1443,6 +1444,67 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given built in reader, when payment fails because of NFC_DISABLED, then error is mapped correcty`() =
+        testBlocking {
+            whenever(
+                errorMapper.mapPaymentErrorToUiError(
+                    CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled,
+                    cardReaderConfig,
+                    true
+                )
+            ).thenReturn(PaymentFlowError.BuiltInReader.NfcDisabled)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        PaymentFailed(
+                            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled, null, "message"
+                        )
+                    )
+                }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            val state = viewModel.viewStateData.value as BuiltInReaderFailedPaymentState
+            assertThat(state.paymentStateLabel).isEqualTo(
+                UiStringRes(R.string.card_reader_payment_failed_nfc_disabled)
+            )
+            assertThat(state.primaryActionLabel).isEqualTo(R.string.card_reader_payment_failed_nfc_disabled_enable_nfc)
+            assertThat(state.secondaryActionLabel).isEqualTo(R.string.cancel)
+        }
+
+    @Test
+    fun `given payment fails because of NFC_DISABLED, when primary button clicked, then tracked and enablenfc emitted`() =
+        testBlocking {
+            whenever(
+                errorMapper.mapPaymentErrorToUiError(
+                    CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled,
+                    cardReaderConfig,
+                    true
+                )
+            ).thenReturn(PaymentFlowError.BuiltInReader.NfcDisabled)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        PaymentFailed(
+                            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled, null, "message"
+                        )
+                    )
+                }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            val events = viewModel.event.captureValues()
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+
+            assertThat(events.last()).isInstanceOf(EnableNfc::class.java)
+            verify(tracker).trackPaymentFailedEnabledNfcTapped()
         }
 
     @Test

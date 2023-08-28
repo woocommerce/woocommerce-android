@@ -82,7 +82,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(orderCreateEditRepository).fetchTaxBasedOnSetting()
     }
 
-    @Test
     fun `given tax based on store when initializing the view model, then update view state with current tax setting`() =
         testBlocking {
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(
