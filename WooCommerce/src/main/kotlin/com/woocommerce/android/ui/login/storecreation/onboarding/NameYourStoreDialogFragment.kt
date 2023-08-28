@@ -109,9 +109,10 @@ class NameYourStoreDialogFragment : DialogFragment() {
             Row(
                 modifier = Modifier
                     .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.minor_100))
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.minor_100)
+                    )
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
