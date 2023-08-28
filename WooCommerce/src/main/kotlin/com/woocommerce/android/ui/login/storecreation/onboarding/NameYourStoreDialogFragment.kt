@@ -34,15 +34,19 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreViewModel.NameYourStoreDialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NameYourStoreDialogFragment : DialogFragment() {
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: NameYourStoreViewModel by viewModels()
 
@@ -72,6 +76,7 @@ class NameYourStoreDialogFragment : DialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }
