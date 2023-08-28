@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +19,8 @@ class NameYourStoreViewModel @Inject constructor(
     selectedSite: SelectedSite,
     private val onboardingRepository: StoreOnboardingRepository
 ) : ScopedViewModel(savedStateHandle) {
+    private val navArgs: NameYourStoreDialogFragmentArgs by savedStateHandle.navArgs()
+
     private val _viewState = MutableLiveData(
         NameYourStoreDialogState(
             currentSiteTitle = selectedSite.get().name,
@@ -28,12 +31,12 @@ class NameYourStoreViewModel @Inject constructor(
     )
     val viewState = _viewState
 
-    fun saveSiteTitle(siteTitle: String, fromOnboarding: Boolean = true) {
+    fun saveSiteTitle(siteTitle: String) {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true, isError = false)
             onboardingRepository.saveSiteTitle(siteTitle).fold(
                 onSuccess = {
-                    if (fromOnboarding) {
+                    if (navArgs.fromOnboarding) {
                         triggerEvent(ShowSnackbar(R.string.store_onboarding_name_your_store_dialog_success))
                     } else {
                         triggerEvent(ShowSnackbar(R.string.settings_name_your_store_dialog_success))

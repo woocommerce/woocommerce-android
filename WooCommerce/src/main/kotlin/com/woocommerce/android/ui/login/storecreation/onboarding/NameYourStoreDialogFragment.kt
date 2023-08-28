@@ -125,7 +125,7 @@ class NameYourStoreDialogFragment : DialogFragment() {
                         .weight(weight = 1f)
                         .padding(start = dimensionResource(id = R.dimen.major_150)),
                     onClick = {
-                        viewModel.saveSiteTitle(state.enteredSiteTitle, fromOnboarding = false)
+                        viewModel.saveSiteTitle(state.enteredSiteTitle)
                     }
                 )
             }
