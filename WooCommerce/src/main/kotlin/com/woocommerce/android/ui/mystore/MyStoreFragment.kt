@@ -246,6 +246,7 @@ class MyStoreFragment :
         )
     }
 
+    @Suppress("LongMethod")
     private fun setupOnboardingView() {
         storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
             when (state.show) {
