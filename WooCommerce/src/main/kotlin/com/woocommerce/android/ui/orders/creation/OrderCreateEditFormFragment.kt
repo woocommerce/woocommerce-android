@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEdi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
+import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
 import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
@@ -321,7 +322,7 @@ class OrderCreateEditFormFragment :
                 binding.paymentSection.addCouponButton.isEnabled = it
             }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
-                bindTaxLinesSection(binding.paymentSection, viewModel.orderDraft.value, it)
+                bindTaxBasedOnSettingLabel(binding.paymentSection, it)
             }
         }
     }
@@ -372,22 +373,31 @@ class OrderCreateEditFormFragment :
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
         bindTaxLinesSection(
             paymentSection,
-            newOrderData,
-            viewModel.viewStateData.liveData.value?.taxBasedOnSettingLabel
+            newOrderData
         )
         paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
     }
 
+    private fun bindTaxBasedOnSettingLabel(
+        paymentSection: OrderCreationPaymentSectionBinding,
+        settingText: String
+    ) {
+        paymentSection.taxBasedOnLabel.text = settingText
+    }
+
     private fun bindTaxLinesSection(
         paymentSection: OrderCreationPaymentSectionBinding,
-        newOrderData: Order?,
-        taxTextSettingLabel: String?
+        newOrderData: Order
     ) {
-        paymentSection.taxLines.setContent {
-            TaxLines(
-                newOrderData?.taxLines,
-                taxTextSettingLabel
+        val taxLines = newOrderData.taxLines.map {
+            TaxLineUiModel(
+                label = it.label,
+                ratePercent = "${it.ratePercent}%",
+                taxTotal = bigDecimalFormatter(BigDecimal(it.taxTotal))
             )
+        }
+        paymentSection.taxLines.setContent {
+            TaxLines(taxLines)
         }
     }
 

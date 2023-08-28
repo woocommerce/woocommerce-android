@@ -238,6 +238,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         launch {
             orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+
                 viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
             }
         }
