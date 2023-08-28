@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-09 16:54:04+0000
+Translation-Revision-Date: 2023-08-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Pilih negara</string>
+    <string name="store_creation_country_picker_current_location_description">Kami telah mendeteksi lokasi Anda secara otomatis. Silakan ubah jika lokasi salah.</string>
+    <string name="store_creation_country_picker_title">Di mana lokasi bisnis Anda?</string>
+    <string name="store_profiler_challenge_other">Lainnya</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Pengiriman dan logistik</string>
+    <string name="store_profiler_challenge_managing_inventory">Mengelola stok</string>
+    <string name="store_profiler_challenge_finding_customers">Mencari pelanggan</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Menyiapkan toko online</string>
+    <string name="store_profiler_challenge_description">Pilih keluhan atau kesulitan yang Anda hadapi di bawah ini. Anda bisa memilih lebih dari satu opsi.</string>
+    <string name="store_profiler_challenge_title">Apa yang menjadi tantangan Anda dalam\nmemulai atau menjalankan sebuah\nToko online?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Bahan berbahaya meliputi item-item seperti baterai, es kering, cairan yang mudah terbakar, aerosol, amunisi, kembang api, cat kuku, parfum, cat, pelarut, dan lain-lain. Item-item yang berbahaya harus dikirimkan dalam paket-paket terpisah.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Mengandung Bahan Berbahaya</string>
+    <string name="ai_product_description_title_hint">Masukkan nama produk.</string>
+    <string name="free_trial_feature_support">Dukungan prioritas setiap saat</string>
+    <string name="free_trial_feature_backups">Pencadangan situs otomatis</string>
+    <string name="free_trial_feature_hosting">Hosting terbaik di kelasnya</string>
+    <string name="free_trial_feature_automated_customer_emails">Pengiriman email ke pelanggan otomatis</string>
+    <string name="free_trial_feature_built_in_seo">SEO bawaan</string>
+    <string name="free_trial_feature_design_editing">Desain dan pengeditan tanpa kode</string>
+    <string name="free_trial_feature_store_management">Alat manajemen toko</string>
+    <string name="free_trial_summary_try_button">Buat toko Anda</string>
+    <string name="free_trial_summary_hassle_free_store_ownership">Kepemilikan toko tanpa repot</string>
+    <string name="free_trial_summary_grow_your_business">Kembangkan bisnis Anda</string>
+    <string name="free_trial_summary_start_selling_quickly">Mulai berjualan sekarang</string>
+    <string name="store_creation_store_profiler_journey_description">Beri tahu kami sudah sejauh mana Anda\nmenjalani usaha dagang ini agar kami dapat menyesuaikan\npengalaman Woo untuk Anda.</string>
+    <string name="store_creation_store_profiler_journey_title">Manakah yang paling\nmendeskripsikan diri Anda?</string>
+    <string name="store_creation_store_profiler_industries_title">Apa yang ingin dijual\ndi toko Anda?</string>
+    <string name="store_creation_store_profiler_industries_header">Tentang toko Anda</string>
+    <string name="simplified_login_prologue_title">Mulai dengan percobaan gratis 15 hari, tanpa perlu kartu kredit. Bergabunglah bersama 3,4 juta toko yang berkembang bersama Woo, mulai dari transaksi pertama hingga mencapai omzet jutaan.</string>
+    <string name="simplified_login_prologue_intro">Platform ecommerce yang tumbuh bersama Anda</string>
+    <string name="product_type_variable_subscription">Langganan variabel</string>
+    <string name="order_creation_remove_this_coupon">Hapus kupon</string>
+    <string name="coupon_selector_empty_list_title">Semua orang suka promo</string>
+    <string name="coupon_selector_empty_list_message">Anda belum membuat kupon apa pun. Buat kupon untuk diterapkan ke pesanan ini.</string>
+    <string name="coupon_selector_empty_list_button">Buka Kupon</string>
+    <string name="order_creation_select_coupon">Pilih kupon</string>
+    <string name="signup_get_started_button">Buat toko baru</string>
     <string name="coupon_create_coupon_creation_failed">Gagal membuat kupon</string>
     <string name="coupon_create_coupon_created">Kupon dibuat</string>
     <string name="coupon_create_save_button">Buat</string>
@@ -281,20 +318,9 @@ Language: id
     <string name="product_quantity_rules_title">Aturan Jumlah</string>
     <string name="gift_cards">Kartu Hadiah</string>
     <string name="order_gift_card">Kartu Hadiah</string>
-    <string name="free_trial_feature_fast_to_launch">Segera meluncur</string>
-    <string name="free_trial_feature_site_security">Keamanan situs</string>
-    <string name="free_trial_feature_auto_updates_backups">Pembaruan &amp; pencadangan otomatis</string>
-    <string name="free_trial_feature_247_support">Bantuan setiap saat</string>
-    <string name="free_trial_feature_email_marketing">Pemasaran melalui email</string>
     <string name="free_trial_feature_social_advertising">Iklan sosial</string>
-    <string name="free_trial_feature_subscription_product_kits">Paket langganan &amp; produk</string>
-    <string name="free_trial_feature_multiple_payment_options">Beberapa pilihan pembayaran</string>
-    <string name="free_trial_feature_ecommerce_reports">Laporan eCommerce</string>
-    <string name="free_trial_feature_shipping_labels">Label pengiriman</string>
-    <string name="free_trial_feature_unlimited_products">Produk tanpa batas</string>
     <string name="free_trial_feature_premium_themes">Tema premium</string>
     <string name="free_trial_summary_credit_card_message">Tidak perlu kartu kredit.</string>
-    <string name="free_trial_summary_try_button">Coba Gratis</string>
     <string name="free_trial_summary_try_it">Coba gratis selama 14 hari.</string>
     <string name="free_trial_summary_advertise">Kami menawarkan semua yang Anda perlukan untuk membangun dan mengembangkan toko online, didukung oleh WooCommerce dan di-hosting di WordPress.com.</string>
     <string name="free_trial_summary_title">Luncurkan dalam waktu cepat, kembangkan untuk tahun-tahun berikutnya</string>
@@ -334,8 +360,6 @@ Language: id
     <string name="subscription_id">Langganan #%1$d</string>
     <string name="order_subscription">Langganan</string>
     <string name="store_onboarding_launch_store_ok">OK</string>
-    <string name="simplified_login_prologue_title">Woo selalu menyertai mulai dari rintisan hingga jutaan penjualan Anda. Inilah alasan kami dipercaya para penjual untuk memperkuat 3,4 juta toko online mereka.</string>
-    <string name="simplified_login_prologue_intro">Jual apa pun, di mana pun.</string>
     <string name="product_type_subscription">Langganan</string>
     <string name="otp_incorrect">Kode OTP salah. Periksa kembali informasi Anda dan coba lagi.</string>
     <string name="requesting_sms_otp_failure">Permintaan SMS gagal. Harap coba lagi.</string>
@@ -545,13 +569,9 @@ Language: id
     <string name="store_creation_country_picker_countries_header">Negara</string>
     <string name="store_creation_country_picker_current_location">Lokasi saat ini</string>
     <string name="store_creation_country_picker_description">Kami akan menggunakan informasi ini untuk menyiapkan pembayaran, pengiriman, dan pajak.</string>
-    <string name="store_creation_country_picker_title">Konfirmasi lokasi Anda</string>
     <string name="store_creation_store_profiler_platforms_description">Anda dapat memilih lebih dari satu.</string>
-    <string name="store_creation_store_profiler_platforms_title">Di platform manakah Anda berdagang saat ini?</string>
-    <string name="store_creation_store_profiler_journey_description">Untuk mempercepat segalanya, kami akan menyesuaikan pengalaman WooCommerce untuk Anda, berdasarkan tanggapan Anda.</string>
-    <string name="store_creation_store_profiler_journey_title">Di mana posisi Anda dalam perjalanan perdagangan Anda?</string>
-    <string name="store_creation_store_profiler_industries_description">Pilih kategori yang paling sesuai dengan bisnis Anda.</string>
-    <string name="store_creation_store_profiler_industries_title">Apa yang akan Anda jual?</string>
+    <string name="store_creation_store_profiler_platforms_title">Apa platform yang\nsaat ini Anda gunakan?</string>
+    <string name="store_creation_store_profiler_industries_description">Pilih kategori yang paling sesuai\ndengan bisnis Anda.</string>
     <string name="login_application_passwords_unavailable">Sepertinya fitur Kata Sandi Aplikasi dinonaktifkan di situs Anda %1$s.\n Aktifkan Kata Sandi untuk menggunakan aplikasi WooCommerce.</string>
     <string name="login_open_installation_page">Buka halaman instalasi</string>
     <string name="not_a_valid_qr_code">Kode QR yang dipindai bukan kode WooCommerce</string>
@@ -716,7 +736,6 @@ Language: id
     <string name="signup_password_hint">Pilih kata sandi</string>
     <string name="signup_email_address_hint">Alamat email Anda</string>
     <string name="signup_get_started_label">Memulai \ndalam hitungan menit</string>
-    <string name="signup_get_started_button">Mulai</string>
     <string name="login_jetpack_connection_consent">Dengan mengetuk tombol Hubungkan Jetpack, Anda menyetujui &lt;a href=\'terms\'&gt;Ketentuan Layanan&lt;/a&gt; kami dan bersedia &lt;a href=\'sync\'&gt;membagikan detail&lt;/a&gt; kepada WordPress.com.</string>
     <string name="enable_card_reader">Aktifkan Pembaca Kartu Simulasi</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Hubungi pemilik situs untuk menerima undangan ke situs sebagai manajer toko atau administrator untuk menggunakan aplikasi.</string>
@@ -1436,7 +1455,7 @@ Language: id
     <string name="card_reader_onboarding_country_not_supported_learn_more">&lt;a href=\'\'&gt;Pelajari lebih lanjut&lt;/a&gt; tentang penerimaan pembayaran dengan perangkat seluler Anda dan pemesanan pembaca kartu</string>
     <string name="card_reader_onboarding_country_not_supported_contact_support">Butuh bantuan? &lt;a href=\'\'&gt;Hubungi dukungan&lt;/a&gt;</string>
     <string name="card_reader_onboarding_country_not_supported_hint">Anda masih dapat menerima Pembayaran Tunai secara Langsung dengan mengaktifkan metode pembayaran \"bayar di tempat\" di toko Anda</string>
-    <string name="card_reader_onboarding_country_not_supported_header">Kami tidak mendukung Pembayaran Langsung di %1$s</string>
+    <string name="card_reader_onboarding_country_not_supported_header">Kami tidak mendukung Pembayaran Langsung Kartu di %1$s</string>
     <string name="card_reader_onboarding_loading">Menghubungkan ke akun Anda</string>
     <string name="card_reader_onboarding_title">Pembayaran langsung</string>
     <string name="shipping_label_shipping_carrier_rates_unavailable_message">Pastikan kembali dimensi dan berat paket atau coba gunakan paket lain di Detail Paket</string>

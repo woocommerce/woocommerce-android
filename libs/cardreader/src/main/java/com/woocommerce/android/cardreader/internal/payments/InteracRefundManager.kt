@@ -13,7 +13,7 @@ internal class InteracRefundManager(
     private val collectInteracRefundAction: CollectInteracRefundAction,
     private val processInteracRefundAction: ProcessInteracRefundAction,
     private val refundErrorMapper: RefundErrorMapper,
-    private val paymentUtils: PaymentUtils,
+    private val paymentsUtils: PaymentUtils,
 ) {
     fun refundInteracPayment(refundParameters: RefundParams): Flow<CardInteracRefundStatus> = flow {
         collectInteracRefund(refundParameters)
@@ -24,7 +24,7 @@ internal class InteracRefundManager(
     ) {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
         collectInteracRefundAction.collectRefund(
-            refundParameters.toStripeRefundParameters(paymentUtils)
+            refundParameters.toStripeRefundParameters(paymentsUtils)
         ).collect { refundStatus ->
             when (refundStatus) {
                 CollectInteracRefundAction.CollectInteracRefundStatus.Success -> {

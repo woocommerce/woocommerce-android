@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -39,6 +38,7 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_FRAUD
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_LISTED
@@ -71,7 +71,6 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
-    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache,
@@ -123,7 +122,6 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod", "LongMethod")
     private suspend fun fetchOnboardingState(pluginType: PluginType?): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
-        cardReaderTrackingInfoKeeper.setCountry(countryCode)
         val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
         if (cardReaderConfig !is CardReaderConfigForSupportedCountry)
             return StoreCountryNotSupported(countryCode)
@@ -361,7 +359,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_OTHER
 
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status != COMPLETE
+        paymentAccount.status != COMPLETE && paymentAccount.status != ENABLED
 
     private fun updateSharedPreferences(
         status: CardReaderOnboardingStatus,

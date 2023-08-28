@@ -72,12 +72,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var parameterRepository: ParameterRepository
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
+    protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
-    lateinit var productListRepository: ProductListRepository
-    private lateinit var resourceProvider: ResourceProvider
     private lateinit var productRestrictions: OrderCreationProductRestrictions
     private lateinit var selectedSite: SelectedSite
+    lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 

@@ -15,6 +15,7 @@ import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
@@ -36,6 +37,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private lateinit var isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
     private lateinit var accountStore: AccountStore
     private val savedState = SavedStateHandle()
+    private val resourceProvider: ResourceProvider = mock()
 
     @Test
     fun `when onTryForFreeButtonPressed is called, then start the store creation`() = testBlocking {
@@ -241,7 +243,8 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
             tracker = tracker,
             localNotificationScheduler = localNotificationScheduler,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
-            accountStore = accountStore
+            accountStore = accountStore,
+            resourceProvider = resourceProvider
         )
     }
 }

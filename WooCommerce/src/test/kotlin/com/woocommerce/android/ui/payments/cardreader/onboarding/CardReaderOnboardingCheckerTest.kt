@@ -13,7 +13,6 @@ import com.woocommerce.android.cardreader.config.SupportedExtensionType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -54,7 +53,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val wcInPersonPaymentsStore: WCInPersonPaymentsStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache = mock()
@@ -75,7 +73,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             wcInPersonPaymentsStore,
             coroutinesTestRule.testDispatchers,
             networkStatus,
-            cardReaderTrackingInfoKeeper,
             cardReaderCountryConfigProvider,
             cashOnDeliverySettingsRepository,
             cardReaderOnboardingCheckResultCache,
@@ -222,6 +219,60 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
                 CardReaderOnboardingState.OnboardingCompleted(
                     PluginType.WOOCOMMERCE_PAYMENTS,
                     wcPayPluginVersion,
+                    countryCode
+                )
+            )
+        }
+
+    @Test
+    fun `given enabled account status and wcpay installed and activated, when getOnboardingState, then onboarding complete with wcpay`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildWCPayPluginInfo(isActive = true)
+                    )
+                )
+            )
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    wcPayPluginVersion,
+                    countryCode
+                )
+            )
+        }
+
+    @Test
+    fun `given enabled account status and stripe installed and activated, when getOnboardingState, then onboarding complete with stripe`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(
+                    listOf(
+                        buildStripeExtensionPluginInfo(isActive = true)
+                    )
+                )
+            )
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
+                )
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    STRIPE_EXTENSION_GATEWAY,
+                    stripePluginVersion,
                     countryCode
                 )
             )

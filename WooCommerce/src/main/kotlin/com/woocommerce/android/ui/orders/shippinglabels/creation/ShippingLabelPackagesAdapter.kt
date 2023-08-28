@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.transition.TransitionManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingLabelPackageDetailsListItemBinding
 import com.woocommerce.android.databinding.ShippingLabelPackageProductListItemBinding
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
 class ShippingLabelPackagesAdapter(
@@ -51,6 +53,7 @@ class ShippingLabelPackagesAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return ShippingLabelPackageViewHolder(
             ShippingLabelPackageDetailsListItemBinding.inflate(layoutInflater, parent, false)
+                .also { it.hazmatToggle.isVisible = FeatureFlag.HAZMAT_SHIPPING.isEnabled() }
         )
     }
 
@@ -118,6 +121,11 @@ class ShippingLabelPackagesAdapter(
                     binding.detailsLayout.expand()
                     onExpandedChanged(bindingAdapterPosition, true)
                 }
+            }
+
+            binding.hazmatToggle.setOnCheckedChangeListener { _, isChecked ->
+                TransitionManager.beginDelayedTransition(binding.root)
+                binding.hazmatContent.isVisible = isChecked
             }
         }
 
