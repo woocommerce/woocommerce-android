@@ -158,60 +158,54 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     fun onPercentageDiscountSelected() {
-        val previousDiscountType = discountType.value
-        if (previousDiscountType == DiscountType.Percentage) return
+        if (discountType.value == DiscountType.Percentage) return
 
-        val discountAmount = discount.value
-        if (discountAmount != null) {
-            val pricePreDiscount = orderItem.value.pricePreDiscount
-            val discountPercentage =
-                PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
-                    pricePreDiscount,
-                    PERCENTAGE_DIVISION_QUOTIENT_SCALE,
-                    RoundingMode.HALF_UP
-                ) * PERCENTAGE_BASE
-
-            discount.value = discountPercentage.stripTrailingZeros()
-        }
+        discount.value = discount.value?.let { calculateDiscountPercentage(it) }
         discountType.value = DiscountType.Percentage
     }
 
-    private fun getCalculatedPercentage(): BigDecimal {
-        val discountAmount = discount.value ?: BigDecimal.ZERO
+    fun onAmountDiscountSelected() {
+        if (discountType.value == DiscountType.Amount(currency)) return
+
+        discount.value = discount.value?.let { calculateDiscountAmount(it) }
+        discountType.value = DiscountType.Amount(currency)
+    }
+
+    private fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
         val pricePreDiscount = orderItem.value.pricePreDiscount
-        val percentage = PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
+        val discountPercentage = PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
             pricePreDiscount,
             PERCENTAGE_DIVISION_QUOTIENT_SCALE,
             RoundingMode.HALF_UP
         ) * PERCENTAGE_BASE
-        return percentage.setScale(2, RoundingMode.HALF_UP)
+
+        return discountPercentage
+            .stripTrailingZeros()
     }
 
-    fun onAmountDiscountSelected() {
-        val previousDiscountType = discountType.value
-        if (previousDiscountType == DiscountType.Amount(currency)) return
+    private fun calculateDiscountAmount(discountPercentage: BigDecimal): BigDecimal {
+        val pricePreDiscount = orderItem.value.pricePreDiscount
+        val discountAmount = pricePreDiscount
+            .times(discountPercentage)
+            .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
 
-        val discountPercentage = discount.value
-        if (discountPercentage != null) {
-            val pricePreDiscount = orderItem.value.pricePreDiscount
-            val discountAmount = pricePreDiscount
-                .times(discountPercentage)
-                .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
+        return discountAmount
+            .setScale(2, RoundingMode.HALF_UP)
+            .stripTrailingZeros()
+    }
 
-            discount.value = discountAmount
-                .setScale(PRICE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
-                .stripTrailingZeros()
-        }
-        discountType.value = DiscountType.Amount(currency)
+    private fun getCalculatedPercentage(): BigDecimal {
+        return discount.value?.let {
+            calculateDiscountPercentage(it)
+                .setScale(2, RoundingMode.HALF_UP)
+        } ?: BigDecimal.ZERO
     }
 
     private fun getCalculatedAmount(): BigDecimal {
-        val discountPercentage = discount.value ?: BigDecimal.ZERO
-        val pricePreDiscount = orderItem.value.pricePreDiscount
-        return pricePreDiscount
-            .times(discountPercentage)
-            .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
-            .setScale(2, RoundingMode.HALF_UP)
+        return discount.value?.let {
+            calculateDiscountAmount(it)
+                .setScale(2, RoundingMode.HALF_UP)
+        } ?: BigDecimal.ZERO
     }
 
     fun onDiscountRemoveClicked() {
@@ -225,7 +219,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
 
     private fun getPriceAfterDiscount(): BigDecimal {
         return if (discount.value == null) BigDecimal.ZERO else orderItem.value.total - getDiscountAmount()
-            .setScale(2, RoundingMode.UP)
+            .setScale(2, RoundingMode.HALF_UP)
     }
 
     fun onDiscountAmountChange(newDiscount: BigDecimal?) {
