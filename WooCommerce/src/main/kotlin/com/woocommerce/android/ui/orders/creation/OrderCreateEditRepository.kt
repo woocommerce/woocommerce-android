@@ -11,6 +11,10 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -19,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
+import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -98,6 +103,7 @@ class OrderCreateEditRepository @Inject constructor(
                 )
                 Result.failure(WooException(result.error))
             }
+
             else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
     }
@@ -117,8 +123,10 @@ class OrderCreateEditRepository @Inject constructor(
                     total = item.total.takeIf { item.itemId != 0L }?.toPlainString()
                 )
             },
-            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }?.toShippingAddressModel(),
-            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
+            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }
+                ?.toShippingAddressModel(),
+            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }
+                ?.toBillingAddressModel(),
             customerNote = order.customerNote,
             shippingLines = order.shippingLines.map { it.toDataModel() },
             feeLines = order.feesLines.map { it.toDataModel() },
@@ -135,6 +143,7 @@ class OrderCreateEditRepository @Inject constructor(
             result.isError -> {
                 Result.failure(WooException(result.error))
             }
+
             else -> Result.success(orderMapper.toAppModel(result.model!!))
         }
     }
@@ -149,18 +158,37 @@ class OrderCreateEditRepository @Inject constructor(
                 trash = false
             ).let {
                 when {
-                    it.isError -> WooLog.w(T.ORDERS, "Deleting the order draft failed, error: ${it.error.message}")
+                    it.isError -> WooLog.w(
+                        T.ORDERS,
+                        "Deleting the order draft failed, error: ${it.error.message}"
+                    )
+
                     else -> WooLog.d(T.ORDERS, "Draft order deleted successfully")
                 }
             }
         }
     }
 
+    suspend fun fetchTaxBasedOnSetting(): TaxBasedOnSetting? {
+        return wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
+    }
+
+    private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
+        when (selectedOption) {
+            "shipping" -> ShippingAddress
+            "billing" -> BillingAddress
+            "base" -> StoreAddress
+            else -> null
+        }
+
     private var isAutoDraftSupported: Boolean? = null
     private suspend fun isAutoDraftSupported(): Boolean {
         isAutoDraftSupported?.let { return it }
         val version = withContext(dispatchers.io) {
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
+            wooCommerceStore.getSitePlugin(
+                selectedSite.get(),
+                WooCommerceStore.WooPlugin.WOO_CORE
+            )?.version
                 ?: "0.0"
         }
         val isSupported = version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0

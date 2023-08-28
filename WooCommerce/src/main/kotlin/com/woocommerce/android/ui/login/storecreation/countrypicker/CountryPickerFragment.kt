@@ -13,7 +13,7 @@ import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainPickerStep
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainListPicker
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToSummaryStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -49,23 +49,23 @@ class CountryPickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
-                is NavigateToSummaryStep -> navigateToInstallationStep()
+                is NavigateToSummaryStep -> navigateToStoreChallengesStep()
+                is NavigateToDomainListPicker -> navigateToDomainListPicker(event.locationCode)
             }
         }
     }
 
-    private fun navigateToInstallationStep() {
+    private fun navigateToDomainListPicker(locationCode: String) {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToSummaryFragment()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToCountryListPickerFragment(
+                currentLocationCode = locationCode
+            )
         )
     }
 
-    private fun navigateToDomainPickerStep() {
+    private fun navigateToStoreChallengesStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment(
-                initialQuery = newStore.data.name ?: ""
-            )
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToStoreProfilerChallengesFragment()
         )
     }
 }

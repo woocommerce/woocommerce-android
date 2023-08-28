@@ -96,12 +96,10 @@ class JetpackActivationMainFragment : BaseFragment() {
     }
 
     private fun goToStore() {
-        (requireActivity() as? MainActivity)?.handleSitePickerResult() ?: run {
-            val intent = Intent(requireActivity(), MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
-            startActivity(intent)
+        val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
+        startActivity(intent)
     }
 
     private fun showWooNotInstalledScreen(siteUrl: String) {

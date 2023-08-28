@@ -32,6 +32,7 @@ object WooLog {
         JITM,
         PLUGINS,
         IAP,
+        STORE_CREATION,
         ONBOARDING,
         WOO_TRIAL,
         AI,

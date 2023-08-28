@@ -61,8 +61,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         private const val SETTING_NOTIFS_TONE = "notifications_tone"
     }
 
-    @Inject lateinit var presenter: MainSettingsContract.Presenter
-    @Inject lateinit var openReactNative: OpenReactNative
+    @Inject
+    lateinit var presenter: MainSettingsContract.Presenter
+    @Inject
+    lateinit var openReactNative: OpenReactNative
 
     private var _binding: FragmentSettingsMainBinding? = null
     private val binding get() = _binding!!
@@ -221,9 +223,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             }
         }
 
-        binding.containerOptionCloseAccount.isVisible = presenter.isCloseAccountOptionVisible
-        binding.btnOptionCloseAccount.setOnClickListener {
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_closeAccountDialogFragment)
+        binding.optionAccountSettings.isVisible = presenter.isCloseAccountOptionVisible
+        binding.optionAccountSettings.setOnClickListener {
+            findNavController().navigateSafely(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToAccountSettingsFragment()
+            )
         }
 
         presenter.setupAnnouncementOption()
