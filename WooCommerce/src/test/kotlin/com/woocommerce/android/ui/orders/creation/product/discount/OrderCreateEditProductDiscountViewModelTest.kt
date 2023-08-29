@@ -215,6 +215,62 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         }
     }
 
+
+    @Test
+    fun `given discount amount selected, when amount provided, then calculatedPriceAfterDiscount should return discount percentage` () = testBlocking {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            total = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.onDiscountAmountChange(4.29.toBigDecimal())
+        sut.viewState.test {
+            val viewState = awaitItem()
+            assertThat(viewState.calculatedPriceAfterDiscount).isEqualTo("13.00")
+        }
+    }
+
+    @Test
+    fun `given discount percentage selected, when discount provided, the calculatedPriceAfterDiscount should return discount amount` () = testBlocking {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            total = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.onPercentageDiscountSelected()
+        sut.onDiscountAmountChange(13.toBigDecimal())
+        sut.viewState.test {
+            val viewState = awaitItem()
+            assertThat(viewState.calculatedPriceAfterDiscount).isEqualTo("4.29")
+        }
+    }
+
+    @Test
+    fun `given discount amount provided, then show correct price after discount` () = testBlocking {
+        val item = Order.Item.EMPTY.copy(
+            quantity = 1F,
+            total = 33.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            item,
+            "usd"
+        ).initSavedStateHandle()
+        val sut = createSut(savedStateHandle)
+        sut.onDiscountAmountChange(4.29.toBigDecimal())
+        sut.viewState.test {
+            val viewState = awaitItem()
+            assertThat(viewState.priceAfterDiscount).isEqualTo("28.71")
+        }
+    }
+
     @Test
     fun `given initial discount greater than 0, then remove discount button should be visible`() = testBlocking {
         val item = Order.Item.EMPTY.copy(
