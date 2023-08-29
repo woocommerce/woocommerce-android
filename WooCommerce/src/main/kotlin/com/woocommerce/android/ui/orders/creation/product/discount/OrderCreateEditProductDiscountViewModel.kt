@@ -69,7 +69,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         numberOfDecimals = numberOfDecimals
     )
 
-    private val productUiModelFlow: Flow<ProductUIModel> = orderItem.map { mapItemToProductUiModel(it) }
+    private val productUiModelFlow = orderItem.map { mapItemToProductUiModel(it) }
 
     val viewState: StateFlow<ViewState> =
         combine(discount, discountType, productUiModelFlow) { discount, type, productUiModel ->
