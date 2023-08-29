@@ -74,6 +74,9 @@
         <action
             android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
             app:destination="@id/AIProductDescriptionDialogFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -605,5 +608,14 @@
             android:name="siteUrl"
             app:argType="string"
             app:nullable="false" />
+    </dialog>
+    <dialog
+        android:id="@+id/nameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment" >
+        <argument
+            android:name="fromOnboarding"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </dialog>
 </navigation>
