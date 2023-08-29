@@ -170,7 +170,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         discountType.value = DiscountType.Amount(currency)
     }
 
-    fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
+    private fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
         val pricePreDiscount = orderItem.value.total
         val discountPercentage = if (pricePreDiscount > BigDecimal.ZERO) {
             PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
@@ -184,7 +184,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         return discountPercentage.stripTrailingZeros()
     }
 
-    fun calculateDiscountAmount(discountPercentage: BigDecimal): BigDecimal {
+    private fun calculateDiscountAmount(discountPercentage: BigDecimal): BigDecimal {
         val pricePreDiscount = orderItem.value.total
         val discountAmount = pricePreDiscount
             .times(discountPercentage)
