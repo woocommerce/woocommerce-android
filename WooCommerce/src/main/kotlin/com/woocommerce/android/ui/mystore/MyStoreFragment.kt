@@ -309,7 +309,7 @@ class MyStoreFragment :
                 is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
                     findNavController()
                         .navigateSafely(
-                            NavGraphMainDirections.actionGlobalNameYourStoreDialogFragment(fromOnboarding = true)
+                            MyStoreFragmentDirections.actionMyStoreToNameYourStoreDialogFragment(fromOnboarding = true)
                         )
                 }
 
