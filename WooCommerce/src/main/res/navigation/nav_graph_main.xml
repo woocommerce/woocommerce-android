@@ -74,6 +74,9 @@
         <action
             android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
             app:destination="@id/AIProductDescriptionDialogFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -615,7 +618,4 @@
             app:argType="boolean"
             android:defaultValue="false" />
     </dialog>
-    <action
-        android:id="@+id/action_global_nameYourStoreDialogFragment"
-        app:destination="@id/nameYourStoreDialogFragment" />
 </navigation>
