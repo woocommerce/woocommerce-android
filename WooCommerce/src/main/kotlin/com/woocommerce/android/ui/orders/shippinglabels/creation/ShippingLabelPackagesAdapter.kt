@@ -192,6 +192,11 @@ class ShippingLabelPackagesAdapter(
                 binding.expandIcon.rotation = 0f
                 binding.detailsLayout.isVisible = false
             }
+
+            shippingLabelPackage.selectedPackage?.hazmatCategory?.let {
+                binding.hazmatToggle.isChecked = true
+                binding.hazmatCategory.text = context.getString(it.stringResourceID)
+            }
         }
 
         private fun ShippingLabelPackage.adaptItemsForUi(): List<ShippingLabelPackage.Item> {
