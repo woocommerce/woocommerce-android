@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ViewState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -314,7 +315,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { event = it }
 
         viewModel.onHazmatCategoryClicked(
-            currentSelection = ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL,
+            currentSelection = AIR_ELIGIBLE_ETHANOL,
             packagePosition = 0,
             onHazmatCategorySelected = onHazmatCategorySelected
         )
@@ -322,7 +323,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(
             OpenHazmatCategorySelector(
                 packagePosition = 0,
-                currentSelection = ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL,
+                currentSelection = AIR_ELIGIBLE_ETHANOL,
                 onHazmatCategorySelected = onHazmatCategorySelected
             )
         )
@@ -340,11 +341,11 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
         viewModel.onHazmatCategorySelected(
             packagePosition = 0,
-            newSelection = ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
+            newSelection = AIR_ELIGIBLE_ETHANOL
         )
 
         val newPackages = viewModel.viewStateData.liveData.value!!.packages
         assertThat(newPackages.size).isEqualTo(1)
-        assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL)
+        assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(AIR_ELIGIBLE_ETHANOL)
     }
 }

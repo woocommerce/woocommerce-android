@@ -197,7 +197,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 ?.let { copy(selectedPackage = it) }
         }?.let { packages[packagePosition] = packages[packagePosition].copy(data = it) }
         viewState = viewState.copy(packagesUiModels = packages)
-
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
