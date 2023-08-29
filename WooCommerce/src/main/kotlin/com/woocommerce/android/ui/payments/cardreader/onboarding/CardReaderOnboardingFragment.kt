@@ -47,18 +47,18 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             viewLifecycleOwner
         ) { event ->
             when (event) {
-                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
+                is CardReaderOnboardingEvent.NavigateToSupport -> {
                     requireActivity().startHelpActivity(HelpOrigin.CARD_READER_ONBOARDING)
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView -> {
+                is CardReaderOnboardingEvent.NavigateToUrlInWPComWebView -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
                     )
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
+                is CardReaderOnboardingEvent.NavigateToUrlInGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToHub -> {
+                is CardReaderOnboardingEvent.ContinueToHub -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderHubFragment(
@@ -66,7 +66,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
+                is CardReaderOnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(

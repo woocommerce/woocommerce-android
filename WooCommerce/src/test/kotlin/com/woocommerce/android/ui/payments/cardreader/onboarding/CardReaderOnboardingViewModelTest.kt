@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.LoadingState
@@ -96,7 +95,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -116,8 +115,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
-            assertThat((viewModel.event.value as OnboardingEvent.ContinueToConnection).cardReaderType)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
+            assertThat((viewModel.event.value as CardReaderOnboardingEvent.ContinueToConnection).cardReaderType)
                 .isEqualTo(CardReaderType.EXTERNAL)
         }
 
@@ -138,8 +137,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
-            assertThat((viewModel.event.value as OnboardingEvent.ContinueToConnection).cardReaderType)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
+            assertThat((viewModel.event.value as CardReaderOnboardingEvent.ContinueToConnection).cardReaderType)
                 .isEqualTo(CardReaderType.BUILT_IN)
         }
 
@@ -748,7 +747,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.WcPayInCountry)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -762,7 +761,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.Country)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -776,7 +775,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -795,7 +794,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -815,7 +814,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -831,7 +830,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -845,7 +844,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -859,7 +858,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
                 .onContactSupportActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -1090,7 +1089,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -1109,7 +1108,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -1158,7 +1157,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -1177,7 +1176,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -1264,7 +1263,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -1914,7 +1913,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .onButtonActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -1942,7 +1941,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .onButtonActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -1966,7 +1965,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
                 .onButtonActionClicked.invoke()
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test

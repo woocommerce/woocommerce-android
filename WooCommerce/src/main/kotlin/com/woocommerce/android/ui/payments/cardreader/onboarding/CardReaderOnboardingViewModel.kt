@@ -30,7 +30,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.NoConnectionErrorState
@@ -381,7 +381,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onContactSupportClicked() {
-        triggerEvent(OnboardingEvent.NavigateToSupport)
+        triggerEvent(CardReaderOnboardingEvent.NavigateToSupport)
     }
 
     private fun onLearnMoreClicked() {
@@ -396,10 +396,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun continueFlow() {
         when (val params = arguments.cardReaderOnboardingParam.cardReaderFlowParam) {
             is CardReaderFlowParam.CardReadersHub -> {
-                triggerEvent(OnboardingEvent.ContinueToHub(params))
+                triggerEvent(CardReaderOnboardingEvent.ContinueToHub(params))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
-                triggerEvent(OnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType)))
+                triggerEvent(CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType)))
             }
         }.exhaustive
     }
@@ -409,18 +409,5 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun formatDueDate(state: StripeAccountPendingRequirement) =
         state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() }
-
-    sealed class OnboardingEvent : Event() {
-        object NavigateToSupport : Event()
-
-        data class NavigateToUrlInWPComWebView(val url: String) : Event()
-        data class NavigateToUrlInGenericWebView(val url: String) : Event()
-
-        data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam) : Event()
-        data class ContinueToConnection(
-            val cardReaderFlowParam: CardReaderFlowParam,
-            val cardReaderType: CardReaderType,
-        ) : Event()
-    }
 
 }
