@@ -385,7 +385,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             get() = !data.weight.isNaN() &&
                 data.weight > 0.0 &&
                 data.selectedPackage != null &&
-                data.selectedPackage.dimensions.isValid
+                data.selectedPackage.dimensions.isValid &&
+                isHazmatCategorySelected
+
+        private val isHazmatCategorySelected: Boolean
+            get() = isHazmatShippingChecked && data.selectedPackage?.hazmatCategory != null
     }
 
     data class OpenPackageSelectorEvent(val position: Int) : MultiLiveEvent.Event()
