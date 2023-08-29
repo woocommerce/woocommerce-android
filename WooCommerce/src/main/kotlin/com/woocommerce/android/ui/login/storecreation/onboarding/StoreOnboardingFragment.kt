@@ -77,7 +77,9 @@ class StoreOnboardingFragment : BaseFragment() {
                     )
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment()
+                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment(
+                            taskId = event.taskType.id
+                        )
                     )
                 is NavigateToAboutYourStore ->
                     findNavController().navigateSafely(

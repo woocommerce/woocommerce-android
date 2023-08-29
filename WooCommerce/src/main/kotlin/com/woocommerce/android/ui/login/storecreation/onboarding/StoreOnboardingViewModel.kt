@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
@@ -74,20 +75,22 @@ class StoreOnboardingViewModel @Inject constructor(
 
     private fun mapToOnboardingTaskState(task: OnboardingTask) =
         when (task.type) {
-            ABOUT_YOUR_STORE -> OnboardingTaskUi(AboutYourStoreTaskRes, isCompleted = task.isComplete)
-            LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
-            CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
+            ABOUT_YOUR_STORE -> OnboardingTaskUi(task.type, AboutYourStoreTaskRes, isCompleted = task.isComplete)
+            LAUNCH_YOUR_STORE -> OnboardingTaskUi(task.type, LaunchStoreTaskRes, isCompleted = task.isComplete)
+            CUSTOMIZE_DOMAIN -> OnboardingTaskUi(task.type, CustomizeDomainTaskRes, isCompleted = task.isComplete)
             WC_PAYMENTS,
-            PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
+            PAYMENTS -> OnboardingTaskUi(task.type, SetupPaymentsTaskRes, isCompleted = task.isComplete)
 
             ADD_FIRST_PRODUCT -> OnboardingTaskUi(
-                AddProductTaskRes,
+                type = task.type,
+                taskUiResources = AddProductTaskRes,
                 isCompleted = task.isComplete,
                 isLabelVisible = isAIProductDescriptionEnabled()
             )
 
             LOCAL_NAME_STORE -> OnboardingTaskUi(
-                NameYourStoreTaskRes,
+                type = task.type,
+                taskUiResources = NameYourStoreTaskRes,
                 isCompleted = task.isComplete
             )
 
@@ -133,7 +136,7 @@ class StoreOnboardingViewModel @Inject constructor(
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             NameYourStoreTaskRes -> triggerEvent(ShowNameYourStoreDialog)
-            SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)
+            SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments(task.type))
         }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
@@ -172,6 +175,7 @@ class StoreOnboardingViewModel @Inject constructor(
     )
 
     data class OnboardingTaskUi(
+        val type: OnboardingTaskType,
         val taskUiResources: OnboardingTaskUiResources,
         val isCompleted: Boolean,
         val isLabelVisible: Boolean = false,
@@ -227,7 +231,10 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
-    object NavigateToSetupPayments : MultiLiveEvent.Event()
+    data class NavigateToSetupPayments(
+        val taskType: OnboardingTaskType
+    ) : MultiLiveEvent.Event()
+
     object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
     object ShowNameYourStoreDialog : MultiLiveEvent.Event()

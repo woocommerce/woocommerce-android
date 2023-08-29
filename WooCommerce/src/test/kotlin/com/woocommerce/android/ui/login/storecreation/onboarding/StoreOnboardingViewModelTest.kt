@@ -147,7 +147,13 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     @Test
     fun `when any task is clicked, track task clicked event`() = testBlocking {
         whenViewModelIsCreated()
-        viewModel.onTaskClicked(OnboardingTaskUi(AboutYourStoreTaskRes, isCompleted = false))
+        viewModel.onTaskClicked(
+            OnboardingTaskUi(
+                type = OnboardingTaskType.ABOUT_YOUR_STORE,
+                taskUiResources = AboutYourStoreTaskRes,
+                isCompleted = false
+            )
+        )
 
         verify(analyticsTrackerWrapper).track(
             stat = STORE_ONBOARDING_TASK_TAPPED,
