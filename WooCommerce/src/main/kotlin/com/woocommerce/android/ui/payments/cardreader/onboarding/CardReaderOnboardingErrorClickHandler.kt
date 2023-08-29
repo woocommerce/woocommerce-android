@@ -10,7 +10,7 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pluginRepository: PluginRepository,
 ) {
-    suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Result =
+    suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
                 installPlugin(
@@ -27,13 +27,21 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
             name = name,
         ).map { pluginStatus ->
             when (pluginStatus) {
-                is PluginRepository.PluginStatus.PluginActivated -> Result.SUCCESS
-                else -> Result.ERROR
+                is PluginRepository.PluginStatus.PluginActivated,
+                is PluginRepository.PluginStatus.PluginInstalled ->
+                    Reaction.Refresh
+
+                is PluginRepository.PluginStatus.PluginActivationFailed ->
+                    Reaction.ShowErrorAndRefresh(message = pluginStatus.errorDescription)
+
+                is PluginRepository.PluginStatus.PluginInstallFailed ->
+                    Reaction.ShowErrorAndRefresh(message = pluginStatus.errorDescription)
             }
         }.last()
 
-    enum class Result {
-        SUCCESS, ERROR,
+    sealed class Reaction {
+        object Refresh : Reaction()
+        data class ShowErrorAndRefresh(val message: String) : Reaction()
     }
 
     companion object {

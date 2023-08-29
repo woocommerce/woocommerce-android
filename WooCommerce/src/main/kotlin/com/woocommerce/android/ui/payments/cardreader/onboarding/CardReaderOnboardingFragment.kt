@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,9 +32,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     val viewModel: CardReaderOnboardingViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,6 +80,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+                is MultiLiveEvent.Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
             }

@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -112,10 +113,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun handleErrorClick(errorType: CardReaderOnboardingCTAErrorType) {
         launch {
             viewState.value = CardReaderOnboardingViewState.LoadingState
-            when (errorClickHandler(errorType)) {
-                CardReaderOnboardingErrorClickHandler.Result.SUCCESS -> refreshState()
-                CardReaderOnboardingErrorClickHandler.Result.ERROR -> {
-
+            when (val reaction = errorClickHandler(errorType)) {
+                CardReaderOnboardingErrorClickHandler.Reaction.Refresh -> refreshState()
+                is CardReaderOnboardingErrorClickHandler.Reaction.ShowErrorAndRefresh -> {
+                    triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
+                    refreshState()
                 }
             }
         }
