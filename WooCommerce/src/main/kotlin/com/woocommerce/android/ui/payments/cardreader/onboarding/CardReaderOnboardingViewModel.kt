@@ -77,6 +77,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val cardReaderManager: CardReaderManager,
     private val gatewayStore: WCGatewayStore,
+    private val errorClickHandler: CardReaderOnboardingErrorClickHandler,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
 
@@ -105,6 +106,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val state = cardReaderChecker.getOnboardingState(pluginType)
             cardReaderTracker.trackOnboardingState(state)
             showOnboardingState(state)
+        }
+    }
+
+    private fun handleErrorClick(errorType: CardReaderOnboardingCTAErrorType) {
+        launch {
+            viewState.value = CardReaderOnboardingViewState.LoadingState
+            when (errorClickHandler(errorType)) {
+                CardReaderOnboardingErrorClickHandler.Result.SUCCESS -> refreshState()
+            }
         }
     }
 
@@ -151,7 +161,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 }
             WcpayNotInstalled ->
                 viewState.value =
-                    WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
+                    WCPayNotInstalledState(
+                        { handleErrorClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED) },
+                        ::onLearnMoreClicked
+                    )
             is PluginUnsupportedVersion ->
                 when (state.preferredPlugin) {
                     WOOCOMMERCE_PAYMENTS ->
