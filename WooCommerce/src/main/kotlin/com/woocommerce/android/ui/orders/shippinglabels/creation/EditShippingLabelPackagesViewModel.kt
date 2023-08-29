@@ -179,6 +179,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
+    fun onHazmatShippingChecked(position: Int, isChecked: Boolean) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        packages[position] = packages[position].copy(isHazmatShippingChecked = isChecked)
+        viewState = viewState.copy(packagesUiModels = packages)
+    }
+
     fun onHazmatCategoryClicked(
         currentSelection: ShippingLabelHazmatCategory?,
         packagePosition: Int,
@@ -371,6 +377,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     @Parcelize
     data class ShippingLabelPackageUiModel(
         val isExpanded: Boolean = false,
+        val isHazmatShippingChecked: Boolean = false,
         val data: ShippingLabelPackage
     ) : Parcelable {
         @IgnoredOnParcel
