@@ -49,13 +49,13 @@ enum class FeatureFlag {
             SHARING_PRODUCT_AI,
             PRODUCT_DESCRIPTION_AI_GENERATOR,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
-            SHIPPING_ZONES -> true
+            SHIPPING_ZONES,
+            OPTIMIZE_PROFILER_QUESTIONS -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            HAZMAT_SHIPPING,
-            OPTIMIZE_PROFILER_QUESTIONS
+            HAZMAT_SHIPPING
             -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
