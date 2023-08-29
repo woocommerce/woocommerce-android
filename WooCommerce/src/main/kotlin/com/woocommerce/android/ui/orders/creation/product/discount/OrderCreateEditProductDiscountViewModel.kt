@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_REMOVE
@@ -22,8 +23,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -67,10 +68,14 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         numberOfDecimals = numberOfDecimals
     )
 
-    private val productUiModelFlow = orderItem.map { mapItemToProductUiModel(it) }
+    init {
+        viewModelScope.launch {
+            mapItemToProductUiModel(orderItem.value)
+        }
+    }
 
     val viewState: StateFlow<ViewState> =
-        combine(discount, discountType, productUiModelFlow) { discount, type, productUiModel ->
+        combine(discount, discountType) { discount, type ->
             ViewState(
                 currency = currency,
                 discountAmount = discount,
@@ -80,7 +85,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 priceAfterDiscount = getPriceAfterDiscount(),
                 calculatedPriceAfterDiscount = getCalculatedPriceAfterDiscount(),
                 productDetailsState = ProductDetailsState(
-                    imageUrl = productUiModel.imageUrl
+                    imageUrl = mapItemToProductUiModel(orderItem.value).imageUrl
                 )
             )
         }.toStateFlow(ViewState(currency, null))
