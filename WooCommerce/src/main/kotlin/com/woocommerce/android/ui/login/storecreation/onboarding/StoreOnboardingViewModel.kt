@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("TooManyFunctions")
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
