@@ -1841,7 +1841,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             }
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
-                .refreshButtonAction.invoke()
+                .actionButtonAction.invoke()
 
             assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
         }
