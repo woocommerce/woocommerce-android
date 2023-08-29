@@ -114,6 +114,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
             viewState.value = CardReaderOnboardingViewState.LoadingState
             when (errorClickHandler(errorType)) {
                 CardReaderOnboardingErrorClickHandler.Result.SUCCESS -> refreshState()
+                CardReaderOnboardingErrorClickHandler.Result.ERROR -> {
+
+                }
             }
         }
     }
