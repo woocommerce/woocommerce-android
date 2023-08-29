@@ -176,7 +176,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     fun `given discount amount, when switching to percentage discount, should calculate correct value`() = testBlocking {
         val item = Order.Item.EMPTY.copy(
             quantity = 1F,
-            subtotal = 999.toBigDecimal(),
+            total = 999.toBigDecimal(),
         )
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             item,
@@ -197,7 +197,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     fun `given percentage discount, when switching to discount amount, should calculate correct value`() = testBlocking {
         val item = Order.Item.EMPTY.copy(
             quantity = 1F,
-            subtotal = 33.toBigDecimal(),
+            total = 33.toBigDecimal(),
         )
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             item,
