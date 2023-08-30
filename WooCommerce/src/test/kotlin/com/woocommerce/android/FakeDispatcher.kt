@@ -19,8 +19,7 @@ class FakeDispatcher : Dispatcher() {
 
     override fun emitChange(changeEvent: Any) {
         // Copy the listeners to avoid any issues because of concurrent changes
-        val listenersCopy = MutableList<Any>(listeners.size) { }
-        Collections.copy(listenersCopy, listeners)
+        val listenersCopy = listeners.toList()
 
         listenersCopy.forEach { listener ->
             listener::class.java.methods
