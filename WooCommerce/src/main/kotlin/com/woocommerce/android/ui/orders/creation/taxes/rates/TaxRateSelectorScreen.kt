@@ -160,7 +160,7 @@ fun EditTaxRatesInAdminButton(modifier: Modifier = Modifier, onClick: () -> Unit
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
         ) {
-            Text("Edit tax rates in admin")
+            Text(stringResource(R.string.tax_rate_selector_edit_rates_button_label))
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_external),
                 contentDescription = null,
