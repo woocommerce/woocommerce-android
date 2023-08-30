@@ -199,6 +199,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         viewState = viewState.copy(packagesUiModels = packages)
     }
 
+    fun onURLClicked(url: String) {
+        triggerEvent(OpenURL(url))
+    }
+
     // all the logic is inside local functions, so it should be OK, but detekt complains still
     @Suppress("ComplexMethod")
     fun handleMoveItemResult(result: MoveItemResult) {
@@ -395,4 +399,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val currentSelection: ShippingLabelHazmatCategory?,
         val onHazmatCategorySelected: OnHazmatCategorySelected
     ) : MultiLiveEvent.Event()
+
+    data class OpenURL(val url: String) : MultiLiveEvent.Event()
 }

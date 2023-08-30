@@ -278,6 +278,27 @@
                     android:layout_marginVertical="@dimen/major_100"
                     android:text="@string/shipping_label_package_details_hazmat_content_description" />
 
+                <TextView
+                    android:id="@+id/hazmat_usps_instructions_first_section"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100" />
+
+                <TextView
+                    android:id="@+id/hazmat_usps_instructions_second_section"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100" />
+
+                <TextView
+                    android:id="@+id/hazmat_dhl_instructions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginBottom="@dimen/minor_100" />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
