@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -118,44 +116,23 @@ fun Header(onInfoIconClicked: () -> Unit) {
 private fun Footer(
     onEditTaxRatesInAdminClicked: () -> Unit
 ) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                dimensionResource(id = R.dimen.major_100),
-                dimensionResource(id = R.dimen.major_100),
-                dimensionResource(id = R.dimen.major_150),
-                dimensionResource(id = R.dimen.major_100)
-            )
-    ) {
-        val (footerLabel, goToAdminButton) = createRefs()
-        Text(
-            modifier = Modifier.constrainAs(footerLabel) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-            },
-            style = MaterialTheme.typography.caption,
-            color = colorResource(id = R.color.woo_gray_40),
-            text = stringResource(R.string.tax_rate_selector_footer_label)
-        )
-        EditTaxRatesInAdminButton(
-            modifier = Modifier.constrainAs(goToAdminButton) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(footerLabel.bottom)
-            },
-            onEditTaxRatesInAdminClicked
-        )
-    }
+    Text(
+        modifier = Modifier.padding(
+            start = dimensionResource(id = R.dimen.major_100),
+            end = dimensionResource(id = R.dimen.major_100),
+            top = dimensionResource(id = R.dimen.major_150),
+            bottom = dimensionResource(id = R.dimen.minor_00)
+        ),
+        style = MaterialTheme.typography.caption,
+        color = colorResource(id = R.color.woo_gray_40),
+        text = stringResource(R.string.tax_rate_selector_footer_label)
+    )
+    EditTaxRatesInAdminButton(onEditTaxRatesInAdminClicked)
 }
 
 @Composable
-fun EditTaxRatesInAdminButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    TextButton(
-        modifier = modifier,
-        onClick = onClick,
-    ) {
+fun EditTaxRatesInAdminButton(onClick: () -> Unit) {
+    TextButton(onClick = onClick) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
