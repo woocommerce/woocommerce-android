@@ -348,4 +348,14 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         assertThat(newPackages.size).isEqualTo(1)
         assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(AIR_ELIGIBLE_ETHANOL)
     }
+
+    @Test
+    fun `when package hazmat toggle is selected but category is null, then package is not valid`() {
+
+    }
+
+    @Test
+    fun `when package hazmat is not selected and category is null, then package is valid`() {
+
+    }
 }
