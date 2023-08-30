@@ -90,14 +90,9 @@ class OrderCreationProductMapper @Inject constructor(
                 }
             }.filter { item ->
                 (item.itemId in childrenMap.keys).not()
-            }.map {
-                val productInfo = getProductInformation(it)
-                val rules = rulesMap[it.productId]
-                if (rules != null) {
-                    OrderCreationProduct.ProductItemWithRules(it, productInfo, rules)
-                } else {
-                    OrderCreationProduct.ProductItem(it, productInfo)
-                }
+            }.map { item ->
+                val productInfo = getProductInformation(item)
+                createOrderCreationProduct(item, productInfo, rulesMap[item.productId])
             }
                 .toMutableList()
 
@@ -106,23 +101,30 @@ class OrderCreationProductMapper @Inject constructor(
                 val children = childrenMap[parentId] ?: emptyList()
                 val productInfo = getProductInformation(parent)
                 val rules = rulesMap[parent.productId]
-                val groupedProduct = if (rules == null) {
-                    OrderCreationProduct.GroupedProductItem(
-                        parent,
-                        productInfo,
-                        children
-                    )
-                } else {
-                    OrderCreationProduct.GroupedProductItemWithRules(
-                        parent,
-                        productInfo,
-                        children,
-                        rules
-                    )
-                }
+                val groupedProduct = createOrderCreationProduct(parent, productInfo, rules, children)
                 result.add(groupedProduct)
             }
             result
+        }
+    }
+
+    private fun createOrderCreationProduct(
+        item: Order.Item,
+        productInfo: ProductInfo,
+        rules: OrderItemRules? = null,
+        children: List<OrderCreationProduct.ProductItem>? = null
+    ): OrderCreationProduct {
+        return when {
+            rules != null && children != null -> OrderCreationProduct.GroupedProductItemWithRules(
+                item,
+                productInfo,
+                children,
+                rules
+            )
+
+            children != null -> OrderCreationProduct.GroupedProductItem(item, productInfo, children)
+            rules != null -> OrderCreationProduct.ProductItemWithRules(item, productInfo, rules)
+            else -> OrderCreationProduct.ProductItem(item, productInfo)
         }
     }
 
