@@ -22,19 +22,15 @@ class GetPaidViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val args: GetPaidFragmentArgs by savedStateHandle.navArgs()
 
-    private val wooPaymentsUrl = selectedSite.get().url
-        .slashJoin("/wp-admin/admin.php?page=wc-settings&tab=checkout")
-    private val allPaymentsUrl = selectedSite.get().url
-        .slashJoin("/wp-admin/admin.php?page=wc-admin&task=payments")
+    private val setupUrl = selectedSite.get().url.slashJoin("/wp-admin/admin.php?page=wc-admin&task=${args.taskId}")
 
     private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
 
     init {
-        val webViewUrl = if (args.taskId == OnboardingTaskType.WC_PAYMENTS.id) wooPaymentsUrl else allPaymentsUrl
         val shouldAuthenticate = selectedSite.get().isWPComAtomic
         _viewState.update {
-            WebViewState(webViewUrl, shouldAuthenticate)
+            WebViewState(setupUrl, shouldAuthenticate)
         }
     }
 
