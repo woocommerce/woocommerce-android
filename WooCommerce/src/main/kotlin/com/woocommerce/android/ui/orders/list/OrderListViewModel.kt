@@ -73,6 +73,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -557,14 +558,19 @@ class OrderListViewModel @Inject constructor(
             return
         }
 
-        val totalDurationInSeconds = event.duration.toDouble() / 1_000
-        AnalyticsTracker.track(
-            AnalyticsEvent.ORDERS_LIST_LOADED,
-            mapOf(
-                AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
-                AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter
+        launch {
+            val totalDurationInSeconds = event.duration.toDouble() / 1_000
+            val totalCompletedOrders = orderListRepository
+                .getCachedOrderStatusOptions()[CoreOrderStatus.COMPLETED.value]?.statusCount
+            AnalyticsTracker.track(
+                AnalyticsEvent.ORDERS_LIST_LOADED,
+                mapOf(
+                    AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
+                    AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter,
+                    AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders
+                )
             )
-        )
+        }
     }
 
     fun onFiltersButtonTapped() {

@@ -7,7 +7,7 @@
             <stroke
                 android:width="@dimen/minor_10"
                 android:color="@color/divider_color" />
-            <solid android:color="@color/color_surface" />
+            <solid android:color="@color/color_toolbar" />
         </shape>
     </item>
 </ripple>

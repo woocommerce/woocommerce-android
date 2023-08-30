@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 abstract class BaseStoreProfilerViewModel(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
+    private val storeProfilerRepository: StoreProfilerRepository,
 ) : ScopedViewModel(savedStateHandle) {
     abstract val hasSearchableContent: Boolean
     protected val profilerOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
@@ -36,14 +37,19 @@ abstract class BaseStoreProfilerViewModel(
                 isLoading = isLoading,
                 isSearchableContent = hasSearchableContent,
                 searchQuery = searchQuery,
+                mainButtonText = getMainButtonText()
             )
         }.asLiveData()
 
-    protected abstract fun getProfilerStepDescription(): String
-
     protected abstract fun getProfilerStepTitle(): String
 
-    abstract fun onContinueClicked()
+    protected abstract fun getProfilerStepDescription(): String
+
+    protected abstract fun getMainButtonText(): String
+
+    protected abstract fun saveStepAnswer()
+
+    protected abstract fun moveForward()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
@@ -55,6 +61,17 @@ abstract class BaseStoreProfilerViewModel(
 
     fun onArrowBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onMainButtonClicked() {
+        saveStepAnswer()
+        storeProfilerRepository.storeAnswers(
+            siteId = newStore.data.siteId ?: 0L,
+            countryCode = newStore.data.country?.code,
+            profilerAnswers = newStore.data.profilerData
+        )
+
+        moveForward()
     }
 
     open fun onOptionSelected(option: StoreProfilerOptionUi) {
@@ -73,7 +90,8 @@ abstract class BaseStoreProfilerViewModel(
         val options: List<StoreProfilerOptionUi> = emptyList(),
         val isLoading: Boolean,
         val isSearchableContent: Boolean,
-        val searchQuery: String
+        val searchQuery: String,
+        val mainButtonText: String
     )
 
     data class StoreProfilerOptionUi(

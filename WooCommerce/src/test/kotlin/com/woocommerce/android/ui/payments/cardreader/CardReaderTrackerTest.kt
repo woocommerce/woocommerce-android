@@ -1121,4 +1121,14 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 any()
             )
         }
+
+    @Test
+    fun `when trackPaymentFailedContactSupportTapped, then CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED tracked`() {
+        cardReaderTracker.trackPaymentFailedContactSupportTapped()
+
+        verify(trackerWrapper).track(
+            eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_FAILED_CONTACT_SUPPORT_TAPPED),
+            any()
+        )
+    }
 }

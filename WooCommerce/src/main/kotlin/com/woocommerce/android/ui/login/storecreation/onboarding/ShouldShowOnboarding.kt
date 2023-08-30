@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
@@ -77,6 +78,7 @@ class ShouldShowOnboarding @Inject constructor(
             CUSTOMIZE_DOMAIN -> AnalyticsTracker.VALUE_ADD_DOMAIN
             WC_PAYMENTS,
             PAYMENTS -> AnalyticsTracker.VALUE_PAYMENTS
+            LOCAL_NAME_STORE -> AnalyticsTracker.VALUE_LOCAL_NAME_STORE
 
             MOBILE_UNSUPPORTED -> null
         }

@@ -63,6 +63,11 @@ object OrderCreateEditNavigator {
             is OrderCreateEditNavigationTarget.AddCoupon -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCouponSelectorFragment()
             }
+            is OrderCreateEditNavigationTarget.TaxRatesInfoDialog -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToTaxRatesInfoDialogFragment(
+                    target.state
+                )
+            }
         }
         navController.navigate(action)
     }

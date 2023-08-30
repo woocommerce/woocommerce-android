@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ButtonElevation
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -55,8 +56,11 @@ fun WCColoredButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = colorResource(id = R.color.woo_white)
+    ),
     rippleColor: Color = MaterialTheme.colors.primaryVariant,
+    elevation: ButtonElevation? = null,
     content: @Composable RowScope.() -> Unit
 ) {
     val contentColor by colors.contentColor(enabled = enabled)
@@ -80,15 +84,13 @@ fun WCColoredButton(
             onClick = onClick,
             enabled = enabled,
             colors = colors,
-            elevation = null,
+            elevation = elevation,
             interactionSource = interactionSource,
             contentPadding = contentPadding,
             modifier = modifier
         ) {
             ProvideTextStyle(
-                value = MaterialTheme.typography.subtitle2.copy(
-                    color = colorResource(id = R.color.woo_white)
-                )
+                value = MaterialTheme.typography.subtitle2
             ) {
                 content()
             }

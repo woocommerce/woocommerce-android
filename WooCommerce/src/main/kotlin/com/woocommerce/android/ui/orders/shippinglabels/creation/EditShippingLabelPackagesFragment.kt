@@ -161,6 +161,7 @@ class EditShippingLabelPackagesFragment :
                     findNavController().navigateSafely(action)
                 }
                 is OpenHazmatCategorySelector -> showHazmatCategoryPicker(
+                    event.packagePosition,
                     event.currentSelection,
                     event.onHazmatCategorySelected
                 )
@@ -187,6 +188,7 @@ class EditShippingLabelPackagesFragment :
     }
 
     private fun showHazmatCategoryPicker(
+        packagePosition: Int,
         currentSelection: ShippingLabelHazmatCategory?,
         onHazmatCategorySelected: OnHazmatCategorySelected
     ) {
@@ -194,7 +196,9 @@ class EditShippingLabelPackagesFragment :
             key = KEY_HAZMAT_CATEGORY_SELECTOR_RESULT,
             entryId = R.id.editShippingLabelPackagesFragment
         ) { hazmatSelection ->
-            onHazmatCategorySelected(ShippingLabelHazmatCategory.valueOf(hazmatSelection))
+            val selectedCategory = ShippingLabelHazmatCategory.valueOf(hazmatSelection)
+            viewModel.onHazmatCategorySelected(selectedCategory, packagePosition)
+            onHazmatCategorySelected(selectedCategory)
         }
         EditShippingLabelPackagesFragmentDirections
             .actionEditShippingLabelPaymentFragmentToHazmatCategorySelector(

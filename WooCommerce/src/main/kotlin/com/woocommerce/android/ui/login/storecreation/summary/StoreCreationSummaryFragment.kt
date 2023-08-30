@@ -49,7 +49,7 @@ class StoreCreationSummaryFragment : BaseFragment() {
             when (event) {
                 is OnCancelPressed -> findNavController().popBackStack()
                 is OnStoreCreationSuccess -> findNavController().navigateSafely(
-                    StoreCreationSummaryFragmentDirections.actionSummaryFragmentToInstallationFragment()
+                    StoreCreationSummaryFragmentDirections.actionSummaryFragmentToStoreProfilerIndustriesFragment()
                 )
                 is OnStoreCreationFailure -> displayStoreCreationErrorDialog()
             }

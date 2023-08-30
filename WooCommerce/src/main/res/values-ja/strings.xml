@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-17 14:54:04+0000
+Translation-Revision-Date: 2023-08-22 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">国を選択</string>
+    <string name="store_creation_country_picker_current_location_description">位置情報が自動的に検出されました。 正しくない場合はここで変更してください。</string>
+    <string name="store_creation_country_picker_title">活動拠点はどこですか ?</string>
+    <string name="store_profiler_challenge_other">その他</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">海運および物流</string>
+    <string name="store_profiler_challenge_managing_inventory">在庫の管理</string>
+    <string name="store_profiler_challenge_finding_customers">顧客の検索</string>
+    <string name="store_profiler_challenge_setting_up_online_store">オンラインストアのセットアップ</string>
+    <string name="store_profiler_challenge_description">以下から懸念事項や課題を選択してください。 複数のオプションを選択できます。</string>
+    <string name="store_profiler_challenge_title">オンラインストアを\n開始または運営する上での\n課題は何ですか ?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">危険性が高いと考えられる資源には、電池、ドライアイス、可燃性液体、エアロゾル、弾薬、花火、マニキュア、香水、塗料、溶剤などがあります。 危険物は個別に梱包して発送する必要があります。</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">有害物質を含む</string>
     <string name="ai_product_description_title_hint">商品名を入力します。</string>
     <string name="free_trial_feature_support">常時稼動の優先サポート</string>
     <string name="free_trial_feature_backups">サイトの自動バックアップ</string>
@@ -557,7 +569,6 @@ Language: ja_JP
     <string name="store_creation_country_picker_countries_header">国</string>
     <string name="store_creation_country_picker_current_location">現在の位置</string>
     <string name="store_creation_country_picker_description">この情報を使用して、支払い、配送、税金を設定します。</string>
-    <string name="store_creation_country_picker_title">場所を確認</string>
     <string name="store_creation_store_profiler_platforms_description">複数選択できます。</string>
     <string name="store_creation_store_profiler_platforms_title">現在どのプラットフォームを\n使用していますか ?</string>
     <string name="store_creation_store_profiler_industries_description">あなたのビジネスに相応しい\nカテゴリーを選択してください。</string>

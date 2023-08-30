@@ -173,32 +173,72 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/tax_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:minHeight="@dimen/major_300"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/major_100"
-            android:focusable="true"
-            android:focusableInTouchMode="false">
+            android:paddingVertical="@dimen/minor_100">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tax_label"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:paddingVertical="@dimen/minor_100"
+                android:paddingLeft="@dimen/minor_00"
+                android:paddingRight="@dimen/minor_50"
                 android:text="@string/order_creation_payment_tax"
-                android:textAppearance="?attr/textAppearanceSubtitle1" />
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintBottom_toBottomOf="@+id/tax_help_button"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tax_help_button"
+                tools:ignore="RtlHardcoded" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/tax_help_button"
+                android:layout_width="@dimen/image_minor_60"
+                android:layout_height="@dimen/image_minor_60"
+                android:src="@drawable/ic_help_24dp"
+                android:tint="@color/color_primary"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/minor_25"
+                android:contentDescription="@string/tax_rates_information_content_description"
+                android:background="?selectableItemBackgroundBorderless"
+                app:layout_constraintLeft_toRightOf="@+id/tax_label"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tax_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintBottom_toBottomOf="@+id/tax_help_button"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tax_help_button"
                 tools:text="$0.00" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/tax_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tax_label" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tax_based_on_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/minor_100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tax_lines"
+                tools:text="Calculated on shipping address" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/discount_layout"

@@ -8,14 +8,16 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreProfiler
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -30,6 +32,9 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val accountStore: AccountStore = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+    }
 
     @Before
     fun setUp() {
@@ -37,6 +42,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         analyticsTracker = mock()
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
+            resourceProvider = resourceProvider,
             newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
             prefsWrapper = prefsWrapper,
@@ -71,6 +77,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
+            resourceProvider = resourceProvider,
             newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
             prefsWrapper = prefsWrapper,
@@ -99,7 +106,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
                 AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                 AnalyticsTracker.KEY_SOURCE to storeCreationSource,
-                AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                AnalyticsTracker.KEY_IS_FREE_TRIAL to true
             )
         )
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)

@@ -92,7 +92,8 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             label = it.label!!,
             compound = it.compound ?: false,
             taxTotal = it.taxTotal ?: StringUtils.EMPTY,
-            ratePercent = it.ratePercent ?: 0f
+            ratePercent = it.ratePercent ?: 0f,
+            rateCode = it.rateCode ?: StringUtils.EMPTY,
         )
     }
 

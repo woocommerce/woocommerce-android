@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-17 18:54:03+0000
+Translation-Revision-Date: 2023-08-22 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">選擇國家/地區</string>
+    <string name="store_creation_country_picker_current_location_description">我們已自動偵測你的位置。 如果位置不正確，請在此變更。</string>
+    <string name="store_creation_country_picker_title">貴公司位於何處？</string>
+    <string name="store_profiler_challenge_other">其他</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">運輸與物流</string>
+    <string name="store_profiler_challenge_managing_inventory">管理庫存</string>
+    <string name="store_profiler_challenge_finding_customers">尋找顧客</string>
+    <string name="store_profiler_challenge_setting_up_online_store">架設網路商店</string>
+    <string name="store_profiler_challenge_description">請於下方選擇你的疑慮或遭遇的難處。 可以複選。</string>
+    <string name="store_profiler_challenge_title">在「\n」遭逢的挑戰開設或營運\n是網路商店嗎？</string>
+    <string name="shipping_label_package_details_hazmat_content_description">有潛在危險的物品包括電池、乾冰、可燃性物體、氣溶膠、彈藥、煙火、指甲油、香水、油漆和溶劑等項目。 危險物品必須分開裝運。</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">包含危險物品</string>
     <string name="ai_product_description_title_hint">請輸入商品標題。</string>
     <string name="free_trial_feature_support">全天候優先支援服務</string>
     <string name="free_trial_feature_backups">網站自動備份</string>
@@ -557,7 +569,6 @@ Language: zh_TW
     <string name="store_creation_country_picker_countries_header">國家/地區</string>
     <string name="store_creation_country_picker_current_location">目前的位置</string>
     <string name="store_creation_country_picker_description">我們會使用這些資訊完成付款、運送和稅務設定。</string>
-    <string name="store_creation_country_picker_title">確認你的位置</string>
     <string name="store_creation_store_profiler_platforms_description">可複選。</string>
     <string name="store_creation_store_profiler_platforms_title">你目前使用\n哪些平台？</string>
     <string name="store_creation_store_profiler_industries_description">選擇最符合\n你業務定義的類別。</string>

@@ -30,6 +30,7 @@ import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -40,6 +41,8 @@ import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -55,6 +58,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    dispatchers: CoroutineDispatchers,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler,
@@ -64,6 +68,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
+    storeProfilerRepository: StoreProfilerRepository,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -71,6 +76,14 @@ class MainActivityViewModel @Inject constructor(
     init {
         launch {
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
+        }
+
+        launch(dispatchers.io) {
+            if (!FeatureFlag.OPTIMIZE_PROFILER_QUESTIONS.isEnabled()) return@launch
+            if (selectedSite.exists()) {
+                // Upload any pending store profiler answers
+                storeProfilerRepository.uploadAnswers()
+            }
         }
     }
 
