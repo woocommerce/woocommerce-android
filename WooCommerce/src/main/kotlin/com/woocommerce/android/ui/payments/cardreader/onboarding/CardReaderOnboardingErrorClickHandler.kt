@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -11,6 +13,7 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pluginRepository: PluginRepository,
     private val cardReaderTracker: CardReaderTracker,
+    private val resourceProvider: ResourceProvider,
 ) {
     suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
@@ -36,10 +39,21 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
                     Reaction.Refresh
 
                 is PluginRepository.PluginStatus.PluginActivationFailed ->
-                    Reaction.ShowErrorAndRefresh(message = pluginStatus.errorDescription)
+                    Reaction.ShowErrorAndRefresh(
+                        message = pluginStatus.errorDescription.ifEmpty {
+                            resourceProvider.getString(
+                                R.string.error_generic
+                            )
+                        })
 
                 is PluginRepository.PluginStatus.PluginInstallFailed ->
-                    Reaction.ShowErrorAndRefresh(message = pluginStatus.errorDescription)
+                    Reaction.ShowErrorAndRefresh(
+                        message = pluginStatus.errorDescription.ifEmpty {
+                            resourceProvider.getString(
+                                R.string.error_generic
+                            )
+                        }
+                    )
             }
         }.last()
 
