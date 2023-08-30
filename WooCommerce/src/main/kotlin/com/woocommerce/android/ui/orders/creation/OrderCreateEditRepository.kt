@@ -11,10 +11,10 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.BillingAddress
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.ShippingAddress
-import com.woocommerce.android.ui.orders.creation.tax.TaxBasedOnSetting.StoreAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -171,6 +171,10 @@ class OrderCreateEditRepository @Inject constructor(
 
     suspend fun fetchTaxBasedOnSetting(): TaxBasedOnSetting? {
         return wooCommerceStore.fetchTaxBasedOnSettings(selectedSite.get()).model?.getTaxBasedOnSetting()
+    }
+
+    suspend fun getTaxBasedOnSetting(): TaxBasedOnSetting? {
+        return wooCommerceStore.getTaxBasedOnSettings(selectedSite.get())?.getTaxBasedOnSetting()
     }
 
     private fun TaxBasedOnSettingEntity.getTaxBasedOnSetting() =
