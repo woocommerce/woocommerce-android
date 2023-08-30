@@ -350,12 +350,30 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when package hazmat toggle is selected but category is null, then package is not valid`() {
+    fun `when package hazmat toggle is selected but category is null, then package is not valid`() = testBlocking {
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
+        setup(emptyArray())
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.onHazmatShippingChecked(0, true)
+
+        assertThat(viewState!!.packagesUiModels.first().data.selectedPackage?.hazmatCategory).isNull()
+        assertThat(viewState!!.isDataValid).isFalse
     }
 
     @Test
-    fun `when package hazmat is not selected and category is null, then package is valid`() {
+    fun `when package hazmat is not selected and category is null, then package is valid`() = testBlocking {
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
+        setup(emptyArray())
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.onHazmatShippingChecked(0, false)
+
+        assertThat(viewState!!.packagesUiModels.first().data.selectedPackage?.hazmatCategory).isNull()
+        assertThat(viewState!!.isDataValid).isTrue
     }
 }
