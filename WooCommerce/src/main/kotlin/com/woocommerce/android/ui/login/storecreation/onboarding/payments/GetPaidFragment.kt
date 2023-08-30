@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidViewModel.ShowWooPaymentsSetupSuccess
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,8 +23,10 @@ import javax.inject.Inject
 class GetPaidFragment : BaseFragment() {
     private val viewModel: GetPaidViewModel by viewModels()
 
-    @Inject lateinit var userAgent: UserAgent
-    @Inject lateinit var authenticator: WPComWebViewAuthenticator
+    @Inject
+    lateinit var userAgent: UserAgent
+    @Inject
+    lateinit var authenticator: WPComWebViewAuthenticator
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -46,6 +50,7 @@ class GetPaidFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is ShowWooPaymentsSetupSuccess -> TODO()
                 is Exit -> findNavController().popBackStack()
             }
         }
