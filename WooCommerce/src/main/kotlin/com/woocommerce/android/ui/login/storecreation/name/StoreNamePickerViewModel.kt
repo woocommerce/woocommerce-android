@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -22,10 +23,10 @@ import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_NUDGE_F
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.getStateFlow
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,6 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    resourceProvider: ResourceProvider,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper,
@@ -53,10 +55,7 @@ class StoreNamePickerViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private val canCreateFreeTrialStore
-        get() = FeatureFlag.FREE_TRIAL_M2.isEnabled() &&
-            FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
-
-    private val navArgs: StoreNamePickerFragmentArgs by savedStateHandle.navArgs()
+        get() = FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
 
     init {
         analyticsTrackerWrapper.track(
@@ -67,10 +66,7 @@ class StoreNamePickerViewModel @Inject constructor(
         )
 
         triggerEvent(CheckNotificationsPermission(::onCheckNotificationsPermissionResult))
-
-        if (navArgs.storeName != null) {
-            onStoreNameChanged(navArgs.storeName!!)
-        }
+        onStoreNameChanged(resourceProvider.getString(R.string.store_creation_store_name_default))
     }
 
     fun onCancelPressed() {
@@ -80,7 +76,7 @@ class StoreNamePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
                 AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                 AnalyticsTracker.KEY_SOURCE to prefsWrapper.getStoreCreationSource(),
-                AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                AnalyticsTracker.KEY_IS_FREE_TRIAL to true
             )
         )
         triggerEvent(Exit)

@@ -209,7 +209,7 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
 
-        EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
+        EventBus.getDefault().post(NotificationReceivedEvent(notification.remoteSiteId, notification.channelType))
     }
 
     private fun getLocalPushId(wpComNoteId: Int, randomNumber: Int) = wpComNoteId + randomNumber

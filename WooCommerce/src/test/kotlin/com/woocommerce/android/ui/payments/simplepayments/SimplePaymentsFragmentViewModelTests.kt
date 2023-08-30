@@ -18,6 +18,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
         private const val REMOTE_ORDER_NUMBER = "100"
         private const val TAX_LINE_ID = 1L
         private const val TAX_LINE_TAX_RATE = 0.15f
+        private const val TAX_LINE_TAX_RATE_CODE = "US CA 92679"
     }
 
     private val testOrder: Order
@@ -29,7 +30,8 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
                         label = "Test Tax",
                         compound = false,
                         taxTotal = "10.00",
-                        ratePercent = TAX_LINE_TAX_RATE
+                        ratePercent = TAX_LINE_TAX_RATE,
+                        rateCode = TAX_LINE_TAX_RATE_CODE,
                     )
                 )
             }

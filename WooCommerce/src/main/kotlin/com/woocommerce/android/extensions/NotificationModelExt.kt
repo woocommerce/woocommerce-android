@@ -18,4 +18,7 @@ fun NotificationModel.getCommentId(): Long {
     return this.meta?.ids?.comment ?: 0L
 }
 
-class NotificationReceivedEvent(var channel: NotificationChannelType)
+class NotificationReceivedEvent(
+    val siteId: Long,
+    val channel: NotificationChannelType
+)

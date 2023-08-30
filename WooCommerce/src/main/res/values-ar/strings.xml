@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-16 19:54:04+0000
+Translation-Revision-Date: 2023-08-22 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">تحديد بلد</string>
+    <string name="store_creation_country_picker_current_location_description">لقد اكتشفنا موقعك تلقائيًا. يرجى تغييره هنا إذا كان غير صحيح.</string>
+    <string name="store_creation_country_picker_title">أين تقع شركتك؟</string>
+    <string name="store_profiler_challenge_other">أخرى</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">الشحن والإمداد والتموين</string>
+    <string name="store_profiler_challenge_managing_inventory">إدارة المخزون</string>
+    <string name="store_profiler_challenge_finding_customers">العثور على العملاء</string>
+    <string name="store_profiler_challenge_setting_up_online_store">إعداد المتجر على الإنترنت</string>
+    <string name="store_profiler_challenge_description">اختر المخاوف التي تشعر بها أو الصعوبات التي تواجهها أدناه. يمكنك تحديث أكثر من خيار واحد.</string>
+    <string name="store_profiler_challenge_title">ما التحديات التي تواجهها\nعند بدء متجر على الإنترنت\nأو تشغيله؟</string>
+    <string name="shipping_label_package_details_hazmat_content_description">تشمل المواد محتملة الخطورة عناصر، مثل: البطاريات والثلج الجاف والسوائل القابلة للاشتعال والأهباء الجوية والذخائر والألعاب النارية وطلاء الأظافر والعطور والدهانات والمذيبات والمزيد. يجب شحن العناصر الخطرة في حاويات منفصلة.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">يحتوي على مواد خطرة</string>
     <string name="ai_product_description_title_hint">أدخل عنوان المنتج.</string>
     <string name="free_trial_feature_support">دعم ذو أولوية على مدار الساعة وطوال أيام الأسبوع</string>
     <string name="free_trial_feature_backups">عمليات النسخ الاحتياطي التلقائية في الموقع</string>
@@ -557,7 +569,6 @@ Language: ar
     <string name="store_creation_country_picker_countries_header">البلدان</string>
     <string name="store_creation_country_picker_current_location">الموقع الحالي</string>
     <string name="store_creation_country_picker_description">سنستخدم هذه المعلومات لإعداد المدفوعات والشحن والضرائب.</string>
-    <string name="store_creation_country_picker_title">تأكيد موقعك</string>
     <string name="store_creation_store_profiler_platforms_description">يمكنك اختيار العديد منها.</string>
     <string name="store_creation_store_profiler_platforms_title">ما المنصة (المنصات) التي\nتستخدمها حاليًا؟</string>
     <string name="store_creation_store_profiler_industries_description">اختر تصنيفًا يُعرِّف\nعملك على أفضل وجه.</string>
