@@ -235,7 +235,10 @@ private fun ProductCard(
                 }
                 .size(dimensionResource(R.dimen.major_300))
                 .clip(RoundedCornerShape(3.dp))
-                .padding(dimensionResource(id = R.dimen.minor_100))
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.minor_100)
+                )
         )
 
         Column(
