@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 
-typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, OnHazmatCategorySelected) -> Unit
+typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, Int, OnHazmatCategorySelected) -> Unit
 
 class ShippingLabelPackagesAdapter(
     val siteParameters: SiteParameters,
@@ -134,7 +134,7 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.hazmatCategoryContainer.setOnClickListener {
-                onHazmatCategoryClicked(currentHazmatSelection) {
+                onHazmatCategoryClicked(currentHazmatSelection, bindingAdapterPosition) {
                     currentHazmatSelection = it
                     binding.hazmatCategory.text = binding.root.context.getString(it.stringResourceID)
                 }
@@ -191,6 +191,11 @@ class ShippingLabelPackagesAdapter(
             } else {
                 binding.expandIcon.rotation = 0f
                 binding.detailsLayout.isVisible = false
+            }
+
+            shippingLabelPackage.selectedPackage?.hazmatCategory?.let {
+                binding.hazmatToggle.isChecked = true
+                binding.hazmatCategory.text = context.getString(it.stringResourceID)
             }
         }
 

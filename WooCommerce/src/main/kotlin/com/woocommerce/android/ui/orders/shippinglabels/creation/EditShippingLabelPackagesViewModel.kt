@@ -181,9 +181,22 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     fun onHazmatCategoryClicked(
         currentSelection: ShippingLabelHazmatCategory?,
+        packagePosition: Int,
         onHazmatCategorySelected: OnHazmatCategorySelected
     ) {
-        triggerEvent(OpenHazmatCategorySelector(currentSelection, onHazmatCategorySelected))
+        triggerEvent(OpenHazmatCategorySelector(packagePosition, currentSelection, onHazmatCategorySelected))
+    }
+
+    fun onHazmatCategorySelected(
+        newSelection: ShippingLabelHazmatCategory,
+        packagePosition: Int
+    ) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        with(packages[packagePosition].data) {
+            selectedPackage?.copy(hazmatCategory = newSelection)
+                ?.let { copy(selectedPackage = it) }
+        }?.let { packages[packagePosition] = packages[packagePosition].copy(data = it) }
+        viewState = viewState.copy(packagesUiModels = packages)
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
@@ -378,6 +391,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class OpenHazmatCategorySelector(
+        val packagePosition: Int,
         val currentSelection: ShippingLabelHazmatCategory?,
         val onHazmatCategorySelected: OnHazmatCategorySelected
     ) : MultiLiveEvent.Event()
