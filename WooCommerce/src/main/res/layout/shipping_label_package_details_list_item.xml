@@ -209,7 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     android:id="@+id/hazmat_category_container"
@@ -283,21 +283,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/major_100"
-                    android:layout_marginVertical="@dimen/major_100" />
+                    android:layout_marginBottom="@dimen/minor_100" />
 
                 <TextView
                     android:id="@+id/hazmat_usps_instructions_second_section"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/major_100"
-                    android:layout_marginVertical="@dimen/major_100" />
+                    android:layout_marginBottom="@dimen/minor_100" />
 
                 <TextView
                     android:id="@+id/hazmat_dhl_instructions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/major_100"
-                    android:layout_marginVertical="@dimen/major_100" />
+                    android:layout_marginBottom="@dimen/minor_100" />
 
             </LinearLayout>
         </LinearLayout>
