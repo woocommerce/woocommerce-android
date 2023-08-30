@@ -44,7 +44,8 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
                             resourceProvider.getString(
                                 R.string.error_generic
                             )
-                        })
+                        }
+                    )
 
                 is PluginRepository.PluginStatus.PluginInstallFailed ->
                     Reaction.ShowErrorAndRefresh(

@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -613,7 +614,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given incoming wcpay not installed in country, when view model init, then wc pay not installed shown`() =
+    fun `given incoming wcpay not installed, when view model init, then wc pay not installed shown`() =
         testBlocking {
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
@@ -626,6 +627,71 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotInstalledState::class.java)
+        }
+
+    @Test
+    fun `given handler returned show error and refresh, when clicked on wcpay not installed CTA, then error shown and refreshed state`() =
+        testBlocking {
+            val errorText = "error"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
+                .thenReturn(CardReaderOnboardingErrorClickHandler.Reaction.ShowErrorAndRefresh(errorText))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotInstalled,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayNotInstalledState)
+                .actionButtonAction.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(errorText))
+            )
+
+            verify(onboardingChecker).getOnboardingState()
+        }
+
+    @Test
+    fun `given returned refresh, when clicked on wcpay not installed CTA, then error shown`() =
+        testBlocking {
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
+                .thenReturn(CardReaderOnboardingErrorClickHandler.Reaction.Refresh)
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotInstalled,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayNotInstalledState)
+                .actionButtonAction.invoke()
+
+            verify(onboardingChecker).getOnboardingState()
         }
 
     @Test
