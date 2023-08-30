@@ -9,11 +9,6 @@ import javax.inject.Inject
 class TaxRateSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-    fun onEditTaxRatesInAdminClicked() {
-
-    }
-
-    fun onInfoIconClicked() {
-
-    }
+    fun onEditTaxRatesInAdminClicked() = Unit
+    fun onInfoIconClicked() = Unit
 }

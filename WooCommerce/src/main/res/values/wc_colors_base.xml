@@ -54,9 +54,9 @@
     <color name="woo_gray_0">#F6F7F7</color>
     <color name="woo_gray_5">#DCDCDE</color>
     <color name="woo_gray_6">#F2F2F7</color>
-    <color name="woo_gray_20">#C6C6C6</color>
     <color name="woo_gray_40">#787C82</color>
     <color name="woo_gray_80">#2C3338</color>
+    <color name="woo_gray_80_alpha_012">#1F2C3338</color>
     <color name="woo_gray_900">#F7F7F7</color>
 
     <color name="woo_black">@android:color/black</color>

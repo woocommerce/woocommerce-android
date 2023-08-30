@@ -32,12 +32,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun TaxRateSelectorScreen(
-    onEditTaxRatesInAdminClicked: () -> Unit, onInfoIconClicked: () -> Unit
+    onEditTaxRatesInAdminClicked: () -> Unit,
+    onInfoIconClicked: () -> Unit
 ) {
-    Scaffold {
+    Scaffold(
+        backgroundColor = MaterialTheme.colors.surface
+    ) {
         Column(
             modifier = Modifier.padding(it), horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -66,7 +70,6 @@ private fun TaxRates() {
             text = stringResource(R.string.tax_rate_selector_list_header)
         )
         LazyColumn {
-
         }
     }
 }
@@ -80,8 +83,9 @@ fun Header(onInfoIconClicked: () -> Unit) {
                 .border(
                     BorderStroke(
                         dimensionResource(id = R.dimen.minor_10),
-                        colorResource(id = R.color.woo_gray_20)
-                    ), RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
+                        colorResource(id = R.color.woo_gray_80_alpha_012)
+                    ),
+                    RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
                 ),
         ) {
             IconButton(
@@ -140,7 +144,8 @@ private fun Footer(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 top.linkTo(footerLabel.bottom)
-            }, onEditTaxRatesInAdminClicked
+            },
+            onEditTaxRatesInAdminClicked
         )
     }
 }
@@ -174,20 +179,20 @@ fun EditTaxRatesInAdminButton(modifier: Modifier = Modifier, onClick: () -> Unit
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TaxRateSelectorScreenPreview() {
+fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
     TaxRateSelectorScreen(onEditTaxRatesInAdminClicked = {}, onInfoIconClicked = {})
 }
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun FooterPreview() {
+fun FooterPreview() = WooThemeWithBackground {
     Footer(onEditTaxRatesInAdminClicked = {})
 }
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TaxRatesPreview() {
+fun TaxRatesPreview() = WooThemeWithBackground {
     TaxRates()
 }
