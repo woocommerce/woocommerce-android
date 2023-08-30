@@ -8,7 +8,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.useMockedAPI
-import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
@@ -77,24 +76,6 @@ class OrdersRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
-    private val order40 = OrderData(
-        customerName = "Samuel Ayala",
-        id = 40,
-        productsTotalRaw = "10.00",
-        taxesRaw = "0.00",
-        shippingRaw = "0.00",
-        totalRaw = "10.00",
-        statusRaw = "pending",
-        customerNoteRaw = "Cappuccino is made on doppio, free of charge. Enjoy!"
-    )
-
-    private val order41 = OrderData(
-        customerName = "Samara Montes",
-        id = 41,
-        totalRaw = "7.00",
-        statusRaw = "completed"
-    )
-
     @Test
     fun e2eRealApiOrdersFilter() {
         OrderListScreen()
@@ -145,8 +126,8 @@ class OrdersRealAPI : TestBase() {
                 .assertOrderId(order40.id)
                 .assertCustomerName(order40.customerName)
                 .assertOrderStatus(order40.status)
-                .assertOrderHasProduct(ProductsRealAPI().productSalad)
-                .assertOrderHasProduct(ProductsRealAPI().productCappuccinoCocoMedium)
+                .assertOrderHasProduct(productSalad)
+                .assertOrderHasProduct(productCappuccinoCocoMedium)
                 .assertPayments(order40)
                 .assertCustomerNote(order40.customerNote)
         } finally {

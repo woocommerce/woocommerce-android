@@ -81,7 +81,6 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -432,10 +431,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun canSiteUseSharingWithAI(): Boolean {
-        return FeatureFlag.SHARING_PRODUCT_AI.isEnabled() &&
-            selectedSite.get().isWPComAtomic
-    }
+    private fun canSiteUseSharingWithAI(): Boolean = selectedSite.get().isWPComAtomic
 
     fun onWriteWithAIClicked() {
         val chosenDescription =
