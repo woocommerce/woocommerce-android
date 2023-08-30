@@ -216,7 +216,7 @@ private fun ProductCard(
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
             )
     ) {
-        val (asyncImage, column, text) = createRefs()
+        val (asyncImage, productNameText, productDetailsText, totalText) = createRefs()
 
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -237,37 +237,42 @@ private fun ProductCard(
                 .clip(RoundedCornerShape(3.dp))
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.minor_100)
                 )
         )
 
-        Column(
+        Text(
+            text = productName,
+            style = MaterialTheme.typography.body1,
             modifier = Modifier
-                .constrainAs(column) {
+                .constrainAs(productNameText) {
                     start.linkTo(asyncImage.end)
-                    end.linkTo(text.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
+                    top.linkTo(asyncImage.top)
+                    bottom.linkTo(productDetailsText.top)
                     width = Dimension.fillToConstraints
                 }
-                .padding(dimensionResource(id = R.dimen.minor_100)),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = productName,
-                style = MaterialTheme.typography.body1
-            )
-            Text(
-                text = "$productQuantity x $productPrice",
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.woo_gray_40)
-            )
-        }
+                .padding(start = dimensionResource(id = R.dimen.major_100))
+        )
+
+        Text(
+            text = "$productQuantity x $productPrice",
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.woo_gray_40),
+            modifier = Modifier
+                .constrainAs(productDetailsText) {
+                    start.linkTo(asyncImage.end)
+                    top.linkTo(productNameText.bottom)
+                    bottom.linkTo(asyncImage.bottom)
+                    width = Dimension.fillToConstraints
+                }
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                )
+        )
 
         Text(
             text = "${state.currency}$totalPerProduct",
             modifier = Modifier
-                .constrainAs(text) {
+                .constrainAs(totalText) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
