@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.onboarding
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -9,10 +10,13 @@ import javax.inject.Inject
 class CardReaderOnboardingErrorClickHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pluginRepository: PluginRepository,
+    private val cardReaderTracker: CardReaderTracker,
 ) {
     suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
+                cardReaderTracker.trackOnboardingCtaTappedState(ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED)
+
                 installPlugin(
                     slug = WC_PAY_SLUG,
                     name = WC_PAY_NAME,
@@ -45,8 +49,10 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
     }
 
     companion object {
-        const val WC_PAY_SLUG = "woocommerce-payments"
-        const val WC_PAY_NAME = "woocommerce-payments/woocommerce-payments"
+        private const val WC_PAY_SLUG = "woocommerce-payments"
+        private const val WC_PAY_NAME = "woocommerce-payments/woocommerce-payments"
+
+        private const val ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED = "plugin_install_tapped"
     }
 }
 

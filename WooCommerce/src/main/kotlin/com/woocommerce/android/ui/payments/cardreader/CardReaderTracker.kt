@@ -208,15 +208,11 @@ class CardReaderTracker @Inject constructor(
         }
     }
 
-    fun trackOnboardingCtaTappedState(state: CardReaderOnboardingState) {
-        getOnboardingNotCompletedReason(state)?.let {
-            track(
-                CARD_PRESENT_ONBOARDING_CTA_TAPPED,
-                mutableMapOf(
-                    "reason" to it,
-                )
-            )
-        }
+    fun trackOnboardingCtaTappedState(reason: String) {
+        track(
+            CARD_PRESENT_ONBOARDING_CTA_TAPPED,
+            mutableMapOf("reason" to reason)
+        )
     }
 
     fun trackCashOnDeliveryToggled(isEnabled: Boolean) {
