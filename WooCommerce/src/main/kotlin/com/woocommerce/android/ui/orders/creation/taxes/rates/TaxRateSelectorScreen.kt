@@ -102,10 +102,10 @@ fun Header(onInfoIconClicked: () -> Unit) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(
-                        dimensionResource(id = R.dimen.minor_00),
-                        dimensionResource(id = R.dimen.major_100),
-                        dimensionResource(id = R.dimen.major_100),
-                        dimensionResource(id = R.dimen.major_100)
+                        start = dimensionResource(id = R.dimen.minor_00),
+                        top = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.major_100)
                     ),
                 style = MaterialTheme.typography.body2,
                 text = stringResource(R.string.tax_rate_selector_header_label),

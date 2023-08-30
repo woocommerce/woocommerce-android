@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TaxRateSelectorFragment : Fragment() {
-    private val viewModel: TaxRateSelectorViewModel by viewModels<TaxRateSelectorViewModel>()
+    private val viewModel: TaxRateSelectorViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
