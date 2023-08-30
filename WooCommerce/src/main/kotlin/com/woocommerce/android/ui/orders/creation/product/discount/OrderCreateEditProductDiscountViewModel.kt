@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_REMOVE
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -70,7 +68,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         decimalSeparator = decimalSeparator,
         numberOfDecimals = numberOfDecimals
     )
-
 
     private val itemUiModelFuture: Deferred<ProductUIModel> = async {
         mapItemToProductUiModel(orderItem.value)
