@@ -3,7 +3,6 @@ package com.woocommerce.android
 import org.greenrobot.eventbus.Subscribe
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
-import java.util.Collections
 
 class FakeDispatcher : Dispatcher() {
     private val listeners = mutableListOf<Any>()
