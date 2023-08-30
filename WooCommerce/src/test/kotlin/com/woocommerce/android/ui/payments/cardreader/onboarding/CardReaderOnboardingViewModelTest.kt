@@ -75,6 +75,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val gatewayStore: WCGatewayStore = mock()
+    private val errorClickHandler: CardReaderOnboardingErrorClickHandler = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -2193,13 +2194,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
 
-            verify(tracker).trackOnboardingCtaTappedState(
-                CashOnDeliveryDisabled(
-                    countryCode = countryCode,
-                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
-                    version = pluginVersion
-                )
-            )
+            verify(tracker).trackOnboardingCtaTappedState("cash_on_delivery_disabled")
         }
 
     @Test
@@ -2350,6 +2345,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         selectedSite,
         appPrefsWrapper,
         cardReaderManager,
-        gatewayStore
+        gatewayStore,
+        errorClickHandler,
     )
 }
