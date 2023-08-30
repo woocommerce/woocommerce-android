@@ -2,6 +2,7 @@ package com.woocommerce.android.compose
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -73,6 +74,15 @@ fun AppTheme(
 
     MaterialTheme(
         colors = colors,
-        content = content
+        content = { SurfacedContent(content) }
     )
+}
+
+@Composable
+private fun SurfacedContent(
+    content: @Composable () -> Unit
+) {
+    Surface(color = MaterialTheme.colors.background) {
+        content()
+    }
 }
