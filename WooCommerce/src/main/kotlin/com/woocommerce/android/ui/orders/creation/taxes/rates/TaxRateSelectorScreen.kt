@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -123,7 +122,7 @@ fun TaxRateRow(
                 .size(dimensionResource(id = R.dimen.image_minor_50))
                 .padding(dimensionResource(id = R.dimen.minor_10)),
             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
-            tint = Color(0x4D3C3C43),
+            tint = colorResource(id = R.color.woo_gray_80_alpha_030),
             contentDescription = null
         )
     }
@@ -140,7 +139,8 @@ fun Header(onInfoIconClicked: () -> Unit) {
                     BorderStroke(
                         dimensionResource(id = R.dimen.minor_10),
                         colorResource(id = R.color.woo_gray_80_alpha_012)
-                    ), RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
+                    ),
+                    RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
                 ),
         ) {
             IconButton(

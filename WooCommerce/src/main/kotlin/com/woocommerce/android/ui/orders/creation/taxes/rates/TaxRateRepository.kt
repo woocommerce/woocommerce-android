@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
+@Suppress("MagicNumber", "ForbiddenComment", "UnusedPrivateMember")
 class TaxRateRepository @Inject constructor(private val selectedSite: SelectedSite) {
     suspend fun fetchTaxRates(): List<TaxRate> {
         // TODO: Remove mock data and implement endpoint call
