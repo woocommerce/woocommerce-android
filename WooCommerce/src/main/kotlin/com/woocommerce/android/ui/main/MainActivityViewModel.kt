@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -79,7 +78,6 @@ class MainActivityViewModel @Inject constructor(
         }
 
         launch(dispatchers.io) {
-            if (!FeatureFlag.OPTIMIZE_PROFILER_QUESTIONS.isEnabled()) return@launch
             if (selectedSite.exists()) {
                 // Upload any pending store profiler answers
                 storeProfilerRepository.uploadAnswers()
