@@ -364,7 +364,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when package hazmat is not selected and category is null, then package is valid`() = testBlocking {
+    fun `when package hazmat toggle is not selected and category is null, then package is valid`() = testBlocking {
         whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
 
         setup(emptyArray())
@@ -374,6 +374,21 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         viewModel.onHazmatShippingChecked(0, false)
 
         assertThat(viewState!!.packagesUiModels.first().data.selectedPackage?.hazmatCategory).isNull()
+        assertThat(viewState!!.isDataValid).isTrue
+    }
+
+    @Test
+    fun `when package hazmat toggle is selected and category is not null, then package is vaild`() = testBlocking {
+        whenever(shippingLabelRepository.getLastUsedPackage()).thenReturn(availablePackages.first())
+
+        setup(emptyArray())
+        var viewState: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.onHazmatShippingChecked(0, true)
+        viewModel.onHazmatCategorySelected(AIR_ELIGIBLE_ETHANOL, 0)
+
+        assertThat(viewState!!.packagesUiModels.first().data.selectedPackage?.hazmatCategory).isNotNull
         assertThat(viewState!!.isDataValid).isTrue
     }
 }
