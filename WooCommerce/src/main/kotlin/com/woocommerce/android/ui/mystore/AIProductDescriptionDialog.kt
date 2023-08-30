@@ -47,7 +47,7 @@ fun AIProductDescriptionDialog(
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                 text = stringResource(id = R.string.ai_product_description_dialog_title),
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.h5,
                 textAlign = TextAlign.Center
             )
             Text(

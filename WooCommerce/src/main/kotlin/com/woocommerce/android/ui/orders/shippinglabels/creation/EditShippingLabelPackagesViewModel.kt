@@ -179,6 +179,13 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
+    fun onHazmatCategoryClicked(
+        currentSelection: ShippingLabelHazmatCategory?,
+        onHazmatCategorySelected: OnHazmatCategorySelected
+    ) {
+        triggerEvent(OpenHazmatCategorySelector(currentSelection, onHazmatCategorySelected))
+    }
+
     // all the logic is inside local functions, so it should be OK, but detekt complains still
     @Suppress("ComplexMethod")
     fun handleMoveItemResult(result: MoveItemResult) {
@@ -368,5 +375,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val item: ShippingLabelPackage.Item,
         val currentPackage: ShippingLabelPackage,
         val packagesList: List<ShippingLabelPackage>
+    ) : MultiLiveEvent.Event()
+
+    data class OpenHazmatCategorySelector(
+        val currentSelection: ShippingLabelHazmatCategory?,
+        val onHazmatCategorySelected: OnHazmatCategorySelected
     ) : MultiLiveEvent.Event()
 }

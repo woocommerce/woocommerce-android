@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.prefs
+package com.woocommerce.android.ui.prefs.account
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData

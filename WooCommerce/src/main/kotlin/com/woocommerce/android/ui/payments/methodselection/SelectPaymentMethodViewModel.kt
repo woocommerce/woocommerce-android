@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -75,6 +76,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentsUtils: PaymentUtils,
 ) : ScopedViewModel(savedState) {
@@ -100,6 +102,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Payment -> {
                         launch {
                             // stay on screen
+                            cardReaderTrackingInfoKeeper.setCountry(
+                                wooCommerceStore.getStoreCountryCode(selectedSite.get())
+                            )
+
                             _order.value = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
                                 orderMapper.toAppModel(it)
                             }

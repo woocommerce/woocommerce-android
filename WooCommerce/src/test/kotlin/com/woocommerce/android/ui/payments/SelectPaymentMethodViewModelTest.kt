@@ -13,6 +13,7 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
@@ -101,6 +102,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
     private val paymentsUtils: PaymentUtils = mock()
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -139,6 +141,20 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isNull()
+    }
+
+    @Test
+    fun `given payment flow, when view model init, then set country in tracking info`() = testBlocking {
+        // GIVEN
+        val orderId = 1L
+        val country = "US"
+        whenever(wooCommerceStore.getStoreCountryCode(any())).thenReturn(country)
+
+        // WHEN
+        initViewModel(Payment(orderId, ORDER))
+
+        // THEN
+        verify(cardReaderTrackingInfoKeeper).setCountry(eq(country))
     }
 
     @Test
@@ -1196,6 +1212,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             learnMoreUrlProvider,
             cardReaderTracker,
             tapToPayAvailabilityStatus,
+            cardReaderTrackingInfoKeeper,
             appPrefs,
             paymentsUtils,
         )

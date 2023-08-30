@@ -563,7 +563,7 @@
     <string name="order_creation_loading_dialog_message">Please wait…</string>
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
-    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_payment_tax">Taxes Total</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -592,6 +592,9 @@
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <string name="order_creation_coupon_invalid_code">We couldn\'t find a coupon with that code. Please try again</string>
     <string name="order_creation_coupon_network_error">Something went wrong when validating your coupon code. Please try again</string>
+    <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
+    <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
+    <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
 
     <!--
          Barcode Scanning
@@ -964,6 +967,8 @@
     <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contains Hazardous Materials</string>
     <string name="shipping_label_package_details_hazmat_content_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Hazardous material category</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Select a category</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
@@ -2108,6 +2113,7 @@
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
+    <string name="settings_account">Account Settings</string>
 
     <!--
         Developer Options Screen
@@ -3549,5 +3555,27 @@
     Shipping zones
     -->
     <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
+
+    <!--
+    Tax rates info dialog
+    -->
+    <string name="tax_rates_information_content_description">Tax rates information</string>
+    <string name="tax_rates_info_dialog_primary_text">Taxes are calculated by matching your customer’s billing or shipping address, or your shop address to a tax rate location.</string>
+    <string name="tax_rates_info_dialog_secondary_text">Tax rates for different locations can be managed in your store’s admin.</string>
+    <string name="tax_rates_info_dialog_title"><![CDATA[Taxes & Tax Rates]]></string>
+    <string name="tax_rates_redirect_to_admin_content_description">Edit Tax Rates in Admin Button</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Edit Tax Rates in Admin</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Your tax rate is currently calculated based on your shop address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Your tax rate is currently calculated based on your billing address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Your tax rate is currently calculated based on your shipping address%1$s</string>
+
+    <!--
+    Tax rate selector
+    -->
+    <string name="tax_rate_selector_footer_label">Can\'t find the rate you\'re looking for?</string>
+    <string name="tax_rate_selector_list_header">SELECT A TAX RATE</string>
+    <string name="tax_rate_selector_info_icon_content_description">Button opening tax rates info dialog</string>
+    <string name="tax_rate_selector_header_label">This will change the customer’s address to the location of the tax rate you select.</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Edit tax rates in admin</string>
 
 </resources>

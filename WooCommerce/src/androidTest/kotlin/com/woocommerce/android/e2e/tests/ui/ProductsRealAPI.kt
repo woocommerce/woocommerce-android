@@ -8,7 +8,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.useMockedAPI
-import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
@@ -75,42 +74,6 @@ class ProductsRealAPI : TestBase() {
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
     }
-
-    val productSalad = ProductData(
-        name = "Chicken Teriyaki Salad",
-        stockStatusRaw = "instock",
-        priceDiscountedRaw = "7",
-        sku = "SLD-CHK-TRK"
-    )
-
-    private val productCappuccino = ProductData(
-        name = "Cappuccino",
-        stockStatusRaw = "instock",
-        variations = " • 6 variations",
-        priceDiscountedRaw = "2",
-        sku = "CF-CPC"
-    )
-
-    private val productCappuccinoAlmondMedium = ProductData(
-        name = productCappuccino.name,
-        stockStatusRaw = productCappuccino.stockStatusRaw,
-        priceDiscountedRaw = "3",
-        sku = productCappuccino.sku + "-ALM-M"
-    )
-
-    private val productCappuccinoAlmondLarge = ProductData(
-        name = productCappuccino.name,
-        stockStatusRaw = productCappuccino.stockStatusRaw,
-        priceDiscountedRaw = "4",
-        sku = productCappuccino.sku + "-ALM-L"
-    )
-
-    val productCappuccinoCocoMedium = ProductData(
-        name = productCappuccino.name,
-        stockStatusRaw = productCappuccino.stockStatusRaw,
-        priceDiscountedRaw = "3",
-        sku = productCappuccino.sku + "-COCO-M"
-    )
 
     @Test
     fun e2eRealApiProductsSearchUsual() {
