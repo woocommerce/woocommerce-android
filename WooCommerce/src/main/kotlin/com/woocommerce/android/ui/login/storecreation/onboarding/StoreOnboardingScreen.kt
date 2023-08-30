@@ -57,7 +57,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.WcTag
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.LaunchStoreTaskRes
@@ -401,17 +400,14 @@ private fun OnboardingPreview() {
             title = string.store_onboarding_title,
             tasks = listOf(
                 OnboardingTaskUi(
-                    type = OnboardingTaskType.ABOUT_YOUR_STORE,
                     taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 ),
                 OnboardingTaskUi(
-                    type = OnboardingTaskType.ABOUT_YOUR_STORE,
                     taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = true,
                 ),
                 OnboardingTaskUi(
-                    type = OnboardingTaskType.ABOUT_YOUR_STORE,
                     taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 )

@@ -149,7 +149,6 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
         viewModel.onTaskClicked(
             OnboardingTaskUi(
-                type = OnboardingTaskType.ABOUT_YOUR_STORE,
                 taskUiResources = AboutYourStoreTaskRes,
                 isCompleted = false
             )

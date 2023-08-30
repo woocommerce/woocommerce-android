@@ -106,16 +106,22 @@ class MyStoreFragment :
 
     @Inject
     lateinit var selectedSite: SelectedSite
+
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var dateUtils: DateUtils
+
     @Inject
     lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+
     @Inject
     lateinit var appPrefsWrapper: AppPrefsWrapper
+
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
@@ -312,7 +318,14 @@ class MyStoreFragment :
             is StoreOnboardingViewModel.NavigateToSetupPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
-                        taskId = taskType.id
+                        taskId = taskId
+                    )
+                )
+
+            is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+                findNavController().navigateSafely(
+                    directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
+                        taskId = taskId
                     )
                 )
 
