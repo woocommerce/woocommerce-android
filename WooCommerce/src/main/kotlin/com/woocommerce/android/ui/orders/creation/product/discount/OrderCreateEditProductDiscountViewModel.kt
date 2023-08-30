@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
+import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -20,6 +21,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -68,10 +71,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         numberOfDecimals = numberOfDecimals
     )
 
-    init {
-        viewModelScope.launch {
-            mapItemToProductUiModel(orderItem.value)
-        }
+
+    private val itemUiModelFuture: Deferred<ProductUIModel> = async {
+        mapItemToProductUiModel(orderItem.value)
     }
 
     val viewState: StateFlow<ViewState> =
@@ -85,7 +87,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 priceAfterDiscount = getPriceAfterDiscount(),
                 calculatedPriceAfterDiscount = getCalculatedPriceAfterDiscount(),
                 productDetailsState = ProductDetailsState(
-                    imageUrl = mapItemToProductUiModel(orderItem.value).imageUrl
+                    imageUrl = itemUiModelFuture.await().imageUrl
                 )
             )
         }.toStateFlow(ViewState(currency, null))
