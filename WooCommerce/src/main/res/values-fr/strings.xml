@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-16 16:54:04+0000
+Translation-Revision-Date: 2023-08-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Sélectionner un pays</string>
+    <string name="store_creation_country_picker_current_location_description">Nous avons détecté votre emplacement automatiquement. N’hésitez pas à modifier si besoin.</string>
+    <string name="store_creation_country_picker_title">Où se situe votre entreprise ?</string>
+    <string name="store_profiler_challenge_other">Autre</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Expédition et logistique</string>
+    <string name="store_profiler_challenge_managing_inventory">Gérer les stocks</string>
+    <string name="store_profiler_challenge_finding_customers">Rechercher des clients</string>
+    <string name="store_profiler_challenge_setting_up_online_store">Configurer la boutique en ligne</string>
+    <string name="store_profiler_challenge_description">Sélectionnez vos préoccupations ou difficultés ci-dessous. Plusieurs réponses possibles.</string>
+    <string name="store_profiler_challenge_title">Quelle(s) difficulté(s) rencontrez-vous dans le cadre du\nlancement ou de la gestion d’une\nboutique en ligne ?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Parmi les produits potentiellement dangereux figurent notamment les batteries, la neige carbonique, les liquides inflammables, les aérosols, les munitions, les feux d’artifice, le vernis à ongles, le parfum, la peinture et les solvants. Les articles dangereux doivent être expédiés séparément.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contient des produits dangereux</string>
     <string name="ai_product_description_title_hint">Entrez le nom du produit.</string>
     <string name="free_trial_feature_support">Assistance prioritaire 24 h/24 et 7 j/7</string>
     <string name="free_trial_feature_backups">Sauvegardes automatiques du site</string>
@@ -557,7 +569,6 @@ Language: fr
     <string name="store_creation_country_picker_countries_header">Pays</string>
     <string name="store_creation_country_picker_current_location">Emplacement actuel</string>
     <string name="store_creation_country_picker_description">Nous utiliserons ces informations pour configurer rapidement les paiements, les expéditions et les taxes.</string>
-    <string name="store_creation_country_picker_title">Confirmer votre position</string>
     <string name="store_creation_store_profiler_platforms_description">Vous pouvez en choisir plusieurs.</string>
     <string name="store_creation_store_profiler_platforms_title">Quelle(s) plateforme(s)\nutilisez-vous actuellement ?</string>
     <string name="store_creation_store_profiler_industries_description">Choisissez la catégorie qui définit\nle mieux votre activité.</string>

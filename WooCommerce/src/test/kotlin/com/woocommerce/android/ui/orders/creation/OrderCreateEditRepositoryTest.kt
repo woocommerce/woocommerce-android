@@ -6,8 +6,10 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -16,10 +18,12 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -46,7 +50,6 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     @Before
     fun setUp() {
         trackerWrapper = mock()
-
         selectedSite = mock {
             on { get() } doReturn defaultSiteModel
         }
@@ -165,5 +168,44 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         )
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+    }
+
+    @Test
+    fun `when tax based on store address fetched, then it should be parsed correctly`() = testBlocking {
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(any())).thenReturn(
+            WooResult(TaxBasedOnSettingEntity(localSiteId = LocalOrRemoteId.LocalId(1), selectedOption = "base"))
+        )
+        sut.fetchTaxBasedOnSetting().also { setting ->
+            assertThat(setting).isNotNull
+            assertThat(setting).isInstanceOf(TaxBasedOnSetting.StoreAddress::class.java)
+        }
+    }
+
+    @Test
+    fun `when tax based on shipping address fetched, then it should be parsed correctly`() = testBlocking {
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(any())).thenReturn(
+            WooResult(
+                TaxBasedOnSettingEntity(localSiteId = LocalOrRemoteId.LocalId(1), selectedOption = "shipping")
+            )
+        )
+
+        sut.fetchTaxBasedOnSetting().also { setting ->
+            assertThat(setting).isNotNull
+            assertThat(setting).isInstanceOf(TaxBasedOnSetting.ShippingAddress::class.java)
+        }
+    }
+
+    @Test
+    fun `when tax based on billing address fetched, then it should be parsed correctly`() = testBlocking {
+        whenever(wooCommerceStore.fetchTaxBasedOnSettings(any())).thenReturn(
+            WooResult(
+                TaxBasedOnSettingEntity(localSiteId = LocalOrRemoteId.LocalId(1), selectedOption = "billing")
+            )
+        )
+
+        sut.fetchTaxBasedOnSetting().also { setting ->
+            assertThat(setting).isNotNull
+            assertThat(setting).isInstanceOf(TaxBasedOnSetting.BillingAddress::class.java)
+        }
     }
 }

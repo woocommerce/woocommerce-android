@@ -27,7 +27,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
-typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, OnHazmatCategorySelected) -> Unit
+typealias OnHazmatCategoryClicked = (ShippingLabelHazmatCategory?, Int, OnHazmatCategorySelected) -> Unit
 
 @Suppress("LongParameterList")
 class ShippingLabelPackagesAdapter(
@@ -137,7 +137,7 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.hazmatCategoryContainer.setOnClickListener {
-                onHazmatCategoryClicked(currentHazmatSelection) {
+                onHazmatCategoryClicked(currentHazmatSelection, bindingAdapterPosition) {
                     currentHazmatSelection = it
                     binding.hazmatCategory.text = context.getString(it.stringResourceID)
                 }
@@ -224,6 +224,11 @@ class ShippingLabelPackagesAdapter(
             } else {
                 binding.expandIcon.rotation = 0f
                 binding.detailsLayout.isVisible = false
+            }
+
+            shippingLabelPackage.selectedPackage?.hazmatCategory?.let {
+                binding.hazmatToggle.isChecked = true
+                binding.hazmatCategory.text = context.getString(it.stringResourceID)
             }
         }
 

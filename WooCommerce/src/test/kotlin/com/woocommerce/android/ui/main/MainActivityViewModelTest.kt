@@ -14,6 +14,7 @@ import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.notifications.push.NotificationTestUtils
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
@@ -113,6 +114,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn MutableStateFlow(1)
     }
+    private val storeProfilerRepository: StoreProfilerRepository = mock()
 
     private val testAnnouncement = FeatureAnnouncement(
         appVersionName = "14.2",
@@ -526,19 +528,21 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             MainActivityViewModel(
-                savedStateHandle,
-                siteStore,
-                selectedSite,
-                notificationMessageHandler,
-                featureAnnouncementRepository,
-                buildConfigWrapper,
-                prefs,
-                analyticsTrackerWrapper,
-                resolveAppLink,
-                mock(),
-                moreMenuNewFeatureHandler,
-                unseenReviewsCountHandler,
-                mock {
+                savedState = savedStateHandle,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                siteStore = siteStore,
+                selectedSite = selectedSite,
+                notificationHandler = notificationMessageHandler,
+                featureAnnouncementRepository = featureAnnouncementRepository,
+                buildConfigWrapper = buildConfigWrapper,
+                prefs = prefs,
+                analyticsTrackerWrapper = analyticsTrackerWrapper,
+                resolveAppLink = resolveAppLink,
+                privacyRepository = mock(),
+                storeProfilerRepository = storeProfilerRepository,
+                moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
+                unseenReviewsCountHandler = unseenReviewsCountHandler,
+                determineTrialStatusBarState = mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
                 }
             )

@@ -5,7 +5,9 @@ import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ViewState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -303,5 +305,47 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             assertThat(length).isEqualTo(testProduct.length)
             assertThat(height).isEqualTo(testProduct.height)
         }
+    }
+
+    @Test
+    fun `when select hazmat category is clicked, then trigger hazmat dialog event`() = testBlocking {
+        setup(emptyArray())
+        var event: MultiLiveEvent.Event? = null
+        val onHazmatCategorySelected: OnHazmatCategorySelected = { _ -> }
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onHazmatCategoryClicked(
+            currentSelection = AIR_ELIGIBLE_ETHANOL,
+            packagePosition = 0,
+            onHazmatCategorySelected = onHazmatCategorySelected
+        )
+
+        assertThat(event).isEqualTo(
+            OpenHazmatCategorySelector(
+                packagePosition = 0,
+                currentSelection = AIR_ELIGIBLE_ETHANOL,
+                onHazmatCategorySelected = onHazmatCategorySelected
+            )
+        )
+    }
+
+    @Test
+    fun `when onHazmatCategorySelected, then update the packages info`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onHazmatCategorySelected(
+            packagePosition = 0,
+            newSelection = AIR_ELIGIBLE_ETHANOL
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(AIR_ELIGIBLE_ETHANOL)
     }
 }

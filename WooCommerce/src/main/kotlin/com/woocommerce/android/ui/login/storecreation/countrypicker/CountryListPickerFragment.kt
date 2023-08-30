@@ -12,7 +12,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerViewModel.NavigateToDomainPickerStep
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerViewModel.NavigateToSummaryStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -49,23 +48,14 @@ class CountryListPickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
-                is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
-                is NavigateToSummaryStep -> navigateToInstallationStep()
+                is NavigateToSummaryStep -> navigateToStoreChallengesStep()
             }
         }
     }
 
-    private fun navigateToInstallationStep() {
+    private fun navigateToStoreChallengesStep() {
         findNavController().navigateSafely(
-            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToSummaryFragment()
-        )
-    }
-
-    private fun navigateToDomainPickerStep() {
-        findNavController().navigateSafely(
-            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToDomainPickerFragment(
-                initialQuery = newStore.data.name ?: ""
-            )
+            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToChallengesFragment()
         )
     }
 }

@@ -81,7 +81,6 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -432,10 +431,7 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun canSiteUseSharingWithAI(): Boolean {
-        return FeatureFlag.SHARING_PRODUCT_AI.isEnabled() &&
-            selectedSite.get().isWPComAtomic
-    }
+    private fun canSiteUseSharingWithAI(): Boolean = selectedSite.get().isWPComAtomic
 
     fun onWriteWithAIClicked() {
         val chosenDescription =
@@ -2341,17 +2337,14 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
-        if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getProductQuantityRules(productRemoteID)
     }
 
     suspend fun getBundledProductsSize(remoteId: Long): Int {
-        if (FeatureFlag.BUNDLED_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return 0
         return getBundledProductsCount(remoteId)
     }
 
     suspend fun getComponents(remoteId: Long): List<Component>? {
-        if (FeatureFlag.COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getComponentProducts(remoteId)
     }
 

@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-17 18:54:03+0000
+Translation-Revision-Date: 2023-08-22 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_creation_country_list_picker_toolbar_title">Selecteer een land</string>
+    <string name="store_creation_country_picker_current_location_description">We hebben je locatie automatisch gedetecteerd. Verander je locatie hier als deze niet klopt.</string>
+    <string name="store_creation_country_picker_title">Waar is jouw bedrijf gevestigd?</string>
+    <string name="store_profiler_challenge_other">Overig</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">Verzending en logistiek</string>
+    <string name="store_profiler_challenge_managing_inventory">Voorraad beheren</string>
+    <string name="store_profiler_challenge_finding_customers">Klanten vinden</string>
+    <string name="store_profiler_challenge_setting_up_online_store">De webwinkel opzetten</string>
+    <string name="store_profiler_challenge_description">Kies je zorgen of problemen hieronder. Je kan meer dan één optie kiezen.</string>
+    <string name="store_profiler_challenge_title">Waar loop je tegenaan\nbij het starten of onderhouden van een\nwebwinkel?</string>
+    <string name="shipping_label_package_details_hazmat_content_description">Mogelijk gevaarlijk materiaal waaronder batterijen, droogijs, ontvlambare vloeistoffen, aerosolen, ammunitie, vuurwerk, nagellak, parfum, verf, oplosmiddelen en meer. Gevaarlijke producten moeten in een aparte verpakking worden verzonden.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">Bevat gevaarlijke materialen</string>
     <string name="ai_product_description_title_hint">Voer een producttitel in.</string>
     <string name="free_trial_feature_support">24/7 ondersteuning met prioriteit</string>
     <string name="free_trial_feature_backups">Automatische site back-ups</string>
@@ -557,7 +569,6 @@ Language: nl
     <string name="store_creation_country_picker_countries_header">Landen</string>
     <string name="store_creation_country_picker_current_location">Huidige locatie</string>
     <string name="store_creation_country_picker_description">We gebruiken deze gegevens om betalingen, verzending en belasting in te stellen.</string>
-    <string name="store_creation_country_picker_title">Bevestig je locatie</string>
     <string name="store_creation_store_profiler_platforms_description">Je kan er meerdere kiezen.</string>
     <string name="store_creation_store_profiler_platforms_title">Welk(e) platform(s)\ngebruik je op dit moment?</string>
     <string name="store_creation_store_profiler_industries_description">Kies een categorie die je bedrijf\nhet beste weergeeft.</string>

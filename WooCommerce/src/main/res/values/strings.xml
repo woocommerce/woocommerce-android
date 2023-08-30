@@ -45,6 +45,7 @@
     <string name="continue_button">Continue</string>
     <string name="refresh_button">Refresh</string>
     <string name="untitled">Untitled</string>
+    <string name="dialog_ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
@@ -562,7 +563,7 @@
     <string name="order_creation_loading_dialog_message">Please wait…</string>
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
-    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_payment_tax">Taxes Total</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -591,6 +592,9 @@
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <string name="order_creation_coupon_invalid_code">We couldn\'t find a coupon with that code. Please try again</string>
     <string name="order_creation_coupon_network_error">Something went wrong when validating your coupon code. Please try again</string>
+    <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
+    <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
+    <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
 
     <!--
          Barcode Scanning
@@ -1382,6 +1386,7 @@
     <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Your device is not supported. Please contact support for more details</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Something went wrong with the app setup. Please contact support for more details</string>
 
@@ -2114,6 +2119,7 @@
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
+    <string name="settings_account">Account Settings</string>
 
     <!--
         Developer Options Screen
@@ -3109,18 +3115,14 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
-    <string name="store_creation_in_progress_title_1">Creating Your Store! It\'ll be just a few minutes</string>
-    <string name="store_creation_in_progress_title_2">Building the foundations</string>
-    <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
-    <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
-    <string name="store_creation_in_progress_title_5">Turning on the lights</string>
-    <string name="store_creation_in_progress_title_6">Opening the doors</string>
+    <string name="store_creation_in_progress_title_1">Almost there! Your store\nis taking shape </string>
+    <string name="store_creation_in_progress_title_2">Extending your store\'s \ncapabilities</string>
+    <string name="store_creation_in_progress_title_3">Turning on the lights</string>
+    <string name="store_creation_in_progress_title_4">Opening the doors</string>
     <string name="store_creation_in_progress_description_1">You will be notified once the store is ready! Sit back, relax, and let us work our magic while sharing helpful tips. 🔮</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay updated on your store\'s real-time performance. Identify your top-selling products and make informed decisions for maximum profitability.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Handle orders with ease. Scroll, search, and change order status. Create new orders on the fly for in-store or phone purchases. Simplify your order management process.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Expand your sales opportunities by accepting payments in person. Use the app to securely process credit card transactions or even connect with compatible card readers for convenient in-person payments.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Add and edit products with a touch:&lt;/b&gt; Add new products, update details, upload images, and manage variations, all from the app. Keep your inventory up to date effortlessly.</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Get notified of every sale:&lt;/b&gt; Never miss a beat with instant sale notifications. Receive alerts for each new sale, allowing you to celebrate your success and stay on top of your store\'s activity.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay on top of real-time sales and popular products to boost your store\'s profitability.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Search, update, or create new orders instantly. Simplify your order process.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Enhance sales with in-person payments. Secure card transactions with our app or compatible readers.</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
@@ -3159,8 +3161,9 @@
     <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
-    <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
+    <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
+    <string name="store_creation_store_name_default">Store name</string>
 
     <string name="store_creation_store_profiler_industries_header">About your store</string>
     <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
@@ -3178,6 +3181,18 @@
     <string name="store_profiler_challenge_managing_inventory">Managing inventory</string>
     <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
     <string name="store_profiler_challenge_other">Other</string>
+
+    <string name="store_profiler_features_title">Which features are you\nmost interested in?</string>
+    <string name="store_profiler_features_description">Let us know what you are looking\nforward to using in our app.</string>
+    <string name="store_profiler_features_main_button">Create my store</string>
+    <string name="store_profiler_features_product_management">Easy product management and inventory tracking</string>
+    <string name="store_profiler_features_sales_analytics">Comprehensive sales and analytics reports</string>
+    <string name="store_profiler_features_payment_options">Flexible and secure payment options</string>
+    <string name="store_profiler_features_ipp">In-person payment</string>
+    <string name="store_profiler_features_scale_business">Ability to scale as my business grows</string>
+    <string name="store_profiler_features_store_customization">Customization options for my store design</string>
+    <string name="store_profiler_features_plugins_and_extensions">Access to a wide range of plugins and extensions</string>
+    <string name="store_profiler_features_other">Other</string>
 
     <string name="store_creation_country_picker_title">Where is your business located?</string>
     <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping, and taxes.</string>
@@ -3218,6 +3233,8 @@
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
+    <string name="store_onboarding_task_name_store_title">Name your store</string>
+    <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
@@ -3245,6 +3262,7 @@
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
 
     <!--
     Support Request
@@ -3289,7 +3307,7 @@
     <string name="free_trial_summary_start_selling_quickly">Start selling quickly</string>
     <string name="free_trial_summary_grow_your_business">Grow your business</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Hassle-free store ownership</string>
-    <string name="free_trial_summary_try_button">Create your store</string>
+    <string name="free_trial_summary_try_button">Try for free</string>
     <string name="free_trial_summary_credit_card_message">No credit card required.</string>
     <string name="free_trial_feature_premium_themes">Premium themes</string>
     <string name="free_trial_feature_store_management">Store management tools</string>
@@ -3543,5 +3561,27 @@
     Shipping zones
     -->
     <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
+
+    <!--
+    Tax rates info dialog
+    -->
+    <string name="tax_rates_information_content_description">Tax rates information</string>
+    <string name="tax_rates_info_dialog_primary_text">Taxes are calculated by matching your customer’s billing or shipping address, or your shop address to a tax rate location.</string>
+    <string name="tax_rates_info_dialog_secondary_text">Tax rates for different locations can be managed in your store’s admin.</string>
+    <string name="tax_rates_info_dialog_title"><![CDATA[Taxes & Tax Rates]]></string>
+    <string name="tax_rates_redirect_to_admin_content_description">Edit Tax Rates in Admin Button</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Edit Tax Rates in Admin</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Your tax rate is currently calculated based on your shop address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Your tax rate is currently calculated based on your billing address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Your tax rate is currently calculated based on your shipping address%1$s</string>
+
+    <!--
+    Tax rate selector
+    -->
+    <string name="tax_rate_selector_footer_label">Can\'t find the rate you\'re looking for?</string>
+    <string name="tax_rate_selector_list_header">SELECT A TAX RATE</string>
+    <string name="tax_rate_selector_info_icon_content_description">Button opening tax rates info dialog</string>
+    <string name="tax_rate_selector_header_label">This will change the customer’s address to the location of the tax rate you select.</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Edit tax rates in admin</string>
 
 </resources>

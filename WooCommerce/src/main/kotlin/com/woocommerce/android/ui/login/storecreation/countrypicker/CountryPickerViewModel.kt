@@ -7,8 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.util.EmojiUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +24,8 @@ class CountryPickerViewModel @Inject constructor(
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils
+    private val emojiUtils: EmojiUtils,
+    private val storeProfilerRepository: StoreProfilerRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
@@ -79,13 +80,13 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        launch {
-            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                triggerEvent(NavigateToSummaryStep)
-            } else {
-                triggerEvent(NavigateToDomainPickerStep)
-            }
-        }
+        storeProfilerRepository.storeAnswers(
+            siteId = newStore.data.siteId ?: 0L,
+            countryCode = newStore.data.country?.code,
+            profilerAnswers = newStore.data.profilerData
+        )
+
+        triggerEvent(NavigateToSummaryStep)
     }
 
     fun onCurrentCountryClicked() {
@@ -97,6 +98,5 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
-    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 }

@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ADD_DOMAIN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LAUNCH_SITE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOCAL_NAME_STORE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
@@ -84,6 +86,11 @@ class StoreOnboardingViewModel @Inject constructor(
                 isLabelVisible = isAIProductDescriptionEnabled()
             )
 
+            LOCAL_NAME_STORE -> OnboardingTaskUi(
+                NameYourStoreTaskRes,
+                isCompleted = task.isComplete
+            )
+
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -125,6 +132,7 @@ class StoreOnboardingViewModel @Inject constructor(
             is AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
+            NameYourStoreTaskRes -> triggerEvent(ShowNameYourStoreDialog)
             SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)
         }
         analyticsTrackerWrapper.track(
@@ -140,6 +148,7 @@ class StoreOnboardingViewModel @Inject constructor(
             CustomizeDomainTaskRes -> VALUE_ADD_DOMAIN
             LaunchStoreTaskRes -> VALUE_LAUNCH_SITE
             SetupPaymentsTaskRes -> VALUE_PAYMENTS
+            NameYourStoreTaskRes -> VALUE_LOCAL_NAME_STORE
         }
 
     fun onPullToRefresh() {
@@ -174,6 +183,12 @@ class StoreOnboardingViewModel @Inject constructor(
         @StringRes val description: Int,
         @StringRes val labelText: Int = 0,
         @DrawableRes val labelIcon: Int = 0
+    )
+
+    object NameYourStoreTaskRes : OnboardingTaskUiResources(
+        icon = R.drawable.ic_onboarding_name_your_store,
+        title = R.string.store_onboarding_task_name_store_title,
+        description = R.string.store_onboarding_task_name_store_description
     )
 
     object AboutYourStoreTaskRes : OnboardingTaskUiResources(
@@ -215,4 +230,5 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSetupPayments : MultiLiveEvent.Event()
     object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
+    object ShowNameYourStoreDialog : MultiLiveEvent.Event()
 }
