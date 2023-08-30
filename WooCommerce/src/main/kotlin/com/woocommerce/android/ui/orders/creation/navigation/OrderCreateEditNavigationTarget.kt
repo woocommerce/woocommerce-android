@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -18,7 +19,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class ShowProductDetails(
-        val item: Order.Item,
+        val item: OrderCreationProduct,
         val currency: String,
         val discountEditEnabled: Boolean,
     ) : OrderCreateEditNavigationTarget()

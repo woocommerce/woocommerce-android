@@ -8,8 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
-import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
@@ -31,7 +30,6 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderCreateEditProductDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val mapItemToProductUiModel: MapItemToProductUiModel,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val getItemDiscountAmountText: GetItemDiscountAmountText,
@@ -42,29 +40,29 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
 
     private val currency = args.currency
 
-    private val item: MutableStateFlow<Order.Item> = savedState.getStateFlow(viewModelScope, args.item, "key_item")
+    private val product: MutableStateFlow<OrderCreationProduct> =
+        savedState.getStateFlow(viewModelScope, args.product, "key_item")
 
-    val viewState = item.map { item ->
-        val uiModel: ProductUIModel = mapItemToProductUiModel(item)
+    val viewState = product.map { product ->
         ViewState(
             discountEditButtonsEnabled = args.discountEditEnabled,
             productDetailsState = ProductDetailsState(
-                title = getProductTitle(uiModel.item.name),
-                stockPriceSubtitle = getStockPriceSubtitle(uiModel),
-                skuSubtitle = getSkuSubtitle(uiModel.item.sku),
-                imageUrl = uiModel.imageUrl,
+                title = getProductTitle(product.item.name),
+                stockPriceSubtitle = getStockPriceSubtitle(product),
+                skuSubtitle = getSkuSubtitle(product.item.sku),
+                imageUrl = product.productInfo.imageUrl,
             ),
             discountSectionState = DiscountSectionState(
-                isVisible = item.isDiscounted(),
-                discountAmountText = getItemDiscountAmountText(calculateItemDiscountAmount(uiModel.item), currency),
+                isVisible = product.item.isDiscounted(),
+                discountAmountText = getItemDiscountAmountText(calculateItemDiscountAmount(product.item), currency),
             ),
-            configurationButtonVisible = uiModel.rules?.needsConfiguration() ?: false
+            configurationButtonVisible = product.needsConfiguration()
         )
     }.asLiveData()
 
     private fun Order.Item.isDiscounted(): Boolean = calculateItemDiscountAmount(this) > BigDecimal.ZERO
 
-    private fun getStockPriceSubtitle(item: ProductUIModel): String {
+    private fun getStockPriceSubtitle(item: OrderCreationProduct): String {
         val decimalFormatter = getDecimalFormatter(currencyFormatter, args.currency)
         return buildString {
             if (item.item.isVariation && item.item.attributesDescription.isNotEmpty()) {
@@ -100,12 +98,12 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
         }
 
     fun onAddDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
+        triggerEvent(NavigationTarget.DiscountEdit(this.product.value.item, currency))
         tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED)
     }
 
     fun onEditDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountEdit(item.value, currency))
+        triggerEvent(NavigationTarget.DiscountEdit(this.product.value.item, currency))
         tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED)
     }
 
@@ -114,7 +112,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     }
 
     fun onRemoveProductClicked() {
-        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.item.value)))
+        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.product.value.item)))
     }
 
     data class ViewState(

@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.orders.creation.bundle
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 class OrderItemRules private constructor(
     val quantityMin: Long?,
     val quantityMax: Long?,
     val childrenRules: List<OrderChildItemRules>?
-) {
+) : Parcelable {
     fun needsConfiguration(): Boolean {
         if (quantityMin != quantityMax) return true
         return childrenRules?.any { childrenRules ->
@@ -45,6 +49,7 @@ class OrderItemRules private constructor(
     }
 }
 
+@Parcelize
 class OrderChildItemRules(
     val itemId: Long,
     val productId: Long,
@@ -52,4 +57,4 @@ class OrderChildItemRules(
     val quantityMax: Long?,
     val quantityDefault: Long = 0,
     val isOptional: Boolean = false
-)
+) : Parcelable
