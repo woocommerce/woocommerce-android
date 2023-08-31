@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -25,6 +25,7 @@ class GetPaidFragment : BaseFragment() {
 
     @Inject
     lateinit var userAgent: UserAgent
+
     @Inject
     lateinit var authenticator: WPComWebViewAuthenticator
 
@@ -50,7 +51,10 @@ class GetPaidFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowWooPaymentsSetupSuccess -> TODO()
+                is ShowWooPaymentsSetupSuccess -> findNavController().navigateSafely(
+                    GetPaidFragmentDirections.actionGetPaidFragmentToWooPaymentsSetupCelebrationDialog()
+                )
+
                 is Exit -> findNavController().popBackStack()
             }
         }

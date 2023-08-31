@@ -3234,6 +3234,8 @@
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
     <string name="store_onboarding_task_woopayments_setup_description">Manage payments seamlessly with WooPayments, free from setup or monthly fees.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">You did it!</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Congratulations! You\'ve successfully navigated through the setup and your payment system is ready to roll.</string>
     <string name="store_onboarding_task_name_store_title">Name your store</string>
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
