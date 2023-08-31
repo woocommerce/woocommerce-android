@@ -1,11 +1,19 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding.woopayments
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -16,7 +24,9 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,6 +34,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun WooPaymentsPreSetupScreen() {
@@ -42,7 +54,6 @@ fun WooPaymentsPreSetupScreen() {
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
         )
-
     }
 }
 
@@ -52,10 +63,84 @@ fun WooPaymentsPreSetupContent(
 ) {
     Column(
         modifier = modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
+        Image(
+            painter = painterResource(R.drawable.img_woo_payments_logo),
+            contentDescription = "Woo Payments",
+            alignment = Alignment.TopStart,
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
+        Text(
+            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_title),
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
+        Text(
+            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_estimate_title),
+            style = MaterialTheme.typography.body1,
+            color = colorResource(id = R.color.woo_gray_40),
+        )
+        Text(
+            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_estimate_time),
+            style = MaterialTheme.typography.body1
+        )
+
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10),
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_150))
+        )
+
+        Text(
+            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_title),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+        )
+
+        WooPaymentsPreSetupStep(
+            stepNumber = 1,
+            stepTextId = R.string.store_onboarding_wcpay_pre_setup_content_step_1_content
+        )
+
+        WooPaymentsPreSetupStep(
+            stepNumber = 2,
+            stepTextId = R.string.store_onboarding_wcpay_pre_setup_content_step_2_content
+        )
     }
+}
 
+@Composable
+fun WooPaymentsPreSetupStep(stepNumber: Int, stepTextId: Int) {
+    val format = NumberFormat.getInstance(Locale.getDefault())
+    val formattedNumber = format.format(stepNumber)
+
+    Column {
+        Row(
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(dimensionResource(id = R.dimen.major_200))
+                    .background(
+                        color = colorResource(R.color.woo_purple_0),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = formattedNumber)
+            }
+
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+
+            Text(text = stringResource(id = stepTextId))
+        }
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    }
 }
 
 @Composable
@@ -63,6 +148,11 @@ fun WooPaymentsPreSetupFooter() {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10),
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth()
