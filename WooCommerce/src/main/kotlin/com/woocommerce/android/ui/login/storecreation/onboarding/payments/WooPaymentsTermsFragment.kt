@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -48,6 +50,7 @@ class WooPaymentsTermsFragment : BaseFragment() {
     }
 
     private fun onContinueButtonClick() {
+        AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_TERMS_CONTINUE_TAPPED)
         findNavController().navigateSafely(
             directions = WooPaymentsTermsFragmentDirections.actionWooPaymentsTermsFragmentToGetPaidFragment(
                 taskId = WC_PAYMENTS.id
