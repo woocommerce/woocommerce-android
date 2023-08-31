@@ -42,16 +42,25 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun WooPaymentsPreSetupScreen() {
+fun WooPaymentsPreSetupScreen(
+    onCloseButtonClick: () -> Unit = {},
+    onBeginButtonClick: () -> Unit = {},
+    onLearnMoreClick: () -> Unit = {}
+) {
     Scaffold(
         topBar = {
             Toolbar(
                 title = { Text("") },
                 navigationIcon = Icons.Filled.Close,
-                onNavigationButtonClick = { },
+                onNavigationButtonClick = onCloseButtonClick,
             )
         },
-        bottomBar = { WooPaymentsPreSetupFooter() }
+        bottomBar = {
+            WooPaymentsPreSetupFooter(
+                onBeginButtonClick,
+                onLearnMoreClick
+            )
+        }
     ) { paddingValues ->
         WooPaymentsPreSetupContent(
             modifier = Modifier
@@ -188,7 +197,10 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, component: @Composable () -> Unit) 
 }
 
 @Composable
-fun WooPaymentsPreSetupFooter() {
+fun WooPaymentsPreSetupFooter(
+    onBeginButtonClick: () -> Unit = {},
+    onLearnMoreClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -205,7 +217,7 @@ fun WooPaymentsPreSetupFooter() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            onClick = { },
+            onClick = onBeginButtonClick,
         ) {
             Text(text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_button))
         }
@@ -231,7 +243,7 @@ fun WooPaymentsPreSetupFooter() {
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
-                    ?.let { /* click action */ }
+                    ?.let { onLearnMoreClick() }
             }
         }
     }
