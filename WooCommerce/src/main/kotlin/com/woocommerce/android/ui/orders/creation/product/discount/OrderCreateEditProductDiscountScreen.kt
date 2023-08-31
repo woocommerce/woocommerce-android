@@ -248,6 +248,7 @@ private fun ProductCard(
                     start.linkTo(asyncImage.end)
                     top.linkTo(asyncImage.top)
                     bottom.linkTo(productDetailsText.top)
+                    end.linkTo(totalText.start)
                     width = Dimension.fillToConstraints
                 }
                 .padding(start = dimensionResource(id = R.dimen.major_100))
