@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.findNavController
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import org.wordpress.android.util.DisplayUtils
 
 class WooPaymentsSetupFragment : DialogFragment() {
@@ -32,10 +35,31 @@ class WooPaymentsSetupFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    WooPaymentsSetupScreen()
+                    WooPaymentsSetupScreen(
+                        backButtonClick = { findNavController().popBackStack() },
+                        onTermsOfServiceClick = { onTermsOfServiceClick() },
+                        onPrivacyPolicyClick = { onPrivacyPolicyClick() },
+                        onContinueButtonClick = { onContinueButtonClick() },
+                        onLearnMoreButtonClick = { onLearnMoreButtonClick() }
+                    )
                 }
             }
         }
+    }
+
+    private fun onTermsOfServiceClick() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.AUTOMATTIC_TOS)
+    }
+    private fun onPrivacyPolicyClick() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.AUTOMATTIC_PRIVACY_POLICY)
+    }
+
+    private fun onContinueButtonClick() {
+        // navigation code
+    }
+
+    private fun onLearnMoreButtonClick() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_SETUP_GUIDE)
     }
 
     override fun onStart() {

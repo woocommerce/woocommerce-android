@@ -35,19 +35,32 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WooPaymentsSetupScreen() {
+fun WooPaymentsSetupScreen(
+    backButtonClick: () -> Unit = {},
+    onTermsOfServiceClick: () -> Unit = {},
+    onPrivacyPolicyClick: () -> Unit = {},
+    onContinueButtonClick: () -> Unit = {},
+    onLearnMoreButtonClick: () -> Unit = {}
+) {
     Scaffold(
         topBar = {
             Toolbar(
                 title = { Text("") },
                 navigationIcon = Icons.Filled.ArrowBack,
-                onNavigationButtonClick = { },
+                onNavigationButtonClick = backButtonClick,
             )
         },
-        bottomBar = { WooPaymentsSetupFooter() },
+        bottomBar = {
+            WooPaymentsSetupFooter(
+                onContinueButtonClick,
+                onLearnMoreButtonClick
+            )
+        },
         modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
     ) { paddingValues ->
         WooPaymentsSetupContent(
+            onTermsOfServiceClick = onTermsOfServiceClick,
+            onPrivacyPolicyClick = onPrivacyPolicyClick,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
@@ -58,7 +71,9 @@ fun WooPaymentsSetupScreen() {
 
 @Composable
 fun WooPaymentsSetupContent(
-    modifier: Modifier
+    onTermsOfServiceClick: () -> Unit = {},
+    onPrivacyPolicyClick: () -> Unit = {},
+    modifier: Modifier,
 ) {
     Column(
         modifier = modifier
@@ -97,13 +112,21 @@ fun WooPaymentsSetupContent(
         ) {
             text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                 .firstOrNull()
-                ?.let { /* click actions */ }
+                ?.let { annotation ->
+                    when (annotation.item) {
+                        "termsOfService" -> onTermsOfServiceClick()
+                        "privacyPolicy" -> onPrivacyPolicyClick()
+                    }
+                }
         }
     }
 }
 
 @Composable
-fun WooPaymentsSetupFooter() {
+fun WooPaymentsSetupFooter(
+    onContinueButtonClick: () -> Unit = {},
+    onLearnMoreButtonClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,7 +142,7 @@ fun WooPaymentsSetupFooter() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            onClick = { },
+            onClick = onContinueButtonClick,
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
@@ -128,7 +151,7 @@ fun WooPaymentsSetupFooter() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-            onClick = { },
+            onClick = onLearnMoreButtonClick,
         ) {
             Text(text = stringResource(id = R.string.learn_more))
         }
