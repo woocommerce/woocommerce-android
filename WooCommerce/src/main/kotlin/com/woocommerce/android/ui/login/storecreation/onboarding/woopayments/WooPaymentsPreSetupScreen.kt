@@ -20,7 +20,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,7 +46,7 @@ fun WooPaymentsPreSetupScreen() {
         topBar = {
             Toolbar(
                 title = { Text("") },
-                navigationIcon = Icons.Filled.ArrowBack,
+                navigationIcon = Icons.Filled.Close,
                 onNavigationButtonClick = { },
             )
         },
