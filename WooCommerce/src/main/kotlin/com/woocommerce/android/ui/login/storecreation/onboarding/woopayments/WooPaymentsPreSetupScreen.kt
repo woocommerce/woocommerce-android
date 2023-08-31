@@ -36,7 +36,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -129,7 +128,7 @@ fun WooPaymentsPreSetupContent(
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle1
-                    .copy(color = colorResource(id = color.color_on_surface)),
+                    .copy(color = colorResource(id = R.color.color_on_surface)),
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
@@ -158,14 +157,14 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, stepTextId: Int) {
                 modifier = Modifier
                     .size(dimensionResource(id = R.dimen.major_200))
                     .background(
-                        color = colorResource(R.color.woo_purple_0),
+                        color = colorResource(R.color.woo_payments_setup_bullet_background),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = formattedNumber,
-                    color = colorResource(id = color.color_on_surface)
+                    color = colorResource(id = R.color.color_on_surface)
                 )
             }
 
@@ -192,14 +191,14 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, component: @Composable () -> Unit) 
                 modifier = Modifier
                     .size(dimensionResource(id = R.dimen.major_200))
                     .background(
-                        color = colorResource(R.color.woo_purple_0),
+                        color = colorResource(R.color.woo_payments_setup_bullet_background),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = formattedNumber,
-                    color = colorResource(id = color.color_on_surface)
+                    color = colorResource(id = R.color.color_on_surface)
                 )
             }
 
@@ -256,7 +255,7 @@ fun WooPaymentsPreSetupFooter(
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle2
-                    .copy(color = colorResource(id = color.color_on_surface_medium)),
+                    .copy(color = colorResource(id = R.color.color_on_surface_medium)),
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
