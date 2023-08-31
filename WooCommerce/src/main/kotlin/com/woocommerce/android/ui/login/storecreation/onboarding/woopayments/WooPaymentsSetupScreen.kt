@@ -114,7 +114,7 @@ fun WooPaymentsSetupContent(
             text = bodyText,
             style = MaterialTheme.typography.body1.copy(color = colorResource(id = color.color_on_surface_medium))
         ) {
-            text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+            bodyText.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                 .firstOrNull()
                 ?.let { annotation ->
                     when (annotation.item) {
