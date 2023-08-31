@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.creation.product.discount
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_REMOVE
@@ -12,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
+import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -20,11 +20,12 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -46,7 +47,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
     val orderItem: MutableStateFlow<Order.Item> =
-        savedStateHandle.getStateFlow(scope = this, initialValue = args.item, key = "key_item")
+        savedStateHandle.getStateFlow(
+            scope = this, initialValue = args.item.copy(total = args.item.pricePreDiscount), key = "key_item"
+        )
 
     private val discount = savedStateHandle.getNullableStateFlow(
         scope = this, initialValue = getInitialDiscountAmount(), key = "key_discount", clazz = BigDecimal::class.java
@@ -68,10 +71,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         numberOfDecimals = numberOfDecimals
     )
 
-    init {
-        viewModelScope.launch {
-            mapItemToProductUiModel(orderItem.value)
-        }
+    private val itemUiModelFuture: Deferred<ProductUIModel> = async {
+        mapItemToProductUiModel(orderItem.value)
     }
 
     val viewState: StateFlow<ViewState> =
@@ -85,7 +86,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 priceAfterDiscount = getPriceAfterDiscount(),
                 calculatedPriceAfterDiscount = getCalculatedPriceAfterDiscount(),
                 productDetailsState = ProductDetailsState(
-                    imageUrl = mapItemToProductUiModel(orderItem.value).imageUrl
+                    imageUrl = itemUiModelFuture.await().imageUrl
                 )
             )
         }.toStateFlow(ViewState(currency, null))
@@ -174,7 +175,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.total
+        val pricePreDiscount = orderItem.value.pricePreDiscount
         val discountPercentage = if (pricePreDiscount > BigDecimal.ZERO) {
             PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
                 pricePreDiscount,
@@ -188,7 +189,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountAmount(discountPercentage: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.total
+        val pricePreDiscount = orderItem.value.pricePreDiscount
         val discountAmount = pricePreDiscount
             .times(discountPercentage)
             .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
