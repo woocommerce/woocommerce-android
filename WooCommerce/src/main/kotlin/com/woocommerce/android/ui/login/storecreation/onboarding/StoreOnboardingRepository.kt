@@ -128,11 +128,11 @@ class StoreOnboardingRepository @Inject constructor(
     enum class OnboardingTaskType(val id: String, val order: Int) {
         LOCAL_NAME_STORE(id = "local_name_store", order = 1),
         WC_PAYMENTS(id = "woocommerce-payments", order = 2),
-        PAYMENTS(id = "payments", order = 2), // PAYMENTS and WC_PAYMENTS are mutually exclusive
         ABOUT_YOUR_STORE(id = "store_details", order = 3),
         ADD_FIRST_PRODUCT(id = "products", order = 4),
         LAUNCH_YOUR_STORE(id = "launch_site", order = 5),
         CUSTOMIZE_DOMAIN(id = "add_domain", order = 6),
+        PAYMENTS(id = "payments", order = 7),
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 
