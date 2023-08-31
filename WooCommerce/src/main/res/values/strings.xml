@@ -3263,6 +3263,8 @@
     <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">We\'ve partnered with Stripe for WooPayments. You\'ll be directed to Stripe\'s site for sign-up. We\'ll ask you to verify your business and payment details.</string>
     <string name="store_onboarding_wcpay_pre_setup_content_button">Begin setup</string>
     <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about verifying your information with WooPayments.</string>
+    <string name="store_onboarding_wcpay_setup_title">Set up\nWooPayments</string>
+    <string name="store_onboarding_wcpay_setup_description">By using WooCommerce Payments you agree to be bound by our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and acknowledge that you have read our &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacy Policy&lt;/u&gt;&lt;/a&gt;.</string>
 
     <!--
     Support Request
