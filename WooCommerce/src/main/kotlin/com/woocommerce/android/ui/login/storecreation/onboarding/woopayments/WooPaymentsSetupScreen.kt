@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -25,6 +26,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -84,6 +87,16 @@ fun WooPaymentsSetupContent(
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
+
+        val bodyText = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_setup_description)
+        ClickableText(
+            text = bodyText,
+            style = MaterialTheme.typography.body1,
+        ) {
+            text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+                .firstOrNull()
+                ?.let { /* click actions */ }
+        }
     }
 }
 
