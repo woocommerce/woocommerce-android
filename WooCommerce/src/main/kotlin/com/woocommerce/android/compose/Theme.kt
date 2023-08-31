@@ -74,6 +74,7 @@ fun AppTheme(
 
     MaterialTheme(
         colors = colors,
+        typography = WooTypography,
         content = { SurfacedContent(content) }
     )
 }

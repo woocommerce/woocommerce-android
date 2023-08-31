@@ -11,10 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.AppTheme
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSettingsEvent
@@ -60,7 +60,7 @@ class MoreMenuFragment : TopLevelFragment() {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                AppTheme {
                     MoreMenuScreen(viewModel)
                 }
             }
