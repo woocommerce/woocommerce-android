@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -50,6 +51,7 @@ fun WooPaymentsSetupScreen() {
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
+                .fillMaxSize()
         )
     }
 }
@@ -103,7 +105,10 @@ fun WooPaymentsSetupContent(
 @Composable
 fun WooPaymentsSetupFooter() {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.surface)
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
         Divider(
             color = colorResource(id = R.color.divider_color),
