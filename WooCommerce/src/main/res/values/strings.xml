@@ -967,6 +967,12 @@
     <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contains Hazardous Materials</string>
     <string name="shipping_label_package_details_hazmat_content_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Learn how to securely package, label, and ship HAZMAT through USPS® at %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_search_tool">Determine your product\'s mailability using the %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS HAZMAT Search Tool.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping does not currently support HAZMAT shipments through %1$s</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
     <string name="shipping_label_package_details_hazmat_selection_title">Hazardous material category</string>
     <string name="shipping_label_package_details_hazmat_select_category_action">Select a category</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
@@ -3227,6 +3233,7 @@
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Manage payments seamlessly with WooPayments, free from setup or monthly fees.</string>
     <string name="store_onboarding_task_name_store_title">Name your store</string>
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>

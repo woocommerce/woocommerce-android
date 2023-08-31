@@ -24,8 +24,10 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageCreatorEvent
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageSelectorEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenURL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ShowMoveItemDialog
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.MoveItemResult
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -59,7 +61,8 @@ class EditShippingLabelPackagesFragment :
             viewModel::onPackageSpinnerClicked,
             viewModel::onMoveButtonClicked,
             viewModel::onHazmatShippingChecked,
-            viewModel::onHazmatCategoryClicked
+            viewModel::onHazmatCategoryClicked,
+            viewModel::onURLClicked
         )
     }
 
@@ -163,6 +166,7 @@ class EditShippingLabelPackagesFragment :
                     event.currentSelection,
                     event.onHazmatCategorySelected
                 )
+                is OpenURL -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_PACKAGES_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_PACKAGES_CLOSED)
