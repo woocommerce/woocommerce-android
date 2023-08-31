@@ -84,8 +84,9 @@ class AnalyticsTracker private constructor(
 
         val finalProperties = properties.toMutableMap()
 
+        val selectedSiteModel = selectedSite.getOrNull()
         if (!isSiteless) {
-            selectedSite.getIfExists()?.let {
+            selectedSiteModel?.let {
                 finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
@@ -93,7 +94,7 @@ class AnalyticsTracker private constructor(
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-        selectedSite.getIfExists()?.url?.let { finalProperties[KEY_SITE_URL] = it }
+        selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
 
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)

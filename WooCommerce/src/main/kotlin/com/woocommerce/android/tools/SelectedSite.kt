@@ -32,6 +32,13 @@ class SelectedSite(
 
     fun observe(): Flow<SiteModel?> = state
 
+    fun getOrNull(): SiteModel? =
+        try {
+            get()
+        } catch (e: IllegalStateException) {
+            null
+        }
+
     fun get(): SiteModel {
         state.value?.let { return it }
 
