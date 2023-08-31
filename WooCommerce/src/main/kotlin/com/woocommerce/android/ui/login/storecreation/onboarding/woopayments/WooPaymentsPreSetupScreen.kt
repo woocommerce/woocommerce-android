@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -125,7 +126,8 @@ fun WooPaymentsPreSetupContent(
         WooPaymentsPreSetupStep(stepNumber = 1) {
             ClickableText(
                 text = text,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.subtitle1
+                    .copy(color = colorResource(id = color.color_on_surface)),
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
@@ -245,7 +247,8 @@ fun WooPaymentsPreSetupFooter(
             val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_learn_more)
             ClickableText(
                 text = text,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.subtitle2
+                    .copy(color = colorResource(id = color.color_on_surface_medium)),
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
