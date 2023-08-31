@@ -44,6 +44,7 @@ import java.util.Locale
 @Composable
 fun WooPaymentsPreSetupScreen(
     onCloseButtonClick: () -> Unit = {},
+    onWPComAccountMoreDetailsClick: () -> Unit = {},
     onBeginButtonClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {}
 ) {
@@ -63,6 +64,7 @@ fun WooPaymentsPreSetupScreen(
         }
     ) { paddingValues ->
         WooPaymentsPreSetupContent(
+            onWPComAccountMoreDetailsClick,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
@@ -73,6 +75,7 @@ fun WooPaymentsPreSetupScreen(
 
 @Composable
 fun WooPaymentsPreSetupContent(
+    onWPComAccountMoreDetailsClick: () -> Unit = {},
     modifier: Modifier
 ) {
     Column(
@@ -123,7 +126,7 @@ fun WooPaymentsPreSetupContent(
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
-                    ?.let { /* click action */ }
+                    ?.let { onWPComAccountMoreDetailsClick() }
             }
         }
 

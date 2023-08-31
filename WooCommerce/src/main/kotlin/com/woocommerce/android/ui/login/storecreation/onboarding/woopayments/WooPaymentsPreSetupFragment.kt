@@ -37,6 +37,7 @@ class WooPaymentsPreSetupFragment : DialogFragment() {
                 WooThemeWithBackground {
                     WooPaymentsPreSetupScreen(
                         onCloseButtonClick = { findNavController().popBackStack() },
+                        onWPComAccountMoreDetailsClick = { onWPComAccountMoreDetailsClick() },
                         onBeginButtonClick = { onBeginButtonClick() },
                         onLearnMoreClick = { onLearnMoreClick() }
                     )
@@ -45,6 +46,9 @@ class WooPaymentsPreSetupFragment : DialogFragment() {
         }
     }
 
+    private fun onWPComAccountMoreDetailsClick() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_PRE_SETUP_WPCOM_ACCOUNT)
+    }
     private fun onLearnMoreClick() {
         ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_PRE_SETUP_LEARN_MORE)
     }
