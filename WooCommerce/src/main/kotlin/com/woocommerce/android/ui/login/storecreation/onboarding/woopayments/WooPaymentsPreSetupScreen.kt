@@ -137,48 +137,15 @@ fun WooPaymentsPreSetupContent(
         }
 
         WooPaymentsPreSetupStep(
-            stepNumber = 2,
-            stepTextId = R.string.store_onboarding_wcpay_pre_setup_content_step_2_content
-        )
-    }
-}
-
-@Composable
-fun WooPaymentsPreSetupStep(stepNumber: Int, stepTextId: Int) {
-    val format = NumberFormat.getInstance(Locale.getDefault())
-    val formattedNumber = format.format(stepNumber)
-
-    Column {
-        Row(
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier.fillMaxWidth()
+            stepNumber = 2
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_200))
-                    .background(
-                        color = colorResource(R.color.woo_payments_setup_bullet_background),
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = formattedNumber,
-                    color = colorResource(id = R.color.color_on_surface)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-
-            Text(text = stringResource(id = stepTextId))
+            Text(text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_step_2_content))
         }
-
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
 @Composable
-fun WooPaymentsPreSetupStep(stepNumber: Int, component: @Composable () -> Unit) {
+fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
     val format = NumberFormat.getInstance(Locale.getDefault())
     val formattedNumber = format.format(stepNumber)
 
@@ -201,10 +168,8 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, component: @Composable () -> Unit) 
                     color = colorResource(id = R.color.color_on_surface)
                 )
             }
-
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-
-            component()
+            formattedText()
         }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
