@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -82,6 +84,7 @@ fun WooPaymentsPreSetupContent(
         modifier = modifier
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
