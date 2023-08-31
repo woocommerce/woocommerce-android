@@ -29,7 +29,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -98,7 +97,7 @@ fun WooPaymentsSetupContent(
 
         val text = buildAnnotatedString {
             append(firstWord)
-            append(" ") // Space between words
+            append("\n")
             withStyle(style = SpanStyle(color = colorResource(id = R.color.woo_purple_50))) {
                 append(secondWord)
             }
@@ -112,7 +111,7 @@ fun WooPaymentsSetupContent(
         val bodyText = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_setup_description)
         ClickableText(
             text = bodyText,
-            style = MaterialTheme.typography.body1.copy(color = colorResource(id = color.color_on_surface_medium))
+            style = MaterialTheme.typography.body1.copy(color = colorResource(id = R.color.color_on_surface_medium))
         ) {
             bodyText.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                 .firstOrNull()
