@@ -100,6 +100,12 @@ object AppUrls {
 
     const val WOOCOMMERCE_PLUGIN_CONFLICTS = "https://woocommerce.com/document/how-to-test-for-conflicts/"
 
+    const val USPS_HAZMAT_INSTRUCTIONS = "https://www.uspsdelivers.com/hazmat-shipping-safety"
+    const val USPS_HAZMAT_SEARCH_TOOL = "https://pe.usps.com/HAZMAT/Index"
+    const val DHL_EXPRESS_HAZMAT_INSTRUCTIONS =
+        "https://www.dhl.com/global-en/home/our-divisions/freight/customer-service/" +
+            "dangerous-goods-and-prohibited-items.html"
+
     const val STORE_ONBOARDING_WCPAY_PRE_SETUP_WPCOM_ACCOUNT =
         "https://woocommerce.com/document/woopayments/startup-guide/#signing-up"
     const val STORE_ONBOARDING_WCPAY_PRE_SETUP_LEARN_MORE =

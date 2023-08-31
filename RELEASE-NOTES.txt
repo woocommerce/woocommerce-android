@@ -3,6 +3,7 @@
 15.2
 -----
 - [*] Settings: Close Account option is moved to a new section Account Settings. [https://github.com/woocommerce/woocommerce-android/pull/9659]
+- [*] Fix some issues with the order's badge counter [https://github.com/woocommerce/woocommerce-android/pull/9671]
 
 15.1
 -----
