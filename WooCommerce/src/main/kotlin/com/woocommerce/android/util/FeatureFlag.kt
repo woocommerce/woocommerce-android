@@ -17,7 +17,6 @@ enum class FeatureFlag {
     STORE_CREATION_ONBOARDING,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
-    STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
     PRIVACY_CHOICES,
     BLAZE,
@@ -25,8 +24,7 @@ enum class FeatureFlag {
     SHIPPING_ZONES,
     BETTER_CUSTOMER_SEARCH_M2,
     HAZMAT_SHIPPING,
-    NAME_YOUR_STORE_DIALOG,
-    OPTIMIZE_PROFILER_QUESTIONS;
+    NAME_YOUR_STORE_DIALOG;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -41,7 +39,6 @@ enum class FeatureFlag {
             REST_API_I2,
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
-            STORE_CREATION_PROFILER,
             EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
             BLAZE,
@@ -52,9 +49,7 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             HAZMAT_SHIPPING,
-            NAME_YOUR_STORE_DIALOG,
-            OPTIMIZE_PROFILER_QUESTIONS
-            -> PackageUtils.isDebugBuild()
+            NAME_YOUR_STORE_DIALOG -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

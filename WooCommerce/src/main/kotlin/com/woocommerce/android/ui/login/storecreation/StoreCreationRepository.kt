@@ -176,7 +176,7 @@ class StoreCreationRepository @Inject constructor(
 
         return when (createSiteResult) {
             is Success -> {
-                sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data, siteData)
+                sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data)
                     .let { addTrialResult ->
                         return when (addTrialResult) {
                             is WPComGsonRequestBuilder.Response.Success -> {
