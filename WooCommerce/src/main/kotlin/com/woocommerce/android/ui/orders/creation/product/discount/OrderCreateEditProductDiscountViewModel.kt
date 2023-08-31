@@ -47,7 +47,9 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
     val orderItem: MutableStateFlow<Order.Item> =
-        savedStateHandle.getStateFlow(scope = this, initialValue = args.item, key = "key_item")
+        savedStateHandle.getStateFlow(
+            scope = this, initialValue = args.item.copy(total = args.item.pricePreDiscount), key = "key_item"
+        )
 
     private val discount = savedStateHandle.getNullableStateFlow(
         scope = this, initialValue = getInitialDiscountAmount(), key = "key_discount", clazz = BigDecimal::class.java
@@ -173,7 +175,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.total
+        val pricePreDiscount = orderItem.value.pricePreDiscount
         val discountPercentage = if (pricePreDiscount > BigDecimal.ZERO) {
             PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
                 pricePreDiscount,
@@ -187,7 +189,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountAmount(discountPercentage: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.total
+        val pricePreDiscount = orderItem.value.pricePreDiscount
         val discountAmount = pricePreDiscount
             .times(discountPercentage)
             .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)

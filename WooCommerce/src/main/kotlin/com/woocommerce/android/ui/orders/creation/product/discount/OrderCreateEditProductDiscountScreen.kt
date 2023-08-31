@@ -95,7 +95,7 @@ fun OrderCreateEditProductDiscountScreen(
                 ProductCard(
                     imageUrl = viewState.value.productDetailsState?.imageUrl,
                     productName = productItem.value.name,
-                    productPrice = productItem.value.price,
+                    productPrice = productItem.value.pricePreDiscount,
                     productQuantity = productItem.value.quantity,
                     totalPerProduct = productItem.value.total,
                     state = state.value
@@ -255,7 +255,7 @@ private fun ProductCard(
         )
 
         Text(
-            text = "$productQuantity x $productPrice",
+            text = "$productQuantity x ${state.currency}$productPrice",
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40),
             modifier = Modifier
