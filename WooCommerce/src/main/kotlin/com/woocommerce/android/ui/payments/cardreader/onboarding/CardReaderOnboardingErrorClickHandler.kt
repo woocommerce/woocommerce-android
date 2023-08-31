@@ -20,10 +20,16 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
                 cardReaderTracker.trackOnboardingCtaTapped(ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED)
 
-                installPlugin(
-                    slug = WC_PAY_SLUG,
-                    name = WC_PAY_NAME,
-                )
+                val pluginInstallationResult = installPlugin(slug = WC_PAY_SLUG, name = WC_PAY_NAME)
+
+                if (pluginInstallationResult is Reaction.ShowErrorAndRefresh) {
+                    cardReaderTracker.trackOnboardingCtaFailed(
+                        reason = ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED,
+                        description = pluginInstallationResult.message
+                    )
+                }
+
+                pluginInstallationResult
             }
         }
 
