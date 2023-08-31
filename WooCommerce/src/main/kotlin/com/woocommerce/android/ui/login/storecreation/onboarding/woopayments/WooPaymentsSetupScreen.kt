@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding.woopayments
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,9 +14,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -53,6 +56,12 @@ fun WooPaymentsSetupContent(
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Image(
+            painter = painterResource(R.drawable.img_woo_payments_store_onboarding_setup_dialog),
+            contentDescription = "WooPayments setup dialog image",
+            alignment = Alignment.TopStart,
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
     }
 }
 

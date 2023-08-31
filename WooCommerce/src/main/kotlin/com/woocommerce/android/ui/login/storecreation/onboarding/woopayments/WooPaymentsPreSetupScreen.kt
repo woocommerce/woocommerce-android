@@ -72,7 +72,7 @@ fun WooPaymentsPreSetupContent(
 
         Image(
             painter = painterResource(R.drawable.img_woo_payments_logo),
-            contentDescription = "Woo Payments",
+            contentDescription = "WooPayments",
             alignment = Alignment.TopStart,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
