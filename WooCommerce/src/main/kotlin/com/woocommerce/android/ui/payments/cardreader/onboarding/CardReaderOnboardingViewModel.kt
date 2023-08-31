@@ -294,7 +294,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        cardReaderTracker.trackOnboardingCtaTapped("cash_on_delivery_disabled")
+        cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
         viewState.value = CashOnDeliveryDisabledState(
             onSkipCashOnDeliveryClicked = {
                 (::onSkipCashOnDeliveryClicked)(

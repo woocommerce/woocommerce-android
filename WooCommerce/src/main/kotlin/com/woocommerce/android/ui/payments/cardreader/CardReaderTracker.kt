@@ -63,6 +63,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -209,18 +210,18 @@ class CardReaderTracker @Inject constructor(
         }
     }
 
-    fun trackOnboardingCtaTapped(reason: String) {
+    fun trackOnboardingCtaTapped(reason: OnboardingCtaTapped) {
         track(
             CARD_PRESENT_ONBOARDING_CTA_TAPPED,
-            mutableMapOf("reason" to reason)
+            mutableMapOf("reason" to reason.value)
         )
     }
 
-    fun trackOnboardingCtaFailed(reason: String, description: String) {
+    fun trackOnboardingCtaFailed(reason: OnboardingCtaTapped, description: String) {
         track(
             CARD_PRESENT_ONBOARDING_CTA_FAILED,
             mutableMapOf(
-                "reason" to reason,
+                "reason" to reason.value,
                 "description" to description,
             )
         )
