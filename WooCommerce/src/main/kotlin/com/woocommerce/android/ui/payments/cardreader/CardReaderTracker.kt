@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAY
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
@@ -212,6 +213,16 @@ class CardReaderTracker @Inject constructor(
         track(
             CARD_PRESENT_ONBOARDING_CTA_TAPPED,
             mutableMapOf("reason" to reason)
+        )
+    }
+
+    fun trackOnboardingCtaFailed(reason: String, description: String) {
+        track(
+            CARD_PRESENT_ONBOARDING_CTA_FAILED,
+            mutableMapOf(
+                "reason" to reason,
+                "description" to description,
+            )
         )
     }
 
