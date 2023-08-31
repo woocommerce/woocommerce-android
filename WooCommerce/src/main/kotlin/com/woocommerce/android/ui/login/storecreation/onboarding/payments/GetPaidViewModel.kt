@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.login.storecreation.onboarding.payments
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.util.WooLog
@@ -16,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GetPaidViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    selectedSite: SelectedSite
+    selectedSite: SelectedSite,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val SUCCESS_FLAG = "wcpay-connection-success"
@@ -46,6 +50,10 @@ class GetPaidViewModel @Inject constructor(
         when {
             url.contains(SUCCESS_FLAG) -> {
                 WooLog.d(WooLog.T.ONBOARDING, "WooPayments setup completed successfully")
+                analyticsTracker.track(
+                    stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
+                    properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to AnalyticsTracker.VALUE_WOO_PAYMENTS)
+                )
                 triggerEvent(ShowWooPaymentsSetupSuccess)
                 isDismissed = true
             }
