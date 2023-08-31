@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -31,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -100,10 +103,17 @@ fun WooPaymentsPreSetupContent(
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
 
-        WooPaymentsPreSetupStep(
-            stepNumber = 1,
-            stepTextId = R.string.store_onboarding_wcpay_pre_setup_content_step_1_content
-        )
+        val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_step_1_content)
+        WooPaymentsPreSetupStep(stepNumber = 1) {
+            ClickableText(
+                text = text,
+                style = MaterialTheme.typography.subtitle1,
+            ) {
+                text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+                    .firstOrNull()
+                    ?.let { /* click action */ }
+            }
+        }
 
         WooPaymentsPreSetupStep(
             stepNumber = 2,
@@ -144,6 +154,37 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, stepTextId: Int) {
 }
 
 @Composable
+fun WooPaymentsPreSetupStep(stepNumber: Int, component: @Composable () -> Unit) {
+    val format = NumberFormat.getInstance(Locale.getDefault())
+    val formattedNumber = format.format(stepNumber)
+
+    Column {
+        Row(
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(dimensionResource(id = R.dimen.major_200))
+                    .background(
+                        color = colorResource(R.color.woo_purple_0),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = formattedNumber)
+            }
+
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+
+            component()
+        }
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    }
+}
+
+@Composable
 fun WooPaymentsPreSetupFooter() {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -176,10 +217,15 @@ fun WooPaymentsPreSetupFooter() {
                     .align(Alignment.CenterVertically)
                     .padding(end = 8.dp)
             )
-            Text(
-                text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_learn_more),
+            val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_learn_more)
+            ClickableText(
+                text = text,
                 style = MaterialTheme.typography.subtitle1,
-            )
+            ) {
+                text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+                    .firstOrNull()
+                    ?.let { /* click action */ }
+            }
         }
     }
 }
