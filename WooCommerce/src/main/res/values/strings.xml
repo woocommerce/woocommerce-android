@@ -3261,7 +3261,7 @@
     <string name="store_onboarding_wcpay_pre_setup_content_title">Before your start setup</string>
     <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Your WooPayments notifications will be sent to your WordPress.com account email. Prefer a new account? More details here.</string>
     <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">We\'ve partnered with Stripe for WooPayments. You\'ll be directed to Stripe\'s site for sign-up. We\'ll ask you to verify your business and payment details.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Begin Setup</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Begin setup</string>
     <string name="store_onboarding_wcpay_pre_setup_content_learn_more">Learn more about verifying your information with WooPayments.</string>
 
     <!--
