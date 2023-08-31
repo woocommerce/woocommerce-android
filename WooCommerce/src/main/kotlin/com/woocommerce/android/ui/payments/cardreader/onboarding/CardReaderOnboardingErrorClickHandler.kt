@@ -18,7 +18,7 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
     suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
-                cardReaderTracker.trackOnboardingCtaTappedState(ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED)
+                cardReaderTracker.trackOnboardingCtaTapped(ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED)
 
                 installPlugin(
                     slug = WC_PAY_SLUG,

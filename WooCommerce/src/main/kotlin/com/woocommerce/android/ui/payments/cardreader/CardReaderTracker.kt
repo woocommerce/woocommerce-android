@@ -208,7 +208,7 @@ class CardReaderTracker @Inject constructor(
         }
     }
 
-    fun trackOnboardingCtaTappedState(reason: String) {
+    fun trackOnboardingCtaTapped(reason: String) {
         track(
             CARD_PRESENT_ONBOARDING_CTA_TAPPED,
             mutableMapOf("reason" to reason)

@@ -53,7 +53,7 @@ class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaTappedState(
+            verify(cardReaderTracker).trackOnboardingCtaTapped(
                 "plugin_install_tapped"
             )
         }

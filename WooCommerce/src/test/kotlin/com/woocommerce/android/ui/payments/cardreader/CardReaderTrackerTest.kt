@@ -181,7 +181,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given cod disabled state, when enable cod is tapped, then CARD_PRESENT_ONBOARDING_CTA_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTappedState("cash_on_delivery_disabled")
+            cardReaderTracker.trackOnboardingCtaTapped("cash_on_delivery_disabled")
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
