@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -324,9 +325,7 @@ class MyStoreFragment :
 
             is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
                 findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
-                        taskId = taskId
-                    )
+                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsPreSetupFragment()
                 )
 
             is StoreOnboardingViewModel.NavigateToAboutYourStore ->

@@ -8,9 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import org.wordpress.android.util.DisplayUtils
 
@@ -50,12 +53,17 @@ class WooPaymentsSetupFragment : DialogFragment() {
     private fun onTermsOfServiceClick() {
         ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.AUTOMATTIC_TOS)
     }
+
     private fun onPrivacyPolicyClick() {
         ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.AUTOMATTIC_PRIVACY_POLICY)
     }
 
     private fun onContinueButtonClick() {
-        // navigation code
+        findNavController().navigateSafely(
+            directions = WooPaymentsSetupFragmentDirections.actionWooPaymentsSetupFragmentToGetPaidFragment(
+                taskId = WC_PAYMENTS.id
+            )
+        )
     }
 
     private fun onLearnMoreButtonClick() {
