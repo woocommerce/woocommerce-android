@@ -20,16 +20,14 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
                 cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED)
 
-                val pluginInstallationResult = installPlugin(slug = WC_PAY_SLUG, name = WC_PAY_NAME)
-
-                if (pluginInstallationResult is Reaction.ShowErrorAndRefresh) {
-                    cardReaderTracker.trackOnboardingCtaFailed(
-                        reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
-                        description = pluginInstallationResult.message
-                    )
+                installPlugin(slug = WC_PAY_SLUG, name = WC_PAY_NAME).also {
+                    it.errorMessage?.let { errorMessage ->
+                        cardReaderTracker.trackOnboardingCtaFailed(
+                            reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                            description = errorMessage
+                        )
+                    }
                 }
-
-                pluginInstallationResult
             }
         }
 
@@ -68,6 +66,12 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
         object Refresh : Reaction()
         data class ShowErrorAndRefresh(val message: String) : Reaction()
     }
+
+    private val Reaction.errorMessage
+        get() = when (this) {
+            is Reaction.ShowErrorAndRefresh -> message
+            else -> null
+        }
 
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
