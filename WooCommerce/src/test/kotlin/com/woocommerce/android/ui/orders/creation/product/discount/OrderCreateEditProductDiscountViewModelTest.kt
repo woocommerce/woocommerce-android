@@ -177,7 +177,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 1F,
-                total = 999.toBigDecimal(),
+                subtotal = 999.toBigDecimal(),
             )
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 item,
@@ -199,7 +199,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 1F,
-                total = 33.toBigDecimal(),
+                subtotal = 33.toBigDecimal(),
             )
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 item,
@@ -222,7 +222,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 1F,
-                total = 33.toBigDecimal(),
+                subtotal = 33.toBigDecimal(),
             )
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 item,
@@ -241,7 +241,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 1F,
-                total = 33.toBigDecimal(),
+                subtotal = 33.toBigDecimal(),
             )
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
                 item,
@@ -260,7 +260,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     fun `given discount amount provided, then show correct price after discount`() = testBlocking {
         val item = Order.Item.EMPTY.copy(
             quantity = 1F,
-            total = 33.toBigDecimal(),
+            subtotal = 33.toBigDecimal(),
         )
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
             item,
