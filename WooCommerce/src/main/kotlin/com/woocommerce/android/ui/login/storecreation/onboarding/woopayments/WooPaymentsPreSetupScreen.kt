@@ -227,7 +227,7 @@ fun WooPaymentsPreSetupFooter() {
             val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_learn_more)
             ClickableText(
                 text = text,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.subtitle2,
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()

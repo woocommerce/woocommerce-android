@@ -65,7 +65,7 @@ fun WooPaymentsSetupContent(
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
     ) {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
         Image(
             painter = painterResource(R.drawable.img_woo_payments_store_onboarding_setup_dialog),
             contentDescription = "WooPayments setup dialog image",
