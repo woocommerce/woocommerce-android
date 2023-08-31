@@ -67,6 +67,7 @@ fun WooPaymentsPreSetupContent(
     Column(
         modifier = modifier
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .fillMaxWidth()
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 

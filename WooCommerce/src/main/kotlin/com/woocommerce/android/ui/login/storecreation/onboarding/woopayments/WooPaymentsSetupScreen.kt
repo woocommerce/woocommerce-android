@@ -20,6 +20,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -37,7 +40,8 @@ fun WooPaymentsSetupScreen() {
                 onNavigationButtonClick = { },
             )
         },
-        bottomBar = { WooPaymentsSetupFooter() }
+        bottomBar = { WooPaymentsSetupFooter() },
+        modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
     ) { paddingValues ->
         WooPaymentsSetupContent(
             modifier = Modifier
@@ -54,12 +58,30 @@ fun WooPaymentsSetupContent(
     Column(
         modifier = modifier
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .fillMaxWidth()
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Image(
             painter = painterResource(R.drawable.img_woo_payments_store_onboarding_setup_dialog),
             contentDescription = "WooPayments setup dialog image",
             alignment = Alignment.TopStart,
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
+
+        val words = stringResource(id = R.string.store_onboarding_wcpay_setup_title).split("\n")
+        val firstWord = words[0]
+        val secondWord = words[1]
+
+        val text = buildAnnotatedString {
+            append(firstWord)
+            append(" ") // Space between words
+            withStyle(style = SpanStyle(color = colorResource(id = R.color.woo_purple_50))) {
+                append(secondWord)
+            }
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
     }
