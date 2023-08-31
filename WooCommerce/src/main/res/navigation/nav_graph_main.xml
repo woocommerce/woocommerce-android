@@ -551,7 +551,11 @@
     <fragment
         android:id="@+id/getPaidFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
-        android:label="GetPaidFragment" />
+        android:label="GetPaidFragment" >
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"

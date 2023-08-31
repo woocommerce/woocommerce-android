@@ -580,6 +580,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ADD_DOMAIN = "add_domain"
         const val VALUE_LAUNCH_SITE = "launch_site"
         const val VALUE_PAYMENTS = "payments"
+        const val VALUE_WOO_PAYMENTS = "woocommerce-payments"
         const val VALUE_LOCAL_NAME_STORE = "store_name"
 
         // -- Product Selector
