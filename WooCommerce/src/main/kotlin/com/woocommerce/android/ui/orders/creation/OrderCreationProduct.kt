@@ -1,8 +1,13 @@
 package com.woocommerce.android.ui.orders.creation
 
+import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.Gson
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.creation.bundle.OrderItemConfiguration
 import com.woocommerce.android.ui.orders.creation.bundle.OrderItemRules
+import com.woocommerce.android.ui.orders.creation.bundle.QuantityRule
 import com.woocommerce.android.ui.products.GetBundledProducts
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -11,6 +16,7 @@ import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -19,12 +25,13 @@ sealed class OrderCreationProduct(
     open val item: Order.Item,
     open val productInfo: ProductInfo
 ) : Parcelable {
-
+    abstract fun isConfigurable(): Boolean
     abstract fun needsConfiguration(): Boolean
     data class ProductItem(
         override val item: Order.Item,
         override val productInfo: ProductInfo
     ) : OrderCreationProduct(item, productInfo) {
+        override fun isConfigurable(): Boolean = false
         override fun needsConfiguration() = false
     }
 
@@ -33,6 +40,7 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo,
         val children: List<ProductItem>
     ) : OrderCreationProduct(item, productInfo) {
+        override fun isConfigurable(): Boolean = false
         override fun needsConfiguration() = false
     }
 
@@ -41,7 +49,26 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo,
         val rules: OrderItemRules
     ) : OrderCreationProduct(item, productInfo) {
-        override fun needsConfiguration() = rules.needsConfiguration()
+        var configuration: OrderItemConfiguration = getInitialConfiguration()
+        override fun isConfigurable(): Boolean = rules.isConfigurable()
+        override fun needsConfiguration() = configuration.needsConfiguration()
+
+        private fun getInitialConfiguration(): OrderItemConfiguration {
+            val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }
+            return OrderItemConfiguration(itemConfiguration)
+        }
+
+        private companion object : Parceler<ProductItemWithRules> {
+            override fun create(parcel: Parcel): ProductItemWithRules {
+                val json = parcel.readString() ?: ""
+                return Gson().fromJson(json, ProductItemWithRules::class.java)
+            }
+
+            override fun ProductItemWithRules.write(parcel: Parcel, flags: Int) {
+                val json = Gson().toJson(this)
+                parcel.writeString(json)
+            }
+        }
     }
 
     data class GroupedProductItemWithRules(
@@ -50,7 +77,33 @@ sealed class OrderCreationProduct(
         val children: List<ProductItem>,
         val rules: OrderItemRules
     ) : OrderCreationProduct(item, productInfo) {
-        override fun needsConfiguration() = rules.needsConfiguration()
+        var configuration: OrderItemConfiguration = getInitialConfiguration()
+        override fun isConfigurable(): Boolean = rules.isConfigurable()
+        override fun needsConfiguration() = configuration.needsConfiguration()
+
+        private fun getInitialConfiguration(): OrderItemConfiguration {
+            val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }.toMutableMap()
+            val childrenConfiguration = rules.childrenRules?.mapValues { childrenRules ->
+                childrenRules.value.mapValues { it.value.getInitialValue() }
+            }
+            if (rules.itemRules.containsKey(QuantityRule.KEY)) {
+                val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
+                itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
+            }
+            return OrderItemConfiguration(itemConfiguration, childrenConfiguration)
+        }
+
+        private companion object : Parceler<GroupedProductItemWithRules> {
+            override fun create(parcel: Parcel): GroupedProductItemWithRules {
+                val json = parcel.readString() ?: ""
+                return Gson().fromJson(json, GroupedProductItemWithRules::class.java)
+            }
+
+            override fun GroupedProductItemWithRules.write(parcel: Parcel, flags: Int) {
+                val json = Gson().toJson(this)
+                parcel.writeString(json)
+            }
+        }
     }
 }
 
@@ -157,14 +210,15 @@ class OrderCreationProductMapper @Inject constructor(
         return if (isBundle) {
             val builder = OrderItemRules.Builder()
             getBundledProducts(item.productId).first().forEach { bundledProduct ->
-                builder.setChildItemRule(
+                builder.setChildQuantityRules(
                     itemId = bundledProduct.id,
-                    productId = bundledProduct.bundledProductId,
                     quantityMin = bundledProduct.rules.quantityMin,
                     quantityMax = bundledProduct.rules.quantityMax,
-                    quantityDefault = bundledProduct.rules.quantityDefault,
-                    optional = bundledProduct.rules.isOptional
+                    quantityDefault = bundledProduct.rules.quantityDefault
                 )
+                if (bundledProduct.rules.isOptional) {
+                    builder.setChildOptional(bundledProduct.id)
+                }
             }
             builder.build()
         } else {
