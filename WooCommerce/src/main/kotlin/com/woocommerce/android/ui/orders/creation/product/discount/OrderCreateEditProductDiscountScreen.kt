@@ -97,7 +97,7 @@ fun OrderCreateEditProductDiscountScreen(
                     productName = productItem.value.name,
                     productPrice = productItem.value.pricePreDiscount,
                     productQuantity = productItem.value.quantity,
-                    totalPerProduct = productItem.value.total,
+                    totalPerProduct = productItem.value.subtotal,
                     state = state.value
                 )
 

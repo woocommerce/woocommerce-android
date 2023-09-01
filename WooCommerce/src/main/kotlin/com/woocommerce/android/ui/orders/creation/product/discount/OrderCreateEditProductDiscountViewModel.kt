@@ -116,7 +116,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 discount
             }
         }
-        if (discountAmount > orderItem.value.pricePreDiscount) {
+        if (discountAmount > (orderItem.value.pricePreDiscount * orderItem.value.quantity.toBigDecimal())) {
             return DiscountAmountValidationState.Invalid(
                 resourceProvider.getString(R.string.order_creation_discount_too_big_error)
             )
@@ -152,7 +152,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val discountAmount = discount.value ?: BigDecimal.ZERO
         return when (discountType.value) {
             DiscountType.Percentage -> {
-                orderItem.value.total * discountAmount / PERCENTAGE_BASE
+                orderItem.value.subtotal * discountAmount / PERCENTAGE_BASE
             }
             is DiscountType.Amount -> {
                 discountAmount
@@ -175,7 +175,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun calculateDiscountPercentage(discountAmount: BigDecimal): BigDecimal {
-        val pricePreDiscount = orderItem.value.pricePreDiscount
+        val pricePreDiscount = orderItem.value.pricePreDiscount * orderItem.value.quantity.toBigDecimal()
         val discountPercentage = if (pricePreDiscount > BigDecimal.ZERO) {
             PERCENTAGE_BASE - (pricePreDiscount - discountAmount).divide(
                 pricePreDiscount,
@@ -194,7 +194,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
             .times(discountPercentage)
             .divide(PERCENTAGE_BASE, PERCENTAGE_DIVISION_QUOTIENT_SCALE, RoundingMode.HALF_UP)
 
-        return discountAmount
+        return (discountAmount * orderItem.value.quantity.toBigDecimal())
             .setScale(2, RoundingMode.HALF_UP)
             .stripTrailingZeros()
     }
@@ -209,7 +209,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     }
 
     private fun getPriceAfterDiscount(): BigDecimal {
-        return if (discount.value == null) BigDecimal.ZERO else orderItem.value.total - getDiscountAmount()
+        return if (discount.value == null) BigDecimal.ZERO else orderItem.value.subtotal - getDiscountAmount()
             .setScale(2, RoundingMode.HALF_UP)
     }
 
