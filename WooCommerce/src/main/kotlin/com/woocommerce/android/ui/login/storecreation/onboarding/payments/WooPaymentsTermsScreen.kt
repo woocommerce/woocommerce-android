@@ -90,12 +90,12 @@ fun WooPaymentsTermsContent(
         Text(
             text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_one),
             style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
         )
         Text(
             text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_two),
             style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100)),
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
             color = colorResource(id = R.color.woo_purple_50)
         )
 
