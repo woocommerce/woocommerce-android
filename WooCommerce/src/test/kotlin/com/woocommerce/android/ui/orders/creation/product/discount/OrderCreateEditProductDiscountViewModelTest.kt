@@ -79,7 +79,31 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given discount bigger than item's price, when done clicked, then should return Invalid state`() =
+    fun `given discount bigger than item's total price, when done clicked, then should return Invalid state`() =
+        testBlocking {
+            val item = Order.Item.EMPTY.copy(
+                quantity = 2F,
+                subtotal = 100F.toBigDecimal(),
+                total = 100F.toBigDecimal()
+            )
+            val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+                item,
+                "usd"
+            ).initSavedStateHandle()
+
+            val sut = createSut(savedStateHandle)
+
+            sut.onDiscountAmountChange(160.toBigDecimal())
+
+            sut.viewState.test {
+                val validationState = awaitItem().discountValidationState
+                assertIs<Invalid>(validationState)
+                assertThat(validationState.errorMessage).isEqualTo("Discount cannot be greater than the price")
+            }
+        }
+
+    @Test
+    fun `given discount smaller than item's total price, when done clicked, then should return Valid state`() =
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 2F,
@@ -94,30 +118,6 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             val sut = createSut(savedStateHandle)
 
             sut.onDiscountAmountChange(60.toBigDecimal())
-
-            sut.viewState.test {
-                val validationState = awaitItem().discountValidationState
-                assertIs<Invalid>(validationState)
-                assertThat(validationState.errorMessage).isEqualTo("Discount cannot be greater than the price")
-            }
-        }
-
-    @Test
-    fun `given discount smaller than item's price, when done clicked, then should return Valid state`() =
-        testBlocking {
-            val item = Order.Item.EMPTY.copy(
-                quantity = 2F,
-                subtotal = 100F.toBigDecimal(),
-                total = 100F.toBigDecimal()
-            )
-            val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
-                "usd"
-            ).initSavedStateHandle()
-
-            val sut = createSut(savedStateHandle)
-
-            sut.onDiscountAmountChange(40.toBigDecimal())
 
             sut.viewState.test {
                 assertIs<Valid>(awaitItem().discountValidationState)
