@@ -17,7 +17,6 @@ import com.woocommerce.android.notifications.local.LocalNotification.StoreCreati
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -53,9 +52,6 @@ class StoreNamePickerViewModel @Inject constructor(
         initialValue = ViewState("", false)
     )
     val viewState = _viewState.asLiveData()
-
-    private val canCreateFreeTrialStore
-        get() = FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
 
     init {
         analyticsTrackerWrapper.track(
@@ -103,14 +99,7 @@ class StoreNamePickerViewModel @Inject constructor(
         newStore.update(name = _viewState.value.storeName)
 
         scheduleDeferredNotification()
-
-        if (canCreateFreeTrialStore) {
-            triggerEvent(NavigateToSummary)
-        } else if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
-            triggerEvent(NavigateToStoreProfiler)
-        } else {
-            triggerEvent(NavigateToDomainPicker(_viewState.value.storeName))
-        }
+        triggerEvent(NavigateToStoreProfiler)
     }
 
     private fun scheduleDeferredNotification() {
@@ -199,11 +188,7 @@ class StoreNamePickerViewModel @Inject constructor(
         }
     }
 
-    data class NavigateToDomainPicker(val domainInitialQuery: String) : Event()
-
     object NavigateToStoreProfiler : Event()
-
-    object NavigateToSummary : Event()
 
     data class RequestNotificationsPermission(
         val onPermissionsRequestResult: (Boolean) -> Unit

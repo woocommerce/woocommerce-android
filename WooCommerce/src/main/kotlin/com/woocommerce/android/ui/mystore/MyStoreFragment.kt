@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -71,6 +72,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -103,13 +105,26 @@ class MyStoreFragment :
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
     private val blazeViewModel: BlazeBannerViewModel by viewModels()
 
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var dateUtils: DateUtils
-    @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
-    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
-    @Inject lateinit var feedbackPrefs: FeedbackPrefs
+    @Inject
+    lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var dateUtils: DateUtils
+
+    @Inject
+    lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+
+    @Inject
+    lateinit var appPrefsWrapper: AppPrefsWrapper
+
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -274,44 +289,55 @@ class MyStoreFragment :
         }
 
         storeOnboardingViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
-                is StoreOnboardingViewModel.NavigateToSurvey ->
-                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
-                        findNavController().navigateSafely(this)
-                    }
+            event.handle()
+        }
+    }
 
-                is StoreOnboardingViewModel.NavigateToLaunchStore ->
-                    findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
-                    )
-
-                is StoreOnboardingViewModel.NavigateToDomains ->
-                    findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
-                    )
-
-                is StoreOnboardingViewModel.NavigateToAddProduct ->
-                    findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
-                    )
-
-                is StoreOnboardingViewModel.NavigateToSetupPayments ->
-                    findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment()
-                    )
-
-                is StoreOnboardingViewModel.NavigateToAboutYourStore ->
-                    findNavController().navigateSafely(
-                        MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
-                    )
-
-                is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
-                    NameYourStoreDialogFragment().show(childFragmentManager, NameYourStoreDialogFragment.TAG)
+    private fun Event.handle() {
+        when (this) {
+            is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
+            is StoreOnboardingViewModel.NavigateToSurvey ->
+                NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
+                    findNavController().navigateSafely(this)
                 }
 
-                is ShowDialog -> event.showDialog()
+            is StoreOnboardingViewModel.NavigateToLaunchStore ->
+                findNavController().navigateSafely(
+                    directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
+                )
+
+            is StoreOnboardingViewModel.NavigateToDomains ->
+                findNavController().navigateSafely(
+                    directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
+                )
+
+            is StoreOnboardingViewModel.NavigateToAddProduct ->
+                findNavController().navigateSafely(
+                    directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
+                )
+
+            is StoreOnboardingViewModel.NavigateToSetupPayments ->
+                findNavController().navigateSafely(
+                    directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
+                        taskId = taskId
+                    )
+                )
+
+            is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+                findNavController().navigateSafely(
+                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsPreSetupFragment()
+                )
+
+            is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+                findNavController().navigateSafely(
+                    MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
+                )
+
+            is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
+                NameYourStoreDialogFragment().show(childFragmentManager, NameYourStoreDialogFragment.TAG)
             }
+
+            is ShowDialog -> showDialog()
         }
     }
 

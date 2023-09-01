@@ -16,9 +16,7 @@ import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.CheckNotificationsPermission
-import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToDomainPicker
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreProfiler
-import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.WooPermissionUtils
@@ -57,14 +55,13 @@ class StoreNamePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToDomainPicker -> navigateToDomainPicker(event.domainInitialQuery)
                 is NavigateToStoreProfiler -> navigateToStoreProfiler()
-                is NavigateToSummary -> navigateToSummary()
                 is RequestNotificationsPermission -> {
                     if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
                         WooPermissionUtils.requestNotificationsPermission(requestPermissionLauncher)
                     }
                 }
+
                 is CheckNotificationsPermission -> {
                     if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
                         event.onPermissionsCheckResult(
@@ -77,19 +74,8 @@ class StoreNamePickerFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToSummary() {
-        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToSummaryFragment()
-            .let { findNavController().navigateSafely(it) }
-    }
-
     private fun navigateToStoreProfiler() {
         StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
             .let { findNavController().navigateSafely(it) }
-    }
-
-    private fun navigateToDomainPicker(domainInitialQuery: String) {
-        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment(
-            domainInitialQuery
-        ).let { findNavController().navigateSafely(it) }
     }
 }

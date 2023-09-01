@@ -17,7 +17,6 @@ enum class FeatureFlag {
     STORE_CREATION_ONBOARDING,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
-    STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
     PRIVACY_CHOICES,
     BLAZE,
@@ -26,7 +25,7 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     NAME_YOUR_STORE_DIALOG,
     OPTIMIZE_PROFILER_QUESTIONS;
-
+  
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
@@ -40,7 +39,6 @@ enum class FeatureFlag {
             REST_API_I2,
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
-            STORE_CREATION_PROFILER,
             EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
             BLAZE,
@@ -51,8 +49,7 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             NAME_YOUR_STORE_DIALOG,
-            OPTIMIZE_PROFILER_QUESTIONS
-            -> PackageUtils.isDebugBuild()
+            OPTIMIZE_PROFILER_QUESTIONS -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

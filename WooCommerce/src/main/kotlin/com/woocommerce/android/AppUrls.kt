@@ -105,4 +105,10 @@ object AppUrls {
     const val DHL_EXPRESS_HAZMAT_INSTRUCTIONS =
         "https://www.dhl.com/global-en/home/our-divisions/freight/customer-service/" +
             "dangerous-goods-and-prohibited-items.html"
+
+    const val STORE_ONBOARDING_WCPAY_PRE_SETUP_WPCOM_ACCOUNT =
+        "https://woocommerce.com/document/woopayments/startup-guide/#signing-up"
+    const val STORE_ONBOARDING_WCPAY_PRE_SETUP_LEARN_MORE =
+        "https://woocommerce.com/document/woopayments/our-policies/know-your-customer/"
+    const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woocommerce.com/document/woopayments/startup-guide/"
 }
