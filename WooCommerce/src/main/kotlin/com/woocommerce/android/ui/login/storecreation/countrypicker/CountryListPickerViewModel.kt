@@ -58,17 +58,6 @@ class CountryListPickerViewModel @Inject constructor(
         }
     }
 
-    fun onContinueClicked() {
-        val selectedCountry = availableCountries.value.first { it.isSelected }
-        newStore.update(
-            country = selectedCountry.toNewStoreCountry()
-        )
-
-        launch {
-            triggerEvent(NavigateToSummaryStep)
-        }
-    }
-
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 
     data class CountryListPickerState(
