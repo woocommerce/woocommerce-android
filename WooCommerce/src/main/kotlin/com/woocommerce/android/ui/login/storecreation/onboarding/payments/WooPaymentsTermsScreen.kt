@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.woopayments
+package com.woocommerce.android.ui.login.storecreation.onboarding.payments
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

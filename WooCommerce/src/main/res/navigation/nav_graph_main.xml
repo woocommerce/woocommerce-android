@@ -565,7 +565,7 @@
     </fragment>
     <fragment
         android:id="@+id/wooPaymentsPreSetupFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.woopayments.WooPaymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsPreSetupFragment"
         android:label="WooPaymentsPreSetupFragment">
         <action
             android:id="@+id/action_wooPaymentsPreSetupFragment_to_wooPaymentsSetupFragment"
@@ -573,7 +573,7 @@
     </fragment>
     <fragment
         android:id="@+id/wooPaymentsTermsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.woopayments.WooPaymentsTermsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsTermsFragment"
         android:label="WooPaymentsTermsFragment">
         <action
             android:id="@+id/action_wooPaymentsTermsFragment_to_getPaidFragment"

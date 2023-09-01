@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.woopayments
+package com.woocommerce.android.ui.login.storecreation.onboarding.payments
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -127,7 +129,7 @@ fun WooPaymentsPreSetupContent(
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle1
-                    .copy(color = colorResource(id = R.color.color_on_surface)),
+                    .copy(color = colorResource(id = color.color_on_surface)),
             ) {
                 text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()
@@ -138,7 +140,7 @@ fun WooPaymentsPreSetupContent(
         WooPaymentsPreSetupStep(
             stepNumber = 2
         ) {
-            Text(text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_step_2_content))
+            Text(text = stringResource(id = string.store_onboarding_wcpay_pre_setup_content_step_2_content))
         }
     }
 }

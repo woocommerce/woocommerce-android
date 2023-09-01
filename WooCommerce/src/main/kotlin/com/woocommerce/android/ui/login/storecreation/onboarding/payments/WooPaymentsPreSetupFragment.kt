@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.woopayments
+package com.woocommerce.android.ui.login.storecreation.onboarding.payments
 
 import android.os.Bundle
 import android.view.LayoutInflater
