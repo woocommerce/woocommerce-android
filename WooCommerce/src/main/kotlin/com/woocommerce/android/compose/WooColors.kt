@@ -1,5 +1,7 @@
 package com.woocommerce.android.compose
 
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
 @Suppress("MagicNumber")
@@ -30,3 +32,33 @@ object WooColors {
     val md_theme_dark_surface = Color(0xFF121212)
     val md_theme_dark_onSurface = Color(0xFFFFFFFF)
 }
+
+val LightColors = lightColors(
+    primary = WooColors.md_theme_light_primary,
+    primaryVariant = WooColors.md_theme_light_primary_variant,
+    secondary = WooColors.md_theme_light_secondary,
+    secondaryVariant = WooColors.md_theme_light_secondary_variant,
+    background = WooColors.md_theme_light_background,
+    surface = WooColors.md_theme_light_surface,
+    error = WooColors.md_theme_light_error,
+    onPrimary = WooColors.md_theme_light_onPrimary,
+    onSecondary = WooColors.md_theme_light_onSecondary,
+    onBackground = WooColors.md_theme_light_onBackground,
+    onSurface = WooColors.md_theme_light_onSurface,
+    onError = WooColors.md_theme_light_onError,
+)
+
+val DarkColors = darkColors(
+    primary = WooColors.md_theme_dark_primary,
+    primaryVariant = WooColors.md_theme_dark_primary_variant,
+    secondary = WooColors.md_theme_dark_secondary,
+    secondaryVariant = WooColors.md_theme_dark_secondary_variant,
+    background = WooColors.md_theme_dark_background,
+    surface = WooColors.md_theme_dark_surface,
+    error = WooColors.md_theme_dark_error,
+    onPrimary = WooColors.md_theme_dark_onPrimary,
+    onSecondary = WooColors.md_theme_dark_onSecondary,
+    onBackground = WooColors.md_theme_dark_onBackground,
+    onSurface = WooColors.md_theme_dark_onSurface,
+    onError = WooColors.md_theme_dark_onError,
+)
