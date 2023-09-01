@@ -19,47 +19,57 @@ val WooTypography = Typography(
     h1 = TextStyle(
         fontWeight = FontWeight.Light,
         fontSize = 96.sp,
+        lineHeight = 112.sp
     ),
     h2 = TextStyle(
         fontWeight = FontWeight.Light,
         fontSize = 60.sp,
+        lineHeight = 72.sp
     ),
     h3 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 48.sp,
+        lineHeight = 56.sp
     ),
     h4 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 34.sp,
+        lineHeight = 36.sp
     ),
     h5 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
+        lineHeight = 24.sp
     ),
     h6 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
+        lineHeight = 24.sp
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
+        lineHeight = 24.sp
     ),
     subtitle2 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
+        lineHeight = 24.sp
     ),
     body1 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
+        lineHeight = 24.sp
     ),
     body2 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
+        lineHeight = 20.sp
     ),
     button = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        letterSpacing = 0.01.sp
+        lineHeight = 20.sp,
     ),
     caption = TextStyle(
         fontWeight = FontWeight.Normal,
@@ -68,5 +78,6 @@ val WooTypography = Typography(
     overline = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 10.sp,
+        lineHeight = 16.sp
     )
 )
