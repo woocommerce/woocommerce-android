@@ -70,5 +70,3 @@ val WooTypography = Typography(
         fontSize = 10.sp,
     )
 )
-
-
