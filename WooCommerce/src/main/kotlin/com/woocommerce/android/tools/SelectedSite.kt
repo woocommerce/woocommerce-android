@@ -32,6 +32,7 @@ class SelectedSite(
 
     fun observe(): Flow<SiteModel?> = state
 
+    @Suppress("SwallowedException")
     fun getOrNull(): SiteModel? =
         try {
             get()
@@ -39,6 +40,7 @@ class SelectedSite(
             null
         }
 
+    @Throws(IllegalStateException::class)
     fun get(): SiteModel {
         state.value?.let { return it }
 
