@@ -194,4 +194,9 @@
     -->
     <color name="try_test_order_step">@color/woo_black_60</color>
 
+    <!--
+    Store creation
+    -->
+    <color name="woo_payments_setup_bullet_background">@color/woo_purple_80</color>
+
 </resources>
