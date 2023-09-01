@@ -24,9 +24,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
@@ -90,22 +87,16 @@ fun WooPaymentsTermsContent(
             alignment = Alignment.TopStart,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
-
-        val words = stringResource(id = R.string.store_onboarding_wcpay_setup_title).split("\n")
-        val firstWord = words[0]
-        val secondWord = words[1]
-
-        val text = buildAnnotatedString {
-            append(firstWord)
-            append("\n")
-            withStyle(style = SpanStyle(color = colorResource(id = R.color.woo_purple_50))) {
-                append(secondWord)
-            }
-        }
         Text(
-            text = text,
+            text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_one),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
+        Text(
+            text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_two),
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100)),
+            color = colorResource(id = R.color.woo_purple_50)
         )
 
         val bodyText = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_setup_description)
