@@ -173,28 +173,91 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given discount amount, when switching to percentage discount, should calculate correct value`() = testBlocking {
-        val item = Order.Item.EMPTY.copy(
-            quantity = 1F,
-            subtotal = 999.toBigDecimal(),
-        )
-        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
-            "usd"
-        ).initSavedStateHandle()
-        val sut = createSut(savedStateHandle)
-        sut.onDiscountAmountChange(99.toBigDecimal())
-        sut.onPercentageDiscountSelected()
-        sut.viewState.test {
-            val viewState = awaitItem()
-            assertThat(viewState.discountType)
-                .isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Percentage::class.java)
-            assertThat(viewState.discountAmount).isEqualTo("9.90990991")
+    fun `given discount amount, when switching to percentage discount, should calculate correct value`() =
+        testBlocking {
+            val item = Order.Item.EMPTY.copy(
+                quantity = 1F,
+                subtotal = 999.toBigDecimal(),
+            )
+            val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+                item,
+                "usd"
+            ).initSavedStateHandle()
+            val sut = createSut(savedStateHandle)
+            sut.onDiscountAmountChange(99.toBigDecimal())
+            sut.onPercentageDiscountSelected()
+            sut.viewState.test {
+                val viewState = awaitItem()
+                assertThat(viewState.discountType)
+                    .isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Percentage::class.java)
+                assertThat(viewState.discountAmount).isEqualTo("9.90990991")
+            }
         }
-    }
 
     @Test
-    fun `given percentage discount, when switching to discount amount, should calculate correct value`() = testBlocking {
+    fun `given percentage discount, when switching to discount amount, should calculate correct value`() =
+        testBlocking {
+            val item = Order.Item.EMPTY.copy(
+                quantity = 1F,
+                subtotal = 33.toBigDecimal(),
+            )
+            val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+                item,
+                "usd"
+            ).initSavedStateHandle()
+            val sut = createSut(savedStateHandle)
+            sut.onPercentageDiscountSelected()
+            sut.onDiscountAmountChange(13.toBigDecimal())
+            sut.onAmountDiscountSelected()
+            sut.viewState.test {
+                val viewState = awaitItem()
+                assertThat(viewState.discountType)
+                    .isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Amount::class.java)
+                assertThat(viewState.discountAmount).isEqualTo("4.29")
+            }
+        }
+
+    @Test
+    fun `given discount amount selected, when amount provided, then calculatedPriceAfterDiscount should return discount percentage`() =
+        testBlocking {
+            val item = Order.Item.EMPTY.copy(
+                quantity = 1F,
+                subtotal = 33.toBigDecimal(),
+            )
+            val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+                item,
+                "usd"
+            ).initSavedStateHandle()
+            val sut = createSut(savedStateHandle)
+            sut.onDiscountAmountChange(4.29.toBigDecimal())
+            sut.viewState.test {
+                val viewState = awaitItem()
+                assertThat(viewState.calculatedPriceAfterDiscount).isEqualTo("13.00")
+            }
+        }
+
+    @Test
+    fun `given discount percentage selected, when discount provided, the calculatedPriceAfterDiscount should return discount amount`() =
+        testBlocking {
+            val item = Order.Item.EMPTY.copy(
+                quantity = 1F,
+                subtotal = 33.toBigDecimal(),
+            )
+            val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+                item,
+                "usd"
+            ).initSavedStateHandle()
+            val sut = createSut(savedStateHandle)
+            sut.onPercentageDiscountSelected()
+            sut.onDiscountAmountChange(13.toBigDecimal())
+            sut.viewState.test {
+                val viewState = awaitItem()
+                assertThat(viewState.calculatedPriceAfterDiscount).isEqualTo("4.29")
+            }
+        }
+
+    @Test
+    fun `given discount amount provided, then show correct price after discount`() = testBlocking {
         val item = Order.Item.EMPTY.copy(
             quantity = 1F,
             subtotal = 33.toBigDecimal(),
@@ -204,14 +267,10 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
-        sut.onPercentageDiscountSelected()
-        sut.onDiscountAmountChange(13.toBigDecimal())
-        sut.onAmountDiscountSelected()
+        sut.onDiscountAmountChange(4.29.toBigDecimal())
         sut.viewState.test {
             val viewState = awaitItem()
-            assertThat(viewState.discountType)
-                .isInstanceOf(OrderCreateEditProductDiscountViewModel.DiscountType.Amount::class.java)
-            assertThat(viewState.discountAmount).isEqualTo("4.29")
+            assertThat(viewState.priceAfterDiscount).isEqualTo("28.71")
         }
     }
 
