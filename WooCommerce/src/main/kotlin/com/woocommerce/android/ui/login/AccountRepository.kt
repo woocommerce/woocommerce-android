@@ -65,7 +65,6 @@ class AccountRepository @Inject constructor(
                 false
             } else {
                 AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
-                selectedSite.reset()
                 cleanup()
                 true
             }
@@ -84,7 +83,6 @@ class AccountRepository @Inject constructor(
                 }
             }
 
-            selectedSite.reset()
             cleanup()
             true
         }
@@ -118,6 +116,7 @@ class AccountRepository @Inject constructor(
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
+        selectedSite.reset()
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
