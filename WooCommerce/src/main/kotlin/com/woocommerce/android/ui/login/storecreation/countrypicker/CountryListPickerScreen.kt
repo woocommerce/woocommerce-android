@@ -37,7 +37,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
-    viewModel.countryListPickerState.observeAsState().value?.let { viewState ->
+    viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
                 title = { Text(stringResource(id = R.string.store_creation_country_list_picker_toolbar_title)) },
@@ -46,9 +46,10 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
             )
         }) { padding ->
             CountryListPickerForm(
-                searchQuery = "",
+                searchQuery = viewState.searchQuery,
                 countries = viewState.countries,
                 onCountrySelected = viewModel::onCountrySelected,
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
@@ -59,15 +60,16 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
 
 @Composable
 fun CountryListPickerForm(
-    searchQuery: String = "",
+    searchQuery: String,
     countries: List<StoreCreationCountry>,
     onCountrySelected: (StoreCreationCountry) -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
     modifier: Modifier = Modifier
-) {
+    ) {
     Column(modifier = modifier) {
         WCSearchField(
             value = searchQuery,
-            onValueChange = {  },
+            onValueChange = onSearchQueryChanged,
             hint = stringResource(id = R.string.search),
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,7 +81,10 @@ fun CountryListPickerForm(
 
         val configuration = LocalConfiguration.current
         if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            CountryListPickerHeader(countries.first { it.isSelected })
+            val selectedCountry = countries.firstOrNull { it.isSelected }
+            if (selectedCountry != null) {
+                CountryListPickerHeader(selectedCountry)
+            }
         }
         LazyColumn(
             modifier = Modifier
@@ -240,6 +245,7 @@ private fun CurrentCountryItem(
 fun CountryListPickerPreview() {
     WooThemeWithBackground {
         CountryListPickerForm(
+            searchQuery = "",
             countries = listOf(
                 StoreCreationCountry(
                     name = "Canada",
@@ -267,6 +273,7 @@ fun CountryListPickerPreview() {
                 )
             ),
             onCountrySelected = {},
+            onSearchQueryChanged = {},
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
         )
