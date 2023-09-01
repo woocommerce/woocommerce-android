@@ -214,7 +214,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq(CARD_PRESENT_ONBOARDING_CTA_FAILED),
                 check {
                     assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled")
-                    assertThat(it["description"]).isEqualTo("errorDescription")
+                    assertThat(it["error_description"]).isEqualTo("errorDescription")
                 }
             )
         }
@@ -231,7 +231,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq(CARD_PRESENT_ONBOARDING_CTA_FAILED),
                 check {
                     assertThat(it["reason"]).isEqualTo("plugin_install_tapped")
-                    assertThat(it["description"]).isEqualTo("errorDescription")
+                    assertThat(it["error_description"]).isEqualTo("errorDescription")
                 }
             )
         }

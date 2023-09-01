@@ -52,8 +52,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ENABLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_GATEWAY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_REASON
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
@@ -194,7 +196,7 @@ class CardReaderTracker @Inject constructor(
 
     fun trackOnboardingState(state: CardReaderOnboardingState) {
         getOnboardingNotCompletedReason(state)?.let {
-            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
+            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf(KEY_REASON to it))
         }
     }
 
@@ -203,7 +205,7 @@ class CardReaderTracker @Inject constructor(
             track(
                 CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
                 mutableMapOf(
-                    "reason" to it,
+                    KEY_REASON to it,
                     "remind_later" to false
                 )
             )
@@ -213,7 +215,7 @@ class CardReaderTracker @Inject constructor(
     fun trackOnboardingCtaTapped(reason: OnboardingCtaTapped) {
         track(
             CARD_PRESENT_ONBOARDING_CTA_TAPPED,
-            mutableMapOf("reason" to reason.value)
+            mutableMapOf(KEY_REASON to reason.value)
         )
     }
 
@@ -221,8 +223,8 @@ class CardReaderTracker @Inject constructor(
         track(
             CARD_PRESENT_ONBOARDING_CTA_FAILED,
             mutableMapOf(
-                "reason" to reason.value,
-                "description" to description,
+                KEY_REASON to reason.value,
+                KEY_ERROR_DESC to description,
             )
         )
     }
