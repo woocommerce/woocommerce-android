@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -45,6 +46,7 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
             )
         }) { padding ->
             CountryListPickerForm(
+                searchQuery = "",
                 countries = viewState.countries,
                 onCountrySelected = viewModel::onCountrySelected,
                 modifier = Modifier
@@ -57,11 +59,24 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
 
 @Composable
 fun CountryListPickerForm(
+    searchQuery: String = "",
     countries: List<StoreCreationCountry>,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+        WCSearchField(
+            value = searchQuery,
+            onValueChange = {  },
+            hint = stringResource(id = R.string.search),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.major_100)
+                )
+        )
+
         val configuration = LocalConfiguration.current
         if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             CountryListPickerHeader(countries.first { it.isSelected })
