@@ -97,7 +97,7 @@ fun OrderCreateEditProductDiscountScreen(
                     productName = productItem.value.name,
                     productPrice = productItem.value.pricePreDiscount,
                     productQuantity = productItem.value.quantity,
-                    totalPerProduct = productItem.value.subtotal,
+                    subTotalPerProduct = productItem.value.subtotal,
                     state = state.value
                 )
 
@@ -202,7 +202,7 @@ private fun ProductCard(
     productName: String,
     productPrice: BigDecimal,
     productQuantity: Float,
-    totalPerProduct: BigDecimal,
+    subTotalPerProduct: BigDecimal,
     state: ViewState
 ) {
     ConstraintLayout(
@@ -271,7 +271,7 @@ private fun ProductCard(
         )
 
         Text(
-            text = "${state.currency}$totalPerProduct",
+            text = "${state.currency}$subTotalPerProduct",
             modifier = Modifier
                 .constrainAs(totalText) {
                     end.linkTo(parent.end)
@@ -443,7 +443,7 @@ fun ProductCardPreview() {
         productName = "Product Name",
         productPrice = BigDecimal.ZERO,
         productQuantity = 1f,
-        totalPerProduct = BigDecimal.ZERO,
+        subTotalPerProduct = BigDecimal.ZERO,
         state = ViewState(
             "$",
             BigDecimal.ZERO,
