@@ -29,6 +29,7 @@ fun GetPaidScreen(
                 url = state.url,
                 userAgent = userAgent,
                 wpComAuthenticator = if (state.shouldAuthenticate) authenticator else null,
+                onUrlLoaded = viewModel::onUrlLoaded,
                 modifier = Modifier.padding(padding)
             )
         }

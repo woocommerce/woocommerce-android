@@ -562,7 +562,16 @@
         <argument
             android:name="taskId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_getPaidFragment_to_wooPaymentsSetupCelebrationDialog"
+            app:destination="@id/wooPaymentsSetupCelebrationDialog"
+            app:popUpTo="@id/getPaidFragment"
+            app:popUpToInclusive="true" />
     </fragment>
+    <dialog
+        android:id="@+id/wooPaymentsSetupCelebrationDialog"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
+        android:label="WooPaymentsSetupCelebrationDialog" />
     <fragment
         android:id="@+id/wooPaymentsPreSetupFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsPreSetupFragment"
