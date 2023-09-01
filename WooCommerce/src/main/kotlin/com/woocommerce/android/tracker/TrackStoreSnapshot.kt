@@ -85,11 +85,13 @@ class TrackStoreSnapshot @Inject constructor(
             mapOf(
                 KEY_PRODUCTS_COUNT to productCounts.model,
                 KEY_ORDERS_COUNT to ordersCount.count,
-                KEY_WOOCOMMERCE to sitePlugins.model.getPlugin(KEY_WOOCOMMERCE).getPluginStatus(),
+                KEY_WOOCOMMERCE_PLUGIN to sitePlugins.model.getPlugin(KEY_WOOCOMMERCE_PLUGIN).getPluginStatus(),
                 KEY_STRIPE_PLUGIN to sitePlugins.model.getPlugin(KEY_STRIPE_PLUGIN).getPluginStatus(),
                 KEY_SQUARE_PLUGIN to sitePlugins.model.getPlugin(KEY_SQUARE_PLUGIN).getPluginStatus(),
                 KEY_PAYPAL_PLUGIN to sitePlugins.model.getPlugin(KEY_PAYPAL_PLUGIN).getPluginStatus(),
-            )
+            ).mapKeys {
+                it.key.replace("-", "_")
+            }
         )
     }
 
@@ -109,7 +111,7 @@ class TrackStoreSnapshot @Inject constructor(
         private const val KEY_PRODUCTS_COUNT = "products_count"
         private const val KEY_ORDERS_COUNT = "orders_count"
 
-        private const val KEY_WOOCOMMERCE = "woocommerce-payments"
+        private const val KEY_WOOCOMMERCE_PLUGIN = "woocommerce-payments"
         private const val KEY_STRIPE_PLUGIN = "woocommerce-gateway-stripe"
         private const val KEY_SQUARE_PLUGIN = "woocommerce-square"
         private const val KEY_PAYPAL_PLUGIN = "woocommerce-paypal-payments"
