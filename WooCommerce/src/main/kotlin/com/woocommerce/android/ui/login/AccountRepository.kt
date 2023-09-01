@@ -65,6 +65,7 @@ class AccountRepository @Inject constructor(
                 false
             } else {
                 AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+                selectedSite.reset()
                 cleanup()
                 true
             }
