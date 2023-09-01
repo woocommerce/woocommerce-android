@@ -37,7 +37,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WooPaymentsSetupScreen(
+fun WooPaymentsTermsScreen(
     backButtonClick: () -> Unit = {},
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
@@ -53,14 +53,14 @@ fun WooPaymentsSetupScreen(
             )
         },
         bottomBar = {
-            WooPaymentsSetupFooter(
+            WooPaymentsTermsFooter(
                 onContinueButtonClick,
                 onLearnMoreButtonClick
             )
         },
         modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
     ) { paddingValues ->
-        WooPaymentsSetupContent(
+        WooPaymentsTermsContent(
             onTermsOfServiceClick = onTermsOfServiceClick,
             onPrivacyPolicyClick = onPrivacyPolicyClick,
             modifier = Modifier
@@ -72,7 +72,7 @@ fun WooPaymentsSetupScreen(
 }
 
 @Composable
-fun WooPaymentsSetupContent(
+fun WooPaymentsTermsContent(
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
     modifier: Modifier,
@@ -126,7 +126,7 @@ fun WooPaymentsSetupContent(
 }
 
 @Composable
-fun WooPaymentsSetupFooter(
+fun WooPaymentsTermsFooter(
     onContinueButtonClick: () -> Unit = {},
     onLearnMoreButtonClick: () -> Unit = {}
 ) {
@@ -163,8 +163,8 @@ fun WooPaymentsSetupFooter(
 
 @Preview
 @Composable
-fun WooPaymentsSetupScreenPreview() {
+fun WooPaymentsTermsScreenPreview() {
     WooThemeWithBackground {
-        WooPaymentsSetupScreen()
+        WooPaymentsTermsScreen()
     }
 }

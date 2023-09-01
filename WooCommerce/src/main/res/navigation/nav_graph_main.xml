@@ -569,14 +569,14 @@
         android:label="WooPaymentsPreSetupFragment">
         <action
             android:id="@+id/action_wooPaymentsPreSetupFragment_to_wooPaymentsSetupFragment"
-            app:destination="@id/wooPaymentsSetupFragment" />
+            app:destination="@id/wooPaymentsTermsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/wooPaymentsSetupFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.woopayments.WooPaymentsSetupFragment"
-        android:label="WooPaymentsSetupFragment">
+        android:id="@+id/wooPaymentsTermsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.woopayments.WooPaymentsTermsFragment"
+        android:label="WooPaymentsTermsFragment">
         <action
-            android:id="@+id/action_wooPaymentsSetupFragment_to_getPaidFragment"
+            android:id="@+id/action_wooPaymentsTermsFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
             app:popUpTo="@id/dashboard">
             <argument
