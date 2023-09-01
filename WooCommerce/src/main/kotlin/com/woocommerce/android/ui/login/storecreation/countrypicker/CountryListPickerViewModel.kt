@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -19,7 +18,6 @@ import javax.inject.Inject
 class CountryListPickerViewModel @Inject constructor(
     private val localCountriesRepository: LocalCountriesRepository,
     private val emojiUtils: EmojiUtils,
-    private val newStore: NewStore,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
@@ -51,14 +49,8 @@ class CountryListPickerViewModel @Inject constructor(
     }
 
     fun onCountrySelected(selectedCountry: StoreCreationCountry) {
-        availableCountries.update {
-            it.map { country ->
-                country.copy(isSelected = country.code == selectedCountry.code)
-            }
-        }
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(selectedCountry))
     }
-
-    object NavigateToSummaryStep : MultiLiveEvent.Event()
 
     data class CountryListPickerState(
         val countries: List<StoreCreationCountry>
