@@ -8,10 +8,12 @@ fun Order.adjustProductQuantity(itemId: Long, quantityToAdd: Int): Order {
     if (index == -1) error("Couldn't find the product with id $itemId")
     items[index] = with(items[index]) {
         val newQuantity = quantity + quantityToAdd
+        val discountAmount = subtotal - total
+        val newSubtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal())
         copy(
             quantity = newQuantity,
-            subtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal()),
-            total = price.multiply(newQuantity.toBigDecimal())
+            subtotal = newSubtotal,
+            total = newSubtotal - discountAmount
         )
     }
     return updateItems(items)
