@@ -54,7 +54,6 @@ fun WooPaymentsPreSetupScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = { Text("") },
                 navigationIcon = Icons.Filled.Close,
                 onNavigationButtonClick = onCloseButtonClick,
             )
