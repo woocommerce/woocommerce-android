@@ -24,7 +24,7 @@ enum class FeatureFlag {
     SHIPPING_ZONES,
     BETTER_CUSTOMER_SEARCH_M2,
     NAME_YOUR_STORE_DIALOG;
-  
+
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
