@@ -1,0 +1,2 @@
+15.1:
+Sabia que com o Tap to Pay, você pode aceitar pagamentos com cartão no seu celular? Deixamos a experiência inicial ainda mais simples. Esta versão também inclui correções de instabilidade no login. Obrigado por escolher o WooCommerce!

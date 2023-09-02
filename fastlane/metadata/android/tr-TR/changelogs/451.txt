@@ -1,0 +1,2 @@
+15.1:
+Tap to Pay ile kart ödemelerini telefonunuzla kabul edebileceğinizi biliyor muydunuz? Daha da kolaylaştırmak için ilk deneyimi geliştirdik. Ayrıca, bu sürümde oturum açmayla ilgili stabilite düzeltmeleri yer alır. WooCommerce'i seçtiğiniz için teşekkür ederiz!
