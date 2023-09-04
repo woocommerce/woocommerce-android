@@ -1516,6 +1516,7 @@
     <string name="card_reader_onboarding_wcpay_not_activated_header">Activate WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">The WooCommerce Payments extension is installed on your store but not activated. Please activate it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Activate</string>
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>

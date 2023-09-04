@@ -21,7 +21,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
                 cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED)
 
-                installWcPayPlugin().also {
+                installAndActivateWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
                         cardReaderTracker.trackOnboardingCtaFailed(
                             reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
@@ -30,9 +30,20 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
                     }
                 }
             }
+
+            CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED -> {
+                installAndActivateWcPayPlugin().also {
+                    it.errorMessage?.let { errorMessage ->
+                        cardReaderTracker.trackOnboardingCtaFailed(
+                            reason = OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED,
+                            description = errorMessage
+                        )
+                    }
+                }
+            }
         }
 
-    private suspend fun installWcPayPlugin() =
+    private suspend fun installAndActivateWcPayPlugin() =
         pluginRepository.installPlugin(
             site = selectedSite.get(),
             slug = WC_PAY_SLUG,
@@ -78,9 +89,11 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
 enum class OnboardingCtaTapped(val value: String) {
     PLUGIN_INSTALL_TAPPED("plugin_install_tapped"),
+    PLUGIN_ACTIVATE_TAPPED("plugin_activate_tapped"),
     CASH_ON_DELIVERY_TAPPED("cash_on_delivery_disabled"),
 }
 
 enum class CardReaderOnboardingCTAErrorType {
-    WC_PAY_NOT_INSTALLED
+    WC_PAY_NOT_INSTALLED,
+    WC_PAY_NOT_ACTIVATED,
 }
