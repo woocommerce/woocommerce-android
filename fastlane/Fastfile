@@ -15,7 +15,7 @@ end
 ########################################################################
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
-INSTALLABLE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
+PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 ORIGINALS_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
@@ -848,31 +848,39 @@ platform :android do
   # bundle exec fastlane build_apk
   #####################################################################################
   desc "Builds an APK"
-  lane :build_and_upload_installable_build do | options |
-
+  lane :build_and_upload_prototype_build do |options|
     UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
+
+    prototype_flavor = 'Jalapeno'
+    prototype_build_type = 'Debug'
 
     gradle(
       task: "assemble",
-      flavor: "Jalapeno",
-      build_type: "Debug"
+      flavor: prototype_flavor,
+      build_type: prototype_build_type
     )
 
     upload_path = upload_to_s3(
       bucket: 'a8c-apps-public-artifacts',
-      key: "woocommerce-installable-build-#{generate_installable_build_number}.apk",
+      key: "woocommerce-prototype-build-#{generate_prototype_build_number}.apk",
       file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
       skip_if_exists: true
     )
 
-    install_url = "#{INSTALLABLE_BUILD_DOMAIN}/#{upload_path}"
-    qr_code_url = "https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=#{URI::encode( install_url )}&choe=UTF-8"
-    comment_body = "You can test the changes on this Pull Request by <a href='#{install_url}'>downloading an installable build</a>, or scanning this QR code:<br><a href='#{install_url}'><img src='#{qr_code_url}' width='250' height='250' /></a>"
-
+    install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
+    comment_body = prototype_build_details_comment(
+      app_display_name: 'WooCommerce Android',
+      download_url: install_url,
+      metadata: {
+        Flavor: prototype_flavor,
+        'Build Type': prototype_build_type,
+      }
+    )
+  
     comment_on_pr(
       project: 'woocommerce/woocommerce-android',
       pr_number: Integer(ENV['BUILDKITE_PULL_REQUEST']),
-      reuse_identifier: 'installable-build-link',
+      reuse_identifier: 'prototype-build-link',
       body: comment_body
     ) unless ENV['BUILDKITE_PULL_REQUEST'].nil?
   end
@@ -957,7 +965,7 @@ platform :android do
    end
 
   # This function is Buildkite-specific
-  def generate_installable_build_number
+  def generate_prototype_build_number
 
     if ENV['BUILDKITE']
       commit = ENV['BUILDKITE_COMMIT'][0,7]
