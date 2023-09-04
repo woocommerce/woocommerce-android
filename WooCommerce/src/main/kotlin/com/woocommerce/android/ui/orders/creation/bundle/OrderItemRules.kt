@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.creation.bundle
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.sumByFloat
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -76,6 +78,23 @@ class OrderItemConfiguration(
     val configuration: Map<String, String?>,
     val childrenConfiguration: Map<Long, Map<String, String?>>? = null
 ) : Parcelable {
+
+    companion object {
+        fun getConfiguration(
+            rules: OrderItemRules,
+            children: List<OrderCreationProduct.ProductItem>? = null
+        ): OrderItemConfiguration {
+            val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }.toMutableMap()
+            val childrenConfiguration = rules.childrenRules?.mapValues { childrenRules ->
+                childrenRules.value.mapValues { it.value.getInitialValue() }
+            }
+            if (children != null && rules.itemRules.containsKey(QuantityRule.KEY)) {
+                val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
+                itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
+            }
+            return OrderItemConfiguration(itemConfiguration, childrenConfiguration)
+        }
+    }
     fun needsConfiguration(): Boolean {
         val itemNeedsConfiguration = configuration.any { entry -> entry.value == null }
         val childrenNeedsConfiguration = childrenConfiguration?.any {
