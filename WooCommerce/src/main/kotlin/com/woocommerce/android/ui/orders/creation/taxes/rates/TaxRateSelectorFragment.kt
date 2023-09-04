@@ -24,8 +24,10 @@ class TaxRateSelectorFragment : Fragment() {
         setContent {
             WooThemeWithBackground {
                 TaxRateSelectorScreen(
+                    viewModel.viewState,
                     viewModel::onEditTaxRatesInAdminClicked,
-                    viewModel::onInfoIconClicked
+                    viewModel::onInfoIconClicked,
+                    viewModel::onTaxRateSelected,
                 )
             }
         }
