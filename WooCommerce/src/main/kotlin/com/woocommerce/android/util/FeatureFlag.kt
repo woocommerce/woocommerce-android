@@ -28,7 +28,8 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     HAZMAT_SHIPPING,
     NAME_YOUR_STORE_DIALOG,
-    OPTIMIZE_PROFILER_QUESTIONS;
+    OPTIMIZE_PROFILER_QUESTIONS,
+    ORDER_CREATION_TAX_RATE_SELECTOR;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -57,7 +58,8 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             HAZMAT_SHIPPING,
             NAME_YOUR_STORE_DIALOG,
-            OPTIMIZE_PROFILER_QUESTIONS
+            OPTIMIZE_PROFILER_QUESTIONS,
+            ORDER_CREATION_TAX_RATE_SELECTOR
             -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
