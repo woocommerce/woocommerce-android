@@ -135,6 +135,9 @@
             android:id="@+id/action_orderCreationFragment_to_couponSelectorFragment"
             app:destination="@id/couponSelectorFragment" >
         </action>
+        <action
+            android:id="@+id/action_order_creationFragment_to_taxRateSelectorFragment"
+            app:destination="@id/taxRateSelectorFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -317,4 +320,8 @@
             app:destination="@id/nav_graph_coupons" />
     </fragment>
     <include app:graph="@navigation/nav_graph_coupons" />
+    <fragment
+        android:id="@+id/taxRateSelectorFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment"
+        android:label="TaxRateSelectorFragment"/>
 </navigation>

@@ -1104,6 +1104,10 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
+    fun onSetTaxRateClicked() {
+        triggerEvent(OrderCreateEditNavigationTarget.TaxRateSelector)
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,

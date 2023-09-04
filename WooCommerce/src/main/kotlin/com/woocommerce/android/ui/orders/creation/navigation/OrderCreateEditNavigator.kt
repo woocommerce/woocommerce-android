@@ -68,6 +68,9 @@ object OrderCreateEditNavigator {
                     target.state
                 )
             }
+            is OrderCreateEditNavigationTarget.TaxRateSelector -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToTaxRateSelectorFragment()
+            }
         }
         navController.navigate(action)
     }

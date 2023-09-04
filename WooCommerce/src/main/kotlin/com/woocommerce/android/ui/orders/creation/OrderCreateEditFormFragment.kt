@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -165,6 +166,14 @@ class OrderCreateEditFormFragment :
         initCustomerSection()
         initProductsSection()
         initPaymentSection()
+        initTaxRateSelectorSection()
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
+        taxRateSelectorSection.isVisible = FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+        setTaxRateButton.setOnClickListener {
+            viewModel.onSetTaxRateClicked()
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
