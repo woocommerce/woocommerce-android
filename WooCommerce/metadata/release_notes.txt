@@ -1,1 +1,5 @@
-Did you know that with Tap to Pay, you can accept card payments with your phone? We've enhanced the initial experience to make it even easier. This release also includes stability fixes for the login. Thank you for choosing WooCommerce!
+- [*] [Internal] Improved Product Discount Screen [https://github.com/woocommerce/woocommerce-android/pull/9639]
+- [*] Settings: Close Account option is moved to a new section Account Settings. [https://github.com/woocommerce/woocommerce-android/pull/9659]
+- [*] Fix some issues with the order's badge counter [https://github.com/woocommerce/woocommerce-android/pull/9671]
+- [*] Improvements to the WooPayments onboarding task [https://github.com/woocommerce/woocommerce-android/pull/9714]
+
