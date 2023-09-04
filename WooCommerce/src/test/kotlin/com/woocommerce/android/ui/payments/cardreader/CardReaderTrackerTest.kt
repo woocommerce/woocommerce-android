@@ -181,13 +181,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given cod disabled state, when enable cod is tapped, then CARD_PRESENT_ONBOARDING_CTA_TAPPED tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTappedState(
-                CardReaderOnboardingState.CashOnDeliveryDisabled(
-                    countryCode = "US",
-                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
-                    version = "4.0.0"
-                )
-            )
+            cardReaderTracker.trackOnboardingCtaTappedState("cash_on_delivery_disabled")
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
