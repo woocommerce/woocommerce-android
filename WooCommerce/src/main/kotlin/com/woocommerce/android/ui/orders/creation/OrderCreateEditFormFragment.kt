@@ -45,6 +45,8 @@ import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEdi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
+import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
+import com.woocommerce.android.ui.orders.creation.views.TaxLines
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
@@ -266,6 +268,12 @@ class OrderCreateEditFormFragment :
             bindProductsSection(binding.productsSection, it)
         }
 
+        observeViewStateChanges(binding)
+
+        viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
+    }
+
+    private fun observeViewStateChanges(binding: FragmentOrderCreateEditFormBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
                 if (show) showProgressDialog() else hideProgressDialog()
@@ -278,14 +286,17 @@ class OrderCreateEditFormFragment :
                 if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = idle
                     binding.paymentSection.feeButton.isEnabled = idle
-                    binding.paymentSection.couponButton.isEnabled = new.isCouponButtonEnabled && idle
-                    binding.paymentSection.addCouponButton.isEnabled = new.isCouponButtonEnabled && idle
+                    binding.paymentSection.couponButton.isEnabled =
+                        new.isCouponButtonEnabled && idle
+                    binding.paymentSection.addCouponButton.isEnabled =
+                        new.isCouponButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
                 }
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
                 if (new.isEditable) {
-                    binding.productsSection.content.productsAdapter?.areProductsEditable = show.not()
+                    binding.productsSection.content.productsAdapter?.areProductsEditable =
+                        show.not()
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -298,8 +309,10 @@ class OrderCreateEditFormFragment :
                 when (multipleLinesContext) {
                     None -> binding.multipleLinesWarningSection.root.visibility = View.GONE
                     is Warning -> {
-                        binding.multipleLinesWarningSection.header.text = multipleLinesContext.header
-                        binding.multipleLinesWarningSection.explanation.text = multipleLinesContext.explanation
+                        binding.multipleLinesWarningSection.header.text =
+                            multipleLinesContext.header
+                        binding.multipleLinesWarningSection.explanation.text =
+                            multipleLinesContext.explanation
                         binding.multipleLinesWarningSection.root.visibility = View.VISIBLE
                     }
                 }
@@ -308,9 +321,10 @@ class OrderCreateEditFormFragment :
                 binding.paymentSection.couponButton.isEnabled = it
                 binding.paymentSection.addCouponButton.isEnabled = it
             }
+            new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
+                bindTaxBasedOnSettingLabel(binding.paymentSection, it)
+            }
         }
-
-        viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
     private fun updateProgressBarsVisibility(
@@ -357,6 +371,34 @@ class OrderCreateEditFormFragment :
             )
         }
         paymentSection.orderTotalValue.text = bigDecimalFormatter(newOrderData.total)
+        bindTaxLinesSection(
+            paymentSection,
+            newOrderData
+        )
+        paymentSection.taxHelpButton.setOnClickListener { viewModel.onTaxHelpButtonClicked() }
+    }
+
+    private fun bindTaxBasedOnSettingLabel(
+        paymentSection: OrderCreationPaymentSectionBinding,
+        settingText: String
+    ) {
+        paymentSection.taxBasedOnLabel.text = settingText
+    }
+
+    private fun bindTaxLinesSection(
+        paymentSection: OrderCreationPaymentSectionBinding,
+        newOrderData: Order
+    ) {
+        val taxLines = newOrderData.taxLines.map {
+            TaxLineUiModel(
+                label = it.label,
+                ratePercent = "${it.ratePercent}%",
+                taxTotal = bigDecimalFormatter(BigDecimal(it.taxTotal))
+            )
+        }
+        paymentSection.taxLines.setContent {
+            TaxLines(taxLines)
+        }
     }
 
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {

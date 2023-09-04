@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -206,7 +207,7 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            if (isDialogDestination(navController.currentDestination!!)) return
+            if (f is DialogFragment) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -340,8 +341,6 @@ class MainActivity :
         trackIfOpenedFromWidget()
 
         if (selectedSite.exists()) {
-            updateOrderBadge(false)
-
             if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
                 viewModel.checkForNotificationsPermission(WooPermissionUtils.hasNotificationsPermission(this))
             }
@@ -671,13 +670,6 @@ class MainActivity :
         val uri = intent.data
         val host = uri?.host ?: ""
         return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
-    }
-
-    override fun updateOrderBadge(hideCountUntilComplete: Boolean) {
-        if (hideCountUntilComplete) {
-            binding.bottomNav.clearOrderBadgeCount()
-        }
-        presenter.fetchUnfilledOrderCount()
     }
 
     override fun showOrderBadge(count: Int) {

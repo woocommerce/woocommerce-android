@@ -241,6 +241,14 @@
 
         <View style="@style/Woo.Divider" />
 
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_account_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/settings_account" />
+
+        <View style="@style/Woo.Divider" />
+
         <com.woocommerce.android.ui.prefs.WCSettingsButton
             android:id="@+id/btn_option_logout"
             android:layout_width="match_parent"
@@ -248,23 +256,6 @@
             android:text="@string/settings_signout" />
 
         <View style="@style/Woo.Divider" />
-
-        <LinearLayout
-            android:id="@+id/container_option_close_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <com.woocommerce.android.ui.prefs.WCSettingsButton
-                android:id="@+id/btn_option_close_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_close_account"
-                android:textColor="@color/color_error" />
-
-            <View style="@style/Woo.Divider" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
