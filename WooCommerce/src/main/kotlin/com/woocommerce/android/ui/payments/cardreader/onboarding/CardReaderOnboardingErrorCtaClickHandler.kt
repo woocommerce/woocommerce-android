@@ -19,9 +19,16 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
-                cardReaderTracker.trackOnboardingCtaTappedState(ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED)
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED)
 
-                installWcPayPlugin()
+                installWcPayPlugin().also {
+                    it.errorMessage?.let { errorMessage ->
+                        cardReaderTracker.trackOnboardingCtaFailed(
+                            reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                            description = errorMessage
+                        )
+                    }
+                }
             }
         }
 
@@ -58,11 +65,20 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
         data class ShowErrorAndRefresh(val message: String) : Reaction()
     }
 
+    private val Reaction.errorMessage
+        get() = when (this) {
+            is Reaction.ShowErrorAndRefresh -> message
+            else -> null
+        }
+
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
-
-        private const val ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED = "plugin_install_tapped"
     }
+}
+
+enum class OnboardingCtaTapped(val value: String) {
+    PLUGIN_INSTALL_TAPPED("plugin_install_tapped"),
+    CASH_ON_DELIVERY_TAPPED("cash_on_delivery_disabled"),
 }
 
 enum class CardReaderOnboardingCTAErrorType {

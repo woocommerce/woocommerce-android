@@ -53,8 +53,38 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingCtaTappedState(
-                "plugin_install_tapped"
+            verify(cardReaderTracker).trackOnboardingCtaTapped(
+                OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED
+            )
+        }
+
+    @Test
+    fun `given error plugin installation ,when invoked with WC_PAY_NOT_INSTALLED, then event tracked with reason`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                pluginRepository.installPlugin(
+                    site = siteModel,
+                    slug = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
+                )
+            ).thenReturn(
+                flowOf(
+                    PluginRepository.PluginStatus.PluginInstallFailed(
+                        errorDescription = "errorDescription",
+                        errorType = "errorType",
+                        errorCode = null,
+                    )
+                )
+            )
+
+            // WHEN
+            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
+
+            // THEN
+            verify(cardReaderTracker).trackOnboardingCtaFailed(
+                reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                description = "errorDescription"
             )
         }
 
