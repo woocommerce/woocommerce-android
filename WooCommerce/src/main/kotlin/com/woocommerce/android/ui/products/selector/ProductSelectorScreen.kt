@@ -286,7 +286,7 @@ private fun displayProductsSection(
                     stringResource(string.product_selector_sku_value, it)
                 },
                 selectionState = product.selectionState,
-                isArrowVisible = product.hasVariations(),
+                isArrowVisible = product.hasVariations() || product is ListItem.ConfigurableListItem,
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description)
             ) {
@@ -393,7 +393,7 @@ private fun ProductList(
                         stringResource(string.product_selector_sku_value, it)
                     },
                     selectionState = product.selectionState,
-                    isArrowVisible = product.hasVariations(),
+                    isArrowVisible = product.hasVariations() || product is ListItem.ConfigurableListItem,
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
