@@ -22,8 +22,7 @@ enum class FeatureFlag {
     BLAZE,
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     SHIPPING_ZONES,
-    BETTER_CUSTOMER_SEARCH_M2,
-    NAME_YOUR_STORE_DIALOG;
+    BETTER_CUSTOMER_SEARCH_M2;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -46,8 +45,7 @@ enum class FeatureFlag {
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            BETTER_CUSTOMER_SEARCH_M2,
-            NAME_YOUR_STORE_DIALOG -> PackageUtils.isDebugBuild()
+            BETTER_CUSTOMER_SEARCH_M2 -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

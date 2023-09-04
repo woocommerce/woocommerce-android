@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -70,16 +70,14 @@ class StoreOnboardingRepository @Inject constructor(
                 )
             )
         }
-        if (FeatureFlag.NAME_YOUR_STORE_DIALOG.isEnabled()) {
-            onboardingTasks.add(
-                OnboardingTask(
-                    type = LOCAL_NAME_STORE,
-                    isComplete = isLocalTaskNameYourStoreCompleted(),
-                    isVisible = true,
-                    isVisited = false
-                )
+        onboardingTasks.add(
+            OnboardingTask(
+                type = LOCAL_NAME_STORE,
+                isComplete = isLocalTaskNameYourStoreCompleted(),
+                isVisible = true,
+                isVisited = false
             )
-        }
+        )
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
@@ -106,6 +104,28 @@ class StoreOnboardingRepository @Inject constructor(
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Site launched successfully")
                 Success
+            }
+        }
+    }
+
+    suspend fun saveSiteTitle(siteTitle: String): Result<Boolean> {
+        val site = selectedSite.get()
+        val result = onboardingStore.saveSiteTitle(site, siteTitle)
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.ONBOARDING, "Error while saving site title. Message: ${result.error.message} ")
+                Result.failure(WooException(result.error))
+            }
+
+            else -> {
+                WooLog.d(WooLog.T.ONBOARDING, "Site title saved successfully")
+
+                // Update selectedSite to reflect the newly saved store name.
+                siteStore.getSiteByLocalId(selectedSite.get().id)?.let { updatedSite ->
+                    selectedSite.set(updatedSite)
+                }
+
+                Result.success(true)
             }
         }
     }

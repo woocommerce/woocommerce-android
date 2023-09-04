@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 17:54:04+0000
+Translation-Revision-Date: 2023-08-29 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_onboarding_name_your_store_dialog_title">שם האתר</string>
+    <string name="store_onboarding_task_name_store_description">התאמה אישית של שם החנות יכולה גם לעזור למיטוב של החנות במנועי החיפוש.</string>
+    <string name="store_onboarding_task_name_store_title">יש לציין שם לחנות שלך</string>
+    <string name="store_profiler_features_other">אחר</string>
+    <string name="store_profiler_features_plugins_and_extensions">גישה למגוון רחב של תוספים והרחבות</string>
+    <string name="store_profiler_features_store_customization">אפשרויות התאמה לעיצוב של החנות שלי</string>
+    <string name="store_profiler_features_scale_business">אפשרות להתאים השירות לפי היקף העסק</string>
+    <string name="store_profiler_features_ipp">תשלומים באופן אישי</string>
+    <string name="store_profiler_features_payment_options">אפשרויות תשלום גמישות ומאובטחות</string>
+    <string name="store_profiler_features_sales_analytics">דוחות מקיפים לגבי מכירות ונתונים אנליטיים</string>
+    <string name="store_profiler_features_product_management">ניהול מוצרים ומעקב אחר מלאי בקלות</string>
+    <string name="store_profiler_features_main_button">ליצור את החנות שלי</string>
+    <string name="store_profiler_features_description">אנחנו רוצים לדעת אילו אפשרויות יעניינו אותך\nבשימוש באפליקציה שלנו.</string>
+    <string name="store_profiler_features_title">אילו אפשרויות\nהכי מעניינות אותך?</string>
+    <string name="store_creation_store_name_default">שם החנות</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#לגבות תשלומים באופן אישי: &lt;/b&gt;לשפר את המכירות עם תשלומים באופן אישי. ניתן לבצע עסקאות מאובטחות בכרטיסים בעזרת האפליקציה שלנו או קוראים תואמים.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#לנהל וליצור הזמנות:&lt;/b&gt; לחפש, לעדכן או ליצור הזמנות באופן מיידי. תהליך פשוט יותר לניהול ההזמנות.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#לעקוב אחרי מכירות ומוצרים פופולריים:&lt;/b&gt; לקבל עדכונים בזמן אמת לגבי הביצועים והמוצרים הפופולריים בחנות שלך כדי לשפר את הרווחיות.</string>
+    <string name="store_creation_in_progress_title_2">הרחבת היכולות של \nהחנות שלך</string>
+    <string name="store_creation_in_progress_title_1">כמעט סיימת! החנות שלך\nמתחילה להיראות טוב </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">להפעיל NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">חבילת הקצאה לכמויות קטנות (יש לציין סימונים)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">חבילה להובלה יבשתית עם כמויות מוגבלות – תרסיסים, חומרי חיטוי במכל התזה, צבע במכל התזה, ספריי לשיער, פרופן, בוטאן, חומרי ניקוי וכו\'. - בשמים, לק לציפורניים, מסיר לק לציפורניים, חומרים ממסים, נוזל חיטוי לידיים, אלכוהול רפואי, מוצרים המבוססים על אתנול וכו\'. - מוצרים אחרים למשטחים בכמות מוגבלת (קוסמטיקה, חומרי ניקוי, צבעים וכו\').</string>
+    <string name="shipping_label_hazmat_option_lighters">חבילות במשקל נמוך יותר – מציתים מורשים</string>
+    <string name="shipping_label_hazmat_option_id8000">חבילת סחורות לצרכנים מסוג ID8000 – סחורה לצרכנים מסוג ID8000 שמורשית להובלה אווירית (תרסיסים שאינם דליקים, נוזלים דליקים שעלולים להתלקח, חומרים רעילים, חומרים מסוכנים שונים)</string>
+    <string name="shipping_label_hazmat_option_ground_only">חומרים מסוכנים להובלה יבשתית בלבד (לפריטים שלא רשומים כאן אך מוגבלים למשטחים בלבד)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">חבילה להקצאת כמות צפויה (למשל, נוזלים דליקים בכמויות קטנות, חומר שגורם לקורוזיה, חומרים רעילים או חומרים שמסוכנים לסביבה –יש לציין סימונים)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">סיווג 6.2 – חומרים מסוכנים – חומרים ביולוגיים (למשל, ערכות לבדיקות מעבדה, החזרות של ערכות מאושרות לבדיקת קורונה)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">סיווג 6.1 – חבילה עם חומרים רעילים (עם LD50 של 50 מיקרוגרם לק\"ג או פחות) – (חומרי הדברה, קוטלי עשבים וכו\').</string>
+    <string name="shipping_label_hazmat_option_division_5_2">סיווג 5.2 – חבילה עם על-תחמוצת אורגנית</string>
+    <string name="shipping_label_hazmat_option_division_5_1">סיווג 5.1 – חבילה עם חומרים מחמצנים – מימן על-חמצני (בריכוז של 8 עד ‎20%%‎)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">סיווג 4.1 – חבילה עם חומרים מוצקים דליקים שניתנים לשליחה בדואר וגפרורים – גפרורים עם פס בטיחות על האריזה, גפרורים נתלשים, חומרים מוצקים דליקים שניתנים לשליחה בדואר</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">סיווג 9 – חבילה עם חומרים מגנטיים</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">סיווג 9 – חבילה לא מסומנת עם סוללות ליתיום – מכשירים אלקטרוניים חדשים שהותקנו בהם סוללות ליתיום או שנארזו עם סוללות ליתיום (ללא סימון)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">סיווג 9 – חבילה עם קרח יבש (מוגבל ל-2.26 ק\"ג בהובלה אווירית)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">סיווג 9 – חבילה מסומנת עם סוללות ליתיום – מכשירים אלקטרוניים חדשים שנארזו עם סוללות ליתיום (עם סימון UN3481 או UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">סיווג 9 – סוללות ליתיום – חבילת החזרה – מכשירים אלקטרוניים משומשים שכוללים סוללות ליתיום או שנארזו עם סוללות ליתיום (יש לציין סימונים)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">סיווג 9 – חבילה מסומנת עם סוללות ליתיום – להובלה יבשתית בלבד – סוללות ליתיום חדשות יחידות או חלופיות (עם סימון UN3480 או UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">סיווג 8 – חבילה עם סוללות חשמליות אטומות – סוללות חומצת נחושת אטומות</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">סיווג 8 – חבילה עם חומרים שגורמים לקורוזיה – חומרים שגורמים לקורוזיה שמורשים להובלה אווירית (חומרים ניקוי או קוטלי צמחים/עשבים מסוימים וכו\')</string>
+    <string name="shipping_label_hazmat_option_class_7">סיווג 7 – חבילה עם חומרים רדיו-אקטיביים (למשל, גלאי עשן, מינרלים, כוונת לנשק וכו\')</string>
+    <string name="shipping_label_hazmat_option_class_6">סיווג 6 ‏– חבילה (חומרים רעילים)</string>
+    <string name="shipping_label_hazmat_option_class_5">סיווג 5 ‏– חבילה (חומרים מחמצנים)</string>
+    <string name="shipping_label_hazmat_option_class_4">סיווג 4 ‏– חבילה (חומרים מוצקים דליקים)</string>
+    <string name="shipping_label_hazmat_option_class_3">סיווג 3 – חבילה (נוזל חיטוי לידיים, אלכוהול רפואי, מוצרים המבוססים על אתנול, נוזלים דליקים וכו\').</string>
+    <string name="shipping_label_hazmat_option_class_1">סיווג 1 – חבילה עם חומרים מניעים לצעצועים/מנגנון בטיחות</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">חבילה עם אתנול שמותרת להובלה אווירית – (משלוח של בשמים או חומרי חיטוי לידיים מאושרים)</string>
+    <string name="dialog_ok">אישור</string>
     <string name="store_creation_country_list_picker_toolbar_title">יש לבחור ארץ</string>
     <string name="store_creation_country_picker_current_location_description">זיהינו את המיקום שלך באופן אוטומטי. אם הוא שגוי, ניתן ללחוץ כאן לשינוי.</string>
     <string name="store_creation_country_picker_title">איפה נמצא העסק שלך?</string>
@@ -26,7 +74,6 @@ Language: he_IL
     <string name="free_trial_feature_built_in_seo">כלי SEO מובנים</string>
     <string name="free_trial_feature_design_editing">עיצוב ועריכה של תוכן ללא כתיבת קוד</string>
     <string name="free_trial_feature_store_management">כלים לניהול החנות</string>
-    <string name="free_trial_summary_try_button">ליצור את החנות שלך</string>
     <string name="free_trial_summary_hassle_free_store_ownership">בעלות על חנות ללא מאמץ</string>
     <string name="free_trial_summary_grow_your_business">להגדיל את העסק שלך</string>
     <string name="free_trial_summary_start_selling_quickly">להתחיל למכור במהירות</string>
@@ -159,13 +206,7 @@ Language: he_IL
     <string name="more_settings">הגדרות נוספות</string>
     <string name="maybe_later">אולי מאוחר יותר</string>
     <string name="product_sharing_regenerate">לכתוב שוב</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#לקבל הודעות עם כל מכירה:&lt;/b&gt; הודעות מיידיות לגבי כל מכירה יבטיחו שתמיד יש לך את המידע המעודכן ביותר. ניתן לקבל התראות על כל מכירה חדשה, כדי לחגוג את ההצלחה ולהתעדכן בפעילות של החנות.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#להוסיף ולערוך מוצרים בהקשה פשוטה:&lt;/b&gt; ניתן להוסיף מוצרים חדשים, לעדכן פרטים, להעלות תמונות ולנהל סוגים – והכול אפשרי מתוך האפליקציה. כך אפשר לדאוג שהמלאי תמיד מעודכן ללא מאמץ.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#לקבל תשלומים באופן אישי:&lt;/b&gt; אפשר להגדיל את הזדמנויות המכירה על ידי קבלת תשלומים באופן אישי. ניתן להשתמש באפליקציה כדי לעבד בצורה מאובטחת עסקאות בכרטיסי אשראי, או אפילו כדי להתחבר לקוראי כרטיסים תואמים לגביית תשלומים באופן אישי בצורה נוחה.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#לנהל וליצור הזמנות:&lt;/b&gt; ניתן לטפל בהזמנות בקלות. אפשר לגלול, לחפש ולשנות סטטוס של הזמנה. ניתן ליצור הזמנות חדשות במהירות עבור הזמנות המבוצעות בחנות עצמה או דרך הטלפון. תהליך פשוט יותר לניהול ההזמנות.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#לעקוב אחרי מכירות ומוצרים פופולריים:&lt;/b&gt; באפשרותך לקבל עדכונים בזמן אמת לגבי הביצועים בחנות שלך. אפשר לזהות את המוצרים הנמכרים ביותר כדי לקבל החלטות מושכלות ולגרוף רווחים מקסימליים.</string>
     <string name="store_creation_in_progress_description_1">אנחנו נשלח לך הודעה כאשר החנות מוכנה! אפשר לשבת בנוח ולהמתין, אנחנו נפעיל את הקסמים שלנו ונשתף כמה עצות שימושיות. 🔮</string>
-    <string name="store_creation_in_progress_title_1">יוצר את החנות שלך! כמה דקות, תכף נסיים</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">קוד PIN הוא חובה, אבל שירות Tap To Pay עדיין לא תומך בו. כדאי להשתמש בקורא כרטיסים חיצוני</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">לקנות קורא כרטיסים</string>
     <string name="order_sync_coupon_removed">לא ניתן היה להחיל את הקופון, והוא הוסר מההזמנה</string>
@@ -277,11 +318,8 @@ Language: he_IL
     <string name="store_creation_profiler_industry_home_furniture_garden">בית, ריהוט וגינה</string>
     <string name="store_creation_profiler_industry_food_drink">אוכל ומשקאות</string>
     <string name="store_creation_profiler_industry_health_beauty">בריאות וקוסמטיקה</string>
-    <string name="store_creation_in_progress_title_6">פתיחת שערים</string>
-    <string name="store_creation_in_progress_title_5">מדליקים את האור</string>
-    <string name="store_creation_in_progress_title_4">עושים ליטושים אחרונים</string>
-    <string name="store_creation_in_progress_title_3">מסדרים את המדפים</string>
-    <string name="store_creation_in_progress_title_2">מניחים את היסודות</string>
+    <string name="store_creation_in_progress_title_4">פותחים את הדלתות</string>
+    <string name="store_creation_in_progress_title_3">מדליקים את האור</string>
     <string name="notifications_permission_description">אנחנו זקוקים להרשאה שלך כדי לשלוח אליך הודעות דחיפה לגבי הזמנות חדשות, ביקורות וכו\' במכשיר שלך.</string>
     <string name="notifications_permission_title">הודעות</string>
     <string name="product_type_composite">מוצר בהרכב</string>
@@ -321,6 +359,7 @@ Language: he_IL
     <string name="free_trial_feature_social_advertising">פרסום ברשתות חברתיות</string>
     <string name="free_trial_feature_premium_themes">ערכות פרימיום</string>
     <string name="free_trial_summary_credit_card_message">אין צורך בכרטיס אשראי.</string>
+    <string name="free_trial_summary_try_button">ניסיון בחינם</string>
     <string name="free_trial_summary_try_it">ניתן לנסות בחינם למשך 14 יום.</string>
     <string name="free_trial_summary_advertise">אנחנו מציעים כל מה שצריך כדי לבנות ולפתח את החנות המקוונת שלך. השירות מופעל על ידי WooCommerce באחסון של WordPress.com.</string>
     <string name="free_trial_summary_title">להשיק חנות תוך ימים ספורים ולצמוח במשך השנים</string>

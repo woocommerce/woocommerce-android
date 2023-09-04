@@ -1,0 +1,2 @@
+15.1:
+Sapevi che con Tocca per pagare puoi accettare pagamenti con carta con il tuo telefono? Abbiamo migliorato l'esperienza iniziale per renderla ancora più semplice. Questa versione include anche correzioni di stabilità per l'accesso. Grazie per aver scelto WooCommerce.

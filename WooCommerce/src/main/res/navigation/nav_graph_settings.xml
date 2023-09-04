@@ -44,6 +44,10 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_accountSettingsFragment"
             app:destination="@id/accountSettingsFragment" />
+
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -167,4 +171,14 @@
         android:id="@+id/closeAccountDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
         android:label="CloseAccountDialogFragment" />
+    <dialog
+        android:id="@+id/nameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment" >
+        <argument
+            android:name="fromOnboarding"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </dialog>
+
 </navigation>

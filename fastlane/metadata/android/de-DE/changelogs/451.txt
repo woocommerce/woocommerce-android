@@ -1,0 +1,2 @@
+15.1:
+Wusstest du, dass du mit Tap to Pay Kartenzahlungen mit deinem Smartphone akzeptieren kannst? Wir haben das ursprüngliche Nutzererlebnis verbessert, um das Ganze noch einfacher zu machen. In dieser Version wurden zudem Stabilitätsproblem beim Anmelden behoben. Danke, dass du dich für WooCommerce entschieden hast.

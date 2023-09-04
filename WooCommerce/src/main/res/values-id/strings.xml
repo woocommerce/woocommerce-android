@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 09:54:04+0000
+Translation-Revision-Date: 2023-08-29 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_onboarding_name_your_store_dialog_title">Judul Situs</string>
+    <string name="store_onboarding_task_name_store_description">Menyesuaikan nama toko Anda juga dapat membantu optimisasi mesin pencari toko Anda.</string>
+    <string name="store_onboarding_task_name_store_title">Beri nama untuk toko Anda</string>
+    <string name="store_profiler_features_other">Lainnya</string>
+    <string name="store_profiler_features_plugins_and_extensions">Akses aneka plugin dan ekstensi</string>
+    <string name="store_profiler_features_store_customization">Opsi kustomisasi desain toko saya</string>
+    <string name="store_profiler_features_scale_business">Kemungkinkan mengembangkan situs seiring pertumbuhan bisnis</string>
+    <string name="store_profiler_features_ipp">Pembayaran langsung</string>
+    <string name="store_profiler_features_payment_options">Opsi pembayaran yang fleksibel dan aman</string>
+    <string name="store_profiler_features_sales_analytics">Laporan penjualan dan analitik yang lengkap</string>
+    <string name="store_profiler_features_product_management">Pengelolaan produk dan pelacakan stok praktis</string>
+    <string name="store_profiler_features_main_button">Buat toko saya</string>
+    <string name="store_profiler_features_description">Beri tahu kami apa yang Anda ingin\nbisa lakukan di aplikasi kami.</string>
+    <string name="store_profiler_features_title">Fitur manakah\nyang paling menarik bagi Anda?</string>
+    <string name="store_creation_store_name_default">Nama toko</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Terima pembayaran secara langsung:&lt;/b&gt; Tingkatkan penjualan dengan pembayaran secara langsung. Amankan transaksi kartu dengan aplikasi kami atau pembaca yang kompatibel.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Kelola dan buat pesanan:&lt;/b&gt; Cari, perbarui, atau buat pesanan baru secara instan. Sederhanakan pemrosesan pesanan Anda.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Lacak penjualan dan produk populer:&lt;/b&gt; Dapatkan informasi terbaru tentang penjualan dan produk populer secara real-time untuk meningkatkan keuntungan toko Anda.</string>
+    <string name="store_creation_in_progress_title_2">Memperluas \nkapabilitas toko Anda</string>
+    <string name="store_creation_in_progress_title_1">Hampir selesai! Toko Anda\nmulai terbentuk </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktifkan NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">Paket Pengadaan Kuantitas Kecil (wajib ditandai)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Paket Jalur Darat Kuantitas Terbatas - Aerosol, disinfektan semprot, cat semprot, hair spray, propana, butana, produk-produk kebersihan, dll. - Parfum, cat kuku, pembersih cat kuku, pelarut, penyanitasi tangan, alkohol medis, produk-produk berbahan dasar etanol, dll. - Bahan-bahan jalur darat kuantitas terbatas lainnya (kosmetik, produk-produk kebersihan, cat, dll.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Paket Pemantik Api - Pemantik Api Resmi</string>
+    <string name="shipping_label_hazmat_option_id8000">Paket Barang Konsumen ID8000 - Barang Konsumen ID8000 yang Memenuhi Syarat Jalur Udara (Aerosol yang tidak mudah terbakar, Cairan yang mudah terbakar, Zat Beracun, Aneka bahan berbahaya)</string>
+    <string name="shipping_label_hazmat_option_ground_only">Bahan-Bahan Berbahaya Khusus Jalur Darat (Untuk item yang tidak masuk dalam daftar, tetapi terbatas hanya untuk jalur darat)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">Paket Pengadaan Kuantitas Pengecualian (mis. cairan mudah terbakar, bahan-bahan berbahaya bagi lingkungan, beracun, atau korosif dalam volume kecil - wajib ditandai)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">Bagian 6.2 - Bahan-Bahan Berbahaya - Bahan-Bahan Biologis (mis. perlengkapan uji laboratorium, paket kembali alat uji COVID terpakai dengan izin resmi)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">Bagian 6.1 – Paket Bahan-Bahan Beracun (dengan LD50 sebanyak 50 mg/kg atau kurang) - (pestisida, herbisida, dll.)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">Bagian 5.2 – Paket Peroksida Organik</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Bagian 5.1 – Paket Oksidator - Hidrogen peroksida (konsentrasi%% 8 hingga 20)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">Bagian 4.1 – Zat padat mudah terbakar yang bisa dikirim dan Paket Korek Api - Korek api bungkus kotak, korek api bungkus lipat, zat padat mudah terbakar yang bisa dikirim</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">Kelas 9 – Paket Bahan-Bahan Bermagnet</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Kelas 9 – Baterai litium, paket yang tidak ditandai - Perangkat elektronik baru yang dipasangi atau berisi baterai litium (tidak ditandai)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">Kelas 9 – Paket Es Kering (terbatas hingga seberat 5 pon jika dikirim melalui Jalur Udara)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">Kelas 9 - Baterai litium, paket yang ditandai - Perangkat elektronik baru dengan baterai litium (ditandai UN3481 atau UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">Kelas 9 - Baterai Litium – Paket Kembali - Perangkat elektronik bekas yang mengandung atau berisi baterai litium (wajib ditandai)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">Kelas 9 - Tertandai Baterai Litium – Paket Khusus Jalur Darat - Baterai litium terpisah atau cadangan baru (ditandai UN3480 atau UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">Kelas 8 – Paket Baterai Basah Antitumpah - Baterai asam timbal tersegel</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">Kelas 8 – Paket Bahan-Bahan Korosif - Bahan-Bahan Korosif yang Memenuhi Syarat Jalur Udara (senyawa tertentu pembasmi tanaman/rumput liar atau pembersih, dll.)</string>
+    <string name="shipping_label_hazmat_option_class_7">Kelas 7 – Paket Bahan-Bahan Radioaktif (mis. pendeteksi kebakaran, mineral, alat bidik senjata, dll.)</string>
+    <string name="shipping_label_hazmat_option_class_6">Kelas 6 - Paket (Bahan-bahan beracun)</string>
+    <string name="shipping_label_hazmat_option_class_5">Kelas 5 - Paket (Oksidator)</string>
+    <string name="shipping_label_hazmat_option_class_4">Kelas 4 - Paket (Zat padat mudah terbakar)</string>
+    <string name="shipping_label_hazmat_option_class_3">Kelas 3 - Paket (Penyanitasi tangan, alkohol medis, produk-produk berbahan dasar etanol, cairan mudah terbakar, dll.)</string>
+    <string name="shipping_label_hazmat_option_class_1">Kelas 1 – Paket Murang/Propelan Mainan</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">Paket Etanol yang Memenuhi Syarat Jalur Udara - (pengiriman parfum dan penyanitasi tangan resmi)</string>
+    <string name="dialog_ok">OK</string>
     <string name="store_creation_country_list_picker_toolbar_title">Pilih negara</string>
     <string name="store_creation_country_picker_current_location_description">Kami telah mendeteksi lokasi Anda secara otomatis. Silakan ubah jika lokasi salah.</string>
     <string name="store_creation_country_picker_title">Di mana lokasi bisnis Anda?</string>
@@ -26,7 +74,6 @@ Language: id
     <string name="free_trial_feature_built_in_seo">SEO bawaan</string>
     <string name="free_trial_feature_design_editing">Desain dan pengeditan tanpa kode</string>
     <string name="free_trial_feature_store_management">Alat manajemen toko</string>
-    <string name="free_trial_summary_try_button">Buat toko Anda</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Kepemilikan toko tanpa repot</string>
     <string name="free_trial_summary_grow_your_business">Kembangkan bisnis Anda</string>
     <string name="free_trial_summary_start_selling_quickly">Mulai berjualan sekarang</string>
@@ -159,13 +206,7 @@ Language: id
     <string name="more_settings">Pengaturan selengkapnya</string>
     <string name="maybe_later">Mungkin nanti</string>
     <string name="product_sharing_regenerate">Tulis lagi</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Dapatkan pemberitahuan untuk tiap penjualan:&lt;/b&gt; Jangan lewatkan kabar terbaru dengan pemberitahuan penjualan secara langsung. Dapatkan pemberitahuan untuk tiap penjualan baru agar Anda dapat terus menikmati keberhasilan dan memantau aktivitas toko.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Tambahkan dan sunting produk dengan sekali sentuh:&lt;/b&gt; Tambahkan produk baru, perbarui detail, unggah gambar, dan kelola variasi, semuanya dari aplikasi ini. Pantau dan perbarui inventaris Anda dengan mudah.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Terima pembayaran secara langsung:&lt;/b&gt; Perluas prospek penjualan dengan menerima pembayaran secara langsung. Gunakan aplikasi ini untuk secara aman memproses transaksi kartu kredit atau terhubung dengan pembaca kartu yang kompatibel untuk memudahkan pembayaran secara langsung.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Kelola dan buat pesanan:&lt;/b&gt; Tangani pesanan dengan mudah. Gulir, cari, dan ubah status pesanan. Buat pesanan baru dengan cepat untuk transaksi pembelian langsung di toko atau via telepon. Sederhanakan proses pengelolaan pesanan.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Lacak penjualan dan produk populer:&lt;/b&gt; Dapatkan informasi terbaru tentang performa real-time toko Anda. Cari tahu mana produk terlaris dan maksimalkan laba dengan memanfaatkan data dalam pengambilan keputusan.</string>
     <string name="store_creation_in_progress_description_1">Anda akan menerima pemberitahuan segera setelah toko siap. Silakan bersantai dan biarkan kami memberikan keahlian terbaik kami sambil berbagi tips yang bermanfaat. 🔮</string>
-    <string name="store_creation_in_progress_title_1">Membuat Toko Anda! Hanya perlu waktu beberapa menit</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">Meski diperlukan, kode PIN belum dapat digunakan pada Ketuk untuk Bayar. Coba gunakan pembaca kartu eksternal</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Beli pembaca kartu</string>
     <string name="order_sync_coupon_removed">Kupon tidak dapat digunakan dan telah dihapus dari pesanan</string>
@@ -277,11 +318,8 @@ Language: id
     <string name="store_creation_profiler_industry_home_furniture_garden">Rumah, furnitur, dan taman</string>
     <string name="store_creation_profiler_industry_food_drink">Makanan dan minuman</string>
     <string name="store_creation_profiler_industry_health_beauty">Kesehatan dan kecantikan</string>
-    <string name="store_creation_in_progress_title_6">Membuka pintu</string>
-    <string name="store_creation_in_progress_title_5">Menyalakan lampu</string>
-    <string name="store_creation_in_progress_title_4">Memberikan sentuhan akhir</string>
-    <string name="store_creation_in_progress_title_3">Mengelola gudang stok</string>
-    <string name="store_creation_in_progress_title_2">Membangun fondasi</string>
+    <string name="store_creation_in_progress_title_4">Membuka pintu</string>
+    <string name="store_creation_in_progress_title_3">Menyalakan lampu</string>
     <string name="notifications_permission_description">Kami membutuhkan izin Anda untuk mengirim pemberitahuan push mengenai pesanan dan ulasan baru, dsb. ke perangkat Anda.</string>
     <string name="notifications_permission_title">Pemberitahuan</string>
     <string name="product_type_composite">Produk gabungan</string>
@@ -321,6 +359,7 @@ Language: id
     <string name="free_trial_feature_social_advertising">Iklan sosial</string>
     <string name="free_trial_feature_premium_themes">Tema premium</string>
     <string name="free_trial_summary_credit_card_message">Tidak perlu kartu kredit.</string>
+    <string name="free_trial_summary_try_button">Coba Gratis</string>
     <string name="free_trial_summary_try_it">Coba gratis selama 14 hari.</string>
     <string name="free_trial_summary_advertise">Kami menawarkan semua yang Anda perlukan untuk membangun dan mengembangkan toko online, didukung oleh WooCommerce dan di-hosting di WordPress.com.</string>
     <string name="free_trial_summary_title">Luncurkan dalam waktu cepat, kembangkan untuk tahun-tahun berikutnya</string>

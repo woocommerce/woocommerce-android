@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 13:54:03+0000
+Translation-Revision-Date: 2023-08-29 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_onboarding_name_your_store_dialog_title">Sitetitel</string>
+    <string name="store_onboarding_task_name_store_description">Je winkelnaam aanpassen kan de zoekmachine-optimalisatie van je winkel ten goede komen.</string>
+    <string name="store_onboarding_task_name_store_title">Geef je winkel een naam</string>
+    <string name="store_profiler_features_other">Overig</string>
+    <string name="store_profiler_features_plugins_and_extensions">Toegang tot een groot aantal plugins en extensies</string>
+    <string name="store_profiler_features_store_customization">Aanpassingsopties voor mijn winkelontwerp</string>
+    <string name="store_profiler_features_scale_business">Mogelijkheid om te schalen terwijl mijn bedrijf groeit</string>
+    <string name="store_profiler_features_ipp">Fysieke betalingen</string>
+    <string name="store_profiler_features_payment_options">Flexibele en veilige betalingsopties</string>
+    <string name="store_profiler_features_sales_analytics">Uitgebreide verkoop- en analyserapporten</string>
+    <string name="store_profiler_features_product_management">Eenvoudig productbeheer en bijhouden van de voorraad</string>
+    <string name="store_profiler_features_main_button">Mijn winkel aanmaken</string>
+    <string name="store_profiler_features_description">Laat ons weten wat je graag\nwil gaan gebruiken in onze app.</string>
+    <string name="store_profiler_features_title">Welke functies interesseren\nje het meest?</string>
+    <string name="store_creation_store_name_default">Winkelnaam</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Fysieke betalingen:&lt;/b&gt; verhoog de omzet met fysieke betalingen. Veilige pinpastransacties met onze app of compatibele kaartlezers.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Bestellingen beheren en aanmaken:&lt;/b&gt; nieuwe bestellingen direct zoeken, bijwerken of aanmaken. Vereenvoudig je bestelproces.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Houd sales en populaire producten bij:&lt;/b&gt; blijf in realtime op de hoogte van verkopen en populaire producten om de winstgevendheid van je winkel te stimuleren.</string>
+    <string name="store_creation_in_progress_title_2">De \n van je winkel uitbreidenmogelijkheden</string>
+    <string name="store_creation_in_progress_title_1">Bijna klaar! Jouw winkel\nwordt opgezet </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC inschakelen</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">Provisiepakket kleine hoeveelheid (markering vereist)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Grondpakket LTD QTY - aerosolen, spuitontsmettingsmiddelen, spuitverf, haarspray, propaan, butaan, reinigingsproducten enz. - Parfums, nagellak, nagellakverwijderaar, oplosmiddelen, handreiniging, schoonmaakalcohol, ethanolproducten enz. - Andere oppervlaktematerialen in beperkte hoeveelheid (cosmetica, reinigingsproducten, verf enz.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Aanstekerspakket - goedgekeurde aanstekers</string>
+    <string name="shipping_label_hazmat_option_id8000">ID8000 Consumer Commodity-pakket - Air Eligible ID8000 Consumer Commodity (niet-ontvlambare aerosolen, vlambare vloeistoffen, giftige stof, verschillende gevaarlijke materialen)</string>
+    <string name="shipping_label_hazmat_option_ground_only">Gevaarlijke materialen grond (voor artikelen die niet zijn vermeld, maar beperkt zijn tot alleen oppervlak)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">Provisiepakket uitzonderingshoeveelheid (bv. kleine hoeveelheden vlambare vloeistoffen, schurende, giftige of milieugevaarlijke materialen - markering vereist)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">Divisie 6.2 - Gevaarlijke materialen - Biologische materialen (bv. labtestkits, goedgekeurde teruggestuurde Covid-testkits)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">Divisie 6.1 - Giftige materialen-pakket (met een LD50 van 50 mg per kg of minder) - (pesticiden, herbiciden, enz.)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">Divisie 5.2 - Organische peroxiden-pakket</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Divisie 5.1 - Oxidatiemiddel-pakket - Waterstofperoxide (concentratie van 8 tot 20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">Divisie 4.1 - Verzendbare vlambare vaste stoffen en veiligheidslucifers-pakket - veiligheids-/strike on box-lucifers, book-lucifers, verzendbare vlambare vaste stoffen</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">Klasse 9 - Gemagnetiseerde materialen-pakket</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Klasse 9 - Lithiumbatterijen, ongemarkeerd pakket - Nieuwe elektronische apparaten geïnstalleerd of verpakt met lithiumbatterijen (geen markering)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">Klasse 9 - Droogijs-pakket (beperkt tot 5 lbs. indien via lucht verstuurd)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">Klasse 9 - Lithiumbatterijen, gemarkeerd pakket - Nieuwe elektronische apparaten verpakt met lithiumbatterijen (gemarkeerd met UN3481 of UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">Klasse 9 - Lithiumbatterij - Retourpakket - Gebruikte elektronische apparaten met, of verpakt met, lithiumbatterijen (markeringen vereist)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">Klasse 9 - Lithiumbatterij gemarkeerd - alleen grondpakket - nieuwe individuele of extra lithiumbatterijen (gemarkeerd met UN3480 of UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">Klasse 8 - Antilek natte batterijen-pakket - Afgedichte loodbatterijen</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">Klasse 8 - Schurende materialen-pakket - Luchtgeschikte schurende materialen (bepaalde reinigings- of boom-/onkruid-dodende stoffen))</string>
+    <string name="shipping_label_hazmat_option_class_7">Klasse 7 - Radioactieve materialen-pakket (bv. rookdetectors, mineralen, geweerslopen enz.).</string>
+    <string name="shipping_label_hazmat_option_class_6">Klasse 6 - Pakket (Giftige materialen)</string>
+    <string name="shipping_label_hazmat_option_class_5">Klasse 5 - Pakket (Oxidatiemiddelen)</string>
+    <string name="shipping_label_hazmat_option_class_4">Klasse 4 - Pakket (Vlambare vaste stoffen)</string>
+    <string name="shipping_label_hazmat_option_class_3">Klasse 3 - Pakket (Handreiniging, reinigingsalcohol, ethanolproducten, vlambare vloeistoffen enz.)</string>
+    <string name="shipping_label_hazmat_option_class_1">Klasse 1 - Speelgoeddrijfgas/veiligheidslont-pakket</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">Luchtgeschikt ethanol-pakket - (goedgekeurde parfum en handreinigingsverzendingen)</string>
+    <string name="dialog_ok">OK</string>
     <string name="store_creation_country_list_picker_toolbar_title">Selecteer een land</string>
     <string name="store_creation_country_picker_current_location_description">We hebben je locatie automatisch gedetecteerd. Verander je locatie hier als deze niet klopt.</string>
     <string name="store_creation_country_picker_title">Waar is jouw bedrijf gevestigd?</string>
@@ -26,7 +74,6 @@ Language: nl
     <string name="free_trial_feature_built_in_seo">Ingebouwde SEO</string>
     <string name="free_trial_feature_design_editing">Ontwerpen en bewerken zonder coderen</string>
     <string name="free_trial_feature_store_management">Tools voor winkelbeheer</string>
-    <string name="free_trial_summary_try_button">Maak je winkel aan</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Moeiteloze winkeleigendom</string>
     <string name="free_trial_summary_grow_your_business">Laat je bedrijf groeien</string>
     <string name="free_trial_summary_start_selling_quickly">Begin snel met verkopen</string>
@@ -159,13 +206,7 @@ Language: nl
     <string name="more_settings">Meer instellingen</string>
     <string name="maybe_later">Misschien later</string>
     <string name="product_sharing_regenerate">Nog een keer schrijven</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Ontvang een melding bij elke aankoop:&lt;/b&gt; Je mist nooit meer iets met de directe verkoopmeldingen. Ontvang een waarschuwing over elke nieuwe verkoop, zodat je je successen kan vieren en je op de hoogte blijft van de activiteit in je winkel.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Voeg producten toe en bewerk ze met een enkele tik:&lt;/b&gt; Voeg nieuwe producten toe, werk gegevens bij, upload afbeeldingen en beheer alle variaties, en dat allemaal in de app. Houd je inventaris moeiteloos up-to-date.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ontvang betalingen in hoogsteigen persoon:&lt;/b&gt; Breid je verkoopmogelijkheden uit door fysieke betalingen te accepteren. Gebruik de app om creditcardtransacties veilig te verwerken of koppel een compatibele kaartlezer voor nog eenvoudigere fysieke betalingen.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Maak bestellingen aan en beheer ze:&lt;/b&gt; Handel bestellingen eenvoudig af. Scrol door de bestelstatussen en zoek ze of wijzig ze. Maak ter plekke nieuwe bestellingen aan voor aankopen in de winkel of via de telefoon. Vereenvoudig je beheerproces voor bestellingen.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Volg verkoopcijfers en populaire producten:&lt;/b&gt; Blijf op de hoogte van de realtime prestaties van je winkel. Identificeer wat je bestverkopende producten zijn en maak weloverwogen beslissingen voor maximale winstgevendheid.</string>
     <string name="store_creation_in_progress_description_1">Je krijgt een melding wanneer je winkel klaarstaat! Leun achterover, ontspan en laat ons het werk doen terwijl we wat handige tips met je delen. 🔮</string>
-    <string name="store_creation_in_progress_title_1">We zijn je winkel aan het aanmaken! Dit duurt maar een paar minuten</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">Een pincode is vereist, maar Tap To Pay ondersteunt dit nog niet. Je kan een externe kaartlezer gebruiken</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Koop een kaartlezer</string>
     <string name="order_sync_coupon_removed">Kortingsbon kon niet worden toegepast en is verwijderd uit de bestelling</string>
@@ -277,11 +318,8 @@ Language: nl
     <string name="store_creation_profiler_industry_home_furniture_garden">Huis, meubilair en tuin</string>
     <string name="store_creation_profiler_industry_food_drink">Eten en drinken</string>
     <string name="store_creation_profiler_industry_health_beauty">Gezondheid en schoonheid</string>
-    <string name="store_creation_in_progress_title_6">De deuren openen</string>
-    <string name="store_creation_in_progress_title_5">De lichten aandoen</string>
-    <string name="store_creation_in_progress_title_4">De laatste hand leggen</string>
-    <string name="store_creation_in_progress_title_3">De voorraadkamer opruimen</string>
-    <string name="store_creation_in_progress_title_2">De basis leggen</string>
+    <string name="store_creation_in_progress_title_4">De deuren openen</string>
+    <string name="store_creation_in_progress_title_3">De lichten aandoen</string>
     <string name="notifications_permission_description">We hebben je toestemming nodig om je pushberichten te sturen voor nieuwe bestellingen, beoordelingen, enz. op je apparaat.</string>
     <string name="notifications_permission_title">Meldingen</string>
     <string name="product_type_composite">Samengesteld product</string>
@@ -321,6 +359,7 @@ Language: nl
     <string name="free_trial_feature_social_advertising">Sociale reclame</string>
     <string name="free_trial_feature_premium_themes">Premium-thema\'s</string>
     <string name="free_trial_summary_credit_card_message">Geen creditcard vereist</string>
+    <string name="free_trial_summary_try_button">Probeer gratis</string>
     <string name="free_trial_summary_try_it">Probeer het 14 dagen gratis.</string>
     <string name="free_trial_summary_advertise">Wij bieden alles wat je nodig hebt om een online winkel op te bouwen en te laten groeien, mogelijk gemaakt door WooCommerce en gehost door WordPress.com.</string>
     <string name="free_trial_summary_title">Lanceer snel en blijf jaren groeien</string>
