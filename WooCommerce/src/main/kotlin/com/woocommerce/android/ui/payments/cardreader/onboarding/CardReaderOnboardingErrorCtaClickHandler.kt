@@ -36,25 +36,22 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
                 is PluginRepository.PluginStatus.PluginInstalled ->
                     Reaction.Refresh
 
-                is PluginRepository.PluginStatus.PluginActivationFailed ->
-                    Reaction.ShowErrorAndRefresh(
-                        message = pluginStatus.errorDescription.ifEmpty {
-                            resourceProvider.getString(
-                                R.string.error_generic
-                            )
-                        }
-                    )
+                is PluginRepository.PluginStatus.PluginActivationFailed, ->
+                    buildShowErrorAndRefresh(pluginStatus.errorDescription)
 
                 is PluginRepository.PluginStatus.PluginInstallFailed ->
-                    Reaction.ShowErrorAndRefresh(
-                        message = pluginStatus.errorDescription.ifEmpty {
-                            resourceProvider.getString(
-                                R.string.error_generic
-                            )
-                        }
-                    )
+                    buildShowErrorAndRefresh(pluginStatus.errorDescription)
             }
         }.last()
+
+    private fun buildShowErrorAndRefresh(errorDescription: String) =
+        Reaction.ShowErrorAndRefresh(
+            message = errorDescription.ifEmpty {
+                resourceProvider.getString(
+                    R.string.error_generic
+                )
+            }
+        )
 
     sealed class Reaction {
         object Refresh : Reaction()
