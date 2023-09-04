@@ -11,7 +11,7 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.bundle.OrderItemConfiguration
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
@@ -668,7 +668,7 @@ class ProductSelectorViewModel @Inject constructor(
         @Parcelize
         data class ConfigurableProduct(
             val productId: Long,
-            val configuration: OrderItemConfiguration,
+            val configuration: ProductConfiguration,
         ) : SelectedItem(productId)
     }
 

@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.bundle.OrderItemConfiguration
-import com.woocommerce.android.ui.orders.creation.bundle.OrderItemRules
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
@@ -39,8 +39,8 @@ sealed class OrderCreationProduct(
     data class ProductItemWithRules(
         override val item: Order.Item,
         override val productInfo: ProductInfo,
-        val rules: OrderItemRules,
-        var configuration: OrderItemConfiguration = OrderItemConfiguration.getConfiguration(rules)
+        val rules: ProductRules,
+        var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules)
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = rules.isConfigurable()
         override fun needsConfiguration() = configuration.needsConfiguration()
@@ -50,8 +50,8 @@ sealed class OrderCreationProduct(
         override val item: Order.Item,
         override val productInfo: ProductInfo,
         val children: List<ProductItem>,
-        val rules: OrderItemRules,
-        var configuration: OrderItemConfiguration = OrderItemConfiguration.getConfiguration(rules, children)
+        val rules: ProductRules,
+        var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules, children)
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = rules.isConfigurable()
         override fun needsConfiguration() = configuration.needsConfiguration()
@@ -78,7 +78,7 @@ class OrderCreationProductMapper @Inject constructor(
         return withContext(dispatchers.io) {
             val itemsMap = items.associateBy { item -> item.itemId }
             val childrenMap = mutableMapOf<Long, MutableList<OrderCreationProduct.ProductItem>>()
-            val rulesMap = mutableMapOf<Long, OrderItemRules?>()
+            val rulesMap = mutableMapOf<Long, ProductRules?>()
 
             val result = items.mapNotNull { item ->
                 if ((item.productId in rulesMap.keys).not()) {
@@ -115,7 +115,7 @@ class OrderCreationProductMapper @Inject constructor(
     private fun createOrderCreationProduct(
         item: Order.Item,
         productInfo: ProductInfo,
-        rules: OrderItemRules? = null,
+        rules: ProductRules? = null,
         children: List<OrderCreationProduct.ProductItem>? = null
     ): OrderCreationProduct {
         return when {

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.bundle
+package com.woocommerce.android.ui.orders.creation.configuration
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.sumByFloat
@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class OrderItemRules private constructor(
+class ProductRules private constructor(
     val itemRules: Map<String, ItemRules>,
     val childrenRules: Map<Long, Map<String, ItemRules>>? = null
 ) : Parcelable {
@@ -40,9 +40,9 @@ class OrderItemRules private constructor(
             childRules[OptionalRule.KEY] = OptionalRule()
         }
 
-        fun build(): OrderItemRules {
+        fun build(): ProductRules {
             val itemChildrenRules = if (childrenRules.isEmpty()) null else childrenRules
-            return OrderItemRules(rules, itemChildrenRules)
+            return ProductRules(rules, itemChildrenRules)
         }
     }
 }
@@ -74,16 +74,16 @@ class OptionalRule : ItemRules {
 }
 
 @Parcelize
-class OrderItemConfiguration(
+class ProductConfiguration(
     val configuration: Map<String, String?>,
     val childrenConfiguration: Map<Long, Map<String, String?>>? = null
 ) : Parcelable {
 
     companion object {
         fun getConfiguration(
-            rules: OrderItemRules,
+            rules: ProductRules,
             children: List<OrderCreationProduct.ProductItem>? = null
-        ): OrderItemConfiguration {
+        ): ProductConfiguration {
             val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }.toMutableMap()
             val childrenConfiguration = rules.childrenRules?.mapValues { childrenRules ->
                 childrenRules.value.mapValues { it.value.getInitialValue() }
@@ -92,7 +92,7 @@ class OrderItemConfiguration(
                 val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
                 itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
             }
-            return OrderItemConfiguration(itemConfiguration, childrenConfiguration)
+            return ProductConfiguration(itemConfiguration, childrenConfiguration)
         }
     }
     fun needsConfiguration(): Boolean {
