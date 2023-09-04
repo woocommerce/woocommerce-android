@@ -82,7 +82,7 @@ class AccountRepository @Inject constructor(
                     WooLog.i(LOGIN, "Application password deleted")
                 }
             }
-
+            AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
             cleanup()
             true
         }
