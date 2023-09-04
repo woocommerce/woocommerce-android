@@ -43,6 +43,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
@@ -112,6 +114,13 @@ class OrderCreateEditFormFragment :
         handleProductDetailsEditResult()
         handleResult<String>(KEY_COUPON_SELECTOR_RESULT) {
             viewModel.onCouponAdded(it)
+        }
+        handleTaxRateSelectionResult()
+    }
+
+    private fun handleTaxRateSelectionResult() {
+        handleResult<TaxRate>(KEY_SELECTED_TAX_RATE) {
+            viewModel.onTaxRateSelected(it)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -54,14 +55,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -80,11 +79,12 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
-import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -119,7 +119,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
@@ -140,7 +139,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
-    private val selectedSite: SelectedSite,
+    private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -148,8 +147,6 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
-        private const val TAX_BASED_ON_SETTING_ADMIN_URL =
-            "admin.php?page=wc-settings&tab=tax&section=standard"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -1067,45 +1064,17 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onTaxHelpButtonClicked() = launch {
-        val taxLines: List<Pair<String, String>> =
-            _orderDraft.value.taxLines.map { Pair(it.label, "${it.ratePercent}%") }
-        val settingTextPostFix = if (taxLines.isNotEmpty()) ":" else "."
-        val settingText = when (orderCreateEditRepository.getTaxBasedOnSetting()) {
-            StoreAddress ->
-                resourceProvider.getString(
-                    string.tax_rates_info_dialog_tax_based_on_store_address,
-                    settingTextPostFix
-                )
-
-            BillingAddress ->
-                resourceProvider.getString(
-                    string.tax_rates_info_dialog_tax_based_on_billing_address,
-                    settingTextPostFix
-                )
-
-            ShippingAddress ->
-                resourceProvider.getString(
-                    string.tax_rates_info_dialog_tax_based_on_shipping_address,
-                    settingTextPostFix
-                )
-
-            else -> ""
-        }
-        val taxRatesSettingsUrl =
-            selectedSite.get().adminUrlOrDefault.slashJoin(TAX_BASED_ON_SETTING_ADMIN_URL)
-        triggerEvent(
-            OrderCreateEditNavigationTarget.TaxRatesInfoDialog(
-                TaxRatesInfoDialogViewState(
-                    settingText,
-                    taxLines,
-                    taxRatesSettingsUrl
-                )
-            )
-        )
+        val state = getTaxRatesInfoDialogState(_orderDraft.value.taxLines)
+        triggerEvent(OrderCreateEditNavigationTarget.TaxRatesInfoDialog(state))
     }
 
-    fun onSetTaxRateClicked() {
-        triggerEvent(OrderCreateEditNavigationTarget.TaxRateSelector)
+    fun onSetTaxRateClicked() = launch {
+        val state = getTaxRatesInfoDialogState(_orderDraft.value.taxLines)
+        triggerEvent(OrderCreateEditNavigationTarget.TaxRateSelector(state))
+    }
+
+    fun onTaxRateSelected(taxRate: TaxRate) {
+        Log.d("OrderCreateEdit", "onTaxRateSelected: $taxRate")
     }
 
     @Parcelize

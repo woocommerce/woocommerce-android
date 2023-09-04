@@ -66,8 +66,9 @@
                 android:id="@+id/tax_rate_selector_section"
                 style="@style/Woo.Card"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible">
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/set_tax_rate_button"
                     style="@style/Woo.Button.TextButton.Secondary"
@@ -75,10 +76,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="@string/order_creation_set_tax_rate"
-                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:visibility="visible" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView

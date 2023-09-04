@@ -239,15 +239,18 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
-                rate = "20%"
+                rate = "20%",
+                taxRate = TaxRate(0)
             ),
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "GST · US CA",
-                rate = "5%"
+                rate = "5%",
+                taxRate = TaxRate(0)
             ),
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "GST · AU",
-                rate = "0%"
+                rate = "0%",
+                taxRate = TaxRate(0)
             ),
         )
     )
@@ -275,15 +278,18 @@ fun TaxRatesPreview() = WooThemeWithBackground {
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
-                rate = "20%"
+                rate = "20%",
+                taxRate = TaxRate(0)
             ),
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "GST · US CA",
-                rate = "5%"
+                rate = "5%",
+                taxRate = TaxRate(0)
             ),
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "GST · AU",
-                rate = "0%"
+                rate = "0%",
+                taxRate = TaxRate(0)
             ),
         )
     )

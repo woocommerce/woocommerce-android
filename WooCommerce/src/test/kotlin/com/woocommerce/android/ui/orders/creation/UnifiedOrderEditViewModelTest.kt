@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
+import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -2156,7 +2157,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             checkDigitRemoverFactory = checkDigitRemoverFactory,
             resourceProvider = resourceProvider,
             productRestrictions = productRestrictions,
-            selectedSite = selectedSite,
+            getTaxRatesInfoDialogState = GetTaxRatesInfoDialogViewState(
+                orderCreateEditRepository,
+                selectedSite,
+                resourceProvider
+            )
         )
     }
 

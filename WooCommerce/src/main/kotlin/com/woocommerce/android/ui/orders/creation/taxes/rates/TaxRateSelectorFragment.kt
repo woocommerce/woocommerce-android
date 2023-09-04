@@ -8,12 +8,18 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentDirections.Companion.actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TaxRateSelectorFragment : Fragment() {
     private val viewModel: TaxRateSelectorViewModel by viewModels<TaxRateSelectorViewModel>()
+    private val args: TaxRateSelectorFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,5 +37,31 @@ class TaxRateSelectorFragment : Fragment() {
                 )
             }
         }
+        handleEvents()
+    }
+
+    private fun handleEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is TaxRateSelectorViewModel.TaxRateSelected -> {
+                    navigateBackWithResult(KEY_SELECTED_TAX_RATE, event.taxRate)
+                }
+                is TaxRateSelectorViewModel.EditTaxRatesInAdmin -> {
+                    args.dialogState.taxRatesSettingsUrl.let {
+                        ChromeCustomTabUtils.launchUrl(requireContext(), it)
+                        findNavController().navigateUp()
+                    }
+                }
+                is TaxRateSelectorViewModel.ShowTaxesInfoDialog -> {
+                    actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment(args.dialogState).also {
+                        findNavController().navigate(it)
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val KEY_SELECTED_TAX_RATE = "key_selected_tax_rate"
     }
 }

@@ -323,5 +323,12 @@
     <fragment
         android:id="@+id/taxRateSelectorFragment"
         android:name="com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment"
-        android:label="TaxRateSelectorFragment"/>
+        android:label="TaxRateSelectorFragment">
+        <argument
+            android:name="dialogState"
+            app:argType="com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState"/>
+        <action
+            android:id="@+id/action_taxRateSelectorFragment_to_taxRatesInfoDialogFragment"
+            app:destination="@id/taxRatesInfoDialogFragment" />
+    </fragment>
 </navigation>
