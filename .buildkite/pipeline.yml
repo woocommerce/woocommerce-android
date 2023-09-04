@@ -60,8 +60,8 @@ steps:
       ./gradlew assembleJalapenoDebugAndroidTest
     plugins: [*ci_toolkit]
 
-  - label: "🛠 Installable Build"
-    command: ".buildkite/commands/installable-build.sh"
+  - label: "🛠 Prototype Build"
+    command: ".buildkite/commands/prototype-build.sh"
     if: build.pull_request.id != null
     plugins: [*ci_toolkit]
 
