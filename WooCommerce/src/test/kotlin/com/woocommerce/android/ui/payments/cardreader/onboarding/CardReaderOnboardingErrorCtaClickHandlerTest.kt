@@ -15,7 +15,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
+class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(siteModel)
@@ -24,7 +24,7 @@ class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val resourceProvider: ResourceProvider = mock()
 
-    private val handler = CardReaderOnboardingErrorClickHandler(
+    private val handler = CardReaderOnboardingErrorCtaClickHandler(
         selectedSite,
         pluginRepository,
         cardReaderTracker,
@@ -85,7 +85,7 @@ class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
 
             // THEN
             assertThat(result).isEqualTo(
-                CardReaderOnboardingErrorClickHandler.Reaction.ShowErrorAndRefresh(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(
                     message = errorDescription
                 )
             )
@@ -118,7 +118,7 @@ class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
 
             // THEN
             assertThat(result).isEqualTo(
-                CardReaderOnboardingErrorClickHandler.Reaction.ShowErrorAndRefresh(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(
                     message = errorDescription
                 )
             )
@@ -147,7 +147,7 @@ class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
 
             // THEN
             assertThat(result).isEqualTo(
-                CardReaderOnboardingErrorClickHandler.Reaction.Refresh
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh
             )
         }
 
@@ -174,7 +174,7 @@ class CardReaderOnboardingErrorClickHandlerTest : BaseUnitTest() {
 
             // THEN
             assertThat(result).isEqualTo(
-                CardReaderOnboardingErrorClickHandler.Reaction.Refresh
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh
             )
         }
 }

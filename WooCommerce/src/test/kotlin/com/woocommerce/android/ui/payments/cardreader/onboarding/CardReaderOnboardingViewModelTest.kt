@@ -76,7 +76,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val gatewayStore: WCGatewayStore = mock()
-    private val errorClickHandler: CardReaderOnboardingErrorClickHandler = mock()
+    private val errorClickHandler: CardReaderOnboardingErrorCtaClickHandler = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -634,7 +634,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             val errorText = "error"
             whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
-                .thenReturn(CardReaderOnboardingErrorClickHandler.Reaction.ShowErrorAndRefresh(errorText))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(errorText))
 
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
@@ -668,7 +668,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given returned refresh, when clicked on wcpay not installed CTA, then error shown`() =
         testBlocking {
             whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
-                .thenReturn(CardReaderOnboardingErrorClickHandler.Reaction.Refresh)
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh)
 
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(

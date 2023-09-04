@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class CardReaderOnboardingErrorClickHandler @Inject constructor(
+class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pluginRepository: PluginRepository,
     private val cardReaderTracker: CardReaderTracker,

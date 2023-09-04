@@ -78,7 +78,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val cardReaderManager: CardReaderManager,
     private val gatewayStore: WCGatewayStore,
-    private val errorClickHandler: CardReaderOnboardingErrorClickHandler,
+    private val errorClickHandler: CardReaderOnboardingErrorCtaClickHandler,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
 
@@ -114,8 +114,8 @@ class CardReaderOnboardingViewModel @Inject constructor(
         launch {
             viewState.value = CardReaderOnboardingViewState.LoadingState
             when (val reaction = errorClickHandler(errorType)) {
-                CardReaderOnboardingErrorClickHandler.Reaction.Refresh -> refreshState()
-                is CardReaderOnboardingErrorClickHandler.Reaction.ShowErrorAndRefresh -> {
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh -> refreshState()
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh -> {
                     triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
                     refreshState()
                 }
