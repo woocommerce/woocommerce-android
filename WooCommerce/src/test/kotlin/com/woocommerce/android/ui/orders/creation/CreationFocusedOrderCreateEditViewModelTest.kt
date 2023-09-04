@@ -41,12 +41,15 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -117,6 +120,17 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on billing address")
         }
+
+    @Test
+    fun `when tax help clicked, then should track event`() = testBlocking {
+        whenever(orderCreateEditRepository.getTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        whenever(resourceProvider.getString(anyInt(), anyString()))
+            .thenReturn("Your tax rate is currently calculated based on your billing address:")
+        sut.onTaxHelpButtonClicked()
+        verify(tracker).track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED)
+    }
 
     @Test
     fun `when submitting customer note, then update orderDraft liveData`() {

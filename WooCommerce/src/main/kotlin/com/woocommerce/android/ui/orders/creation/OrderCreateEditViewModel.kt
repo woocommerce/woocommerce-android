@@ -1102,6 +1102,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
             )
         )
+        tracker.track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED)
     }
 
     @Parcelize
