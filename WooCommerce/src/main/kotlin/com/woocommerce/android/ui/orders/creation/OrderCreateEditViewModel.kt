@@ -123,7 +123,6 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 
 @HiltViewModel
 @Suppress("LargeClass")
