@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
@@ -20,18 +21,15 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
                 cardReaderTracker.trackOnboardingCtaTappedState(ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED)
 
-                installPlugin(
-                    slug = WC_PAY_SLUG,
-                    name = WC_PAY_NAME,
-                )
+                installWcPayPlugin()
             }
         }
 
-    private suspend fun installPlugin(slug: String, name: String) =
+    private suspend fun installWcPayPlugin() =
         pluginRepository.installPlugin(
             site = selectedSite.get(),
-            slug = slug,
-            name = name,
+            slug = WC_PAY_SLUG,
+            name = WooCommerceStore.WooPlugin.WOO_PAYMENTS.pluginName,
         ).map { pluginStatus ->
             when (pluginStatus) {
                 is PluginRepository.PluginStatus.PluginActivated,
@@ -65,7 +63,6 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
-        private const val WC_PAY_NAME = "woocommerce-payments/woocommerce-payments"
 
         private const val ONBOARDING_CTA_TAPPED_PLUGIN_INSTALL_TAPPED = "plugin_install_tapped"
     }
