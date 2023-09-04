@@ -7,9 +7,10 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class CardReaderOnboardingErrorClickHandler @Inject constructor(
+class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     private val selectedSite: SelectedSite,
     private val pluginRepository: PluginRepository,
     private val cardReaderTracker: CardReaderTracker,
@@ -20,7 +21,7 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
                 cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED)
 
-                installPlugin(slug = WC_PAY_SLUG, name = WC_PAY_NAME).also {
+                installWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
                         cardReaderTracker.trackOnboardingCtaFailed(
                             reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
@@ -31,36 +32,33 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
             }
         }
 
-    private suspend fun installPlugin(slug: String, name: String) =
+    private suspend fun installWcPayPlugin() =
         pluginRepository.installPlugin(
             site = selectedSite.get(),
-            slug = slug,
-            name = name,
+            slug = WC_PAY_SLUG,
+            name = WooCommerceStore.WooPlugin.WOO_PAYMENTS.pluginName,
         ).map { pluginStatus ->
             when (pluginStatus) {
                 is PluginRepository.PluginStatus.PluginActivated,
                 is PluginRepository.PluginStatus.PluginInstalled ->
                     Reaction.Refresh
 
-                is PluginRepository.PluginStatus.PluginActivationFailed ->
-                    Reaction.ShowErrorAndRefresh(
-                        message = pluginStatus.errorDescription.ifEmpty {
-                            resourceProvider.getString(
-                                R.string.error_generic
-                            )
-                        }
-                    )
+                is PluginRepository.PluginStatus.PluginActivationFailed, ->
+                    buildShowErrorAndRefresh(pluginStatus.errorDescription)
 
                 is PluginRepository.PluginStatus.PluginInstallFailed ->
-                    Reaction.ShowErrorAndRefresh(
-                        message = pluginStatus.errorDescription.ifEmpty {
-                            resourceProvider.getString(
-                                R.string.error_generic
-                            )
-                        }
-                    )
+                    buildShowErrorAndRefresh(pluginStatus.errorDescription)
             }
         }.last()
+
+    private fun buildShowErrorAndRefresh(errorDescription: String) =
+        Reaction.ShowErrorAndRefresh(
+            message = errorDescription.ifEmpty {
+                resourceProvider.getString(
+                    R.string.error_generic
+                )
+            }
+        )
 
     sealed class Reaction {
         object Refresh : Reaction()
@@ -75,7 +73,6 @@ class CardReaderOnboardingErrorClickHandler @Inject constructor(
 
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
-        private const val WC_PAY_NAME = "woocommerce-payments/woocommerce-payments"
     }
 }
 
