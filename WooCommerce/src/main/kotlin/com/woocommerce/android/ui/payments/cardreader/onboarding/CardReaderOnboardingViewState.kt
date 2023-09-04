@@ -229,7 +229,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
             learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            actionButtonLabel = UiString.UiStringRes(R.string.install)
+            actionButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_install_button)
         )
 
         data class WCPayNotActivatedState(
