@@ -128,6 +128,7 @@ class ReviewListFragment :
 
         setupObservers()
         viewModel.start()
+        setUnreadFilterChangedListener()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
@@ -146,6 +147,7 @@ class ReviewListFragment :
                 viewModel.markAllReviewsAsRead()
                 true
             }
+
             else -> false
         }
     }
@@ -200,10 +202,12 @@ class ReviewListFragment :
             ActionStatus.SUBMITTED -> {
                 menuMarkAllRead?.actionView = layoutInflater.inflate(R.layout.action_menu_progress, null)
             }
+
             ActionStatus.SUCCESS -> {
                 menuMarkAllRead?.actionView = null
                 showMarkAllReadMenuItem(show = false)
             }
+
             ActionStatus.ERROR -> menuMarkAllRead?.actionView = null
             else -> {
             }
@@ -221,6 +225,7 @@ class ReviewListFragment :
                 skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
+
             false -> skeletonView.hide()
         }
     }
@@ -237,6 +242,12 @@ class ReviewListFragment :
 
     private fun showMarkAllReadMenuItem(show: Boolean) {
         menuMarkAllRead?.let { if (it.isVisible != show) it.isVisible = show }
+    }
+
+    private fun setUnreadFilterChangedListener() {
+        binding.unreadFilterCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onUnreadReviewsFilterChanged(isChecked)
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.review_notifications)

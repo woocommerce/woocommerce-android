@@ -47,6 +47,7 @@ class ReviewListViewModel @Inject constructor(
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
+
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
     override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
@@ -137,6 +138,7 @@ class ReviewListViewModel @Inject constructor(
                         triggerEvent(MarkAllAsRead(ActionStatus.ERROR))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_error))
                     }
+
                     Success -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.SUCCESS))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_success))
@@ -155,6 +157,7 @@ class ReviewListViewModel @Inject constructor(
                 SUCCESS, NO_ACTION_NEEDED -> {
                     _reviewList.value = reviewRepository.getCachedProductReviews()
                 }
+
                 else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             }
 
@@ -191,6 +194,10 @@ class ReviewListViewModel @Inject constructor(
             // Refresh data now that a connection is active if needed
             forceRefreshReviews()
         }
+    }
+
+    fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
+        //TODO()
     }
 
     @Parcelize

@@ -1632,6 +1632,8 @@
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <string name="product_review_list_fetching_failed">Error fetching product reviews</string>
     <string name="pending_review_label">Pending Review</string>
+    <string name="product_review_list_unread_reviews_filter">Filter by unread reviews</string>
+
     <!--
         Products
     -->

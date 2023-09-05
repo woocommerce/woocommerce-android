@@ -142,6 +142,7 @@ class ProductReviewsFragment :
                 skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
+
             false -> skeletonView.hide()
         }
     }
