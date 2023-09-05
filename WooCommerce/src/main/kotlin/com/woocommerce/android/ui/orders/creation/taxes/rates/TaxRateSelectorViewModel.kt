@@ -84,6 +84,10 @@ class TaxRateSelectorViewModel @Inject constructor(
         triggerEvent(TaxRateSelected(taxRate.taxRate))
     }
 
+    fun onDismissed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     @Parcelize
     data class ViewState(
         val taxRates: List<TaxRateUiModel> = emptyList(),

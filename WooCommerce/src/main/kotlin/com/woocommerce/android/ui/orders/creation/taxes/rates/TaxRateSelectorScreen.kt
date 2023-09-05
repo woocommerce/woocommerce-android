@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +39,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
@@ -47,10 +52,14 @@ fun TaxRateSelectorScreen(
     viewState: StateFlow<TaxRateSelectorViewModel.ViewState>,
     onEditTaxRatesInAdminClicked: () -> Unit,
     onInfoIconClicked: () -> Unit,
-    onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit
+    onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Scaffold(
-        backgroundColor = MaterialTheme.colors.surface
+        backgroundColor = MaterialTheme.colors.surface,
+        topBar = {
+            Toolbar(onDismiss)
+        }
     ) {
         Column(
             modifier = Modifier.padding(it), horizontalAlignment = Alignment.CenterHorizontally
@@ -60,6 +69,31 @@ fun TaxRateSelectorScreen(
             Footer(onEditTaxRatesInAdminClicked)
         }
     }
+}
+
+@Composable
+private fun Toolbar(onDismiss: () -> Unit) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.tax_rate_selector_title)) },
+        navigationIcon = {
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    imageVector = Icons.Filled.Clear,
+                    contentDescription = stringResource(R.string.close),
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.color_toolbar),
+        elevation = 0.dp,
+        actions = {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                contentDescription = stringResource(R.string.tax_rate_selector_info_icon_content_description),
+                tint = MaterialTheme.colors.primary,
+            )
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+        }
+    )
 }
 
 @Composable
@@ -259,7 +293,8 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         viewState = state,
         onEditTaxRatesInAdminClicked = {},
         onInfoIconClicked = {},
-        onTaxRateClick = {}
+        onTaxRateClick = {},
+        onDismiss = {},
     )
 }
 

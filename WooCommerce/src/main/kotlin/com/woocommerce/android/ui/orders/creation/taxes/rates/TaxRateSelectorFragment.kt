@@ -6,20 +6,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentDirections.Companion.actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TaxRateSelectorFragment : Fragment() {
+class TaxRateSelectorFragment : BaseFragment() {
     private val viewModel: TaxRateSelectorViewModel by viewModels<TaxRateSelectorViewModel>()
     private val args: TaxRateSelectorFragmentArgs by navArgs()
+
+    override val activityAppBarStatus = AppBarStatus.Hidden
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +38,7 @@ class TaxRateSelectorFragment : Fragment() {
                     viewModel::onEditTaxRatesInAdminClicked,
                     viewModel::onInfoIconClicked,
                     viewModel::onTaxRateSelected,
+                    viewModel::onDismissed,
                 )
             }
         }
@@ -56,6 +61,9 @@ class TaxRateSelectorFragment : Fragment() {
                     actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment(args.dialogState).also {
                         findNavController().navigate(it)
                     }
+                }
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().navigateUp()
                 }
             }
         }
