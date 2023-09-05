@@ -213,56 +213,84 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
     sealed class WCPayError(
         val headerLabel: UiString,
         val hintLabel: UiString,
-        val learnMoreLabel: UiString,
-        val actionButtonLabel: UiString
+        val learnMoreLabel: ActionButton,
+        val actionButtonLabelPrimary: ActionButton,
+        val actionButtonLabelSecondary: ActionButton? = null
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
-        abstract val actionButtonAction: () -> Unit
+        abstract val actionButtonActionPrimary: () -> Unit
         abstract val onLearnMoreActionClicked: (() -> Unit)
 
         @DrawableRes
         val illustration = R.drawable.img_woo_payments
 
         data class WCPayNotInstalledState(
-            override val actionButtonAction: () -> Unit,
+            override val actionButtonActionPrimary: () -> Unit,
             override val onLearnMoreActionClicked: (() -> Unit)
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
-            learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            actionButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_install_button)
+            learnMoreLabel = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                action = onLearnMoreActionClicked
+            ),
+            actionButtonLabelPrimary = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_install_button),
+                action = actionButtonActionPrimary
+            )
         )
 
         data class WCPayNotActivatedState(
-            override val actionButtonAction: () -> Unit,
+            override val actionButtonActionPrimary: () -> Unit,
             override val onLearnMoreActionClicked: (() -> Unit)
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
-            learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            actionButtonLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_wcpay_not_activated_activate_button
+            learnMoreLabel = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                action = onLearnMoreActionClicked
+            ),
+            actionButtonLabelPrimary = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_activate_button),
+                action = actionButtonActionPrimary
             )
         )
 
         data class WCPayNotSetupState(
-            override val actionButtonAction: () -> Unit,
+            override val actionButtonActionPrimary: () -> Unit,
+            val actionButtonActionSecondary: () -> Unit,
             override val onLearnMoreActionClicked: (() -> Unit)
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint),
-            learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            actionButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
+            learnMoreLabel = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                action = onLearnMoreActionClicked
+            ),
+            actionButtonLabelPrimary = ActionButton(
+                UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button),
+                action = actionButtonActionPrimary
+            ),
+            actionButtonLabelSecondary = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button),
+                action = actionButtonActionSecondary
+            )
         )
 
         data class WCPayUnsupportedVersionState(
-            override val actionButtonAction: () -> Unit,
+            override val actionButtonActionPrimary: () -> Unit,
             override val onLearnMoreActionClicked: (() -> Unit)
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint),
-            learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            actionButtonLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button
+            learnMoreLabel = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+                action = onLearnMoreActionClicked
+            ),
+            actionButtonLabelPrimary = ActionButton(
+                label = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button
+                ),
+                action = actionButtonActionPrimary
             )
         )
     }
@@ -307,4 +335,10 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             )
         )
     }
+
+    data class ActionButton(
+        val label: UiString,
+        val icon: Int? = null,
+        val action: () -> Unit
+    )
 }

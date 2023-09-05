@@ -1521,6 +1521,7 @@
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Finish setup</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>

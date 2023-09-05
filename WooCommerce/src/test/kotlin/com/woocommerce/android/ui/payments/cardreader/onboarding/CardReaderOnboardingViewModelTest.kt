@@ -655,7 +655,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
 
             (viewModel.viewStateData.value as WCPayNotInstalledState)
-                .actionButtonAction.invoke()
+                .actionButtonActionPrimary.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(
                 MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(errorText))
@@ -689,7 +689,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
 
             (viewModel.viewStateData.value as WCPayNotInstalledState)
-                .actionButtonAction.invoke()
+                .actionButtonActionPrimary.invoke()
 
             verify(onboardingChecker).getOnboardingState()
         }
@@ -720,7 +720,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
-                .actionButtonAction.invoke()
+                .actionButtonActionPrimary.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(
                 MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(errorText))
@@ -754,7 +754,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
-                .actionButtonAction.invoke()
+                .actionButtonActionPrimary.invoke()
 
             verify(onboardingChecker).getOnboardingState()
         }
@@ -1973,7 +1973,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             }
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
-                .actionButtonAction.invoke()
+                .actionButtonActionPrimary.invoke()
 
             assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
         }
