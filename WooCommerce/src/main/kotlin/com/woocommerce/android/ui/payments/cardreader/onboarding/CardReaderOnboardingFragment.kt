@@ -285,12 +285,19 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.actionButtonLabelPrimary)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
-            state.actionButtonActionPrimary.invoke()
+
+        UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary.label)
+        binding.primaryButton.setOnClickListener {
+            state.actionButtonPrimary.action.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setOnClickListener {
+            state.actionButtonSecondary?.action?.invoke()
+        }
+
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
@@ -303,10 +310,10 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.refreshButtonLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
+        binding.secondaryButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
         binding.learnMoreContainer.learnMore.setOnClickListener {

@@ -213,9 +213,9 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
     sealed class WCPayError(
         val headerLabel: UiString,
         val hintLabel: UiString,
-        val learnMoreLabel: ActionButton,
-        val actionButtonLabelPrimary: ActionButton,
-        val actionButtonLabelSecondary: ActionButton? = null
+        val learnMoreButton: ActionButton,
+        val actionButtonPrimary: ActionButton,
+        val actionButtonSecondary: ActionButton? = null
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
         abstract val actionButtonActionPrimary: () -> Unit
         abstract val onLearnMoreActionClicked: (() -> Unit)
@@ -229,11 +229,11 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
-            learnMoreLabel = ActionButton(
+            learnMoreButton = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
                 action = onLearnMoreActionClicked
             ),
-            actionButtonLabelPrimary = ActionButton(
+            actionButtonPrimary = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_install_button),
                 action = actionButtonActionPrimary
             )
@@ -245,11 +245,11 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
-            learnMoreLabel = ActionButton(
+            learnMoreButton = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
                 action = onLearnMoreActionClicked
             ),
-            actionButtonLabelPrimary = ActionButton(
+            actionButtonPrimary = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_activate_button),
                 action = actionButtonActionPrimary
             )
@@ -262,15 +262,15 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint),
-            learnMoreLabel = ActionButton(
+            learnMoreButton = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
                 action = onLearnMoreActionClicked
             ),
-            actionButtonLabelPrimary = ActionButton(
+            actionButtonPrimary = ActionButton(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button),
                 action = actionButtonActionPrimary
             ),
-            actionButtonLabelSecondary = ActionButton(
+            actionButtonSecondary = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button),
                 action = actionButtonActionSecondary
             )
@@ -282,11 +282,11 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         ) : WCPayError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint),
-            learnMoreLabel = ActionButton(
+            learnMoreButton = ActionButton(
                 label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
                 action = onLearnMoreActionClicked
             ),
-            actionButtonLabelPrimary = ActionButton(
+            actionButtonPrimary = ActionButton(
                 label = UiString.UiStringRes(
                     R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button
                 ),
