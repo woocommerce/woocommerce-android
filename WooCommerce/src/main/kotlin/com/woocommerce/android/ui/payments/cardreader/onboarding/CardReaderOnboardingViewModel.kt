@@ -110,7 +110,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         }
     }
 
-    private fun handleErrorClick(errorType: CardReaderOnboardingCTAErrorType) {
+    private fun handleErrorCtaClick(errorType: CardReaderOnboardingCTAErrorType) {
         launch {
             viewState.value = CardReaderOnboardingViewState.LoadingState
             when (val reaction = errorClickHandler(errorType)) {
@@ -167,7 +167,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             WcpayNotInstalled ->
                 viewState.value =
                     WCPayNotInstalledState(
-                        { handleErrorClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED) },
+                        { handleErrorCtaClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED) },
                         ::onLearnMoreClicked
                     )
             is PluginUnsupportedVersion ->
@@ -186,7 +186,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 }
             WcpayNotActivated ->
                 viewState.value =
-                    WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
+                    WCPayNotActivatedState(
+                        { handleErrorCtaClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED) },
+                        ::onLearnMoreClicked
+                    )
             is SetupNotCompleted ->
                 viewState.value = when (state.preferredPlugin) {
                     WOOCOMMERCE_PAYMENTS ->

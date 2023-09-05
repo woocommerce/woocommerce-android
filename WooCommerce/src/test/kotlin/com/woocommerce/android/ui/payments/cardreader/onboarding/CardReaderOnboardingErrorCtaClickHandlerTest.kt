@@ -59,6 +59,33 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when invoked with WC_PAY_NOT_ACTIVATED, then event tracked with reason`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                pluginRepository.installPlugin(
+                    site = siteModel,
+                    slug = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
+                )
+            ).thenReturn(
+                flowOf(
+                    PluginRepository.PluginStatus.PluginInstalled(
+                        slug = "slug"
+                    )
+                )
+            )
+
+            // WHEN
+            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
+
+            // THEN
+            verify(cardReaderTracker).trackOnboardingCtaTapped(
+                OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED
+            )
+        }
+
+    @Test
     fun `given error plugin installation ,when invoked with WC_PAY_NOT_INSTALLED, then event tracked with reason`() =
         testBlocking {
             // GIVEN
@@ -84,6 +111,36 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaFailed(
                 reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                description = "errorDescription"
+            )
+        }
+
+    @Test
+    fun `given error plugin installation ,when invoked with WC_PAY_NOT_ACTIVATED, then event tracked with reason`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                pluginRepository.installPlugin(
+                    site = siteModel,
+                    slug = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
+                )
+            ).thenReturn(
+                flowOf(
+                    PluginRepository.PluginStatus.PluginActivationFailed(
+                        errorDescription = "errorDescription",
+                        errorType = "errorType",
+                        errorCode = null,
+                    )
+                )
+            )
+
+            // WHEN
+            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
+
+            // THEN
+            verify(cardReaderTracker).trackOnboardingCtaFailed(
+                reason = OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED,
                 description = "errorDescription"
             )
         }
@@ -122,6 +179,39 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given installPlugin failed with PluginInstallFailed, when invoked with WC_PAY_NOT_ACTIVATED, then error with description returned`() =
+        testBlocking {
+            // GIVEN
+            val errorDescription = "errorDescription"
+            val errorType = "errorType"
+            whenever(
+                pluginRepository.installPlugin(
+                    site = siteModel,
+                    slug = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
+                )
+            ).thenReturn(
+                flowOf(
+                    PluginRepository.PluginStatus.PluginInstallFailed(
+                        errorDescription = errorDescription,
+                        errorType = errorType,
+                        errorCode = null,
+                    )
+                )
+            )
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(
+                    message = errorDescription
+                )
+            )
+        }
+
+    @Test
     fun `given installPlugin failed with PluginActivationFailed, when invoked with WC_PAY_NOT_INSTALLED, then error with description returned`() =
         testBlocking {
             // GIVEN
@@ -145,6 +235,39 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // WHEN
             val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(
+                    message = errorDescription
+                )
+            )
+        }
+
+    @Test
+    fun `given installPlugin failed with PluginActivationFailed, when invoked with WC_PAY_NOT_ACTIVATED, then error with description returned`() =
+        testBlocking {
+            // GIVEN
+            val errorDescription = "errorDescription"
+            val errorType = "errorType"
+            whenever(
+                pluginRepository.installPlugin(
+                    site = siteModel,
+                    slug = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
+                )
+            ).thenReturn(
+                flowOf(
+                    PluginRepository.PluginStatus.PluginActivationFailed(
+                        errorDescription = errorDescription,
+                        errorType = errorType,
+                        errorCode = null,
+                    )
+                )
+            )
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -201,6 +324,33 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // WHEN
             val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh
+            )
+        }
+
+    @Test
+    fun `given installPlugin failed with PluginInstalled, when invoked with WC_PAY_NOT_ACTIVATED, then Refresh returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                pluginRepository.installPlugin(
+                    site = siteModel,
+                    slug = "woocommerce-payments",
+                    name = "woocommerce-payments/woocommerce-payments",
+                )
+            ).thenReturn(
+                flowOf(
+                    PluginRepository.PluginStatus.PluginInstalled(
+                        slug = "slug"
+                    )
+                )
+            )
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED)
 
             // THEN
             assertThat(result).isEqualTo(

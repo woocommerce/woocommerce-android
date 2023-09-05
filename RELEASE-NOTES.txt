@@ -3,6 +3,7 @@
 15.3
 -----
 - [**] [Internal] In-Person Payments: if WcPay not install then we allow a user to install that from the app using API [https://github.com/woocommerce/woocommerce-android/pull/9690]
+- [**] [Internal] In-Person Payments: if WcPay not activated then we allow a user to install that from the app using API [https://github.com/woocommerce/woocommerce-android/pull/9728]
 
 15.2
 -----
