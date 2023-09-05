@@ -168,15 +168,14 @@ class ReviewListRepository @Inject constructor(
         if (cachedReviews.isNotEmpty()) {
             val relatedProducts = cachedReviews.map { it.remoteProductId }.distinct()
             val productsMap = getProductsByRemoteIdMap(relatedProducts)
-            cachedReviews = cachedReviews.filter {
-                // Only returns reviews that have a matching product in the db.
-                productsMap.containsKey(it.remoteProductId) && productsMap[it.remoteProductId] != null
-            }.also { review ->
-                review.forEach {
+            cachedReviews = cachedReviews
+                .filter {
+                    // Only returns reviews that have a matching product in the db.
+                    productsMap.containsKey(it.remoteProductId) && productsMap[it.remoteProductId] != null
+                }.onEach {
                     it.product = productsMap[it.remoteProductId]
                     it.read = readValueByRemoteIdMap[it.remoteId] // if not found will stay null
                 }
-            }
         }
         return cachedReviews
     }
