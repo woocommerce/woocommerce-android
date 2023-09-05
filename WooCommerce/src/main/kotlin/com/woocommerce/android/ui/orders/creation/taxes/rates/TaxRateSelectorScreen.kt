@@ -149,14 +149,6 @@ fun TaxRateRow(
             fontSize = dimensionResource(id = R.dimen.text_minor_125).value.sp,
             text = taxRate.rate
         )
-        Icon(
-            modifier = Modifier
-                .size(dimensionResource(id = R.dimen.image_minor_50))
-                .padding(dimensionResource(id = R.dimen.minor_10)),
-            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
-            tint = colorResource(id = R.color.woo_gray_80_alpha_030),
-            contentDescription = null
-        )
     }
     Divider()
 }
