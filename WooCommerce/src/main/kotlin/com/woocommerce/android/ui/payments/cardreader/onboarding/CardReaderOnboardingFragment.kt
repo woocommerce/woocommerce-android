@@ -125,28 +125,20 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         when (state) {
             is CardReaderOnboardingViewState.GenericErrorState ->
                 showGenericErrorState(layout, state)
-
             is CardReaderOnboardingViewState.NoConnectionErrorState ->
                 showNetworkErrorState(layout, state)
-
             is CardReaderOnboardingViewState.LoadingState ->
                 showLoadingState(layout, state)
-
             is CardReaderOnboardingViewState.UnsupportedErrorState ->
                 showCountryNotSupportedState(layout, state)
-
             is CardReaderOnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
-
             is CardReaderOnboardingViewState.StripeAcountError ->
                 showStripeAccountError(layout, state)
-
             is CardReaderOnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
-
             is CardReaderOnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
-
             is CardReaderOnboardingViewState.CashOnDeliveryDisabledState ->
                 showCashOnDeliveryDisabledState(layout, state)
         }.exhaustive
@@ -179,7 +171,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                         R.string.card_reader_onboarding_cash_on_delivery_enable_failure
                     )
                 }
-
                 null -> {}
             }
         }
