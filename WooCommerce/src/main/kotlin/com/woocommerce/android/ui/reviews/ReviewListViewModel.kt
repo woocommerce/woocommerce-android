@@ -156,6 +156,13 @@ class ReviewListViewModel @Inject constructor(
             when (reviewRepository.fetchProductReviews(loadMore)) {
                 SUCCESS, NO_ACTION_NEEDED -> {
                     _reviewList.value = reviewRepository.getCachedProductReviews()
+                        .filter {
+                            if (viewState.isUnreadFilterEnabled) {
+                                it.read == false
+                            } else {
+                                true
+                            }
+                        }
                 }
 
                 else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
@@ -197,7 +204,17 @@ class ReviewListViewModel @Inject constructor(
     }
 
     fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
-        //TODO()
+        viewState = viewState.copy(isUnreadFilterEnabled = isEnabled)
+        launch {
+            if (isEnabled) {
+                val reviewsInDb = reviewRepository.getCachedProductReviews()
+                if (reviewsInDb.isNotEmpty()) {
+                    _reviewList.value = reviewsInDb.filter { it.read == false }
+                }
+            } else {
+                _reviewList.value = reviewRepository.getCachedProductReviews()
+            }
+        }
     }
 
     @Parcelize
@@ -205,7 +222,8 @@ class ReviewListViewModel @Inject constructor(
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val hasUnreadReviews: Boolean? = null
+        val hasUnreadReviews: Boolean? = null,
+        val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 
     sealed class ReviewListEvent : Event() {
