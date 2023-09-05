@@ -2,4 +2,5 @@
 <resources>
     <dimen name="payments_dialog_width">280dp</dimen>
     <dimen name="payments_dialog_height">244dp</dimen>
+    <dimen name="payments_welcome_dialog_height">244dp</dimen>
 </resources>

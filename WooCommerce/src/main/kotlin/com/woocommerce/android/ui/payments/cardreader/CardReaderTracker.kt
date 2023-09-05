@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAY
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
@@ -51,8 +52,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ENABLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_GATEWAY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_REASON
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
@@ -62,6 +65,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -192,7 +196,7 @@ class CardReaderTracker @Inject constructor(
 
     fun trackOnboardingState(state: CardReaderOnboardingState) {
         getOnboardingNotCompletedReason(state)?.let {
-            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
+            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf(KEY_REASON to it))
         }
     }
 
@@ -201,22 +205,28 @@ class CardReaderTracker @Inject constructor(
             track(
                 CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
                 mutableMapOf(
-                    "reason" to it,
+                    KEY_REASON to it,
                     "remind_later" to false
                 )
             )
         }
     }
 
-    fun trackOnboardingCtaTappedState(state: CardReaderOnboardingState) {
-        getOnboardingNotCompletedReason(state)?.let {
-            track(
-                CARD_PRESENT_ONBOARDING_CTA_TAPPED,
-                mutableMapOf(
-                    "reason" to it,
-                )
+    fun trackOnboardingCtaTapped(reason: OnboardingCtaTapped) {
+        track(
+            CARD_PRESENT_ONBOARDING_CTA_TAPPED,
+            mutableMapOf(KEY_REASON to reason.value)
+        )
+    }
+
+    fun trackOnboardingCtaFailed(reason: OnboardingCtaTapped, description: String) {
+        track(
+            CARD_PRESENT_ONBOARDING_CTA_FAILED,
+            mutableMapOf(
+                KEY_REASON to reason.value,
+                KEY_ERROR_DESC to description,
             )
-        }
+        )
     }
 
     fun trackCashOnDeliveryToggled(isEnabled: Boolean) {

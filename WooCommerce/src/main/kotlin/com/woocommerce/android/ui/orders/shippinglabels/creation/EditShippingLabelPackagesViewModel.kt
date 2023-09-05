@@ -179,6 +179,30 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
+    fun onHazmatCategoryClicked(
+        currentSelection: ShippingLabelHazmatCategory?,
+        packagePosition: Int,
+        onHazmatCategorySelected: OnHazmatCategorySelected
+    ) {
+        triggerEvent(OpenHazmatCategorySelector(packagePosition, currentSelection, onHazmatCategorySelected))
+    }
+
+    fun onHazmatCategorySelected(
+        newSelection: ShippingLabelHazmatCategory,
+        packagePosition: Int
+    ) {
+        val packages = viewState.packagesUiModels.toMutableList()
+        with(packages[packagePosition].data) {
+            selectedPackage?.copy(hazmatCategory = newSelection)
+                ?.let { copy(selectedPackage = it) }
+        }?.let { packages[packagePosition] = packages[packagePosition].copy(data = it) }
+        viewState = viewState.copy(packagesUiModels = packages)
+    }
+
+    fun onURLClicked(url: String) {
+        triggerEvent(OpenURL(url))
+    }
+
     // all the logic is inside local functions, so it should be OK, but detekt complains still
     @Suppress("ComplexMethod")
     fun handleMoveItemResult(result: MoveItemResult) {
@@ -369,4 +393,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val currentPackage: ShippingLabelPackage,
         val packagesList: List<ShippingLabelPackage>
     ) : MultiLiveEvent.Event()
+
+    data class OpenHazmatCategorySelector(
+        val packagePosition: Int,
+        val currentSelection: ShippingLabelHazmatCategory?,
+        val onHazmatCategorySelected: OnHazmatCategorySelected
+    ) : MultiLiveEvent.Event()
+
+    data class OpenURL(val url: String) : MultiLiveEvent.Event()
 }

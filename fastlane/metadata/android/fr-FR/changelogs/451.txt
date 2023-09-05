@@ -1,0 +1,2 @@
+15.1 :
+Savez-vous qu’avec Appuyer pour payer, vous pouvez accepter les paiements par carte avec votre téléphone ? Nous avons amélioré l’expérience initiale pour une plus grande simplicité. Cette mise à jour comprend des corrections de stabilité en vue de la connexion. Merci d’avoir choisi WooCommerce !

@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
@@ -16,6 +13,7 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -34,25 +32,24 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountPendingRequirementsState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountRejectedState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.StripeAccountUnderReviewState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.Country
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.StripeInCountry
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState.WcPayInCountry
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotActivatedState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotInstalledState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotSetupState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayUnsupportedVersionState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.CashOnDeliveryDisabledState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.GenericErrorState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.NoConnectionErrorState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountPendingRequirementsState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountRejectedState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountUnderReviewState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState.Country
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState.StripeAccountInUnsupportedCountry
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState.StripeInCountry
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState.WcPayInCountry
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError.WCPayNotActivatedState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError.WCPayNotInstalledState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError.WCPayNotSetupState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError.WCPayUnsupportedVersionState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
@@ -81,14 +78,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val cardReaderManager: CardReaderManager,
     private val gatewayStore: WCGatewayStore,
+    private val errorClickHandler: CardReaderOnboardingErrorCtaClickHandler,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
 
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
 
-    private val viewState = MutableLiveData<OnboardingViewState>()
-    val viewStateData: LiveData<OnboardingViewState> = viewState
+    private val viewState = MutableLiveData<CardReaderOnboardingViewState>()
+    val viewStateData: LiveData<CardReaderOnboardingViewState> = viewState
 
     init {
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
@@ -105,10 +103,23 @@ class CardReaderOnboardingViewModel @Inject constructor(
             pluginType?.let {
                 disconnectCardReader()
             }
-            viewState.value = OnboardingViewState.LoadingState
+            viewState.value = CardReaderOnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState(pluginType)
             cardReaderTracker.trackOnboardingState(state)
             showOnboardingState(state)
+        }
+    }
+
+    private fun handleErrorCtaClick(errorType: CardReaderOnboardingCTAErrorType) {
+        launch {
+            viewState.value = CardReaderOnboardingViewState.LoadingState
+            when (val reaction = errorClickHandler(errorType)) {
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh -> refreshState()
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh -> {
+                    triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
+                    refreshState()
+                }
+            }
         }
     }
 
@@ -155,7 +166,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 }
             WcpayNotInstalled ->
                 viewState.value =
-                    WCPayNotInstalledState(::refreshState, ::onLearnMoreClicked)
+                    WCPayNotInstalledState(
+                        { handleErrorCtaClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED) },
+                        ::onLearnMoreClicked
+                    )
             is PluginUnsupportedVersion ->
                 when (state.preferredPlugin) {
                     WOOCOMMERCE_PAYMENTS ->
@@ -172,7 +186,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 }
             WcpayNotActivated ->
                 viewState.value =
-                    WCPayNotActivatedState(::refreshState, ::onLearnMoreClicked)
+                    WCPayNotActivatedState(
+                        { handleErrorCtaClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED) },
+                        ::onLearnMoreClicked
+                    )
             is SetupNotCompleted ->
                 viewState.value = when (state.preferredPlugin) {
                     WOOCOMMERCE_PAYMENTS ->
@@ -280,13 +297,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        cardReaderTracker.trackOnboardingCtaTappedState(
-            CardReaderOnboardingState.CashOnDeliveryDisabled(
-                countryCode,
-                preferredPlugin,
-                version
-            )
-        )
+        cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
         viewState.value = CashOnDeliveryDisabledState(
             onSkipCashOnDeliveryClicked = {
                 (::onSkipCashOnDeliveryClicked)(
@@ -375,7 +386,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun updateUiWithSelectPaymentPlugin() {
         launch {
             viewState.value =
-                OnboardingViewState.SelectPaymentPluginState(
+                CardReaderOnboardingViewState.SelectPaymentPluginState(
                     onConfirmPaymentMethodClicked = { pluginType ->
                         cardReaderTracker.trackPaymentGatewaySelected(pluginType)
                         (::refreshState)(pluginType)
@@ -385,7 +396,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onContactSupportClicked() {
-        triggerEvent(OnboardingEvent.NavigateToSupport)
+        triggerEvent(CardReaderOnboardingEvent.NavigateToSupport)
     }
 
     private fun onLearnMoreClicked() {
@@ -400,10 +411,12 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun continueFlow() {
         when (val params = arguments.cardReaderOnboardingParam.cardReaderFlowParam) {
             is CardReaderFlowParam.CardReadersHub -> {
-                triggerEvent(OnboardingEvent.ContinueToHub(params))
+                triggerEvent(CardReaderOnboardingEvent.ContinueToHub(params))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
-                triggerEvent(OnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType)))
+                triggerEvent(
+                    CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
+                )
             }
         }.exhaustive
     }
@@ -413,322 +426,4 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun formatDueDate(state: StripeAccountPendingRequirement) =
         state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() }
-
-    sealed class OnboardingEvent : Event() {
-        object NavigateToSupport : Event()
-
-        data class NavigateToUrlInWPComWebView(val url: String) : Event()
-        data class NavigateToUrlInGenericWebView(val url: String) : Event()
-
-        data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam) : Event()
-        data class ContinueToConnection(
-            val cardReaderFlowParam: CardReaderFlowParam,
-            val cardReaderType: CardReaderType,
-        ) : Event()
-    }
-
-    sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {
-        object LoadingState : OnboardingViewState(R.layout.fragment_card_reader_onboarding_loading) {
-            val headerLabel: UiString =
-                UiString.UiStringRes(R.string.card_reader_onboarding_loading)
-            val hintLabel: UiString =
-                UiString.UiStringRes(R.string.please_wait)
-
-            @DrawableRes
-            val illustration: Int = R.drawable.img_hot_air_balloon
-        }
-
-        class GenericErrorState(
-            val onContactSupportActionClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit)
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_generic_error) {
-            val contactSupportLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
-                containsHtml = true
-            )
-            val learnMoreLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
-                containsHtml = true
-            )
-            val illustration = R.drawable.img_products_error
-        }
-
-        data class SelectPaymentPluginState(
-            val onConfirmPaymentMethodClicked: ((PluginType) -> Unit),
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_select_payment_gateway) {
-            val cardIllustration = R.drawable.ic_credit_card_give
-            val headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_payment_provider)
-            val choosePluginHintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_plugin_hint)
-
-            val selectWcPayButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_wcpayment_button)
-            val icWcPayLogo = R.drawable.ic_wcpay
-            val icCheckmarkWcPay = R.drawable.ic_menu_action_mode_check
-            val selectStripeButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_stripe_button)
-            val confirmPaymentMethodButtonLabel = UiString
-                .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
-        }
-
-        data class CashOnDeliveryDisabledState(
-            val onSkipCashOnDeliveryClicked: (() -> Unit),
-            val onCashOnDeliveryEnabledSuccessfully: (() -> Unit),
-            val onEnableCashOnDeliveryClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit),
-            val shouldShowProgress: Boolean = false,
-            val cashOnDeliveryEnabledSuccessfully: Boolean? = null
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
-            val cardIllustration = R.drawable.img_products_error
-            val headerLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
-            )
-            val cashOnDeliveryHintLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
-            )
-            val skipCashOnDeliveryButtonLabel = UiString.UiStringRes(
-                R.string.skip
-            )
-            val enableCashOnDeliveryButtonLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_cash_on_delivery_disabled_button
-            )
-            val learnMoreLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
-                containsHtml = true
-            )
-        }
-
-        class NoConnectionErrorState(
-            val onRetryButtonActionClicked: (() -> Unit)
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_network_error) {
-            val illustration = R.drawable.ic_woo_error_state
-        }
-
-        sealed class UnsupportedErrorState(
-            val headerLabel: UiString,
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_unsupported) {
-            abstract val onContactSupportActionClicked: (() -> Unit)
-            abstract val onLearnMoreActionClicked: (() -> Unit)
-
-            val contactSupportLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_contact_support,
-                containsHtml = true
-            )
-            val learnMoreLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
-                containsHtml = true
-            )
-            val illustration = R.drawable.img_hot_air_balloon
-            val hintLabel = UiString.UiStringRes(
-                stringRes = R.string.card_reader_onboarding_country_not_supported_hint
-            )
-
-            data class Country(
-                val countryDisplayName: String,
-                override val onContactSupportActionClicked: (() -> Unit),
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : UnsupportedErrorState(
-                headerLabel = UiString.UiStringRes(
-                    stringRes = R.string.card_reader_onboarding_country_not_supported_header,
-                    params = listOf(UiString.UiStringText(countryDisplayName))
-                )
-            )
-
-            data class StripeInCountry(
-                val countryDisplayName: String,
-                override val onContactSupportActionClicked: (() -> Unit),
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : UnsupportedErrorState(
-                headerLabel = UiString.UiStringRes(
-                    stringRes = R.string.card_reader_onboarding_stripe_unsupported_in_country_header,
-                    params = listOf(UiString.UiStringText(countryDisplayName))
-                )
-            )
-
-            data class WcPayInCountry(
-                val countryDisplayName: String,
-                override val onContactSupportActionClicked: (() -> Unit),
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : UnsupportedErrorState(
-                headerLabel = UiString.UiStringRes(
-                    stringRes = R.string.card_reader_onboarding_wcpay_unsupported_in_country_header,
-                    params = listOf(UiString.UiStringText(countryDisplayName))
-                )
-            )
-
-            data class StripeAccountInUnsupportedCountry(
-                val countryDisplayName: String,
-                override val onContactSupportActionClicked: (() -> Unit),
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : UnsupportedErrorState(
-                headerLabel = UiString.UiStringRes(
-                    stringRes = R.string.card_reader_onboarding_stripe_account_in_unsupported_country,
-                    params = listOf(UiString.UiStringText(countryDisplayName))
-                )
-            )
-        }
-
-        sealed class StripeAcountError(
-            val headerLabel: UiString,
-            val hintLabel: UiString,
-            val buttonLabel: UiString? = null
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
-            abstract val onContactSupportActionClicked: (() -> Unit)
-            abstract val onLearnMoreActionClicked: (() -> Unit)
-            open val onButtonActionClicked: (() -> Unit?)? = null
-
-            @DrawableRes
-            val illustration = R.drawable.img_products_error
-            val contactSupportLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true)
-            val learnMoreLabel =
-                UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
-
-            data class StripeAccountUnderReviewState(
-                override val onContactSupportActionClicked: () -> Unit,
-                override val onLearnMoreActionClicked: () -> Unit
-            ) : StripeAcountError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
-            )
-
-            data class StripeAccountRejectedState(
-                override val onContactSupportActionClicked: () -> Unit,
-                override val onLearnMoreActionClicked: () -> Unit
-            ) : StripeAcountError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
-            )
-
-            data class StripeAccountOverdueRequirementsState(
-                override val onContactSupportActionClicked: () -> Unit,
-                override val onLearnMoreActionClicked: () -> Unit
-            ) : StripeAcountError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
-            )
-
-            data class PluginInTestModeWithLiveAccountState(
-                override val onContactSupportActionClicked: () -> Unit,
-                override val onLearnMoreActionClicked: () -> Unit
-            ) : StripeAcountError(
-                headerLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header),
-                hintLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint)
-            )
-
-            data class StripeAccountPendingRequirementsState(
-                override val onContactSupportActionClicked: () -> Unit,
-                override val onLearnMoreActionClicked: () -> Unit,
-                override val onButtonActionClicked: () -> Unit,
-                val dueDate: String?
-            ) : StripeAcountError(
-                headerLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
-                hintLabel = if (dueDate != null) UiString.UiStringRes(
-                    R.string.card_reader_onboarding_account_pending_requirements_hint,
-                    listOf(UiString.UiStringText(dueDate))
-                ) else UiString.UiStringRes(
-                    R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
-                ),
-                buttonLabel = UiString.UiStringRes(R.string.skip)
-            )
-        }
-
-        sealed class WCPayError(
-            val headerLabel: UiString,
-            val hintLabel: UiString,
-            val learnMoreLabel: UiString,
-            val refreshButtonLabel: UiString
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
-            abstract val refreshButtonAction: () -> Unit
-            abstract val onLearnMoreActionClicked: (() -> Unit)
-
-            @DrawableRes
-            val illustration = R.drawable.img_woo_payments
-
-            data class WCPayNotInstalledState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : WCPayError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_installed_refresh_button)
-            )
-
-            data class WCPayNotActivatedState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : WCPayError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_refresh_button)
-            )
-
-            data class WCPayNotSetupState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : WCPayError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
-            )
-
-            data class WCPayUnsupportedVersionState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : WCPayError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
-            )
-        }
-
-        sealed class StripeExtensionError(
-            val headerLabel: UiString,
-            val hintLabel: UiString,
-            val learnMoreLabel: UiString,
-            val refreshButtonLabel: UiString
-        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_wcpay) {
-            abstract val refreshButtonAction: () -> Unit
-            abstract val onLearnMoreActionClicked: (() -> Unit)
-
-            @DrawableRes
-            val illustration = R.drawable.img_stripe_extension
-
-            data class StripeExtensionNotSetupState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : StripeExtensionError(
-                headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_header),
-                hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_stripe_extension_not_setup_hint),
-                learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_refresh_button)
-            )
-
-            data class StripeExtensionUnsupportedVersionState(
-                override val refreshButtonAction: () -> Unit,
-                override val onLearnMoreActionClicked: (() -> Unit)
-            ) : StripeExtensionError(
-                headerLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_extension_unsupported_version_header
-                ),
-                hintLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
-                ),
-                learnMoreLabel = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_learn_more, containsHtml = true
-                ),
-                refreshButtonLabel = UiString
-                    .UiStringRes(R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button)
-            )
-        }
-    }
 }

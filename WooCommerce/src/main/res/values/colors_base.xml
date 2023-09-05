@@ -247,6 +247,7 @@
     Store creation
     -->
     <color name="creating_store_linear_progress_background">@color/woo_purple_0</color>
+    <color name="store_creation_summary_top_illustration_background">@color/woo_purple_0</color>
 
     <!--
     Highlight tooltip
@@ -258,4 +259,10 @@
     Test order step number
     -->
     <color name="try_test_order_step">#F7F5FB</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="woo_payments_setup_bullet_background">@color/woo_purple_0</color>
+
 </resources>

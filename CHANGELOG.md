@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 15.2
+We're thrilled to announce a new update for our Android app! In this version, we've moved the 'Close Account' option to a new section called 'Account Settings' for easier navigation. We've also fixed some issues with the order's badge counter to ensure accurate tracking. Plus, we've made improvements to the WooPayments onboarding task for a smoother setup process. Update now for a better user experience!
+
 ## 15.1
 Did you know that with Tap to Pay, you can accept card payments with your phone? We've enhanced the initial experience to make it even easier. This release also includes stability fixes for the login. Thank you for choosing WooCommerce!
 

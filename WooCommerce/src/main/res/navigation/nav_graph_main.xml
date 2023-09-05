@@ -69,11 +69,17 @@
             android:id="@+id/action_myStore_to_getPaidFragment"
             app:destination="@id/getPaidFragment" />
         <action
+            android:id="@+id/action_myStore_to_wooPaymentsPreSetupFragment"
+            app:destination="@id/wooPaymentsPreSetupFragment" />
+        <action
             android:id="@+id/action_myStore_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
         <action
             android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
             app:destination="@id/AIProductDescriptionDialogFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -540,6 +546,10 @@
             android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
             app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsPreSetupFragment"
+            app:destination="@id/wooPaymentsPreSetupFragment"
+            app:popUpTo="@id/dashboard" />
     </fragment>
     <dialog
         android:id="@+id/privacyBannerFragment"
@@ -551,7 +561,41 @@
     <fragment
         android:id="@+id/getPaidFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
-        android:label="GetPaidFragment" />
+        android:label="GetPaidFragment">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_getPaidFragment_to_wooPaymentsSetupCelebrationDialog"
+            app:destination="@id/wooPaymentsSetupCelebrationDialog"
+            app:popUpTo="@id/getPaidFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <dialog
+        android:id="@+id/wooPaymentsSetupCelebrationDialog"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
+        android:label="WooPaymentsSetupCelebrationDialog" />
+    <fragment
+        android:id="@+id/wooPaymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsPreSetupFragment"
+        android:label="WooPaymentsPreSetupFragment">
+        <action
+            android:id="@+id/action_wooPaymentsPreSetupFragment_to_wooPaymentsSetupFragment"
+            app:destination="@id/wooPaymentsTermsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooPaymentsTermsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsTermsFragment"
+        android:label="WooPaymentsTermsFragment">
+        <action
+            android:id="@+id/action_wooPaymentsTermsFragment_to_getPaidFragment"
+            app:destination="@id/getPaidFragment"
+            app:popUpTo="@id/dashboard">
+            <argument
+                android:name="taskId"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
@@ -600,10 +644,19 @@
     <dialog
         android:id="@+id/createTestOrderDialogFragment"
         android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
-        android:label="CreateTestOrderDialogFragment" >
+        android:label="CreateTestOrderDialogFragment">
         <argument
             android:name="siteUrl"
             app:argType="string"
             app:nullable="false" />
+    </dialog>
+    <dialog
+        android:id="@+id/nameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment" >
+        <argument
+            android:name="fromOnboarding"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </dialog>
 </navigation>

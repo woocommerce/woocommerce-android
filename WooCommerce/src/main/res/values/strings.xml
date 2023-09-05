@@ -544,6 +544,10 @@
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_discount_amount_label">Calculated Amount</string>
+    <string name="order_creation_discount_percentage_label">Calculated Percentage</string>
+    <string name="order_creation_total_label">Order total</string>
+    <string name="order_creation_price_after_discount_label">Price after discount</string>
     <string name="order_creation_remove_discount">Remove discount</string>
     <string name="order_creation_discount_too_big_error">Discount cannot be greater than the price</string>
     <string name="order_creation_discount_invalid_number_error">Discount is not a valid number</string>
@@ -968,6 +972,14 @@
     <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contains Hazardous Materials</string>
     <string name="shipping_label_package_details_hazmat_content_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Learn how to securely package, label, and ship HAZMAT through USPS® at %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_search_tool">Determine your product\'s mailability using the %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS HAZMAT Search Tool.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping does not currently support HAZMAT shipments through %1$s</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Hazardous material category</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Select a category</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
@@ -1500,10 +1512,12 @@
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Refresh after installing</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_install_button" translatable="false">@string/install</string>
 
     <string name="card_reader_onboarding_wcpay_not_activated_header">Activate WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">The WooCommerce Payments extension is installed on your store but not activated. Please activate it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Activate</string>
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
@@ -3157,6 +3171,7 @@
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
     <string name="store_creation_store_name_default">Store name</string>
+    <string name="store_creation_store_name_settings_option">Store name</string>
 
     <string name="store_creation_store_profiler_industries_header">About your store</string>
     <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
@@ -3226,6 +3241,9 @@
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Manage payments seamlessly with WooPayments, free from setup or monthly fees.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">You did it!</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Congratulations! You\'ve successfully navigated through the setup and your payment system is ready to roll.</string>
     <string name="store_onboarding_task_name_store_title">Name your store</string>
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
@@ -3255,7 +3273,23 @@
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
-    <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Update store name</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Store name</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Store name set! \n To change again, visit Store Settings.</string>
+    <string name="settings_name_your_store_dialog_success">Store name set!</string>
+    <string name="settings_name_your_store_dialog_loading">Saving new store name…</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Unable to save store name. Please try again.</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Manage payments effortlessly with WooPayments all in one place. Accept cards, Apple Pay, in-person payments, and 135+ currencies, all with zero setup costs or monthly fees.</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Estimated setup time</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minutes</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Before your start setup</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Your WooPayments notifications will be sent to your WordPress.com account email. Prefer a new account? &lt;a href=\'learnMore\'&gt;&lt;u&gt;More details here.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">We\'ve partnered with Stripe for WooPayments. You\'ll be directed to Stripe\'s site for sign-up. We\'ll ask you to verify your business and payment details.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Begin setup</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about verifying your information with WooPayments.</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Set up</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_setup_description">By using WooCommerce Payments you agree to be bound by our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and acknowledge that you have read our &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacy Policy&lt;/u&gt;&lt;/a&gt;.</string>
 
     <!--
     Support Request

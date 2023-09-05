@@ -1,0 +1,2 @@
+15.1:
+Wist je dat je met Tap to Pay kaartbetalingen kan accepteren met je telefoon? We hebben de ervaring verbeterd zodat dit nog eenvoudiger is. Deze uitgave bevat ook stabiliteitsfixes voor het inloggen. Bedankt dat je voor WooCommerce hebt gekozen!

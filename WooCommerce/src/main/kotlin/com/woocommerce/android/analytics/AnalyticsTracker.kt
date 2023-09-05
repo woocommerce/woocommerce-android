@@ -7,19 +7,20 @@ import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
-import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Locale
 import java.util.UUID
 
-class AnalyticsTracker private constructor(private val context: Context) {
+class AnalyticsTracker private constructor(
+    private val context: Context,
+    private val selectedSite: SelectedSite,
+) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
-
-    private var site: SiteModel? = null
 
     private fun clearAllData() {
         clearAnonID()
@@ -83,8 +84,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         val finalProperties = properties.toMutableMap()
 
+        val selectedSiteModel = selectedSite.getOrNull()
         if (!isSiteless) {
-            site?.let {
+            selectedSiteModel?.let {
                 finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
@@ -92,6 +94,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
+        selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
 
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
@@ -107,12 +110,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         tracksClient?.flush()
     }
 
-    private fun refreshMetadata(newUsername: String?, site: SiteModel? = null) {
+    private fun refreshMetadata(newUsername: String?) {
         if (tracksClient == null) {
             return
         }
-
-        this.site = site
 
         if (!newUsername.isNullOrEmpty()) {
             username = newUsername
@@ -128,10 +129,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         }
     }
 
-    private fun refreshSiteMetadata(site: SiteModel) {
-        refreshMetadata(username, site)
-    }
-
     private fun storeUsagePref() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         prefs.edit().putBoolean(PREFKEY_SEND_USAGE_STATS, sendUsageStats).apply()
@@ -144,6 +141,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
+        private const val KEY_SITE_URL = "site_url"
 
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
@@ -580,6 +578,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ADD_DOMAIN = "add_domain"
         const val VALUE_LAUNCH_SITE = "launch_site"
         const val VALUE_PAYMENTS = "payments"
+        const val VALUE_WOO_PAYMENTS = "woocommerce-payments"
         const val VALUE_LOCAL_NAME_STORE = "store_name"
 
         // -- Product Selector
@@ -616,8 +615,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
                 }
             }
 
-        fun init(context: Context) {
-            instance = AnalyticsTracker(context.applicationContext)
+        fun init(context: Context, selectedSite: SelectedSite) {
+            instance = AnalyticsTracker(context.applicationContext, selectedSite)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
@@ -702,12 +701,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
             instance?.clearAllData()
         }
 
-        fun refreshMetadata(username: String?, site: SiteModel? = null) {
-            instance?.refreshMetadata(username, site)
-        }
-
-        fun refreshSiteMetadata(site: SiteModel) {
-            instance?.refreshSiteMetadata(site)
+        fun refreshMetadata(username: String?) {
+            instance?.refreshMetadata(username)
         }
     }
 }

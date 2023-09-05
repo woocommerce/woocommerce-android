@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-21 19:54:21+0000
+Translation-Revision-Date: 2023-08-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="store_onboarding_name_your_store_dialog_title">Título do site</string>
+    <string name="store_onboarding_task_name_store_description">Personalizar o nome da sua loja pode ajudar a otimização para mecanismos de busca.</string>
+    <string name="store_onboarding_task_name_store_title">Dê um nome à loja</string>
+    <string name="store_profiler_features_other">Outro</string>
+    <string name="store_profiler_features_plugins_and_extensions">Acesso a uma ampla variedade de plugins e extensões</string>
+    <string name="store_profiler_features_store_customization">Opções de personalização para o design da loja</string>
+    <string name="store_profiler_features_scale_business">Capacidade de crescer junto com o meu negócio</string>
+    <string name="store_profiler_features_ipp">Pagamentos presenciais</string>
+    <string name="store_profiler_features_payment_options">Opções de pagamento flexíveis e seguras</string>
+    <string name="store_profiler_features_sales_analytics">Relatórios abrangentes de vendas e análises</string>
+    <string name="store_profiler_features_product_management">Gerenciamento de produtos simplificado e acompanhamento de estoque</string>
+    <string name="store_profiler_features_main_button">Criar minha loja</string>
+    <string name="store_profiler_features_description">Conte o que você mais quer\nusar no nosso aplicativo.</string>
+    <string name="store_profiler_features_title">Em quais funcionalidades\nvocê mais tem interesse?</string>
+    <string name="store_creation_store_name_default">Nome da loja</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Aceite pagamentos presenciais:&lt;/b&gt; aumente suas vendas com pagamentos presenciais. Transações com cartão seguras usando os leitores compatíveis ou do aplicativo.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gerencie e crie pedidos:&lt;/b&gt; pesquise, atualize ou crie novos pedidos instantaneamente. Simplifique seu processo de pedido.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Monitore as vendas e os produtos populares:&lt;/b&gt; fique por dentro de vendas em tempo real e produtos populares para aumentar a lucratividade da sua loja.</string>
+    <string name="store_creation_in_progress_title_2">Amplie os recursos \nda sua loja</string>
+    <string name="store_creation_in_progress_title_1">Quase pronta! Sua loja está\nse desenvolvendo </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Ativar NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">Pacote de provisão em pequenas quantidades (identificação obrigatória)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Pacote para envio por via terrestre em quantidade limitada - Desinfetantes, tintas e fixadores de cabelo em spray, aerossol, propano, butano, produtos de limpeza etc. - Fragrâncias, esmalte de unha e removedor de esmalte, solventes, higienizador para mãos, álcool isopropílico, produtos à base de etanol etc. - Outros materiais em quantidade limitada usados em superfícies (cosméticos, produtos de limpeza, tintas etc.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Pacote de isqueiros - Isqueiros autorizados</string>
+    <string name="shipping_label_hazmat_option_id8000">Pacote com artigo de consumo (ID8000) - Artigo de consumo (ID8000) elegível para envio por via aérea (aerossol não inflamável, líquidos combustíveis inflamáveis, substâncias tóxicas, outros materiais perigosos)</string>
+    <string name="shipping_label_hazmat_option_ground_only">Materiais perigosos para apenas envio por via terrestre (para itens que não estejam listados, mas sejam restritos a superfícies)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">Pacote com provisão em quantidade muito pequena (como pequenos volumes de líquidos inflamáveis ou materiais perigosos para o meio ambiente, corrosivos ou tóxicos; com identificação obrigatória)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">Divisão 6.2 - Materiais perigosos - Materiais biológicos (como kits de teste em laboratório, resultados de kit de teste de covid autorizados)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">Divisão 6.1 - Pacote com materiais tóxicos (com LD50 de 50 mg/kg ou menos) - (pesticidas, herbicidas etc.)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">Divisão 5.2 - Pacote com peróxidos orgânicos</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Divisão 5.1 - Pacote com oxidadores - Peróxido de hidrogênio (concentração de 8 a 20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">Divisão 4.1 - Sólidos inflamáveis que podem ser enviados por correio e pacote com caixas de fósforo - Caixas de fósforo, sólidos inflamáveis que podem ser enviados por correio</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">Classe 9 - Pacote de materiais magnéticos</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Classe 9 - Baterias de lítio, pacote não identificado - Novos dispositivos eletrônicos instalados ou embalados com baterias de lítio (sem identificação)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">Classe 9 - Pacote com gelo seco (limitado a 2,27 kg em envio por via aérea)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">Classe 9 - Baterias de lítio, pacote identificado - Novos dispositivos eletrônicos embalados com baterias de lítio (identificação UN3481 ou UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">Classe 9 - Bateria de lítio - Pacote de devolução - Dispositivos eletrônicos usados contendo ou embalados com baterias de lítio (identificação obrigatória)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">Classe 9 - Bateria de lítio identificada - Pacote para apenas envio por via terrestre - Novas baterias de lítio de substituição ou individuais (identificação UN3480 ou UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">Classe 8 - Pacote com bateria úmida sem riscos de derramamento - Baterias de chumbo-ácido seladas</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">Classe 8 - Pacote com materiais corrosivos - Materiais corrosivos elegíveis a envio por via aérea (determinados produtos de limpeza ou componentes de controle de ervas daninhas/florestal etc.)</string>
+    <string name="shipping_label_hazmat_option_class_7">Classe 7 - Pacote com materiais radioativos (como detectores de fumaça, minerais, mira de arma etc.)</string>
+    <string name="shipping_label_hazmat_option_class_6">Classe 6 - Pacote (materiais venenosos)</string>
+    <string name="shipping_label_hazmat_option_class_5">Classe 5 - Pacote (oxidadores)</string>
+    <string name="shipping_label_hazmat_option_class_4">Classe 4 - Pacote (sólidos inflamáveis)</string>
+    <string name="shipping_label_hazmat_option_class_3">Classe 3 - Pacote (higienizador para mãos, álcool isopropílico, produtos à base de etanol, líquidos inflamáveis etc.)</string>
+    <string name="shipping_label_hazmat_option_class_1">Classe 1 - Pacote com fusível/propulsor de brinquedo</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">Pacote com etanol elegível a envio por via aérea - (envios de higienizador para mãos e fragrância autorizados)</string>
+    <string name="dialog_ok">OK</string>
     <string name="store_creation_country_list_picker_toolbar_title">Selecione um país</string>
     <string name="store_creation_country_picker_current_location_description">Detectamos sua localização automaticamente. Faça a alteração aqui se estiver incorreta.</string>
     <string name="store_creation_country_picker_title">Onde fica localizada sua empresa?</string>
@@ -26,7 +74,6 @@ Language: pt_BR
     <string name="free_trial_feature_built_in_seo">SEO integrada</string>
     <string name="free_trial_feature_design_editing">Design e edição sem código</string>
     <string name="free_trial_feature_store_management">Ferramentas de gerenciamento da loja</string>
-    <string name="free_trial_summary_try_button">Crie sua loja</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Propriedade da loja sem problemas</string>
     <string name="free_trial_summary_grow_your_business">Expanda seus negócios</string>
     <string name="free_trial_summary_start_selling_quickly">Comece a vender rapidamente</string>
@@ -159,13 +206,7 @@ Language: pt_BR
     <string name="more_settings">Mais configurações</string>
     <string name="maybe_later">Talvez depois</string>
     <string name="product_sharing_regenerate">Gravar novamente</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Receba notificações de todas as vendas:&lt;/b&gt; não perca oportunidades com as notificações instantâneas de venda. Receba alertas de cada venda para comemorar seu sucesso e ficar por dentro da atividade da sua loja.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Adicione e edite produtos com um toque:&lt;/b&gt; adicione novos produtos, atualize detalhes, faça upload de imagens e gerencie variações direto do aplicativo. Mantenha seu inventário atualizado sem esforços.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Receba pagamentos presencialmente:&lt;/b&gt; amplie suas oportunidades de venda com pagamentos presenciais. Use o aplicativo para processar transações com cartão de crédito de forma segura e também para se conectar com leitores de cartão compatíveis em pagamentos presenciais.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gerencie e crie pedidos:&lt;/b&gt; lide com os pedidos facilmente. Pesquise, mude e navegue pelos status dos pedidos. Faça novos pedidos a qualquer momento para compras na loja física ou pelo telefone. Simplifique o processo de gerenciamento do seu pedido.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Monitore vendas e produtos populares:&lt;/b&gt; fique por dentro do desempenho da sua loja em tempo real. Identifique os produtos mais vendidos e tome decisões conscientes para obter o máximo de lucro.</string>
     <string name="store_creation_in_progress_description_1">Você receberá uma notificação quando a loja estiver pronta. Sente-se, relaxe e veja a magia acontecer enquanto compartilhamos dicas úteis. 🔮</string>
-    <string name="store_creation_in_progress_title_1">Criando sua loja. Isso só vai levar alguns minutos</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">Um código PIN é necessário, mas ele ainda não é compatível com o Tap to Pay. Considere usar um leitor de cartão externo</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Compre um leitor de cartão</string>
     <string name="order_sync_coupon_removed">Não foi possível aplicar o cupom, por isso ele foi removido do pedido</string>
@@ -277,11 +318,8 @@ Language: pt_BR
     <string name="store_creation_profiler_industry_home_furniture_garden">Casa, mobília e jardim</string>
     <string name="store_creation_profiler_industry_food_drink">Alimentação e bebidas</string>
     <string name="store_creation_profiler_industry_health_beauty">Saúde e beleza</string>
-    <string name="store_creation_in_progress_title_6">Abrindo as portas</string>
-    <string name="store_creation_in_progress_title_5">Acendendo as luzes</string>
-    <string name="store_creation_in_progress_title_4">Dando os toques finais</string>
-    <string name="store_creation_in_progress_title_3">Organizando o estoque</string>
-    <string name="store_creation_in_progress_title_2">Fazendo o alicerce</string>
+    <string name="store_creation_in_progress_title_4">Abrindo as portas</string>
+    <string name="store_creation_in_progress_title_3">Acendendo as luzes</string>
     <string name="notifications_permission_description">Precisamos da sua permissão para enviar notificações por push sobre novos pedidos, avaliações etc. para o seu dispositivo.</string>
     <string name="notifications_permission_title">Notificações</string>
     <string name="product_type_composite">Produto composto</string>
@@ -321,6 +359,7 @@ Language: pt_BR
     <string name="free_trial_feature_social_advertising">Publicidade social</string>
     <string name="free_trial_feature_premium_themes">Temas premium</string>
     <string name="free_trial_summary_credit_card_message">Não é necessário ter cartão de crédito.</string>
+    <string name="free_trial_summary_try_button">Experimente gratuitamente</string>
     <string name="free_trial_summary_try_it">Experimente gratuitamente por 14 dias.</string>
     <string name="free_trial_summary_advertise">Oferecemos tudo que você precisa para criar sua loja online e faze-la crescer, desenvolvida pelo WooCommerce e hospedada no WordPress.com.</string>
     <string name="free_trial_summary_title">Lance sua loja em poucos dias e cresça por bastante tempo</string>

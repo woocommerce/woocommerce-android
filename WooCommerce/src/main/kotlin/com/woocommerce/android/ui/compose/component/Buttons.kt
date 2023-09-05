@@ -206,6 +206,7 @@ fun WCSelectableChip(
         backgroundColor = Color.Transparent,
     ),
     isSelected: Boolean,
+    shape: RoundedCornerShape = RoundedCornerShape(50),
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -214,7 +215,7 @@ fun WCSelectableChip(
         contentPadding = contentPadding,
         interactionSource = interactionSource,
         colors = if (isSelected) selectedButtonColors else defaultButtonColors,
-        shape = RoundedCornerShape(50),
+        shape = shape,
     ) {
         if (leadingIcon != null) {
             leadingIcon()

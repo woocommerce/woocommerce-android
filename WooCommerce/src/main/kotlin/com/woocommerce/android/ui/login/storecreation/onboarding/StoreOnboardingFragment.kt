@@ -70,19 +70,31 @@ class StoreOnboardingFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections.actionOnboardingFragmentToLaunchStoreFragment()
                     )
+
                 is NavigateToDomains ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
                     )
+
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment()
+                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment(
+                            taskId = event.taskId
+                        )
                     )
+
+                is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+                    findNavController().navigateSafely(
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToWooPaymentsPreSetupFragment()
+                    )
+
                 is NavigateToAboutYourStore ->
                     findNavController().navigateSafely(
                         StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToAboutYourStoreFragment()
                     )
+
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections

@@ -1,0 +1,2 @@
+15.1:
+¿Sabías que con la función Tocar para pagar puedes aceptar pagos con tarjeta con el teléfono? Hemos mejorado la experiencia inicial para facilitarlo aún más. Esta versión también incluye modificaciones de la estabilidad para acceder. Gracias por elegir WooCommerce.

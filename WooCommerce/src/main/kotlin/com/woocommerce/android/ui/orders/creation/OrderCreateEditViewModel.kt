@@ -1066,6 +1066,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onTaxHelpButtonClicked() = launch {
         val state = getTaxRatesInfoDialogState(_orderDraft.value.taxLines)
         triggerEvent(OrderCreateEditNavigationTarget.TaxRatesInfoDialog(state))
+        tracker.track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED)
     }
 
     fun onSetTaxRateClicked() = launch {

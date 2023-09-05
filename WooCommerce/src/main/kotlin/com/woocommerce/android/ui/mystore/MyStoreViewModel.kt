@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
@@ -124,6 +125,14 @@ class MyStoreViewModel @Inject constructor(
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
     private var jetpackMonitoringJob: Job? = null
+
+    val storeName = selectedSite.observe().map { site ->
+        if (!site?.displayName.isNullOrBlank()) {
+            site?.displayName
+        } else {
+            site?.name
+        } ?: resourceProvider.getString(R.string.store_creation_store_name_default)
+    }.asLiveData()
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)

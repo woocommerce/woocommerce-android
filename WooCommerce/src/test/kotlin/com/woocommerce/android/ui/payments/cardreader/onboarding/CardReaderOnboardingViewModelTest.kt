@@ -29,20 +29,19 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountUnderReview
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.WCPayError.WCPayNotInstalledState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.CashOnDeliveryDisabledState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.GenericErrorState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.LoadingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.NoConnectionErrorState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeExtensionError
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError.WCPayNotInstalledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -77,6 +76,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val gatewayStore: WCGatewayStore = mock()
+    private val errorClickHandler: CardReaderOnboardingErrorCtaClickHandler = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -97,7 +97,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -117,8 +117,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
-            assertThat((viewModel.event.value as OnboardingEvent.ContinueToConnection).cardReaderType)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
+            assertThat((viewModel.event.value as CardReaderOnboardingEvent.ContinueToConnection).cardReaderType)
                 .isEqualTo(CardReaderType.EXTERNAL)
         }
 
@@ -139,8 +139,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
-            assertThat((viewModel.event.value as OnboardingEvent.ContinueToConnection).cardReaderType)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
+            assertThat((viewModel.event.value as CardReaderOnboardingEvent.ContinueToConnection).cardReaderType)
                 .isEqualTo(CardReaderType.BUILT_IN)
         }
 
@@ -614,7 +614,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given incoming wcpay not installed in country, when view model init, then wc pay not installed shown`() =
+    fun `given incoming wcpay not installed, when view model init, then wc pay not installed shown`() =
         testBlocking {
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(
@@ -627,6 +627,136 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(WCPayNotInstalledState::class.java)
+        }
+
+    @Test
+    fun `given handler returned show error and refresh, when clicked on wcpay not installed CTA, then error shown and refreshed state`() =
+        testBlocking {
+            val errorText = "error"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(errorText))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotInstalled,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayNotInstalledState)
+                .actionButtonAction.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(errorText))
+            )
+
+            verify(onboardingChecker).getOnboardingState()
+        }
+
+    @Test
+    fun `given returned refresh, when clicked on wcpay not installed CTA, then error shown`() =
+        testBlocking {
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh)
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotInstalled,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayNotInstalledState)
+                .actionButtonAction.invoke()
+
+            verify(onboardingChecker).getOnboardingState()
+        }
+
+    @Test
+    fun `given handler returned show error and refresh, when clicked on wcpay not activated CTA, then error shown and refreshed state`() =
+        testBlocking {
+            val errorText = "error"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(errorText))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotActivated,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
+                .actionButtonAction.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(errorText))
+            )
+
+            verify(onboardingChecker).getOnboardingState()
+        }
+
+    @Test
+    fun `given returned refresh, when clicked on wcpay not activated CTA, then error shown`() =
+        testBlocking {
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh)
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotActivated,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
+                .actionButtonAction.invoke()
+
+            verify(onboardingChecker).getOnboardingState()
         }
 
     @Test
@@ -749,7 +879,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.WcPayInCountry)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -763,7 +893,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.Country)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -777,7 +907,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -796,7 +926,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .onContactSupportActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -816,7 +946,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -832,7 +962,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as UnsupportedErrorState.Country).onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -846,7 +976,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -860,7 +990,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as UnsupportedErrorState.StripeAccountInUnsupportedCountry)
                 .onContactSupportActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(OnboardingEvent.NavigateToSupport::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(CardReaderOnboardingEvent.NavigateToSupport::class.java)
         }
 
     @Test
@@ -1091,7 +1221,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -1110,7 +1240,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -1159,7 +1289,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -1178,7 +1308,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -1265,7 +1395,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
                 .onLearnMoreActionClicked.invoke()
 
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            val event = viewModel.event.value as CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
             assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
@@ -1597,7 +1727,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                OnboardingViewState.SelectPaymentPluginState::class.java
+                CardReaderOnboardingViewState.SelectPaymentPluginState::class.java
             )
         }
 
@@ -1610,7 +1740,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             assertThat(viewStateData.cardIllustration).isNotNull()
         }
 
@@ -1623,7 +1753,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             assertThat(viewStateData.headerLabel).isNotNull()
         }
 
@@ -1636,7 +1766,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             assertThat(viewStateData.choosePluginHintLabel).isNotNull()
         }
 
@@ -1649,7 +1779,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             assertThat(viewStateData.selectWcPayButtonLabel).isNotNull
         }
 
@@ -1662,7 +1792,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             assertThat(viewStateData.selectStripeButtonLabel).isNotNull
         }
 
@@ -1675,7 +1805,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             assertThat(viewStateData.confirmPaymentMethodButtonLabel).isNotNull()
         }
 
@@ -1689,7 +1819,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             val state = (
-                viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+                viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
                 )
             assertThat(state.cardIllustration)
                 .describedAs("Check illustration")
@@ -1752,7 +1882,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             viewStateData.onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
 
             assertThat(viewModel.viewStateData.value).isEqualTo(LoadingState)
@@ -1768,7 +1898,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             viewStateData.onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
 
             verify(appPrefsWrapper).removeLastConnectedCardReaderId()
@@ -1784,7 +1914,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             viewStateData.onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
 
             verify(cardReaderManager).disconnectReader()
@@ -1824,7 +1954,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
 
-            val viewStateData = viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState
+            val viewStateData = viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState
             viewStateData.onConfirmPaymentMethodClicked.invoke(STRIPE_EXTENSION_GATEWAY)
 
             assertThat(viewModel.viewStateData.value).isEqualTo(LoadingState)
@@ -1837,13 +1967,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 WcpayNotActivated
             )
             val viewModel = createVM()
-            val receivedViewStates = mutableListOf<OnboardingViewState>()
+            val receivedViewStates = mutableListOf<CardReaderOnboardingViewState>()
             viewModel.viewStateData.observeForever {
                 receivedViewStates.add(it)
             }
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
-                .refreshButtonAction.invoke()
+                .actionButtonAction.invoke()
 
             assertThat(receivedViewStates[1]).isEqualTo(LoadingState)
         }
@@ -1915,7 +2045,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .onButtonActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
         }
 
     @Test
@@ -1943,7 +2073,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .onButtonActionClicked.invoke()
 
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -1967,7 +2097,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
                 .onButtonActionClicked.invoke()
             assertThat(viewModel.event.value)
-                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
 
     @Test
@@ -2195,13 +2325,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
 
-            verify(tracker).trackOnboardingCtaTappedState(
-                CashOnDeliveryDisabled(
-                    countryCode = countryCode,
-                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
-                    version = pluginVersion
-                )
-            )
+            verify(tracker).trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
         }
 
     @Test
@@ -2295,7 +2419,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(ChoosePaymentGatewayProvider)
 
             val viewModel = createVM()
-            (viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState)
+            (viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState)
                 .onConfirmPaymentMethodClicked.invoke(WOOCOMMERCE_PAYMENTS)
 
             verify(tracker).trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
@@ -2308,7 +2432,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 .thenReturn(ChoosePaymentGatewayProvider)
 
             val viewModel = createVM()
-            (viewModel.viewStateData.value as OnboardingViewState.SelectPaymentPluginState)
+            (viewModel.viewStateData.value as CardReaderOnboardingViewState.SelectPaymentPluginState)
                 .onConfirmPaymentMethodClicked.invoke(STRIPE_EXTENSION_GATEWAY)
 
             verify(tracker).trackPaymentGatewaySelected(STRIPE_EXTENSION_GATEWAY)
@@ -2352,6 +2476,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         selectedSite,
         appPrefsWrapper,
         cardReaderManager,
-        gatewayStore
+        gatewayStore,
+        errorClickHandler,
     )
 }

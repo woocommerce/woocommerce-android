@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 11:54:04+0000
+Translation-Revision-Date: 2023-08-29 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_onboarding_name_your_store_dialog_title">站点标题</string>
+    <string name="store_onboarding_task_name_store_description">自定义商店名称也有助于优化您商店的搜索引擎。</string>
+    <string name="store_onboarding_task_name_store_title">为您的商店取名</string>
+    <string name="store_profiler_features_other">其他</string>
+    <string name="store_profiler_features_plugins_and_extensions">获取各种插件和扩展程序</string>
+    <string name="store_profiler_features_store_customization">用于设计我的商店的自定义选项</string>
+    <string name="store_profiler_features_scale_business">可随着业务发展而扩展</string>
+    <string name="store_profiler_features_ipp">现场付款</string>
+    <string name="store_profiler_features_payment_options">灵活可靠的付款选项</string>
+    <string name="store_profiler_features_sales_analytics">全面的销售和分析报告</string>
+    <string name="store_profiler_features_product_management">轻松管理产品和跟踪库存</string>
+    <string name="store_profiler_features_main_button">创建我的商店</string>
+    <string name="store_profiler_features_description">告诉我们您期待\n在我们的应用程序中使用的功能。</string>
+    <string name="store_profiler_features_title">您对哪些功能\n最感兴趣？</string>
+    <string name="store_creation_store_name_default">商店名称</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#现场付款：&lt;/b&gt;通过现场付款提高您的销售额。 通过我们的应用程序或兼容读卡器为刷卡交易提供安全保障。</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#管理和创建订单：&lt;/b&gt;即时搜索、更新或创建新订单。 简化您的订单流程。</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#跟踪销售额和热销产品：&lt;/b&gt;随时了解实时销售额和热销产品，以提升您商店的利润率。</string>
+    <string name="store_creation_in_progress_title_2">扩展您商店的\n功能</string>
+    <string name="store_creation_in_progress_title_1">马上就好！ 您的商店\n初具雏形 </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">启用 NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">小批量供应包装（必须标记）</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">有限数量基础包装 — 气雾剂、喷雾消毒剂、喷漆、定型喷雾、丙烷、丁烷、清洁产品等。 - 芳香剂、指甲油、洗甲水、溶剂、洗手液、擦洗酒精、乙醇基产品等 - 其他有限数量表面物质（化妆品、清洁产品、油漆等）</string>
+    <string name="shipping_label_hazmat_option_lighters">打火机包装 — 获授权的打火机</string>
+    <string name="shipping_label_hazmat_option_id8000">ID8000 消费品包装 — 符合空气条件的 ID8000 消费品（不易燃气雾剂、易燃可燃液体、有毒物质、各种危险物质）</string>
+    <string name="shipping_label_hazmat_option_ground_only">仅适用于基础包装的危险物质（仅适用于未列出但仅限用于表面的物品)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">例外数量供应包装（如少量易燃液体、腐蚀性、有毒或对环境有害的物质 — 必须标记）</string>
+    <string name="shipping_label_hazmat_option_division_6_2">类别 6.2 — 危险物质 — 生物材料（如实验室检测试剂盒、获授权的 COVID 检测试剂盒返回包）</string>
+    <string name="shipping_label_hazmat_option_division_6_1">类别 6.1 — 有毒物质包装（LD50 小于等于 50mg/kg）—（杀虫剂、除草剂等）</string>
+    <string name="shipping_label_hazmat_option_division_5_2">类别 5.2 — 有机过氧化物包装</string>
+    <string name="shipping_label_hazmat_option_division_5_1">类别 5.1 — 氧化剂包装 — 过氧化氢（8–20%% 浓度）</string>
+    <string name="shipping_label_hazmat_option_division_4_1">类别 4.1 — 可邮寄的易燃固体和安全火柴包装 — 安全/火柴盒、卡纸夹式火柴、可邮寄的易燃固体</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">第 9 类 — 磁性物质包装</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">第 9 类 — 锂电池，无标记包装 — 安装或包装有锂电池的新电子设备（无标记）</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">第 9 类 — 干冰包装（如果空运，重量不得超过 5 磅）</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">第 9 类 — 锂电池，有标记包装 — 包装有锂电池的新电子设备（标有 UN3481 或 UN3091）</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">第 9 类 — 锂电池 — 退货包装 — 含有或包装有锂电池的二手电子设备（必须标记）</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">第 9 类 — 已标记的锂电池 — 仅基础包装 — 新的单体或备用锂电池（标有 UN3480 或 UN3090）</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">第 8 类 — 非溢漏式湿电池包装 — 密封铅酸电池</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">第 8 类 — 腐蚀性物质包装 — 符合空气条件的腐蚀性物质（某些清洁剂或除杂/除草剂等）</string>
+    <string name="shipping_label_hazmat_option_class_7">第 7 类 — 放射性物质包装（如烟雾探测器、矿物、射击瞄准具等）</string>
+    <string name="shipping_label_hazmat_option_class_6">第 6 类 — 包装（有毒物质）</string>
+    <string name="shipping_label_hazmat_option_class_5">第 5 类 — 包装（氧化剂）</string>
+    <string name="shipping_label_hazmat_option_class_4">第 4 类 — 包装（易燃固体）</string>
+    <string name="shipping_label_hazmat_option_class_3">第 3 类 — 包装（洗手液、擦洗酒精、乙醇基产品、易燃液体等）</string>
+    <string name="shipping_label_hazmat_option_class_1">第 1 类 — 玩具推进燃料/安全导火索包装</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">符合空气条件的乙醇包装 —（获授权的芳香剂及洗手液装运）</string>
+    <string name="dialog_ok">确定</string>
     <string name="store_creation_country_list_picker_toolbar_title">选择国家/地区</string>
     <string name="store_creation_country_picker_current_location_description">已自动检测到您的位置。 若信息有误，请在此进行更改。</string>
     <string name="store_creation_country_picker_title">您的企业设在哪里？</string>
@@ -26,7 +74,6 @@ Language: zh_CN
     <string name="free_trial_feature_built_in_seo">内置搜索引擎优化</string>
     <string name="free_trial_feature_design_editing">零代码设计与编辑</string>
     <string name="free_trial_feature_store_management">商店管理工具</string>
-    <string name="free_trial_summary_try_button">创建您的商店</string>
     <string name="free_trial_summary_hassle_free_store_ownership">安全无忧的商店所有权</string>
     <string name="free_trial_summary_grow_your_business">扩大业务</string>
     <string name="free_trial_summary_start_selling_quickly">快速开始销售</string>
@@ -159,13 +206,7 @@ Language: zh_CN
     <string name="more_settings">更多设置</string>
     <string name="maybe_later">稍后再说</string>
     <string name="product_sharing_regenerate">再写一遍</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#接收每一笔销售的通知：&lt;/b&gt;通过即时的销售通知，不会错过任何内容。 接收每一笔新销售的提醒，以便您能够庆祝成功并保持对商店活动的掌控。</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#只需轻触即可添加和编辑产品：&lt;/b&gt;通过应用添加新产品，更新详细信息，上传图片，并管理不同的变量。轻松保持库存的最新状态。</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#支持现场付款：&lt;/b&gt;通过现场接受付款，扩大您的销售机会。 使用该应用可以安全地处理信用卡交易，甚至可以与兼容的读卡器连接，以便实现便捷的现场付款。</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#管理和创建订单：&lt;/b&gt;轻松处理订单。 滚动、搜索和更改订单状态。 为商店内或电话购买即时快速地创建新订单。 简化您的订单管理流程。</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#跟踪销量和热门产品：&lt;/b&gt;随时了解您商店的实时表现。 识别您的畅销产品，并做出明智决策以实现最大的盈利。</string>
     <string name="store_creation_in_progress_description_1">商店准备就绪后，您将会收到通知！ 请坐好，放轻松，我们来施展魔法，同时分享实用的贴士。🔮</string>
-    <string name="store_creation_in_progress_title_1">正在创建您的商店！ 只需几分钟</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">需要 PIN 码，但尚不支持“点按付款”功能。 考虑使用外部读卡器</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">购买读卡器</string>
     <string name="order_sync_coupon_removed">优惠券无法使用并已从订单中删除</string>
@@ -277,11 +318,8 @@ Language: zh_CN
     <string name="store_creation_profiler_industry_home_furniture_garden">家居、家具和园艺</string>
     <string name="store_creation_profiler_industry_food_drink">食品和饮料</string>
     <string name="store_creation_profiler_industry_health_beauty">卫生和美容</string>
-    <string name="store_creation_in_progress_title_6">打开店门</string>
-    <string name="store_creation_in_progress_title_5">指引方向</string>
-    <string name="store_creation_in_progress_title_4">执行收尾工作</string>
-    <string name="store_creation_in_progress_title_3">整理库存空间</string>
-    <string name="store_creation_in_progress_title_2">奠定基础</string>
+    <string name="store_creation_in_progress_title_4">开门</string>
+    <string name="store_creation_in_progress_title_3">开灯</string>
     <string name="notifications_permission_description">我们需要您的许可，以便将新订单、评论等推送通知发送到您的设备。</string>
     <string name="notifications_permission_title">通知</string>
     <string name="product_type_composite">组合产品</string>
@@ -321,6 +359,7 @@ Language: zh_CN
     <string name="free_trial_feature_social_advertising">社交广告</string>
     <string name="free_trial_feature_premium_themes">高级版主题</string>
     <string name="free_trial_summary_credit_card_message">无需信用卡。</string>
+    <string name="free_trial_summary_try_button">免费试用</string>
     <string name="free_trial_summary_try_it">免费试用 14 天。</string>
     <string name="free_trial_summary_advertise">我们提供一切建立和发展在线商店所需的服务，由 WooCommerce 提供支持，且托管在 WordPress.com 上。</string>
     <string name="free_trial_summary_title">即刻启动，持续成长</string>
