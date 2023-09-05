@@ -268,6 +268,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             ),
             actionButtonPrimary = ActionButton(
                 UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button),
+                icon = R.drawable.ic_external,
                 action = actionButtonActionPrimary
             ),
             actionButtonSecondary = ActionButton(
@@ -338,7 +339,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
 
     data class ActionButton(
         val label: UiString,
-        val icon: Int? = null,
+        @DrawableRes val icon: Int? = null,
         val action: () -> Unit
     )
 }

@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
@@ -55,14 +58,17 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingEvent.NavigateToSupport -> {
                     requireActivity().startHelpActivity(HelpOrigin.CARD_READER_ONBOARDING)
                 }
+
                 is CardReaderOnboardingEvent.NavigateToUrlInWPComWebView -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
                     )
                 }
+
                 is CardReaderOnboardingEvent.NavigateToUrlInGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+
                 is CardReaderOnboardingEvent.ContinueToHub -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
@@ -71,6 +77,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+
                 is CardReaderOnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
@@ -80,6 +87,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+
                 is MultiLiveEvent.Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
@@ -117,20 +125,28 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         when (state) {
             is CardReaderOnboardingViewState.GenericErrorState ->
                 showGenericErrorState(layout, state)
+
             is CardReaderOnboardingViewState.NoConnectionErrorState ->
                 showNetworkErrorState(layout, state)
+
             is CardReaderOnboardingViewState.LoadingState ->
                 showLoadingState(layout, state)
+
             is CardReaderOnboardingViewState.UnsupportedErrorState ->
                 showCountryNotSupportedState(layout, state)
+
             is CardReaderOnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
+
             is CardReaderOnboardingViewState.StripeAcountError ->
                 showStripeAccountError(layout, state)
+
             is CardReaderOnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
+
             is CardReaderOnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
+
             is CardReaderOnboardingViewState.CashOnDeliveryDisabledState ->
                 showCashOnDeliveryDisabledState(layout, state)
         }.exhaustive
@@ -163,6 +179,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                         R.string.card_reader_onboarding_cash_on_delivery_enable_failure
                     )
                 }
+
                 null -> {}
             }
         }
@@ -288,11 +305,13 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
 
         UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary.label)
+        binding.primaryButton.setWhiteIcon(state.actionButtonPrimary.icon)
         binding.primaryButton.setOnClickListener {
             state.actionButtonPrimary.action.invoke()
         }
 
         UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setWhiteIcon(state.actionButtonSecondary?.icon)
         binding.secondaryButton.setOnClickListener {
             state.actionButtonSecondary?.action?.invoke()
         }
@@ -340,6 +359,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
+
+    private fun MaterialButton.setWhiteIcon(@DrawableRes icon: Int?) {
+        icon?.let {
+            setIconResource(it)
+            iconTint = ColorStateList.valueOf(getColor(context, R.color.woo_white))
+            iconGravity = MaterialButton.ICON_GRAVITY_TEXT_END
+            iconSize = resources.getDimensionPixelSize(R.dimen.major_125)
+        }
+    }
 }
 
 sealed class CardReaderOnboardingParams : Parcelable {

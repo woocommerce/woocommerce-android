@@ -43,6 +43,10 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
                     }
                 }
             }
+
+            CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP -> {
+                TODO()
+            }
         }
 
     private suspend fun installAndActivateWcPayPlugin() =
@@ -98,4 +102,5 @@ enum class OnboardingCtaTapped(val value: String) {
 enum class CardReaderOnboardingCTAErrorType {
     WC_PAY_NOT_INSTALLED,
     WC_PAY_NOT_ACTIVATED,
+    WC_PAY_NOT_SETUP,
 }

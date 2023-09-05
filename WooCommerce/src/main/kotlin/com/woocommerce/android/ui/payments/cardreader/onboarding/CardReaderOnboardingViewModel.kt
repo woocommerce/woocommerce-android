@@ -193,7 +193,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
             is SetupNotCompleted ->
                 viewState.value = when (state.preferredPlugin) {
                     WOOCOMMERCE_PAYMENTS ->
-                        WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
+                        WCPayNotSetupState(
+                            actionButtonActionPrimary = {
+                                handleErrorCtaClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+                            },
+                            actionButtonActionSecondary = ::refreshState,
+                            onLearnMoreActionClicked = ::onLearnMoreClicked
+                        )
                     STRIPE_EXTENSION_GATEWAY ->
                         StripeExtensionNotSetupState(
                             ::refreshState, ::onLearnMoreClicked
