@@ -55,7 +55,7 @@ fun TaxRateSelectorScreen(
 ) {
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
-        topBar = { Toolbar(onDismiss) }
+        topBar = { Toolbar(onDismiss, onInfoIconClicked) }
     ) {
         Column(
             modifier = Modifier.padding(it), horizontalAlignment = Alignment.CenterHorizontally
@@ -68,7 +68,7 @@ fun TaxRateSelectorScreen(
 }
 
 @Composable
-private fun Toolbar(onDismiss: () -> Unit) {
+private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
     TopAppBar(
         title = { Text(stringResource(R.string.tax_rate_selector_title)) },
         navigationIcon = {
@@ -82,11 +82,13 @@ private fun Toolbar(onDismiss: () -> Unit) {
         backgroundColor = colorResource(id = R.color.color_toolbar),
         elevation = 0.dp,
         actions = {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
-                contentDescription = stringResource(R.string.tax_rate_selector_info_icon_content_description),
-                tint = MaterialTheme.colors.primary,
-            )
+            IconButton(onClick = onInfoIconClicked) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                    contentDescription = stringResource(R.string.tax_rate_selector_info_icon_content_description),
+                    tint = MaterialTheme.colors.primary,
+                )
+            }
             Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
         }
     )
