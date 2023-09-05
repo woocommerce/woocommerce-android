@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -118,6 +119,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 is CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh -> {
                     triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
                     refreshState()
+                }
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView -> {
+                    triggerEvent(NavigateToUrlInWPComWebView(reaction.url))
                 }
             }
         }
