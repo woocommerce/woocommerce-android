@@ -146,7 +146,8 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
     sealed class StripeAccountError(
         val headerLabel: UiString,
         val hintLabel: UiString,
-        val buttonLabel: UiString? = null
+        val actionButtonPrimary: ActionButton? = null,
+        val actionButtonSecondary: ActionButton? = null,
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
         abstract val onContactSupportActionClicked: (() -> Unit)
         abstract val onLearnMoreActionClicked: (() -> Unit)
@@ -154,17 +155,21 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
 
         @DrawableRes
         val illustration = R.drawable.img_products_error
-        val contactSupportLabel =
-            UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true)
-        val learnMoreLabel =
-            UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
+        val learnMoreButton = ActionButton(
+            label = UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true),
+            action = onContactSupportActionClicked
+        )
+        val contactSupportButton = ActionButton(
+            label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+            action = onLearnMoreActionClicked
+        )
 
         data class StripeAccountUnderReviewState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
-            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
+            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint)
         )
 
         data class StripeAccountRejectedState(
@@ -206,7 +211,10 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             ) else UiString.UiStringRes(
                 R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
             ),
-            buttonLabel = UiString.UiStringRes(R.string.skip)
+            actionButtonPrimary = ActionButton(
+                label = UiString.UiStringRes(R.string.skip),
+                action = onButtonActionClicked
+            )
         )
     }
 
@@ -337,7 +345,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         )
     }
 
-    data class ActionButton(
+        data class ActionButton(
         val label: UiString,
         @DrawableRes val icon: Int? = null,
         val action: () -> Unit

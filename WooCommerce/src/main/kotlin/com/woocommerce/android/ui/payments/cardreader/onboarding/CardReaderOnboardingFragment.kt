@@ -263,19 +263,28 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
+
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportButton.label)
         binding.textSupport.setOnClickListener {
             state.onContactSupportActionClicked.invoke()
         }
 
-        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
-        state.onButtonActionClicked?.let { onButtonActionClicked ->
-            binding.button.setOnClickListener {
+        UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary?.label)
+        state.actionButtonPrimary?.action?.let { onButtonActionClicked ->
+            binding.primaryButton.setOnClickListener {
+                onButtonActionClicked.invoke()
+            }
+        }
+
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        state.actionButtonSecondary?.action?.let { onButtonActionClicked ->
+            binding.secondaryButton.setOnClickListener {
                 onButtonActionClicked.invoke()
             }
         }
