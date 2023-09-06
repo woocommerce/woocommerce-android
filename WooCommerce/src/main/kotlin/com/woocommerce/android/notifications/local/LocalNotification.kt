@@ -30,7 +30,7 @@ sealed class LocalNotification(
         title = R.string.local_notification_store_creation_complete_title,
         description = R.string.local_notification_store_creation_complete_description,
         type = LocalNotificationType.STORE_CREATION_FINISHED,
-        delay = 5,
+        delay = 1,
         delayUnit = TimeUnit.MINUTES
     ) {
 

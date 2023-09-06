@@ -67,6 +67,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     private fun buildNotification(
         id: Int,
         siteId: Long,

@@ -187,7 +187,7 @@ class MainActivityViewModel @Inject constructor(
             triggerEvent(restartEvent)
         } ?: {
             launch {
-                //Refresh site db in case the remoteSiteId belongs to a site that has just been created
+                // Refresh site db in case the remoteSiteId belongs to a site that has just been created
                 sitePickerRepository.fetchWooCommerceSites()
                 // Try again to match siteId
                 siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
