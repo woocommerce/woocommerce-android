@@ -17,7 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
+import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -115,6 +116,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         on { observeUnseenCount() } doReturn MutableStateFlow(1)
     }
     private val storeProfilerRepository: StoreProfilerRepository = mock()
+    private val sitePickerRepository: SitePickerRepository = mock()
 
     private val testAnnouncement = FeatureAnnouncement(
         appVersionName = "14.2",
@@ -311,7 +313,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         verify(selectedSite, atLeastOnce()).set(any())
         assertThat(viewModel.event.value)
-            .isEqualTo(RestartActivityForNotification(groupOrderPushId, orderNotification2))
+            .isEqualTo(RestartActivityForPushNotification(groupOrderPushId, orderNotification2))
     }
 
     @Test
@@ -324,7 +326,12 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
-        assertThat(viewModel.event.value).isEqualTo(RestartActivityForNotification(reviewPushId, reviewNotification2))
+        assertThat(viewModel.event.value).isEqualTo(
+            RestartActivityForPushNotification(
+                reviewPushId,
+                reviewNotification2
+            )
+        )
     }
 
     @Test
@@ -544,7 +551,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
-                }
+                },
+                sitePickerRepository = sitePickerRepository
             )
         )
     }
