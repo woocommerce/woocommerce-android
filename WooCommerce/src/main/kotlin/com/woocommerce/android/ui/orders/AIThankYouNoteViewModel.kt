@@ -10,6 +10,4 @@ import javax.inject.Inject
 class AIThankYouNoteViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     savedStateHandle: SavedStateHandle
-) : ScopedViewModel(savedStateHandle) {
-
-}
+) : ScopedViewModel(savedStateHandle)
