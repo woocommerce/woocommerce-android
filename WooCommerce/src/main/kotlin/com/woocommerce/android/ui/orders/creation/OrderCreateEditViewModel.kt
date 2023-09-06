@@ -122,6 +122,15 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.model.Address.Companion.EMPTY
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.Dispatchers
+import org.wordpress.android.fluxc.model.data.WCLocationModel
+import org.wordpress.android.fluxc.store.WCDataStore
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -140,6 +149,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
+    private val dataStore: WCDataStore,
+    private val selectedSite: SelectedSite,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -235,8 +246,14 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         launch {
             orderCreateEditRepository.fetchTaxBasedOnSetting().also {
-
-                viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
+                val isSetNewTaxRateButtonVisible: Boolean = when (it) {
+                    BillingAddress, ShippingAddress -> true
+                    else -> false
+                } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+                viewState = viewState.copy(
+                    taxBasedOnSettingLabel = it?.label ?: "",
+                    isSetNewTaxRateButtonVisible = isSetNewTaxRateButtonVisible
+                )
             }
         }
     }
@@ -682,7 +699,7 @@ class OrderCreateEditViewModel @Inject constructor(
             order.copy(
                 customerId = customerId,
                 billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
+                shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
             )
         }
     }
@@ -696,8 +713,8 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { order ->
             order.copy(
                 customerId = null,
-                billingAddress = Address.EMPTY,
-                shippingAddress = Address.EMPTY
+                billingAddress = EMPTY,
+                shippingAddress = EMPTY
             )
         }
     }
@@ -1074,8 +1091,56 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(OrderCreateEditNavigationTarget.TaxRateSelector(state))
     }
 
-    fun onTaxRateSelected(taxRate: TaxRate) {
-        Log.d("OrderCreateEdit", "onTaxRateSelected: $taxRate")
+    fun onTaxRateSelected(taxRate: TaxRate) = launch(Dispatchers.IO) {
+        dataStore.fetchCountriesAndStates(selectedSite.get())
+
+        val country: Location = dataStore.getCountries().first {
+            it.code == taxRate.countryCode
+        }.toAppModel()
+
+        val state: Location = dataStore.getStates(country.code).first {
+            it.code == taxRate.stateCode
+        }.toAppModel()
+
+        val city = if (taxRate.city.isNotNullOrEmpty()) {
+            taxRate.city
+        } else {
+            taxRate.cities?.first() ?: ""
+        }
+
+        val postCode = if (taxRate.postcode.isNotNullOrEmpty()) {
+            taxRate.postcode
+        } else {
+            taxRate.postCodes?.first() ?: ""
+        }
+
+        val address = EMPTY.copy(
+            country = country,
+            state = AmbiguousLocation.Defined(state),
+            city = city,
+            postcode = postCode,
+        )
+
+        launch {
+            val taxBasedOnSetting = orderCreateEditRepository.getTaxBasedOnSetting()
+            _orderDraft.update { order ->
+                when (taxBasedOnSetting) {
+                    BillingAddress -> {
+                        order.copy(
+                            billingAddress = address
+                        )
+                    }
+                    ShippingAddress -> {
+                        order.copy(
+                            shippingAddress = address
+                        )
+                    }
+                    else -> {
+                        order
+                    }
+                }
+            }
+        }
     }
 
     @Parcelize
@@ -1085,6 +1150,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
+        val isSetNewTaxRateButtonVisible: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
