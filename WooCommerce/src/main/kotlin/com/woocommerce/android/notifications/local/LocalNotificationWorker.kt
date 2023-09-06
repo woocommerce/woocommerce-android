@@ -15,6 +15,7 @@ import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DATA
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DESC
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_ID
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TITLE
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.ui.main.MainActivity
@@ -33,13 +34,13 @@ class LocalNotificationWorker @AssistedInject constructor(
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         val type = inputData.getString(LOCAL_NOTIFICATION_TYPE)
-        val id = inputData.getInt(LOCAL_NOTIFICATION_ID, -1)
+        val notificationId = inputData.getInt(LOCAL_NOTIFICATION_ID, -1)
         val title = inputData.getString(LOCAL_NOTIFICATION_TITLE)
         val description = inputData.getString(LOCAL_NOTIFICATION_DESC)
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
-
-        if (type != null && id != -1 && title != null && description != null) {
-            val notification = buildNotification(id, type, title, description, data)
+        val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
+        if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
+            val notification = buildNotification(notificationId, siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
                 appContext.getString(R.string.notification_channel_general_id),
                 notification,
@@ -48,7 +49,10 @@ class LocalNotificationWorker @AssistedInject constructor(
 
             AnalyticsTracker.track(
                 LOCAL_NOTIFICATION_DISPLAYED,
-                mapOf(AnalyticsTracker.KEY_TYPE to type)
+                mapOf(
+                    AnalyticsTracker.KEY_TYPE to type,
+                    AnalyticsTracker.KEY_BLOG_ID to data
+                )
             )
         } else {
             wooLogWrapper.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
@@ -65,6 +69,7 @@ class LocalNotificationWorker @AssistedInject constructor(
 
     private fun buildNotification(
         id: Int,
+        siteId: Long,
         type: String,
         title: String,
         description: String,
@@ -74,7 +79,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         tag = type,
         uniqueId = 0,
         remoteNoteId = 0,
-        remoteSiteId = 0,
+        remoteSiteId = siteId,
         icon = null,
         noteTitle = title,
         noteMessage = description,

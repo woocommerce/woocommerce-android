@@ -8,7 +8,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.extensions.isFreeTrial
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DATA
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
@@ -35,7 +35,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
         if (!canDisplayNotifications) cancelWork("Notifications permission not granted. Cancelling work.")
 
         val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
-        val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
+        val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
         return when (type) {
             STORE_CREATION_FINISHED,
             STORE_CREATION_INCOMPLETE -> Result.success()
@@ -44,14 +44,14 @@ class PreconditionCheckWorker @AssistedInject constructor(
             FREE_TRIAL_EXPIRED,
             SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
             FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
-            THREE_DAYS_AFTER_STILL_EXPLORING -> proceedIfFreeTrialAndMatchesSite(data?.toLongOrNull())
+            THREE_DAYS_AFTER_STILL_EXPLORING -> proceedIfFreeTrialAndMatchesSite(siteId)
 
             null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
 
-    private fun proceedIfFreeTrialAndMatchesSite(siteId: Long?): Result {
-        if (siteId == null) return cancelWork("Site id is null. Cancelling work.")
+    private fun proceedIfFreeTrialAndMatchesSite(siteId: Long): Result {
+        if (siteId == 0L) return cancelWork("Site id is missing. Cancelling work.")
 
         val notificationLinkedSite = siteStore.getSiteByLocalId(siteId.toInt())
         return if (notificationLinkedSite.isFreeTrial) {
