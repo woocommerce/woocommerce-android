@@ -791,6 +791,10 @@ class OrderDetailViewModel @Inject constructor(
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
     }
 
+    fun onAIThankYouNoteButtonClicked() {
+        triggerEvent(OrderNavigationTarget.AIThankYouNote)
+    }
+
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,

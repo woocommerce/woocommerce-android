@@ -167,7 +167,7 @@ class OrderDetailFragment :
         }
 
         binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
-            // add function here
+            viewModel.onAIThankYouNoteButtonClicked()
         }
 
         ViewCompat.setTransitionName(
