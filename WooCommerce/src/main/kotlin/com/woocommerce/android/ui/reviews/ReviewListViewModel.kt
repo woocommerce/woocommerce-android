@@ -155,7 +155,7 @@ class ReviewListViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             when (reviewRepository.fetchProductReviews(loadMore)) {
                 SUCCESS, NO_ACTION_NEEDED -> {
-                    _reviewList.value = reviewRepository.getCachedProductReviews()
+                    val productReviews = reviewRepository.getCachedProductReviews()
                         .filter {
                             if (viewState.isUnreadFilterEnabled) {
                                 it.read == false
@@ -163,6 +163,11 @@ class ReviewListViewModel @Inject constructor(
                                 true
                             }
                         }
+                    _reviewList.value = productReviews
+                    if (!loadMore && productReviews.size < 10 && viewState.isUnreadFilterEnabled) {
+                        viewState = viewState.copy(isLoadingMore = true)
+                        fetchReviewList(true)
+                    }
                 }
 
                 else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
