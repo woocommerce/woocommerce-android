@@ -665,7 +665,32 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given returned refresh, when clicked on wcpay not installed CTA, then error shown`() =
+    fun `given handler returned OpenWebView, when clicked on wcpay not setup, then open webview`() =
+        testBlocking {
+            val url = "url"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(url))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as WCPayError.WCPayNotSetupState)
+                .actionButtonActionPrimary.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderOnboardingEvent.NavigateToUrlInWPComWebView(url)
+            )
+        }
+
+    @Test
+    fun `given handler returned refresh, when clicked on wcpay not installed CTA, then get onboarding state`() =
         testBlocking {
             whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
                 .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh)

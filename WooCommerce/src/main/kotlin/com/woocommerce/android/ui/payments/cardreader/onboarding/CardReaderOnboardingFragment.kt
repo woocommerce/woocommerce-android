@@ -58,17 +58,14 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingEvent.NavigateToSupport -> {
                     requireActivity().startHelpActivity(HelpOrigin.CARD_READER_ONBOARDING)
                 }
-
                 is CardReaderOnboardingEvent.NavigateToUrlInWPComWebView -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
                     )
                 }
-
                 is CardReaderOnboardingEvent.NavigateToUrlInGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-
                 is CardReaderOnboardingEvent.ContinueToHub -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
@@ -77,7 +74,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
-
                 is CardReaderOnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
@@ -87,7 +83,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
-
                 is MultiLiveEvent.Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
