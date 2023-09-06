@@ -17,19 +17,19 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOU
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import org.wordpress.android.fluxc.store.SiteStore
 
 @HiltWorker
 class PreconditionCheckWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooLogWrapper: WooLogWrapper,
-    private val selectedSite: SelectedSite
+    private val siteStore: SiteStore
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         if (!canDisplayNotifications) cancelWork("Notifications permission not granted. Cancelling work.")
@@ -51,11 +51,13 @@ class PreconditionCheckWorker @AssistedInject constructor(
     }
 
     private fun proceedIfFreeTrialAndMatchesSite(siteId: Long?): Result {
-        val site = selectedSite.get()
-        return if (site.isFreeTrial && site.siteId == siteId) {
+        if (siteId == null) return cancelWork("Site id is null. Cancelling work.")
+
+        val notificationLinkedSite = siteStore.getSiteByLocalId(siteId.toInt())
+        return if (notificationLinkedSite.isFreeTrial) {
             Result.success()
         } else {
-            cancelWork("Store plan upgraded or a different site. Cancelling work.")
+            cancelWork("Store plan upgraded. Cancelling work.")
         }
     }
 
