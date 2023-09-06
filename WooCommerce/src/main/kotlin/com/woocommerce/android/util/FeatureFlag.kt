@@ -22,7 +22,8 @@ enum class FeatureFlag {
     BLAZE,
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     SHIPPING_ZONES,
-    BETTER_CUSTOMER_SEARCH_M2;
+    BETTER_CUSTOMER_SEARCH_M2,
+    AI_ORDER_DETAIL_THANK_YOU_NOTE;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -41,7 +42,8 @@ enum class FeatureFlag {
             PRIVACY_CHOICES,
             BLAZE,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
-            SHIPPING_ZONES -> true
+            SHIPPING_ZONES,
+            AI_ORDER_DETAIL_THANK_YOU_NOTE -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
