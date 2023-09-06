@@ -551,8 +551,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
-                },
-                sitePickerRepository = sitePickerRepository
+                }
             )
         )
     }

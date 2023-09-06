@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
-import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -69,7 +68,6 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
-    private val sitePickerRepository: SitePickerRepository,
     storeProfilerRepository: StoreProfilerRepository,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
@@ -185,19 +183,9 @@ class MainActivityViewModel @Inject constructor(
         siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
             selectedSite.set(updatedSite)
             triggerEvent(restartEvent)
-        } ?: {
-            launch {
-                // Refresh site db in case the remoteSiteId belongs to a site that has just been created
-                sitePickerRepository.fetchWooCommerceSites()
-                // Try again to match siteId
-                siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
-                    selectedSite.set(updatedSite)
-                    triggerEvent(restartEvent)
-                } ?: run {
-                    // If for any reason we can't get the store, show the default screen
-                    triggerEvent(ViewMyStoreStats)
-                }
-            }
+        } ?: run {
+            // If for any reason we can't get the store, show the default screen
+            triggerEvent(ViewMyStoreStats)
         }
     }
 

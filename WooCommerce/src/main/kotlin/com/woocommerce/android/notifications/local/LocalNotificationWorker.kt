@@ -3,7 +3,7 @@ package com.woocommerce.android.notifications.local
 import android.content.Context
 import android.content.Intent
 import androidx.hilt.work.HiltWorker
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISPLAYED
@@ -18,7 +18,9 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TITLE
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLogWrapper
 import dagger.assisted.Assisted
@@ -30,15 +32,23 @@ class LocalNotificationWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
-    private val wooLogWrapper: WooLogWrapper
-) : Worker(appContext, workerParams) {
-    override fun doWork(): Result {
+    private val wooLogWrapper: WooLogWrapper,
+    private val sitePickerRepository: SitePickerRepository,
+) : CoroutineWorker(appContext, workerParams) {
+
+    override suspend fun doWork(): Result {
         val type = inputData.getString(LOCAL_NOTIFICATION_TYPE)
         val notificationId = inputData.getInt(LOCAL_NOTIFICATION_ID, -1)
         val title = inputData.getString(LOCAL_NOTIFICATION_TITLE)
         val description = inputData.getString(LOCAL_NOTIFICATION_DESC)
         val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
+
+        // This means the new store is ready a we need to refresh the database with it
+        if (type == STORE_CREATION_FINISHED.value) {
+            sitePickerRepository.fetchWooCommerceSites()
+        }
+
         if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
             val notification = buildNotification(notificationId, siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
