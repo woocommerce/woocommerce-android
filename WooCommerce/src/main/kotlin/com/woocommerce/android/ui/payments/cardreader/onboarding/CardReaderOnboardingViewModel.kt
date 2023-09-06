@@ -113,6 +113,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun handleErrorCtaClick(errorType: CardReaderOnboardingCTAErrorType) {
         launch {
+            val prevState = viewState.value
             viewState.value = CardReaderOnboardingViewState.LoadingState
             when (val reaction = errorClickHandler(errorType)) {
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh -> refreshState()
@@ -122,6 +123,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 }
                 is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView -> {
                     triggerEvent(NavigateToUrlInWPComWebView(reaction.url))
+                    viewState.value = prevState!!
                 }
             }
         }
