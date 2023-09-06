@@ -21,6 +21,19 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: "☢️ Danger - PR Check"
+    command: .buildkite/commands/danger-pr-check.sh
+    plugins:
+      - docker#v5.8.0:
+          image: "public.ecr.aws/docker/library/ruby:3.2.2"
+          propagate-environment: true
+          environment:
+            - "GITHUB_TOKEN"
+    if: "build.pull_request.id != null"
+    retry:
+      manual:
+        permit_on_passed: true
+
   - label: "detekt"
     command: |
       echo "--- 🧹 Linting"

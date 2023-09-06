@@ -1,6 +1,12 @@
+inherit_mode:
+  merge:
+    - Include
+
 AllCops:
   Exclude:
     - vendor/**/*
+  Include:
+    - .buildkite/danger/**/*
   NewCops: enable
 
 Metrics/BlockLength:
@@ -16,3 +22,7 @@ Layout/LineLength:
 Naming/VariableNumber:
   Exclude:
     - fastlane/Fastfile
+
+Naming/FileName:
+  Exclude:
+    - .buildkite/danger/Dangerfile
