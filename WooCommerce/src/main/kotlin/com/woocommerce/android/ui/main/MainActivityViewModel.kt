@@ -185,10 +185,11 @@ class MainActivityViewModel @Inject constructor(
         siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
             selectedSite.set(updatedSite)
             triggerEvent(restartEvent)
-        } ?: run {
+        } ?: {
             launch {
                 //Refresh site db in case the remoteSiteId belongs to a site that has just been created
                 sitePickerRepository.fetchWooCommerceSites()
+                // Try again to match siteId
                 siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
                     selectedSite.set(updatedSite)
                     triggerEvent(restartEvent)
@@ -287,10 +288,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onLocalNotificationTapped(notification: Notification) {
-        val remoteSiteId = notification.data?.toLongOrNull() ?: 0L
-        if (remoteSiteId != selectedSite.get().siteId) {
+        if (notification.remoteSiteId != selectedSite.get().siteId) {
             changeSiteAndRestart(
-                remoteSiteId,
+                notification.remoteSiteId,
                 RestartActivityForLocalNotification(notification)
             )
         } else {
