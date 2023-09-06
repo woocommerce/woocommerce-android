@@ -371,7 +371,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(
-                    url = "$adminUrl/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
+                    url = "$adminUrl/wp-admin/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
                 )
             )
         }

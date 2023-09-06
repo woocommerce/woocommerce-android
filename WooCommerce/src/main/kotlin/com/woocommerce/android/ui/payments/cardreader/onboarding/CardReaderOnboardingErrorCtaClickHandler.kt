@@ -96,7 +96,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
-        private const val WC_PAY_FINISH_SETUP_URL = "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
+        private const val WC_PAY_FINISH_SETUP_URL = "/wp-admin/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
     }
 }
 
