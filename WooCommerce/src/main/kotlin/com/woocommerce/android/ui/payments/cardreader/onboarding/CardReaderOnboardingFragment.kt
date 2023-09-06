@@ -128,7 +128,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
-            is CardReaderOnboardingViewState.StripeAcountError ->
+            is CardReaderOnboardingViewState.StripeAccountError ->
                 showStripeAccountError(layout, state)
             is CardReaderOnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
@@ -258,7 +258,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showStripeAccountError(
         view: View,
-        state: CardReaderOnboardingViewState.StripeAcountError
+        state: CardReaderOnboardingViewState.StripeAccountError
     ) {
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)

@@ -143,7 +143,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         )
     }
 
-    sealed class StripeAcountError(
+    sealed class StripeAccountError(
         val headerLabel: UiString,
         val hintLabel: UiString,
         val buttonLabel: UiString? = null
@@ -162,7 +162,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class StripeAccountUnderReviewState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
         )
@@ -170,7 +170,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class StripeAccountRejectedState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
         )
@@ -178,7 +178,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class StripeAccountOverdueRequirementsState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
         )
@@ -186,7 +186,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class PluginInTestModeWithLiveAccountState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(
                 R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header
             ),
@@ -198,7 +198,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             override val onLearnMoreActionClicked: () -> Unit,
             override val onButtonActionClicked: () -> Unit,
             val dueDate: String?
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
             hintLabel = if (dueDate != null) UiString.UiStringRes(
                 R.string.card_reader_onboarding_account_pending_requirements_hint,
