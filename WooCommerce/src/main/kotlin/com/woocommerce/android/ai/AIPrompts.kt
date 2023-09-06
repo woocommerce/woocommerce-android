@@ -37,21 +37,28 @@ object AIPrompts {
         return String.format(PRODUCT_SHARING_PROMPT, name, descriptionPart, url, languageISOCode)
     }
 
-    private const val ORDER_DETAIL_THANK_YOU_NOTE_PROMPT = "Write a thank you note for a customer who has just " +
-        "purchased a product named \"%1\$s\". More information about the product:\n" +
-        "%2\$s\n" +
+    private const val ORDER_DETAIL_THANK_YOU_NOTE_PROMPT = "Write a thank you note for a customer " +
+        "whose name is \"%1\$s\", who has just purchased a product named \"%2\$s\". \n" +
+        "%3\$s\n" +
         "Your response should be in the ISO language code \"%4\$s\". \n" +
         "The length should be up to 3 paragraphs.\n" +
-        "Use a 9th grade reading level.\n" +
-        "Do not include the URL in the message."
+        "Use a 9th grade reading level.\n"
 
     fun generateThankYouNotePrompt(
-        name: String,
-        description: String = "",
+        customerName: String,
+        productName: String,
+        productDescription: String = "",
         languageISOCode: String = "en"
     ): String {
-        val descriptionPart = if (description.isNotEmpty()) "- Product description: \"$description\"" else ""
-        return String.format(ORDER_DETAIL_THANK_YOU_NOTE_PROMPT, name, descriptionPart, languageISOCode)
+        val descriptionPart =
+            if (productDescription.isNotEmpty()) "Product description: \"$productDescription\"" else ""
+        return String.format(
+            ORDER_DETAIL_THANK_YOU_NOTE_PROMPT,
+            customerName,
+            productName,
+            descriptionPart,
+            languageISOCode
+        )
     }
 
     private const val LANGUAGE_IDENTIFICATION_PROMPT = "What is the ISO language code of the language used in the " +
