@@ -357,4 +357,38 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh
             )
         }
+
+    @Test
+    fun `when invoked with WC_PAY_NOT_SETUP, then OpenWebView returned`() =
+        testBlocking {
+            // GIVEN
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(
+                    url = "$adminUrl/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
+                )
+            )
+        }
+
+    @Test
+    fun `when invoked with WC_PAY_NOT_SETUP, then event tracked with reason`() =
+        testBlocking {
+            // GIVEN
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+
+            // THEN
+            verify(cardReaderTracker).trackOnboardingCtaTapped(
+                OnboardingCtaTapped.PLUGIN_SETUP_TAPPED
+            )
+        }
 }
