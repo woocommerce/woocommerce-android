@@ -21,12 +21,12 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     suspend operator fun invoke(errorType: CardReaderOnboardingCTAErrorType): Reaction =
         when (errorType) {
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED)
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
 
                 installAndActivateWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
                         cardReaderTracker.trackOnboardingCtaFailed(
-                            reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                            reason = OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
                             description = errorMessage
                         )
                     }
@@ -34,12 +34,12 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             }
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED)
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
 
                 installAndActivateWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
                         cardReaderTracker.trackOnboardingCtaFailed(
-                            reason = OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED,
+                            reason = OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED,
                             description = errorMessage
                         )
                     }
@@ -47,13 +47,13 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             }
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_SETUP_TAPPED)
-
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED)
                 Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(WC_PAY_FINISH_SETUP_URL))
             }
 
             CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
-                TODO()
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
+                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(STRIPE_OVERDUE_REQUIREMENTS_URL))
             }
         }
 
@@ -101,13 +101,15 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
         private const val WC_PAY_FINISH_SETUP_URL = "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
+        private const val STRIPE_OVERDUE_REQUIREMENTS_URL = "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
     }
 }
 
-enum class OnboardingCtaTapped(val value: String) {
+enum class OnboardingCtaReasonTapped(val value: String) {
     PLUGIN_INSTALL_TAPPED("plugin_install_tapped"),
     PLUGIN_ACTIVATE_TAPPED("plugin_activate_tapped"),
     PLUGIN_SETUP_TAPPED("plugin_setup_tapped"),
+    STRIPE_ACCOUNT_SETUP_TAPPED("stripe_account_setup_tapped"),
     CASH_ON_DELIVERY_TAPPED("cash_on_delivery_disabled"),
 }
 

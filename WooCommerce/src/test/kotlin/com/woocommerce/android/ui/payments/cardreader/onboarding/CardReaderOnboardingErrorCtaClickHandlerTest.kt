@@ -54,7 +54,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaTapped(
-                OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED
+                OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED
             )
         }
 
@@ -81,7 +81,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaTapped(
-                OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED
+                OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED
             )
         }
 
@@ -110,7 +110,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaFailed(
-                reason = OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                reason = OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
                 description = "errorDescription"
             )
         }
@@ -140,7 +140,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaFailed(
-                reason = OnboardingCtaTapped.PLUGIN_ACTIVATE_TAPPED,
+                reason = OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED,
                 description = "errorDescription"
             )
         }
@@ -388,7 +388,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaTapped(
-                OnboardingCtaTapped.PLUGIN_SETUP_TAPPED
+                OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED
             )
         }
 }

@@ -2350,7 +2350,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
 
-            verify(tracker).trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
+            verify(tracker).trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
         }
 
     @Test
