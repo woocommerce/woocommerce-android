@@ -366,7 +366,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             whenever(siteModel.adminUrl).thenReturn(adminUrl)
 
             // WHEN
-            val result = handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -384,11 +384,45 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             whenever(siteModel.adminUrl).thenReturn(adminUrl)
 
             // WHEN
-            handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
+            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaTapped(
                 OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED
+            )
+        }
+
+    @Test
+    fun `when invoked with STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS, then OpenWebView returned`() =
+        testBlocking {
+            // GIVEN
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(
+                    url = "$adminUrl/wp-admin/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+                )
+            )
+        }
+
+    @Test
+    fun `when invoked with STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS, then event tracked with reason`() =
+        testBlocking {
+            // GIVEN
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
+
+            // THEN
+            verify(cardReaderTracker).trackOnboardingCtaTapped(
+                OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED
             )
         }
 }

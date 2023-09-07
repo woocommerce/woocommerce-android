@@ -34,7 +34,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             }
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_ACTIVATE_TAPPED)
 
                 installAndActivateWcPayPlugin().also {
                     it.errorMessage?.let { errorMessage ->
