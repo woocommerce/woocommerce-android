@@ -59,7 +59,10 @@ class LocalNotificationWorker @AssistedInject constructor(
 
             AnalyticsTracker.track(
                 LOCAL_NOTIFICATION_DISPLAYED,
-                mapOf(AnalyticsTracker.KEY_TYPE to type)
+                mapOf(
+                    AnalyticsTracker.KEY_TYPE to type,
+                    AnalyticsTracker.KEY_BLOG_ID to siteId,
+                )
             )
         } else {
             wooLogWrapper.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
