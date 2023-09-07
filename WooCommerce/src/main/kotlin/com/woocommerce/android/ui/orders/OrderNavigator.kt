@@ -196,7 +196,11 @@ class OrderNavigator @Inject constructor() {
             }
             is AIThankYouNote -> {
                 val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToAIThankYouNoteBottomSheetFragment()
+                    .actionOrderDetailFragmentToAIThankYouNoteBottomSheetFragment(
+                        customerName = target.customerName,
+                        productName = target.productName,
+                        productDescription = target.productDescription
+                    )
                 fragment.findNavController().navigateSafely(action)
             }
         }

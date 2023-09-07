@@ -631,5 +631,19 @@
     <dialog
         android:id="@+id/AIThankYouNoteBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.AIThankYouNoteBottomSheetFragment"
-        android:label="AIThankYouNoteBottomSheetFragment" />
+        android:label="AIThankYouNoteBottomSheetFragment">
+        <argument
+            android:name="customerName"
+            app:argType="string" />
+
+        <argument
+            android:name="productName"
+            app:argType="string" />
+
+        <argument
+            android:name="productDescription"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 </navigation>

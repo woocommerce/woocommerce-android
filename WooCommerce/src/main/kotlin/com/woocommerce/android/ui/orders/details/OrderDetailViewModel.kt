@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -109,7 +110,8 @@ class OrderDetailViewModel @Inject constructor(
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
-    private val orderProductMapper: OrderProductMapper
+    private val orderProductMapper: OrderProductMapper,
+    private val productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -792,7 +794,26 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAIThankYouNoteButtonClicked() {
-        triggerEvent(OrderNavigationTarget.AIThankYouNote)
+        val orderRefunds = loadOrderRefunds()
+        val orderProducts = loadOrderProducts(orderRefunds)
+
+        val firstProductId = when (val first = orderProducts.list.first()) {
+            is OrderProduct.GroupedProductItem -> first.product.productId
+            is OrderProduct.ProductItem -> first.product.productId
+        }
+
+        launch {
+            val product = productDetailRepository.getProductAsync(firstProductId)
+            product?.let {
+                triggerEvent(
+                    OrderNavigationTarget.AIThankYouNote(
+                        customerName = order.billingAddress.firstName,
+                        productName = it.name,
+                        productDescription = it.description
+                    )
+                )
+            }
+        }
     }
 
     @Parcelize
