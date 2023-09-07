@@ -32,7 +32,11 @@ class LocalNotificationScheduler @Inject constructor(
         cancelScheduledNotification(notification.type)
 
         workManager
-            .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildPreconditionCheckWorkRequest(notification))
+            .beginUniqueWork(
+                LOCAL_NOTIFICATION_WORK_NAME + notification.type.value,
+                REPLACE,
+                buildPreconditionCheckWorkRequest(notification)
+            )
             .then(buildNotificationWorkRequest(notification))
             .enqueue()
 
