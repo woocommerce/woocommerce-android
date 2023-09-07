@@ -95,8 +95,8 @@ sealed class LocalNotification(
         title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
         description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
         type = LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
-        delay = 2,
-        delayUnit = TimeUnit.MINUTES
+        delay = 6,
+        delayUnit = TimeUnit.HOURS
     ) {
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description)
