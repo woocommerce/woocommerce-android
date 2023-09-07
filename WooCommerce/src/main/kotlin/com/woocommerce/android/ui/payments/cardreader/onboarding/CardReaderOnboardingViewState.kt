@@ -156,7 +156,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         val illustration = R.drawable.img_products_error
         val learnMoreButton = ActionButton(
             label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            action =  { onLearnMoreActionClicked() }
+            action = { onLearnMoreActionClicked() }
         )
         val contactSupportButton = ActionButton(
             label = UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true),
@@ -195,7 +195,9 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
                 action = onPrimaryActionClicked
             ),
             actionButtonSecondary = ActionButton(
-                label = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_refresh_button),
+                label = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_overdue_requirements_refresh_button
+                ),
                 action = onSecondaryActionClicked
             )
         )
@@ -357,7 +359,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         )
     }
 
-        data class ActionButton(
+    data class ActionButton(
         val label: UiString,
         @DrawableRes val icon: Int? = null,
         val action: () -> Unit

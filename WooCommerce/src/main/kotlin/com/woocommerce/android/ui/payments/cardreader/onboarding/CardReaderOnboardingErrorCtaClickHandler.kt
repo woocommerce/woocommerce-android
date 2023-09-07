@@ -101,7 +101,8 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
         private const val WC_PAY_FINISH_SETUP_URL = "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
-        private const val STRIPE_OVERDUE_REQUIREMENTS_URL = "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
+        private const val STRIPE_OVERDUE_REQUIREMENTS_URL =
+            "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
     }
 }
 
