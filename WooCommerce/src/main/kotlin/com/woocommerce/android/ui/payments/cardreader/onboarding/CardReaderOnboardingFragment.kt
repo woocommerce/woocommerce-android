@@ -276,6 +276,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
 
         UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary?.label)
+        binding.primaryButton.setWhiteIcon(state.actionButtonPrimary?.icon)
         state.actionButtonPrimary?.action?.let { onButtonActionClicked ->
             binding.primaryButton.setOnClickListener {
                 onButtonActionClicked.invoke()
@@ -283,6 +284,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         }
 
         UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setWhiteIcon(state.actionButtonSecondary?.icon)
         state.actionButtonSecondary?.action?.let { onButtonActionClicked ->
             binding.secondaryButton.setOnClickListener {
                 onButtonActionClicked.invoke()

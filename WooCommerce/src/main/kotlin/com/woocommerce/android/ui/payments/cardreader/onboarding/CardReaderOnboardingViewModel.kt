@@ -231,7 +231,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
             is StripeAccountOverdueRequirement ->
                 viewState.value = StripeAccountOverdueRequirementsState(
                     onContactSupportActionClicked = ::onContactSupportClicked,
-                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                    onLearnMoreActionClicked = ::onLearnMoreClicked,
+                    onPrimaryActionClicked = {
+                        handleErrorCtaClick(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
+                    },
+                    onSecondaryActionClicked = ::refreshState
                 )
             is StripeAccountRejected ->
                 viewState.value = StripeAccountRejectedState(

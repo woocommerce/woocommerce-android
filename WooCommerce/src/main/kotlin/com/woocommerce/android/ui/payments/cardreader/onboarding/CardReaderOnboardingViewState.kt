@@ -151,7 +151,6 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
         abstract val onContactSupportActionClicked: (() -> Unit)
         abstract val onLearnMoreActionClicked: (() -> Unit)
-        open val onPrimaryActionClicked: (() -> Unit?)? = null
 
         @DrawableRes
         val illustration = R.drawable.img_products_error
@@ -182,10 +181,23 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
 
         data class StripeAccountOverdueRequirementsState(
             override val onContactSupportActionClicked: () -> Unit,
-            override val onLearnMoreActionClicked: () -> Unit
+            override val onLearnMoreActionClicked: () -> Unit,
+            val onPrimaryActionClicked: (() -> Unit),
+            val onSecondaryActionClicked: (() -> Unit),
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
-            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
+            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint),
+            actionButtonPrimary = ActionButton(
+                label = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_overdue_requirements_take_care_button
+                ),
+                icon = R.drawable.ic_external,
+                action = onPrimaryActionClicked
+            ),
+            actionButtonSecondary = ActionButton(
+                label = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_refresh_button),
+                action = onSecondaryActionClicked
+            )
         )
 
         data class PluginInTestModeWithLiveAccountState(
@@ -201,7 +213,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class StripeAccountPendingRequirementsState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit,
-            override val onPrimaryActionClicked: () -> Unit,
+            val onPrimaryActionClicked: () -> Unit,
             val dueDate: String?
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),

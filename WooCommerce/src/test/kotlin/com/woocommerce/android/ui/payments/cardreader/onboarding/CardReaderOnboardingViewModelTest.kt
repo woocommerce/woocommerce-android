@@ -668,7 +668,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given handler returned OpenWebView, when clicked on wcpay not setup, then open webview`() =
         testBlocking {
             val url = "url"
-            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP))
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS))
                 .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(url))
 
             val viewModel = createVM(

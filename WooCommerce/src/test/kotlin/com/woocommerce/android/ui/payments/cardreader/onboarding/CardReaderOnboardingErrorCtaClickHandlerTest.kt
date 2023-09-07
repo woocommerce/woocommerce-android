@@ -366,7 +366,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             whenever(siteModel.adminUrl).thenReturn(adminUrl)
 
             // WHEN
-            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+            val result = handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -384,7 +384,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             whenever(siteModel.adminUrl).thenReturn(adminUrl)
 
             // WHEN
-            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+            handler(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
 
             // THEN
             verify(cardReaderTracker).trackOnboardingCtaTapped(

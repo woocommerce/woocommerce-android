@@ -51,6 +51,10 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
                 Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(WC_PAY_FINISH_SETUP_URL))
             }
+
+            CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
+                TODO()
+            }
         }
 
     private suspend fun installAndActivateWcPayPlugin() =
@@ -111,4 +115,5 @@ enum class CardReaderOnboardingCTAErrorType {
     WC_PAY_NOT_INSTALLED,
     WC_PAY_NOT_ACTIVATED,
     WC_PAY_NOT_SETUP,
+    STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS,
 }
