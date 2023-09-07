@@ -20,11 +20,7 @@ class AIThankYouNoteViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs = AIThankYouNoteBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    private val _viewState = MutableStateFlow(
-        ViewState(
-            generatedThankYouNote = ""
-        )
-    )
+    private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
 
     init {
@@ -64,6 +60,14 @@ class AIThankYouNoteViewModel @Inject constructor(
         WooLog.e(WooLog.T.AI, "Failed to generate thank you note", error)
     }
     data class ViewState(
-        val generatedThankYouNote: String
+        val generatedThankYouNote: String = "",
+        val generationState: GenerationState = GenerationState.Start(),
     )
+
+    sealed class GenerationState {
+        data class Start(val showError: Boolean = false) : GenerationState()
+        object Generating : GenerationState()
+        data class Generated(val showError: Boolean = false) : GenerationState()
+        object Regenerating : GenerationState()
+    }
 }
