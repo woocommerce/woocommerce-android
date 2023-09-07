@@ -30,8 +30,10 @@ object ProductImagesUtils {
         // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
         fetchMedia(context, localUri)?.let { fetchedUri ->
             mediaPickerUtils.getFilePath(fetchedUri)?.let { filePath ->
-                // optimize the image if the setting is enabled
-                val path = getOptimizedPath(context, filePath)
+                val path = if (MediaUtils.isValidImage(filePath)) {
+                    // optimize the image if the setting is enabled
+                    getOptimizedPath(context, filePath)
+                } else filePath
 
                 val file = File(path)
                 if (file.exists()) {

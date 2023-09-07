@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.mediapicker.MediaPickerUtils
+import org.wordpress.android.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
 
@@ -64,7 +65,11 @@ class MediaFilesRepository @Inject constructor(
             WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload ${localMediaModel.filePath}")
             val listener = OnMediaUploadListener(this)
             dispatcher.register(listener)
-            val uploadPayload = MediaStore.UploadMediaPayload(selectedSite.get(), localMediaModel, stripLocation)
+            val uploadPayload = MediaStore.UploadMediaPayload(
+                selectedSite.get(),
+                localMediaModel,
+                if (MediaUtils.isValidImage(localMediaModel.filePath)) stripLocation else false
+            )
             dispatcher.dispatch(MediaActionBuilder.newUploadMediaAction(uploadPayload))
 
             awaitClose {
@@ -133,9 +138,11 @@ class MediaFilesRepository @Inject constructor(
                         }
                     producerScope.close()
                 }
+
                 event.canceled -> {
                     WooLog.d(T.MEDIA, "MediaFilesRepository > upload media cancelled")
                 }
+
                 event.completed -> {
                     val channelResult = if (event.media?.url != null) {
                         WooLog.i(T.MEDIA, "MediaFilesRepository > uploaded media ${event.media?.id}")
@@ -166,6 +173,7 @@ class MediaFilesRepository @Inject constructor(
                     }
                     producerScope.close()
                 }
+
                 else -> {
                     producerScope.trySend(
                         UploadResult.UploadProgress(event.progress)
