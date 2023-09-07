@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,11 +21,11 @@ import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.*
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
@@ -43,6 +44,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         private const val KEY_RENAMED_ATTRIBUTE_NAME = "renamed_attribute_name"
         private const val KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING = "is_remove_dialog_showing"
     }
+
+    private val termsViewModel: AddAttributeTermsViewModel by viewModels()
 
     private var layoutManagerAssigned: LinearLayoutManager? = null
     private var layoutManagerGlobal: LinearLayoutManager? = null
@@ -151,7 +154,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun getAttributeTerms() {
         // if this is a global attribute, fetch the attribute's terms
         if (isGlobalAttribute) {
-            viewModel.fetchGlobalAttributeTerms(navArgs.attributeId)
+            termsViewModel.onFetchAttributeTerms(navArgs.attributeId)
         }
 
         // get the attribute terms for attributes already assigned to this product
@@ -309,14 +312,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun setupObservers() {
-        viewModel.attributeTermsList.observe(viewLifecycleOwner) {
+        termsViewModel.termsListState.observe(viewLifecycleOwner) {
             showGlobalAttributeTerms(it)
         }
 
-        viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
-                showSkeleton(it)
-            }
+        termsViewModel.loadingState.observe(viewLifecycleOwner) {
+            showSkeleton(it == Loading)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
