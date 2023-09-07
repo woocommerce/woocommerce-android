@@ -55,6 +55,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LongParameterList")
 class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
     dispatchers: CoroutineDispatchers,
@@ -132,7 +133,7 @@ class MainActivityViewModel @Inject constructor(
             val currentSite = selectedSite.get()
             val isSiteSpecificNotification = it.remoteSiteId != 0L
             if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
-                changeSiteAndRestart(it.remoteSiteId, RestartActivityForNotification(localPushId, notification))
+                changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
                 when (localPushId) {
                     it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
@@ -177,11 +178,10 @@ class MainActivityViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private fun changeSiteAndRestart(remoteSiteId: Long, restartEvent: Event) {
+    private fun changeSiteAndRestart(remoteSiteId: Long, restartEvent: RestartActivityEvent) {
         // Update selected store
         siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
             selectedSite.set(updatedSite)
-            // Recreate activity before showing notification
             triggerEvent(restartEvent)
         } ?: run {
             // If for any reason we can't get the store, show the default screen
@@ -276,21 +276,28 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onLocalNotificationTapped(notification: Notification) {
-        AnalyticsTracker.track(
-            AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
-        )
-        LocalNotificationType.fromString(notification.tag)?.let {
-            when (it) {
-                STORE_CREATION_INCOMPLETE -> triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
-                FREE_TRIAL_EXPIRED,
-                FREE_TRIAL_EXPIRING,
-                SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+        if (notification.remoteSiteId != selectedSite.get().siteId) {
+            changeSiteAndRestart(
+                notification.remoteSiteId,
+                RestartActivityForLocalNotification(notification)
+            )
+        } else {
+            AnalyticsTracker.track(
+                AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
+                mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
+            )
+            LocalNotificationType.fromString(notification.tag)?.let {
+                when (it) {
+                    STORE_CREATION_INCOMPLETE -> triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+                    FREE_TRIAL_EXPIRED,
+                    FREE_TRIAL_EXPIRING,
+                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
 
-                FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
+                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
 
-                STORE_CREATION_FINISHED,
-                THREE_DAYS_AFTER_STILL_EXPLORING -> {
+                    STORE_CREATION_FINISHED,
+                    THREE_DAYS_AFTER_STILL_EXPLORING -> {
+                    }
                 }
             }
         }
@@ -333,8 +340,14 @@ class MainActivityViewModel @Inject constructor(
     object ShortcutOpenOrderCreation : Event()
     data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
     data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
-    data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
-    data class RestartActivityForAppLink(val data: Uri) : Event()
+
+    sealed class RestartActivityEvent : Event()
+    data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
+    data class RestartActivityForPushNotification(val pushId: Int, val notification: Notification) :
+        RestartActivityEvent()
+
+    data class RestartActivityForAppLink(val data: Uri) : RestartActivityEvent()
+
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
