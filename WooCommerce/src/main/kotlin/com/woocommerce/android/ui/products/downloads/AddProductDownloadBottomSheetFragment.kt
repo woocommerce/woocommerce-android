@@ -18,8 +18,9 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigator
-import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromDevice
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickDocumentFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickMediaFileFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,7 +53,8 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
         binding.addDownloadableFromWpmediaLibrary.setOnClickListener { viewModel.onMediaGalleryClicked() }
-        binding.addDownloadableFromDevice.setOnClickListener { viewModel.onDeviceClicked() }
+        binding.addMediaFileFromDevice.setOnClickListener { viewModel.onDeviceMediaFilesClicked() }
+        binding.addDocumentFileFromDevice.setOnClickListener { viewModel.onDeviceDocumentsClicked() }
         binding.addDownloadableManually.setOnClickListener { viewModel.onEnterURLClicked() }
     }
 
@@ -65,7 +67,8 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PickFileFromMedialLibrary -> showMediaLibraryPicker()
-                is PickFileFromDevice -> showLocalDeviceMediaPicker()
+                is PickMediaFileFromDevice -> showLocalDeviceMediaPicker()
+                is PickDocumentFromDevice -> showLocalDeviceDocumentPicker()
                 is UploadFile -> {
                     parentViewModel.uploadDownloadableFile(event.uri.toString())
                     findNavController().navigateUp()
@@ -100,7 +103,7 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
             requireContext(),
             mediaPickerSetupFactory.build(
                 source = MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY,
-                mediaTypes = MediaTypes.IMAGES
+                mediaTypes = MediaTypes.EVERYTHING
             )
         )
 
@@ -120,7 +123,19 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
             requireContext(),
             mediaPickerSetupFactory.build(
                 source = MediaPickerSetup.DataSource.DEVICE,
-                mediaTypes = MediaTypes.IMAGES
+                mediaTypes = MediaTypes.MEDIA
+            )
+        )
+
+        mediaDeviceMediaPickerLauncher.launch(intent)
+    }
+
+    private fun showLocalDeviceDocumentPicker() {
+        val intent = MediaPickerActivity.buildIntent(
+            requireContext(),
+            mediaPickerSetupFactory.build(
+                source = MediaPickerSetup.DataSource.SYSTEM_PICKER,
+                mediaTypes = MediaTypes.DOCUMENTS
             )
         )
 

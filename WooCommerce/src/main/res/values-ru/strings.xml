@@ -1847,7 +1847,7 @@ Language: ru
     <string name="product_downloadable_files_name_invalid">Введите правильное имя</string>
     <string name="product_downloadable_files_add_manually">Введите URL-адрес файла</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Из библиотеки файлов WordPress</string>
-    <string name="product_downloadable_files_add_from_device">С устройства</string>
+    <string name="product_downloadable_files_add_media_from_device">С устройства</string>
     <string name="product_downloadable_files_url_invalid">Убедитесь, что введен допустимый URL-адрес</string>
     <string name="product_downloadable_files_upload_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_downloadable_files_upload_dialog_title">Загрузка файлов</string>

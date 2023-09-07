@@ -1847,7 +1847,7 @@ Language: tr
     <string name="product_downloadable_files_name_invalid">Lütfen geçerli bir ad girin</string>
     <string name="product_downloadable_files_add_manually">Dosya URL\'si girin</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Ortam Kütüphanesinden</string>
-    <string name="product_downloadable_files_add_from_device">Cihazdan</string>
+    <string name="product_downloadable_files_add_media_from_device">Cihazdan</string>
     <string name="product_downloadable_files_url_invalid">Girilen URL\'nin geçerli olup olmadığını kontrol edin</string>
     <string name="product_downloadable_files_upload_dialog_message">Lütfen bekleyin…</string>
     <string name="product_downloadable_files_upload_dialog_title">Dosyalar yükleniyor</string>

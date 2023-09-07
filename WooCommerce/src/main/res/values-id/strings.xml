@@ -1847,7 +1847,7 @@ Language: id
     <string name="product_downloadable_files_name_invalid">Harap masukkan nama yang valid</string>
     <string name="product_downloadable_files_add_manually">Masukkan URL file</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Dari Pustaka Media WordPress</string>
-    <string name="product_downloadable_files_add_from_device">Dari perangkat</string>
+    <string name="product_downloadable_files_add_media_from_device">Dari perangkat</string>
     <string name="product_downloadable_files_url_invalid">Pastikan url yang dimasukkan valid</string>
     <string name="product_downloadable_files_upload_dialog_message">Harap tunggu…</string>
     <string name="product_downloadable_files_upload_dialog_title">Mengunggah file</string>

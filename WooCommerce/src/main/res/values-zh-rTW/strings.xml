@@ -1847,7 +1847,7 @@ Language: zh_TW
     <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
     <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">來自 WordPress 媒體庫</string>
-    <string name="product_downloadable_files_add_from_device">來自裝置</string>
+    <string name="product_downloadable_files_add_media_from_device">來自裝置</string>
     <string name="product_downloadable_files_url_invalid">檢查輸入的 URL 是否有效</string>
     <string name="product_downloadable_files_upload_dialog_message">請稍候…</string>
     <string name="product_downloadable_files_upload_dialog_title">正在上傳檔案</string>

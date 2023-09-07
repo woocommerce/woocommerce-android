@@ -1847,7 +1847,7 @@ Language: ar
     <string name="product_downloadable_files_name_invalid">يرجى إدخال اسم صالح</string>
     <string name="product_downloadable_files_add_manually">إدخال عنوان URL للملف</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">من مكتبة وسائط ووردبريس</string>
-    <string name="product_downloadable_files_add_from_device">من الجهاز</string>
+    <string name="product_downloadable_files_add_media_from_device">من الجهاز</string>
     <string name="product_downloadable_files_url_invalid">تحقق من أن عنوان URL الذي تم إدخاله صحيح</string>
     <string name="product_downloadable_files_upload_dialog_message">يُرجى الانتظار…</string>
     <string name="product_downloadable_files_upload_dialog_title">رفع الملفات</string>

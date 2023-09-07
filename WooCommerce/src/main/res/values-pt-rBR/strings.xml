@@ -1847,7 +1847,7 @@ Language: pt_BR
     <string name="product_downloadable_files_name_invalid">Digite um nome válido</string>
     <string name="product_downloadable_files_add_manually">Inserir URL de arquivo</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Da biblioteca de mídia do WordPress</string>
-    <string name="product_downloadable_files_add_from_device">Do dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">Do dispositivo</string>
     <string name="product_downloadable_files_url_invalid">Verifique se a URL inserida é válida</string>
     <string name="product_downloadable_files_upload_dialog_message">Aguarde…</string>
     <string name="product_downloadable_files_upload_dialog_title">Fazendo upload dos arquivos</string>
