@@ -668,7 +668,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `given handler returned OpenWebView, when clicked on wcpay not setup, then open webview`() =
         testBlocking {
             val url = "url"
-            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS))
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP))
                 .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(url))
 
             val viewModel = createVM(
@@ -683,6 +683,31 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as WCPayError.WCPayNotSetupState)
                 .actionButtonActionPrimary.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderOnboardingEvent.NavigateToUrlInWPComWebView(url)
+            )
+        }
+
+    @Test
+    fun `given handler returned OpenWebView, when clicked on stripe req overdue, then open webview`() =
+        testBlocking {
+            val url = "url"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(url))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS),
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .actionButtonPrimary!!.action.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(
                 CardReaderOnboardingEvent.NavigateToUrlInWPComWebView(url)
