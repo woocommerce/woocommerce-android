@@ -151,17 +151,17 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
         abstract val onContactSupportActionClicked: (() -> Unit)
         abstract val onLearnMoreActionClicked: (() -> Unit)
-        open val onButtonActionClicked: (() -> Unit?)? = null
+        open val onPrimaryActionClicked: (() -> Unit?)? = null
 
         @DrawableRes
         val illustration = R.drawable.img_products_error
         val learnMoreButton = ActionButton(
-            label = UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true),
-            action = onContactSupportActionClicked
+            label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+            action =  { onLearnMoreActionClicked() }
         )
         val contactSupportButton = ActionButton(
-            label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
-            action = onLearnMoreActionClicked
+            label = UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true),
+            action = { onContactSupportActionClicked() }
         )
 
         data class StripeAccountUnderReviewState(
@@ -201,7 +201,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class StripeAccountPendingRequirementsState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit,
-            override val onButtonActionClicked: () -> Unit,
+            override val onPrimaryActionClicked: () -> Unit,
             val dueDate: String?
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
@@ -213,7 +213,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             ),
             actionButtonPrimary = ActionButton(
                 label = UiString.UiStringRes(R.string.skip),
-                action = onButtonActionClicked
+                action = onPrimaryActionClicked
             )
         )
     }

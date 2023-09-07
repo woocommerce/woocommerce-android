@@ -225,7 +225,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 viewState.value = StripeAccountPendingRequirementsState(
                     onContactSupportActionClicked = ::onContactSupportClicked,
                     onLearnMoreActionClicked = ::onLearnMoreClicked,
-                    onButtonActionClicked = { onSkipPendingRequirementsClicked() },
+                    onPrimaryActionClicked = { onSkipPendingRequirementsClicked() },
                     dueDate = formatDueDate(state)
                 )
             is StripeAccountOverdueRequirement ->

@@ -2067,7 +2067,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             val viewModel = createVM()
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
-                .onButtonActionClicked.invoke()
+                .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
@@ -2095,7 +2095,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
-                .onButtonActionClicked.invoke()
+                .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
@@ -2120,7 +2120,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
-                .onButtonActionClicked.invoke()
+                .onPrimaryActionClicked.invoke()
             assertThat(viewModel.event.value)
                 .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
