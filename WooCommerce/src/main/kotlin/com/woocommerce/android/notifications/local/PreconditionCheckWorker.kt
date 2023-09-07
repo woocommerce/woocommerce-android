@@ -61,7 +61,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
             val message = "Site id is missing. Cancelling local notification work."
             crashLogging.sendReport(
                 exception = Exception(message),
-                message = "PreconditionCheckWorker: canceling work"
+                message = "PreconditionCheckWorker: cancelling work"
             )
             return cancelWork(message)
         }
