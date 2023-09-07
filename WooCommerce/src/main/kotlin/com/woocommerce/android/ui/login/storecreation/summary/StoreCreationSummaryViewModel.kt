@@ -7,7 +7,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.notifications.local.LocalNotification.FreeTrialExpiredNotification
+import com.woocommerce.android.notifications.local.LocalNotification.FreeTrialExpiringNotification
+import com.woocommerce.android.notifications.local.LocalNotification.FreeTrialSurveyNotification
 import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationCompletedNotification
+import com.woocommerce.android.notifications.local.LocalNotification.UpgradeToPaidPlanNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
@@ -15,7 +19,10 @@ import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.Store
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Finished
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES
+import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -25,6 +32,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -98,6 +107,31 @@ class StoreCreationSummaryViewModel @Inject constructor(
                     accountStore.account.userName
                 localNotificationScheduler.scheduleNotification(StoreCreationCompletedNotification(siteId, name))
             }
+            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES)) {
+                val in14days = LocalDateTime.now()
+                    .plusDays(StoreInstallationViewModel.TRIAL_LENGTH_IN_DAYS)
+                    .format(DateTimeFormatter.ofPattern("EEEE, MMMM d"))
+                localNotificationScheduler.scheduleNotification(
+                    FreeTrialExpiringNotification(in14days, siteId)
+                )
+            }
+
+            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES)) {
+                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                    accountStore.account.firstName
+                else
+                    accountStore.account.userName
+
+                localNotificationScheduler.scheduleNotification(
+                    FreeTrialExpiredNotification(name, siteId)
+                )
+            }
+            localNotificationScheduler.scheduleNotification(
+                UpgradeToPaidPlanNotification(siteId)
+            )
+            localNotificationScheduler.scheduleNotification(
+                FreeTrialSurveyNotification(siteId)
+            )
 
             // No need to display a notification to complete store creation anymore
             localNotificationScheduler.cancelScheduledNotification(STORE_CREATION_INCOMPLETE)

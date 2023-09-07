@@ -33,10 +33,6 @@ class PreconditionCheckWorker @AssistedInject constructor(
     private val siteStore: SiteStore,
     private val crashLogging: CrashLogging,
 ) : Worker(appContext, workerParams) {
-    private companion object {
-        const val LOCAL_NOTIFICATION_SCHEDULED_ERROR = "local_notification_scheduled_error"
-    }
-
     override fun doWork(): Result {
         if (!canDisplayNotifications) cancelWork("Notifications permission not granted. Cancelling work.")
 

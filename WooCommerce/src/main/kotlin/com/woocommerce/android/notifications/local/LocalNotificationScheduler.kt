@@ -38,7 +38,10 @@ class LocalNotificationScheduler @Inject constructor(
 
         AnalyticsTracker.track(
             AnalyticsEvent.LOCAL_NOTIFICATION_SCHEDULED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notification.type.value)
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to notification.type.value,
+                AnalyticsTracker.KEY_BLOG_ID to notification.siteId,
+            )
         )
     }
 
