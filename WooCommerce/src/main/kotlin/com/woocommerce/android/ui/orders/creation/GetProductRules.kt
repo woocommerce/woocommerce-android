@@ -13,12 +13,16 @@ class GetProductRules @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     private val getBundledProducts: GetBundledProducts
 ) {
-    suspend fun getItemRules(item: Order.Item): ProductRules? {
+    suspend fun getRules(item: Order.Item): ProductRules? {
         if (item.isVariation) return null
-        return productDetailRepository.getProduct(item.productId)?.let { getItemRules(it) }
+        return productDetailRepository.getProduct(item.productId)?.let { getRules(it) }
     }
 
-    private suspend fun getItemRules(product: Product): ProductRules? {
+    suspend fun getRules(productId: Long): ProductRules? {
+        return productDetailRepository.getProduct(productId)?.let { getRules(it) }
+    }
+
+    private suspend fun getRules(product: Product): ProductRules? {
         val isBundle = product.productType == ProductType.BUNDLE
         return if (isBundle) {
             val builder = ProductRules.Builder()

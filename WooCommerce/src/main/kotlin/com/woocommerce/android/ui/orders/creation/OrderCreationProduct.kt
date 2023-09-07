@@ -82,7 +82,7 @@ class OrderCreationProductMapper @Inject constructor(
 
             val result = items.mapNotNull { item ->
                 if ((item.productId in rulesMap.keys).not()) {
-                    rulesMap[item.productId] = getProductRules.getItemRules(item)
+                    rulesMap[item.productId] = getProductRules.getRules(item)
                 }
                 if (item.parent == null) {
                     item

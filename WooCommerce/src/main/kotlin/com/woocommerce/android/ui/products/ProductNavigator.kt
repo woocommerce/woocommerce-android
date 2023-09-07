@@ -59,7 +59,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirec
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AttributeListFragmentDirections
-import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -399,7 +398,11 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ProductNavigationTarget.NavigateToProductConfiguration -> {
-                ToastUtils.showToast(fragment.requireContext(), "configure the item")
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToProductConfigurationFragment(
+                        target.productId
+                    )
+                )
             }
 
             is NavigateToProductFilter -> {
