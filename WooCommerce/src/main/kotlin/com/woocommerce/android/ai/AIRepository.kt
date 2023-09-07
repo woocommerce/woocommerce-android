@@ -56,7 +56,7 @@ class AIRepository @Inject constructor(
         productName: String,
         productDescription: String?,
         languageISOCode: String = "en"
-    ) : Result<String> {
+    ): Result<String> {
         val prompt = AIPrompts.generateThankYouNotePrompt(
             customerName = customerName,
             productName = productName,
@@ -65,7 +65,6 @@ class AIRepository @Inject constructor(
         )
         return fetchJetpackAICompletionsForSite(site, prompt, ORDER_DETAIL_THANK_YOU_NOTE)
     }
-
 
     suspend fun identifyISOLanguageCode(site: SiteModel, text: String, feature: String): Result<String> {
         val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)

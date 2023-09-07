@@ -21,7 +21,7 @@ class AIThankYouNoteBottomSheetFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    AIThankYouNoteBottomSheet()
+                    AIThankYouNoteBottomSheet(viewModel)
                 }
             }
         }
