@@ -7,6 +7,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
@@ -29,8 +30,13 @@ class PreconditionCheckWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooLogWrapper: WooLogWrapper,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val crashLogging: CrashLogging,
 ) : Worker(appContext, workerParams) {
+    private companion object {
+        const val LOCAL_NOTIFICATION_SCHEDULED_ERROR = "local_notification_scheduled_error"
+    }
+
     override fun doWork(): Result {
         if (!canDisplayNotifications) cancelWork("Notifications permission not granted. Cancelling work.")
 
@@ -51,7 +57,14 @@ class PreconditionCheckWorker @AssistedInject constructor(
     }
 
     private fun proceedIfFreeTrialAndMatchesSite(siteId: Long): Result {
-        if (siteId == 0L) return cancelWork("Site id is missing. Cancelling work.")
+        if (siteId == 0L) {
+            val message = "Site id is missing. Cancelling local notification work."
+            crashLogging.sendReport(
+                exception = Exception(message),
+                message = "PreconditionCheckWorker: canceling work"
+            )
+            return cancelWork(message)
+        }
 
         val notificationLinkedSite = siteStore.getSiteByLocalId(siteId.toInt())
         return if (notificationLinkedSite.isFreeTrial) {
