@@ -750,11 +750,12 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun showAddProductDownload(url: String) {
+    private fun showAddProductDownload(url: String) {
+        val fileName = url.substringAfterLast(delimiter = "/", missingDelimiterValue = "")
         triggerEvent(
             ProductNavigationTarget.ViewProductDownloadDetails(
                 isEditing = false,
-                file = ProductFile(id = null, url = url, name = "")
+                file = ProductFile(id = null, url = url, name = fileName)
             )
         )
     }
