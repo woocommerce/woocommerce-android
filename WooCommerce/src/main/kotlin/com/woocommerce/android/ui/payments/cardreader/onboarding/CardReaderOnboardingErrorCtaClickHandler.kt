@@ -48,12 +48,12 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP -> {
                 cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED)
-                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(WC_PAY_FINISH_SETUP_URL))
+                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(PAYMENTS_TAP_URL))
             }
 
             CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
                 cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
-                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(STRIPE_OVERDUE_REQUIREMENTS_URL))
+                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(PAYMENTS_TAP_URL))
             }
         }
 
@@ -100,9 +100,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
-        private const val WC_PAY_FINISH_SETUP_URL = "/wp-admin/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
-        private const val STRIPE_OVERDUE_REQUIREMENTS_URL =
-            "/wp-admin/admin.php?page=wc-admin&task=woocommerce-payments"
+        private const val PAYMENTS_TAP_URL = "/wp-admin/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
     }
 }
 
