@@ -7,7 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationFinishedNotification
+import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationCompletedNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
@@ -78,7 +78,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
                         )
                         triggerEvent(OnStoreCreationSuccess)
 
-                        manageDeferredNotifications()
+                        manageDeferredNotifications(creationState.siteId)
                     }
 
                     is Failed -> triggerEvent(OnStoreCreationFailure)
@@ -89,14 +89,14 @@ class StoreCreationSummaryViewModel @Inject constructor(
         }
     }
 
-    private fun manageDeferredNotifications() {
+    private fun manageDeferredNotifications(siteId: Long) {
         launch {
             if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_STORE_CREATION_READY)) {
                 val name = if (accountStore.account.firstName.isNotNullOrEmpty())
                     accountStore.account.firstName
                 else
                     accountStore.account.userName
-                localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
+                localNotificationScheduler.scheduleNotification(StoreCreationCompletedNotification(siteId, name))
             }
 
             // No need to display a notification to complete store creation anymore
