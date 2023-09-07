@@ -6,16 +6,16 @@ import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AddAttributeTermsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val termsListHandler: AttributeTermsListHandler
-): ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
     private val termsFlow = savedState.getStateFlow(
         this,
         emptyList<ProductAttributeTerm>()

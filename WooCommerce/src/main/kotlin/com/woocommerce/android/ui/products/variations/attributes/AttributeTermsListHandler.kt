@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import javax.inject.Inject
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import javax.inject.Inject
 
 class AttributeTermsListHandler @Inject constructor(
     private val repository: ProductDetailRepository

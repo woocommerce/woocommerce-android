@@ -25,7 +25,7 @@ import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
-import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.*
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
