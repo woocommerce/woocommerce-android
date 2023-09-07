@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AIThankYouNoteBottomSheetFragment : DialogFragment() {
+class AIThankYouNoteBottomSheetFragment : WCBottomSheetDialogFragment() {
     private val viewModel: AIThankYouNoteViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

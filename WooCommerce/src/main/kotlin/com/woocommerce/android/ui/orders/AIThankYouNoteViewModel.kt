@@ -50,7 +50,8 @@ class AIThankYouNoteViewModel @Inject constructor(
     private fun handleCompletionsSuccess(completions: String) {
         _viewState.update {
             _viewState.value.copy(
-                generatedThankYouNote = completions
+                generatedThankYouNote = completions,
+                generationState = GenerationState.Generated()
             )
         }
     }
@@ -61,11 +62,10 @@ class AIThankYouNoteViewModel @Inject constructor(
     }
     data class ViewState(
         val generatedThankYouNote: String = "",
-        val generationState: GenerationState = GenerationState.Start(),
+        val generationState: GenerationState = GenerationState.Generating,
     )
 
     sealed class GenerationState {
-        data class Start(val showError: Boolean = false) : GenerationState()
         object Generating : GenerationState()
         data class Generated(val showError: Boolean = false) : GenerationState()
         object Regenerating : GenerationState()

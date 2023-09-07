@@ -779,7 +779,7 @@
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
     <string name="orderdetail_view_custom_fields">View custom fields</string>
-    <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank you note.</string>
+    <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -3554,6 +3554,13 @@
     <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
     <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
+
+    <!--
+    AI thank you note
+    -->
+    <string name="ai_order_thank_you_note_dialog_title">Thank-you note</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">Creating a thank-you note for your order…</string>
+
 
     <!--
     Blaze banner
