@@ -1093,52 +1093,38 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onTaxRateSelected(taxRate: TaxRate) = launch(Dispatchers.IO) {
         dataStore.fetchCountriesAndStates(selectedSite.get())
-
         val country: Location = dataStore.getCountries().first {
             it.code == taxRate.countryCode
         }.toAppModel()
-
         val state: Location = dataStore.getStates(country.code).first {
             it.code == taxRate.stateCode
         }.toAppModel()
-
         val city = if (taxRate.city.isNotNullOrEmpty()) {
             taxRate.city
         } else {
             taxRate.cities?.first() ?: ""
         }
-
         val postCode = if (taxRate.postcode.isNotNullOrEmpty()) {
             taxRate.postcode
         } else {
             taxRate.postCodes?.first() ?: ""
         }
-
-        val address = EMPTY.copy(
-            country = country,
-            state = AmbiguousLocation.Defined(state),
+        val taxBasedOnSetting = orderCreateEditRepository.getTaxBasedOnSetting()
+        val address = when (taxBasedOnSetting) {
+            BillingAddress -> _orderDraft.value.billingAddress
+            ShippingAddress -> _orderDraft.value.shippingAddress
+            else -> EMPTY
+        }.copy(
             city = city,
-            postcode = postCode,
+            state = AmbiguousLocation.Defined(state),
+            country = country,
+            postcode = postCode
         )
-
-        launch {
-            val taxBasedOnSetting = orderCreateEditRepository.getTaxBasedOnSetting()
-            _orderDraft.update { order ->
-                when (taxBasedOnSetting) {
-                    BillingAddress -> {
-                        order.copy(
-                            billingAddress = address
-                        )
-                    }
-                    ShippingAddress -> {
-                        order.copy(
-                            shippingAddress = address
-                        )
-                    }
-                    else -> {
-                        order
-                    }
-                }
+        _orderDraft.update { order ->
+            when (taxBasedOnSetting) {
+                BillingAddress -> order.copy(billingAddress = address)
+                ShippingAddress -> order.copy(shippingAddress = address)
+                else -> order
             }
         }
     }
