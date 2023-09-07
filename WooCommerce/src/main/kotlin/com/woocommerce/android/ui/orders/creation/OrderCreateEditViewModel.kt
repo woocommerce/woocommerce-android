@@ -127,6 +127,7 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.Dispatchers
 import org.wordpress.android.fluxc.model.data.WCLocationModel
@@ -149,8 +150,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
-    private val dataStore: WCDataStore,
-    private val selectedSite: SelectedSite,
+    private val getAddressFromTaxRate: GetAddressFromTaxRate,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -1092,38 +1092,19 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onTaxRateSelected(taxRate: TaxRate) = launch(Dispatchers.IO) {
-        dataStore.fetchCountriesAndStates(selectedSite.get())
-        val country: Location = dataStore.getCountries().first {
-            it.code == taxRate.countryCode
-        }.toAppModel()
-        val state: Location = dataStore.getStates(country.code).first {
-            it.code == taxRate.stateCode
-        }.toAppModel()
-        val city = if (taxRate.city.isNotNullOrEmpty()) {
-            taxRate.city
-        } else {
-            taxRate.cities?.first() ?: ""
-        }
-        val postCode = if (taxRate.postcode.isNotNullOrEmpty()) {
-            taxRate.postcode
-        } else {
-            taxRate.postCodes?.first() ?: ""
-        }
         val taxBasedOnSetting = orderCreateEditRepository.getTaxBasedOnSetting()
-        val address = when (taxBasedOnSetting) {
+        val baseAddress: Address = when (taxBasedOnSetting) {
             BillingAddress -> _orderDraft.value.billingAddress
             ShippingAddress -> _orderDraft.value.shippingAddress
             else -> EMPTY
-        }.copy(
-            city = city,
-            state = AmbiguousLocation.Defined(state),
-            country = country,
-            postcode = postCode
-        )
+        }
+        val updatedAddress: Address = with(getAddressFromTaxRate) {
+            baseAddress(taxRate)
+        }
         _orderDraft.update { order ->
             when (taxBasedOnSetting) {
-                BillingAddress -> order.copy(billingAddress = address)
-                ShippingAddress -> order.copy(shippingAddress = address)
+                BillingAddress -> order.copy(billingAddress = updatedAddress)
+                ShippingAddress -> order.copy(shippingAddress = updatedAddress)
                 else -> order
             }
         }
