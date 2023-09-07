@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import javax.inject.Inject
 import kotlinx.coroutines.sync.Mutex
@@ -19,20 +20,36 @@ class AttributeTermsListHandler @Inject constructor(
 
     suspend fun fetchAttributeTerms(
         remoteAttributeId: Long
-    ) {
+    ): List<ProductAttributeTerm> {
         return mutex.withLock {
             page = INITIAL_PAGE
             canLoadMore = true
-            repository.fetchGlobalAttributeTerms(
-                remoteAttributeId = remoteAttributeId,
-                page = page,
-                pageSize = PAGE_SIZE
-            ).also {
-                if (it.size == PAGE_SIZE) {
-                    canLoadMore = true
-                    page++
-                }
+            loadAttributeTerms(remoteAttributeId)
+        }
+    }
+
+    suspend fun loadMore(
+        remoteAttributeId: Long
+    ): List<ProductAttributeTerm> {
+        return mutex.withLock {
+            if (canLoadMore) {
+                loadAttributeTerms(remoteAttributeId)
+            } else {
+                emptyList()
             }
+        }
+    }
+
+    private suspend fun loadAttributeTerms(
+        remoteAttributeId: Long
+    ): List<ProductAttributeTerm> = repository.fetchGlobalAttributeTerms(
+        remoteAttributeId, page, PAGE_SIZE
+    ).also {
+        if (it.size == PAGE_SIZE) {
+            canLoadMore = true
+            page++
+        } else {
+            canLoadMore = false
         }
     }
 }
