@@ -253,7 +253,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         layoutManagerAssigned = initializeRecycler(
             binding.assignedTermList,
             enableDragAndDrop = !isGlobalAttribute,
-            enableDeleting = true
+            enableDeleting = true,
+            supportsLoadMore = false
         )
         assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
         assignedTermsAdapter.setOnTermListener(assignedTermListener)
@@ -264,7 +265,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         layoutManagerGlobal = initializeRecycler(
             binding.globalTermList,
             enableDragAndDrop = false,
-            enableDeleting = false
+            enableDeleting = false,
+            supportsLoadMore = true
         )
         globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
         globalTermsAdapter.setOnTermListener(globalTermListener)
@@ -284,7 +286,8 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun initializeRecycler(
         recycler: RecyclerView,
         enableDragAndDrop: Boolean,
-        enableDeleting: Boolean
+        enableDeleting: Boolean,
+        supportsLoadMore: Boolean
     ): LinearLayoutManager {
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recycler.layoutManager = layoutManager
@@ -296,14 +299,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 recycler.adapter = AttributeTermsListAdapter(
                     enableDragAndDrop = true,
                     enableDeleting = enableDeleting,
-                    defaultItemBackground = this
+                    defaultItemBackground = this,
+                    loadMoreListener = (::onLoadMoreRequested).takeIf { supportsLoadMore }
                 )
                 itemTouchHelper.attachToRecyclerView(recycler)
             } else {
                 recycler.adapter = AttributeTermsListAdapter(
                     enableDragAndDrop = false,
                     enableDeleting = enableDeleting,
-                    defaultItemBackground = this
+                    defaultItemBackground = this,
+                    loadMoreListener = (::onLoadMoreRequested).takeIf { supportsLoadMore }
                 )
             }
         }
@@ -427,5 +432,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     private fun removeAttribute() {
         viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
         saveChangesAndReturn()
+    }
+
+    private fun onLoadMoreRequested() {
+        termsViewModel.onLoadMore(navArgs.attributeId)
     }
 }
