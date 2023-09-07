@@ -44,7 +44,7 @@ class MediaFilesRepository @Inject constructor(
 ) {
     suspend fun fetchMedia(localUri: String): MediaModel? {
         return withContext(dispatchers.io) {
-            val mediaModel = ProductImagesUtils.mediaModelFromLocalUri(
+            val mediaModel = FileUploadUtils.mediaModelFromLocalUri(
                 context,
                 selectedSite.get().id,
                 Uri.parse(localUri),
