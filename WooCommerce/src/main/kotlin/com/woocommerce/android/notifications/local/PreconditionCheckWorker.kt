@@ -62,7 +62,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
             return cancelWork(message)
         }
 
-        val notificationLinkedSite = siteStore.getSiteByLocalId(siteId.toInt())
+        val notificationLinkedSite = siteStore.getSiteBySiteId(siteId)
         return if (notificationLinkedSite.isFreeTrial) {
             Result.success()
         } else {
