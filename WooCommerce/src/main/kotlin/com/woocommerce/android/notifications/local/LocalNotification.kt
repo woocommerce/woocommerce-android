@@ -6,7 +6,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import java.util.concurrent.TimeUnit
 
 sealed class LocalNotification(
-    val localNotificationSiteId: Long,
+    open val siteId: Long,
     @StringRes val title: Int,
     @StringRes val description: Int,
     val type: LocalNotificationType,
@@ -23,10 +23,10 @@ sealed class LocalNotification(
     }
 
     data class StoreCreationCompletedNotification(
-        val siteId: Long,
+        override val siteId: Long,
         val name: String
     ) : LocalNotification(
-        localNotificationSiteId = siteId,
+        siteId = siteId,
         title = R.string.local_notification_store_creation_complete_title,
         description = R.string.local_notification_store_creation_complete_description,
         type = LocalNotificationType.STORE_CREATION_FINISHED,
@@ -40,11 +40,11 @@ sealed class LocalNotification(
     }
 
     data class StoreCreationIncompleteNotification(
-        val siteId: Long,
+        override val siteId: Long,
         val name: String,
         val storeName: String
     ) : LocalNotification(
-        localNotificationSiteId = siteId,
+        siteId = siteId,
         title = R.string.local_notification_without_free_trial_title,
         description = R.string.local_notification_without_free_trial_description,
         type = LocalNotificationType.STORE_CREATION_INCOMPLETE,
@@ -60,9 +60,9 @@ sealed class LocalNotification(
 
     data class FreeTrialExpiringNotification(
         val expiryDate: String,
-        val siteId: Long
+        override val siteId: Long
     ) : LocalNotification(
-        localNotificationSiteId = siteId,
+        siteId = siteId,
         title = R.string.local_notification_one_day_before_free_trial_expires_title,
         description = R.string.local_notification_one_day_before_free_trial_expires_description,
         type = LocalNotificationType.FREE_TRIAL_EXPIRING,
@@ -76,9 +76,9 @@ sealed class LocalNotification(
 
     data class FreeTrialExpiredNotification(
         val name: String,
-        val siteId: Long
+        override val siteId: Long
     ) : LocalNotification(
-        localNotificationSiteId = siteId,
+        siteId = siteId,
         title = R.string.local_notification_one_day_after_free_trial_expires_title,
         description = R.string.local_notification_one_day_after_free_trial_expires_description,
         type = LocalNotificationType.FREE_TRIAL_EXPIRED,
@@ -90,21 +90,21 @@ sealed class LocalNotification(
         }
     }
 
-    data class UpgradeToPaidPlanNotification(val siteId: Long) : LocalNotification(
-        localNotificationSiteId = siteId,
+    data class UpgradeToPaidPlanNotification(override val siteId: Long) : LocalNotification(
+        siteId = siteId,
         title = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_title,
         description = R.string.local_notification_upgrade_to_paid_plan_after_6_hours_description,
         type = LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
-        delay = 6,
-        delayUnit = TimeUnit.HOURS
+        delay = 2,
+        delayUnit = TimeUnit.MINUTES
     ) {
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description)
         }
     }
 
-    data class FreeTrialSurveyNotification(val siteId: Long) : LocalNotification(
-        localNotificationSiteId = siteId,
+    data class FreeTrialSurveyNotification(override val siteId: Long) : LocalNotification(
+        siteId = siteId,
         title = R.string.local_notification_survey_after_24_hours_title,
         description = R.string.local_notification_survey_after_24_hours_description,
         type = LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
@@ -116,8 +116,8 @@ sealed class LocalNotification(
         }
     }
 
-    data class StillExploringNotification(val siteId: Long) : LocalNotification(
-        localNotificationSiteId = siteId,
+    data class StillExploringNotification(override val siteId: Long) : LocalNotification(
+        siteId = siteId,
         title = R.string.local_notification_still_exploring_title,
         description = R.string.local_notification_still_exploring_description,
         type = LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING,
