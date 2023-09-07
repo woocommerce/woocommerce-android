@@ -44,4 +44,5 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class TaxRatesInfoDialog(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
+    data class TaxRateSelector(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
 }
