@@ -122,6 +122,13 @@ fun EmptyTaxRateSelectorList(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
+            trailingIcon =
+            {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_external),
+                    contentDescription = stringResource(id = R.string.tax_rate_empty_list_button_alt),
+                )
+            }
         )
     }
 }
