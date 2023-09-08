@@ -3,30 +3,29 @@ package com.woocommerce.android.ui.orders.creation.taxes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateRepository
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentArgs
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: TaxRateSelectorViewModel
     private val tracker: AnalyticsTrackerWrapper = mock()
-    private val savedStateHandle: SavedStateHandle = mock()
+    private val savedStateHandle: SavedStateHandle = TaxRateSelectorFragmentArgs(mock()).initSavedStateHandle()
     private val repository: TaxRateRepository = mock()
-
 
     @Before
     fun setup() {
-        // Initialize the ViewModel with mocked dependencies
+        testBlocking { whenever(repository.fetchTaxRates()).thenReturn(listOf(mock())) }
         viewModel = TaxRateSelectorViewModel(tracker, repository, savedStateHandle)
     }
 
@@ -43,5 +42,15 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(tracker).track(AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED)
+    }
+
+    @Test
+    fun `when onEditTaxRatesInAdmin clicked, the should track event`() = testBlocking {
+
+        // WHEN
+        viewModel.onEditTaxRatesInAdminClicked()
+
+        // THEN
+        verify(tracker).track(AnalyticsEvent.TAX_RATE_SELECTOR_EDIT_IN_ADMIN_TAPPED)
     }
 }
