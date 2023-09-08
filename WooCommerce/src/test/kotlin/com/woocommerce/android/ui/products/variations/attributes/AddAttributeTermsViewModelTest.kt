@@ -11,7 +11,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AddAttributeTermsViewModelTest: BaseUnitTest() {
+class AddAttributeTermsViewModelTest : BaseUnitTest() {
     private lateinit var sut: AddAttributeTermsViewModel
     private lateinit var termsListHandler: AttributeTermsListHandler
 
@@ -84,6 +84,20 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
 
     @Test
     fun `when resetGlobalAttributeTerms is called, then termsListState should be empty`() {
+        // Given
+        val termListUpdates = mutableListOf<List<ProductAttributeTerm>>()
+        sut.termsListState.observeForever { termListUpdates.add(it) }
+
+        // When
+        sut.onFetchAttributeTerms(defaultAttributeId)
+        sut.resetGlobalAttributeTerms()
+
+        // Then
+        assertThat(termListUpdates).containsExactly(
+            emptyList(),
+            defaultAttributeList,
+            emptyList()
+        )
     }
 
     @Test
