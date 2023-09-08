@@ -54,6 +54,12 @@ class TaxRateSelectorViewModel @Inject constructor(
         StringBuilder().apply {
             if (taxRate.name.isNotNullOrEmpty()) {
                 append(taxRate.name)
+            }
+            if (taxRate.countryCode.isNotNullOrEmpty() ||
+                taxRate.stateCode.isNotNullOrEmpty() ||
+                taxRate.postcode.isNotNullOrEmpty() ||
+                taxRate.city.isNotNullOrEmpty()
+            ) {
                 append(" · ")
             }
             if (taxRate.countryCode.isNotNullOrEmpty()) {
