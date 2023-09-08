@@ -62,6 +62,7 @@ fun TaxRateSelectorScreen(
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onDismiss: () -> Unit,
     onLoadMore: () -> Unit,
+    onEmptyScreenButtonClicked: () -> Unit,
 ) {
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
@@ -73,7 +74,8 @@ fun TaxRateSelectorScreen(
             onInfoIconClicked,
             onTaxRateClick,
             onEditTaxRatesInAdminClicked,
-            onLoadMore
+            onLoadMore,
+            onEmptyScreenButtonClicked,
         )
     }
 }
@@ -159,6 +161,7 @@ private fun TaxRates(
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onEditTaxRatesInAdminClicked: () -> Unit,
     onLoadMore: () -> Unit = {},
+    onEmptyScreenButtonClicked: () -> Unit,
 ) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -169,24 +172,36 @@ private fun TaxRates(
         item {
             Header(onInfoIconClicked)
         }
-        item {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
-                        vertical = dimensionResource(
-                            id = R.dimen.minor_100
-                        )
-                    ),
-                fontSize = 13.sp,
-                color = colorResource(id = R.color.woo_gray_40),
-                text = stringResource(R.string.tax_rate_selector_list_header)
-            )
-            Divider()
-        }
-        itemsIndexed(state.taxRates) { _, taxRate ->
-            TaxRateRow(taxRate, onTaxRateClick)
+        when {
+            state.taxRates.isEmpty() -> {
+                item {
+                    EmptyTaxRateSelectorList(onEmptyScreenButtonClicked)
+                }
+            }
+            else -> {
+                item {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = dimensionResource(id = R.dimen.major_100),
+                                vertical = dimensionResource(
+                                    id = R.dimen.minor_100
+                                )
+                            ),
+                        fontSize = 13.sp,
+                        color = colorResource(id = R.color.woo_gray_40),
+                        text = stringResource(R.string.tax_rate_selector_list_header)
+                    )
+                    Divider()
+                }
+                itemsIndexed(state.taxRates) { _, taxRate ->
+                    TaxRateRow(taxRate, onTaxRateClick)
+                }
+                item {
+                    Footer(onEditTaxRatesInAdminClicked)
+                }
+            }
         }
         if (state.isLoading) {
             item {
@@ -197,9 +212,6 @@ private fun TaxRates(
                         .padding(vertical = dimensionResource(id = R.dimen.minor_100))
                 )
             }
-        }
-        item {
-            Footer(onEditTaxRatesInAdminClicked)
         }
     }
     InfiniteListHandler(listState = listState) {
@@ -350,6 +362,7 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         onTaxRateClick = {},
         onDismiss = {},
         onLoadMore = {},
+        onEmptyScreenButtonClicked = {},
     )
 }
 
@@ -391,6 +404,7 @@ fun TaxRatesPreview() = WooThemeWithBackground {
         onEditTaxRatesInAdminClicked = {},
         onInfoIconClicked = {},
         onLoadMore = {},
+        onEmptyScreenButtonClicked = {},
     )
 }
 

@@ -39,7 +39,8 @@ class TaxRateSelectorFragment : BaseFragment() {
                     viewModel::onInfoIconClicked,
                     viewModel::onTaxRateSelected,
                     viewModel::onDismissed,
-                    viewModel::onLoadMore
+                    viewModel::onLoadMore,
+                    viewModel::onEditTaxRatesInAdminClicked
                 )
             }
         }
