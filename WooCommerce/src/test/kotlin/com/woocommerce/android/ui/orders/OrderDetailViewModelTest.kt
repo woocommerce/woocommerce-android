@@ -158,7 +158,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             OrderDetailViewModel(
-                coroutinesTestRule.testDispatchers,
                 savedState,
                 appPrefsWrapper,
                 networkStatus,
@@ -1140,7 +1139,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1163,7 +1161,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1186,8 +1183,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
-
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
                 isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
@@ -1208,7 +1203,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
 
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(orderStatus.copy(statusKey = CoreOrderStatus.COMPLETED.value)).whenever(
                 orderDetailRepository
             ).getOrderStatus(any())
@@ -1233,7 +1227,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1256,7 +1249,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1279,7 +1271,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1302,7 +1293,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1338,7 +1328,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             viewModel.start()
 
             // When
