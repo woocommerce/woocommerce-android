@@ -87,7 +87,7 @@ class AnalyticsTracker private constructor(
         val selectedSiteModel = selectedSite.getOrNull()
         if (!isSiteless) {
             selectedSiteModel?.let {
-                finalProperties[KEY_BLOG_ID] = it.siteId
+                if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug

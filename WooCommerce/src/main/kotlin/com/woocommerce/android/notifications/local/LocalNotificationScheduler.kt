@@ -23,6 +23,7 @@ class LocalNotificationScheduler @Inject constructor(
         const val LOCAL_NOTIFICATION_TITLE = "local_notification_title"
         const val LOCAL_NOTIFICATION_DESC = "local_notification_description"
         const val LOCAL_NOTIFICATION_DATA = "local_notification_data"
+        const val LOCAL_NOTIFICATION_SITE_ID = "local_notification_site_id"
     }
 
     private val workManager = WorkManager.getInstance(appContext)
@@ -31,20 +32,28 @@ class LocalNotificationScheduler @Inject constructor(
         cancelScheduledNotification(notification.type)
 
         workManager
-            .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildPreconditionCheckWorkRequest(notification))
+            .beginUniqueWork(
+                LOCAL_NOTIFICATION_WORK_NAME + notification.type.value,
+                REPLACE,
+                buildPreconditionCheckWorkRequest(notification)
+            )
             .then(buildNotificationWorkRequest(notification))
             .enqueue()
 
         AnalyticsTracker.track(
             AnalyticsEvent.LOCAL_NOTIFICATION_SCHEDULED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notification.type.value)
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to notification.type.value,
+                AnalyticsTracker.KEY_BLOG_ID to notification.siteId,
+            )
         )
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
         val conditionData = workDataOf(
             LOCAL_NOTIFICATION_TYPE to notification.type.value,
-            LOCAL_NOTIFICATION_DATA to notification.data
+            LOCAL_NOTIFICATION_DATA to notification.data,
+            LOCAL_NOTIFICATION_SITE_ID to notification.siteId
         )
         return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
@@ -59,7 +68,8 @@ class LocalNotificationScheduler @Inject constructor(
             LOCAL_NOTIFICATION_ID to notification.id,
             LOCAL_NOTIFICATION_TITLE to notification.getTitleString(resourceProvider),
             LOCAL_NOTIFICATION_DESC to notification.getDescriptionString(resourceProvider),
-            LOCAL_NOTIFICATION_DATA to notification.data
+            LOCAL_NOTIFICATION_DATA to notification.data,
+            LOCAL_NOTIFICATION_SITE_ID to notification.siteId
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
             .addTag(notification.type.value)
