@@ -8,12 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerViewModel.NavigateToSummaryStep
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -22,6 +22,10 @@ import javax.inject.Inject
 class CountryListPickerFragment : BaseFragment() {
     private val viewModel: CountryListPickerViewModel by viewModels()
     @Inject lateinit var newStore: NewStore
+
+    companion object {
+        const val KEY_COUNTRY_LIST_PICKER_RESULT = "key_country_list_picker_result"
+    }
 
     override
     val activityAppBarStatus: AppBarStatus
@@ -48,14 +52,13 @@ class CountryListPickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
-                is NavigateToSummaryStep -> navigateToStoreChallengesStep()
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                    navigateBackWithResult(
+                        KEY_COUNTRY_LIST_PICKER_RESULT,
+                        event.data as StoreCreationCountry
+                    )
+                }
             }
         }
-    }
-
-    private fun navigateToStoreChallengesStep() {
-        findNavController().navigateSafely(
-            CountryListPickerFragmentDirections.actionCountryListPickerFragmentToChallengesFragment()
-        )
     }
 }

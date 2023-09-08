@@ -77,8 +77,10 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityEvent
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
-import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForLocalNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenStoreCreation
@@ -235,6 +237,7 @@ class MainActivity :
                     } else 0f
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
+
                 AppBarStatus.Hidden -> hideToolbar()
             }
 
@@ -579,6 +582,7 @@ class MainActivity :
                 }
                 return
             }
+
             RequestCodes.SETTINGS -> {
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
@@ -741,8 +745,8 @@ class MainActivity :
 
             viewModel.handleIncomingNotification(localPushId, notification)
         } else if (localNotification != null) {
-            viewModel.onLocalNotificationTapped(localNotification)
             intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
+            viewModel.onLocalNotificationTapped(localNotification)
         }
     }
     // endregion
@@ -757,8 +761,9 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForNotification -> restartActivityForNotification(event)
-                is RestartActivityForAppLink -> restartActivityForAppLink(event)
+                is RestartActivityForPushNotification -> onRestartActivityEvent(event)
+                is RestartActivityForLocalNotification -> onRestartActivityEvent(event)
+                is RestartActivityForAppLink -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
@@ -910,16 +915,18 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
-    private fun restartActivityForAppLink(event: RestartActivityForAppLink) {
-        intent.data = event.data
-        restart()
-    }
-
-    private fun restartActivityForNotification(event: RestartActivityForNotification) {
-        // Add flags for handling the push notification after restart
-        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+    private fun onRestartActivityEvent(event: RestartActivityEvent) {
+        intent.apply {
+            when (event) {
+                is RestartActivityForAppLink -> data = event.data
+                is RestartActivityForLocalNotification -> putExtra(FIELD_LOCAL_NOTIFICATION, event.notification)
+                is RestartActivityForPushNotification -> {
+                    putExtra(FIELD_OPENED_FROM_PUSH, true)
+                    putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                    putExtra(FIELD_PUSH_ID, event.pushId)
+                }
+            }
+        }
         restart()
     }
 
