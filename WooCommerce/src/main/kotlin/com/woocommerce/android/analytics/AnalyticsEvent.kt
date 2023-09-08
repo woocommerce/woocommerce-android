@@ -240,6 +240,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
     ORDER_DETAILS_SUBSCRIPTIONS_SHOWN,
     ORDER_DETAILS_GIFT_CARD_SHOWN,
+    ORDER_PRODUCTS_LOADED,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
