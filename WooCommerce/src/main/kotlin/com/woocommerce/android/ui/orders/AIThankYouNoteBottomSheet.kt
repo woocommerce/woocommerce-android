@@ -51,19 +51,22 @@ fun AIThankYouNoteBottomSheet(viewModel: AIThankYouNoteViewModel) {
             generationState = state.generationState,
             onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
             onCopyButtonClicked = viewModel::onCopyButtonClicked,
-            onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived
+            onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived,
+            onShareButtonClicked = viewModel::onShareButtonClicked
         )
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
+@Suppress("LongParameterList")
 @Composable
 fun ThankYouNoteGenerationForm(
     generatedThankYouNote: String,
     generationState: GenerationState,
     onRegenerateButtonClicked: () -> Unit,
     onCopyButtonClicked: () -> Unit,
-    onDescriptionFeedbackReceived: (Boolean) -> Unit
+    onDescriptionFeedbackReceived: (Boolean) -> Unit,
+    onShareButtonClicked: () -> Unit
 ) {
     Text(generatedThankYouNote)
     AnimatedContent(generationState) { state ->
@@ -79,7 +82,8 @@ fun ThankYouNoteGenerationForm(
                     generatedThankYouNote,
                     onRegenerateButtonClicked,
                     onCopyButtonClicked,
-                    onDescriptionFeedbackReceived
+                    onDescriptionFeedbackReceived,
+                    onShareButtonClicked
                 )
                 is GenerationState.Regenerating -> GeneratingState(isRegenerating = true)
             }
@@ -132,7 +136,8 @@ fun GeneratedState(
     note: String,
     onRegenerateButtonClicked: () -> Unit,
     onCopyButtonClicked: () -> Unit,
-    onDescriptionFeedbackReceived: (Boolean) -> Unit
+    onDescriptionFeedbackReceived: (Boolean) -> Unit,
+    onShareButtonClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -176,11 +181,12 @@ fun GeneratedState(
 
             Survey(onDescriptionFeedbackReceived)
 
-            ActionButtons(onRegenerateButtonClicked)
+            ActionButtons(onRegenerateButtonClicked, onShareButtonClicked)
         }
     }
 }
 
+@Suppress("LongMethod")
 @Composable
 fun Survey(
     onDescriptionFeedbackReceived: (Boolean) -> Unit
@@ -263,7 +269,8 @@ fun Survey(
 
 @Composable
 fun ActionButtons(
-    onRegenerateButtonClicked: () -> Unit
+    onRegenerateButtonClicked: () -> Unit,
+    onShareButtonClicked: () -> Unit
 ) {
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
 
@@ -289,7 +296,7 @@ fun ActionButtons(
             )
         }
         WCColoredButton(
-            onClick = { },
+            onClick = onShareButtonClicked,
             modifier = Modifier
                 .align(Alignment.CenterEnd),
         ) {

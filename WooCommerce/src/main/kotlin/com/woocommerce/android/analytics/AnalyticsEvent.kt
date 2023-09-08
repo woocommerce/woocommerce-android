@@ -902,6 +902,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     AI_IDENTIFY_LANGUAGE_SUCCESS,
     AI_IDENTIFY_LANGUAGE_FAILED,
 
+    ORDER_THANK_YOU_NOTE_SHARE_TAPPED,
+
     // Blaze
     BLAZE_ENTRY_POINT_DISPLAYED,
     BLAZE_ENTRY_POINT_TAPPED,

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.CopyDescriptionToClipboard
+import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.ShareNote
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +42,15 @@ class AIThankYouNoteBottomSheetFragment : WCBottomSheetDialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CopyDescriptionToClipboard -> copyDescriptionToClipboard(event.description)
+                is ShareNote -> {
+                    val shareIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, event.note)
+                        type = "text/plain"
+                    }
+                    val title = resources.getText(R.string.product_share_dialog_title)
+                    startActivity(Intent.createChooser(shareIntent, title))
+                }
             }
         }
     }

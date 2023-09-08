@@ -93,6 +93,14 @@ class AIThankYouNoteViewModel @Inject constructor(
         triggerEvent(CopyDescriptionToClipboard(_viewState.value.generatedThankYouNote))
     }
 
+    fun onShareButtonClicked() {
+        val messageToShare = _viewState.value.generatedThankYouNote
+
+        tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_SHARE_TAPPED)
+
+        triggerEvent(ShareNote(messageToShare))
+    }
+
     data class ViewState(
         val generatedThankYouNote: String = "",
         val generationState: GenerationState = GenerationState.Generating,
@@ -105,4 +113,5 @@ class AIThankYouNoteViewModel @Inject constructor(
     }
 
     data class CopyDescriptionToClipboard(val description: String) : MultiLiveEvent.Event()
+    data class ShareNote(val note: String) : MultiLiveEvent.Event()
 }
