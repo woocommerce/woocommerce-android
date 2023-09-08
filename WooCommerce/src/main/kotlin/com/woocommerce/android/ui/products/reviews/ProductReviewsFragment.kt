@@ -41,6 +41,7 @@ class ProductReviewsFragment :
     companion object {
         const val PRODUCT_REVIEWS_MODIFIED = "product-reviews-modified"
     }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     val viewModel: ProductReviewsViewModel by viewModels()
@@ -80,7 +81,7 @@ class ProductReviewsFragment :
 
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) { }
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {}
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
 
@@ -99,6 +100,7 @@ class ProductReviewsFragment :
                 viewModel.refreshProductReviews()
             }
         }
+        setUnreadFilterChangedListener()
     }
 
     private fun setupObservers() {
@@ -154,6 +156,12 @@ class ProductReviewsFragment :
             }
         } else {
             binding.emptyView.hide()
+        }
+    }
+
+    private fun setUnreadFilterChangedListener() {
+        binding.unreadFilterSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onUnreadReviewsFilterChanged(isChecked)
         }
     }
 

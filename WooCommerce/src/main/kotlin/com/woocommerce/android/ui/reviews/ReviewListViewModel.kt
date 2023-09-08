@@ -13,6 +13,7 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewListRepository.Companion.MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
@@ -46,7 +47,6 @@ class ReviewListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
-        private const val MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL = 10
     }
 
     private val _reviewList = MutableLiveData<List<ProductReview>>()

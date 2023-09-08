@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAI
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewListRepository.Companion.MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
 import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
 import com.woocommerce.android.ui.reviews.ReviewModerationHandler
 import com.woocommerce.android.ui.reviews.observeModerationEvents
@@ -116,7 +117,11 @@ class ProductReviewsViewModel @Inject constructor(
             if (result.isError) {
                 triggerEvent(ShowSnackbar(R.string.product_review_list_fetching_failed))
             } else {
-                _reviewList.value = reviewsRepository.getProductReviewsFromDB(remoteProductId)
+                val productReviews = reviewsRepository.getProductReviewsFromDB(remoteProductId)
+                if (productReviewsViewState.isUnreadFilterEnabled) {
+                    applyUnreadFilter(productReviews)
+                } else _reviewList.value = productReviews
+                _reviewList.value = productReviews
             }
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -153,11 +158,39 @@ class ProductReviewsViewModel @Inject constructor(
         }
     }
 
+    fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
+        productReviewsViewState = productReviewsViewState.copy(isUnreadFilterEnabled = isEnabled)
+        launch {
+            if (isEnabled) {
+                applyUnreadFilter(reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId))
+            } else {
+                _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
+            }
+        }
+    }
+
+    private suspend fun applyUnreadFilter(productReviews: List<ProductReview>) {
+        val unreadReviews = productReviews.filter { it.read == false }
+        if (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL && reviewsRepository.canLoadMore) {
+            productReviewsViewState = productReviewsViewState.copy(
+                isLoadingMore = unreadReviews.isNotEmpty(),
+                isSkeletonShown = unreadReviews.isEmpty()
+            )
+            if (unreadReviews.isNotEmpty()) _reviewList.value = unreadReviews
+            fetchProductReviews(
+                remoteProductId = navArgs.remoteProductId,
+                loadMore = true
+            )
+        } else
+            _reviewList.value = unreadReviews
+    }
+
     @Parcelize
     data class ProductReviewsViewState(
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 }
