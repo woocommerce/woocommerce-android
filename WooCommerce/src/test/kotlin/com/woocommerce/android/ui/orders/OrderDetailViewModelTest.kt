@@ -1868,4 +1868,54 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
     }
+
+    @Test
+    fun `when the order is opened then track order loaded with right types and add-ons`() = testBlocking {
+        val items = OrderTestUtils.generateTestOrderItems(count = 2)
+        val testOrder = order.copy(items = items)
+        val types = "simple, bundle"
+        val hasAddons = true
+        doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(types).whenever(orderDetailRepository).getUniqueProductTypes(any())
+        doReturn(hasAddons).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(
+            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_ID to order.id,
+                AnalyticsTracker.PRODUCT_TYPES to types,
+                AnalyticsTracker.HAS_ADDONS to hasAddons
+            )
+        )
+    }
+
+    @Test
+    fun `when the order is opened then track order loaded with right types and add-ons 2`() = testBlocking {
+        val items = OrderTestUtils.generateTestOrderItems(count = 2)
+        val testOrder = order.copy(items = items)
+        val types = "simple, variable"
+        val hasAddons = false
+        doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(types).whenever(orderDetailRepository).getUniqueProductTypes(any())
+        doReturn(hasAddons).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(
+            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_ID to order.id,
+                AnalyticsTracker.PRODUCT_TYPES to types,
+                AnalyticsTracker.HAS_ADDONS to hasAddons
+            )
+        )
+    }
 }
