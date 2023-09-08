@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,7 +44,8 @@ class TaxRateSelectorViewModel @Inject constructor(
 
     private fun calculateTaxRatePercentageText(taxRate: TaxRate) =
         if (taxRate.rate.isNotNullOrEmpty()) {
-            "${taxRate.rate}%"
+            val standardisedRate = taxRate.rate.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+            "$standardisedRate%"
         } else {
             ""
         }
