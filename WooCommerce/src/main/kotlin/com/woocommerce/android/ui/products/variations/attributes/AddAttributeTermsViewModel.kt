@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class AddAttributeTermsViewModel @Inject constructor(
@@ -18,9 +19,11 @@ class AddAttributeTermsViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val termsFlow = savedState.getStateFlow(
         this,
-        emptyList<ProductAttributeTerm>()
+        emptyMap<Int, ProductAttributeTerm>()
     )
-    val termsListState = termsFlow.asLiveData()
+    val termsListState = termsFlow
+        .map { it.map { (_, term) -> term } }
+        .asLiveData()
 
     private val loadingStateFlow = MutableStateFlow(LoadingState.Idle)
     val loadingState = loadingStateFlow.asLiveData()
@@ -36,12 +39,16 @@ class AddAttributeTermsViewModel @Inject constructor(
     }
 
     private fun publishChangesFrom(newTerms: List<ProductAttributeTerm>) {
-        termsFlow.update { it.toMutableList().apply { addAll(newTerms) } }
+        termsFlow.update { termsMap ->
+            termsMap.toMutableMap().apply {
+                putAll(newTerms.associateBy { it.remoteId })
+            }
+        }
         loadingStateFlow.update { LoadingState.Idle }
     }
 
     fun resetGlobalAttributeTerms() {
-        termsFlow.update { emptyList() }
+        termsFlow.update { emptyMap() }
     }
 
     enum class LoadingState {
