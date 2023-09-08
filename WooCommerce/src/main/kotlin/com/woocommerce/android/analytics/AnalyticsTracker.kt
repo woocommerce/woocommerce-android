@@ -600,6 +600,9 @@ class AnalyticsTracker private constructor(
         // -- AI Language detection
         const val KEY_DETECTED_LANGUAGE = "language"
 
+        // -- AI thank-you note
+        const val VALUE_ORDER_THANK_YOU_NOTE = "order_thank_you_note"
+
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"

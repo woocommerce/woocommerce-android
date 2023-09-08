@@ -51,6 +51,7 @@ fun AIThankYouNoteBottomSheet(viewModel: AIThankYouNoteViewModel) {
             generationState = state.generationState,
             onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
             onCopyButtonClicked = viewModel::onCopyButtonClicked,
+            onDescriptionFeedbackReceived = viewModel::onDescriptionFeedbackReceived
         )
     }
 }
@@ -61,7 +62,8 @@ fun ThankYouNoteGenerationForm(
     generatedThankYouNote: String,
     generationState: GenerationState,
     onRegenerateButtonClicked: () -> Unit,
-    onCopyButtonClicked: () -> Unit
+    onCopyButtonClicked: () -> Unit,
+    onDescriptionFeedbackReceived: (Boolean) -> Unit
 ) {
     Text(generatedThankYouNote)
     AnimatedContent(generationState) { state ->
@@ -76,7 +78,8 @@ fun ThankYouNoteGenerationForm(
                 is GenerationState.Generated -> GeneratedState(
                     generatedThankYouNote,
                     onRegenerateButtonClicked,
-                    onCopyButtonClicked
+                    onCopyButtonClicked,
+                    onDescriptionFeedbackReceived
                 )
                 is GenerationState.Regenerating -> GeneratingState(isRegenerating = true)
             }
@@ -128,7 +131,8 @@ fun GeneratingState(isRegenerating: Boolean = false) {
 fun GeneratedState(
     note: String,
     onRegenerateButtonClicked: () -> Unit,
-    onCopyButtonClicked: () -> Unit
+    onCopyButtonClicked: () -> Unit,
+    onDescriptionFeedbackReceived: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -170,7 +174,7 @@ fun GeneratedState(
                 )
             }
 
-            Survey()
+            Survey(onDescriptionFeedbackReceived)
 
             ActionButtons(onRegenerateButtonClicked)
         }
@@ -178,7 +182,9 @@ fun GeneratedState(
 }
 
 @Composable
-fun Survey() {
+fun Survey(
+    onDescriptionFeedbackReceived: (Boolean) -> Unit
+) {
     Column {
         val isFeedbackVisible = remember { mutableStateOf(true) }
         if (isFeedbackVisible.value) {
@@ -219,7 +225,7 @@ fun Survey() {
                             bottom.linkTo(parent.bottom)
                         },
                     onClick = {
-                        // todo track feedback
+                        onDescriptionFeedbackReceived(true)
                         isFeedbackVisible.value = false
                     }
                 ) {
@@ -239,7 +245,7 @@ fun Survey() {
                             bottom.linkTo(parent.bottom)
                         },
                     onClick = {
-                        // todo track feedback
+                        onDescriptionFeedbackReceived(false)
                         isFeedbackVisible.value = false
                     }
                 ) {

@@ -3,6 +3,11 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFUL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_THANK_YOU_NOTE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,6 +22,7 @@ import javax.inject.Inject
 class AIThankYouNoteViewModel @Inject constructor(
     private val site: SelectedSite,
     private val aiRepository: AIRepository,
+    private val tracker: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs = AIThankYouNoteBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
@@ -71,6 +77,16 @@ class AIThankYouNoteViewModel @Inject constructor(
         launch {
             createThankYouNote()
         }
+    }
+
+    fun onDescriptionFeedbackReceived(isUseful: Boolean) {
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                KEY_SOURCE to VALUE_ORDER_THANK_YOU_NOTE,
+                KEY_IS_USEFUL to isUseful
+            )
+        )
     }
 
     fun onCopyButtonClicked() {
