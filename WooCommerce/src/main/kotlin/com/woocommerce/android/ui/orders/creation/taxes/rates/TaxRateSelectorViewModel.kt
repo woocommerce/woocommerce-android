@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.orders.creation.taxes.rates
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +35,7 @@ class TaxRateSelectorViewModel @Inject constructor(
                         TaxRateUiModel(
                             label = calculateTaxRateLabel(taxRate),
                             rate = calculateTaxRatePercentageText(taxRate),
+                            taxRate = taxRate,
                         )
                     }
                 )
@@ -69,20 +73,36 @@ class TaxRateSelectorViewModel @Inject constructor(
             }
         }.toString()
 
-    fun onEditTaxRatesInAdminClicked() = Unit
-    fun onInfoIconClicked() = Unit
+    fun onEditTaxRatesInAdminClicked() {
+        triggerEvent(EditTaxRatesInAdmin)
+    }
+    fun onInfoIconClicked() {
+        triggerEvent(ShowTaxesInfoDialog)
+    }
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onTaxRateSelected(taxRate: TaxRateUiModel) = Unit
+    fun onTaxRateSelected(taxRate: TaxRateUiModel) {
+        triggerEvent(TaxRateSelected(taxRate.taxRate))
+    }
 
+    fun onDismissed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    @Parcelize
     data class ViewState(
         val taxRates: List<TaxRateUiModel> = emptyList(),
-    )
+    ) : Parcelable
 
+    @Parcelize
     data class TaxRateUiModel(
         val label: String,
         val rate: String,
-    )
+        val taxRate: TaxRate,
+    ) : Parcelable
+
+    data class TaxRateSelected(val taxRate: TaxRate) : MultiLiveEvent.Event()
+    object EditTaxRatesInAdmin : MultiLiveEvent.Event()
+    object ShowTaxesInfoDialog : MultiLiveEvent.Event()
 
     private companion object {
         private const val SPACE_CHAR = " "

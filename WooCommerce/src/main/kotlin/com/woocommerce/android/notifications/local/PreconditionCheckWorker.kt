@@ -7,8 +7,9 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.isFreeTrial
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DATA
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
@@ -17,25 +18,26 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOU
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import org.wordpress.android.fluxc.store.SiteStore
 
 @HiltWorker
 class PreconditionCheckWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooLogWrapper: WooLogWrapper,
-    private val selectedSite: SelectedSite
+    private val siteStore: SiteStore,
+    private val crashLogging: CrashLogging,
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         if (!canDisplayNotifications) cancelWork("Notifications permission not granted. Cancelling work.")
 
         val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
-        val data = inputData.getString(LOCAL_NOTIFICATION_DATA)
+        val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
         return when (type) {
             STORE_CREATION_FINISHED,
             STORE_CREATION_INCOMPLETE -> Result.success()
@@ -44,18 +46,29 @@ class PreconditionCheckWorker @AssistedInject constructor(
             FREE_TRIAL_EXPIRED,
             SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
             FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
-            THREE_DAYS_AFTER_STILL_EXPLORING -> proceedIfFreeTrialAndMatchesSite(data?.toLongOrNull())
+            THREE_DAYS_AFTER_STILL_EXPLORING -> proceedIfFreeTrialAndMatchesSite(siteId)
 
             null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
 
-    private fun proceedIfFreeTrialAndMatchesSite(siteId: Long?): Result {
-        val site = selectedSite.get()
-        return if (site.isFreeTrial && site.siteId == siteId) {
+    private fun proceedIfFreeTrialAndMatchesSite(siteId: Long): Result {
+        if (siteId == 0L) {
+            val message = "Site id is missing. Cancelling local notification work."
+            crashLogging.sendReport(
+                exception = Exception(message),
+                message = "PreconditionCheckWorker: cancelling work"
+            )
+            return cancelWork(message)
+        }
+
+        val notificationLinkedSite = siteStore.getSiteBySiteId(siteId)
+        return if (notificationLinkedSite.isFreeTrial) {
             Result.success()
         } else {
-            cancelWork("Store plan upgraded or a different site. Cancelling work.")
+            if (notificationLinkedSite == null) {
+                cancelWork("The site linked to the notifications doesn't exist in the db. Cancelling work.")
+            } else cancelWork("Store plan upgraded. Cancelling work.")
         }
     }
 

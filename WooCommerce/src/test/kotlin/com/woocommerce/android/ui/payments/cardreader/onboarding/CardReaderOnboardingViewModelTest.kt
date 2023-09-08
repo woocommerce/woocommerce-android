@@ -695,6 +695,71 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given handler returned show error and refresh, when clicked on wcpay not activated CTA, then error shown and refreshed state`() =
+        testBlocking {
+            val errorText = "error"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh(errorText))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotActivated,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
+                .actionButtonAction.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowUiStringSnackbar(UiString.UiStringText(errorText))
+            )
+
+            verify(onboardingChecker).getOnboardingState()
+        }
+
+    @Test
+    fun `given returned refresh, when clicked on wcpay not activated CTA, then error shown`() =
+        testBlocking {
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_ACTIVATED))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh)
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = WcpayNotActivated,
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    PluginIsNotSupportedInTheCountry(
+                        STRIPE_EXTENSION_GATEWAY,
+                        ""
+                    )
+                )
+
+            (viewModel.viewStateData.value as WCPayError.WCPayNotActivatedState)
+                .actionButtonAction.invoke()
+
+            verify(onboardingChecker).getOnboardingState()
+        }
+
+    @Test
     fun `when stripe account country not supported, then country not supported state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
