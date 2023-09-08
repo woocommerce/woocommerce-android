@@ -502,6 +502,9 @@
          Taxes
     -->
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="tax_rate_empty_list_title">We couldn\'t find any tax rates</string>
+    <string name="tax_rate_empty_list_message">Add tax rates in admin. Only tax rates with location information will be shown here.</string>
+    <string name="tax_rate_empty_list_button">Edit Tax Rates in Admin</string>
     <!--
          Order Creation
     -->
