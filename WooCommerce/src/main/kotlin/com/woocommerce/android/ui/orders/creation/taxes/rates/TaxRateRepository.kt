@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.creation.taxes.rates
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient.TaxRateModel
 import org.wordpress.android.fluxc.store.WCTaxStore
