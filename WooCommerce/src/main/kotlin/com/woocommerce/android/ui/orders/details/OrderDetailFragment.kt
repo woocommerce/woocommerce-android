@@ -252,7 +252,7 @@ class OrderDetailFragment :
             new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
                 binding.customFieldsCard.isVisible = it
             }
-            new.isAIThankYouNoteButtonShown?.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
+            new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
             }
         }
