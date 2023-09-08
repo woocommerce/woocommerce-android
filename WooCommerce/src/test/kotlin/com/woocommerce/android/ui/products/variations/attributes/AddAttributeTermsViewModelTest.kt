@@ -19,14 +19,9 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
 
     @Before
     fun setUp() {
-        termsListHandler = mock {
-            onBlocking { fetchAttributeTerms(defaultAttributeId) } doReturn defaultAttributeList
-            onBlocking { loadMore(defaultAttributeId) } doReturn defaultLoadMoreList
-        }
-
-        sut = AddAttributeTermsViewModel(
-            savedState = SavedStateHandle(),
-            termsListHandler = termsListHandler
+        startSutWith(
+            attributesFirstPage = defaultAttributeList,
+            attributesSecondPage = defaultLoadMoreList
         )
     }
 
@@ -47,11 +42,40 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when onLoadMore is called, then termsListState should be updated by appending new items`() {
+    fun `when onLoadMore is called, then termsListState should be updated by appending new items`() = testBlocking {
+        // Given
+        val termListUpdates = mutableListOf<List<ProductAttributeTerm>>()
+        sut.termsListState.observeForever { termListUpdates.add(it) }
+
+        // When
+        sut.onFetchAttributeTerms(defaultAttributeId)
+        sut.onLoadMore(defaultAttributeId)
+
+        // Then
+        assertThat(termListUpdates).containsExactly(
+            emptyList(),
+            defaultAttributeList,
+            defaultAttributeList + defaultLoadMoreList
+        )
     }
 
     @Test
     fun `when onLoadMore is called and returns repeated results, then termsListState should filter them out`() {
+        // Given
+
+        val termListUpdates = mutableListOf<List<ProductAttributeTerm>>()
+        sut.termsListState.observeForever { termListUpdates.add(it) }
+
+        // When
+        sut.onFetchAttributeTerms(defaultAttributeId)
+        sut.onLoadMore(defaultAttributeId)
+
+        // Then
+        assertThat(termListUpdates).containsExactly(
+            emptyList(),
+            defaultAttributeList,
+            defaultAttributeList + defaultLoadMoreList
+        )
     }
 
     @Test
@@ -68,7 +92,7 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
 
     private val defaultAttributeList = generateAttributeList(from = 1, to = 10)
 
-    private val defaultLoadMoreList = generateAttributeList(from = 10, to = 16)
+    private val defaultLoadMoreList = generateAttributeList(from = 11, to = 16)
 
     private fun generateAttributeList(from: Int, to: Int): List<ProductAttributeTerm> {
         return (from..to).map { index ->
@@ -80,5 +104,20 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
                 description = "Term $index description"
             )
         }
+    }
+
+    private fun startSutWith(
+        attributesFirstPage: List<ProductAttributeTerm>,
+        attributesSecondPage: List<ProductAttributeTerm>
+    ) {
+        termsListHandler = mock {
+            onBlocking { fetchAttributeTerms(defaultAttributeId) } doReturn attributesFirstPage
+            onBlocking { loadMore(defaultAttributeId) } doReturn attributesSecondPage
+        }
+
+        sut = AddAttributeTermsViewModel(
+            savedState = SavedStateHandle(),
+            termsListHandler = termsListHandler
+        )
     }
 }
