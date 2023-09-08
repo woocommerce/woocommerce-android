@@ -63,7 +63,7 @@ class AddAttributeTermsViewModelTest : BaseUnitTest() {
     fun `when onLoadMore is called and returns repeated results, then termsListState should filter them out`() = testBlocking {
         // Given
         startSutWith(
-            attributesFirstPage = defaultAttributeList,
+            attributesFirstPage = generateAttributeList(from = 1, to = 10),
             attributesSecondPage = generateAttributeList(from = 7, to = 16)
         )
         val filteredAttributesList = generateAttributeList(from = 1, to = 16)
@@ -83,7 +83,7 @@ class AddAttributeTermsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when resetGlobalAttributeTerms is called, then termsListState should be empty`() {
+    fun `when resetGlobalAttributeTerms is called, then termsListState should be empty`() = testBlocking {
         // Given
         val termListUpdates = mutableListOf<List<ProductAttributeTerm>>()
         sut.termsListState.observeForever { termListUpdates.add(it) }
@@ -98,14 +98,6 @@ class AddAttributeTermsViewModelTest : BaseUnitTest() {
             defaultAttributeList,
             emptyList()
         )
-    }
-
-    @Test
-    fun `when onFetchAttributeTerms is called, then loadingState should be updated as expected`() {
-    }
-
-    @Test
-    fun `when onLoadMore is called, then loadingState should be updated as expected`() {
     }
 
     private val defaultAttributeList = generateAttributeList(from = 1, to = 10)
