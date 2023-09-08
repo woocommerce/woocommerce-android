@@ -2,12 +2,16 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.ProductAttributeTerm
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
-class AddAttributeTermsViewModelTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class AddAttributeTermsViewModelTest: BaseUnitTest() {
     private lateinit var sut: AddAttributeTermsViewModel
     private lateinit var termsListHandler: AttributeTermsListHandler
 
@@ -27,7 +31,19 @@ class AddAttributeTermsViewModelTest {
     }
 
     @Test
-    fun `when onFetchAttributeTerms is called, then termsListState should be updated`() {
+    fun `when onFetchAttributeTerms is called, then termsListState should be updated`() = testBlocking {
+        // Given
+        val termListUpdates = mutableListOf<List<ProductAttributeTerm>>()
+        sut.termsListState.observeForever { termListUpdates.add(it) }
+
+        // When
+        sut.onFetchAttributeTerms(defaultAttributeId)
+
+        // Then
+        assertThat(termListUpdates).containsExactly(
+            emptyList(),
+            defaultAttributeList
+        )
     }
 
     @Test
