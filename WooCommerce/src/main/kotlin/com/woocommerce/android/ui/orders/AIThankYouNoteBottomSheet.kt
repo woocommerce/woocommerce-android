@@ -325,12 +325,11 @@ fun FailedState(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        WCTextButton(
+        WCColoredButton(
             onClick = onRegenerateButtonClicked,
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = colorResource(id = R.color.color_on_surface)
-            ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
