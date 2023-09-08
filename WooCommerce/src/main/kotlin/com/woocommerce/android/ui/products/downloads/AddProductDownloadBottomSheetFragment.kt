@@ -18,10 +18,10 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.AddFile
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickDocumentFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickMediaFileFromDevice
-import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.UploadFile
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
@@ -69,9 +69,9 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
                 is PickFileFromMedialLibrary -> showMediaLibraryPicker()
                 is PickMediaFileFromDevice -> showLocalDeviceMediaPicker()
                 is PickDocumentFromDevice -> showLocalDeviceDocumentPicker()
-                is UploadFile -> {
-                    parentViewModel.uploadDownloadableFile(event.uri.toString())
+                is AddFile -> {
                     findNavController().navigateUp()
+                    parentViewModel.handleSelectedDownloadableFile(event.uri.toString())
                 }
 
                 is ViewProductDownloadDetails -> navigator.navigate(this, event)
