@@ -669,7 +669,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             val url = "url"
             whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP))
-                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView(url))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(url))
 
             val viewModel = createVM(
                 CardReaderOnboardingFragmentArgs(

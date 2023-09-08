@@ -48,12 +48,10 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
             CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP -> {
                 cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_SETUP_TAPPED)
-                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(PAYMENTS_TAP_URL))
+                buildReactionToOpenWcPaySetup()
             }
 
-            CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
-                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
-                Reaction.OpenWebView(selectedSite.get().adminUrlOrDefault.slashJoin(PAYMENTS_TAP_URL))
+                buildReactionToOpenWcPaySetup()
             }
         }
 
@@ -85,10 +83,21 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
             }
         )
 
+    private fun buildReactionToOpenWcPaySetup(): Reaction {
+        val siteModel = selectedSite.get()
+        val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PAY_FINISH_SETUP_URL)
+        return if (siteModel.isWPCom || siteModel.isWPComAtomic) {
+            Reaction.OpenWpComWebView(url)
+        } else {
+            Reaction.OpenGenericWebView(url)
+        }
+    }
+
     sealed class Reaction {
         object Refresh : Reaction()
         data class ShowErrorAndRefresh(val message: String) : Reaction()
-        data class OpenWebView(val url: String) : Reaction()
+        data class OpenWpComWebView(val url: String) : Reaction()
+        data class OpenGenericWebView(val url: String) : Reaction()
     }
 
     private val Reaction.errorMessage
@@ -100,7 +109,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
-        private const val PAYMENTS_TAP_URL = "/wp-admin/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+        private const val PAYMENTS_TAP_URL = "/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
     }
 }
 
