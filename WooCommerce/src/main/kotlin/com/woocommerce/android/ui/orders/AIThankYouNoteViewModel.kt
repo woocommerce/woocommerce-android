@@ -31,6 +31,8 @@ class AIThankYouNoteViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
+        tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_SHOWN)
+
         launch {
             createThankYouNote()
         }
@@ -55,6 +57,7 @@ class AIThankYouNoteViewModel @Inject constructor(
     }
 
     private fun handleCompletionsSuccess(completions: String) {
+        tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_GENERATION_SUCCESS)
         _viewState.update {
             _viewState.value.copy(
                 generatedThankYouNote = completions,
@@ -64,11 +67,12 @@ class AIThankYouNoteViewModel @Inject constructor(
     }
 
     private fun handleCompletionsFailure(error: AIRepository.JetpackAICompletionsException) {
-        // do something about it
+        tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_GENERATION_FAILED)
         WooLog.e(WooLog.T.AI, "Failed to generate thank you note", error)
     }
 
     fun onRegenerateButtonClicked() {
+        tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_REGENERATE_TAPPED)
         _viewState.update {
             _viewState.value.copy(
                 generationState = GenerationState.Regenerating
