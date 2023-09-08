@@ -121,8 +121,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
                     refreshState()
                 }
-                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWebView -> {
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView -> {
                     triggerEvent(NavigateToUrlInWPComWebView(reaction.url))
+                    viewState.value = prevState!!
+                }
+
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView -> {
+                    triggerEvent(NavigateToUrlInGenericWebView(reaction.url))
                     viewState.value = prevState!!
                 }
             }
