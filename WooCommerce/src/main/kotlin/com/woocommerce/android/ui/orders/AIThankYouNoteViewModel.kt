@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,6 +61,22 @@ class AIThankYouNoteViewModel @Inject constructor(
         // do something about it
         WooLog.e(WooLog.T.AI, "Failed to generate thank you note", error)
     }
+
+    fun onRegenerateButtonClicked() {
+        _viewState.update {
+            _viewState.value.copy(
+                generationState = GenerationState.Generating
+            )
+        }
+        launch {
+            createThankYouNote()
+        }
+    }
+
+    fun onCopyButtonClicked() {
+        triggerEvent(CopyDescriptionToClipboard(_viewState.value.generatedThankYouNote))
+    }
+
     data class ViewState(
         val generatedThankYouNote: String = "",
         val generationState: GenerationState = GenerationState.Generating,
@@ -70,4 +87,6 @@ class AIThankYouNoteViewModel @Inject constructor(
         data class Generated(val showError: Boolean = false) : GenerationState()
         object Regenerating : GenerationState()
     }
+
+    data class CopyDescriptionToClipboard(val description: String) : MultiLiveEvent.Event()
 }

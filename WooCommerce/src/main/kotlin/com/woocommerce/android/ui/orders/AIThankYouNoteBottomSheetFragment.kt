@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.CopyDescriptionToClipboard
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,5 +28,23 @@ class AIThankYouNoteBottomSheetFragment : WCBottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        observeEvents()
+    }
+
+    private fun observeEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is CopyDescriptionToClipboard -> copyDescriptionToClipboard(event.description)
+            }
+        }
+    }
+
+    private fun copyDescriptionToClipboard(description: String) {
+        context?.copyToClipboard(getString(R.string.ai_order_thank_you_note_copy_label), description)
     }
 }

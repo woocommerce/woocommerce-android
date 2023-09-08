@@ -47,14 +47,21 @@ fun AIThankYouNoteBottomSheet(viewModel: AIThankYouNoteViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         ThankYouNoteGenerationForm(
             generatedThankYouNote = state.generatedThankYouNote,
-            generationState = state.generationState
+            generationState = state.generationState,
+            onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
+            onCopyButtonClicked = viewModel::onCopyButtonClicked,
         )
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ThankYouNoteGenerationForm(generatedThankYouNote: String, generationState: GenerationState) {
+fun ThankYouNoteGenerationForm(
+    generatedThankYouNote: String,
+    generationState: GenerationState,
+    onRegenerateButtonClicked: () -> Unit,
+    onCopyButtonClicked: () -> Unit
+) {
     Text(generatedThankYouNote)
     AnimatedContent(generationState) { state ->
         Column(
@@ -64,8 +71,12 @@ fun ThankYouNoteGenerationForm(generatedThankYouNote: String, generationState: G
             Header()
 
             when (state) {
-                is GenerationState.Generating -> StartState()
-                is GenerationState.Generated -> GeneratedState(generatedThankYouNote)
+                is GenerationState.Generating -> GeneratingState()
+                is GenerationState.Generated -> GeneratedState(
+                    generatedThankYouNote,
+                    onRegenerateButtonClicked,
+                    onCopyButtonClicked
+                )
                 is GenerationState.Regenerating -> Text("Success")
             }
         }
@@ -89,7 +100,7 @@ fun Header() {
 }
 
 @Composable
-fun StartState() {
+fun GeneratingState() {
     Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
         Text(
             text = stringResource(R.string.ai_order_thank_you_note_dialog_loading_message),
@@ -107,7 +118,11 @@ fun StartState() {
 }
 
 @Composable
-fun GeneratedState(note: String) {
+fun GeneratedState(
+    note: String,
+    onRegenerateButtonClicked: () -> Unit,
+    onCopyButtonClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(dimensionResource(id = R.dimen.major_100))
@@ -131,7 +146,7 @@ fun GeneratedState(note: String) {
 
             WCTextButton(
                 modifier = Modifier.align(Alignment.End),
-                onClick = { },
+                onClick = onCopyButtonClicked,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = colorResource(id = R.color.color_on_surface_medium)
                 )
@@ -149,7 +164,7 @@ fun GeneratedState(note: String) {
 
             Survey()
 
-            ActionButtons()
+            ActionButtons(onRegenerateButtonClicked)
         }
     }
 }
@@ -233,7 +248,9 @@ fun Survey() {
 }
 
 @Composable
-fun ActionButtons() {
+fun ActionButtons(
+    onRegenerateButtonClicked: () -> Unit
+) {
     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
 
     Box(
@@ -241,7 +258,7 @@ fun ActionButtons() {
             .fillMaxWidth()
     ) {
         WCTextButton(
-            onClick = { },
+            onClick = onRegenerateButtonClicked,
             modifier = Modifier.align(Alignment.CenterStart),
             colors = ButtonDefaults.textButtonColors(
                 contentColor = colorResource(id = R.color.color_on_surface)
