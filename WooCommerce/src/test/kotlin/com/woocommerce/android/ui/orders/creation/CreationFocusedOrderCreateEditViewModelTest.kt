@@ -1214,7 +1214,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         with(lastReceivedEvent) {
             assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse()
+            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse
         }
     }
 
@@ -1229,7 +1229,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         with(lastReceivedEvent) {
             assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue()
+            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue
         }
     }
 
@@ -1237,7 +1237,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1263,7 +1263,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
