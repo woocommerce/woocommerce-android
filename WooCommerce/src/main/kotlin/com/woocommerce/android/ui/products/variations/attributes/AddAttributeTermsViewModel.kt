@@ -40,6 +40,10 @@ class AddAttributeTermsViewModel @Inject constructor(
         loadingStateFlow.update { LoadingState.Idle }
     }
 
+    fun resetGlobalAttributeTerms() {
+        termsFlow.update { emptyList() }
+    }
+
     enum class LoadingState {
         Idle, Loading, Appending
     }
