@@ -51,6 +51,8 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
                 buildReactionToOpenWcPaySetup()
             }
 
+            CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
+                cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
                 buildReactionToOpenWcPaySetup()
             }
         }
@@ -85,7 +87,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
     private fun buildReactionToOpenWcPaySetup(): Reaction {
         val siteModel = selectedSite.get()
-        val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PAY_FINISH_SETUP_URL)
+        val url = selectedSite.get().adminUrlOrDefault.slashJoin(PAYMENTS_TAP_URL)
         return if (siteModel.isWPCom || siteModel.isWPComAtomic) {
             Reaction.OpenWpComWebView(url)
         } else {
