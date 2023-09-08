@@ -10,7 +10,7 @@ class AttributeTermsListHandler @Inject constructor(
     private val repository: ProductDetailRepository
 ) {
     companion object {
-        private const val PAGE_SIZE = 20
+        private const val PAGE_SIZE = 10
         private const val INITIAL_PAGE = 1
     }
 
