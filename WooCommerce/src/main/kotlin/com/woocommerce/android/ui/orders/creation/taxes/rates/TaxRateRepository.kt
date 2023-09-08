@@ -4,6 +4,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient.TaxRateModel
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class TaxRateRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
 ) {
-    private val _taxRates: MutableSharedFlow<List<TaxRate>> = MutableSharedFlow()
+    private val _taxRates: MutableStateFlow<List<TaxRate>> = MutableStateFlow(emptyList())
     val taxRates: Flow<List<TaxRate>> = _taxRates
 
     /**
@@ -31,7 +32,7 @@ class TaxRateRepository @Inject constructor(
                 Result.failure(WooException(result.error))
             } else {
                 val taxRates = result.model!!.toAppModel()
-                _taxRates.emit(taxRates)
+                _taxRates.value += taxRates
                 Result.success(taxRates.size == pageSize)
             }
         }

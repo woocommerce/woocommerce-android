@@ -80,7 +80,7 @@ class TaxRateSelectorViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onLoadMode() {
+    fun onLoadMore() {
         launch {
             ratesListHandler.loadMore()
         }
