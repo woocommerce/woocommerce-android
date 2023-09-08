@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -69,7 +70,8 @@ class ProductPricingViewModel @Inject constructor(
             currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
-            isTaxSectionVisible = isProductPricing
+            isTaxSectionVisible = isProductPricing,
+            showAISalePriceRecommendation = FeatureFlag.AI_PRICE_ADVISOR.isEnabled() && pricingData.salePrice == null
         )
 
         originalPricingData = navArgs.pricingData
@@ -180,6 +182,7 @@ class ProductPricingViewModel @Inject constructor(
         val salePriceErrorMessage: Int? = null,
         val pricingData: PricingData = PricingData(),
         val isTaxSectionVisible: Boolean? = null,
+        val showAISalePriceRecommendation: Boolean = false,
         private val currencyPosition: CurrencyPosition? = null
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean

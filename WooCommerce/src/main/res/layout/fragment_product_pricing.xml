@@ -53,6 +53,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/product_regular_price" />
 
+            <!-- Suggest a good sales price Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/suggest_price_button"
+                style="@style/Woo.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ai_price_advisor_sale_price_button"
+                android:textAppearance="@style/TextAppearance.Woo.Subtitle2"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/product_sale_price" />
+
             <!-- Managing Product Stock -->
             <com.woocommerce.android.widgets.WCToggleSingleOptionView
                 android:id="@+id/scheduleSale_switch"
@@ -64,7 +76,7 @@
                 android:importantForAccessibility="yes"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/product_sale_price"
+                app:layout_constraintTop_toBottomOf="@+id/suggest_price_button"
                 app:switchSummary="@string/product_schedule_sale_sublabel"
                 app:switchTitle="@string/product_schedule_sale_label" />
 

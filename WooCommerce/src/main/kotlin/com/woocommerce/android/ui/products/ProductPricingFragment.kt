@@ -105,6 +105,13 @@ class ProductPricingFragment :
                 }
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
+            new.showAISalePriceRecommendation.takeIfNotEqualTo(old?.showAISalePriceRecommendation) { show ->
+                if (show) {
+                    binding.suggestPriceButton.show()
+                } else {
+                    binding.suggestPriceButton.hide()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
