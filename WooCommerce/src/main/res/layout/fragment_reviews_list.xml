@@ -13,32 +13,44 @@
         android:clickable="true"
         android:focusable="true">
 
+        <RelativeLayout
+            android:id="@+id/unread_reviews_filter_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/major_75">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/major_100"
+                android:text="@string/product_review_list_unread_reviews_filter"
+                android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+                tools:text="Filter by unread reviews" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/unread_filter_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+
+            <View
+                style="@style/Woo.Divider"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/unread_filter_switch" />
+
+        </RelativeLayout>
+
         <!-- Notifications List View -->
         <LinearLayout
             android:id="@+id/notifsView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/unread_reviews_filter_layout"
             android:orientation="vertical"
             tools:visibility="visible">
-
-            <LinearLayout
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/product_review_list_unread_reviews_filter"
-                    tools:text="Filter by unread reviews" />
-
-                <CheckBox
-                    android:id="@+id/unread_filter_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/reviewsList"
@@ -52,6 +64,7 @@
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/unread_reviews_filter_layout"
             android:visibility="gone"
             tools:visibility="gone" />
 
