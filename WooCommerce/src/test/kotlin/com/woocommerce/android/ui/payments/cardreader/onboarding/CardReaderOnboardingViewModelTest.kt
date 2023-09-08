@@ -715,6 +715,32 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given handler returned OpenWpComWebView, when clicked on stripe req overdue, then open wpcom webview`() =
+        testBlocking {
+            val url = "url"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(url))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam =
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS),
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .actionButtonPrimary!!.action.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderOnboardingEvent.NavigateToUrlInWPComWebView(url)
+            )
+        }
+
+    @Test
     fun `given handler returned OpenGenericWebView, when clicked on stripe req overdue, then open generic webview`() =
         testBlocking {
             val url = "url"
