@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.orders.creation.taxes.rates
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,13 +40,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,6 +74,52 @@ fun TaxRateSelectorScreen(
             onTaxRateClick,
             onEditTaxRatesInAdminClicked,
             onLoadMore
+        )
+    }
+}
+
+@Composable
+fun EmptyTaxRateSelectorList(
+    onButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.tax_rate_empty_list_title),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_tax),
+            contentDescription = null,
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
+        Text(
+            text = stringResource(id = R.string.tax_rate_empty_list_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        WCColoredButton(
+            onClick = onButtonClicked,
+            text = stringResource(id = R.string.tax_rate_empty_list_button),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
         )
     }
 }
@@ -340,4 +392,11 @@ fun TaxRatesPreview() = WooThemeWithBackground {
         onInfoIconClicked = {},
         onLoadMore = {},
     )
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun TaxRateEmptyListPreview() = WooThemeWithBackground {
+    EmptyTaxRateSelectorList(onButtonClicked = {})
 }
