@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -77,7 +78,7 @@ fun ThankYouNoteGenerationForm(
                     onRegenerateButtonClicked,
                     onCopyButtonClicked
                 )
-                is GenerationState.Regenerating -> Text("Success")
+                is GenerationState.Regenerating -> GeneratingState(isRegenerating = true)
             }
         }
     }
@@ -100,8 +101,14 @@ fun Header() {
 }
 
 @Composable
-fun GeneratingState() {
-    Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
+fun GeneratingState(isRegenerating: Boolean = false) {
+    Column(
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .let { if (isRegenerating) it.fillMaxHeight() else it },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = stringResource(R.string.ai_order_thank_you_note_dialog_loading_message),
             style = MaterialTheme.typography.body1,
@@ -126,6 +133,7 @@ fun GeneratedState(
     Column(
         modifier = Modifier
             .padding(dimensionResource(id = R.dimen.major_100))
+            .fillMaxHeight()
             .verticalScroll(rememberScrollState())
     ) {
         Column(

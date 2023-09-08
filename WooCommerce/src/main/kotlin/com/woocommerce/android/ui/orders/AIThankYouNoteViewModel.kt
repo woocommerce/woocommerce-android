@@ -65,7 +65,7 @@ class AIThankYouNoteViewModel @Inject constructor(
     fun onRegenerateButtonClicked() {
         _viewState.update {
             _viewState.value.copy(
-                generationState = GenerationState.Generating
+                generationState = GenerationState.Regenerating
             )
         }
         launch {
