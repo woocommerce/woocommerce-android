@@ -180,7 +180,9 @@ class ReviewListViewModel @Inject constructor(
 
     private suspend fun applyUnreadFilter(productReviews: List<ProductReview>) {
         val unreadReviews = productReviews.filter { it.read == false }
-        if (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL) {
+        if (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
+            && reviewRepository.canLoadMore
+        ) {
             viewState = viewState.copy(
                 isLoadingMore = unreadReviews.isNotEmpty(),
                 isSkeletonShown = unreadReviews.isEmpty()
