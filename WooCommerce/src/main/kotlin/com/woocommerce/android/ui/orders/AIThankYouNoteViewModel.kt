@@ -4,12 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DETECTED_LANGUAGE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFUL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_THANK_YOU_NOTE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class AIThankYouNoteViewModel @Inject constructor(
     private val site: SelectedSite,
@@ -34,16 +39,25 @@ class AIThankYouNoteViewModel @Inject constructor(
         tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_SHOWN)
 
         launch {
-            createThankYouNote()
+            startThankYouNoteCreation()
         }
     }
 
-    private suspend fun createThankYouNote() {
+    private suspend fun startThankYouNoteCreation() {
+        val languageISOCode = _viewState.value.identifiedLanguageISOCode
+            ?: identifyLanguage().getOrNull()
+        if (languageISOCode != null) {
+            createThankYouNote(languageISOCode = languageISOCode)
+        }
+    }
+
+    private suspend fun createThankYouNote(languageISOCode: String) {
         val result = aiRepository.generateOrderThankYouNote(
             site = site.get(),
             customerName = navArgs.customerName,
             productName = navArgs.productName,
-            productDescription = navArgs.productDescription
+            productDescription = navArgs.productDescription,
+            languageISOCode = languageISOCode
         )
 
         result.fold(
@@ -67,8 +81,16 @@ class AIThankYouNoteViewModel @Inject constructor(
     }
 
     private fun handleCompletionsFailure(error: AIRepository.JetpackAICompletionsException) {
-        tracker.track(AnalyticsEvent.ORDER_THANK_YOU_NOTE_GENERATION_FAILED)
-        WooLog.e(WooLog.T.AI, "Failed to generate thank you note", error)
+        tracker.track(
+            stat = AnalyticsEvent.ORDER_THANK_YOU_NOTE_GENERATION_FAILED,
+            properties = mapOf(KEY_ERROR to error.message)
+        )
+
+        _viewState.update {
+            _viewState.value.copy(
+                generationState = GenerationState.Failed
+            )
+        }
     }
 
     fun onRegenerateButtonClicked() {
@@ -79,7 +101,7 @@ class AIThankYouNoteViewModel @Inject constructor(
             )
         }
         launch {
-            createThankYouNote()
+            startThankYouNoteCreation()
         }
     }
 
@@ -91,6 +113,11 @@ class AIThankYouNoteViewModel @Inject constructor(
                 KEY_IS_USEFUL to isUseful
             )
         )
+
+        // If the user says the description is not useful, we should try identifying language again.
+        if (!isUseful) {
+            _viewState.update { _viewState.value.copy(identifiedLanguageISOCode = null) }
+        }
     }
 
     fun onCopyButtonClicked() {
@@ -105,15 +132,68 @@ class AIThankYouNoteViewModel @Inject constructor(
         triggerEvent(ShareNote(messageToShare))
     }
 
+    private suspend fun identifyLanguage(): Result<String> {
+        return aiRepository.identifyISOLanguageCode(
+            site = site.get(),
+            text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}",
+            feature = AIRepository.ORDER_DETAIL_THANK_YOU_NOTE
+        ).fold(
+            onSuccess = { languageISOCode ->
+                handleIdentificationSuccess(languageISOCode)
+                Result.success(languageISOCode)
+            },
+            onFailure = { exception ->
+                handleIdentificationFailure(exception as AIRepository.JetpackAICompletionsException)
+                Result.failure(exception)
+            }
+        )
+    }
+
+    private fun handleIdentificationSuccess(languageISOCode: String) {
+        _viewState.update {
+            it.copy(
+                identifiedLanguageISOCode = languageISOCode
+            )
+        }
+
+        tracker.track(
+            AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS,
+            mapOf(
+                KEY_DETECTED_LANGUAGE to languageISOCode,
+                KEY_SOURCE to VALUE_ORDER_THANK_YOU_NOTE
+            )
+        )
+    }
+
+    private fun handleIdentificationFailure(error: AIRepository.JetpackAICompletionsException) {
+        tracker.track(
+            AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
+            mapOf(
+                KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                KEY_ERROR_TYPE to error.errorType,
+                KEY_ERROR_DESC to error.errorMessage,
+                KEY_SOURCE to VALUE_ORDER_THANK_YOU_NOTE
+            )
+        )
+
+        _viewState.update {
+            _viewState.value.copy(
+                generationState = GenerationState.Failed
+            )
+        }
+    }
+
     data class ViewState(
         val generatedThankYouNote: String = "",
         val generationState: GenerationState = GenerationState.Generating,
+        val identifiedLanguageISOCode: String? = null
     )
 
     sealed class GenerationState {
         object Generating : GenerationState()
         data class Generated(val showError: Boolean = false) : GenerationState()
         object Regenerating : GenerationState()
+        object Failed : GenerationState()
     }
 
     data class CopyDescriptionToClipboard(val description: String) : MultiLiveEvent.Event()

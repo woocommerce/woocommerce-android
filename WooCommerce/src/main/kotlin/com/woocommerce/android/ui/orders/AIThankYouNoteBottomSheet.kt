@@ -86,6 +86,7 @@ fun ThankYouNoteGenerationForm(
                     onShareButtonClicked
                 )
                 is GenerationState.Regenerating -> GeneratingState(isRegenerating = true)
+                is GenerationState.Failed -> FailedState(onRegenerateButtonClicked)
             }
         }
     }
@@ -303,6 +304,42 @@ fun ActionButtons(
             Text(
                 text = stringResource(id = R.string.ai_order_thank_you_note_dialog_share_button),
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
+        }
+    }
+}
+
+@Composable
+fun FailedState(
+    onRegenerateButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.ai_order_thank_you_note_dialog_failed_title),
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        WCTextButton(
+            onClick = onRegenerateButtonClicked,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = colorResource(id = R.color.color_on_surface)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_150))
+            )
+            Text(
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
+                text = stringResource(id = R.string.ai_order_thank_you_note_dialog_regenerate_button)
             )
         }
     }
