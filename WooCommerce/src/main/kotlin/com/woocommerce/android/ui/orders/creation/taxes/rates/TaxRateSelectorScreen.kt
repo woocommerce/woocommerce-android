@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,13 +56,13 @@ fun TaxRateSelectorScreen(
         backgroundColor = MaterialTheme.colors.surface,
         topBar = { Toolbar(onDismiss, onInfoIconClicked) }
     ) {
-        Column(
-            modifier = Modifier.padding(it), horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Header(onInfoIconClicked)
-            TaxRates(viewState.collectAsState().value, onTaxRateClick)
-            Footer(onEditTaxRatesInAdminClicked)
-        }
+        TaxRates(
+            Modifier.padding(it),
+            viewState.collectAsState().value,
+            onInfoIconClicked,
+            onTaxRateClick,
+            onEditTaxRatesInAdminClicked
+        )
     }
 }
 
@@ -96,28 +95,40 @@ private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
 
 @Composable
 private fun TaxRates(
+    modifier: Modifier = Modifier,
     state: TaxRateSelectorViewModel.ViewState,
-    onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit
+    onInfoIconClicked: () -> Unit,
+    onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
+    onEditTaxRatesInAdminClicked: () -> Unit,
 ) {
-    Column {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(
-                        id = R.dimen.minor_100
-                    )
-                ),
-            fontSize = 13.sp,
-            color = colorResource(id = R.color.woo_gray_40),
-            text = stringResource(R.string.tax_rate_selector_list_header)
-        )
-        Divider()
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            itemsIndexed(state.taxRates) { _, taxRate ->
-                TaxRateRow(taxRate, onTaxRateClick)
-            }
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        item {
+            Header(onInfoIconClicked)
+        }
+        item {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = R.dimen.major_100),
+                        vertical = dimensionResource(
+                            id = R.dimen.minor_100
+                        )
+                    ),
+                fontSize = 13.sp,
+                color = colorResource(id = R.color.woo_gray_40),
+                text = stringResource(R.string.tax_rate_selector_list_header)
+            )
+            Divider()
+        }
+        itemsIndexed(state.taxRates) { _, taxRate ->
+            TaxRateRow(taxRate, onTaxRateClick)
+        }
+        item {
+            Footer(onEditTaxRatesInAdminClicked)
         }
     }
 }
@@ -298,5 +309,10 @@ fun TaxRatesPreview() = WooThemeWithBackground {
         )
     )
     val state by remember { mutableStateOf(viewState) }
-    TaxRates(state, {})
+    TaxRates(
+        state = state,
+        onTaxRateClick = {},
+        onEditTaxRatesInAdminClicked = {},
+        onInfoIconClicked = {}
+    )
 }
