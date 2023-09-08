@@ -22,8 +22,6 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val savedStateHandle: SavedStateHandle = mock()
     private val repository: TaxRateRepository = mock()
-    lateinit var selectedSite: SelectedSite
-    protected lateinit var resourceProvider: ResourceProvider
 
 
     @Before
