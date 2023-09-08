@@ -6,8 +6,9 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -17,21 +18,25 @@ class TaxRateSelectorViewModel @Inject constructor(
     private val ratesListHandler: TaxRateListHandler,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
-    val viewState: StateFlow<ViewState> = ratesListHandler.taxRatesFlow.map { rates ->
-        rates.map { taxRate ->
-            TaxRateUiModel(
-                label = calculateTaxRateLabel(taxRate),
-                rate = calculateTaxRatePercentageText(taxRate),
-                taxRate = taxRate,
-            )
-        }.let {
-            ViewState(it)
-        }
-    }.toStateFlow(ViewState())
+    private val isLoading = MutableStateFlow(false)
+    val viewState: StateFlow<ViewState> =
+        ratesListHandler.taxRatesFlow.combine(isLoading) { rates, isLoading ->
+            rates.map { taxRate ->
+                TaxRateUiModel(
+                    label = calculateTaxRateLabel(taxRate),
+                    rate = calculateTaxRatePercentageText(taxRate),
+                    taxRate = taxRate,
+                )
+            }.let {
+                ViewState(taxRates = it, isLoading = isLoading)
+            }
+        }.toStateFlow(ViewState())
 
     init {
         launch {
+            isLoading.value = true
             ratesListHandler.fetchTaxRates()
+            isLoading.value = false
         }
     }
 
@@ -82,13 +87,16 @@ class TaxRateSelectorViewModel @Inject constructor(
 
     fun onLoadMore() {
         launch {
+            isLoading.value = true
             ratesListHandler.loadMore()
+            isLoading.value = false
         }
     }
 
     @Parcelize
     data class ViewState(
         val taxRates: List<TaxRateUiModel> = emptyList(),
+        val isLoading: Boolean = false,
     ) : Parcelable
 
     @Parcelize

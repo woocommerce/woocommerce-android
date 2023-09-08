@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -133,6 +135,16 @@ private fun TaxRates(
         }
         itemsIndexed(state.taxRates) { _, taxRate ->
             TaxRateRow(taxRate, onTaxRateClick)
+        }
+        if (state.isLoading) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                )
+            }
         }
         item {
             Footer(onEditTaxRatesInAdminClicked)
@@ -301,6 +313,7 @@ fun FooterPreview() = WooThemeWithBackground {
 @Composable
 fun TaxRatesPreview() = WooThemeWithBackground {
     val viewState = TaxRateSelectorViewModel.ViewState(
+        isLoading = true,
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
