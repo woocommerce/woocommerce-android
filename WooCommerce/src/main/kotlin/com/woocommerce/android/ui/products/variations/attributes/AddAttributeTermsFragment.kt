@@ -25,6 +25,7 @@ import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAddAttributeTerms
+import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Appending
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
@@ -323,6 +324,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         termsViewModel.loadingState.observe(viewLifecycleOwner) {
             showSkeleton(it == Loading)
+            binding.loadMoreProgress.isVisible = it == Appending
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
