@@ -133,7 +133,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when set new tax rate clicked, then should track event` () = testBlocking {
+    fun `when set new tax rate clicked, then should track event`() = testBlocking {
         whenever(orderCreateEditRepository.getTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
@@ -142,7 +142,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onSetTaxRateClicked()
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
     }
-
 
     @Test
     fun `when submitting customer note, then update orderDraft liveData`() {
