@@ -60,9 +60,13 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when onLoadMore is called and returns repeated results, then termsListState should filter them out`() {
+    fun `when onLoadMore is called and returns repeated results, then termsListState should filter them out`() = testBlocking {
         // Given
-
+        startSutWith(
+            attributesFirstPage = defaultAttributeList,
+            attributesSecondPage = generateAttributeList(from = 7, to = 16)
+        )
+        val filteredAttributesList = generateAttributeList(from = 1, to = 16)
         val termListUpdates = mutableListOf<List<ProductAttributeTerm>>()
         sut.termsListState.observeForever { termListUpdates.add(it) }
 
@@ -74,7 +78,7 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
         assertThat(termListUpdates).containsExactly(
             emptyList(),
             defaultAttributeList,
-            defaultAttributeList + defaultLoadMoreList
+            filteredAttributesList
         )
     }
 
@@ -108,11 +112,12 @@ class AddAttributeTermsViewModelTest: BaseUnitTest() {
 
     private fun startSutWith(
         attributesFirstPage: List<ProductAttributeTerm>,
-        attributesSecondPage: List<ProductAttributeTerm>
+        attributesSecondPage: List<ProductAttributeTerm>,
+        attributeId: Long = defaultAttributeId
     ) {
         termsListHandler = mock {
-            onBlocking { fetchAttributeTerms(defaultAttributeId) } doReturn attributesFirstPage
-            onBlocking { loadMore(defaultAttributeId) } doReturn attributesSecondPage
+            onBlocking { fetchAttributeTerms(attributeId) } doReturn attributesFirstPage
+            onBlocking { loadMore(attributeId) } doReturn attributesSecondPage
         }
 
         sut = AddAttributeTermsViewModel(
