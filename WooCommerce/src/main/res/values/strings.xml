@@ -2001,6 +2001,8 @@
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+    <string name="empty_review_filtered_list_title">No unread product reviews</string>
+    <string name="empty_review_filtered_list_message">Try disabling the unread filter to see all your product reviews</string>
     <string name="empty_wpmedia_list_message">No images yet</string>
 
     <string name="orders_empty_message_with_processing">No orders to process yet</string>

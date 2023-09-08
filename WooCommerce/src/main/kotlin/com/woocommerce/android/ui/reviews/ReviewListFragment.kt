@@ -235,11 +235,15 @@ class ReviewListFragment :
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
-                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+            if (binding.unreadFilterSwitch.isChecked) {
+                binding.unreadReviewsFilterLayout.show()
+                binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
+            } else {
+                binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+                }
+                binding.unreadReviewsFilterLayout.hide()
             }
-            if (binding.unreadFilterSwitch.isChecked) binding.unreadReviewsFilterLayout.show()
-            else binding.unreadReviewsFilterLayout.hide()
         } else {
             binding.emptyView.hide()
         }
