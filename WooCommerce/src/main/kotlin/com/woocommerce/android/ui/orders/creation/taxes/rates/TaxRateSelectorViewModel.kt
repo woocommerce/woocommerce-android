@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
 
@@ -50,6 +49,7 @@ class TaxRateSelectorViewModel @Inject constructor(
             ""
         }
 
+    @Suppress("ComplexCondition")
     private fun calculateTaxRateLabel(taxRate: TaxRate) =
         StringBuilder().apply {
             if (taxRate.name.isNotNullOrEmpty()) {
