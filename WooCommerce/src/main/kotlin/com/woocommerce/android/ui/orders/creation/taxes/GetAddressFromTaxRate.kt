@@ -16,25 +16,33 @@ class GetAddressFromTaxRate @Inject constructor(
 ) {
     suspend operator fun Address.invoke(taxRate: TaxRate): Address {
         dataStore.fetchCountriesAndStates(selectedSite.get())
-        val country: Location = dataStore.getCountries().first {
+        val country: Location = dataStore.getCountries().firstOrNull {
             it.code == taxRate.countryCode
-        }.toAppModel()
-        val state: Location = dataStore.getStates(country.code).first {
+        }
+            ?.toAppModel()
+            ?: Location.EMPTY
+
+        val state = dataStore.getStates(country.code).firstOrNull {
             it.code == taxRate.stateCode
-        }.toAppModel()
+        }
+            ?.toAppModel()
+            ?.let { AmbiguousLocation.Defined(it) }
+            ?: AmbiguousLocation.Defined(Location.EMPTY)
+
         val city = if (taxRate.city.isNotNullOrEmpty()) {
             taxRate.city
         } else {
-            taxRate.cities?.first() ?: ""
+            taxRate.cities?.firstOrNull() ?: ""
         }
+
         val postCode = if (taxRate.postcode.isNotNullOrEmpty()) {
             taxRate.postcode
         } else {
-            taxRate.postCodes?.first() ?: ""
+            taxRate.postCodes?.firstOrNull() ?: ""
         }
         return copy(
             city = city,
-            state = AmbiguousLocation.Defined(state),
+            state = state,
             country = country,
             postcode = postCode
         )
