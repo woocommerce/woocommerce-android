@@ -665,7 +665,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given handler returned OpenWebView, when clicked on wcpay not setup, then open webview`() =
+    fun `given handler returned OpenWpComWebView, when clicked on wcpay not setup, then open wp webview`() =
         testBlocking {
             val url = "url"
             whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP))
@@ -686,6 +686,31 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value).isEqualTo(
                 CardReaderOnboardingEvent.NavigateToUrlInWPComWebView(url)
+            )
+        }
+
+    @Test
+    fun `given handler returned OpenGenericWebView, when clicked on wcpay not setup, then open generic webview`() =
+        testBlocking {
+            val url = "url"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView(url))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as WCPayError.WCPayNotSetupState)
+                .actionButtonActionPrimary.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderOnboardingEvent.NavigateToUrlInGenericWebView(url)
             )
         }
 
