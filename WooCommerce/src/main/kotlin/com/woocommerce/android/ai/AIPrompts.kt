@@ -37,11 +37,10 @@ object AIPrompts {
         return String.format(PRODUCT_SHARING_PROMPT, name, descriptionPart, url, languageISOCode)
     }
 
-    private const val ORDER_DETAIL_THANK_YOU_NOTE_PROMPT = "Write a thank-you note for a customer " +
+    private const val ORDER_DETAIL_THANK_YOU_NOTE_PROMPT = "Write a 2 paragraphs thank-you note for a customer " +
         "whose name is \"%1\$s\", who has just purchased a product named \"%2\$s\". \n" +
         "%3\$s\n" +
         "Your response should be in the ISO language code \"%4\$s\". \n" +
-        "The length should be up to 3 short paragraphs.\n" +
         "Make sure the note sounds genuine and explains the appreciation well." +
         "Use a 9th grade reading level.\n"
 

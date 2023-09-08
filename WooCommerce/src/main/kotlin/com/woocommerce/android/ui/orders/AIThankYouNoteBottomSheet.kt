@@ -60,7 +60,6 @@ fun ThankYouNoteGenerationForm(generatedThankYouNote: String, generationState: G
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
-                .verticalScroll(rememberScrollState())
         ) {
             Header()
 
@@ -112,6 +111,7 @@ fun GeneratedState(note: String) {
     Column(
         modifier = Modifier
             .padding(dimensionResource(id = R.dimen.major_100))
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
