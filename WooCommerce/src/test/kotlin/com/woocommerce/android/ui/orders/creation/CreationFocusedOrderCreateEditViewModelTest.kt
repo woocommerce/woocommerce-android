@@ -134,7 +134,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when set new tax rate clicked, then should track event`() = testBlocking {
-        whenever(orderCreateEditRepository.getTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         whenever(resourceProvider.getString(anyInt(), anyString()))
