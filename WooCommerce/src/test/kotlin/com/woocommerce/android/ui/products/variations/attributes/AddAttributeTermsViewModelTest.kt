@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.ProductAttributeTerm
 import org.junit.Before
 import org.junit.Test
@@ -18,6 +19,11 @@ class AddAttributeTermsViewModelTest {
             onBlocking { fetchAttributeTerms(defaultAttributeId) } doReturn defaultAttributeList
             onBlocking { loadMore(defaultAttributeId) } doReturn defaultLoadMoreList
         }
+
+        sut = AddAttributeTermsViewModel(
+            savedState = SavedStateHandle(),
+            termsListHandler = termsListHandler
+        )
     }
 
     @Test
@@ -26,6 +32,10 @@ class AddAttributeTermsViewModelTest {
 
     @Test
     fun `when onLoadMore is called, then termsListState should be updated by appending new items`() {
+    }
+
+    @Test
+    fun `when onLoadMore is called and returns repeated results, then termsListState should filter them out`() {
     }
 
     @Test
