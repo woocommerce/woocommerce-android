@@ -3559,7 +3559,9 @@
     AI thank you note
     -->
     <string name="ai_order_thank_you_note_dialog_title">Thank-you note</string>
-    <string name="ai_order_thank_you_note_dialog_loading_message">Creating a thank-you note for your order…</string>
+    <string name="ai_order_thank_you_note_dialog_loading_message">✨ Creating a thank-you note for your order…</string>
+    <string name="ai_order_thank_you_note_dialog_regenerate_button">Regenerate</string>
+    <string name="ai_order_thank_you_note_dialog_share_button">Share</string>
 
 
     <!--
