@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class TaxRateSelectorViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
-    repository: TaxRateRepository,
     private val ratesListHandler: TaxRateListHandler,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
