@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
-import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -58,6 +57,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Address.Companion.EMPTY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
@@ -79,6 +79,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
+import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
@@ -97,6 +98,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -107,6 +109,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -140,6 +143,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
+    private val getAddressFromTaxRate: GetAddressFromTaxRate,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -235,8 +239,14 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         launch {
             orderCreateEditRepository.fetchTaxBasedOnSetting().also {
-
-                viewState = viewState.copy(taxBasedOnSettingLabel = it?.label ?: "")
+                val isSetNewTaxRateButtonVisible: Boolean = when (it) {
+                    BillingAddress, ShippingAddress -> true
+                    else -> false
+                } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+                viewState = viewState.copy(
+                    taxBasedOnSettingLabel = it?.label ?: "",
+                    isSetNewTaxRateButtonVisible = isSetNewTaxRateButtonVisible
+                )
             }
         }
     }
@@ -682,7 +692,7 @@ class OrderCreateEditViewModel @Inject constructor(
             order.copy(
                 customerId = customerId,
                 billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { it != Address.EMPTY } ?: billingAddress
+                shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
             )
         }
     }
@@ -696,8 +706,8 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { order ->
             order.copy(
                 customerId = null,
-                billingAddress = Address.EMPTY,
-                shippingAddress = Address.EMPTY
+                billingAddress = EMPTY,
+                shippingAddress = EMPTY
             )
         }
     }
@@ -1075,8 +1085,23 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
     }
 
-    fun onTaxRateSelected(taxRate: TaxRate) {
-        Log.d("OrderCreateEdit", "onTaxRateSelected: $taxRate")
+    fun onTaxRateSelected(taxRate: TaxRate) = launch(Dispatchers.IO) {
+        val taxBasedOnSetting = orderCreateEditRepository.getTaxBasedOnSetting()
+        val baseAddress: Address = when (taxBasedOnSetting) {
+            BillingAddress -> _orderDraft.value.billingAddress
+            ShippingAddress -> _orderDraft.value.shippingAddress
+            else -> EMPTY
+        }
+        val updatedAddress: Address = with(getAddressFromTaxRate) {
+            baseAddress(taxRate)
+        }
+        _orderDraft.update { order ->
+            when (taxBasedOnSetting) {
+                BillingAddress -> order.copy(billingAddress = updatedAddress)
+                ShippingAddress -> order.copy(shippingAddress = updatedAddress)
+                else -> order
+            }
+        }
     }
 
     @Parcelize
@@ -1086,6 +1111,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
+        val isSetNewTaxRateButtonVisible: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",

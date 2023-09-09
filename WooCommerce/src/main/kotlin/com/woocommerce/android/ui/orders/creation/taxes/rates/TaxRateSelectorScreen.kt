@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -40,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +55,7 @@ fun TaxRateSelectorScreen(
     onInfoIconClicked: () -> Unit,
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onDismiss: () -> Unit,
+    onLoadMore: () -> Unit,
 ) {
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
@@ -61,7 +66,8 @@ fun TaxRateSelectorScreen(
             viewState.collectAsState().value,
             onInfoIconClicked,
             onTaxRateClick,
-            onEditTaxRatesInAdminClicked
+            onEditTaxRatesInAdminClicked,
+            onLoadMore
         )
     }
 }
@@ -100,9 +106,12 @@ private fun TaxRates(
     onInfoIconClicked: () -> Unit,
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onEditTaxRatesInAdminClicked: () -> Unit,
+    onLoadMore: () -> Unit = {},
 ) {
+    val listState = rememberLazyListState()
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
+        state = listState,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
@@ -127,9 +136,22 @@ private fun TaxRates(
         itemsIndexed(state.taxRates) { _, taxRate ->
             TaxRateRow(taxRate, onTaxRateClick)
         }
+        if (state.isLoading) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                )
+            }
+        }
         item {
             Footer(onEditTaxRatesInAdminClicked)
         }
+    }
+    InfiniteListHandler(listState = listState) {
+        onLoadMore()
     }
 }
 
@@ -275,6 +297,7 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         onInfoIconClicked = {},
         onTaxRateClick = {},
         onDismiss = {},
+        onLoadMore = {},
     )
 }
 
@@ -290,6 +313,7 @@ fun FooterPreview() = WooThemeWithBackground {
 @Composable
 fun TaxRatesPreview() = WooThemeWithBackground {
     val viewState = TaxRateSelectorViewModel.ViewState(
+        isLoading = true,
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
@@ -313,6 +337,7 @@ fun TaxRatesPreview() = WooThemeWithBackground {
         state = state,
         onTaxRateClick = {},
         onEditTaxRatesInAdminClicked = {},
-        onInfoIconClicked = {}
+        onInfoIconClicked = {},
+        onLoadMore = {},
     )
 }
