@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateListHandler
-import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateRepository
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentArgs
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -15,20 +14,16 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: TaxRateSelectorViewModel
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val savedStateHandle: SavedStateHandle = TaxRateSelectorFragmentArgs(mock()).initSavedStateHandle()
-    private val repository: TaxRateRepository = mock()
     private val taxRateListHandler: TaxRateListHandler = mock()
-    private val result: Result<Boolean> = mock()
 
     @Before
     fun setup() {
-        testBlocking { whenever(repository.fetchTaxRates(1, 10)).thenReturn(result) }
         viewModel = TaxRateSelectorViewModel(tracker, taxRateListHandler, savedStateHandle)
     }
 
