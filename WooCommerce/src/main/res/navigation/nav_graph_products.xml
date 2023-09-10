@@ -405,6 +405,9 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_productPricingFragment_to_AIPriceAdvisorFragment"
+            app:destination="@id/AIPriceAdvisorFragment" />
 
     </fragment>
     <fragment
@@ -762,5 +765,42 @@
             android:name="productDescription"
             app:argType="string"
             app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/AIPriceAdvisorFragment"
+        android:name="com.woocommerce.android.ui.products.AIPriceAdvisorFragment"
+        android:label="AIPriceAdvisorFragment" >
+
+        <argument
+            android:name="adviceTypeValue"
+            app:argType="integer" />
+
+        <argument
+            android:name="currentPrice"
+            app:argType="java.math.BigDecimal" />
+
+        <argument
+            android:name="currency"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
+
+        <argument
+            android:name="productName"
+            app:argType="string" />
+
+        <argument
+            android:name="productDescription"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
+
+        <argument
+            android:name="countryCode"
+            app:argType="string" />
+
+        <argument
+            android:name="stateCode"
+            app:argType="string" />
     </dialog>
 </navigation>

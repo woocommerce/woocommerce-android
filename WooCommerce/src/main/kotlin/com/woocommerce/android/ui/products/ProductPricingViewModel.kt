@@ -178,7 +178,7 @@ class ProductPricingViewModel @Inject constructor(
     fun onRecommendSalePriceButtonClicked() {
         triggerEvent(
             NavigateToAIPriceAdvisor(
-                adviceType = AIPriceAdvisorViewModel.AdviceType.SALE_PRICE,
+                adviceTypeValue = AIPriceAdvisorViewModel.AdviceType.SALE_PRICE.value,
                 currentPrice = pricingData.regularPrice ?: BigDecimal.ZERO,
                 currency = parameters.currencyCode,
                 productName = navArgs.productName,
@@ -236,7 +236,7 @@ class ProductPricingViewModel @Inject constructor(
         }
     }
     data class NavigateToAIPriceAdvisor(
-        val adviceType: AIPriceAdvisorViewModel.AdviceType,
+        val adviceTypeValue: Int,
         val currentPrice: BigDecimal,
         val currency: String?,
         val productName: String,

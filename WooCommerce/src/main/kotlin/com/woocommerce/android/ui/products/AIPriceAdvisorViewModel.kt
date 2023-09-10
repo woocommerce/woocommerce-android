@@ -17,11 +17,10 @@ class AIPriceAdvisorViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asLiveData()
 
-    enum class AdviceType {
-        REGULAR_PRICE,
-        SALE_PRICE
+    enum class AdviceType(val value: Int) {
+        REGULAR_PRICE(0),
+        SALE_PRICE(1)
     }
-
     data class ViewState(
         val generatedAdvice: String = "",
         val generationState: GenerationState = GenerationState.Generating
