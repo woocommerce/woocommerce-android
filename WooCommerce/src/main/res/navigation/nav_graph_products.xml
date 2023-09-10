@@ -395,6 +395,17 @@
         <argument
             android:name="pricingData"
             app:argType="com.woocommerce.android.ui.products.ProductPricingViewModel$PricingData" />
+
+        <argument
+            android:name="productName"
+            app:argType="string" />
+
+        <argument
+            android:name="productDescription"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
     </fragment>
     <fragment
         android:id="@+id/productDownloadsFragment"

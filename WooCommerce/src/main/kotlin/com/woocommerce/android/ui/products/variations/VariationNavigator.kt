@@ -49,7 +49,9 @@ class VariationNavigator @Inject constructor() {
             is ViewPricing -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToProductPricingFragment(
                     requestCode = RequestCodes.VARIATION_DETAIL_PRICING,
-                    pricingData = target.pricingData
+                    pricingData = target.pricingData,
+                    productName = target.productName,
+                    productDescription = target.productDescription
                 )
                 fragment.findNavController().navigateSafely(action)
             }
