@@ -1,2 +1,0 @@
-15.1:
-Tahukah Anda bahwa dengan Ketuk untuk Bayar, Anda bisa menerima pembayaran dengan kartu lewat ponsel? Kami telah meningkatkan pengalaman awal agar menjadi lebih mudah. Rilis ini juga meliputi perbaikan stabilitas untuk login. Terima kasih telah memilih WooCommerce!
