@@ -1,1 +1,0 @@
-Did you know that with Tap to Pay, you can accept card payments with your phone? We've enhanced the initial experience to make it even easier. This release also includes stability fixes for the login. Thank you for choosing WooCommerce!
