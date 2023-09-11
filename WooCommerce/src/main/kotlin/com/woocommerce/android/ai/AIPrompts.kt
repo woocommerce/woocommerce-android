@@ -1,5 +1,6 @@
 package com.woocommerce.android.ai
 
+import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 
 object AIPrompts {
@@ -64,17 +65,26 @@ object AIPrompts {
         )
     }
 
-    private const val SALES_PRICE_ADVICE_PROMPT = "Please provide a sales price recommendation for a product " +
-        "currently priced at \"%1\$s\". " +
+    private const val SALES_PRICE_ADVICE_PROMPT = "Without referring to yourself, " +
+        "provide a sales/discount price recommendation " +
+        "for a product currently priced at \"%1\$s\". " +
         "%2\$s" +
         "The product's name is \"%3\$s\". \n" +
         "%4\$s\n" +
         "Consider the location of the store which is in the country with the code \"%5\$s\" and the state " +
         "with the code \"%6\$s\". " +
-        "Your sales advice should be in the ISO language code \"%7\$s\". \n" +
-        "Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
-        "to maximize sales while maintaining a competitive price."
+        "Some rules to follow:\n" +
+        "1. Your sales advice should be in the ISO language code \"%7\$s\". \n" +
+        "2. Never mention the country code or sales code, instead use the country name and state name. \n" +
+        "3. Keep in mind that this is pricing for an e-commerce store, not a physical store. \n" +
+        "4. Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
+        "to maximize sales while maintaining a competitive price. " +
+        "5. Most importantly, the advised price must be lower than the current product price." +
+        "6. The current date is %8\$s .\n" +
+        "Based on that date, recommend the next best times to run a sale, with your reasoning. " +
+        "But don't recommend a time or month or season that is already in the past."
 
+    @Suppress("LongParameterList")
     fun generateSalesPriceAdvicePrompt(
         currentPrice: BigDecimal,
         currency: String?,
@@ -82,10 +92,10 @@ object AIPrompts {
         productDescription: String = "",
         countryCode: String,
         stateCode: String,
-        languageISOCode: String = "en"
+        languageISOCode: String = "en",
     ): String {
         val descriptionPart = if (productDescription.isNotEmpty()) "The product description is as " +
-                "follows: \"$productDescription\". "  else ""
+            "follows: \"$productDescription\". " else ""
 
         val currencyPart = currency?.let { "The current currency is $it. " } ?: ""
         return String.format(
@@ -96,7 +106,8 @@ object AIPrompts {
             descriptionPart,
             countryCode,
             stateCode,
-            languageISOCode
+            languageISOCode,
+            DateUtils.getCurrentDateString()
         )
     }
 
