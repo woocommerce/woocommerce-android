@@ -1,8 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
-15.3
+15.4
 -----
-
+- [*] Add new filter for unread product reviews [https://github.com/woocommerce/woocommerce-android/pull/9753]
 
 15.3
 -----
