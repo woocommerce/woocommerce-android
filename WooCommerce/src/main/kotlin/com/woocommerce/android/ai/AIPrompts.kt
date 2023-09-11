@@ -1,5 +1,7 @@
 package com.woocommerce.android.ai
 
+import java.math.BigDecimal
+
 object AIPrompts {
     private const val PRODUCT_DESCRIPTION_PROMPT = "Write a description for a product with title \"%1\$s\"%2\$s.\n" +
         "Your response should be in the ISO language code \"%3\$s\". \n" +
@@ -58,6 +60,42 @@ object AIPrompts {
             customerName,
             productName,
             descriptionPart,
+            languageISOCode
+        )
+    }
+
+    private const val SALES_PRICE_ADVICE_PROMPT = "Please provide a sales price recommendation for a product " +
+        "currently priced at \"%1\$s\". " +
+        "%2\$s" +
+        "The product's name is \"%3\$s\". \n" +
+        "%4\$s\n" +
+        "Consider the location of the store which is in the country with the code \"%5\$s\" and the state " +
+        "with the code \"%6\$s\". " +
+        "Your sales advice should be in the ISO language code \"%7\$s\". \n" +
+        "Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
+        "to maximize sales while maintaining a competitive price."
+
+    fun generateSalesPriceAdvicePrompt(
+        currentPrice: BigDecimal,
+        currency: String?,
+        productName: String,
+        productDescription: String = "",
+        countryCode: String,
+        stateCode: String,
+        languageISOCode: String = "en"
+    ): String {
+        val descriptionPart = if (productDescription.isNotEmpty()) "The product description is as " +
+                "follows: \"$productDescription\". "  else ""
+
+        val currencyPart = currency?.let { "The current currency is $it. " } ?: ""
+        return String.format(
+            SALES_PRICE_ADVICE_PROMPT,
+            currentPrice,
+            currencyPart,
+            productName,
+            descriptionPart,
+            countryCode,
+            stateCode,
             languageISOCode
         )
     }
