@@ -86,7 +86,6 @@ fun EmptyTaxRateSelectorList(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
