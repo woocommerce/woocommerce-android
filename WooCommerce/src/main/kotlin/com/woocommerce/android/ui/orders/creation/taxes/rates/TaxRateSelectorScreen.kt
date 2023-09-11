@@ -92,7 +92,7 @@ fun EmptyTaxRateSelectorList(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.tax_rate_empty_list_title),
+            text = stringResource(id = R.string.tax_rate_selector_empty_list_title),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
@@ -100,14 +100,14 @@ fun EmptyTaxRateSelectorList(
                 end = dimensionResource(id = R.dimen.major_150)
             )
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_tax),
             contentDescription = null,
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_200)))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.tax_rate_empty_list_message),
+            text = stringResource(id = R.string.tax_rate_selector_empty_list_message),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.padding(
@@ -115,10 +115,10 @@ fun EmptyTaxRateSelectorList(
                 end = dimensionResource(id = R.dimen.major_150)
             )
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             onClick = onButtonClicked,
-            text = stringResource(id = R.string.tax_rate_empty_list_button),
+            text = stringResource(id = R.string.tax_rate_selector_empty_list_button),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
@@ -126,7 +126,7 @@ fun EmptyTaxRateSelectorList(
             {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_external),
-                    contentDescription = stringResource(id = R.string.tax_rate_empty_list_button_alt),
+                    contentDescription = stringResource(id = R.string.tax_rate_selector_empty_list_button_alt),
                 )
             }
         )
@@ -180,7 +180,7 @@ private fun TaxRates(
             Header(onInfoIconClicked)
         }
         when {
-            state.taxRates.isEmpty() -> {
+            state.isEmpty -> {
                 item {
                     EmptyTaxRateSelectorList(onEmptyScreenButtonClicked)
                 }
