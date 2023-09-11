@@ -10,7 +10,7 @@ object WooColors {
     val md_theme_light_onPrimary = Color(0xFFFFFFFF)
     val md_theme_light_primary_variant = Color(0xFF3C2861)
     val md_theme_light_secondary = Color(0xFFC9356E)
-    val md_theme_light_onSecondary = Color(0xFFC9356E)
+    val md_theme_light_onSecondary = Color(0xFF000000)
     val md_theme_light_secondary_variant = Color(0xFF880E4F)
     val md_theme_light_error = Color(0xFFD63638)
     val md_theme_light_onError = Color(0xFFFFFFFF)
