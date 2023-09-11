@@ -446,7 +446,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(
-                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
                 )
             )
         }
@@ -465,7 +465,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(
-                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
                 )
             )
         }
@@ -485,7 +485,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView(
-                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
                 )
             )
         }
