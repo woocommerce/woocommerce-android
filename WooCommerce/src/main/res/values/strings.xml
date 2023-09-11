@@ -1545,7 +1545,7 @@
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_refresh_button" translatable="false">@string/refresh_button</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Take care</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolve now</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
