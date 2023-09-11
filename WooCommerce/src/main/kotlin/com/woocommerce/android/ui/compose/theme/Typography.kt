@@ -1,17 +1,27 @@
+@file:OptIn(ExperimentalTextApi::class)
+
 package com.woocommerce.android.ui.compose.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
-import com.woocommerce.android.R.font
+import com.woocommerce.android.R
 
+val provider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = R.array.com_google_android_gms_fonts_certs
+)
+val fontName = GoogleFont("Roboto")
 val robotoFamily = FontFamily(
-    Font(font.roboto_light_ttf, FontWeight.Light),
-    Font(font.roboto_ttf, FontWeight.Normal),
-    Font(font.roboto_medium_ttf, FontWeight.Medium)
+    Font(googleFont = fontName, fontProvider = provider, weight = FontWeight.Light),
+    Font(googleFont = fontName, fontProvider = provider, weight = FontWeight.Normal),
+    Font(googleFont = fontName, fontProvider = provider, weight = FontWeight.Medium)
 )
 
 val WooTypography = Typography(
