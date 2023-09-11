@@ -74,6 +74,7 @@ val WooTypography = Typography(
     caption = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
+        lineHeight = 16.sp,
     ),
     overline = TextStyle(
         fontWeight = FontWeight.Normal,
