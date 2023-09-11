@@ -357,4 +357,78 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh
             )
         }
+
+    @Test
+    fun `given wpcom site, when invoked with WC_PAY_NOT_SETUP, then OpenWpComWebView returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(siteModel.isWPCom).thenReturn(true)
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
+                )
+            )
+        }
+
+    @Test
+    fun `given wpcomatomic site, when invoked with WC_PAY_NOT_SETUP, then OpenWpComWebView returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(siteModel.isWPComAtomic).thenReturn(true)
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
+                )
+            )
+        }
+
+    @Test
+    fun `given non wpcom site, when invoked with WC_PAY_NOT_SETUP, then OpenGenericWebView returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(siteModel.isWPCom).thenReturn(false)
+            whenever(siteModel.isWPComAtomic).thenReturn(false)
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            val result = handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView(
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
+                )
+            )
+        }
+
+    @Test
+    fun `when invoked with WC_PAY_NOT_SETUP, then event tracked with reason`() =
+        testBlocking {
+            // GIVEN
+            val adminUrl = "mywebsite.com"
+            whenever(siteModel.adminUrl).thenReturn(adminUrl)
+
+            // WHEN
+            handler(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+
+            // THEN
+            verify(cardReaderTracker).trackOnboardingCtaTapped(
+                OnboardingCtaTapped.PLUGIN_SETUP_TAPPED
+            )
+        }
 }

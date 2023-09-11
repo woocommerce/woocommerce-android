@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInWPComWebView
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -112,12 +113,22 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun handleErrorCtaClick(errorType: CardReaderOnboardingCTAErrorType) {
         launch {
+            val prevState = viewState.value
             viewState.value = CardReaderOnboardingViewState.LoadingState
             when (val reaction = errorClickHandler(errorType)) {
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.Refresh -> refreshState()
                 is CardReaderOnboardingErrorCtaClickHandler.Reaction.ShowErrorAndRefresh -> {
                     triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
                     refreshState()
+                }
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView -> {
+                    triggerEvent(NavigateToUrlInWPComWebView(reaction.url))
+                    viewState.value = prevState!!
+                }
+
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView -> {
+                    triggerEvent(NavigateToUrlInGenericWebView(reaction.url))
+                    viewState.value = prevState!!
                 }
             }
         }
@@ -193,7 +204,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
             is SetupNotCompleted ->
                 viewState.value = when (state.preferredPlugin) {
                     WOOCOMMERCE_PAYMENTS ->
-                        WCPayNotSetupState(::refreshState, ::onLearnMoreClicked)
+                        WCPayNotSetupState(
+                            actionButtonActionPrimary = {
+                                handleErrorCtaClick(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_SETUP)
+                            },
+                            actionButtonActionSecondary = ::refreshState,
+                            onLearnMoreActionClicked = ::onLearnMoreClicked
+                        )
                     STRIPE_EXTENSION_GATEWAY ->
                         StripeExtensionNotSetupState(
                             ::refreshState, ::onLearnMoreClicked

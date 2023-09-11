@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
@@ -285,12 +288,21 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.actionButtonLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
-            state.actionButtonAction.invoke()
+
+        UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary.label)
+        binding.primaryButton.setWhiteIcon(state.actionButtonPrimary.icon)
+        binding.primaryButton.setOnClickListener {
+            state.actionButtonPrimary.action.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setWhiteIcon(state.actionButtonSecondary?.icon)
+        binding.secondaryButton.setOnClickListener {
+            state.actionButtonSecondary?.action?.invoke()
+        }
+
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
@@ -303,10 +315,10 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.refreshButtonLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
+        binding.secondaryButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
         binding.learnMoreContainer.learnMore.setOnClickListener {
@@ -333,6 +345,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
+
+    private fun MaterialButton.setWhiteIcon(@DrawableRes icon: Int?) {
+        icon?.let {
+            setIconResource(it)
+            iconTint = ColorStateList.valueOf(getColor(context, R.color.woo_white))
+            iconGravity = MaterialButton.ICON_GRAVITY_TEXT_END
+            iconSize = resources.getDimensionPixelSize(R.dimen.major_125)
+        }
+    }
 }
 
 sealed class CardReaderOnboardingParams : Parcelable {

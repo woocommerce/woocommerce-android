@@ -1522,6 +1522,7 @@
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Finish setup</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
@@ -3611,5 +3612,9 @@
     <string name="tax_rate_selector_header_label">This will change the customer’s address to the location of the tax rate you select.</string>
     <string name="tax_rate_selector_edit_rates_button_label">Edit tax rates in admin</string>
     <string name="tax_rate_selector_title">Set Tax Rate</string>
+    <string name="tax_rate_selector_empty_list_title">We couldn\'t find any tax rates</string>
+    <string name="tax_rate_selector_empty_list_message">Add tax rates in admin. Only tax rates with location information will be shown here.</string>
+    <string name="tax_rate_selector_empty_list_button">Edit Tax Rates in Admin</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
 
 </resources>
