@@ -133,6 +133,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when set new tax rate clicked, then should track event`() = testBlocking {
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        sut.onSetTaxRateClicked()
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
+    }
+
+    @Test
     fun `when submitting customer note, then update orderDraft liveData`() {
         var orderDraft: Order? = null
 
@@ -1214,7 +1222,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         with(lastReceivedEvent) {
             assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse()
+            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse
         }
     }
 
@@ -1229,7 +1237,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         with(lastReceivedEvent) {
             assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue()
+            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue
         }
     }
 
@@ -1237,7 +1245,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1263,7 +1271,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
