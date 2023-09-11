@@ -68,6 +68,7 @@ class AIRepository @Inject constructor(
         return fetchJetpackAICompletionsForSite(site, prompt, ORDER_DETAIL_THANK_YOU_NOTE)
     }
 
+    @Suppress("LongParameterList")
     suspend fun generateSalesPriceAdvice(
         site: SiteModel,
         currentPrice: BigDecimal,
