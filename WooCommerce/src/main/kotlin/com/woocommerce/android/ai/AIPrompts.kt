@@ -65,8 +65,7 @@ object AIPrompts {
         )
     }
 
-    private const val SALES_PRICE_ADVICE_PROMPT = "Without referring to yourself, " +
-        "provide a sales/discount price recommendation " +
+    private const val SALES_PRICE_ADVICE_PROMPT = "Please provide a sales/discount price recommendation " +
         "for a product currently priced at \"%1\$s\". " +
         "%2\$s" +
         "The product's name is \"%3\$s\". \n" +
@@ -74,13 +73,15 @@ object AIPrompts {
         "Consider the location of the store which is in the country with the code \"%5\$s\" and the state " +
         "with the code \"%6\$s\". " +
         "Some rules to follow:\n" +
-        "1. Your sales advice should be in the ISO language code \"%7\$s\". \n" +
-        "2. Never mention the country code or sales code, instead use the country name and state name. \n" +
-        "3. Keep in mind that this is pricing for an e-commerce store, not a physical store. \n" +
-        "4. Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
+        "1. Never refer to yourself. Don't say things like `I recommend` or `I advise`. Instead say it " +
+        " passively like `a possible recommendation is...` or in variations of that." +
+        "2. Your sales advice should be in the ISO language code \"%7\$s\". \n" +
+        "3. Never mention the country code or sales code, instead use the country name and state name. \n" +
+        "4. Keep in mind that this is pricing for an e-commerce store, not a physical store. \n" +
+        "5. Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
         "to maximize sales while maintaining a competitive price. " +
-        "5. Most importantly, the advised price must be lower than the current product price." +
-        "6. The current date is %8\$s .\n" +
+        "6. Most importantly, the advised price must be lower than the current product price." +
+        "7. The current date is %8\$s .\n" +
         "Based on that date, recommend the next best times to run a sale, with your reasoning. " +
         "But don't recommend a time or month or season that is already in the past."
 
