@@ -111,7 +111,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
-        private const val PAYMENTS_TAP_URL = "/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+        private const val PAYMENTS_TAP_URL = "/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
     }
 }
 
