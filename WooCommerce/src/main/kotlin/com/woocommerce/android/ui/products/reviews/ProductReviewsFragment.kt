@@ -28,6 +28,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,7 +39,8 @@ class ProductReviewsFragment :
     BaseFragment(R.layout.fragment_reviews_list),
     ReviewListAdapter.OnReviewClickListener,
     ReviewModerationUi,
-    BackPressListener {
+    BackPressListener,
+    ItemDecorationListener {
     companion object {
         const val PRODUCT_REVIEWS_MODIFIED = "product-reviews-modified"
     }
@@ -73,11 +76,13 @@ class ProductReviewsFragment :
 
     private fun setupViews() {
         _reviewsAdapter = ReviewListAdapter(this)
+        val unreadReviewItemDecoration = UnreadItemDecoration(requireContext(), this)
 
         binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
+            addItemDecoration(unreadReviewItemDecoration)
 
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -177,4 +182,6 @@ class ProductReviewsFragment :
         viewModel.onBackButtonClicked()
         return false
     }
+
+    override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 }

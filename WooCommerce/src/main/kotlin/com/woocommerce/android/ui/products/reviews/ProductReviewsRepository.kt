@@ -1,12 +1,16 @@
 package com.woocommerce.android.ui.products.reviews
 
+import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductReviewsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
@@ -15,7 +19,8 @@ import javax.inject.Inject
 class ProductReviewsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val notificationStore: NotificationStore
 ) {
     companion object {
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
@@ -58,9 +63,26 @@ class ProductReviewsRepository @Inject constructor(
      */
     suspend fun getProductReviewsFromDB(remoteProductId: Long): List<ProductReview> =
         withContext(coroutineDispatchers.io) {
-            productStore.getProductReviewsForProductAndSiteId(
+            val reviews = productStore.getProductReviewsForProductAndSiteId(
                 localSiteId = selectedSite.get().id,
                 remoteProductId = remoteProductId
             ).map { it.toAppModel() }
+            val reviewRemoteIdToReadStatusMap = getReviewNotificationReadValueByRemoteId()
+            return@withContext reviews.onEach {
+                it.read = reviewRemoteIdToReadStatusMap[it.remoteId] ?: false
+            }
         }
+
+    /**
+     * Uses the product review notifications to create a map of
+     * [org.wordpress.android.fluxc.model.notification.NotificationModel.read] by [ProductReview.remoteId].
+     */
+    private suspend fun getReviewNotificationReadValueByRemoteId(): Map<Long, Boolean> {
+        return withContext(Dispatchers.IO) {
+            notificationStore.getNotificationsForSite(
+                site = selectedSite.get(),
+                filterBySubtype = listOf(STORE_REVIEW.toString())
+            ).associate { it.getCommentId() to it.read }
+        }
+    }
 }
