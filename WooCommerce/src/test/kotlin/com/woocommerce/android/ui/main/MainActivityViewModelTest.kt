@@ -17,7 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
@@ -311,7 +311,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         verify(selectedSite, atLeastOnce()).set(any())
         assertThat(viewModel.event.value)
-            .isEqualTo(RestartActivityForNotification(groupOrderPushId, orderNotification2))
+            .isEqualTo(RestartActivityForPushNotification(groupOrderPushId, orderNotification2))
     }
 
     @Test
@@ -324,7 +324,12 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
-        assertThat(viewModel.event.value).isEqualTo(RestartActivityForNotification(reviewPushId, reviewNotification2))
+        assertThat(viewModel.event.value).isEqualTo(
+            RestartActivityForPushNotification(
+                reviewPushId,
+                reviewNotification2
+            )
+        )
     }
 
     @Test

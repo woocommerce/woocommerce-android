@@ -240,7 +240,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_wcpay_not_activated_hint),
             learnMoreLabel = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
             actionButtonLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_wcpay_not_activated_refresh_button
+                R.string.card_reader_onboarding_wcpay_not_activated_activate_button
             )
         )
 

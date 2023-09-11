@@ -15,6 +15,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -134,7 +135,10 @@ fun TaxRateInfoDialog(
                                 tint = colorResource(id = R.color.woo_white)
                             )
                         },
-                        text = stringResource(R.string.tax_rates_redirect_to_admin_button_label)
+                        text = stringResource(R.string.tax_rates_redirect_to_admin_button_label),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = colorResource(id = R.color.woo_white)
+                        ),
                     )
 
                     WCOutlinedButton(

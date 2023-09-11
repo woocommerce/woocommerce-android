@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
@@ -42,6 +43,7 @@ class CountryPickerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        handleCountrySelectionResult()
     }
 
     private fun setupObservers() {
@@ -52,6 +54,12 @@ class CountryPickerFragment : BaseFragment() {
                 is NavigateToSummaryStep -> navigateToStoreChallengesStep()
                 is NavigateToDomainListPicker -> navigateToDomainListPicker(event.locationCode)
             }
+        }
+    }
+
+    private fun handleCountrySelectionResult() {
+        handleResult<StoreCreationCountry>(CountryListPickerFragment.KEY_COUNTRY_LIST_PICKER_RESULT) {
+            viewModel.onCountrySelected(it)
         }
     }
 

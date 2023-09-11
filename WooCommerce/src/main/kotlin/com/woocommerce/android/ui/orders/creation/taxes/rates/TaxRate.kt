@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.orders.creation.taxes.rates
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class TaxRate(
     val id: Int,
     val countryCode: String = "",
@@ -15,4 +19,4 @@ data class TaxRate(
     val shipping: Boolean = false,
     val order: Int = 0,
     val taxClass: String = "",
-)
+) : Parcelable

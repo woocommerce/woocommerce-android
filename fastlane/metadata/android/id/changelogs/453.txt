@@ -1,0 +1,2 @@
+15.2:
+Dengan gembira kami umumkan pembaruan untuk aplikasi Android kami! Di versi ini, kami memindahkan opsi 'Tutup Akun' ke bagian baru dengan nama 'Pengaturan Akun' agar navigasi lebih mudah. Kami juga memperbaiki beberapa isu terkait penghitung lencana pesanan untuk memastikan pelacakan yang akurat. Dan, kami juga menyempurnakan langkah penyiapan WooPayments agar proses penyiapan berjalan lebih lancar. Perbarui sekarang untuk pengalaman lebih baik!

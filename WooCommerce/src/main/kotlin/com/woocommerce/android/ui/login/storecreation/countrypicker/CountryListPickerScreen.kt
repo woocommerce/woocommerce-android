@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -48,7 +47,6 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
             CountryListPickerForm(
                 countries = viewState.countries,
                 onCountrySelected = viewModel::onCountrySelected,
-                onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .padding(padding)
@@ -61,7 +59,6 @@ fun CountryListPickerScreen(viewModel: CountryListPickerViewModel) {
 fun CountryListPickerForm(
     countries: List<StoreCreationCountry>,
     onCountrySelected: (StoreCreationCountry) -> Unit,
-    onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -95,14 +92,6 @@ fun CountryListPickerForm(
             color = colorResource(id = R.color.divider_color),
             thickness = dimensionResource(id = R.dimen.minor_10)
         )
-        WCColoredButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100)),
-            onClick = onContinueClicked,
-        ) {
-            Text(text = stringResource(id = R.string.continue_button))
-        }
     }
 }
 
@@ -263,7 +252,6 @@ fun CountryListPickerPreview() {
                 )
             ),
             onCountrySelected = {},
-            onContinueClicked = {},
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
         )
