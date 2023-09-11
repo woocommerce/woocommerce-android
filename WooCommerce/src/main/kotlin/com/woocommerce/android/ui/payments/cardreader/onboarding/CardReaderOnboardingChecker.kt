@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -71,6 +72,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache,
@@ -122,6 +124,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod", "LongMethod")
     private suspend fun fetchOnboardingState(pluginType: PluginType?): CardReaderOnboardingState {
         val countryCode = getStoreCountryCode()
+        cardReaderTrackingInfoKeeper.setCountry(countryCode)
         val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
         if (cardReaderConfig !is CardReaderConfigForSupportedCountry)
             return StoreCountryNotSupported(countryCode)
