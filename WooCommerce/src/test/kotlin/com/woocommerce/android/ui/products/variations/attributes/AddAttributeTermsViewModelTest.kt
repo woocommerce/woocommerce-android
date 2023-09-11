@@ -100,22 +100,6 @@ class AddAttributeTermsViewModelTest : BaseUnitTest() {
         )
     }
 
-    private val defaultAttributeList = generateAttributeList(from = 1, to = 10)
-
-    private val defaultLoadMoreList = generateAttributeList(from = 11, to = 16)
-
-    private fun generateAttributeList(from: Int, to: Int): List<ProductAttributeTerm> {
-        return (from..to).map { index ->
-            ProductAttributeTerm(
-                id = index,
-                remoteId = index,
-                name = "Term $index",
-                slug = "term-$index",
-                description = "Term $index description"
-            )
-        }
-    }
-
     private fun startSutWith(
         attributesFirstPage: List<ProductAttributeTerm>,
         attributesSecondPage: List<ProductAttributeTerm>,

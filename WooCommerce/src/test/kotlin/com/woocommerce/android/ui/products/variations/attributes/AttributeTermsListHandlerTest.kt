@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
-import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,21 +29,5 @@ class AttributeTermsListHandlerTest: BaseUnitTest() {
         sut = AttributeTermsListHandler(
             repository = repository
         )
-    }
-
-    private val defaultAttributeList = generateAttributeList(from = 1, to = 10)
-
-    private val defaultLoadMoreList = generateAttributeList(from = 11, to = 16)
-
-    private fun generateAttributeList(from: Int, to: Int): List<ProductAttributeTerm> {
-        return (from..to).map { index ->
-            ProductAttributeTerm(
-                id = index,
-                remoteId = index,
-                name = "Term $index",
-                slug = "term-$index",
-                description = "Term $index description"
-            )
-        }
     }
 }
