@@ -12,7 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
@@ -155,8 +157,14 @@ class ProductReviewsFragment :
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
-                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+            if (binding.unreadFilterSwitch.isChecked) {
+                binding.unreadReviewsFilterLayout.show()
+                binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
+            } else {
+                binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+                }
+                binding.unreadReviewsFilterLayout.hide()
             }
         } else {
             binding.emptyView.hide()
