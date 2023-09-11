@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+15.4
+-----
+- [*] [Internal] In-Person Payments: Fixed tracking of the country for the cases when IPP onboarding is not finished [https://github.com/woocommerce/woocommerce-android/pull/9764]
+
 15.3
 -----
 
