@@ -45,6 +45,40 @@ class AttributeTermsListHandlerTest: BaseUnitTest() {
         assertThat(result).isEqualTo(defaultLoadMoreList)
     }
 
+    @Test
+    fun `when loadMore is called with no further terms to fetch, then return a empty list`() = testBlocking {
+        // Given
+        startSutWith(
+            attributesFirstPage = generateAttributeList(from = 1, to = 9),
+            attributesSecondPage = generateAttributeList(from = 20, to = 21)
+        )
+
+        // When
+        sut.fetchAttributeTerms(defaultAttributeId)
+        val result = sut.loadMore(defaultAttributeId)
+
+        // Then
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `when a new fetch request is sent, then should ignore last loadMore call result`() = testBlocking {
+        // Given
+        val termsFirstPage = generateAttributeList(from = 1, to = 9)
+        startSutWith(
+            attributesFirstPage = termsFirstPage,
+            attributesSecondPage = generateAttributeList(from = 20, to = 21)
+        )
+
+        // When
+        sut.fetchAttributeTerms(defaultAttributeId)
+        sut.loadMore(defaultAttributeId)
+        val result = sut.fetchAttributeTerms(defaultAttributeId)
+
+        // Then
+        assertThat(result).isEqualTo(termsFirstPage)
+    }
+
     private fun startSutWith(
         attributesFirstPage: List<ProductAttributeTerm>,
         attributesSecondPage: List<ProductAttributeTerm>
