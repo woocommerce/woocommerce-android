@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
 import java.lang.Exception
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +19,7 @@ class AIRepository @Inject constructor(
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val ORDER_DETAIL_THANK_YOU_NOTE = "woo_android_order_detail_thank_you_note"
+        const val PRODUCT_SALES_PRICE_ADVICE = "woo_android_product_sales_price_advice"
     }
 
     suspend fun generateProductSharingText(
@@ -64,6 +66,26 @@ class AIRepository @Inject constructor(
             languageISOCode = languageISOCode
         )
         return fetchJetpackAICompletionsForSite(site, prompt, ORDER_DETAIL_THANK_YOU_NOTE)
+    }
+
+    suspend fun generateSalesPriceAdvice(
+        site: SiteModel,
+        currentPrice: BigDecimal,
+        currency: String?,
+        productName: String,
+        productDescription: String?,
+        countryCode: String,
+        stateCode: String
+    ): Result<String> {
+        val prompt = AIPrompts.generateSalesPriceAdvicePrompt(
+            currentPrice,
+            currency,
+            productName,
+            productDescription.orEmpty(),
+            countryCode,
+            stateCode
+        )
+        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_SALES_PRICE_ADVICE)
     }
 
     suspend fun identifyISOLanguageCode(site: SiteModel, text: String, feature: String): Result<String> {
