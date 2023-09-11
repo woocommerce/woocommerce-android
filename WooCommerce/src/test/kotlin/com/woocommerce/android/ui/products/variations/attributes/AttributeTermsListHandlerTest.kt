@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations.attributes
 
+import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,17 +20,9 @@ class AttributeTermsListHandlerTest: BaseUnitTest() {
 
     @Before
     fun setUp() {
-        repository = mock {
-            onBlocking {
-                fetchGlobalAttributeTerms(defaultAttributeId, 1, defaultPageSize)
-            } doReturn defaultAttributeList
-
-            onBlocking {
-                fetchGlobalAttributeTerms(defaultAttributeId, 2, defaultPageSize)
-            } doReturn defaultLoadMoreList
-        }
-        sut = AttributeTermsListHandler(
-            repository = repository
+        startSutWith(
+            attributesFirstPage = defaultAttributeList,
+            attributesSecondPage = defaultLoadMoreList
         )
     }
 
@@ -50,5 +43,23 @@ class AttributeTermsListHandlerTest: BaseUnitTest() {
 
         // Then
         assertThat(result).isEqualTo(defaultLoadMoreList)
+    }
+
+    private fun startSutWith(
+        attributesFirstPage: List<ProductAttributeTerm>,
+        attributesSecondPage: List<ProductAttributeTerm>
+    ) {
+        repository = mock {
+            onBlocking {
+                fetchGlobalAttributeTerms(defaultAttributeId, 1, defaultPageSize)
+            } doReturn attributesFirstPage
+
+            onBlocking {
+                fetchGlobalAttributeTerms(defaultAttributeId, 2, defaultPageSize)
+            } doReturn attributesSecondPage
+        }
+        sut = AttributeTermsListHandler(
+            repository = repository
+        )
     }
 }
