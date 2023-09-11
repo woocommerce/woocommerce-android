@@ -111,6 +111,7 @@ class TaxRateSelectorViewModel @Inject constructor(
     data class ViewState(
         val taxRates: List<TaxRateUiModel> = emptyList(),
         val isLoading: Boolean = false,
+        val isEmpty: Boolean = taxRates.isEmpty() && !isLoading,
     ) : Parcelable
 
     @Parcelize
