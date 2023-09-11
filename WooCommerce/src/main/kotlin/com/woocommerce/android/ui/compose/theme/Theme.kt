@@ -4,9 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import com.woocommerce.android.compose.DarkColors
-import com.woocommerce.android.compose.LightColors
-import com.woocommerce.android.compose.WooTypography
+import com.woocommerce.android.ui.compose.DarkColors
+import com.woocommerce.android.ui.compose.LightColors
+import com.woocommerce.android.ui.compose.WooTypography
 
 /**
  * This theme should be used to support light/dark colors if the composable root of the view tree

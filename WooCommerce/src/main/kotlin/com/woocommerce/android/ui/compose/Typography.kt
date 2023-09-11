@@ -1,4 +1,4 @@
-package com.woocommerce.android.compose
+package com.woocommerce.android.ui.compose
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
