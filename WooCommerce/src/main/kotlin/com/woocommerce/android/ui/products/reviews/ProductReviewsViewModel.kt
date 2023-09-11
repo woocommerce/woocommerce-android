@@ -121,7 +121,6 @@ class ProductReviewsViewModel @Inject constructor(
                 if (productReviewsViewState.isUnreadFilterEnabled) {
                     applyUnreadFilter(productReviews)
                 } else _reviewList.value = productReviews
-                _reviewList.value = productReviews
             }
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
