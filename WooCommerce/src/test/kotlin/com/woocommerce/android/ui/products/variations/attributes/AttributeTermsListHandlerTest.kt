@@ -11,7 +11,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AttributeTermsListHandlerTest: BaseUnitTest() {
+class AttributeTermsListHandlerTest : BaseUnitTest() {
     private lateinit var sut: AttributeTermsListHandler
     private lateinit var repository: ProductDetailRepository
 
