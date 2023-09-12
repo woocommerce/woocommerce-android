@@ -128,7 +128,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showCountryNotSupportedState(layout, state)
             is CardReaderOnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
-            is CardReaderOnboardingViewState.StripeAcountError ->
+            is CardReaderOnboardingViewState.StripeAccountError ->
                 showStripeAccountError(layout, state)
             is CardReaderOnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
@@ -258,24 +258,35 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showStripeAccountError(
         view: View,
-        state: CardReaderOnboardingViewState.StripeAcountError
+        state: CardReaderOnboardingViewState.StripeAccountError
     ) {
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
+
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportButton.label)
         binding.textSupport.setOnClickListener {
             state.onContactSupportActionClicked.invoke()
         }
 
-        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
-        state.onButtonActionClicked?.let { onButtonActionClicked ->
-            binding.button.setOnClickListener {
+        UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary?.label)
+        binding.primaryButton.setWhiteIcon(state.actionButtonPrimary?.icon)
+        state.actionButtonPrimary?.action?.let { onButtonActionClicked ->
+            binding.primaryButton.setOnClickListener {
+                onButtonActionClicked.invoke()
+            }
+        }
+
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setWhiteIcon(state.actionButtonSecondary?.icon)
+        state.actionButtonSecondary?.action?.let { onButtonActionClicked ->
+            binding.secondaryButton.setOnClickListener {
                 onButtonActionClicked.invoke()
             }
         }
@@ -315,6 +326,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
+        binding.primaryButton.visibility = View.GONE
         UiHelpers.setTextOrHide(binding.secondaryButton, state.refreshButtonLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)

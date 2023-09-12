@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.LoadingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.NoConnectionErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAccountError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeExtensionError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.WCPayError
@@ -715,6 +715,57 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given handler returned OpenWpComWebView, when clicked on stripe req overdue, then open wpcom webview`() =
+        testBlocking {
+            val url = "url"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView(url))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam =
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS),
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .actionButtonPrimary!!.action.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderOnboardingEvent.NavigateToUrlInWPComWebView(url)
+            )
+        }
+
+    @Test
+    fun `given handler returned OpenGenericWebView, when clicked on stripe req overdue, then open generic webview`() =
+        testBlocking {
+            val url = "url"
+            whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS))
+                .thenReturn(CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView(url))
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER),
+                        onboardingState = StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS),
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .actionButtonPrimary!!.action.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(
+                CardReaderOnboardingEvent.NavigateToUrlInGenericWebView(url)
+            )
+        }
+
+    @Test
     fun `given handler returned refresh, when clicked on wcpay not installed CTA, then get onboarding state`() =
         testBlocking {
             whenever(errorClickHandler.invoke(CardReaderOnboardingCTAErrorType.WC_PAY_NOT_INSTALLED))
@@ -1164,7 +1215,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.PluginInTestModeWithLiveAccountState::class.java
+                StripeAccountError.PluginInTestModeWithLiveAccountState::class.java
             )
         }
 
@@ -1182,7 +1233,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.PluginInTestModeWithLiveAccountState::class.java
+                StripeAccountError.PluginInTestModeWithLiveAccountState::class.java
             )
         }
 
@@ -2037,7 +2088,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value)
-                .isInstanceOf(StripeAcountError.StripeAccountRejectedState::class.java)
+                .isInstanceOf(StripeAccountError.StripeAccountRejectedState::class.java)
         }
 
     @Test
@@ -2054,7 +2105,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value)
-                .isInstanceOf(StripeAcountError.StripeAccountRejectedState::class.java)
+                .isInstanceOf(StripeAccountError.StripeAccountRejectedState::class.java)
         }
 
     @Test
@@ -2073,7 +2124,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.StripeAccountPendingRequirementsState::class.java
+                StripeAccountError.StripeAccountPendingRequirementsState::class.java
             )
         }
 
@@ -2091,8 +2142,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 )
 
             val viewModel = createVM()
-            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
-                .onButtonActionClicked.invoke()
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
+                .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
@@ -2119,8 +2170,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
-                .onButtonActionClicked.invoke()
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
+                .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
@@ -2144,8 +2195,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState)
-                .onButtonActionClicked.invoke()
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState)
+                .onPrimaryActionClicked.invoke()
             assertThat(viewModel.event.value)
                 .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
         }
@@ -2166,7 +2217,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(
-                (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).dueDate
+                (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState).dueDate
             ).isNull()
         }
 
@@ -2186,7 +2237,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(
-                (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).hintLabel
+                (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState).hintLabel
             ).isEqualTo(
                 UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_without_date_hint
@@ -2210,7 +2261,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(
-                (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).hintLabel
+                (viewModel.viewStateData.value as StripeAccountError.StripeAccountPendingRequirementsState).hintLabel
             ).isEqualTo(
                 UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_hint,
@@ -2228,7 +2279,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.StripeAccountOverdueRequirementsState::class.java
+                StripeAccountError.StripeAccountOverdueRequirementsState::class.java
             )
         }
 
@@ -2246,7 +2297,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.StripeAccountOverdueRequirementsState::class.java
+                StripeAccountError.StripeAccountOverdueRequirementsState::class.java
             )
         }
 
@@ -2259,7 +2310,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             val viewModel = createVM()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.StripeAccountUnderReviewState::class.java
+                StripeAccountError.StripeAccountUnderReviewState::class.java
             )
         }
 
@@ -2277,7 +2328,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             )
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                StripeAcountError.StripeAccountUnderReviewState::class.java
+                StripeAccountError.StripeAccountUnderReviewState::class.java
             )
         }
 
@@ -2375,7 +2426,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
 
-            verify(tracker).trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
+            verify(tracker).trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
         }
 
     @Test
