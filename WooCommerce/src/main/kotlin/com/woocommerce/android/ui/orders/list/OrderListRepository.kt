@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.orders.list
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
@@ -9,6 +12,8 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
+import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -28,10 +33,12 @@ class OrderListRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val orderStore: WCOrderStore,
     private val gatewayStore: WCGatewayStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val resourceProvider: ResourceProvider
 ) {
     companion object {
         private const val TAG = "OrderListRepository"
+        const val NETWORK_PAGE_SIZE = 25
     }
 
     private var isFetchingOrderStatusOptions = false
@@ -112,5 +119,14 @@ class OrderListRepository @Inject constructor(
         } else {
             continuationOrderStatus.continueWith(RequestResult.SUCCESS)
         }
+    }
+    fun getOrders(): Flow<PagingData<OrderListItemUIType>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { OrderListItemPagingSource(orderStore, selectedSite, resourceProvider) }
+        ).flow
     }
 }
