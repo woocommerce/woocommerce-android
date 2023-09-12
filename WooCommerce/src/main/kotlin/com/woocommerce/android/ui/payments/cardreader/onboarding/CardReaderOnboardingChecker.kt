@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
@@ -76,6 +77,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache,
+    private val cardReaderTracker: CardReaderTracker,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         val cachedValue = cardReaderOnboardingCheckResultCache.value
@@ -84,27 +86,32 @@ class CardReaderOnboardingChecker @Inject constructor(
             NoConnectionError
         } else if (cachedValue is CardReaderOnboardingCheckResultCache.Result.Cached) {
             cachedValue.state
-        } else fetchOnboardingState(pluginType)
-            .also { state ->
-                val (status, version) = when (state) {
-                    is OnboardingCompleted -> {
-                        cardReaderOnboardingCheckResultCache.value =
-                            CardReaderOnboardingCheckResultCache.Result.Cached(state)
-                        CARD_READER_ONBOARDING_COMPLETED to state.version
+        } else {
+            fetchOnboardingState(pluginType)
+                .also { state ->
+                    val (status, version) = when (state) {
+                        is OnboardingCompleted -> {
+                            cardReaderOnboardingCheckResultCache.value =
+                                CardReaderOnboardingCheckResultCache.Result.Cached(state)
+                            CARD_READER_ONBOARDING_COMPLETED to state.version
+                        }
+
+                        is CashOnDeliveryDisabled -> CARD_READER_ONBOARDING_PENDING to state.version
+                        is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to state.version
+                        else -> {
+                            updatePluginExplicitlySelectedFlag(false)
+                            CARD_READER_ONBOARDING_NOT_COMPLETED to null
+                        }
                     }
-                    is CashOnDeliveryDisabled -> CARD_READER_ONBOARDING_PENDING to state.version
-                    is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to state.version
-                    else -> {
-                        updatePluginExplicitlySelectedFlag(false)
-                        CARD_READER_ONBOARDING_NOT_COMPLETED to null
-                    }
+                    updateSharedPreferences(
+                        status,
+                        state.preferredPlugin,
+                        version
+                    )
                 }
-                updateSharedPreferences(
-                    status,
-                    state.preferredPlugin,
-                    version
-                )
-            }
+        }.also {
+            cardReaderTracker.trackOnboardingState(it)
+        }
     }
 
     suspend fun fetchPreferredPlugin(): PreferredPluginResult {

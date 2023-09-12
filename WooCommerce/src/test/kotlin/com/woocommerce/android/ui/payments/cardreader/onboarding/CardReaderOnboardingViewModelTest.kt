@@ -184,7 +184,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(StoreCountryNotSupported(""))
+            verify(tracker).trackOnboardingState(StoreCountryNotSupported(""))
         }
 
     @Test
@@ -203,7 +203,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 PluginIsNotSupportedInTheCountry(
                     STRIPE_EXTENSION_GATEWAY,
                     ""
@@ -227,7 +227,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 PluginIsNotSupportedInTheCountry(
                     WOOCOMMERCE_PAYMENTS,
                     ""
@@ -248,7 +248,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 WcpayNotInstalled
             )
         }
@@ -266,7 +266,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS)
             )
         }
@@ -284,7 +284,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
         }
@@ -302,7 +302,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 WcpayNotActivated
             )
         }
@@ -320,7 +320,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 SetupNotCompleted(WOOCOMMERCE_PAYMENTS)
             )
         }
@@ -338,7 +338,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 SetupNotCompleted(STRIPE_EXTENSION_GATEWAY)
             )
         }
@@ -358,7 +358,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 PluginInTestModeWithLiveStripeAccount(
                     WOOCOMMERCE_PAYMENTS
                 )
@@ -380,7 +380,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 PluginInTestModeWithLiveStripeAccount(
                     STRIPE_EXTENSION_GATEWAY
                 )
@@ -400,7 +400,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 StripeAccountUnderReview(STRIPE_EXTENSION_GATEWAY)
             )
         }
@@ -423,7 +423,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 StripeAccountPendingRequirement(
                     null,
                     STRIPE_EXTENSION_GATEWAY,
@@ -448,7 +448,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 StripeAccountOverdueRequirement(
                     STRIPE_EXTENSION_GATEWAY
                 ),
@@ -470,7 +470,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 StripeAccountRejected(
                     STRIPE_EXTENSION_GATEWAY
                 ),
@@ -490,7 +490,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(GenericError)
+            verify(tracker).trackOnboardingState(GenericError)
         }
 
     @Test
@@ -506,7 +506,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(NoConnectionError)
+            verify(tracker).trackOnboardingState(NoConnectionError)
         }
 
     @Test
@@ -522,7 +522,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 StripeAccountCountryNotSupported(WOOCOMMERCE_PAYMENTS, "US")
             )
         }
@@ -1239,7 +1239,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingNotCompletedState(
+            verify(tracker).trackOnboardingState(
                 CashOnDeliveryDisabled(
                     countryCode = countryCode,
                     preferredPlugin = WOOCOMMERCE_PAYMENTS,
@@ -2509,7 +2509,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             createVM()
 
-            verify(tracker).trackOnboardingNotCompletedState(onboardingState)
+            verify(tracker).trackOnboardingState(onboardingState)
         }
     // Tracking End
 
