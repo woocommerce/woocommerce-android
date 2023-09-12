@@ -318,7 +318,7 @@ class MyStoreFragment :
 
             is StoreOnboardingViewModel.NavigateToSetupPayments ->
                 findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
+                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsTermsFragment(
                         taskId = taskId
                     )
                 )

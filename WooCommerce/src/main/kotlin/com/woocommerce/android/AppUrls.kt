@@ -111,4 +111,6 @@ object AppUrls {
     const val STORE_ONBOARDING_WCPAY_PRE_SETUP_LEARN_MORE =
         "https://woocommerce.com/document/woopayments/our-policies/know-your-customer/"
     const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woocommerce.com/document/woopayments/startup-guide/"
+    const val STORE_ONBOARDING_PAYMENTS_SETUP_GUIDE =
+        "https://woocommerce.com/documentation/woocommerce/getting-started/sell-products/core-payment-options"
 }

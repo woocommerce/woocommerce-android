@@ -3616,5 +3616,7 @@
     <string name="tax_rate_selector_empty_list_message">Add tax rates in admin. Only tax rates with location information will be shown here.</string>
     <string name="tax_rate_selector_empty_list_button">Edit Tax Rates in Admin</string>
     <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
+    <string name="store_onboarding_payments_terms_title_two">Payment Methods</string>
+    <string name="store_onboarding_payments_setup_description">Discover other payment providers and \nchoose a payment provider.</string>
 
 </resources>

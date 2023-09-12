@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
@@ -51,7 +52,7 @@ class WooPaymentsPreSetupFragment : BaseFragment() {
         AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_BEGIN_SETUP_TAPPED)
         findNavController().navigateSafely(
             directions = WooPaymentsPreSetupFragmentDirections
-                .actionWooPaymentsPreSetupFragmentToWooPaymentsSetupFragment()
+                .actionWooPaymentsPreSetupFragmentToWooPaymentsSetupFragment(OnboardingTaskType.WC_PAYMENTS.id)
         )
     }
 }
