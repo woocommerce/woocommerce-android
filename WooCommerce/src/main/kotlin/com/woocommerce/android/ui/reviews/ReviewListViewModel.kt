@@ -180,7 +180,7 @@ class ReviewListViewModel @Inject constructor(
 
     private suspend fun applyUnreadFilter(productReviews: List<ProductReview>) {
         val unreadReviews = productReviews.filter { it.read == false }
-        if (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL && reviewRepository.canLoadMore) {
+        if (shouldLoadMore(unreadReviews)) {
             viewState = viewState.copy(
                 isLoadingMore = unreadReviews.isNotEmpty(),
                 isSkeletonShown = unreadReviews.isEmpty()
@@ -190,6 +190,11 @@ class ReviewListViewModel @Inject constructor(
         } else
             _reviewList.value = unreadReviews
     }
+
+    private fun shouldLoadMore(unreadReviews: List<ProductReview>) =
+        reviewRepository.canLoadMore
+            && (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
+            || unreadReviews.size == _reviewList.value?.size)
 
     private fun showOfflineSnack() {
         // Network is not connected

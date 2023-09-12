@@ -170,7 +170,7 @@ class ProductReviewsViewModel @Inject constructor(
 
     private suspend fun applyUnreadFilter(productReviews: List<ProductReview>) {
         val unreadReviews = productReviews.filter { it.read == false }
-        if (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL && reviewsRepository.canLoadMore) {
+        if (shouldLoadMore(unreadReviews)) {
             productReviewsViewState = productReviewsViewState.copy(
                 isLoadingMore = unreadReviews.isNotEmpty(),
                 isSkeletonShown = unreadReviews.isEmpty()
@@ -183,6 +183,11 @@ class ProductReviewsViewModel @Inject constructor(
         } else
             _reviewList.value = unreadReviews
     }
+
+    private fun shouldLoadMore(unreadReviews: List<ProductReview>) =
+        reviewsRepository.canLoadMore
+            && (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
+            || unreadReviews.size == _reviewList.value?.size)
 
     @Parcelize
     data class ProductReviewsViewState(
