@@ -133,7 +133,6 @@ ext {
     composeBOMVersion = "2022.12.00"
     composeCompilerVersion = "1.4.7"
     composeAccompanistVersion = "0.23.1"
-    composeThemeAdapterVersion = "1.1.17"
 
     // Testing
     jUnitVersion = '4.13.2'

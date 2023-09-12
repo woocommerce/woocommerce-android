@@ -108,7 +108,9 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors()
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = colorResource(id = R.color.woo_white)
+    )
 ) {
     WCColoredButton(
         onClick = onClick,
