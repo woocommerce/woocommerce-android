@@ -35,17 +35,24 @@ import androidx.compose.ui.text.withStyle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun AIPriceAdvisorDialog(
     viewModel: AIPriceAdvisorViewModel,
-    onCloseButtonClick: () -> Unit = {},
+    onCloseButtonClick: () -> Unit = {}
 ) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(
             topBar = { Header() },
-            bottomBar = { Footer(onCloseButtonClick) },
+            bottomBar = {
+                Footer(
+                    state,
+                    onCloseButtonClick,
+                    viewModel::onRetryButtonClick,
+                )
+            },
             backgroundColor = MaterialTheme.colors.surface
         ) { paddingValues ->
             AdvisorContent(
@@ -106,7 +113,19 @@ fun AdvisorContent(
                 }
 
                 is AIPriceAdvisorViewModel.GenerationState.Failed -> {
-                    Text(text = "Error")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(id = R.dimen.major_100)),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.ai_price_advisor_sale_price_dialog_failed_message),
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
             }
         }
@@ -134,7 +153,9 @@ fun Header() {
 
 @Composable
 fun Footer(
+    state: AIPriceAdvisorViewModel.ViewState,
     onCloseButtonClick: () -> Unit = {},
+    onRetryButtonClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     Column {
@@ -143,6 +164,27 @@ fun Footer(
             thickness = dimensionResource(id = R.dimen.minor_10)
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+
+        if (state.generationState is AIPriceAdvisorViewModel.GenerationState.Failed) {
+            WCOutlinedButton(
+                onClick = onRetryButtonClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(text = stringResource(id = R.string.retry))
+            }
+        } else if (state.generationState is AIPriceAdvisorViewModel.GenerationState.Generated) {
+            WCOutlinedButton(
+                onClick = onRetryButtonClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(text = stringResource(id = R.string.ai_price_advisor_sale_price_dialog_another_one_button))
+            }
+        }
+
         WCColoredButton(
             onClick = onCloseButtonClick,
             modifier = Modifier

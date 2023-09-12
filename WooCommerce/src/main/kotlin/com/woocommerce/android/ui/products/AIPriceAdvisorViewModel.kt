@@ -63,7 +63,7 @@ class AIPriceAdvisorViewModel @Inject constructor(
         _viewState.update {
             it.copy(
                 generatedAdvice = completions,
-                generationState = GenerationState.Generated()
+                generationState = GenerationState.Generated
             )
         }
     }
@@ -78,6 +78,17 @@ class AIPriceAdvisorViewModel @Inject constructor(
         }
     }
 
+    fun onRetryButtonClick() {
+        _viewState.update {
+            it.copy(
+                generationState = GenerationState.Regenerating
+            )
+        }
+        launch {
+            startPriceAdviceGeneration()
+        }
+    }
+
     enum class AdviceType(val value: Int) {
         REGULAR_PRICE(0),
         SALE_PRICE(1)
@@ -89,7 +100,7 @@ class AIPriceAdvisorViewModel @Inject constructor(
 
     sealed class GenerationState {
         object Generating : GenerationState()
-        data class Generated(val showError: Boolean = false) : GenerationState()
+        object Generated : GenerationState()
         object Regenerating : GenerationState()
         object Failed : GenerationState()
     }

@@ -3578,6 +3578,8 @@
     <string name="ai_price_advisor_sale_price_button">✨Recommend me a sale price</string>
     <string name="ai_price_advisor_sale_price_dialog_title">✨Sale recommendation</string>
     <string name="ai_price_advisor_sale_price_dialog_loading_message">Generating sale price advice…</string>
+    <string name="ai_price_advisor_sale_price_dialog_failed_message">Unable to get an advice. Please use the button below to retry.</string>
+    <string name="ai_price_advisor_sale_price_dialog_another_one_button">✨Get another advice</string>
 
     <!--
     Blaze banner
