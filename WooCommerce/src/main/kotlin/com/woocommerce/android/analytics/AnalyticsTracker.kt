@@ -604,6 +604,9 @@ class AnalyticsTracker private constructor(
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
 
+        const val PRODUCT_TYPES = "product_types"
+        const val HAS_ADDONS = "has_addons"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
