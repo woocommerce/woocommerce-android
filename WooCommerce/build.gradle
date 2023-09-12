@@ -404,6 +404,9 @@ dependencies {
     implementation "com.google.guava:guava:$guavaVersion"
 
     implementation "${gradle.ext.wooCommerceSharedBinaryPath}:$wooCommerceSharedVersion"
+
+    implementation "androidx.paging:paging-common-ktx:$androidxPaging"
+    implementation "androidx.paging:paging-runtime-ktx:$androidxPaging"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
