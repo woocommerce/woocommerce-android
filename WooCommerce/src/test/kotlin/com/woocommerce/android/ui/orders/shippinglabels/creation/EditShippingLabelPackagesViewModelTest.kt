@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CATEGORY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -386,7 +385,6 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         verify(analyticsTrackerWrapper).track(
             stat = AnalyticsEvent.HAZMAT_CATEGORY_SELECTOR_OPENED
         )
-
     }
 
     @Test
