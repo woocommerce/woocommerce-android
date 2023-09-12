@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.*
@@ -185,6 +186,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         packagePosition: Int,
         onHazmatCategorySelected: OnHazmatCategorySelected
     ) {
+        analyticsWrapper.track(AnalyticsEvent.HAZMAT_CATEGORY_SELECTOR_OPENED)
         triggerEvent(OpenHazmatCategorySelector(packagePosition, currentSelection, onHazmatCategorySelected))
     }
 
@@ -192,6 +194,13 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         newSelection: ShippingLabelHazmatCategory,
         packagePosition: Int
     ) {
+        analyticsWrapper.track(
+            AnalyticsEvent.HAZMAT_CATEGORY_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_CATEGORY to newSelection.toString(),
+                AnalyticsTracker.KEY_ORDER_ID to arguments.orderId
+            )
+        )
         val packages = viewState.packagesUiModels.toMutableList()
         with(packages[packagePosition].data) {
             selectedPackage?.copy(hazmatCategory = newSelection)
@@ -202,6 +211,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     fun onURLClicked(url: String) {
         triggerEvent(OpenURL(url))
+    }
+
+    fun onContainsHazmatChanged(isActive: Boolean) {
+        if (isActive) {
+            analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
+        }
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
