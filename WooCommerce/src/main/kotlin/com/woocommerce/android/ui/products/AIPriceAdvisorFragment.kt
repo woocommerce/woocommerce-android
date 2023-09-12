@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,12 +31,16 @@ class AIPriceAdvisorFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val navController = findNavController()
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 WooThemeWithBackground {
-                    AIPriceAdvisorDialog(viewModel)
+                    AIPriceAdvisorDialog(
+                        viewModel,
+                        onCloseButtonClick = { navController.popBackStack() },
+                    )
                 }
             }
         }

@@ -38,11 +38,14 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
-fun AIPriceAdvisorDialog(viewModel: AIPriceAdvisorViewModel) {
+fun AIPriceAdvisorDialog(
+    viewModel: AIPriceAdvisorViewModel,
+    onCloseButtonClick: () -> Unit = {},
+) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(
             topBar = { Header() },
-            bottomBar = { Footer() },
+            bottomBar = { Footer(onCloseButtonClick) },
             backgroundColor = MaterialTheme.colors.surface
         ) { paddingValues ->
             AdvisorContent(
@@ -130,7 +133,9 @@ fun Header() {
 }
 
 @Composable
-fun Footer() {
+fun Footer(
+    onCloseButtonClick: () -> Unit = {},
+) {
     val context = LocalContext.current
     Column {
         Divider(
@@ -139,7 +144,7 @@ fun Footer() {
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         WCColoredButton(
-            onClick = { },
+            onClick = onCloseButtonClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
