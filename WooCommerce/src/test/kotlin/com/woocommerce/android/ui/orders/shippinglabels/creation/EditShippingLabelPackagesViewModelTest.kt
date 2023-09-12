@@ -351,4 +351,24 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         assertThat(newPackages.size).isEqualTo(1)
         assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(AIR_ELIGIBLE_ETHANOL)
     }
+
+    @Test
+    fun `when onContainsHazmatChanged is true, then trigger expected track event`() {
+
+    }
+
+    @Test
+    fun `when onHazmatCategoryClicked, then trigger expected track event`() {
+
+    }
+
+    @Test
+    fun `when onHazmatCategorySelected, then trigger expected track event`() {
+
+    }
+
+    @Test
+    fun `when onURLClicked, then trigger expected track event`() {
+
+    }
 }
