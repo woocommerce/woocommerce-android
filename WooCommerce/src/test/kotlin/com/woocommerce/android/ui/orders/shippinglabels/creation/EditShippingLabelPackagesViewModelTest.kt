@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CATEGORY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
@@ -353,22 +357,56 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onContainsHazmatChanged is true, then trigger expected track event`() {
+    fun `when onContainsHazmatChanged is true, then trigger expected track event`() = testBlocking {
+        // Given
+        setup(emptyArray())
+
+        // When
+        viewModel.onContainsHazmatChanged(true)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.CONTAINS_HAZMAT_CHECKED
+        )
+    }
+
+    @Test
+    fun `when onHazmatCategoryClicked, then trigger expected track event`() = testBlocking {
+        // Given
+        setup(emptyArray())
+
+        // When
+        viewModel.onHazmatCategoryClicked(
+            currentSelection = AIR_ELIGIBLE_ETHANOL,
+            packagePosition = 0,
+            onHazmatCategorySelected = {}
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.HAZMAT_CATEGORY_SELECTOR_OPENED
+        )
 
     }
 
     @Test
-    fun `when onHazmatCategoryClicked, then trigger expected track event`() {
+    fun `when onHazmatCategorySelected, then trigger expected track event`() = testBlocking {
+        // Given
+        setup(emptyArray())
 
-    }
+        // When
+        viewModel.onHazmatCategorySelected(
+            packagePosition = 0,
+            newSelection = AIR_ELIGIBLE_ETHANOL
+        )
 
-    @Test
-    fun `when onHazmatCategorySelected, then trigger expected track event`() {
-
-    }
-
-    @Test
-    fun `when onURLClicked, then trigger expected track event`() {
-
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.HAZMAT_CATEGORY_SELECTED,
+            properties = mapOf(
+                KEY_CATEGORY to AIR_ELIGIBLE_ETHANOL.toString(),
+                KEY_ORDER_ID to ORDER_ID
+            )
+        )
     }
 }
