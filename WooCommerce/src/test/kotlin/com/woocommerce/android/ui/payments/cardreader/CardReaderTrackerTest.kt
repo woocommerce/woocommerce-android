@@ -703,7 +703,8 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 CardReaderOnboardingState.OnboardingCompleted(
                     STRIPE_EXTENSION_GATEWAY,
                     PLUGIN_VERSION,
-                    COUNTRY_CODE)
+                    COUNTRY_CODE
+                )
             )
 
             verify(trackerWrapper).track(
