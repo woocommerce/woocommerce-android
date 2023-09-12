@@ -71,7 +71,8 @@ object AIPrompts {
         "The product's name is \"%3\$s\". \n" +
         "%4\$s\n" +
         "Consider the location of the store which is in the country with the code \"%5\$s\" and the state " +
-        "with the code \"%6\$s\". " +
+        "with the code \"%6\$s\". When looking into the state code, ensure that the state actually exists in the " +
+        "country. If not, please only use the country location as consideration." +
         "Some rules to follow:\n" +
         "1. Never refer to yourself. Don't say things like `I recommend` or `I advise`. Instead say it " +
         " passively like `a possible recommendation is...` or in variations of that." +
