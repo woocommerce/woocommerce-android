@@ -78,7 +78,7 @@ fun WooPaymentsPreSetupScreen(
 }
 
 @Composable
-fun WooPaymentsPreSetupContent(
+private fun WooPaymentsPreSetupContent(
     onWPComAccountMoreDetailsClick: () -> Unit = {},
     modifier: Modifier
 ) {
@@ -146,7 +146,7 @@ fun WooPaymentsPreSetupContent(
 }
 
 @Composable
-fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
+private fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
     val format = NumberFormat.getInstance(Locale.getDefault())
     val formattedNumber = format.format(stepNumber)
 
@@ -178,7 +178,7 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Un
 }
 
 @Composable
-fun WooPaymentsPreSetupFooter(
+private fun WooPaymentsPreSetupFooter(
     onBeginButtonClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {}
 ) {
@@ -233,7 +233,7 @@ fun WooPaymentsPreSetupFooter(
 
 @Preview
 @Composable
-fun WooPaymentsPreSetupScreenPreview() {
+private fun WooPaymentsPreSetupScreenPreview() {
     WooThemeWithBackground {
         WooPaymentsPreSetupScreen()
     }

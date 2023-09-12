@@ -70,7 +70,7 @@ fun WooPaymentsTermsScreen(
 }
 
 @Composable
-fun WooPaymentsTermsContent(
+private fun WooPaymentsTermsContent(
     isWooPaymentsTask: Boolean,
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
@@ -125,7 +125,7 @@ fun WooPaymentsTermsContent(
 }
 
 @Composable
-fun WooPaymentsTermsFooter(
+private fun WooPaymentsTermsFooter(
     onContinueButtonClick: () -> Unit = {},
     onLearnMoreButtonClick: () -> Unit = {}
 ) {
@@ -162,7 +162,7 @@ fun WooPaymentsTermsFooter(
 
 @Preview
 @Composable
-fun WooPaymentsTermsScreenPreview() {
+private fun WooPaymentsTermsScreenPreview() {
     WooThemeWithBackground {
         WooPaymentsTermsScreen(isWooPaymentsTask = true)
     }
@@ -170,7 +170,7 @@ fun WooPaymentsTermsScreenPreview() {
 
 @Preview
 @Composable
-fun PaymentsTermsScreenPreview() {
+private fun PaymentsTermsScreenPreview() {
     WooThemeWithBackground {
         WooPaymentsTermsScreen(isWooPaymentsTask = false)
     }
