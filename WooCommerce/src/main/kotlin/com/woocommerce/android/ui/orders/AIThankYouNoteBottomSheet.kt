@@ -68,7 +68,6 @@ fun ThankYouNoteGenerationForm(
     onDescriptionFeedbackReceived: (Boolean) -> Unit,
     onShareButtonClicked: () -> Unit
 ) {
-    Text(generatedThankYouNote)
     AnimatedContent(generationState) { state ->
         Column(
             modifier = Modifier
