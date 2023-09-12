@@ -110,6 +110,7 @@ import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
@@ -891,8 +892,10 @@ class MainActivity :
     }
 
     private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
-        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-        navController.navigateSafely(action)
+        if (!PackageUtils.isTesting()) {
+            val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+            navController.navigateSafely(action)
+        }
     }
 
     private fun navigateToWebView(event: ViewUrlInWebView) {
