@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
@@ -54,7 +55,6 @@ import org.mockito.kotlin.check
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -680,7 +680,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onboarding state OnboardingCompleted WCPay, then event NOT tracked`() =
+    fun `given OnboardingCompleted with wcpay, when onboarding trackOnboardingState, then event tracked`() =
         testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.OnboardingCompleted(
@@ -690,17 +690,26 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 )
             )
 
-            verify(trackerWrapper, never()).track(any(), any())
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_COMPLETED),
+                any()
+            )
         }
 
     @Test
-    fun `when onboarding state OnboardingCompleted Stripe, then event NOT tracked`() =
+    fun `given OnboardingCompleted with stripe, when onboarding trackOnboardingState, then event tracked`() =
         testBlocking {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.OnboardingCompleted(STRIPE_EXTENSION_GATEWAY, PLUGIN_VERSION, COUNTRY_CODE)
+                CardReaderOnboardingState.OnboardingCompleted(
+                    STRIPE_EXTENSION_GATEWAY,
+                    PLUGIN_VERSION,
+                    COUNTRY_CODE)
             )
 
-            verify(trackerWrapper, never()).track(any(), any())
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_COMPLETED),
+                any()
+            )
         }
 
     @Test
