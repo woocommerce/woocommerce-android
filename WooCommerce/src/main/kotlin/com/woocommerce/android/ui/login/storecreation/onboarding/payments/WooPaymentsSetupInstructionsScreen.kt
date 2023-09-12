@@ -47,7 +47,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun WooPaymentsPreSetupScreen(
+fun WooPaymentsSetupInstructionsScreen(
     onCloseButtonClick: () -> Unit = {},
     onWPComAccountMoreDetailsClick: () -> Unit = {},
     onBeginButtonClick: () -> Unit = {},
@@ -61,13 +61,13 @@ fun WooPaymentsPreSetupScreen(
             )
         },
         bottomBar = {
-            WooPaymentsPreSetupFooter(
+            WooPaymentsSetupInstructionsFooter(
                 onBeginButtonClick,
                 onLearnMoreClick
             )
         }
     ) { paddingValues ->
-        WooPaymentsPreSetupContent(
+        WooPaymentsSetupInstructionsContent(
             onWPComAccountMoreDetailsClick,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
@@ -78,7 +78,7 @@ fun WooPaymentsPreSetupScreen(
 }
 
 @Composable
-private fun WooPaymentsPreSetupContent(
+private fun WooPaymentsSetupInstructionsContent(
     onWPComAccountMoreDetailsClick: () -> Unit = {},
     modifier: Modifier
 ) {
@@ -125,7 +125,7 @@ private fun WooPaymentsPreSetupContent(
         )
 
         val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_step_1_content)
-        WooPaymentsPreSetupStep(stepNumber = 1) {
+        WooPaymentsSetupInstructionsStep(stepNumber = 1) {
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle1
@@ -137,7 +137,7 @@ private fun WooPaymentsPreSetupContent(
             }
         }
 
-        WooPaymentsPreSetupStep(
+        WooPaymentsSetupInstructionsStep(
             stepNumber = 2
         ) {
             Text(text = stringResource(id = string.store_onboarding_wcpay_pre_setup_content_step_2_content))
@@ -146,7 +146,7 @@ private fun WooPaymentsPreSetupContent(
 }
 
 @Composable
-private fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
+private fun WooPaymentsSetupInstructionsStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
     val format = NumberFormat.getInstance(Locale.getDefault())
     val formattedNumber = format.format(stepNumber)
 
@@ -178,7 +178,7 @@ private fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable 
 }
 
 @Composable
-private fun WooPaymentsPreSetupFooter(
+private fun WooPaymentsSetupInstructionsFooter(
     onBeginButtonClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {}
 ) {
@@ -233,8 +233,8 @@ private fun WooPaymentsPreSetupFooter(
 
 @Preview
 @Composable
-private fun WooPaymentsPreSetupScreenPreview() {
+private fun WooPaymentsSetupInstructionsScreenPreview() {
     WooThemeWithBackground {
-        WooPaymentsPreSetupScreen()
+        WooPaymentsSetupInstructionsScreen()
     }
 }

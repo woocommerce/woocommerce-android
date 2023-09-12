@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WooPaymentsTermsScreen(
+fun PaymentsPreSetupScreen(
     isWooPaymentsTask: Boolean,
     backButtonClick: () -> Unit = {},
     onTermsOfServiceClick: () -> Unit = {},
@@ -50,14 +50,14 @@ fun WooPaymentsTermsScreen(
             )
         },
         bottomBar = {
-            WooPaymentsTermsFooter(
+            PaymentsPreSetupFooter(
                 onContinueButtonClick,
                 onLearnMoreButtonClick
             )
         },
         modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
     ) { paddingValues ->
-        WooPaymentsTermsContent(
+        PaymentsPreSetupContent(
             isWooPaymentsTask = isWooPaymentsTask,
             onTermsOfServiceClick = onTermsOfServiceClick,
             onPrivacyPolicyClick = onPrivacyPolicyClick,
@@ -70,7 +70,7 @@ fun WooPaymentsTermsScreen(
 }
 
 @Composable
-private fun WooPaymentsTermsContent(
+private fun PaymentsPreSetupContent(
     isWooPaymentsTask: Boolean,
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
@@ -125,7 +125,7 @@ private fun WooPaymentsTermsContent(
 }
 
 @Composable
-private fun WooPaymentsTermsFooter(
+private fun PaymentsPreSetupFooter(
     onContinueButtonClick: () -> Unit = {},
     onLearnMoreButtonClick: () -> Unit = {}
 ) {
@@ -162,16 +162,16 @@ private fun WooPaymentsTermsFooter(
 
 @Preview
 @Composable
-private fun WooPaymentsTermsScreenPreview() {
+private fun WooPaymentsPreSetupPreview() {
     WooThemeWithBackground {
-        WooPaymentsTermsScreen(isWooPaymentsTask = true)
+        PaymentsPreSetupScreen(isWooPaymentsTask = true)
     }
 }
 
 @Preview
 @Composable
-private fun PaymentsTermsScreenPreview() {
+private fun PaymentsPreSetupPreview() {
     WooThemeWithBackground {
-        WooPaymentsTermsScreen(isWooPaymentsTask = false)
+        PaymentsPreSetupScreen(isWooPaymentsTask = false)
     }
 }

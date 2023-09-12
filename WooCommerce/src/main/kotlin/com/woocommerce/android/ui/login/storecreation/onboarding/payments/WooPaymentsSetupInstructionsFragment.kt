@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
-class WooPaymentsPreSetupFragment : BaseFragment() {
+class WooPaymentsSetupInstructionsFragment : BaseFragment() {
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -29,7 +29,7 @@ class WooPaymentsPreSetupFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    WooPaymentsPreSetupScreen(
+                    WooPaymentsSetupInstructionsScreen(
                         onCloseButtonClick = { findNavController().popBackStack() },
                         onWPComAccountMoreDetailsClick = { onWPComAccountMoreDetailsClick() },
                         onBeginButtonClick = { onBeginButtonClick() },
@@ -51,8 +51,8 @@ class WooPaymentsPreSetupFragment : BaseFragment() {
     private fun onBeginButtonClick() {
         AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_BEGIN_SETUP_TAPPED)
         findNavController().navigateSafely(
-            directions = WooPaymentsPreSetupFragmentDirections
-                .actionWooPaymentsPreSetupFragmentToWooPaymentsSetupFragment(OnboardingTaskType.WC_PAYMENTS.id)
+            directions = WooPaymentsSetupInstructionsFragmentDirections
+                .actionWooPaymentsSetupInstructionsFragmentToPaymentsPreSetupFragment(OnboardingTaskType.WC_PAYMENTS.id)
         )
     }
 }
