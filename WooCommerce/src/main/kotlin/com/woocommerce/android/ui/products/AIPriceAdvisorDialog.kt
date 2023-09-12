@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +42,7 @@ fun AIPriceAdvisorDialog(viewModel: AIPriceAdvisorViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(
             topBar = { Header() },
-            bottomBar = { Footer(state) },
+            bottomBar = { Footer() },
             backgroundColor = MaterialTheme.colors.surface
         ) { paddingValues ->
             AdvisorContent(
@@ -71,7 +72,10 @@ fun AdvisorContent(
                 is AIPriceAdvisorViewModel.GenerationState.Regenerating -> {
                     Column(
                         modifier = Modifier
-                            .padding(dimensionResource(id = R.dimen.major_100))
+                            .fillMaxSize()
+                            .padding(dimensionResource(id = R.dimen.major_100)),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = stringResource(R.string.ai_price_advisor_sale_price_dialog_loading_message),
@@ -82,7 +86,7 @@ fun AdvisorContent(
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(dimensionResource(id = R.dimen.major_100))
-                                .size(dimensionResource(id = R.dimen.major_150))
+                                .size(dimensionResource(id = R.dimen.major_250))
                                 .align(Alignment.CenterHorizontally)
                         )
                     }
@@ -126,7 +130,7 @@ fun Header() {
 }
 
 @Composable
-fun Footer(state: AIPriceAdvisorViewModel.ViewState) {
+fun Footer() {
     val context = LocalContext.current
     Column {
         Divider(
@@ -168,9 +172,5 @@ fun Footer(state: AIPriceAdvisorViewModel.ViewState) {
             )
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-
-        if (state.generationState is AIPriceAdvisorViewModel.GenerationState.Generating) {
-            Text("Generating")
-        }
     }
 }
