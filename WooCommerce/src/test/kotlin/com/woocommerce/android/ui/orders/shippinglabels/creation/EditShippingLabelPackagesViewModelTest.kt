@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -46,6 +47,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val defaultItem = ShippingLabelPackage.Item(
         productId = 15,
         name = "test",
@@ -71,7 +73,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             orderDetailRepository = orderDetailRepository,
             variationDetailRepository = variationDetailRepository,
             shippingLabelRepository = shippingLabelRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            analyticsWrapper = analyticsTrackerWrapper
         )
     }
 
