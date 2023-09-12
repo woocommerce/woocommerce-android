@@ -399,7 +399,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             initViewModel(param)
 
             // THEN
-            verify(cardReaderTracker).trackOnboardingState(onboardingState)
+            verify(cardReaderTracker).trackOnboardingNotCompletedState(onboardingState)
         }
 
     @Test

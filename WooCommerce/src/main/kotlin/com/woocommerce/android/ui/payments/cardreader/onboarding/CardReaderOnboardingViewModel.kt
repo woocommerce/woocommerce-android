@@ -93,7 +93,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
             is Check -> refreshState(onboardingParam.pluginType)
             is Failed -> {
-                cardReaderTracker.trackOnboardingState(onboardingParam.onboardingState)
+                cardReaderTracker.trackOnboardingNotCompletedState(onboardingParam.onboardingState)
                 showOnboardingState(onboardingParam.onboardingState)
             }
         }.exhaustive
@@ -106,7 +106,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             }
             viewState.value = CardReaderOnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState(pluginType)
-            cardReaderTracker.trackOnboardingState(state)
+            cardReaderTracker.trackOnboardingNotCompletedState(state)
             showOnboardingState(state)
         }
     }

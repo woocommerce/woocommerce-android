@@ -194,7 +194,7 @@ class CardReaderTracker @Inject constructor(
         track(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED)
     }
 
-    fun trackOnboardingState(state: CardReaderOnboardingState) {
+    fun trackOnboardingNotCompletedState(state: CardReaderOnboardingState) {
         getOnboardingNotCompletedReason(state)?.let {
             track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf(KEY_REASON to it))
         }

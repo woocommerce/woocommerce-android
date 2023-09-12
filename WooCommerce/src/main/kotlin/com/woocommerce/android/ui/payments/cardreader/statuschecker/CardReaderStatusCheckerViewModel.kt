@@ -83,7 +83,7 @@ class CardReaderStatusCheckerViewModel
         when (val state = cardReaderChecker.getOnboardingState()) {
             is CardReaderOnboardingState.OnboardingCompleted -> {
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
-                    cardReaderTracker.trackOnboardingState(state)
+                    cardReaderTracker.trackOnboardingNotCompletedState(state)
                     triggerEvent(NavigateToConnection(param, arguments.cardReaderType))
                 } else {
                     triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, arguments.cardReaderType))

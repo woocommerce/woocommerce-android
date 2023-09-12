@@ -412,7 +412,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state cod disabled, then reason=cash_on_delivery tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.CashOnDeliveryDisabled(
                     countryCode = "US",
                     preferredPlugin = WOOCOMMERCE_PAYMENTS,
@@ -429,7 +429,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state GenericError, then reason=generic_error tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.GenericError)
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.GenericError)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED), check { assertThat(it["reason"]).isEqualTo("generic_error") }
@@ -439,7 +439,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StoreCountryNotSupported, then reason=country_not_supported tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.StoreCountryNotSupported(""))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -450,7 +450,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state PluginIsNotSupportedInTheCountry woo, then wcpay_is_not_supported_in_CA tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
                     WOOCOMMERCE_PAYMENTS,
                     "CA"
@@ -466,7 +466,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state PluginIsNotSupportedInTheCountry str, then stripe_extension_is_not_supported_in_US`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.PluginIsNotSupportedInTheCountry(
                     STRIPE_EXTENSION_GATEWAY,
                     "US"
@@ -482,7 +482,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountCountryNotSupported, then reason=account_country_not_supported tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.StripeAccountCountryNotSupported(
                     mock(),
                     ""
@@ -498,7 +498,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state WcpayNotInstalled, then reason=wcpay_not_installed tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotInstalled)
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.WcpayNotInstalled)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -509,7 +509,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state WcpayNotActivated, then reason=wcpay_not_activated tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.WcpayNotActivated)
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.WcpayNotActivated)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -520,7 +520,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state PluginUnsupportedVersion WCPay, then reason=wcpay_unsupported_version tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS)
             )
 
@@ -533,7 +533,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding PluginUnsupportedVersion Stripe, then reason=stripe_extension_unsupported_version tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY)
             )
 
@@ -546,7 +546,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state SetupNotCompleted WCPay, then reason=wcpay_not_setup tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.SetupNotCompleted(WOOCOMMERCE_PAYMENTS)
             )
 
@@ -559,7 +559,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state SetupNotCompleted Stripe, then reason=stripe_extension_not_setup tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.SetupNotCompleted(STRIPE_EXTENSION_GATEWAY)
             )
 
@@ -572,7 +572,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding StripeAccountPendingRequirement WCPay, then reason=account_pending_requirements tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.StripeAccountPendingRequirement(
                     null,
                     WOOCOMMERCE_PAYMENTS,
@@ -590,7 +590,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding StripeAccountPendingRequirement Stripe, then reason=account_pending_requirements tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.StripeAccountPendingRequirement(
                     null,
                     WOOCOMMERCE_PAYMENTS,
@@ -608,7 +608,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountOverdueRequirement, then reason=account_overdue_requirements tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.StripeAccountOverdueRequirement(mock()))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -619,7 +619,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountUnderReview, then reason=account_under_review tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.StripeAccountUnderReview(mock()))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -630,7 +630,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state StripeAccountRejected, then reason=account_rejected tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(CardReaderOnboardingState.StripeAccountRejected(mock()))
+            cardReaderTracker.trackOnboardingNotCompletedState(CardReaderOnboardingState.StripeAccountRejected(mock()))
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
@@ -641,7 +641,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when state ChoosePaymentGatewayProvider, then reason=multiple_payment_providers_conflict tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 ChoosePaymentGatewayProvider
             )
 
@@ -655,7 +655,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when wcpay in test mode with live account, then wcpay_in_test_mode_with_live_account`() =
         testBlocking {
             cardReaderTracker
-                .trackOnboardingState(
+                .trackOnboardingNotCompletedState(
                     CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(WOOCOMMERCE_PAYMENTS)
                 )
 
@@ -669,7 +669,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `when stripe in test mode with live account, then stripe_extension_in_test_mode_with_live_account`() =
         testBlocking {
             cardReaderTracker
-                .trackOnboardingState(
+                .trackOnboardingNotCompletedState(
                     CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount(STRIPE_EXTENSION_GATEWAY)
                 )
 
@@ -682,7 +682,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state OnboardingCompleted WCPay, then event NOT tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.OnboardingCompleted(
                     WOOCOMMERCE_PAYMENTS,
                     PLUGIN_VERSION,
@@ -696,7 +696,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `when onboarding state OnboardingCompleted Stripe, then event NOT tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingState(
+            cardReaderTracker.trackOnboardingNotCompletedState(
                 CardReaderOnboardingState.OnboardingCompleted(STRIPE_EXTENSION_GATEWAY, PLUGIN_VERSION, COUNTRY_CODE)
             )
 
