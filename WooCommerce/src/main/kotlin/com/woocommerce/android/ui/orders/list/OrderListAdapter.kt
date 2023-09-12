@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -30,7 +30,7 @@ import java.util.Date
 class OrderListAdapter(
     val listener: OrderListListener,
     val currencyFormatter: CurrencyFormatter
-) : PagedListAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
+) : PagingDataAdapter<OrderListItemUIType, ViewHolder>(OrderListDiffItemCallback) {
     companion object {
         private const val VIEW_TYPE_ORDER_ITEM = 0
         private const val VIEW_TYPE_SECTION_HEADER = 2

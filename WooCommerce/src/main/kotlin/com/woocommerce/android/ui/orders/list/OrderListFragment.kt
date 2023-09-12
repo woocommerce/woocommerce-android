@@ -19,7 +19,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.paging.PagedList
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -249,7 +249,7 @@ class OrderListFragment :
             enableSearchListeners()
             searchQuery = savedSearchQuery
             searchView?.setQuery(searchQuery, false)
-            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
+            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData(viewLifecycleOwner)
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -531,8 +531,8 @@ class OrderListFragment :
         emptyView.hide()
     }
 
-    private fun updatePagedListData(pagedListData: PagedList<OrderListItemUIType>?) {
-        binding.orderListView.submitPagedList(pagedListData)
+    private fun updatePagedListData(pagedListData: PagingData<OrderListItemUIType>?) {
+        pagedListData?.let { binding.orderListView.submitPagedList(viewLifecycleOwner, it) }
     }
 
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
@@ -577,7 +577,7 @@ class OrderListFragment :
         if (newText.length > 2) {
             submitSearchDelayed(newText)
         } else {
-            binding.orderListView.clearAdapterData()
+            binding.orderListView.clearAdapterData(viewLifecycleOwner)
             hideEmptyView()
         }
         return true
@@ -588,7 +588,7 @@ class OrderListFragment :
         checkOrientation()
         onSearchViewActiveChanged(isActive = true)
         binding.orderFiltersCard.isVisible = false
-        binding.orderListView.clearAdapterData()
+        binding.orderListView.clearAdapterData(viewLifecycleOwner)
         return true
     }
 

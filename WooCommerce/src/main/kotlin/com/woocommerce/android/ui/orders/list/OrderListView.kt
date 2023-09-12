@@ -5,7 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
-import androidx.paging.PagedList
+import androidx.lifecycle.LifecycleOwner
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.databinding.OrderListViewBinding
 import com.woocommerce.android.util.CurrencyFormatter
@@ -60,9 +61,9 @@ class OrderListView @JvmOverloads constructor(
     /**
      * Submit new paged list data to the adapter
      */
-    fun submitPagedList(list: PagedList<OrderListItemUIType>?) {
+    fun submitPagedList(viewLifecycleOwner: LifecycleOwner, list: PagingData<OrderListItemUIType>) {
         val recyclerViewState = onFragmentSavedInstanceState()
-        ordersAdapter.submitList(list)
+        ordersAdapter.submitData(viewLifecycleOwner.lifecycle, list)
 
         post {
             (binding.ordersList.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
@@ -76,8 +77,8 @@ class OrderListView @JvmOverloads constructor(
     /**
      * clear order list adapter data
      */
-    fun clearAdapterData() {
-        ordersAdapter.submitList(null)
+    fun clearAdapterData(viewLifecycleOwner: LifecycleOwner) {
+        ordersAdapter.submitData(viewLifecycleOwner.lifecycle, PagingData.empty())
     }
 
     /**
