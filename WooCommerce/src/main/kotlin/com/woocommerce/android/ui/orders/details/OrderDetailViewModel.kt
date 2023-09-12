@@ -6,7 +6,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -67,7 +69,6 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -92,7 +93,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderDetailViewModel @Inject constructor(
-    private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
     private val networkStatus: NetworkStatus,
@@ -156,10 +156,17 @@ class OrderDetailViewModel @Inject constructor(
 
     private var isFetchingData = false
 
+    private val productListObserver = Observer<List<OrderProduct>> { products ->
+        launch {
+            trackProductsLoaded(products)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
         orderDetailsTransactionLauncher.clear()
+        _productList.removeObserver(productListObserver)
     }
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
@@ -169,6 +176,7 @@ class OrderDetailViewModel @Inject constructor(
         launch {
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
+        _productList.distinctUntilChanged().observeForever(productListObserver)
     }
 
     fun start() {
@@ -604,7 +612,7 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(list = orderDetailRepository.getOrderRefunds(navArgs.orderId))
     }
 
-    private fun loadOrderProducts(
+    private suspend fun loadOrderProducts(
         refunds: ListInfo<Refund>
     ): ListInfo<OrderProduct> {
         val products = refunds.list.getNonRefundedProducts(order.items)
@@ -612,10 +620,24 @@ class OrderDetailViewModel @Inject constructor(
         val orderProducts = orderProductMapper.toOrderProducts(_productList.value ?: emptyList(), products)
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
     }
-    private fun checkAddonAvailability(products: List<Order.Item>) {
-        launch(coroutineDispatchers.computation) {
-            products.forEach { it.containsAddons = addonsRepository.containsAddonsFrom(it) }
-        }
+
+    private suspend fun trackProductsLoaded(orderProducts: List<OrderProduct>) {
+        if (orderProducts.isEmpty()) return
+        val ids = orderProducts.map { orderProduct -> orderProduct.product.productId }
+        val productTypes = orderDetailRepository.getUniqueProductTypes(ids)
+        val hasAddons = orderProducts.any { orderProduct -> orderProduct.product.containsAddons }
+        trackerWrapper.track(
+            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_ID to order.id,
+                AnalyticsTracker.PRODUCT_TYPES to productTypes,
+                AnalyticsTracker.HAS_ADDONS to hasAddons
+            )
+        )
+    }
+
+    private suspend fun checkAddonAvailability(products: List<Order.Item>) {
+        products.forEach { it.containsAddons = addonsRepository.containsAddonsFrom(it) }
     }
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
@@ -706,7 +728,7 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(isVisible = false)
     }
 
-    private fun displayProductAndShippingDetails() {
+    private suspend fun displayProductAndShippingDetails() {
         val shippingLabels = loadOrderShippingLabels()
         val shipmentTracking = loadShipmentTracking(shippingLabels)
         val orderRefunds = loadOrderRefunds()
