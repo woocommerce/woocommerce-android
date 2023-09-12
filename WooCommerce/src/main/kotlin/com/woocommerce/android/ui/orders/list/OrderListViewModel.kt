@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
@@ -14,9 +15,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagedList
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
@@ -29,7 +32,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -62,6 +64,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -83,7 +87,7 @@ import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
-typealias PagedOrdersList = PagedList<OrderListItemUIType>
+typealias PagedOrdersList = PagingData<OrderListItemUIType>
 
 @Suppress("LeakingThis")
 @HiltViewModel
@@ -136,8 +140,10 @@ class OrderListViewModel @Inject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
-    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
+    val pagedListData: LiveData<PagedOrdersList> = orderListRepository.getOrders()
+        .distinctUntilChanged()
+        .cachedIn(viewModelScope)
+        .asLiveData()
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -190,7 +196,6 @@ class OrderListViewModel @Inject constructor(
             // value in many different places in the order list view.
             _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
 
-            _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
             } else {
@@ -269,6 +274,7 @@ class OrderListViewModel @Inject constructor(
                 SUCCESS -> {
                     viewState = viewState.copy(arePaymentGatewaysFetched = true)
                 }
+
                 else -> {
                     /* do nothing */
                 }
@@ -314,6 +320,7 @@ class OrderListViewModel @Inject constructor(
                     }
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_LIST)
                 triggerEvent(
@@ -361,58 +368,8 @@ class OrderListViewModel @Inject constructor(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
         isFirstInit: Boolean = false
     ) {
-        // Clear any of the data sources assigned to the current wrapper, then
-        // create a new one.
-        clearLiveDataSources(this.activePagedListWrapper)
-
-        listenToEmptyViewStateLiveData(pagedListWrapper)
-
-        _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
-            pagedList?.let {
-                // We are re-checking the ipp feedback survey banner logic on every order fetch
-                // from the API. This is primarily being done because when the app migrates
-                // WCDatabase from v22 to v23, we clear all the orders in the database and fetch
-                // it freshly. After the update, on the very first launch, the ipp feedback survey banner logic
-                // returns that there are no IPP orders since the database is not filled with any orders
-                // (The API call happens after the database check). After the API returns, we re-check the logic
-                // so that the database is populated by now and we can show the correct banner.
-                // This also helps in updating the feedback survey banner according to the order changes
-                // on pull-to-refresh.
-                displayIPPFeedbackOrOrdersBannerOrJitm()
-                _pagedListData.value = it
-            }
-        }
-        _isFetchingFirstPage.addSource(pagedListWrapper.isFetchingFirstPage) {
-            _isFetchingFirstPage.value = it
-        }
-        _isEmpty.addSource(pagedListWrapper.isEmpty) {
-            _isEmpty.value = it
-        }
-        _isLoadingMore.addSource(pagedListWrapper.isLoadingMore) {
-            _isLoadingMore.value = it
-        }
-
-        pagedListWrapper.listError
-            .filter { !dismissListErrors }
-            .filterNotNull()
-            .observe(this) { error ->
-                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
-                    viewState = viewState.copy(
-                        isErrorFetchingDataBannerVisible = true,
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
-                    )
-                } else {
-                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-                }
-            }
+        Log.d("test", isFirstInit.not().toString())
         this.activePagedListWrapper = pagedListWrapper
-
-        if (isFirstInit) {
-            fetchOrdersAndOrderDependencies()
-        } else {
-            pagedListWrapper.invalidateData()
-        }
     }
 
     private fun displayIPPFeedbackOrOrdersBannerOrJitm() {
@@ -425,6 +382,7 @@ class OrderListViewModel @Inject constructor(
                     )
                     trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
                 }
+
                 !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
                     viewState = viewState.copy(
                         ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
@@ -438,8 +396,8 @@ class OrderListViewModel @Inject constructor(
 
     private fun clearLiveDataSources(pagedListWrapper: PagedListWrapper<OrderListItemUIType>?) {
         pagedListWrapper?.apply {
-            _pagedListData.removeSource(data)
-            _emptyViewType.removeSource(pagedListData)
+            // _pagedListData.removeSource(data)
+            // _emptyViewType.removeSource(pagedListData)
             _emptyViewType.removeSource(isEmpty)
             _emptyViewType.removeSource(listError)
             _emptyViewType.removeSource(isFetchingFirstPage)
@@ -479,6 +437,7 @@ class OrderListViewModel @Inject constructor(
                             EmptyViewType.ORDER_LIST_LOADING
                         }
                     }
+
                     isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
@@ -583,8 +542,9 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun updateOrderDisplayedStatus(position: Int, status: String) {
-        val pagedList = _pagedListData.value ?: return
-        (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
+        //val pagedList = _pagedListData.value ?: return
+        // (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
+        Log.d("Status", status)
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
     }
 
