@@ -914,4 +914,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     BLAZE_FLOW_CANCELED,
     BLAZE_FLOW_COMPLETED,
     BLAZE_FLOW_ERROR,
+
+    // Hazmat Shipping Declaration
+    CONTAINS_HAZMAT_CHECKED,
+    HAZMAT_CATEGORY_SELECTOR_OPENED,
+    HAZMAT_CATEGORY_SELECTED,
 }
