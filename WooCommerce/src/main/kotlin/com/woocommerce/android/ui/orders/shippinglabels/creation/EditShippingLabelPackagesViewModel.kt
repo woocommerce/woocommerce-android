@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -35,7 +35,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
-    private val shippingLabelRepository: ShippingLabelRepository
+    private val shippingLabelRepository: ShippingLabelRepository,
+    private val analyticsWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -175,7 +176,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
+        analyticsWrapper.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
