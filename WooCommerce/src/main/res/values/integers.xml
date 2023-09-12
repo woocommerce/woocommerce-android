@@ -21,4 +21,9 @@
      refresh the widget data (WorkManager periodic task and updatePeriodMillis)
      https://issuetracker.google.com/issues/113676489 -->
     <integer name="stats_widget_update_period">1800000</integer>
+
+    <!-- Constant value used to display a number of items in a list view that will be enough
+     to enable scrolling in the screen.-->
+    <integer name="min_number_of_items_to_make_list_scrollable">10</integer>
+
 </resources>

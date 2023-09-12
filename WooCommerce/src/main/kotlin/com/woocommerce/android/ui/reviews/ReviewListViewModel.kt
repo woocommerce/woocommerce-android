@@ -13,7 +13,6 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ReviewListRepository.Companion.MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
@@ -23,6 +22,7 @@ import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -43,7 +43,8 @@ class ReviewListViewModel @Inject constructor(
     private val reviewRepository: ReviewListRepository,
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
@@ -193,7 +194,7 @@ class ReviewListViewModel @Inject constructor(
 
     private fun shouldLoadMore(unreadReviews: List<ProductReview>) =
         reviewRepository.canLoadMore
-            && (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
+            && (unreadReviews.size < resourceProvider.getInteger(R.integer.min_number_of_items_to_make_list_scrollable)
             || unreadReviews.size == _reviewList.value?.size)
 
     private fun showOfflineSnack() {

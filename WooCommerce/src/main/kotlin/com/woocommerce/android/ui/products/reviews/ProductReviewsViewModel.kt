@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAI
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.reviews.ReviewListRepository.Companion.MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
 import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
 import com.woocommerce.android.ui.reviews.ReviewModerationHandler
 import com.woocommerce.android.ui.reviews.observeModerationEvents
@@ -20,6 +19,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +33,8 @@ class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val reviewsRepository: ProductReviewsRepository,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
@@ -186,7 +187,7 @@ class ProductReviewsViewModel @Inject constructor(
 
     private fun shouldLoadMore(unreadReviews: List<ProductReview>) =
         reviewsRepository.canLoadMore
-            && (unreadReviews.size < MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL
+            && (unreadReviews.size < resourceProvider.getInteger(R.integer.min_number_of_items_to_make_list_scrollable)
             || unreadReviews.size == _reviewList.value?.size)
 
     @Parcelize

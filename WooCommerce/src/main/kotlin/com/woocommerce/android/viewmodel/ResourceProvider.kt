@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.ArrayRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
+import androidx.annotation.IntegerRes
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -36,6 +37,10 @@ class ResourceProvider @Inject constructor(private val context: Context) {
     fun openRawResource(@RawRes rawId: Int): InputStream {
         val resources = context.resources
         return resources.openRawResource(rawId)
+    }
+
+    fun getInteger(@IntegerRes resourceId: Int): Int {
+        return context.resources.getInteger(resourceId)
     }
 
     fun getQuantityString(

@@ -43,7 +43,6 @@ class ReviewListRepository @Inject constructor(
 ) {
     companion object {
         private const val PAGE_SIZE = WCProductStore.NUM_REVIEWS_PER_FETCH
-        const val MIN_NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLL = 10
     }
 
     private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)

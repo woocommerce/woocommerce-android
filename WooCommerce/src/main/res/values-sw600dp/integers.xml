@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Constant value used to display a number of items in a list view that will be enough
+     to enable scrolling in the screen.-->
+    <integer name="min_number_of_items_to_make_list_scrollable">15</integer>
+
+</resources>
