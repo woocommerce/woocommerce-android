@@ -65,7 +65,7 @@ fun CountryListPickerForm(
     onCountrySelected: (StoreCreationCountry) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     modifier: Modifier = Modifier
-    ) {
+) {
     Column(modifier = modifier) {
         WCSearchField(
             value = searchQuery,
