@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient.TaxRateModel
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class TaxRateRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,

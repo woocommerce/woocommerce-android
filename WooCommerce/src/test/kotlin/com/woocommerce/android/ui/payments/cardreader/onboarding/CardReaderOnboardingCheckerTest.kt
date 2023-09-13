@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.config.SupportedExtensionType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -56,6 +57,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache = mock()
+    private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
 
     private val site = SiteModel()
 
@@ -73,6 +75,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             wcInPersonPaymentsStore,
             coroutinesTestRule.testDispatchers,
             networkStatus,
+            cardReaderTrackingInfoKeeper,
             cardReaderCountryConfigProvider,
             cashOnDeliverySettingsRepository,
             cardReaderOnboardingCheckResultCache,
@@ -1615,6 +1618,16 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
         assertThat(result).isEqualTo(state)
     }
+
+    @Test
+    fun `given value not in cache, when get onboarding state, then saved country set to tracking info keeper`() =
+        testBlocking {
+            whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+
+            checker.getOnboardingState()
+
+            verify(cardReaderTrackingInfoKeeper).setCountry(eq("US"))
+        }
 
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
