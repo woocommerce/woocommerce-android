@@ -1897,7 +1897,7 @@ Language: sv_SE
     <string name="product_downloadable_files_name_invalid">Ange ett giltigt namn</string>
     <string name="product_downloadable_files_add_manually">Ange fil-URL</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Från WordPress-mediabiblioteket</string>
-    <string name="product_downloadable_files_add_from_device">Från enhet</string>
+    <string name="product_downloadable_files_add_media_from_device">Från enhet</string>
     <string name="product_downloadable_files_url_invalid">Kontrollera att den angivna URL:en är giltig</string>
     <string name="product_downloadable_files_upload_dialog_message">Vänta …</string>
     <string name="product_downloadable_files_upload_dialog_title">Laddar upp filer</string>

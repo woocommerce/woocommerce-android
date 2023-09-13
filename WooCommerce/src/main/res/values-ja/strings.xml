@@ -1897,7 +1897,7 @@ Language: ja_JP
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress メディアライブラリから</string>
-    <string name="product_downloadable_files_add_from_device">端末から</string>
+    <string name="product_downloadable_files_add_media_from_device">端末から</string>
     <string name="product_downloadable_files_url_invalid">入力した URL が正しいかどうかを確認してください</string>
     <string name="product_downloadable_files_upload_dialog_message">しばらくお待ちください…</string>
     <string name="product_downloadable_files_upload_dialog_title">ファイルをアップロードしています</string>
