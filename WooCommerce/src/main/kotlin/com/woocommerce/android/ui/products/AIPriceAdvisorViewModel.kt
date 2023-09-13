@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +18,7 @@ import javax.inject.Inject
 class AIPriceAdvisorViewModel @Inject constructor(
     private val site: SelectedSite,
     private val aiRepository: AIRepository,
+    private val tracker: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -25,6 +28,8 @@ class AIPriceAdvisorViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
+        tracker.track(AnalyticsEvent.AI_SALES_ADVISOR_DIALOG_SHOWN)
+
         launch {
             startPriceAdviceGeneration()
         }
@@ -60,6 +65,7 @@ class AIPriceAdvisorViewModel @Inject constructor(
     }
 
     private fun handleCompletionsSuccess(completions: String) {
+        tracker.track(AnalyticsEvent.AI_SALES_ADVISOR_GENERATION_SUCCESS)
         _viewState.update {
             it.copy(
                 generatedAdvice = completions,
@@ -68,8 +74,11 @@ class AIPriceAdvisorViewModel @Inject constructor(
         }
     }
 
-    private fun handleCompletionsFailure(exception: AIRepository.JetpackAICompletionsException) {
-        WooLog.e(WooLog.T.AI, "Failed to generate price advice: ${exception.message}")
+    private fun handleCompletionsFailure(error: AIRepository.JetpackAICompletionsException) {
+        tracker.track(
+            stat = AnalyticsEvent.AI_SALES_ADVISOR_GENERATION_FAILED,
+            properties = mapOf(KEY_ERROR to error.message)
+        )
 
         _viewState.update {
             it.copy(
@@ -79,6 +88,8 @@ class AIPriceAdvisorViewModel @Inject constructor(
     }
 
     fun onRetryButtonClick() {
+        tracker.track(AnalyticsEvent.AI_SALES_ADVISOR_REGENERATE_TAPPED)
+
         _viewState.update {
             it.copy(
                 generationState = GenerationState.Regenerating
