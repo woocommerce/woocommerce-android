@@ -160,7 +160,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private fun createViewModel() {
         viewModel = spy(
             OrderDetailViewModel(
-                coroutinesTestRule.testDispatchers,
                 savedState,
                 appPrefsWrapper,
                 networkStatus,
@@ -1143,7 +1142,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1166,7 +1164,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1189,8 +1186,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
-
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
                 isMarkOrderCompleteButtonVisible = new.isMarkOrderCompleteButtonVisible
@@ -1211,7 +1206,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val orderStub = order.copy(datePaid = Date(), status = orderStatusStub!!)
 
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(orderStatus.copy(statusKey = CoreOrderStatus.COMPLETED.value)).whenever(
                 orderDetailRepository
             ).getOrderStatus(any())
@@ -1236,7 +1230,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1259,7 +1252,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1282,7 +1274,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1305,7 +1296,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(orderStatus).whenever(orderDetailRepository).getOrderStatus(any())
             doReturn(orderStub).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(orderStub).whenever(orderDetailRepository).fetchOrderById(any())
 
             var isMarkOrderCompleteButtonVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
@@ -1341,7 +1331,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             viewModel.start()
 
             // When
@@ -1870,5 +1859,55 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
+
+    @Test
+    fun `when the order is opened then track order loaded with right types and add-ons`() = testBlocking {
+        val items = OrderTestUtils.generateTestOrderItems(count = 2)
+        val testOrder = order.copy(items = items)
+        val types = "simple, bundle"
+        val hasAddons = true
+        doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(types).whenever(orderDetailRepository).getUniqueProductTypes(any())
+        doReturn(hasAddons).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(
+            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_ID to order.id,
+                AnalyticsTracker.PRODUCT_TYPES to types,
+                AnalyticsTracker.HAS_ADDONS to hasAddons
+            )
+        )
+    }
+
+    @Test
+    fun `when the order is opened then track order loaded with right types and add-ons 2`() = testBlocking {
+        val items = OrderTestUtils.generateTestOrderItems(count = 2)
+        val testOrder = order.copy(items = items)
+        val types = "simple, variable"
+        val hasAddons = false
+        doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(types).whenever(orderDetailRepository).getUniqueProductTypes(any())
+        doReturn(hasAddons).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(
+            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_ID to order.id,
+                AnalyticsTracker.PRODUCT_TYPES to types,
+                AnalyticsTracker.HAS_ADDONS to hasAddons
+            )
+        )
     }
 }

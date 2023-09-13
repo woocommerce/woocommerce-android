@@ -342,6 +342,9 @@ class OrderCreateEditFormFragment :
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
             }
+            new.isSetNewTaxRateButtonVisible.takeIfNotEqualTo(old?.isSetNewTaxRateButtonVisible) {
+                binding.taxRateSelectorSection.isVisible = it
+            }
         }
     }
 

@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 12:54:04+0000
+Translation-Revision-Date: 2023-09-06 15:54:24+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">عنوان الموقع</string>
+    <string name="tax_rate_selector_edit_rates_button_label">تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rate_selector_header_label">سيؤدي ذلك إلى تغيير عنوان العميل إلى موقع معدل الضريبة الذي تحدِّده.</string>
+    <string name="tax_rate_selector_info_icon_content_description">زر يفتح مربع حوار معلومات معدلات الضرائب</string>
+    <string name="tax_rate_selector_list_header">تحديد معدل الضريبة</string>
+    <string name="tax_rate_selector_footer_label">ألا تستطيع إيجاد المعدل الذي تبحث عنه؟</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">يُحسب معدل الضريبة الخاص بك حاليًا استنادًا إلى عنوان الشحن الخاص بك⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">يُحسب معدل الضريبة الخاص بك حاليًا استنادًا إلى عنوان الفوترة الخاص بك⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">يُحسب معدل الضريبة الخاص بك حاليًا استنادًا إلى عنوان متجرك⁦%1$s⁩</string>
+    <string name="tax_rates_redirect_to_admin_button_label">تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rates_redirect_to_admin_content_description">زر تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rates_info_dialog_title">الضرائب ومعدلات الضرائب</string>
+    <string name="tax_rates_info_dialog_secondary_text">يمكن إدارة معدلات الضرائب لمختلف المواقع ضمن مسؤول متجرك.</string>
+    <string name="tax_rates_info_dialog_primary_text">تُحسب الضرائب عن طريق مطابقة الفوترة أو عنوان الشحن الخاصَين بعميلك، أو عنوان متجرك مع موقع معدل الضريبة.</string>
+    <string name="tax_rates_information_content_description">معلومات معدلات الضرائب</string>
+    <string name="store_onboarding_wcpay_setup_description">يعني استخدام WooCommerce Payments أنك توافق على الالتزام &lt;a href=\'termsOfService\'&gt;&lt;u&gt;بشروط الخدمة التي نقرِّها&lt;/u&gt;&lt;/a&gt;، والاعتراف بأنك قرأت &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;سياسة الخصوصية الخاصة بنا&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">الإعداد</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt; حول التحقق من معلوماتك باستخدام WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">بدء الإعداد</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">لقد عقدنا شراكة مع Stripe لـ WooPayments. سيُعاد توجيهك إلى موقع Stripe للتسجيل. سنطلب منك التحقق من تفاصيل أعمالك وعمليات الدفع.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">ستُرسَل تنبيهات WooPayments الخاصة بك إلى البريد الإلكتروني الخاص بحسابك على ووردبريس.كوم. هل تفضِّل حسابًا جديدًا؟ &lt;a href=\'learnMore\'&gt;&lt;u&gt;مزيد من التفاصيل هنا.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">قبل أن تبدأ الإعداد</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">من 4 إلى 6 دقائق</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">وقت الإعداد المُقدَّر</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">أدر المدفوعات بكل يسر باستخدام WooPayments، وكل ذلك في مكان واحد. اقبل البطاقات وApple Pay والمدفوعات الشخصية وأكثر من 135 عملة، كل ذلك من دون تكاليف للإعداد أو رسوم شهرية.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">يتعذر حفظ اسم المتجر. ترجى المحاولة مجددًا.</string>
+    <string name="settings_name_your_store_dialog_loading">جارٍ حفظ اسم المتجر الجديد…</string>
+    <string name="settings_name_your_store_dialog_success">تم تعيين اسم المتجر!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">تم تعيين اسم المتجر! \n للتغيير مجددًا، تفضّل بزيارة إعدادات المتجر.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">تحديث اسم المتجر</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">تهانينا! لقد أكملت عملية الإعداد بنجاح وأصبح نظام الدفع الخاص بك جاهزًا للعمل.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">لقد فعلتها!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">أدر المدفوعات بسلاسة باستخدام WooPayments، مجانًا بدءًا من الإعداد أو الرسوم الشهرية.</string>
+    <string name="store_creation_store_name_settings_option">اسم المتجر</string>
+    <string name="settings_account">إعدادات الحساب</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">تحديد تصنيف</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">تصنيف المواد الخطيرة</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">لا يدعم WooCommerce Shipping حاليًا عمليات شحن الموارد الخطيرة من خلال ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_search_tool_link_text">أداة بحث شحن الموارد الخطيرة عبر الخدمة البريدية للولايات المتحدة.</string>
+    <string name="shipping_label_usps_search_tool">تحديد قابلية إرسال منتجاتك بالبريد باستخدام ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">تعرّف على كيفية تعبئة الموارد الخطيرة وتغليفها ووضع الملصقات عليها وشحنها من خلال USPS® في ⁦%1$s⁩</string>
+    <string name="order_creation_tax_based_on_shipping_address">تم الحساب وفق عنوان الشحن</string>
+    <string name="order_creation_tax_based_on_billing_address">تم الحساب وفق عنوان الفوترة</string>
+    <string name="order_creation_tax_based_on_store_address">تم الحساب وفق عنوان المتجر</string>
+    <string name="order_creation_price_after_discount_label">السعر بعد الخصم</string>
+    <string name="order_creation_total_label">إجمالي الطلبات</string>
+    <string name="order_creation_discount_percentage_label">النسبة المئوية المحسوبة</string>
+    <string name="order_creation_discount_amount_label">المبلغ المحسوب</string>
+    <string name="store_onboarding_name_your_store_dialog_label">اسم المتجر</string>
     <string name="store_onboarding_task_name_store_description">يمكن أن يؤدي تخصيص اسم متجرك أيضًا إلى المساعدة على تحسين محركات البحث الخاصة بمتجرك.</string>
     <string name="store_onboarding_task_name_store_title">تسمية متجرك</string>
     <string name="store_profiler_features_other">أخرى</string>
@@ -1165,7 +1215,7 @@ Language: ar
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى الاتصال بمسؤول الموقع لتعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى تعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">تم اكتشاف إضافات دفع متعارضة</string>
-    <string name="order_creation_payment_tax">الضرائب</string>
+    <string name="order_creation_payment_tax">إجمالي الضرائب</string>
     <string name="exclusive_or">أو</string>
     <string name="settings_install_jetpack">تثبيت Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>

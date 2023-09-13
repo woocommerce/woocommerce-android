@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
+import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
@@ -77,6 +78,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     private lateinit var productRestrictions: OrderCreationProductRestrictions
+    private lateinit var taxRateToAddress: GetAddressFromTaxRate
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
 
@@ -149,6 +151,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         productRestrictions = mock()
         selectedSite = mock()
+        taxRateToAddress = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2161,7 +2164,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 orderCreateEditRepository,
                 selectedSite,
                 resourceProvider
-            )
+            ),
+            getAddressFromTaxRate = taxRateToAddress
         )
     }
 

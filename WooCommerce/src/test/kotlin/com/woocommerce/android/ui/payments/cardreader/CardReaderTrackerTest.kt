@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
-import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaTapped
+import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaReasonTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -183,7 +183,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given CASH_ON_DELIVERY_TAPPED, when trackOnbardingCtaTapped, then cash_on_delivery_disabled tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
+            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
@@ -194,7 +194,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given PLUGIN_INSTALL_TAPPED state, when trackOnbardingCtaTapped, then plugin_install_tapped tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED)
+            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
@@ -206,7 +206,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given CASH_ON_DELIVERY_TAPPED, when trackOnboardingCtaFailed, then cash_on_delivery_disabled tracked with description`() =
         testBlocking {
             cardReaderTracker.trackOnboardingCtaFailed(
-                OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED,
+                OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED,
                 "errorDescription"
             )
 
@@ -223,7 +223,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given PLUGIN_INSTALL_TAPPED, when trackOnboardingCtaFailed, then plugin_install_tapped tracked with description`() =
         testBlocking {
             cardReaderTracker.trackOnboardingCtaFailed(
-                OnboardingCtaTapped.PLUGIN_INSTALL_TAPPED,
+                OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
                 "errorDescription"
             )
 

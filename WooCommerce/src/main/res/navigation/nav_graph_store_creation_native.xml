@@ -139,9 +139,6 @@
         android:id="@+id/countryListPickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryListPickerFragment"
         android:label="CountryListPickerFragment">
-        <action
-            android:id="@+id/action_countryListPickerFragment_to_challengesFragment"
-            app:destination="@id/storeProfilerChallengesFragment" />
         <argument
             android:name="currentLocationCode"
             app:argType="string" />

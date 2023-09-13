@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 14:54:04+0000
+Translation-Revision-Date: 2023-09-06 15:54:41+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">Sitetitel</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Belastingtarieven bewerken in beheer</string>
+    <string name="tax_rate_selector_header_label">Dit zal het adres van de klant veranderen naar de locatie van het belastingtarief dat je selecteert.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Knop om het informatievenster over belastingtarieven te openen</string>
+    <string name="tax_rate_selector_list_header">EEN BELASTINGTARIEF SELECTEREN</string>
+    <string name="tax_rate_selector_footer_label">Kan je het tarief waar je naar op zoek bent niet vinden?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Je belastingtarief wordt momenteel berekend op basis van je verzendadres%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Je belastingtarief wordt momenteel berekend op basis van je factuuradres%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Je belastingtarief wordt momenteel berekend op basis van je winkeladres%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Belastingtarieven bewerken in Beheer</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Knop Belastingtarieven bewerken in Beheer</string>
+    <string name="tax_rates_info_dialog_title">Belasting en belastingtarieven</string>
+    <string name="tax_rates_info_dialog_secondary_text">Je kan belastingtarieven voor verschillende locaties beheren in het beheerdersgedeelte van je winkel.</string>
+    <string name="tax_rates_info_dialog_primary_text">Belasting wordt berekend door het factuur- of verzendadres van je klant of je winkeladres te koppelen aan de locatie van een belastingtarief.</string>
+    <string name="tax_rates_information_content_description">Informatie over belastingtarieven</string>
+    <string name="store_onboarding_wcpay_setup_description">Door WooCommerce Payments te gebruiken ga je ermee akkoord dat je bent gebonden aan onze &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Servicevoorwaarden&lt;/u&gt;&lt;/a&gt; en bevestig je dat je ons &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacybeleid&lt;/u&gt;&lt;/a&gt; hebt gelezen.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Instellen</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over je gegevens verifiëren met WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Installatie starten</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">We werken voor WooPayments samen met Stripe. Je wordt doorgestuurd naar de site van Stripe om je aan te melden. We zullen je vragen je bedrijfs- en betaalgegevens te verifiëren.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Je WooPayments-meldingen worden verzonden naar het e-mailadres van je WordPress.com-account. Heb je liever dat we het naar een nieuw account sturen? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie vind je hier.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Voordat je met je installatie begint</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minuten</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Geschatte installatietijd</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Beheer betalingen moeiteloos op één plek met WooPayments. Accepteer kaarten, Apple Pay, fysieke betalingen en meer dan 135 valuta, zonder installatie- of maandelijkse kosten.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Winkelnaam kan niet worden opgeslagen. Probeer het opnieuw.</string>
+    <string name="settings_name_your_store_dialog_loading">Nieuwe winkelnaam opslaan …</string>
+    <string name="settings_name_your_store_dialog_success">Winkelnaam is ingesteld!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Winkelnaam is ingesteld! \n Om deze weer te veranderen, ga je naar Winkelinstellingen</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Winkelnaam bijwerken</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Gefeliciteerd! Je hebt de installatie voltooid. Je betalingssysteem is nu klaar voor de start.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Goed gedaan!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Beheer betalingen eenvoudig met WooPayments, zonder installatie- of maandelijkse kosten.</string>
+    <string name="store_creation_store_name_settings_option">Winkelnaam</string>
+    <string name="settings_account">Accountinstellingen</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Een categorie selecteren</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Categorie Gevaarlijke goederen</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping ondersteunt op dit moment geen verzendingen met gevaarlijke goederen via %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">Zoektool USPS HAZMAT.</string>
+    <string name="shipping_label_usps_search_tool">Controleer de verzendbaarheid van je product met behulp van de %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Ontdek hoe je gevaarlijke goederen via USPS® kunt verpakken, labelen en verzenden op %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Berekend met verzendadres</string>
+    <string name="order_creation_tax_based_on_billing_address">Berekend met factuuradres</string>
+    <string name="order_creation_tax_based_on_store_address">Berekend met winkeladres</string>
+    <string name="order_creation_price_after_discount_label">Prijs na korting</string>
+    <string name="order_creation_total_label">Totaalbedrag bestelling</string>
+    <string name="order_creation_discount_percentage_label">Berekend percentage</string>
+    <string name="order_creation_discount_amount_label">Berekend bedrag</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Winkelnaam</string>
     <string name="store_onboarding_task_name_store_description">Je winkelnaam aanpassen kan de zoekmachine-optimalisatie van je winkel ten goede komen.</string>
     <string name="store_onboarding_task_name_store_title">Geef je winkel een naam</string>
     <string name="store_profiler_features_other">Overig</string>
@@ -1165,7 +1215,7 @@ Language: nl
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Om verder te gaan, neem contact op met een sitebeheerder om een van deze plugins te deactiveren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Deactiveer een van deze plugins om verder te gaan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Tegenstrijdige plugins voor betalingen gedetecteerd</string>
-    <string name="order_creation_payment_tax">Belastingen</string>
+    <string name="order_creation_payment_tax">Btw totaal</string>
     <string name="exclusive_or">of</string>
     <string name="settings_install_jetpack">Jetpack installeren</string>
     <string name="card_reader_onboarding_account_rejected_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
