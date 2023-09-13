@@ -112,7 +112,7 @@ class AIPriceAdvisorViewModel @Inject constructor(
     }
 
     enum class AdviceType(val value: Int) {
-        REGULAR_PRICE(0),
+        REGULAR_PRICE(0), // For a future feature
         SALE_PRICE(1)
     }
     data class ViewState(
