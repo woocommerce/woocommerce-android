@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -98,6 +99,16 @@ class AIPriceAdvisorViewModel @Inject constructor(
         launch {
             startPriceAdviceGeneration()
         }
+    }
+
+    fun onDescriptionFeedbackReceived(isUseful: Boolean) {
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_AI_SALES_PRICE_ADVISOR,
+                AnalyticsTracker.KEY_IS_USEFUL to isUseful
+            )
+        )
     }
 
     enum class AdviceType(val value: Int) {
