@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 14:54:04+0000
+Translation-Revision-Date: 2023-09-06 15:54:23+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">Site Başlığı</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Yöneticide vergi oranlarını düzenle</string>
+    <string name="tax_rate_selector_header_label">Bu, müşterinin adresini seçtiğiniz vergi oranının konumuna değiştirecektir.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Vergi oranları bilgi iletişim kutusunu açan düğme</string>
+    <string name="tax_rate_selector_list_header">BİR VERGİ ORANI SEÇ</string>
+    <string name="tax_rate_selector_footer_label">Aradığınız oranı bulamıyor musunuz?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Vergi oranınız, şu anda gönderim adresinize dayalı olarak hesaplanıyor%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Vergi oranınız, şu anda fatura adresinize dayalı olarak hesaplanıyor%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Vergi oranınız, şu anda mağaza adresinize dayalı olarak hesaplanıyor%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Yöneticide Vergi Oranlarını Düzenle</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Yöneticide Vergi Oranlarını Düzenle Düğmesi</string>
+    <string name="tax_rates_info_dialog_title">Vergiler ve Vergi Oranları</string>
+    <string name="tax_rates_info_dialog_secondary_text">Farklı konumlar için vergi oranları, mağazanızın yöneticisinde yönetilebilir.</string>
+    <string name="tax_rates_info_dialog_primary_text">Vergiler, müşterinizin fatura veya gönderim adresiyle ya da mağaza adresiniz bir vergi oranı konumuyla eşleşecek şekilde hesaplanır.</string>
+    <string name="tax_rates_information_content_description">Veri oranları bilgileri</string>
+    <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments\'ı kullanarak &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Hizmet Koşullarımıza&lt;/u&gt;&lt;/a&gt; bağlı kalmayı ve &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Gizlilik Politikamızı&lt;/u&gt;&lt;/a&gt; okuduğunuzu kabul etmiş olursunuz.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Ayarla</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">Bilgilerinizi WooPayments ile doğrulama hakkında &lt;a href=\'learnMore\'&gt;&lt;u&gt;daha fazla bilgi alın&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Kurulumu başlat</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Stripe for WooPayments ile iş ortaklığı kurdunuz. Kaydolmak için Stripe\'ın sitesine yönlendirileceksiniz. Ardından para yatırma işlevini etkinleştirmek için işletmenizi ve ödeme ayrıntılarınızı doğrulamanızı isteyeceğiz.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments bildirimleriniz WordPress.com hesabınızın e-posta adresine gönderilecektir. Yeni bir hesabı mı tercih edersiniz? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Daha fazla ayrıntıyı burada bulabilirsiniz.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Kurulumu başlatmadan önce</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 dakika</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Tahmini kurulum süresi</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Tüm ödemeleri WooPayments ile tek bir yerden yönetin. Kartları, Apple Pay\'i, şahsi ödemeleri ve 135\'ten fazla para birimini hiçbir kurulum maliyeti veya aylık ücret olmadan kabul edin.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Mağaza adı kaydedilemiyor. Lütfen tekrar deneyin.</string>
+    <string name="settings_name_your_store_dialog_loading">Yeni mağaza adı kaydediliyor…</string>
+    <string name="settings_name_your_store_dialog_success">Mağaza adı ayarlandı!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Mağaza adı ayarlandı! \n Tekrar değiştirmek için Mağaza Ayarları\'nı ziyaret edin.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Mağaza adını güncelleyin</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Tebrikler! Kurulumu başarıyla tamamladınız ve ödeme sisteminiz artık kullanıma hazır.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Başardınız!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Ödemeleri, herhangi bir kurulum veya aylık ücret olmadan WooPayments ile kusursuz bir şekilde yönetin.</string>
+    <string name="store_creation_store_name_settings_option">Mağaza adı</string>
+    <string name="settings_account">Hesap Ayarları</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Bir kategori seçin</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Tehlikeli maddeler kategorisi</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping, şu anda %1$s USPS Tehlikeli Madde Arama Aracı</string>
+    <string name="shipping_label_usps_search_tool_link_text">yoluyla Tehlikeli Madde gönderimlerini desteklemiyor.</string>
+    <string name="shipping_label_usps_search_tool">Şu adresi kullanarak ürününüzün postayla gönderilebilir olup olmadığını öğrenin: %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Şu adresten USPS® yoluyla Tehlikeli Maddelerin nasıl güvenli bir şekilde paketleneceğini, etiketleneceğini ve gönderileceğini öğrenin: %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Gönderim adresi üzerinden hesaplanmıştır</string>
+    <string name="order_creation_tax_based_on_billing_address">Fatura adresi üzerinden hesaplanmıştır</string>
+    <string name="order_creation_tax_based_on_store_address">Mağaza adresi üzerinden hesaplanmıştır</string>
+    <string name="order_creation_price_after_discount_label">İndirim sonrası fiyat</string>
+    <string name="order_creation_total_label">Sipariş toplamı</string>
+    <string name="order_creation_discount_percentage_label">Yüzde Olarak Hesaplanmıştır</string>
+    <string name="order_creation_discount_amount_label">Hesaplanan Tutar</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Mağaza adı</string>
     <string name="store_onboarding_task_name_store_description">Mağaza adınızı özelleştirmek, mağazanızın arama motoru optimizasyonuna da yardımcı olabilir.</string>
     <string name="store_onboarding_task_name_store_title">Mağazanıza ad verin</string>
     <string name="store_profiler_features_other">Diğer</string>
@@ -1165,7 +1215,7 @@ Language: tr
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Şahsen Ödemeler yalnızca aşağıdaki eklentilerden biri etkinleştirildiğinde çalışır. Devam etmek üzere bu eklentilerden birini devre dışı bırakması için lütfen bir site yöneticisiyle iletişime geçin:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Şahsen Ödemeler yalnızca aşağıdaki eklentilerden biri etkinleştirildiğinde çalışır. Devam etmek için lütfen bu eklentilerden birini devre dışı bırakın:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Çakışan ödeme eklentileri algılandı</string>
-    <string name="order_creation_payment_tax">Vergiler</string>
+    <string name="order_creation_payment_tax">Vergi Toplamı</string>
     <string name="exclusive_or">veya</string>
     <string name="settings_install_jetpack">Jetpack\'i Kur</string>
     <string name="card_reader_onboarding_account_rejected_header">Şahsen Ödemeler şu anda kullanılamıyor</string>

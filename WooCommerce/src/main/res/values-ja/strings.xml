@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-30 09:54:04+0000
+Translation-Revision-Date: 2023-09-07 09:54:26+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">サイトのタイトル</string>
+    <string name="tax_rate_selector_edit_rates_button_label">管理画面で税率を編集</string>
+    <string name="tax_rate_selector_header_label">これにより顧客の住所が選択した税率の場所に変更されます。</string>
+    <string name="tax_rate_selector_info_icon_content_description">税率情報ダイアログを開くボタン</string>
+    <string name="tax_rate_selector_list_header">税率を選択する</string>
+    <string name="tax_rate_selector_footer_label">希望の税率が見つかりませんか ?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">現在、税率は配送先住所に基づいて計算されています%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">現在、税率は請求先住所に基づいて計算されています%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">現在、税率は店舗の住所に基づいて計算されています%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">管理画面で税率を編集</string>
+    <string name="tax_rates_redirect_to_admin_content_description">管理画面で税率を編集ボタン</string>
+    <string name="tax_rates_info_dialog_title">税金および税率</string>
+    <string name="tax_rates_info_dialog_secondary_text">ストアの管理画面でさまざまな場所の税率を管理できます。</string>
+    <string name="tax_rates_info_dialog_primary_text">税金は、顧客の請求先住所、配送先住所、または店舗の住所を税率の場所と一致させて計算されます。</string>
+    <string name="tax_rates_information_content_description">税率に関する情報</string>
+    <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments を使用することで、お客様は弊社の&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;に拘束されることに同意し、弊社&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;プライバシーポリシー&lt;/u&gt;&lt;/a&gt;を読んだものとみなされます。</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">セットアップ</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">WooPayments での情報の確認について&lt;a href=\'learnMore\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">セットアップを開始</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">WooPayments では Stripe と提携しています。 サインアップでは Stripe のサイトに移動します。 ビジネス情報と支払い情報の確認が求められます。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments の通知は WordPress.com アカウントのメールアドレスに送信されます。 新アカウントをご希望ですか ? &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳細はこちら。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">セットアップを始める前に</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4〜6分</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">推定所要時間</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">WooPayments を使用すると、支払いをすべて1か所で簡単に管理できます。 セットアップ費用や月額料金なしで、カード、Apple Pay、オフラインでの支払い、135種類以上の通貨をすべて利用できます。</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">ストア名を保存できません。 もう一度お試しください。</string>
+    <string name="settings_name_your_store_dialog_loading">新しいストア名を保存しています…</string>
+    <string name="settings_name_your_store_dialog_success">ストア名が設定されました。</string>
+    <string name="store_onboarding_name_your_store_dialog_success">ストア名が設定されました。 \n 再度変更するには、「ストア設定」にアクセスしてください。</string>
+    <string name="store_onboarding_name_your_store_dialog_title">ストア名を更新する</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">お疲れ様でした。 セットアップが完了し、支払いシステムを開始する準備が整いました。</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">手続きがすべて完了しました。</string>
+    <string name="store_onboarding_task_woopayments_setup_description">WooPayments を使用すると、セットアップ料金や月額料金なしで支払いをシームレスに管理できます。</string>
+    <string name="store_creation_store_name_settings_option">ストア名</string>
+    <string name="settings_account">アカウント設定</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">カテゴリーを選択</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">有害物質カテゴリー</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping は現在、%1$s による危険物の発送には対応していません。</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS 危険物検索ツール</string>
+    <string name="shipping_label_usps_search_tool">%1$s を使用して商品が郵送可能かわかります。</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat</string>
+    <string name="shipping_label_usps_hazmat_instructions">USPS® (%1$s) で危険物を安全に梱包、ラベル付け、発送する方法についてご確認ください。</string>
+    <string name="order_creation_tax_based_on_shipping_address">配送先住所に基づいて計算されます</string>
+    <string name="order_creation_tax_based_on_billing_address">請求先住所に基づいて計算されます</string>
+    <string name="order_creation_tax_based_on_store_address">店舗の基本住所に基づいて計算されます</string>
+    <string name="order_creation_price_after_discount_label">割引後の価格</string>
+    <string name="order_creation_total_label">注文合計</string>
+    <string name="order_creation_discount_percentage_label">計算されたパーセンテージ</string>
+    <string name="order_creation_discount_amount_label">算出額</string>
+    <string name="store_onboarding_name_your_store_dialog_label">ストア名</string>
     <string name="store_onboarding_task_name_store_description">ストア名をカスタマイズすると、ストアの検索エンジンの最適化にも役立ちます。</string>
     <string name="store_onboarding_task_name_store_title">ストアに名前を付ける</string>
     <string name="store_profiler_features_other">その他</string>
@@ -1165,7 +1215,7 @@ Language: ja_JP
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、サイト管理者に連絡して、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">支払いプラグインが複数検出されました</string>
-    <string name="order_creation_payment_tax">税金</string>
+    <string name="order_creation_payment_tax">税合計</string>
     <string name="exclusive_or">または</string>
     <string name="settings_install_jetpack">Jetpack をインストール</string>
     <string name="card_reader_onboarding_account_rejected_header">オフラインでの支払いは現在利用できません</string>

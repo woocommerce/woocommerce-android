@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 09:54:04+0000
+Translation-Revision-Date: 2023-09-07 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">사이트 제목</string>
+    <string name="tax_rate_selector_edit_rates_button_label">관리자에서 세율 편집</string>
+    <string name="tax_rate_selector_header_label">그러면 고객의 주소가 선택한 세율이 적용되는 위치로 변경됩니다.</string>
+    <string name="tax_rate_selector_info_icon_content_description">세율 정보 대화 상자 열기 버튼</string>
+    <string name="tax_rate_selector_list_header">세율 선택</string>
+    <string name="tax_rate_selector_footer_label">원하는 세율을 찾을 수 없으신가요?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">세율은 현재 배송 주소를 기준으로 계산됩니다.%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">세율은 현재 청구 주소를 기준으로 계산됩니다.%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">세율은 현재 상점 주소를 기준으로 계산됩니다.%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">관리자에서 세율 편집</string>
+    <string name="tax_rates_redirect_to_admin_content_description">관리자에서 세율 편집 버튼</string>
+    <string name="tax_rates_info_dialog_title">세금 및 세율</string>
+    <string name="tax_rates_info_dialog_secondary_text">스토어의 관리자에서 다양한 위치의 세율을 관리할 수 있습니다.</string>
+    <string name="tax_rates_info_dialog_primary_text">세금은 고객의 청구 주소, 배송 주소 또는 상점 주소를 세율 위치와 일치시켜 계산됩니다.</string>
+    <string name="tax_rates_information_content_description">세율 정보</string>
+    <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments를 사용하면 &lt;a href=\'termsOfService\'&gt;&lt;u&gt;서비스 약관&lt;/u&gt;&lt;/a&gt; 적용에 동의하고 &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;개인정보 취급방침&lt;/u&gt;&lt;/a&gt;을 읽었다는 것을 확인하는 것입니다.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">설정</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">WooPayments와 관련한 자신의 정보를 확인하는 방법을 &lt;a href=\'learnMore\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">설정 시작</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">WooPayments는 Stripe와 제휴되어 있습니다. 가입을 위해 Stripe 사이트로 이동됩니다. 비즈니스 및 결제 상세 정보를 확인하라는 메시지가 표시됩니다.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments 알림이 워드프레스닷컴 계정 이메일로 발송됩니다. 새 계정을 선호하시나요? &lt;a href=\'learnMore\'&gt;&lt;u&gt;여기에서 자세히 알아보세요.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">설정을 시작하기 전에</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4~6분</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">예상 설정 시간</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">WooPayments를 사용하여 한곳에서 간편하게 결제를 관리하세요. 설정 비용이나 월 수수료 없이 카드, Apple Pay, 직접 결제, 135개 이상의 통화를 사용할 수 있습니다.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">스토어 이름을 저장할 수 없습니다. 다시 시도하세요.</string>
+    <string name="settings_name_your_store_dialog_loading">새 스토어 이름 저장 중…</string>
+    <string name="settings_name_your_store_dialog_success">스토어 이름이 설정되었습니다!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">스토어 이름이 설정되었습니다! \n 다시 변경하려면 스토어 설정으로 이동하세요.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">스토어 이름 업데이트</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">축하합니다! 설정을 성공적으로 완료했으며 결제 시스템을 사용할 준비가 되었습니다.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">훌륭합니다!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">WooPayments를 사용하여 설정이나 월 수수료 없이 결제를 원활하게 관리하세요.</string>
+    <string name="store_creation_store_name_settings_option">스토어 이름</string>
+    <string name="settings_account">계정 설정</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">카테고리 선택</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">유해물질 카테고리</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">우커머스 배송에서는 현재 USPS HAZMAT 검색 도구를 통한 %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">HAZMAT 배송이 지원되지 않습니다.</string>
+    <string name="shipping_label_usps_search_tool">Www.usps.com/hazmat을 사용하여 상품의 %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">우송 가능성을 결정하세요.</string>
+    <string name="shipping_label_usps_hazmat_instructions">%1$s에서 USPS®를 통해 HAZMAT를 안전하게 포장하고, 레이블을 부착하고, 배송하는 방법을 알아보세요.</string>
+    <string name="order_creation_tax_based_on_shipping_address">배송 주소에 따라 계산됨</string>
+    <string name="order_creation_tax_based_on_billing_address">청구 주소에 따라 계산됨</string>
+    <string name="order_creation_tax_based_on_store_address">상점 주소에 따라 계산됨</string>
+    <string name="order_creation_price_after_discount_label">할인 후 가격</string>
+    <string name="order_creation_total_label">주문 합계</string>
+    <string name="order_creation_discount_percentage_label">계산한 백분율</string>
+    <string name="order_creation_discount_amount_label">계산한 금액</string>
+    <string name="store_onboarding_name_your_store_dialog_label">스토어 이름</string>
     <string name="store_onboarding_task_name_store_description">스토어 이름을 사용자 정의하면 스토어의 검색 엔진 최적화에도 도움이 될 수 있습니다.</string>
     <string name="store_onboarding_task_name_store_title">스토어 이름 지정</string>
     <string name="store_profiler_features_other">기타</string>
@@ -1165,7 +1215,7 @@ Language: ko_KR
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 사이트 관리자에게 문의하여 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">충돌하는 결제 플러그인 감지됨</string>
-    <string name="order_creation_payment_tax">세금</string>
+    <string name="order_creation_payment_tax">세금 합계</string>
     <string name="exclusive_or">또는</string>
     <string name="settings_install_jetpack">젯팩 설치</string>
     <string name="card_reader_onboarding_account_rejected_header">현재 직접 결제 사용 불가능</string>

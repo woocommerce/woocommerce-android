@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_MIN_MAX_QUANTITY_RULES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_FORM
@@ -1319,9 +1320,15 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun trackProductDetailLoaded() {
         if (hasTrackedProductDetailLoaded.not()) {
-            storedProduct.value?.let {
-                val properties = mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
-                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+            storedProduct.value?.let { product ->
+                launch {
+                    val hasQuantityRules = getProductQuantityRules(product.remoteId) != null
+                    val properties = mapOf(
+                        KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
+                        KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules
+                    )
+                    tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+                }
             } ?: run {
                 tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
             }
