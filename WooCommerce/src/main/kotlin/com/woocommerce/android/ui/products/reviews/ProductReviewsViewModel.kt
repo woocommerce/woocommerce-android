@@ -185,10 +185,14 @@ class ProductReviewsViewModel @Inject constructor(
             _reviewList.value = unreadReviews
     }
 
-    private fun shouldLoadMore(unreadReviews: List<ProductReview>) =
-        reviewsRepository.canLoadMore
-            && (unreadReviews.size < resourceProvider.getInteger(R.integer.min_number_of_items_to_make_list_scrollable)
-            || unreadReviews.size == _reviewList.value?.size)
+    private fun shouldLoadMore(unreadReviews: List<ProductReview>): Boolean {
+        val minAmountForScrolling = resourceProvider.getInteger(R.integer.min_number_of_items_to_make_list_scrollable)
+        return reviewsRepository.canLoadMore &&
+            (
+                unreadReviews.size < minAmountForScrolling ||
+                    unreadReviews.size == _reviewList.value?.size
+                )
+    }
 
     @Parcelize
     data class ProductReviewsViewState(
