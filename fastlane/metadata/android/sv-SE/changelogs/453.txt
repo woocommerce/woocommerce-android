@@ -1,0 +1,2 @@
+15.2:
+Vi är glada att kunna presentera en ny uppdatering av vår Android-app! In this version, we've moved the 'Close Account' option to a new section called 'Account Settings' for easier navigation. We've also fixed some issues with the order's badge counter to ensure accurate tracking. Plus, we've made improvements to the WooPayments onboarding task for a smoother setup process. Uppdatera nu för en bättre upplevelse.

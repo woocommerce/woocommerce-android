@@ -97,6 +97,10 @@ class CountryPickerViewModel @Inject constructor(
         )
     }
 
+    fun onCountrySelected(country: StoreCreationCountry) {
+        detectedCountry.update { country }
+    }
+
     data class NavigateToDomainListPicker(val locationCode: String) : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 }

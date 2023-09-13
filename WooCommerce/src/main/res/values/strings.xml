@@ -1522,7 +1522,8 @@
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button" translatable="false">@string/refresh_button</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Finish setup</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
@@ -1530,7 +1531,7 @@
 
     <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finish Stripe setup on your store admin</string>
     <string name="card_reader_onboarding_stripe_extension_not_setup_hint">You’re almost there! Please finish setting up Stripe to start accepting Card-Present Payments.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button" translatable="false">@string/refresh_button</string>
 
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Update Stripe</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Outdated version of the WooCommerce Stripe Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
@@ -1545,6 +1546,8 @@
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_refresh_button" translatable="false">@string/refresh_button</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolve now</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
@@ -3636,5 +3639,9 @@
     <string name="tax_rate_selector_header_label">This will change the customer’s address to the location of the tax rate you select.</string>
     <string name="tax_rate_selector_edit_rates_button_label">Edit tax rates in admin</string>
     <string name="tax_rate_selector_title">Set Tax Rate</string>
+    <string name="tax_rate_selector_empty_list_title">We couldn\'t find any tax rates</string>
+    <string name="tax_rate_selector_empty_list_message">Add tax rates in admin. Only tax rates with location information will be shown here.</string>
+    <string name="tax_rate_selector_empty_list_button">Edit Tax Rates in Admin</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
 
 </resources>

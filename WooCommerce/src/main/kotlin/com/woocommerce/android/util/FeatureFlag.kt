@@ -45,13 +45,13 @@ enum class FeatureFlag {
             BLAZE,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
             SHIPPING_ZONES,
+            ORDER_CREATION_TAX_RATE_SELECTOR,
             AI_ORDER_DETAIL_THANK_YOU_NOTE,
             AI_PRICE_ADVISOR -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_TAX_RATE_SELECTOR -> PackageUtils.isDebugBuild()
+            BETTER_CUSTOMER_SEARCH_M2 -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

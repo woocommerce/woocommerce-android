@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 12:54:04+0000
+Translation-Revision-Date: 2023-09-06 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">Webbplatsrubrik</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Redigera momssatser i adminpanelen</string>
+    <string name="tax_rate_selector_header_label">Detta kommer att ändra kundens adress till platsen för den momssats du väljer.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Knapp som öppnar dialogrutan för information om momssatser</string>
+    <string name="tax_rate_selector_list_header">VÄLJ EN MOMSSATS</string>
+    <string name="tax_rate_selector_footer_label">Kan du inte hitta satsen du letar efter?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Din momssats beräknas för närvarande baserat på din leveransadress%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Din momssats beräknas för närvarande baserat på din faktureringsadress%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Din momssats beräknas för närvarande baserat på din butiksadress%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Redigera momssatser i adminpanelen</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Redigera momssatser med admin-knappen</string>
+    <string name="tax_rates_info_dialog_title">Moms och momssatser</string>
+    <string name="tax_rates_info_dialog_secondary_text">Momssatser för olika platser kan hanteras i din butiks adminpanel.</string>
+    <string name="tax_rates_info_dialog_primary_text">Moms beräknas genom att matcha din kunds fakturerings- eller leveransadress eller din butiksadress med en plats för momssats.</string>
+    <string name="tax_rates_information_content_description">Information om momssatser</string>
+    <string name="store_onboarding_wcpay_setup_description">Genom att använda WooCommerce Payments samtycker du till våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och intygar att du har läst vår &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;integritetspolicy&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Konfigurera</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om att kontrollera din information med WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Starta konfiguration</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Vi har slagit oss ihop med Stripe för WooPayments. Du kommer att bli omdirigerad till Stripes webbplats för registrering. Vi kommer att be dig att kontrollera dina företagsuppgifter och din betalningsinformation.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Dina WooCommerce-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Innan du startar konfigurationen</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minuter</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Beräknad tid</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Hantera betalningar utan ansträngning med WooPayments, allt på en och samma plats. Ta emot kortbetalningar, Apple Pay-betalningar, personliga betalningar och över 135 olika valutor, helt utan installationskostnader eller månadsavgifter.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Det gick inte att spara butiksnamnet. Försök igen.</string>
+    <string name="settings_name_your_store_dialog_loading">Sparar nytt butiksnamn…</string>
+    <string name="settings_name_your_store_dialog_success">Butiksnamn inställt.</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Butiksnamn inställt. \n För att ändra igen, gå till butiksinställningarna.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Uppdatera butiksnamn</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Grattis! Du har gått igenom konfigurationen och ditt betalningssystem är redo att användas.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Du gjorde det!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Hantera betalningar sömlöst med WooPayments, utan installationskostnader eller månadsavgifter.</string>
+    <string name="store_creation_store_name_settings_option">Butiksnamn</string>
+    <string name="settings_account">Kontoinställningar</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Välj en kategori</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Kategori för farligt material</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping stöder för närvarande inte transporter av farligt material via %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS sökverktyg för farligt material</string>
+    <string name="shipping_label_usps_search_tool">Bestäm din produkts sändbarhet med hjälp av %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Läs mer om hur du packar, märker och skickar farligt material på ett säkert sätt via USPS® på %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Beräknat utifrån leveransadressen</string>
+    <string name="order_creation_tax_based_on_billing_address">Beräknat utifrån faktureringsadressen</string>
+    <string name="order_creation_tax_based_on_store_address">Beräknat utifrån butikens adress</string>
+    <string name="order_creation_price_after_discount_label">Pris efter avdragen rabatt</string>
+    <string name="order_creation_total_label">Beställningssumma</string>
+    <string name="order_creation_discount_percentage_label">Beräknad procentandel</string>
+    <string name="order_creation_discount_amount_label">Beräknat belopp</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Butiksnamn</string>
     <string name="store_onboarding_task_name_store_description">Att anpassa ditt butiksnamn kan också förbättra din butiks sökmotoroptimering.</string>
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="store_profiler_features_other">Annat</string>
@@ -1165,7 +1215,7 @@ Language: sv_SE
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Kontakta en webbplatsadministratör för att inaktivera ett av dessa tillägg och fortsätta:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Inaktivera ett av dessa tillägg för att fortsätta.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflikt mellan betalningstillägg upptäckt</string>
-    <string name="order_creation_payment_tax">Momsen</string>
+    <string name="order_creation_payment_tax">Momser totalt</string>
     <string name="exclusive_or">eller</string>
     <string name="settings_install_jetpack">Installera Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är för närvarande inte tillgängliga</string>

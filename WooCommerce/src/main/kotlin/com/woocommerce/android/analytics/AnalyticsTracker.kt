@@ -160,6 +160,7 @@ class AnalyticsTracker private constructor(
         const val KEY_PRODUCT_ID = "product_id"
         const val KEY_PRODUCT_COUNT = "product_count"
         const val KEY_HAS_LINKED_PRODUCTS = "has_linked_products"
+        const val KEY_HAS_MIN_MAX_QUANTITY_RULES = "has_min_max_quantity_rules"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
@@ -606,6 +607,9 @@ class AnalyticsTracker private constructor(
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
+
+        const val PRODUCT_TYPES = "product_types"
+        const val HAS_ADDONS = "has_addons"
 
         var sendUsageStats: Boolean = true
             set(value) {

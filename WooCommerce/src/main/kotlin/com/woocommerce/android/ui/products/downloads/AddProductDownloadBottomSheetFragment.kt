@@ -24,16 +24,18 @@ import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
-    @Inject lateinit var navigator: ProductNavigator
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
+    @Inject
+    lateinit var navigator: ProductNavigator
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
 
     private val viewModel: AddProductDownloadViewModel by viewModels()
     private val parentViewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
@@ -68,6 +70,7 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
                     parentViewModel.uploadDownloadableFile(event.uri.toString())
                     findNavController().navigateUp()
                 }
+
                 is ViewProductDownloadDetails -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
@@ -95,7 +98,10 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
     private fun showMediaLibraryPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            mediaPickerSetupFactory.build(WP_MEDIA_LIBRARY)
+            mediaPickerSetupFactory.build(
+                source = MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY,
+                mediaTypes = MediaTypes.IMAGES
+            )
         )
 
         mediaLibraryLauncher.launch(intent)
@@ -112,7 +118,10 @@ class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment() {
     private fun showLocalDeviceMediaPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            mediaPickerSetupFactory.build(DEVICE)
+            mediaPickerSetupFactory.build(
+                source = MediaPickerSetup.DataSource.DEVICE,
+                mediaTypes = MediaTypes.IMAGES
+            )
         )
 
         mediaDeviceMediaPickerLauncher.launch(intent)
