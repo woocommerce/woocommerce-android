@@ -816,15 +816,15 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAIThankYouNoteButtonClicked() {
-        val orderRefunds = loadOrderRefunds()
-        val orderProducts = loadOrderProducts(orderRefunds)
-
-        val firstProductId = when (val first = orderProducts.list.first()) {
-            is OrderProduct.GroupedProductItem -> first.product.productId
-            is OrderProduct.ProductItem -> first.product.productId
-        }
-
         launch {
+            val orderRefunds = loadOrderRefunds()
+            val orderProducts = loadOrderProducts(orderRefunds)
+
+            val firstProductId = when (val first = orderProducts.list.first()) {
+                is OrderProduct.GroupedProductItem -> first.product.productId
+                is OrderProduct.ProductItem -> first.product.productId
+            }
+
             val product = productDetailRepository.getProductAsync(firstProductId)
             product?.let {
                 triggerEvent(
