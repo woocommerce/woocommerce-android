@@ -3618,5 +3618,7 @@
     <string name="tax_rate_selector_empty_list_message">Add tax rates in admin. Only tax rates with location information will be shown here.</string>
     <string name="tax_rate_selector_empty_list_button">Edit Tax Rates in Admin</string>
     <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
+    <string name="tax_rate_selector_auto_rate_label">Add this rate to all created orders</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">This will not affect online orders</string>
 
 </resources>
