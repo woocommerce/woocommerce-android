@@ -1,0 +1,2 @@
+15.2:
+We kondigen vol blijdschap de nieuwe update aan voor onze Android-app! In deze versie hebben we optie Account sluiten verplaatst naar een nieuw gedeelte genaamd Accountinstelling voor eenvoudiger navigeren. We hebben ook een aantal problemen opgelost met de badgeteller van bestellingen om voor nauwkeurigere tracking te zorgen. Daarnaast hebben we ook verbeteringen aangebracht aan de WooPayments-onboardingstaken voor een soepeler instellingsproces. Update nu voor een betere gebruikerservaring!

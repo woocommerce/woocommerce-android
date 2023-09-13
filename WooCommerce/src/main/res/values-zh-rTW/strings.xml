@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 09:54:04+0000
+Translation-Revision-Date: 2023-09-07 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="tax_rate_selector_edit_rates_button_label">使用管理員編輯稅率</string>
+    <string name="tax_rate_selector_header_label">如此顧客地址即會變更至所選稅率的地點。</string>
+    <string name="tax_rate_selector_info_icon_content_description">開啟稅率資訊對話方塊的按鈕</string>
+    <string name="tax_rate_selector_list_header">選取稅率</string>
+    <string name="tax_rate_selector_footer_label">找不到所需的稅率嗎？</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">你的稅率目前是依運送地址計算%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">你的稅率目前是依帳單地址計算%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">你的稅率目前是依商店地址計算%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">使用管理員編輯稅率</string>
+    <string name="tax_rates_redirect_to_admin_content_description">「使用管理員編輯稅率」按鈕</string>
+    <string name="tax_rates_info_dialog_title">稅金與稅率</string>
+    <string name="tax_rates_info_dialog_secondary_text">你可以用商店管理員來管理不同地點的稅率。</string>
+    <string name="tax_rates_info_dialog_primary_text">稅金計算方式是根據顧客帳單或運送地址的比對結果，或依照稅率地點的商店地址。</string>
+    <string name="tax_rates_information_content_description">稅率資訊</string>
+    <string name="store_onboarding_wcpay_setup_description">使用 WooCommerce Payments，即表示你同意遵守我們的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服務條款&lt;/u&gt;&lt;/a&gt;，並確認已詳閱我們的&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;隱私權政策&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">設定</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;如何向 WooPayments 驗證個人資訊。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">開始設定</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">我們已與 Stripe 合作，為 WooPayments 提供支援。 系統會將你導入 Stripe 的網站進行註冊。 我們會要求你驗證商家和付款詳細資料。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments 通知會傳送至您的 WordPress.com 帳號電子郵件信箱。 想要使用新帳號嗎？ &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳情請見此處。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">開始設定之前</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 分鐘</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">預估設定時間</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">運用 WooPayments，集中一處輕鬆管理付款。 接受金融卡、Apple Pay、親自收款，以及超過 135 種不同貨幣，完全免設定費或月費。</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">無法儲存商店名稱， 請再試一次。</string>
+    <string name="settings_name_your_store_dialog_loading">正在儲存新商店名稱……</string>
+    <string name="settings_name_your_store_dialog_success">商店名稱設定完成！</string>
+    <string name="store_onboarding_name_your_store_dialog_success">商店名稱設定完成！ \n 若要再度變更，請造訪「商店設定」。</string>
+    <string name="store_onboarding_name_your_store_dialog_title">更新商店名稱</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">恭喜！ 你已成功完成設定流程，付款系統也準備就緒。</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">你辦到了！</string>
+    <string name="store_onboarding_task_woopayments_setup_description">運用 WooPayments 流暢管理付款，免設定費或月費。</string>
+    <string name="store_creation_store_name_settings_option">商店名稱</string>
+    <string name="settings_account">帳號設定</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">請選擇分類</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">危險物品分類</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping 目前不支援透過 %1$s 的危險物品貨件。</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS 危險物品搜尋工具</string>
+    <string name="shipping_label_usps_search_tool">使用 %1$s 確認你的商品是否可郵寄。</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat</string>
+    <string name="shipping_label_usps_hazmat_instructions">瞭解如何透過 USPS® (%1$s) 安全地包裝、貼標籤，並運送危險物品。</string>
+    <string name="order_creation_tax_based_on_shipping_address">以運送地址計算</string>
+    <string name="order_creation_tax_based_on_billing_address">以帳單地址計算</string>
+    <string name="order_creation_tax_based_on_store_address">以商店地址計算</string>
+    <string name="order_creation_price_after_discount_label">折扣後價格</string>
+    <string name="order_creation_total_label">訂單總計</string>
+    <string name="order_creation_discount_percentage_label">已計百分比</string>
+    <string name="order_creation_discount_amount_label">已計金額</string>
+    <string name="store_onboarding_name_your_store_dialog_label">商店名稱</string>
+    <string name="store_onboarding_task_name_store_description">自訂商店名稱也能讓你商店的搜尋引擎最佳化。</string>
+    <string name="store_onboarding_task_name_store_title">為商店命名</string>
+    <string name="store_profiler_features_other">其他</string>
+    <string name="store_profiler_features_plugins_and_extensions">存取各式各樣的外掛程式和擴充功能</string>
+    <string name="store_profiler_features_store_customization">商店設計自訂選項</string>
+    <string name="store_profiler_features_scale_business">能隨著公司規模增長而擴充</string>
+    <string name="store_profiler_features_ipp">面對面收款</string>
+    <string name="store_profiler_features_payment_options">彈性、安全的付款選項</string>
+    <string name="store_profiler_features_sales_analytics">全方位銷售與分析報告</string>
+    <string name="store_profiler_features_product_management">易於管理商品和追蹤庫存</string>
+    <string name="store_profiler_features_main_button">建立我的商店</string>
+    <string name="store_profiler_features_description">你希望應用程式提供哪些功能？\n請告訴我們。</string>
+    <string name="store_profiler_features_title">你最喜歡\n哪些功能？</string>
+    <string name="store_creation_store_name_default">商店名稱</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#面對面收款：&lt;/b&gt;利用面對面收款拉抬銷量。 利用我們的應用程式或相容讀卡機，保障卡片交易安全無虞。</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#管理與建立訂單：&lt;/b&gt;即刻搜尋、更新或建立新訂單。 簡化你的訂單流程。</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#追蹤銷量與熱門商品：&lt;/b&gt;掌握即時銷量與熱門商品，提升商店的利潤。</string>
+    <string name="store_creation_in_progress_title_2">擴大你商店的\n功能</string>
+    <string name="store_creation_in_progress_title_1">快完成了！ 你的商店\n即將完工 </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">啟用 NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">只能少量運送的包裹 (需標記)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">有運送量限制的陸運包裹：氣溶膠、噴霧消毒劑、噴漆、髮膠、丙烷、丁烷、清潔產品等。 - 香氛、指甲油、去光水、溶劑、乾洗手、外用酒精、乙醇類產品等。 - 有運送量限制的陸運物品 (化妝品、清潔用品、塗料等)。</string>
+    <string name="shipping_label_hazmat_option_lighters">打火機包裹：獲准運送的打火機</string>
+    <string name="shipping_label_hazmat_option_id8000">ID8000 消費品包裹：可攜帶上機的 ID8000 消費品 (不易燃氣溶膠、易燃液體、有毒物質、其他危險物品)</string>
+    <string name="shipping_label_hazmat_option_ground_only">僅可陸運的危險物品 (未列出但僅可陸運的物品)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">例外數量的包裹 (例如少量易燃液體、腐蝕性物質、有毒或有害環境的物品 (需標記))</string>
+    <string name="shipping_label_hazmat_option_division_6_2">第 6.2 類：危險物品 - 生質物品 (例如實驗室檢測套組、採集的獲准運送新冠病毒檢測套組)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">第 6.1 類：有毒物品包裹 (LD50 上限為 50 mg/kg) - (殺蟲劑、除草劑等)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">第 5.2 類：有機過氧化物包裹</string>
+    <string name="shipping_label_hazmat_option_division_5_1">第 5.1 類：氧化劑包裹 - 過氧化氫 (濃度為 8 到 20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">第 4.1 類：可郵寄的易燃固體和安全火柴包裹。可安全擦劃盒裝火柴、紙板火柴、可郵寄的易燃固體</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">第 9 類：磁性物品包裹</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">第 9 類：未標記的鋰電池包裹。已安裝或包裝內含鋰電池 (未標記) 的全新電子裝置</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">第 9 類：乾冰包裹 (空運上限為 5 磅)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">第 9 類：已標記的鋰電池包裹。包裝內含鋰電池 (標記為 UN3481 或 UN3091) 的全新電子裝置</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">第 9 類：鋰電池退貨包裹。包含或包裝內含鋰電池的二手電子裝置 (需標記)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">第 9 類：已標記的鋰電池。僅可陸運的包裹 (全新的單一或備用鋰電池，標記為 UN3480 或 UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">第 8 類：不會溢出的濕電池包裹 (已密封的鉛酸電池)</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">第 8 類：腐蝕性物品包裹。可空運的腐蝕性物品 (特定清潔或除樹/除草化合物等)</string>
+    <string name="shipping_label_hazmat_option_class_7">第 7 類：放射性物品包裹 (例如煙霧探測器、礦物質、瞄具等)</string>
+    <string name="shipping_label_hazmat_option_class_6">第 6 類：包裹 (有毒物品)</string>
+    <string name="shipping_label_hazmat_option_class_5">第 5 類：包裹 (氧化劑)</string>
+    <string name="shipping_label_hazmat_option_class_4">第 4 類：包裹 (易燃固體)</string>
+    <string name="shipping_label_hazmat_option_class_3">第 3 類：包裹 (乾洗手、外用酒精、乙醇類產品、易燃液體等)</string>
+    <string name="shipping_label_hazmat_option_class_1">第 1 類：玩具推進器/安全保險絲包裹</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">可空運的乙醇包裹：(獲准運送的香水及乾洗手貨件)</string>
+    <string name="dialog_ok">確定</string>
     <string name="store_creation_country_list_picker_toolbar_title">選擇國家/地區</string>
     <string name="store_creation_country_picker_current_location_description">我們已自動偵測你的位置。 如果位置不正確，請在此變更。</string>
     <string name="store_creation_country_picker_title">貴公司位於何處？</string>
@@ -26,7 +124,6 @@ Language: zh_TW
     <string name="free_trial_feature_built_in_seo">內建 SEO</string>
     <string name="free_trial_feature_design_editing">設計與編輯無須程式碼</string>
     <string name="free_trial_feature_store_management">商店管理工具</string>
-    <string name="free_trial_summary_try_button">建立你的商店</string>
     <string name="free_trial_summary_hassle_free_store_ownership">輕鬆擁有商店</string>
     <string name="free_trial_summary_grow_your_business">拓展業務</string>
     <string name="free_trial_summary_start_selling_quickly">快速開始銷售</string>
@@ -159,13 +256,7 @@ Language: zh_TW
     <string name="more_settings">更多設定</string>
     <string name="maybe_later">稍後再說</string>
     <string name="product_sharing_regenerate">重新撰寫</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#每次銷售都會收到通知：&lt;/b&gt;接收即時銷售通知，讓你掌握所有環節。 每一筆新的銷售都能收到提示，讓你在歡慶成功的同時掌握商店的活動狀態。</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#輕觸即可新增及編輯產品：&lt;/b&gt;從應用程式即可新增產品、更新詳細資訊、上傳圖片和管理款式。輕鬆管理你的庫存最新狀態。</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#親自收款：&lt;/b&gt;透過親自收款拓展你的銷售商機。 使用此應用程式即可安全處理信用卡交易，甚至與相容的讀卡機連線，實現便利的親自收款。</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#管理及建立訂單：&lt;/b&gt;輕鬆處理訂單。 捲動、搜尋並變更訂單狀態。 隨時隨地為店內或電話購物建立新訂單。 簡化你的訂單管理程序。</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#追蹤銷售額和熱門產品：&lt;/b&gt;隨時掌握商店的即時表現。 找出最熱銷的產品並根據資訊做出決策，以獲得最大利潤。</string>
     <string name="store_creation_in_progress_description_1">商店準備就緒時，你會收到通知！ 儘管放輕鬆，讓我們在施展魔法的同時和你分享一些實用秘訣。🔮</string>
-    <string name="store_creation_in_progress_title_1">正在建立你的商店！ 只要幾分鐘就能完成</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">需要 PIN 碼，但「Tap To Pay」(卡緊收) 功能尚未提供支援。 請考慮使用外部讀卡機</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">購買讀卡機</string>
     <string name="order_sync_coupon_removed">優惠券無法套用，並已從訂單中移除</string>
@@ -277,11 +368,8 @@ Language: zh_TW
     <string name="store_creation_profiler_industry_home_furniture_garden">住家、家具和花園</string>
     <string name="store_creation_profiler_industry_food_drink">食物與飲料</string>
     <string name="store_creation_profiler_industry_health_beauty">健康與美容</string>
-    <string name="store_creation_in_progress_title_6">正在打開店門</string>
-    <string name="store_creation_in_progress_title_5">正在把燈光開起來</string>
-    <string name="store_creation_in_progress_title_4">正在進行最後修飾</string>
-    <string name="store_creation_in_progress_title_3">正在整理倉庫</string>
-    <string name="store_creation_in_progress_title_2">正在打下穩固地基</string>
+    <string name="store_creation_in_progress_title_4">正在開啟大門</string>
+    <string name="store_creation_in_progress_title_3">正在打開燈光</string>
     <string name="notifications_permission_description">我們需要你授予權限，將新訂單、評論等內容的推播通知傳送至你的裝置。</string>
     <string name="notifications_permission_title">通知</string>
     <string name="product_type_composite">複合產品</string>
@@ -321,6 +409,7 @@ Language: zh_TW
     <string name="free_trial_feature_social_advertising">社群媒體廣告</string>
     <string name="free_trial_feature_premium_themes">進階版佈景主題</string>
     <string name="free_trial_summary_credit_card_message">無需使用信用卡。</string>
+    <string name="free_trial_summary_try_button">免費試用</string>
     <string name="free_trial_summary_try_it">立即免費試用 14 天。</string>
     <string name="free_trial_summary_advertise">我們提供打造和經營線上商店所需的一切工具，由 WooCommerce 提供技術支援，並託管於 WordPress.com。</string>
     <string name="free_trial_summary_title">幾天內上線，經營好幾年</string>
@@ -1126,7 +1215,7 @@ Language: zh_TW
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請聯絡網站管理員以停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">已偵測到衝突的付款外掛程式</string>
-    <string name="order_creation_payment_tax">稅金</string>
+    <string name="order_creation_payment_tax">稅金總計</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安裝 Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">目前無法親自收款</string>

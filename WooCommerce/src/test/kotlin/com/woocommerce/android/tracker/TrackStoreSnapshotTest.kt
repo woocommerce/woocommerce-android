@@ -196,11 +196,11 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                 mapOf(
                     "products_count" to 1L,
                     "orders_count" to 2,
-                    "woocommerce-payments" to "not_installed",
-                    "woocommerce-gateway-stripe" to "not_installed",
-                    "woocommerce-gateway-stripe" to "not_installed",
-                    "woocommerce-square" to "not_installed",
-                    "woocommerce-paypal-payments" to "not_installed",
+                    "woocommerce_payments" to "not_installed",
+                    "woocommerce_gateway_stripe" to "not_installed",
+                    "woocommerce_gateway_stripe" to "not_installed",
+                    "woocommerce_square" to "not_installed",
+                    "woocommerce_paypal_payments" to "not_installed",
                 )
             )
         }
@@ -253,11 +253,11 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                 mapOf(
                     "products_count" to 1L,
                     "orders_count" to 2,
-                    "woocommerce-payments" to "installed_and_not_activated",
-                    "woocommerce-gateway-stripe" to "installed_and_not_activated",
-                    "woocommerce-gateway-stripe" to "installed_and_not_activated",
-                    "woocommerce-square" to "installed_and_not_activated",
-                    "woocommerce-paypal-payments" to "installed_and_not_activated",
+                    "woocommerce_payments" to "installed_and_not_activated",
+                    "woocommerce_gateway_stripe" to "installed_and_not_activated",
+                    "woocommerce_gateway_stripe" to "installed_and_not_activated",
+                    "woocommerce_square" to "installed_and_not_activated",
+                    "woocommerce_paypal_payments" to "installed_and_not_activated",
                 )
             )
         }
@@ -310,11 +310,11 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                 mapOf(
                     "products_count" to 1L,
                     "orders_count" to 2,
-                    "woocommerce-payments" to "installed_and_activated",
-                    "woocommerce-gateway-stripe" to "installed_and_activated",
-                    "woocommerce-gateway-stripe" to "installed_and_activated",
-                    "woocommerce-square" to "installed_and_activated",
-                    "woocommerce-paypal-payments" to "installed_and_activated",
+                    "woocommerce_payments" to "installed_and_activated",
+                    "woocommerce_gateway_stripe" to "installed_and_activated",
+                    "woocommerce_gateway_stripe" to "installed_and_activated",
+                    "woocommerce_square" to "installed_and_activated",
+                    "woocommerce_paypal_payments" to "installed_and_activated",
                 )
             )
         }
@@ -367,11 +367,11 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
                 mapOf(
                     "products_count" to 1L,
                     "orders_count" to 2,
-                    "woocommerce-payments" to "installed_and_activated",
-                    "woocommerce-gateway-stripe" to "installed_and_activated",
-                    "woocommerce-gateway-stripe" to "installed_and_activated",
-                    "woocommerce-square" to "installed_and_activated",
-                    "woocommerce-paypal-payments" to "not_installed",
+                    "woocommerce_payments" to "installed_and_activated",
+                    "woocommerce_gateway_stripe" to "installed_and_activated",
+                    "woocommerce_gateway_stripe" to "installed_and_activated",
+                    "woocommerce_square" to "installed_and_activated",
+                    "woocommerce_paypal_payments" to "not_installed",
                 )
             )
         }

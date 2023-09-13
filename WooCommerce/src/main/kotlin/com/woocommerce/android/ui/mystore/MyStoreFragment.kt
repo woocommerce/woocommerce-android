@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
-import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
@@ -262,6 +261,7 @@ class MyStoreFragment :
         )
     }
 
+    @Suppress("LongMethod")
     private fun setupOnboardingView() {
         storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
             when (state.show) {
@@ -334,7 +334,10 @@ class MyStoreFragment :
                 )
 
             is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
-                NameYourStoreDialogFragment().show(childFragmentManager, NameYourStoreDialogFragment.TAG)
+                findNavController()
+                    .navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToNameYourStoreDialogFragment(fromOnboarding = true)
+                    )
             }
 
             is ShowDialog -> showDialog()
@@ -434,6 +437,9 @@ class MyStoreFragment :
         }
         myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
             binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+            ((activity) as MainActivity).setSubtitle(storeName)
         }
     }
 
@@ -599,7 +605,7 @@ class MyStoreFragment :
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = myStoreViewModel.getSelectedSiteName()
+    override fun getFragmentSubtitle(): String = myStoreViewModel.storeName.value ?: ""
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)

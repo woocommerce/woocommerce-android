@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 11:54:03+0000
+Translation-Revision-Date: 2023-09-07 09:54:26+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="tax_rate_selector_edit_rates_button_label">管理画面で税率を編集</string>
+    <string name="tax_rate_selector_header_label">これにより顧客の住所が選択した税率の場所に変更されます。</string>
+    <string name="tax_rate_selector_info_icon_content_description">税率情報ダイアログを開くボタン</string>
+    <string name="tax_rate_selector_list_header">税率を選択する</string>
+    <string name="tax_rate_selector_footer_label">希望の税率が見つかりませんか ?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">現在、税率は配送先住所に基づいて計算されています%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">現在、税率は請求先住所に基づいて計算されています%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">現在、税率は店舗の住所に基づいて計算されています%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">管理画面で税率を編集</string>
+    <string name="tax_rates_redirect_to_admin_content_description">管理画面で税率を編集ボタン</string>
+    <string name="tax_rates_info_dialog_title">税金および税率</string>
+    <string name="tax_rates_info_dialog_secondary_text">ストアの管理画面でさまざまな場所の税率を管理できます。</string>
+    <string name="tax_rates_info_dialog_primary_text">税金は、顧客の請求先住所、配送先住所、または店舗の住所を税率の場所と一致させて計算されます。</string>
+    <string name="tax_rates_information_content_description">税率に関する情報</string>
+    <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments を使用することで、お客様は弊社の&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;に拘束されることに同意し、弊社&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;プライバシーポリシー&lt;/u&gt;&lt;/a&gt;を読んだものとみなされます。</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">セットアップ</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">WooPayments での情報の確認について&lt;a href=\'learnMore\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">セットアップを開始</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">WooPayments では Stripe と提携しています。 サインアップでは Stripe のサイトに移動します。 ビジネス情報と支払い情報の確認が求められます。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments の通知は WordPress.com アカウントのメールアドレスに送信されます。 新アカウントをご希望ですか ? &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳細はこちら。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">セットアップを始める前に</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4〜6分</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">推定所要時間</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">WooPayments を使用すると、支払いをすべて1か所で簡単に管理できます。 セットアップ費用や月額料金なしで、カード、Apple Pay、オフラインでの支払い、135種類以上の通貨をすべて利用できます。</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">ストア名を保存できません。 もう一度お試しください。</string>
+    <string name="settings_name_your_store_dialog_loading">新しいストア名を保存しています…</string>
+    <string name="settings_name_your_store_dialog_success">ストア名が設定されました。</string>
+    <string name="store_onboarding_name_your_store_dialog_success">ストア名が設定されました。 \n 再度変更するには、「ストア設定」にアクセスしてください。</string>
+    <string name="store_onboarding_name_your_store_dialog_title">ストア名を更新する</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">お疲れ様でした。 セットアップが完了し、支払いシステムを開始する準備が整いました。</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">手続きがすべて完了しました。</string>
+    <string name="store_onboarding_task_woopayments_setup_description">WooPayments を使用すると、セットアップ料金や月額料金なしで支払いをシームレスに管理できます。</string>
+    <string name="store_creation_store_name_settings_option">ストア名</string>
+    <string name="settings_account">アカウント設定</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">カテゴリーを選択</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">有害物質カテゴリー</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping は現在、%1$s による危険物の発送には対応していません。</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS 危険物検索ツール</string>
+    <string name="shipping_label_usps_search_tool">%1$s を使用して商品が郵送可能かわかります。</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat</string>
+    <string name="shipping_label_usps_hazmat_instructions">USPS® (%1$s) で危険物を安全に梱包、ラベル付け、発送する方法についてご確認ください。</string>
+    <string name="order_creation_tax_based_on_shipping_address">配送先住所に基づいて計算されます</string>
+    <string name="order_creation_tax_based_on_billing_address">請求先住所に基づいて計算されます</string>
+    <string name="order_creation_tax_based_on_store_address">店舗の基本住所に基づいて計算されます</string>
+    <string name="order_creation_price_after_discount_label">割引後の価格</string>
+    <string name="order_creation_total_label">注文合計</string>
+    <string name="order_creation_discount_percentage_label">計算されたパーセンテージ</string>
+    <string name="order_creation_discount_amount_label">算出額</string>
+    <string name="store_onboarding_name_your_store_dialog_label">ストア名</string>
+    <string name="store_onboarding_task_name_store_description">ストア名をカスタマイズすると、ストアの検索エンジンの最適化にも役立ちます。</string>
+    <string name="store_onboarding_task_name_store_title">ストアに名前を付ける</string>
+    <string name="store_profiler_features_other">その他</string>
+    <string name="store_profiler_features_plugins_and_extensions">幅広いプラグインや拡張機能へのアクセス</string>
+    <string name="store_profiler_features_store_customization">ストアデザインのカスタマイズオプション</string>
+    <string name="store_profiler_features_scale_business">ビジネスの成長に合わせて拡張できる機能</string>
+    <string name="store_profiler_features_ipp">オフラインでの支払い</string>
+    <string name="store_profiler_features_payment_options">柔軟で安全な支払いオプション</string>
+    <string name="store_profiler_features_sales_analytics">包括的な販売レポートおよび分析レポート</string>
+    <string name="store_profiler_features_product_management">簡単な商品管理と在庫追跡</string>
+    <string name="store_profiler_features_main_button">ストアを作成</string>
+    <string name="store_profiler_features_description">アプリでの使用を楽しみにしている\nことを教えてください。</string>
+    <string name="store_profiler_features_title">どの機能に\n一番ご興味をお持ちですか ?</string>
+    <string name="store_creation_store_name_default">ストア名</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#支払いを直接行う:&lt;/b&gt; オフラインでの支払いで売上を伸ばします。 当社のアプリまたは互換性のあるリーダーを使用してカードによる取引を安全にします。</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#注文を管理し作成する:&lt;/b&gt; 新しい注文を即座に検索、更新、または作成します。 注文プロセスを簡素化します。</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#売上と人気商品を追跡する:&lt;/b&gt; リアルタイムで売上や人気商品を常に把握してストアの収益性を高めます。</string>
+    <string name="store_creation_in_progress_title_2">ストアの\n機能を拡張 </string>
+    <string name="store_creation_in_progress_title_1">もう少しです ! ストアを\n構築中です </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC を有効化</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">少量提供パッケージ (ラベル必須)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">数量限定の陸送便パッケージ - エアゾール、スプレー消毒剤、スプレー塗料、ヘアスプレー、プロパン、ブタン、洗浄剤など - フレグランス、マニキュア、除光液、溶剤、手指消毒剤、消毒用アルコール、エタノールベース製品など - その他数量限定の陸送物質 (化粧品、洗浄剤、塗料など)</string>
+    <string name="shipping_label_hazmat_option_lighters">ライターパッケージ - 認可されたライター</string>
+    <string name="shipping_label_hazmat_option_id8000">ID8000日用品パッケージ - 航空便適合 ID8000日用品 (不燃性エアゾール、可燃性液体、有毒物質、その他の危険物)</string>
+    <string name="shipping_label_hazmat_option_ground_only">陸送便専用危険物 (リストに記載されていないが、陸送のみに制限される品目)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">例外数量提供パッケージ (例: 少量の可燃性液体、腐食性物質、毒性物質、環境に有害な物質 - ラベル必須)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">区分6.2 - 危険物 - 生体物質 (例: 臨床検査キット、認可された COVID 検査キットの返却)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">区分6.1 – 有毒物質パッケージ (LD50が50mg/kg 以下) - (殺虫剤、除草剤など)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">区分5.2 – 有機過酸化物パッケージ</string>
+    <string name="shipping_label_hazmat_option_division_5_1">区分5.1 – 酸化剤パッケージ - 過酸化水素 (濃度8～20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">区分4.1 – 郵送可能な可燃性固体および安全マッチパッケージ - 安全なボックスマッチ、ブックマッチ、郵送可能な可燃性固体</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">クラス9 – 磁化物質パッケージ</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">クラス9 – リチウム電池、ラベルのないパッケージ - リチウム電池が内蔵された新しい電子機器 (ラベルなし)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">クラス9 – ドライアイスパッケージ (航空便で発送する場合は5ポンドまで)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">クラス9 - リチウム電池、ラベル付きパッケージ - リチウム電池が内蔵された新しい電子機器 (UN3481または UN3091のラベル付き)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">クラス9 - リチウム電池 –返品パッケージ - リチウム電池が内蔵された使用済み電子機器 (ラベル必須)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">クラス9 - ラベル付きリチウム電池 – 陸送便専用パッケージ - 新品の個別または予備のリチウム電池 (UN3480または UN3090のラベル付き)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">クラス8 – 防漏型湿電池パッケージ - 密閉型鉛酸蓄電池</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">クラス8 – 腐食性物質パッケージ - 航空便適合腐食性物質 (特定の洗浄剤または樹木/除草剤など)</string>
+    <string name="shipping_label_hazmat_option_class_7">クラス7 – 放射性物質パッケージ (例: 煙感知器、鉱物、銃の照準器など)</string>
+    <string name="shipping_label_hazmat_option_class_6">クラス6 - パッケージ (毒性物質)</string>
+    <string name="shipping_label_hazmat_option_class_5">クラス5 - パッケージ (酸化剤)</string>
+    <string name="shipping_label_hazmat_option_class_4">クラス4 - パッケージ (可燃性固体)</string>
+    <string name="shipping_label_hazmat_option_class_3">クラス3 - パッケージ (手指消毒剤、消毒用アルコール、エタノールベース製品、引火性液体など)</string>
+    <string name="shipping_label_hazmat_option_class_1">クラス1 – 玩具用推進剤/安全ヒューズパッケージ</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">航空便適合エタノールパッケージ - (認可されたフレグランスおよび手指消毒剤の配送)</string>
+    <string name="dialog_ok">OK</string>
     <string name="store_creation_country_list_picker_toolbar_title">国を選択</string>
     <string name="store_creation_country_picker_current_location_description">位置情報が自動的に検出されました。 正しくない場合はここで変更してください。</string>
     <string name="store_creation_country_picker_title">活動拠点はどこですか ?</string>
@@ -26,7 +124,6 @@ Language: ja_JP
     <string name="free_trial_feature_built_in_seo">組み込み SEO</string>
     <string name="free_trial_feature_design_editing">コーディング不要のデザインと編集機能</string>
     <string name="free_trial_feature_store_management">ストア管理ツール</string>
-    <string name="free_trial_summary_try_button">ストアを作成</string>
     <string name="free_trial_summary_hassle_free_store_ownership">手間のかからないストア所有権</string>
     <string name="free_trial_summary_grow_your_business">ビジネスを成長させる</string>
     <string name="free_trial_summary_start_selling_quickly">すぐに販売を開始する</string>
@@ -159,13 +256,7 @@ Language: ja_JP
     <string name="more_settings">その他の設定</string>
     <string name="maybe_later">後で確認する</string>
     <string name="product_sharing_regenerate">もう一度記入する</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#すべての販売に関する通知が届く:&lt;/b&gt; 即時の販売通知をお送りします。 新たな売上がある度に通知が届くことで、成功を祝い、常にストアのアクティビティを把握できるようになります。</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#ワンタッチで商品を追加および編集:&lt;/b&gt; 新しい商品の追加、詳細の更新、画像のアップロード、バリエーションの管理をすべてアプリから行います。在庫を簡単に最新の状態に保つことができます。</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#直接支払いを受け取る:&lt;/b&gt; 直接支払いを受けることで販売の機会を拡大します。 アプリを使用してクレジットカード取引を安全に処理したり、互換性のあるカードリーダーに接続して便利な直接支払いを行ったりすることもできます。</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#注文を管理し作成:&lt;/b&gt; 注文を簡単に処理します。 注文ステータスをスクロール、検索、変更します。 店頭または電話で購入する場合は、その場で新しい注文を作成します。 注文管理プロセスを簡素化します。</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#売上と人気の高い商品を追跡:&lt;/b&gt; ストアのリアルタイムパフォーマンスの最新情報を入手します。 最も売れている商品を特定し、情報に基づいた意思決定を行い最大限の収益性を得ます。</string>
     <string name="store_creation_in_progress_description_1">ストアの準備が完了すると通知が届きます。 役立つヒントを共有しますので、腰をかけてリラックスしましょう。私たちがサポートいたします。🔮</string>
-    <string name="store_creation_in_progress_title_1">ストアを作成しています ! あと数分で完了します</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">PIN コードが必要ですが、Tap To Pay ではまだ対応していません。 外付けカードリーダーの使用を検討してください</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">カードリーダーを購入</string>
     <string name="order_sync_coupon_removed">クーポンを適用できず、注文から削除されました。</string>
@@ -277,11 +368,8 @@ Language: ja_JP
     <string name="store_creation_profiler_industry_home_furniture_garden">住宅、家具、庭</string>
     <string name="store_creation_profiler_industry_food_drink">食品・飲料</string>
     <string name="store_creation_profiler_industry_health_beauty">健康・美容</string>
-    <string name="store_creation_in_progress_title_6">扉を開いています</string>
-    <string name="store_creation_in_progress_title_5">明かりを点けています</string>
-    <string name="store_creation_in_progress_title_4">仕上げをしています</string>
-    <string name="store_creation_in_progress_title_3">倉庫を整理しています</string>
-    <string name="store_creation_in_progress_title_2">基礎を築いています</string>
+    <string name="store_creation_in_progress_title_4">扉を開いています</string>
+    <string name="store_creation_in_progress_title_3">明かりを点けています</string>
     <string name="notifications_permission_description">お使いのデバイスに届く新しい注文やレビューなどのプッシュ通知を送信するには権限が必要です。</string>
     <string name="notifications_permission_title">通知</string>
     <string name="product_type_composite">混合商品</string>
@@ -321,6 +409,7 @@ Language: ja_JP
     <string name="free_trial_feature_social_advertising">ソーシャル広告</string>
     <string name="free_trial_feature_premium_themes">プレミアムテーマ</string>
     <string name="free_trial_summary_credit_card_message">クレジットカードは不要です。</string>
+    <string name="free_trial_summary_try_button">無料でお試し</string>
     <string name="free_trial_summary_try_it">無料で14日間お試しください。</string>
     <string name="free_trial_summary_advertise">WooCommerce を使用し WordPress.com でホスティングされるオンラインストアの構築と拡大に必要なすべてを提供します。</string>
     <string name="free_trial_summary_title">数日で公開、長期的に成長</string>
@@ -1126,7 +1215,7 @@ Language: ja_JP
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、サイト管理者に連絡して、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">支払いプラグインが複数検出されました</string>
-    <string name="order_creation_payment_tax">税金</string>
+    <string name="order_creation_payment_tax">税合計</string>
     <string name="exclusive_or">または</string>
     <string name="settings_install_jetpack">Jetpack をインストール</string>
     <string name="card_reader_onboarding_account_rejected_header">オフラインでの支払いは現在利用できません</string>

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 
 object OrderCreateEditNavigator {
+    @Suppress("LongMethod")
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
         val navController = fragment.findNavController()
         val action = when (target) {
@@ -65,6 +66,11 @@ object OrderCreateEditNavigator {
             }
             is OrderCreateEditNavigationTarget.TaxRatesInfoDialog -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToTaxRatesInfoDialogFragment(
+                    target.state
+                )
+            }
+            is OrderCreateEditNavigationTarget.TaxRateSelector -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToTaxRateSelectorFragment(
                     target.state
                 )
             }

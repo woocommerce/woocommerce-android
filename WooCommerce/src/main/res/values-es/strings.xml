@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 11:54:04+0000
+Translation-Revision-Date: 2023-09-06 15:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="tax_rate_selector_edit_rates_button_label">Editar los tipos impositivos en el escritorio</string>
+    <string name="tax_rate_selector_header_label">Esto cambiará la dirección del cliente a la ubicación del tipo impositivo que selecciones.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Botón que abre el cuadro de diálogo de información sobre tipos impositivos</string>
+    <string name="tax_rate_selector_list_header">ELEGIR UN TIPO IMPOSITIVO</string>
+    <string name="tax_rate_selector_footer_label">¿No encuentras la tarifa que buscas?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Actualmente, el tipo impositivo se calcula en función de tu dirección de envío%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Actualmente, el tipo impositivo se calcula en función de tu dirección de facturación%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Actualmente, el tipo impositivo se calcula en función de la dirección de tu tienda%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Editar los tipos impositivos en el escritorio</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Botón Editar los tipos impositivos en el escritorio</string>
+    <string name="tax_rates_info_dialog_title">Impuestos y tipos impositivos</string>
+    <string name="tax_rates_info_dialog_secondary_text">Los tipos impositivos de las distintas ubicaciones pueden gestionarse en el escritorio de la tienda.</string>
+    <string name="tax_rates_info_dialog_primary_text">Los impuestos se calculan cotejando la dirección de facturación o de envío de tu cliente, o la dirección de tu tienda con una ubicación de tipo impositivo.</string>
+    <string name="tax_rates_information_content_description">Información sobre tipos impositivos</string>
+    <string name="store_onboarding_wcpay_setup_description">Si utilizas WooCommerce Payments, aceptas regirte por nuestros &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Términos y condiciones&lt;/u&gt;&lt;/a&gt; y confirmas que has leído nuestra &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Política de privacidad&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Configurar</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Más información&lt;/u&gt;&lt;/a&gt; sobre la verificación de tu información con WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Iniciar la configuración</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Nos hemos asociado con Stripe para desarrollar WooPayments. Se te dirigirá al sitio web de Stripe para que te inscribas. Te pediremos que verifiques los datos de pago y del negocio.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Tus notificaciones de WooPayments se enviarán al correo electrónico de tu cuenta de WordPress. ¿Prefieres crear una cuenta nueva? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Encontrarás más información aquí.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Antes de iniciar la configuración</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minutos</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Tiempo estimado de configuración</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Gestiona los pagos sin esfuerzo con WooPayments todo en un solo lugar. Acepta tarjetas, Apple Pay, pagos en persona y más de 135 monedas, todo ello sin costes de configuración ni tarifas mensuales.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">No se puede guardar el nombre de la tienda. Inténtalo de nuevo.</string>
+    <string name="settings_name_your_store_dialog_loading">Guardando nuevo nombre de tienda…</string>
+    <string name="settings_name_your_store_dialog_success">Nombre de la tienda configurado.</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Nombre de la tienda configurado. \n Para volver a cambiar, visita Ajustes de la tienda.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Actualizar el nombre de la tienda</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">¡Enhorabuena! Has navegado con éxito a través de la configuración y tu sistema de pago está listo para implementarse.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Listo.</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Gestiona los pagos sin problemas con WooPayments, sin tarifas mensuales ni de instalación.</string>
+    <string name="store_creation_store_name_settings_option">Nombre de la tienda</string>
+    <string name="settings_account">Ajustes de la cuenta</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Elige una categoría</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Categoría de materiales peligrosos</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping no admite actualmente envíos de materiales peligrosos a través de %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">Herramienta de búsqueda de materiales peligrosos de USPS.</string>
+    <string name="shipping_label_usps_search_tool">Determina la capacidad de envío de tu producto utilizando %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Descubre cómo empaquetar, etiquetar y enviar materiales peligrosos de forma segura a través de USPS® en %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Calculado según la dirección de envío</string>
+    <string name="order_creation_tax_based_on_billing_address">Calculado según la dirección de facturación</string>
+    <string name="order_creation_tax_based_on_store_address">Calculado según la dirección de la tienda</string>
+    <string name="order_creation_price_after_discount_label">Precio después del descuento</string>
+    <string name="order_creation_total_label">Total del pedido</string>
+    <string name="order_creation_discount_percentage_label">Porcentaje calculado</string>
+    <string name="order_creation_discount_amount_label">Importe calculado</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Nombre de la tienda</string>
+    <string name="store_onboarding_task_name_store_description">Personalizar el nombre de tu tienda también puede ayudarte a optimizar su motor de búsqueda.</string>
+    <string name="store_onboarding_task_name_store_title">Asigna un nombre a tu tienda</string>
+    <string name="store_profiler_features_other">Otros</string>
+    <string name="store_profiler_features_plugins_and_extensions">Acceso a una amplia variedad de plugins y extensiones</string>
+    <string name="store_profiler_features_store_customization">Opciones de personalización para el diseño de mi tienda</string>
+    <string name="store_profiler_features_scale_business">Capacidad de realizar mejoras a medida que crece mi negocio</string>
+    <string name="store_profiler_features_ipp">Pagos en persona</string>
+    <string name="store_profiler_features_payment_options">Opciones de pago seguro y flexible</string>
+    <string name="store_profiler_features_sales_analytics">Informes exhaustivos analíticos y de ventas</string>
+    <string name="store_profiler_features_product_management">Gestión de productos y control de inventario sencillos</string>
+    <string name="store_profiler_features_main_button">Crear mi tienda</string>
+    <string name="store_profiler_features_description">Dinos qué quieres\nal utilizar en nuestra aplicación.</string>
+    <string name="store_profiler_features_title">¿Qué funciones\nte interesan más?</string>
+    <string name="store_creation_store_name_default">Nombre de la tienda</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;Acepta pagos en persona:&lt;/b&gt; aumenta las ventas con los pagos en persona. Transacciones seguras con tarjeta con nuestra aplicación o nuestros lectores compatibles.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;Gestiona y crea pedidos:&lt;/b&gt; busca, actualiza o crea nuevos pedidos al instante. Simplifica el proceso de pedidos.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;Rastrea ventas y productos populares:&lt;/b&gt; mantente al tanto de las ventas en tiempo real y de los productos más populares para aumentar la rentabilidad de tu tienda.</string>
+    <string name="store_creation_in_progress_title_2">Ampliación de las capacidades \nde tu tienda</string>
+    <string name="store_creation_in_progress_title_1">¡Ya casi estamos! Tu tienda\nestá tomando forma </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Activar NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">Paquete de suministro para cantidades pequeñas (necesita etiquetas)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Paquete de transporte terrestre con cantidad limitada: aerosoles, desinfectantes en pulverizador, pintura en pulverizador, productos capilares en pulverizador, propano, butano, productos de limpieza, etc. - Fragancias, esmalte de uñas, quitaesmalte, disolventes, desinfectante de manos, alcohol isopropílico, productos con base de etanol, etc. - Otros materiales de transporte terrestre con cantidad limitada (cosméticos, productos de limpieza, pinturas, etc.).</string>
+    <string name="shipping_label_hazmat_option_lighters">Paquete de mecheros: mecheros autorizados</string>
+    <string name="shipping_label_hazmat_option_id8000">Paquete de mercancías de consumo ID8000: mercancías de consumo ID8000 aptas para transporte aéreo (aerosoles no inflamables, líquidos combustibles inflamables, sustancias tóxicas, materiales peligrosos varios)</string>
+    <string name="shipping_label_hazmat_option_ground_only">Materiales peligrosos solo por tierra (para artículos que no están en la lista, pero que están limitados al transporte terrestre)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">Paquete de suministro en cantidades permitidas (por ejemplo, líquidos inflamables en pequeño volumen, materiales peligrosos para el medio ambiente, tóxicos o corrosivos, necesita etiquetas)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">División 6.2 - Materiales peligrosos: materiales biológicos (por ejemplo, equipos de pruebas de laboratorio, devoluciones de kits de pruebas de la COVID autorizadas)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">División 6.1 - Paquetes de materiales tóxicos (con una LD50 de 50 mg/kg o menos): pesticidas, herbicidas, etc.</string>
+    <string name="shipping_label_hazmat_option_division_5_2">División 5.2 - Paquete de peróxidos orgánicos</string>
+    <string name="shipping_label_hazmat_option_division_5_1">División 5.1 - Paquete de oxidantes: peróxido de hidrógeno (concentración de 8 a 20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">División 4.1 - Paquete de cerillas de seguridad y sólidos inflamables que se pueden enviar: seguridad/fricción en las cajas de cerillas, en los cartones de cerillas o en sólidos inflamables que se pueden enviar</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">Clase 9 - Paquete de materiales imantados</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Clase 9 - Baterías de litio, paquete sin etiquetas: dispositivos electrónicos nuevos que contienen o se suministran con baterías de litio (sin etiquetas)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">Clase 9 - Paquete de hielo seco (limitado a 2,2 kg si se envía por avión)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">Clase 9 - Baterías de litio, paquete con etiquetas: dispositivos electrónicos nuevos empaquetados con baterías de litio (con etiqueta de UN3481 o UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">Clase 9 - Batería de litio - Paquete de devolución: dispositivos electrónicos usados que contienen o están empaquetados con baterías de litio (necesita etiquetas)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">Clase 9 - Batería de litio marcada - Solo paquete terrestre: baterías de litio nuevas o de repuesto (con etiqueta de UN3480 o UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">Clase 8 - Paquete de batería húmeda antiderrame: baterías de plomo-ácido selladas</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">Clase 8 - Paquete de materiales corrosivos: materiales corrosivos que se pueden enviar por avión (determinados compuestos de limpieza o veneno para árboles o hierbas, etc.).</string>
+    <string name="shipping_label_hazmat_option_class_7">Clase 7 - Paquete de materiales radioactivos (por ejemplo, detectores de humo, minerales, mirillas de armas, etc.).</string>
+    <string name="shipping_label_hazmat_option_class_6">Clase 6 - Paquete (materiales venenosos)</string>
+    <string name="shipping_label_hazmat_option_class_5">Clase 5 - Paquete (oxidantes)</string>
+    <string name="shipping_label_hazmat_option_class_4">Clase 4 - Paquete (sólidos inflamables)</string>
+    <string name="shipping_label_hazmat_option_class_3">Clase 3 - Paquete (desinfectante de manos, alcohol isopropílico, productos con base de etanol, líquidos inflamables, etc.).</string>
+    <string name="shipping_label_hazmat_option_class_1">Clase 1 - Paquete de fusible de seguridad/propulsores de juguete</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">Paquete de etanol que se puede enviar por avión (envíos de fragancias y desinfectantes de manos autorizados)</string>
+    <string name="dialog_ok">Aceptar</string>
     <string name="store_creation_country_list_picker_toolbar_title">Selecciona un país</string>
     <string name="store_creation_country_picker_current_location_description">Hemos detectado tu ubicación automáticamente. Cámbiala aquí si no es correcta.</string>
     <string name="store_creation_country_picker_title">¿Dónde está ubicado tu negocio?</string>
@@ -26,7 +124,6 @@ Language: es
     <string name="free_trial_feature_built_in_seo">SEO integrado</string>
     <string name="free_trial_feature_design_editing">Diseño y edición sin código</string>
     <string name="free_trial_feature_store_management">Herramientas de gestión de la tienda</string>
-    <string name="free_trial_summary_try_button">Crea tu tienda</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Propiedad de la tienda sin complicaciones</string>
     <string name="free_trial_summary_grow_your_business">Haz crecer tu negocio</string>
     <string name="free_trial_summary_start_selling_quickly">Empieza a vender rápidamente</string>
@@ -159,13 +256,7 @@ Language: es
     <string name="more_settings">Más ajustes</string>
     <string name="maybe_later">Quizá más tarde</string>
     <string name="product_sharing_regenerate">Volver a escribir</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Recibe notificaciones de todas las ventas:&lt;/b&gt; no te pierdas nada gracias a las notificaciones de venta instantáneas. Recibe alertas por cada nueva venta: así podrás celebrar tus logros y controlar la actividad de tu tienda.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Añade y edita productos en un clic:&lt;/b&gt; añade nuevos productos, actualiza los detalles, sube imágenes y gestiona las variaciones; todo ello desde la aplicación. Mantén tu inventario actualizado sin esfuerzo.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Acepta pagos en persona:&lt;/b&gt; aumenta tus oportunidades de venta aceptando pagos en persona. Usa la aplicación para procesar las transacciones con tarjeta de crédito de manera segura o incluso para conectarte con lectores de tarjetas compatibles y así aceptar pagos en persona cómodamente.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Gestiona y crea pedidos:&lt;/b&gt; tramita pedidos con facilidad. Desplázate por la página, busca y cambia el estado de los pedidos. Crea nuevos pedidos sobre la marcha para compras en el establecimiento o por teléfono. Simplifica el proceso de gestión de pedidos.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Haz un seguimiento de las ventas y de los productos populares:&lt;/b&gt; mantente al día del rendimiento en tiempo real de tu tienda. Identifica cuáles son tus productos más vendidos y toma decisiones fundamentadas para conseguir la máxima rentabilidad.</string>
     <string name="store_creation_in_progress_description_1">Te avisaremos cuando tu tienda esté lista. Relájate, disfruta y déjanos hacer nuestra magia a la vez que te ofrecemos útiles consejos.🔮</string>
-    <string name="store_creation_in_progress_title_1">Estamos creando tu tienda. El proceso solo durará unos minutos</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">Se requiere un código PIN, pero Tap to Pay aún no lo admite. Puedes usar un lector de tarjetas externo</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Compra un lector de tarjetas</string>
     <string name="order_sync_coupon_removed">No se ha podido aplicar el cupón y se ha eliminado del pedido</string>
@@ -277,11 +368,8 @@ Language: es
     <string name="store_creation_profiler_industry_home_furniture_garden">Hogar, muebles y jardín</string>
     <string name="store_creation_profiler_industry_food_drink">Alimentación y bebidas</string>
     <string name="store_creation_profiler_industry_health_beauty">Salud y belleza</string>
-    <string name="store_creation_in_progress_title_6">Abriendo las puertas</string>
-    <string name="store_creation_in_progress_title_5">Encendiendo las luces</string>
-    <string name="store_creation_in_progress_title_4">Dando los retoques finales</string>
-    <string name="store_creation_in_progress_title_3">Organizando el almacén</string>
-    <string name="store_creation_in_progress_title_2">Sentando las bases</string>
+    <string name="store_creation_in_progress_title_4">Apertura de puertas</string>
+    <string name="store_creation_in_progress_title_3">Encendido de luces</string>
     <string name="notifications_permission_description">Necesitamos tu permiso para enviarte notificaciones push de nuevos pedidos, opiniones, etc. en tu dispositivo.</string>
     <string name="notifications_permission_title">Notificaciones</string>
     <string name="product_type_composite">Producto compuesto</string>
@@ -321,6 +409,7 @@ Language: es
     <string name="free_trial_feature_social_advertising">Publicidad en redes sociales</string>
     <string name="free_trial_feature_premium_themes">Temas premium</string>
     <string name="free_trial_summary_credit_card_message">No hace falta tarjeta de crédito.</string>
+    <string name="free_trial_summary_try_button">Probar gratis</string>
     <string name="free_trial_summary_try_it">Pruébalo gratis durante 14 días.</string>
     <string name="free_trial_summary_advertise">Te ofrecemos todo lo que necesitas para crear y hacer crecer una tienda online, con la tecnología de WooCommerce y alojada en WordPress.com.</string>
     <string name="free_trial_summary_title">Lanzamiento en días, crecimiento durante años</string>
@@ -1126,7 +1215,7 @@ Language: es
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Los Pagos en Persona solo funcionarán si uno de los siguientes plugins está activado. Para continuar, ponte en contacto con un administrador del sitio y desactiva uno de estos plugins:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Los Pagos en Persona solo funcionarán si uno de los siguientes plugins está activado. Para continuar, desactiva uno de estos plugins:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Se han detectado plugins de pago conflictivos.</string>
-    <string name="order_creation_payment_tax">Impuestos</string>
+    <string name="order_creation_payment_tax">Impuestos totales</string>
     <string name="exclusive_or">o</string>
     <string name="settings_install_jetpack">Instalar Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pagos en persona no está disponible en este momento</string>

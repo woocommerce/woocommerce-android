@@ -1,0 +1,2 @@
+15.2:
+Android uygulamamız için yeni bir güncellemeyi duyurmaktan büyük heyecan duyuyoruz! Bu sürümde, daha kolay gezinme deneyimi için 'Hesabı Kapat' seçeneğini 'Hesap Ayarları' adlı yeni bir bölüme taşıdık. Ayrıca, doğru takibi sağlamak için siparişin rozet sayacındaki bazı sorunları giderdik. Ayrıca, daha sorunsuz bir kurulum süreci için WooPayments yeni müşteri görevinde iyileştirmeler yaptık. Daha iyi bir kullanıcı deneyimi için şimdi güncelleyin!
