@@ -785,6 +785,7 @@ class OrderDetailViewModel @Inject constructor(
                 orderEligibleForInPersonPayments
             ),
             isAIThankYouNoteButtonShown = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
+                selectedSite.get().isWPComAtomic &&
                 order.status == Order.Status.Completed
         )
     }
