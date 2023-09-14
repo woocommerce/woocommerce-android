@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-30 16:54:04+0000
+Translation-Revision-Date: 2023-09-06 23:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">Название сайта</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Изменить налоговые ставки в консоли</string>
+    <string name="tax_rate_selector_header_label">Адрес клиента будет изменён на адрес, где действует выбранная вами налоговая ставка.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Кнопка открытия диалогового окна с информацией о налоговых ставках</string>
+    <string name="tax_rate_selector_list_header">ВЫБРАТЬ НАЛОГОВУЮ СТАВКУ</string>
+    <string name="tax_rate_selector_footer_label">Не можете найти нужную налоговую ставку?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Сейчас налоговая ставка рассчитывается на основе адреса доставки%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Сейчас налоговая ставка рассчитывается на основе платёжного адреса%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Сейчас налоговая ставка рассчитывается на основе адреса магазина%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Изменить налоговые ставки в консоли</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Кнопка «Изменить налоговые ставки в консоли»</string>
+    <string name="tax_rates_info_dialog_title">Налоги и налоговые ставки</string>
+    <string name="tax_rates_info_dialog_secondary_text">Налоговые ставки для разных адресов можно изменить в консоли магазина.</string>
+    <string name="tax_rates_info_dialog_primary_text">Налоги рассчитываются на основе сопоставления платёжного адреса, адреса доставки или адреса магазина с адресом, где действует налоговая ставка.</string>
+    <string name="tax_rates_information_content_description">Сведения о налоговых ставках</string>
+    <string name="store_onboarding_wcpay_setup_description">Используя WooCommerce Payments, вы принимаете наши &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Условия предоставления услуг&lt;/u&gt;&lt;/a&gt; и подтверждаете, что ознакомились с &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Политикой конфиденциальности&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Настроить</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt; о подтверждении вашей информации на WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Начать настройку</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Партнёр WooPayments — платёжная система Stripe. Вы будете перенаправлены на сайт Stripe для регистрации. Мы попросим вас подтвердить сведения о вашем бизнесе и платёжные данные.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Уведомления WooPayments будут приходить на адрес эл. почты, указанный в вашей учётной записи WordPress.com. Хотите использовать новую учётную запись? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробности см. здесь.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Перед началом настройки</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 минут</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Примерное время настройки</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Управляйте платежами без усилий с помощью WooPayments — всё на одной консоли. Принимайте карты, платежи Apple Pay, очные платежи и более 135 валют — без платы за настройку и ежемесячное использование.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Не удалось сохранить название магазина. Повторите попытку.</string>
+    <string name="settings_name_your_store_dialog_loading">Сохранение нового названия магазина…</string>
+    <string name="settings_name_your_store_dialog_success">Название магазина сохранено!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Название магазина сохранено! \n Чтобы изменить его снова, перейдите в «Настройки магазина».</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Обновить название магазина</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Поздравляем! Вы успешно прошли настройку — ваша платёжная система готова к работе.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Готово!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Управляйте платежами с помощью WooPayments — без платы за настройку и ежемесячное использование.</string>
+    <string name="store_creation_store_name_settings_option">Название магазина</string>
+    <string name="settings_account">Настройки учётной записи</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Выбрать категорию</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Категория опасных веществ</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">В настоящее время WooCommerce Shipping не поддерживает доставку опасных веществ через %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">Инструмент поиска опасных веществ USPS.</string>
+    <string name="shipping_label_usps_search_tool">С помощью %1$s выясните, можно ли доставить ваш товар по почте.</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Узнайте, как надежно упаковать, выполнить адресацию и доставить опасные вещества с помощью USPS® в %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Вычислено на основе адреса доставки</string>
+    <string name="order_creation_tax_based_on_billing_address">Вычислено на основе платёжного адреса</string>
+    <string name="order_creation_tax_based_on_store_address">Вычислено на основе адреса магазина</string>
+    <string name="order_creation_price_after_discount_label">Цена со скидкой</string>
+    <string name="order_creation_total_label">Общая сумма заказа</string>
+    <string name="order_creation_discount_percentage_label">Расчётный процент</string>
+    <string name="order_creation_discount_amount_label">Расчётная сумма</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Название магазина</string>
     <string name="store_onboarding_task_name_store_description">Правильный выбор названия магазина может помочь в поисковой оптимизации.</string>
     <string name="store_onboarding_task_name_store_title">Назовите магазин</string>
     <string name="store_profiler_features_other">Другое</string>
@@ -1165,7 +1215,7 @@ Language: ru
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения обратитесь к администратору сайта, чтобы деактивировать один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения деактивируйте один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Обнаружены конфликтующие плагины оплаты</string>
-    <string name="order_creation_payment_tax">Налоги</string>
+    <string name="order_creation_payment_tax">Общая сумма налогов</string>
     <string name="exclusive_or">или</string>
     <string name="settings_install_jetpack">Установить Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">В настоящее время очные платежи недоступны</string>
@@ -1847,7 +1897,7 @@ Language: ru
     <string name="product_downloadable_files_name_invalid">Введите правильное имя</string>
     <string name="product_downloadable_files_add_manually">Введите URL-адрес файла</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Из библиотеки файлов WordPress</string>
-    <string name="product_downloadable_files_add_from_device">С устройства</string>
+    <string name="product_downloadable_files_add_media_from_device">С устройства</string>
     <string name="product_downloadable_files_url_invalid">Убедитесь, что введен допустимый URL-адрес</string>
     <string name="product_downloadable_files_upload_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_downloadable_files_upload_dialog_title">Загрузка файлов</string>

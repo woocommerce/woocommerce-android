@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 16:54:04+0000
+Translation-Revision-Date: 2023-09-06 15:54:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">שם האתר</string>
+    <string name="tax_rate_selector_edit_rates_button_label">לערוך את שיעורי המיסים במקטע מנהל המערכת</string>
+    <string name="tax_rate_selector_header_label">הפעולה הזאת תשנה את כתובת הלקוח למיקום של שיעור המס שבחרת.</string>
+    <string name="tax_rate_selector_info_icon_content_description">כפתור שפותח את תיבת הדו-שיח לפרטים של שיעורי המיסים</string>
+    <string name="tax_rate_selector_list_header">לבחור שיעור מס</string>
+    <string name="tax_rate_selector_footer_label">לא הצלחת למצוא את שיעור המס שנדרש לך?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">שיעור המס שלך מחושב כעת לפי כתובת המשלוח שלך⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">שיעור המס שלך מחושב כעת לפי כתובת החיוב שלך⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">שיעור המס שלך מחושב כעת לפי כתובת החנות שלך⁦%1$s⁩</string>
+    <string name="tax_rates_redirect_to_admin_button_label">לערוך את שיעורי המיסים במקטע מנהל המערכת</string>
+    <string name="tax_rates_redirect_to_admin_content_description">הכפתור \'לערוך את שיעורי המיסים במקטע מנהל המערכת\'</string>
+    <string name="tax_rates_info_dialog_title">מיסים ושיעורי מיסים</string>
+    <string name="tax_rates_info_dialog_secondary_text">ניתן לנהל שיעורי מיסים למיקומים שונים במקטע מנהל המערכת של החנות.</string>
+    <string name="tax_rates_info_dialog_primary_text">המיסים מחושבים לפי הכתובת לחיוב או הכתובת למשלוח של הלקוח, או לפי הכתובת של החנות שלך, והתאמת הכתובת הנבחרת למיקום של שיעור המס.</string>
+    <string name="tax_rates_information_content_description">מידע לגבי שיעורי מיסים</string>
+    <string name="store_onboarding_wcpay_setup_description">השימוש ב-WooCommerce Payments מהווה את הסכמתך לפעול בכפוף &lt;a href=\'termsOfService\'&gt;&lt;u&gt;לתנאי השימוש&lt;/u&gt;&lt;/a&gt;, ומאשר שקראת את &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;מדיניות הפרטיות&lt;/u&gt;&lt;/a&gt; שלנו.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">הגדרה</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי אימות הפרטים שלך ב-WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">להתחיל בהגדרה</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">אנחנו משתפים פעולה עם Stripe בשירות של WooPayments. אנחנו נפנה אותך להרשמה באתר של Stripe. נבקש ממך לאמת את העסק ואת פרטי התשלום שלך.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">ההודעות של WooPayments יישלחו אל האימייל של חשבונך ב-WordPress.com. רוצה ליצור חשבון חדש? &lt;a href=\'learnMore\'&gt;&lt;u&gt;ניתן למצוא כאן פרטים נוספים.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">לפני שנתחיל בתהליך ההגדרה</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 דקות</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">זמן משוער להקמה</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">לנהל תשלומים ללא מאמץ עם WooPayments ממקום אחד. ניתן לקבל תשלומים באמצעות כרטיסים, Apple Pay ותשלומים באופן אישי במעל 135 מטבעות שונים – כל התשלומים ללא עלויות הקמה או עמלות חודשיות.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">אין אפשרות לשמור את שם החנות. יש לנסות שוב.</string>
+    <string name="settings_name_your_store_dialog_loading">שומר את שם החנות החדש…</string>
+    <string name="settings_name_your_store_dialog_success">שם החנות הוגדר!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">שם החנות הוגדר! \n כדי לשנות את ההגדרה שוב, יש לעבור אל \'הגדרות החנות\'.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">לעדכן את שם החנות</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">איחולינו! השלמת בהצלחה את תהליך ההגדרה ומערכת התשלומים שלך מוכנה לשימוש.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">הצלחת!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">לנהל תשלומים בצורה יעילה עם WooPayments, ללא עלויות הקמה וללא עמלות חודשיות.</string>
+    <string name="store_creation_store_name_settings_option">שם החנות</string>
+    <string name="settings_account">הגדרות חשבון</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">בחר קטגוריה</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">קטגוריית חומרים מסוכנים</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">השירות של WooCommerce Shipping כרגע לא תומך במשלוחי HAZMAT דרך ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_search_tool_link_text">כלי החיפוש של USPS HAZMAT.</string>
+    <string name="shipping_label_usps_search_tool">להבין את אפשרויות השליחה של המוצר שלך בדואר באמצעות ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">ללמוד איך לארוז חבילות HAZMAT, להכין תוויות עבורן ולשלוח אותן דרך USPS®‎ בכתובת ⁦%1$s⁩</string>
+    <string name="order_creation_tax_based_on_shipping_address">לחשב לפי כתובת המשלוח</string>
+    <string name="order_creation_tax_based_on_billing_address">לחשב לפי כתובת החיוב</string>
+    <string name="order_creation_tax_based_on_store_address">לחשב לפי כתובת החנות</string>
+    <string name="order_creation_price_after_discount_label">מחיר לאחר הנחה</string>
+    <string name="order_creation_total_label">סך כל ההזמנה</string>
+    <string name="order_creation_discount_percentage_label">אחוז מחושב</string>
+    <string name="order_creation_discount_amount_label">סכום מחושב</string>
+    <string name="store_onboarding_name_your_store_dialog_label">שם החנות</string>
     <string name="store_onboarding_task_name_store_description">התאמה אישית של שם החנות יכולה גם לעזור למיטוב של החנות במנועי החיפוש.</string>
     <string name="store_onboarding_task_name_store_title">יש לציין שם לחנות שלך</string>
     <string name="store_profiler_features_other">אחר</string>
@@ -1165,7 +1215,7 @@ Language: he_IL
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש ליצור קשר עם מנהל האתר כדי לכבות את אחד מהתוספים האלו על מנת להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש לכבות את אחד מהתוספים האלו כדי להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">תוספי תשלומים מתנגשים זוהו</string>
-    <string name="order_creation_payment_tax">מיסים</string>
+    <string name="order_creation_payment_tax">סך כל המיסים</string>
     <string name="exclusive_or">או</string>
     <string name="settings_install_jetpack">להתקין את Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">תשלומים באופן אישי אינם זמינים כרגע</string>
@@ -1847,7 +1897,7 @@ Language: he_IL
     <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
     <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">מספריית המדיה של WordPress</string>
-    <string name="product_downloadable_files_add_from_device">מהמכשיר</string>
+    <string name="product_downloadable_files_add_media_from_device">מהמכשיר</string>
     <string name="product_downloadable_files_url_invalid">יש לוודא שכתובת ה-URL שהוזנה חוקית</string>
     <string name="product_downloadable_files_upload_dialog_message">רק רגע…</string>
     <string name="product_downloadable_files_upload_dialog_title">מעלה קבצים</string>

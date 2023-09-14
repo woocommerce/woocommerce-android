@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 16:54:04+0000
+Translation-Revision-Date: 2023-09-07 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">網站標題</string>
+    <string name="tax_rate_selector_edit_rates_button_label">使用管理員編輯稅率</string>
+    <string name="tax_rate_selector_header_label">如此顧客地址即會變更至所選稅率的地點。</string>
+    <string name="tax_rate_selector_info_icon_content_description">開啟稅率資訊對話方塊的按鈕</string>
+    <string name="tax_rate_selector_list_header">選取稅率</string>
+    <string name="tax_rate_selector_footer_label">找不到所需的稅率嗎？</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">你的稅率目前是依運送地址計算%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">你的稅率目前是依帳單地址計算%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">你的稅率目前是依商店地址計算%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">使用管理員編輯稅率</string>
+    <string name="tax_rates_redirect_to_admin_content_description">「使用管理員編輯稅率」按鈕</string>
+    <string name="tax_rates_info_dialog_title">稅金與稅率</string>
+    <string name="tax_rates_info_dialog_secondary_text">你可以用商店管理員來管理不同地點的稅率。</string>
+    <string name="tax_rates_info_dialog_primary_text">稅金計算方式是根據顧客帳單或運送地址的比對結果，或依照稅率地點的商店地址。</string>
+    <string name="tax_rates_information_content_description">稅率資訊</string>
+    <string name="store_onboarding_wcpay_setup_description">使用 WooCommerce Payments，即表示你同意遵守我們的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服務條款&lt;/u&gt;&lt;/a&gt;，並確認已詳閱我們的&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;隱私權政策&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">設定</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;如何向 WooPayments 驗證個人資訊。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">開始設定</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">我們已與 Stripe 合作，為 WooPayments 提供支援。 系統會將你導入 Stripe 的網站進行註冊。 我們會要求你驗證商家和付款詳細資料。</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments 通知會傳送至您的 WordPress.com 帳號電子郵件信箱。 想要使用新帳號嗎？ &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳情請見此處。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">開始設定之前</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 分鐘</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">預估設定時間</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">運用 WooPayments，集中一處輕鬆管理付款。 接受金融卡、Apple Pay、親自收款，以及超過 135 種不同貨幣，完全免設定費或月費。</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">無法儲存商店名稱， 請再試一次。</string>
+    <string name="settings_name_your_store_dialog_loading">正在儲存新商店名稱……</string>
+    <string name="settings_name_your_store_dialog_success">商店名稱設定完成！</string>
+    <string name="store_onboarding_name_your_store_dialog_success">商店名稱設定完成！ \n 若要再度變更，請造訪「商店設定」。</string>
+    <string name="store_onboarding_name_your_store_dialog_title">更新商店名稱</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">恭喜！ 你已成功完成設定流程，付款系統也準備就緒。</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">你辦到了！</string>
+    <string name="store_onboarding_task_woopayments_setup_description">運用 WooPayments 流暢管理付款，免設定費或月費。</string>
+    <string name="store_creation_store_name_settings_option">商店名稱</string>
+    <string name="settings_account">帳號設定</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">請選擇分類</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">危險物品分類</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping 目前不支援透過 %1$s 的危險物品貨件。</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS 危險物品搜尋工具</string>
+    <string name="shipping_label_usps_search_tool">使用 %1$s 確認你的商品是否可郵寄。</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat</string>
+    <string name="shipping_label_usps_hazmat_instructions">瞭解如何透過 USPS® (%1$s) 安全地包裝、貼標籤，並運送危險物品。</string>
+    <string name="order_creation_tax_based_on_shipping_address">以運送地址計算</string>
+    <string name="order_creation_tax_based_on_billing_address">以帳單地址計算</string>
+    <string name="order_creation_tax_based_on_store_address">以商店地址計算</string>
+    <string name="order_creation_price_after_discount_label">折扣後價格</string>
+    <string name="order_creation_total_label">訂單總計</string>
+    <string name="order_creation_discount_percentage_label">已計百分比</string>
+    <string name="order_creation_discount_amount_label">已計金額</string>
+    <string name="store_onboarding_name_your_store_dialog_label">商店名稱</string>
     <string name="store_onboarding_task_name_store_description">自訂商店名稱也能讓你商店的搜尋引擎最佳化。</string>
     <string name="store_onboarding_task_name_store_title">為商店命名</string>
     <string name="store_profiler_features_other">其他</string>
@@ -1165,7 +1215,7 @@ Language: zh_TW
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請聯絡網站管理員以停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">已偵測到衝突的付款外掛程式</string>
-    <string name="order_creation_payment_tax">稅金</string>
+    <string name="order_creation_payment_tax">稅金總計</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安裝 Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">目前無法親自收款</string>
@@ -1847,7 +1897,7 @@ Language: zh_TW
     <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
     <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">來自 WordPress 媒體庫</string>
-    <string name="product_downloadable_files_add_from_device">來自裝置</string>
+    <string name="product_downloadable_files_add_media_from_device">來自裝置</string>
     <string name="product_downloadable_files_url_invalid">檢查輸入的 URL 是否有效</string>
     <string name="product_downloadable_files_upload_dialog_message">請稍候…</string>
     <string name="product_downloadable_files_upload_dialog_title">正在上傳檔案</string>

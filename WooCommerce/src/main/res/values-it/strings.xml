@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-30 09:54:04+0000
+Translation-Revision-Date: 2023-09-06 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">Titolo del sito</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
+    <string name="tax_rate_selector_header_label">Questa azione modificherà l\'indirizzo del cliente nella località dell\'aliquota d\'imposta selezionata.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Pulsante che apre la finestra di dialogo delle informazioni sulle aliquote d\'imposta</string>
+    <string name="tax_rate_selector_list_header">SELEZIONA UN\'ALIQUOTA D\'IMPOSTA</string>
+    <string name="tax_rate_selector_footer_label">Non riesci a trovare l\'aliquota che cerchi?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">La tua aliquota d\'imposta viene attualmente calcolata in base al tuo indirizzo di spedizione%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">La tua aliquota d\'imposta viene attualmente calcolata in base al tuo indirizzo di fatturazione%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">La tua aliquota d\'imposta viene attualmente calcolata in base all\'indirizzo del tuo negozio%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
+    <string name="tax_rates_info_dialog_title">Tasse e aliquote d\'imposta</string>
+    <string name="tax_rates_info_dialog_secondary_text">Le aliquote d\'imposta per diverse località possono essere gestite nella pagina dell\'amministratore del negozio.</string>
+    <string name="tax_rates_info_dialog_primary_text">Le tasse vengono calcolate abbinando l\'indirizzo di fatturazione o di spedizione del cliente o l\'indirizzo del tuo negozio a una località dell\'aliquota d\'imposta.</string>
+    <string name="tax_rates_information_content_description">Informazioni sulle tasse</string>
+    <string name="store_onboarding_wcpay_setup_description">Usando WooCommerce Payments, accetti di essere vincolato dai &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e confermi di aver letto la &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Politica sulla privacy&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Configura</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sulla verifica delle tue informazioni con WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Inizia l\'impostazione</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Collaboriamo con Stripe per WooPayments. Verrai indirizzato al sito di Stripe per l\'iscrizione. Ti chiederemo di verificare i dettagli della tua attività e di pagamento.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Le notifiche di WooPayments verranno inviate all\'e-mail del tuo account WordPress.com. Preferisci un nuovo account? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Trovi ulteriori dettagli qui.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Prima di iniziare l\'impostazione</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minuti</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Tempo di impostazione stimato</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Gestisci senza problemi i pagamenti con WooPayments da un\'unica postazione. Accetta carte, Apple Pay, pagamenti di persona e oltre 135 valute, il tutto senza costi di impostazione o tariffe mensili.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Impossibile salvare il nome del negozio. Riprova.</string>
+    <string name="settings_name_your_store_dialog_loading">Salvataggio del nuovo nome del negozio in corso…</string>
+    <string name="settings_name_your_store_dialog_success">Nome del negozio impostato.</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Nome del negozio impostato. \n Per modificare di nuovo, visita le Impostazioni del negozio.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Aggiorna il nome del negozio</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Complimenti. Hai completato con successo l\'impostazione e il tuo sistema di pagamento è pronto per essere usato.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Ce l\'hai fatta.</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Gestisci senza problemi i pagamenti con WooPayments, senza impostazione o tariffe mensili.</string>
+    <string name="store_creation_store_name_settings_option">Nome del negozio</string>
+    <string name="settings_account">Impostazioni dell\'account</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Seleziona una categoria</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Categoria dei materiali pericolosi</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping attualmente non supporta le spedizioni HAZMAT tramite %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">Strumento di ricerca di USPS HAZMAT.</string>
+    <string name="shipping_label_usps_search_tool">Determina la disponibilità del tuo prodotto usando %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Scopri come imballare, etichettare e spedire con HAZMAT in modo sicuro tramite USPS® su %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Calcolato sull\'indirizzo di spedizione</string>
+    <string name="order_creation_tax_based_on_billing_address">Calcolato sull\'indirizzo di fatturazione</string>
+    <string name="order_creation_tax_based_on_store_address">Calcolato sull\'indirizzo di base del negozio</string>
+    <string name="order_creation_price_after_discount_label">Prezzo dopo lo sconto</string>
+    <string name="order_creation_total_label">Totale ordine</string>
+    <string name="order_creation_discount_percentage_label">Percentuale calcolata</string>
+    <string name="order_creation_discount_amount_label">Importo calcolato</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Nome del negozio</string>
     <string name="store_onboarding_task_name_store_description">La personalizzazione del nome del negozio può anche agevolarne l\'ottimizzazione per i motori di ricerca.</string>
     <string name="store_onboarding_task_name_store_title">Dai un nome al tuo negozio</string>
     <string name="store_profiler_features_other">Altro</string>
@@ -1165,7 +1215,7 @@ Language: it
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">I pagamenti di persona funzioneranno solo con uno dei seguenti plugin attivato. Per continuare, contatta un amministratore del sito per disattivare uno di questi plugin:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">I pagamenti di persona funzioneranno solo con uno dei seguenti plugin attivato. Per continuare disattiva uno di questi plugin:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Conflitto con i plugin di pagamento rilevato</string>
-    <string name="order_creation_payment_tax">Imposte</string>
+    <string name="order_creation_payment_tax">Totale imposte</string>
     <string name="exclusive_or">oppure</string>
     <string name="settings_install_jetpack">Installa Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pagamenti di persona attualmente non disponibile</string>
@@ -1847,7 +1897,7 @@ Language: it
     <string name="product_downloadable_files_name_invalid">Inserisci un nome valido</string>
     <string name="product_downloadable_files_add_manually">Inserisci URL file</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Dalla libreria multimediale WordPress</string>
-    <string name="product_downloadable_files_add_from_device">Dal dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">Dal dispositivo</string>
     <string name="product_downloadable_files_url_invalid">Verifica che l\'URL inserito sia valido</string>
     <string name="product_downloadable_files_upload_dialog_message">Attendi…</string>
     <string name="product_downloadable_files_upload_dialog_title">Caricamento file</string>

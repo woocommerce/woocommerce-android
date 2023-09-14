@@ -2,23 +2,29 @@ package com.woocommerce.android.ui.orders.creation.taxes.rates
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
@@ -34,34 +40,104 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel.ViewState
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun TaxRateSelectorScreen(
-    viewState: StateFlow<TaxRateSelectorViewModel.ViewState>,
+    viewState: StateFlow<ViewState>,
     onEditTaxRatesInAdminClicked: () -> Unit,
     onInfoIconClicked: () -> Unit,
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onDismiss: () -> Unit,
+    onLoadMore: () -> Unit,
+    onEmptyScreenButtonClicked: () -> Unit,
+    onAutoRateToggleStateChanged: (Boolean) -> Unit,
 ) {
+    val state = viewState.collectAsState().value
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
-        topBar = { Toolbar(onDismiss, onInfoIconClicked) }
+        topBar = { Toolbar(onDismiss, onInfoIconClicked) },
+        bottomBar = {
+            if (FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE.isEnabled()) {
+                BottomBar(onAutoRateToggleStateChanged, state)
+            }
+        },
     ) {
         TaxRates(
             Modifier.padding(it),
-            viewState.collectAsState().value,
+            state,
             onInfoIconClicked,
             onTaxRateClick,
-            onEditTaxRatesInAdminClicked
+            onEditTaxRatesInAdminClicked,
+            onLoadMore,
+            onEmptyScreenButtonClicked,
+        )
+    }
+}
+
+@Composable
+fun EmptyTaxRateSelectorList(
+    onButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.tax_rate_selector_empty_list_title),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_tax),
+            contentDescription = null,
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
+        Text(
+            text = stringResource(id = R.string.tax_rate_selector_empty_list_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_150),
+                end = dimensionResource(id = R.dimen.major_150)
+            )
+        )
+        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
+        WCColoredButton(
+            onClick = onButtonClicked,
+            text = stringResource(id = R.string.tax_rate_selector_empty_list_button),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            trailingIcon =
+            {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_external),
+                    contentDescription = stringResource(id = R.string.tax_rate_selector_empty_list_button_alt),
+                )
+            }
         )
     }
 }
@@ -94,42 +170,125 @@ private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
 }
 
 @Composable
+private fun BottomBar(onAutoRateSwitchStateChanged: (Boolean) -> Unit, state: ViewState) = ConstraintLayout(
+    modifier = Modifier.fillMaxWidth()
+) {
+    val (label, subtitle, autoRateSwitch, divider) = createRefs()
+    Divider(
+        Modifier.constrainAs(divider) {
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            top.linkTo(parent.top)
+        }
+    )
+    Switch(
+        modifier = Modifier
+            .constrainAs(autoRateSwitch) {
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        checked = state.isAutoRateEnabled,
+        onCheckedChange = onAutoRateSwitchStateChanged
+    )
+    Text(
+        text = stringResource(id = R.string.tax_rate_selector_auto_rate_label),
+        style = MaterialTheme.typography.body1,
+        modifier = Modifier
+            .constrainAs(label) {
+                start.linkTo(parent.start)
+                end.linkTo(autoRateSwitch.end)
+                top.linkTo(parent.top)
+            }
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.minor_00),
+                top = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.minor_50),
+            )
+            .fillMaxWidth()
+    )
+    Text(
+        text = stringResource(id = R.string.tax_rate_selector_auto_rate_subtitle),
+        style = MaterialTheme.typography.caption,
+        modifier = Modifier
+            .constrainAs(subtitle) {
+                start.linkTo(parent.start)
+                end.linkTo(autoRateSwitch.end)
+                top.linkTo(label.bottom)
+            }
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.minor_00),
+            )
+            .fillMaxWidth()
+    )
+}
+
+@Composable
 private fun TaxRates(
     modifier: Modifier = Modifier,
-    state: TaxRateSelectorViewModel.ViewState,
+    state: ViewState,
     onInfoIconClicked: () -> Unit,
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onEditTaxRatesInAdminClicked: () -> Unit,
+    onLoadMore: () -> Unit = {},
+    onEmptyScreenButtonClicked: () -> Unit,
 ) {
+    val listState = rememberLazyListState()
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
+        state = listState,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
             Header(onInfoIconClicked)
         }
-        item {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
-                        vertical = dimensionResource(
-                            id = R.dimen.minor_100
-                        )
-                    ),
-                fontSize = 13.sp,
-                color = colorResource(id = R.color.woo_gray_40),
-                text = stringResource(R.string.tax_rate_selector_list_header)
-            )
-            Divider()
+        when {
+            state.isEmpty -> {
+                item {
+                    EmptyTaxRateSelectorList(onEmptyScreenButtonClicked)
+                }
+            }
+            else -> {
+                item {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = dimensionResource(id = R.dimen.major_100),
+                                vertical = dimensionResource(
+                                    id = R.dimen.minor_100
+                                )
+                            ),
+                        fontSize = 13.sp,
+                        color = colorResource(id = R.color.woo_gray_40),
+                        text = stringResource(R.string.tax_rate_selector_list_header)
+                    )
+                    Divider()
+                }
+                itemsIndexed(state.taxRates) { _, taxRate ->
+                    TaxRateRow(taxRate, onTaxRateClick)
+                }
+                item {
+                    Footer(onEditTaxRatesInAdminClicked)
+                }
+            }
         }
-        itemsIndexed(state.taxRates) { _, taxRate ->
-            TaxRateRow(taxRate, onTaxRateClick)
+        if (state.isLoading) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                )
+            }
         }
-        item {
-            Footer(onEditTaxRatesInAdminClicked)
-        }
+    }
+    InfiniteListHandler(listState = listState) {
+        onLoadMore()
     }
 }
 
@@ -249,7 +408,7 @@ fun EditTaxRatesInAdminButton(onClick: () -> Unit) {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
-    val viewState = TaxRateSelectorViewModel.ViewState(
+    val viewState = ViewState(
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
@@ -275,6 +434,9 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         onInfoIconClicked = {},
         onTaxRateClick = {},
         onDismiss = {},
+        onLoadMore = {},
+        onEmptyScreenButtonClicked = {},
+        onAutoRateToggleStateChanged = {},
     )
 }
 
@@ -289,7 +451,8 @@ fun FooterPreview() = WooThemeWithBackground {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TaxRatesPreview() = WooThemeWithBackground {
-    val viewState = TaxRateSelectorViewModel.ViewState(
+    val viewState = ViewState(
+        isLoading = true,
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
@@ -313,6 +476,24 @@ fun TaxRatesPreview() = WooThemeWithBackground {
         state = state,
         onTaxRateClick = {},
         onEditTaxRatesInAdminClicked = {},
-        onInfoIconClicked = {}
+        onInfoIconClicked = {},
+        onLoadMore = {},
+        onEmptyScreenButtonClicked = {},
     )
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun TaxRateEmptyListPreview() = WooThemeWithBackground {
+    EmptyTaxRateSelectorList(onButtonClicked = {})
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun BottomBarPreview() = WooThemeWithBackground {
+    val viewState = ViewState(isAutoRateEnabled = true)
+    val state by remember { mutableStateOf(viewState) }
+    BottomBar({}, state)
 }

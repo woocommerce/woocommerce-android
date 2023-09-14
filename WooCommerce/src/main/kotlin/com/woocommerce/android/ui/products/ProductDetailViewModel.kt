@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BLAZE_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_MIN_MAX_QUANTITY_RULES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_FORM
@@ -716,38 +717,44 @@ class ProductDetailViewModel @Inject constructor(
             ?.let { updateProductDraft(numVariation = variationAmount) }
     }
 
-    fun uploadDownloadableFile(uri: String) {
-        launch {
-            mediaFilesRepository.uploadFile(uri)
-                .onStart {
-                    viewState = viewState.copy(isUploadingDownloadableFile = true)
-                    productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
-                }
-                .onCompletion {
-                    viewState = viewState.copy(isUploadingDownloadableFile = false)
-                    productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
-                }
-                .collect {
-                    when (it) {
-                        is UploadFailure -> triggerEvent(
-                            ShowSnackbar(R.string.product_downloadable_files_upload_failed)
-                        )
-
-                        is UploadProgress -> {
-                            // TODO
-                        }
-
-                        is UploadSuccess -> showAddProductDownload(it.media.url)
+    fun handleSelectedDownloadableFile(uri: String) {
+        if (uri.startsWith("http")) {
+            // The file is already on the server, skip uploading
+            showAddProductDownload(uri)
+        } else {
+            launch {
+                mediaFilesRepository.uploadFile(uri)
+                    .onStart {
+                        viewState = viewState.copy(isUploadingDownloadableFile = true)
+                        productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
                     }
-                }
+                    .onCompletion {
+                        viewState = viewState.copy(isUploadingDownloadableFile = false)
+                        productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
+                    }
+                    .collect {
+                        when (it) {
+                            is UploadFailure -> triggerEvent(
+                                ShowSnackbar(R.string.product_downloadable_files_upload_failed)
+                            )
+
+                            is UploadProgress -> {
+                                // TODO
+                            }
+
+                            is UploadSuccess -> showAddProductDownload(it.media.url)
+                        }
+                    }
+            }
         }
     }
 
-    fun showAddProductDownload(url: String) {
+    private fun showAddProductDownload(url: String) {
+        val fileName = url.substringAfterLast(delimiter = "/", missingDelimiterValue = "")
         triggerEvent(
             ProductNavigationTarget.ViewProductDownloadDetails(
                 isEditing = false,
-                file = ProductFile(id = null, url = url, name = "")
+                file = ProductFile(id = null, url = url, name = fileName)
             )
         )
     }
@@ -1306,9 +1313,15 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun trackProductDetailLoaded() {
         if (hasTrackedProductDetailLoaded.not()) {
-            storedProduct.value?.let {
-                val properties = mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
-                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+            storedProduct.value?.let { product ->
+                launch {
+                    val hasQuantityRules = getProductQuantityRules(product.remoteId) != null
+                    val properties = mapOf(
+                        KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
+                        KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules
+                    )
+                    tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+                }
             } ?: run {
                 tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
             }

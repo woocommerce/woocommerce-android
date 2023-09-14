@@ -16,7 +16,6 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TR
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
@@ -39,8 +38,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
         val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
         return when (type) {
-            STORE_CREATION_FINISHED,
-            STORE_CREATION_INCOMPLETE -> Result.success()
+            STORE_CREATION_FINISHED -> Result.success()
 
             FREE_TRIAL_EXPIRING,
             FREE_TRIAL_EXPIRED,

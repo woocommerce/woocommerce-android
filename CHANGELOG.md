@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 15.3
+We're excited to roll out the latest update for our Android App. This release brings general improvements for a smoother, faster, and more user-friendly experience. Enjoy enhanced performance, a streamlined interface, and bug fixes. Happy selling!
+
 ## 15.2
 We're thrilled to announce a new update for our Android app! In this version, we've moved the 'Close Account' option to a new section called 'Account Settings' for easier navigation. We've also fixed some issues with the order's badge counter to ensure accurate tracking. Plus, we've made improvements to the WooPayments onboarding task for a smoother setup process. Update now for a better user experience!
 

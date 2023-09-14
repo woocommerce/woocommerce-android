@@ -1,2 +1,0 @@
-15.1:
-Visste du att du kan använda Tryck för att betala för att ta emot kortbetalningar med din telefon? Vi har förbättrat den ursprungliga upplevelsen för att göra det ännu enklare. Den här versionen inkluderar också stabilitetskorrigeringar för inloggningen. Tack för att du väljer WooCommerce.

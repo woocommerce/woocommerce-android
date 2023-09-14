@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-29 09:54:04+0000
+Translation-Revision-Date: 2023-09-06 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="store_onboarding_name_your_store_dialog_title">Judul Situs</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Edit tarif pajak di admin</string>
+    <string name="tax_rate_selector_header_label">Langkah ini akan mengganti alamat pelanggan menjadi lokasi tarif pajak yang Anda pilih.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Tombol untuk membuka dialog info tarif pajak</string>
+    <string name="tax_rate_selector_list_header">Pilih tarif pajak</string>
+    <string name="tax_rate_selector_footer_label">Tarif yang Anda cari tidak ada?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Tarif pajak Anda saat ini dihitung berdasarkan alamat pengiriman Anda%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Tarif pajak Anda saat ini dihitung berdasarkan alamat penagihan pelanggan Anda%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Tarif pajak Anda saat ini dihitung berdasarkan alamat toko Anda%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Edit Tarif Pajak di Admin</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Tombol untuk Mengedit Tarif Pajak di Admin</string>
+    <string name="tax_rates_info_dialog_title">Pajak &amp; Tarif Pajak</string>
+    <string name="tax_rates_info_dialog_secondary_text">Tarif pajak untuk berbagai lokasi dapat dikelola di admin toko Anda.</string>
+    <string name="tax_rates_info_dialog_primary_text">Pajak dihitung dengan mencocokkan alamat penagihan atau pengiriman pelanggan, atau lokasi toko Anda, dengan lokasi tarif pajak.</string>
+    <string name="tax_rates_information_content_description">Informasi tarif pajak</string>
+    <string name="store_onboarding_wcpay_setup_description">Dengan menggunakan WooCommerce Payments, Anda sepakat untuk terikat pada &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Ketentuan Layanan&lt;/u&gt;&lt;/a&gt; kami dan mengonfirmasi bahwa Anda sudah membaca &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Kebijakan Privasi&lt;/u&gt;&lt;/a&gt; kami.</string>
+    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
+    <string name="store_onboarding_wcpay_terms_title_one">Siapkan</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_learn_more"> &lt;a href=\'learnMore\'&gt;&lt;u&gt;Pelajari lebih lanjut&lt;/u&gt;&lt;/a&gt; tentang memverifikasi informasi Anda dengan WooPayments.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_button">Mulai penyiapan</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Kami telah bermitra dengan Stripe untuk WooPayments. Anda akan diarahkan ke situs Stripe untuk mendaftar. Kami akan meminta Anda untuk memverifikasi informasi bisnis dan pembayaran Anda.</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Pemberitahuan WooPayments Anda akan dikirim ke email akun WordPress.com Anda. Ingin akun baru? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Detail selengkapnya di sini.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_pre_setup_content_title">Sebelum Anda memulai penyiapan</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 menit</string>
+    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Perkiraan waktu penyiapan</string>
+    <string name="store_onboarding_wcpay_pre_setup_title">Kelola pembayaran dengan mudah bersama WooPayments, semua di satu tempat. Terima kartu kredit, Apple Pay, pembayaran langsung, dan 135+ mata uang, semua tanpa biaya penyiapan ataupun biaya bulanan.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Tidak dapat menyimpan nama toko. Coba lagi.</string>
+    <string name="settings_name_your_store_dialog_loading">Menyimpan nama toko…</string>
+    <string name="settings_name_your_store_dialog_success">Nama Toko Sudah Jadi!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Nama Toko Sudah Jadi! \n Untuk mengubah kembali, kunjungi Pengaturan Toko.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Perbarui nama toko</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Selamat! Anda telah berhasil melalui seluruh penyiapan dan sistem pembayaran Anda siap diluncurkan.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Anda berhasil!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Kelola pembayaran dengan lancar bersama WooPayments, bebas biaya penyiapan ataupun bulanan.</string>
+    <string name="store_creation_store_name_settings_option">Nama toko</string>
+    <string name="settings_account">Pengaturan Akun</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Pilih kategori</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Kategori bahan berbahaya</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping saat ini tidak menyediakan pengiriman HAZMAT melalui%1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">Alat Pencarian USPS HAZMAT</string>
+    <string name="shipping_label_usps_search_tool">Gunakan %1$s untuk mencari tahu apakah produk Anda dapat dikirim.</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Pelajari cara mengemas, melabeli, dan mengirim HAZMAT secara aman dengan USPS® di %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Dihitung sesuai alamat pengiriman</string>
+    <string name="order_creation_tax_based_on_billing_address">Dihitung sesuai alamat penagihan</string>
+    <string name="order_creation_tax_based_on_store_address">Dihitung sesuai alamat toko</string>
+    <string name="order_creation_price_after_discount_label">Harga setelah diskon</string>
+    <string name="order_creation_total_label">Total pesanan</string>
+    <string name="order_creation_discount_percentage_label">Persentase Terhitung</string>
+    <string name="order_creation_discount_amount_label">Jumlah Terhitung</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Nama toko</string>
     <string name="store_onboarding_task_name_store_description">Menyesuaikan nama toko Anda juga dapat membantu optimisasi mesin pencari toko Anda.</string>
     <string name="store_onboarding_task_name_store_title">Beri nama untuk toko Anda</string>
     <string name="store_profiler_features_other">Lainnya</string>
@@ -1165,7 +1215,7 @@ Language: id
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Hubungi administrator situs untuk menonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Harap nonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflik plugin pembayaran terdeteksi</string>
-    <string name="order_creation_payment_tax">Pajak</string>
+    <string name="order_creation_payment_tax">Total Pajak</string>
     <string name="exclusive_or">atau</string>
     <string name="settings_install_jetpack">Menginstal Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Pembayaran Langsung saat ini tidak tersedia</string>
@@ -1847,7 +1897,7 @@ Language: id
     <string name="product_downloadable_files_name_invalid">Harap masukkan nama yang valid</string>
     <string name="product_downloadable_files_add_manually">Masukkan URL file</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Dari Pustaka Media WordPress</string>
-    <string name="product_downloadable_files_add_from_device">Dari perangkat</string>
+    <string name="product_downloadable_files_add_media_from_device">Dari perangkat</string>
     <string name="product_downloadable_files_url_invalid">Pastikan url yang dimasukkan valid</string>
     <string name="product_downloadable_files_upload_dialog_message">Harap tunggu…</string>
     <string name="product_downloadable_files_upload_dialog_title">Mengunggah file</string>
