@@ -6,6 +6,7 @@
 - [**] [Internal] In-Person Payments: if WcPay setup not finished then we allow a user to finish it from the app [https://github.com/woocommerce/woocommerce-android/pull/9732]
 - [**] Order creation: Merchants can now select a tax rate when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9773]
 - [**] Product editing: Merchants can now add downloadable files from all supported file types [https://github.com/woocommerce/woocommerce-android/pull/9745]
+- [*] AI: Thank-you note can now be generated on completed order's details screen. [https://github.com/woocommerce/woocommerce-android/pull/9749/]
 
 15.3
 -----
