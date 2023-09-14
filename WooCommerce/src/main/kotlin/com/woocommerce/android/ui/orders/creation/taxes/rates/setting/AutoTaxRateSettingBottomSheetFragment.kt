@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -28,7 +29,7 @@ class AutoTaxRateSettingBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-
+                    AutoTaxRateSettingBottomSheetScreen(sharedViewModel.viewStateData.liveData.observeAsState())
                 }
             }
         }
