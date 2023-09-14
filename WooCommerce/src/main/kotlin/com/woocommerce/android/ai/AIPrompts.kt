@@ -77,7 +77,8 @@ object AIPrompts {
         "1. Never refer to yourself. Don't say things like `I recommend` or `I advise`. Instead say it " +
         " passively like `a possible recommendation is...` or in variations of that." +
         "2. Your sales advice should be in the ISO language code \"%7\$s\". \n" +
-        "3. Never mention the country code or sales code, instead use the country name and state name. \n" +
+        "3. Never mention the country code or state code, or any location code in general. Instead, you must always " +
+        "use the country name and state name. \n" +
         "4. Keep in mind that this is pricing for an e-commerce store, not a physical store. \n" +
         "5. Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
         "to maximize sales while maintaining a competitive price. " +
