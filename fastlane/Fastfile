@@ -331,7 +331,7 @@ platform :android do
   #####################################################################################
   desc 'Builds and uploads a release to Google Play'
   lane :build_and_upload_google_play do |_options|
-    if is_beta_version(android_get_release_version)
+    if beta_version?(android_get_release_version)
       build_and_upload_beta(
         skip_confirm: is_ci,
         skip_prechecks: true,
@@ -955,7 +955,7 @@ platform :android do
     "wcandroid-#{version['name']}-universal.apk"
   end
 
-  def is_beta_version(version)
+  def beta_version?(version)
     version['name'].include? '-rc-'
   end
 
