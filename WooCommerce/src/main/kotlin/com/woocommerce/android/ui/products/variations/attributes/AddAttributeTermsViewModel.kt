@@ -22,7 +22,7 @@ class AddAttributeTermsViewModel @Inject constructor(
         emptyMap<Int, ProductAttributeTerm>()
     )
     val termsListState = termsFlow
-        .map { it.map { (_, term) -> term } }
+        .map { it.values.toList() }
         .asLiveData()
 
     private val loadingStateFlow = MutableStateFlow(LoadingState.Idle)
