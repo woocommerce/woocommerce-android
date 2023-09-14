@@ -13,28 +13,21 @@ class TaxRateListHandler @Inject constructor(private val repository: TaxRateRepo
     val taxRatesFlow: Flow<List<TaxRate>> = repository.observeTaxRates()
 
     suspend fun fetchTaxRates(
-        forceRefresh: Boolean = false
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page = 1
         canLoadMore = true
-        return if (forceRefresh) {
-            loadTaxRates()
-        } else {
-            Result.success(Unit)
-        }
+        repository.fetchTaxRates(page, PAGE_SIZE).map {}
     }
 
     suspend fun loadMore(): Result<Unit> = mutex.withLock {
-        if (!canLoadMore) return@withLock Result.success(Unit)
-        return loadTaxRates()
-    }
-
-    private suspend fun loadTaxRates(): Result<Unit> {
-        return repository.fetchTaxRates(page, PAGE_SIZE).onSuccess {
-            canLoadMore = it
-            page++
-        }.map {}
+        if (canLoadMore) {
+            repository.fetchTaxRates(++page, PAGE_SIZE).onSuccess {
+                canLoadMore = it
+            }.map {}
+        } else {
+            Result.success(Unit)
+        }
     }
 
     companion object {
