@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.payments.hub
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.payments.hub.PaymentsHubTapToPayUnavailableHandler
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.assertj.core.api.Assertions.assertThat
