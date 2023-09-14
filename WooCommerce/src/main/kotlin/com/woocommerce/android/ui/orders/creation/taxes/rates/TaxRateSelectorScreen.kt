@@ -24,6 +24,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
@@ -46,30 +47,40 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel.ViewState
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun TaxRateSelectorScreen(
-    viewState: StateFlow<TaxRateSelectorViewModel.ViewState>,
+    viewState: StateFlow<ViewState>,
     onEditTaxRatesInAdminClicked: () -> Unit,
     onInfoIconClicked: () -> Unit,
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onDismiss: () -> Unit,
     onLoadMore: () -> Unit,
     onEmptyScreenButtonClicked: () -> Unit,
+    onAutoRateToggleStateChanged: (Boolean) -> Unit,
 ) {
+    val state = viewState.collectAsState().value
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
-        topBar = { Toolbar(onDismiss, onInfoIconClicked) }
+        topBar = { Toolbar(onDismiss, onInfoIconClicked) },
+        bottomBar = {
+            if (FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE.isEnabled()) {
+                BottomBar(onAutoRateToggleStateChanged, state)
+            }
+        },
     ) {
         TaxRates(
             Modifier.padding(it),
-            viewState.collectAsState().value,
+            state,
             onInfoIconClicked,
             onTaxRateClick,
             onEditTaxRatesInAdminClicked,
@@ -159,9 +170,66 @@ private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
 }
 
 @Composable
+private fun BottomBar(onAutoRateSwitchStateChanged: (Boolean) -> Unit, state: ViewState) = ConstraintLayout(
+    modifier = Modifier.fillMaxWidth()
+) {
+    val (label, subtitle, autoRateSwitch, divider) = createRefs()
+    Divider(
+        Modifier.constrainAs(divider) {
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            top.linkTo(parent.top)
+        }
+    )
+    Switch(
+        modifier = Modifier
+            .constrainAs(autoRateSwitch) {
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        checked = state.isAutoRateEnabled,
+        onCheckedChange = onAutoRateSwitchStateChanged
+    )
+    Text(
+        text = stringResource(id = R.string.tax_rate_selector_auto_rate_label),
+        style = MaterialTheme.typography.body1,
+        modifier = Modifier
+            .constrainAs(label) {
+                start.linkTo(parent.start)
+                end.linkTo(autoRateSwitch.end)
+                top.linkTo(parent.top)
+            }
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.minor_00),
+                top = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.minor_50),
+            )
+            .fillMaxWidth()
+    )
+    Text(
+        text = stringResource(id = R.string.tax_rate_selector_auto_rate_subtitle),
+        style = MaterialTheme.typography.caption,
+        modifier = Modifier
+            .constrainAs(subtitle) {
+                start.linkTo(parent.start)
+                end.linkTo(autoRateSwitch.end)
+                top.linkTo(label.bottom)
+            }
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.minor_00),
+            )
+            .fillMaxWidth()
+    )
+}
+
+@Composable
 private fun TaxRates(
     modifier: Modifier = Modifier,
-    state: TaxRateSelectorViewModel.ViewState,
+    state: ViewState,
     onInfoIconClicked: () -> Unit,
     onTaxRateClick: (TaxRateSelectorViewModel.TaxRateUiModel) -> Unit,
     onEditTaxRatesInAdminClicked: () -> Unit,
@@ -340,7 +408,7 @@ fun EditTaxRatesInAdminButton(onClick: () -> Unit) {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
-    val viewState = TaxRateSelectorViewModel.ViewState(
+    val viewState = ViewState(
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
                 label = "Government Sales Tax · US CA 94016 San Francisco",
@@ -368,6 +436,7 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         onDismiss = {},
         onLoadMore = {},
         onEmptyScreenButtonClicked = {},
+        onAutoRateToggleStateChanged = {},
     )
 }
 
@@ -382,7 +451,7 @@ fun FooterPreview() = WooThemeWithBackground {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TaxRatesPreview() = WooThemeWithBackground {
-    val viewState = TaxRateSelectorViewModel.ViewState(
+    val viewState = ViewState(
         isLoading = true,
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
@@ -418,4 +487,13 @@ fun TaxRatesPreview() = WooThemeWithBackground {
 @Composable
 fun TaxRateEmptyListPreview() = WooThemeWithBackground {
     EmptyTaxRateSelectorList(onButtonClicked = {})
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun BottomBarPreview() = WooThemeWithBackground {
+    val viewState = ViewState(isAutoRateEnabled = true)
+    val state by remember { mutableStateOf(viewState) }
+    BottomBar({}, state)
 }
