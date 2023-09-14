@@ -21,10 +21,7 @@ class TaxRateRepository @Inject constructor(
      *
      * @return A [Boolean] indicating whether more items can be fetched.
      */
-    suspend fun fetchTaxRates(
-        page: Int,
-        pageSize: Int
-    ): Result<Boolean> {
+    suspend fun fetchTaxRates(page: Int, pageSize: Int): Result<Boolean> {
         return taxStore.fetchTaxRateList(selectedSite.get(), page, pageSize)
             .let { result ->
                 if (result.isError) {
