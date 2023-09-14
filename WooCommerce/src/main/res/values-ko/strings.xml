@@ -1897,7 +1897,7 @@ Language: ko_KR
     <string name="product_downloadable_files_name_invalid">유효한 이름을 입력하세요</string>
     <string name="product_downloadable_files_add_manually">파일 URL 입력</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">워드프레스 미디어 라이브러리에서</string>
-    <string name="product_downloadable_files_add_from_device">기기에서</string>
+    <string name="product_downloadable_files_add_media_from_device">기기에서</string>
     <string name="product_downloadable_files_url_invalid">입력한 URL이 올바른지 확인</string>
     <string name="product_downloadable_files_upload_dialog_message">기다려주세요…</string>
     <string name="product_downloadable_files_upload_dialog_title">파일 업로드 중</string>

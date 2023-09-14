@@ -39,25 +39,6 @@ sealed class LocalNotification(
         }
     }
 
-    data class StoreCreationIncompleteNotification(
-        override val siteId: Long,
-        val name: String,
-        val storeName: String
-    ) : LocalNotification(
-        siteId = siteId,
-        title = R.string.local_notification_without_free_trial_title,
-        description = R.string.local_notification_without_free_trial_description,
-        type = LocalNotificationType.STORE_CREATION_INCOMPLETE,
-        delay = 24,
-        delayUnit = TimeUnit.HOURS
-    ) {
-        override val data: String = storeName
-
-        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(description, name, storeName)
-        }
-    }
-
     data class FreeTrialExpiringNotification(
         val expiryDate: String,
         override val siteId: Long

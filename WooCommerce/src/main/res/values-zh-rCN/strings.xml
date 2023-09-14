@@ -1897,7 +1897,7 @@ Language: zh_CN
     <string name="product_downloadable_files_name_invalid">请输入有效的名称</string>
     <string name="product_downloadable_files_add_manually">输入文件 URL</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">从 WordPress 媒体库</string>
-    <string name="product_downloadable_files_add_from_device">从设备</string>
+    <string name="product_downloadable_files_add_media_from_device">从设备</string>
     <string name="product_downloadable_files_url_invalid">请检查输入的 url 是否有效</string>
     <string name="product_downloadable_files_upload_dialog_message">请稍候…</string>
     <string name="product_downloadable_files_upload_dialog_title">正在上传文件</string>

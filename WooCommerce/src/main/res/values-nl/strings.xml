@@ -1897,7 +1897,7 @@ Language: nl
     <string name="product_downloadable_files_name_invalid">Voer een geldige naam in</string>
     <string name="product_downloadable_files_add_manually">Voer bestand-URL in</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Vanuit WordPress-mediabibliotheek</string>
-    <string name="product_downloadable_files_add_from_device">Vanuit apparaat</string>
+    <string name="product_downloadable_files_add_media_from_device">Vanuit apparaat</string>
     <string name="product_downloadable_files_url_invalid">Controleer of de ingevoerde URL geldig is</string>
     <string name="product_downloadable_files_upload_dialog_message">Een moment geduld …</string>
     <string name="product_downloadable_files_upload_dialog_title">Bestanden worden geüpload</string>
