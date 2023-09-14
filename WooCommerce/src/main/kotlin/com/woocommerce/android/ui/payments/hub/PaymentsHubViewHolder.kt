@@ -8,10 +8,10 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.CardReaderHubHeaderBinding
-import com.woocommerce.android.databinding.CardReaderHubListItemBinding
-import com.woocommerce.android.databinding.CardReaderHubToggelableItemBinding
 import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
+import com.woocommerce.android.databinding.PaymentsHubHeaderBinding
+import com.woocommerce.android.databinding.PaymentsHubListItemBinding
+import com.woocommerce.android.databinding.PaymentsHubToggelableItemBinding
 import com.woocommerce.android.util.UiHelpers
 
 private const val DISABLED_BUTTON_ALPHA = 0.5f
@@ -20,31 +20,31 @@ abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
     RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false)) {
     abstract fun onBind(uiState: PaymentsHubViewState.ListItem)
 
-    class RowViewHolder(parent: ViewGroup) : PaymentsHubViewHolder(parent, R.layout.card_reader_hub_list_item) {
-        var binding: CardReaderHubListItemBinding = CardReaderHubListItemBinding.bind(itemView)
+    class RowViewHolder(parent: ViewGroup) : PaymentsHubViewHolder(parent, R.layout.payments_hub_list_item) {
+        var binding = PaymentsHubListItemBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.NonToggleableListItem
-            binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
-            UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
-            binding.cardReaderMenuIcon.setImageResource(uiState.icon)
+            binding.paymentsHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
+            UiHelpers.setTextOrHide(binding.paymentsHubListItemDescriptionTv, uiState.description)
+            binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setDrawableOrHide(
-                binding.cardReaderHubBadgeIcon,
+                binding.paymentsHubBadgeIcon,
                 uiState.iconBadge?.let { AppCompatResources.getDrawable(parent.context, it) }
             )
 
             if (uiState.isEnabled) {
                 binding.root.setOnClickListener { uiState.onClick.invoke() }
-                binding.cardReaderMenuIcon.alpha = 1.0f
-                binding.cardReaderHubListItemLabelTv.alpha = 1.0f
+                binding.paymentsHubMenuIcon.alpha = 1.0f
+                binding.paymentsHubListItemLabelTv.alpha = 1.0f
             } else {
                 binding.root.setOnClickListener(null)
-                binding.cardReaderMenuIcon.alpha = DISABLED_BUTTON_ALPHA
-                binding.cardReaderHubListItemLabelTv.alpha = DISABLED_BUTTON_ALPHA
+                binding.paymentsHubMenuIcon.alpha = DISABLED_BUTTON_ALPHA
+                binding.paymentsHubListItemLabelTv.alpha = DISABLED_BUTTON_ALPHA
             }
 
-            (binding.cardReaderHubListItemDivider.layoutParams as ConstraintLayout.LayoutParams).startToStart =
+            (binding.paymentsHubListItemDivider.layoutParams as ConstraintLayout.LayoutParams).startToStart =
                 if (uiState.shortDivider) {
-                    binding.cardReaderHubListItemLabelTv.id
+                    binding.paymentsHubListItemLabelTv.id
                 } else {
                     ConstraintLayout.LayoutParams.PARENT_ID
                 }
@@ -52,42 +52,42 @@ abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
     }
 
     class ToggleableViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.card_reader_hub_toggelable_item) {
-        var binding: CardReaderHubToggelableItemBinding = CardReaderHubToggelableItemBinding.bind(itemView)
+        PaymentsHubViewHolder(parent, R.layout.payments_hub_toggelable_item) {
+        var binding = PaymentsHubToggelableItemBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.ToggleableListItem
-            binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
-            binding.cardReaderMenuIcon.setImageResource(uiState.icon)
-            UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
-            binding.cardReaderHubSwitch.setOnCheckedChangeListener(null)
-            binding.cardReaderHubSwitch.isEnabled = uiState.isEnabled
-            binding.cardReaderHubSwitch.isClickable = uiState.isEnabled
-            binding.cardReaderHubSwitch.isChecked = uiState.isChecked
-            binding.cardReaderHubSwitch.setOnCheckedChangeListener { _, isChecked ->
+            binding.paymentsHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
+            binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
+            UiHelpers.setTextOrHide(binding.paymentsHubListItemDescriptionTv, uiState.description)
+            binding.paymentsHubSwitch.setOnCheckedChangeListener(null)
+            binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
+            binding.paymentsHubSwitch.isClickable = uiState.isEnabled
+            binding.paymentsHubSwitch.isChecked = uiState.isChecked
+            binding.paymentsHubSwitch.setOnCheckedChangeListener { _, isChecked ->
                 if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)
                 }
             }
-            binding.cardReaderHubListItemDescriptionTv.setOnClickListener {
+            binding.paymentsHubListItemDescriptionTv.setOnClickListener {
                 uiState.onLearnMoreClicked()
             }
             binding.root.setOnClickListener {
-                binding.cardReaderHubSwitch.isChecked = !uiState.isChecked
+                binding.paymentsHubSwitch.isChecked = !uiState.isChecked
             }
         }
     }
 
     class HeaderViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.card_reader_hub_header) {
-        var binding: CardReaderHubHeaderBinding = CardReaderHubHeaderBinding.bind(itemView)
+        PaymentsHubViewHolder(parent, R.layout.payments_hub_header) {
+        var binding = PaymentsHubHeaderBinding.bind(itemView)
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             uiState as PaymentsHubViewState.ListItem.HeaderItem
-            binding.cardReaderHubHeaderTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
+            binding.paymentsHubHeaderTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
         }
     }
 
     class GapBetweenSectionsViewHolder(parent: ViewGroup) :
-        PaymentsHubViewHolder(parent, R.layout.card_reader_hub_gap_between_sections) {
+        PaymentsHubViewHolder(parent, R.layout.payments_hub_gap_between_sections) {
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             // no-op
         }

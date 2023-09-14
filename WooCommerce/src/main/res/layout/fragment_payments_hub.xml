@@ -24,7 +24,7 @@
         app:layout_constraintTop_toBottomOf="@id/paymentsHubLoading"
         app:layout_constraintVertical_chainStyle="spread_inside"
         tools:itemCount="10"
-        tools:listitem="@layout/card_reader_hub_list_item" />
+        tools:listitem="@layout/payments_hub_list_item" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/paymentsHubOnboardingFailedTv"
