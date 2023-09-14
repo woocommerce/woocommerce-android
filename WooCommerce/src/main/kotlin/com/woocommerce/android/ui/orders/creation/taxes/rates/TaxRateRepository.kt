@@ -42,6 +42,10 @@ class TaxRateRepository @Inject constructor(
         }
     }
 
+    suspend fun getTaxRate(selectedSite: SelectedSite, taxRateId: Long): TaxRate? {
+        return taxStore.getTaxRate(selectedSite.get(), taxRateId)?.toAppModel()
+    }
+
     fun TaxRateEntity.toAppModel(): TaxRate =
         TaxRate(
             id = id.value,

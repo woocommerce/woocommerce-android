@@ -63,6 +63,7 @@ import com.woocommerce.android.model.Address.Companion.EMPTY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -87,7 +88,10 @@ import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -145,7 +149,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     private val getAddressFromTaxRate: GetAddressFromTaxRate,
-    private val prefs: AppPrefs,
+    taxRateRepository: TaxRateRepository,
+    prefs: AppPrefs,
+    selectedSite: SelectedSite,
+    getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
+    getTaxRateLabel: GetTaxRateLabel,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -221,11 +229,40 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 handleCouponEditResult()
-                if (prefs.isAutoTaxRateEnabled()) {
-                    val taxRateId = prefs.getAutoTaxRateId()
-                    if (taxRateId != -1) {
+                launch {
+                    if (prefs.isAutoTaxRateEnabled()) {
+                        val taxRateId = prefs.getAutoTaxRateId()
+                        if (taxRateId != -1L) {
+                            val rate = taxRateRepository.getTaxRate(
+                                selectedSite = selectedSite,
+                                taxRateId = taxRateId
+                            )
+                            if (rate != null) {
+                                viewState = viewState.copy(
+                                    autoTaxRateSetting = AutoTaxRateSettingState(
+                                        isActive = true,
+                                        taxRateTitle = getTaxRateLabel(rate),
+                                        taxRateValue = getTaxRatePercentageValueText(rate)
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+                        val isSetNewTaxRateButtonVisible: Boolean = when (it) {
+                            BillingAddress, ShippingAddress -> true
+                            else -> false
+                        } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
                         viewState = viewState.copy(
-
+                            taxBasedOnSettingLabel = it?.label ?: "",
+                            taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
+                                isShown = isSetNewTaxRateButtonVisible,
+                                label =  if (viewState.autoTaxRateSetting.isActive) {
+                                    resourceProvider.getString(string.order_creation_edit_tax_rate)
+                                } else {
+                                    resourceProvider.getString(string.order_creation_set_tax_rate)
+                                }
+                            )
                         )
                     }
                 }
@@ -245,18 +282,6 @@ class OrderCreateEditViewModel @Inject constructor(
                         handleCouponEditResult()
                     }
                 }
-            }
-        }
-        launch {
-            orderCreateEditRepository.fetchTaxBasedOnSetting().also {
-                val isSetNewTaxRateButtonVisible: Boolean = when (it) {
-                    BillingAddress, ShippingAddress -> true
-                    else -> false
-                } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
-                viewState = viewState.copy(
-                    taxBasedOnSettingLabel = it?.label ?: "",
-                    isSetNewTaxRateButtonVisible = isSetNewTaxRateButtonVisible
-                )
             }
         }
     }
@@ -1121,11 +1146,11 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
-        val isSetNewTaxRateButtonVisible: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
         val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
+        val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1140,6 +1165,12 @@ class OrderCreateEditViewModel @Inject constructor(
         val isActive: Boolean = false,
         val taxRateTitle: String = "",
         val taxRateValue: String = "",
+    ) : Parcelable
+
+    @Parcelize
+    data class TaxRateSelectorButtonState(
+        val isShown: Boolean = false,
+        val label: String = "",
     ) : Parcelable
 
     sealed class Mode : Parcelable {

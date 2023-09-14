@@ -1099,15 +1099,15 @@ object AppPrefs {
      * Auto-tax-rate setting
      */
     fun isAutoTaxRateEnabled(): Boolean {
-        getInt(AUTO_TAX_RATE_ID, -1).let {
-            return it != -1
+        getLong(AUTO_TAX_RATE_ID, -1L).let {
+            return it != -1L
         }
     }
 
-    fun getAutoTaxRateId() = getInt(AUTO_TAX_RATE_ID, -1)
+    fun getAutoTaxRateId() = getLong(AUTO_TAX_RATE_ID, -1)
 
-    fun setAutoTaxRateId(taxRateId: Int) {
-        setInt(AUTO_TAX_RATE_ID, taxRateId)
+    fun setAutoTaxRateId(taxRateId: Long) {
+        setLong(AUTO_TAX_RATE_ID, taxRateId)
     }
 
     fun disableAutoTaxRate() {

@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,13 +13,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
 class TaxRateSelectorViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val ratesListHandler: TaxRateListHandler,
+    private val getTaxRateLabel: GetTaxRateLabel,
+    private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private val isLoading = MutableStateFlow(false)
@@ -28,8 +28,8 @@ class TaxRateSelectorViewModel @Inject constructor(
         ratesListHandler.taxRatesFlow.combine(isLoading) { rates, isLoading ->
             rates.map { taxRate ->
                 TaxRateUiModel(
-                    label = calculateTaxRateLabel(taxRate),
-                    rate = calculateTaxRatePercentageText(taxRate),
+                    label = getTaxRateLabel(taxRate),
+                    rate = getTaxRatePercentageValueText(taxRate),
                     taxRate = taxRate,
                 )
             }.let {
@@ -44,44 +44,6 @@ class TaxRateSelectorViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-
-    private fun calculateTaxRatePercentageText(taxRate: TaxRate) =
-        if (taxRate.rate.isNotNullOrEmpty()) {
-            val standardisedRate = taxRate.rate.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-            "$standardisedRate%"
-        } else {
-            ""
-        }
-
-    @Suppress("ComplexCondition")
-    private fun calculateTaxRateLabel(taxRate: TaxRate) =
-        StringBuilder().apply {
-            if (taxRate.name.isNotNullOrEmpty()) {
-                append(taxRate.name)
-            }
-            if (taxRate.countryCode.isNotNullOrEmpty() ||
-                taxRate.stateCode.isNotNullOrEmpty() ||
-                taxRate.postcode.isNotNullOrEmpty() ||
-                taxRate.city.isNotNullOrEmpty()
-            ) {
-                append(" · ")
-            }
-            if (taxRate.countryCode.isNotNullOrEmpty()) {
-                append(taxRate.countryCode)
-                append(SPACE_CHAR)
-            }
-            if (taxRate.stateCode.isNotNullOrEmpty()) {
-                append(taxRate.stateCode)
-                append(SPACE_CHAR)
-            }
-            if (taxRate.postcode.isNotNullOrEmpty()) {
-                append(taxRate.postcode)
-                append(SPACE_CHAR)
-            }
-            if (taxRate.city.isNotNullOrEmpty()) {
-                append(taxRate.city)
-            }
-        }.toString()
 
     fun onEditTaxRatesInAdminClicked() {
         triggerEvent(EditTaxRatesInAdmin)
@@ -132,7 +94,5 @@ class TaxRateSelectorViewModel @Inject constructor(
     object EditTaxRatesInAdmin : MultiLiveEvent.Event()
     object ShowTaxesInfoDialog : MultiLiveEvent.Event()
 
-    private companion object {
-        private const val SPACE_CHAR = " "
-    }
+
 }
