@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
 import com.woocommerce.android.util.UtmProvider
 import dagger.Module

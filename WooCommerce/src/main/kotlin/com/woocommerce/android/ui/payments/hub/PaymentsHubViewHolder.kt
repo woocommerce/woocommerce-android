@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

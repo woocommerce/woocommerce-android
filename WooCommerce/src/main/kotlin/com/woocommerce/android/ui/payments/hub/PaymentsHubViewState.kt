@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.model.UiString

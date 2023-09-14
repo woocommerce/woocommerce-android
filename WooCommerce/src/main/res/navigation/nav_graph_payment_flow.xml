@@ -114,7 +114,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentsHubFragment"
-        android:name="com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubFragment"
+        android:name="com.woocommerce.android.ui.payments.hub.PaymentsHubFragment"
         android:label="CardReaderHubFragment">
         <argument
             android:name="cardReaderFlowParam"

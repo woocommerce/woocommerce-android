@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -24,16 +24,16 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.HeaderItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.OnboardingErrorAction
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub.NONE

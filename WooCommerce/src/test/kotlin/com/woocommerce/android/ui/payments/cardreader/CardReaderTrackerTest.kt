@@ -34,8 +34,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaReasonTapped

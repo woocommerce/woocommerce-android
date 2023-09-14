@@ -1,13 +1,13 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.HeaderItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 
 class PaymentsHubAdapter :
     ListAdapter<PaymentsHubViewState.ListItem, PaymentsHubViewHolder>(ListItemDiffCallback) {
