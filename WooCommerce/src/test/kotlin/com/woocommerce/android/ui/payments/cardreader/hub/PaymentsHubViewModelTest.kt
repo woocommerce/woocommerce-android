@@ -22,15 +22,15 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -69,8 +69,8 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
-class CardReaderHubViewModelTest : BaseUnitTest() {
-    private lateinit var viewModel: CardReaderHubViewModel
+class PaymentsHubViewModelTest : BaseUnitTest() {
+    private lateinit var viewModel: PaymentsHubViewModel
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
@@ -96,7 +96,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY)
         )
     }
-    private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
+    private val paymentsHubTapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler = mock()
     private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
@@ -197,7 +197,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.getOrAwaitValue())
             .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPaymentCollectionScreen
+                PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen
             )
     }
 
@@ -218,7 +218,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.getOrAwaitValue())
             .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail(
+                PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderDetail(
                     CardReaderFlowParam.CardReadersHub()
                 )
             )
@@ -245,7 +245,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         val event = (
-            viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow
+            viewModel.event.value as PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow
             )
 
         assertThat(event.url)
@@ -277,7 +277,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         assertThat(
-            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
+            (viewModel.event.value as PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow).url
         ).isEqualTo("$WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY$storeCountryCode")
     }
 
@@ -294,7 +294,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.getOrAwaitValue())
             .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+                PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderOnboardingScreen(
                     genericError
                 )
             )
@@ -327,7 +327,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.getOrAwaitValue())
             .isInstanceOf(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen::class.java
+                PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderManualsScreen::class.java
             )
     }
 
@@ -400,7 +400,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
-            CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+            PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderOnboardingScreen(
                 CardReaderOnboardingState.ChoosePaymentGatewayProvider
             )
         )
@@ -892,7 +892,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getSuccessWooResult()
             )
-            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
             viewModel.viewStateData.observeForever {
                 receivedViewStates.add(it)
             }
@@ -925,7 +925,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getSuccessWooResult()
             )
-            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
             viewModel.viewStateData.observeForever {
                 receivedViewStates.add(it)
             }
@@ -958,7 +958,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getFailureWooResult()
             )
-            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
             viewModel.viewStateData.observeForever {
                 receivedViewStates.add(it)
             }
@@ -991,7 +991,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getSuccessWooResult()
             )
-            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
             viewModel.viewStateData.observeForever {
                 receivedViewStates.add(it)
             }
@@ -1024,7 +1024,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getFailureWooResult()
             )
-            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
             viewModel.viewStateData.observeForever {
                 receivedViewStates.add(it)
             }
@@ -1491,7 +1491,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (viewModel.viewStateData.getOrAwaitValue()).rows
-                .first { it is CardReaderHubViewState.ListItem.LearnMoreListItem }
+                .first { it is PaymentsHubViewState.ListItem.LearnMoreListItem }
                 .onClick!!.invoke()
 
             // THEN
@@ -1512,7 +1512,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (viewModel.viewStateData.getOrAwaitValue()).rows
-                .first { it is CardReaderHubViewState.ListItem.LearnMoreListItem }
+                .first { it is PaymentsHubViewState.ListItem.LearnMoreListItem }
                 .onClick!!.invoke()
 
             // THEN
@@ -1663,7 +1663,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         // THEN
         val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-        val learnMoreListItems = rows.filterIsInstance<CardReaderHubViewState.ListItem.LearnMoreListItem>()
+        val learnMoreListItems = rows.filterIsInstance<PaymentsHubViewState.ListItem.LearnMoreListItem>()
         assertThat(learnMoreListItems).hasSize(1)
         assertThat(learnMoreListItems[0].label).isEqualTo(
             UiStringRes(
@@ -1698,7 +1698,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
 
         // THEN
-        verify(cardReaderHubTapToPayUnavailableHandler).handleTTPUnavailable(
+        verify(paymentsHubTapToPayUnavailableHandler).handleTTPUnavailable(
             eq(SystemVersionNotSupported),
             any(),
             any(),
@@ -1804,8 +1804,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     )
 
     private fun initViewModel(openInHub: OpenInHub = OpenInHub.NONE) {
-        viewModel = CardReaderHubViewModel(
-            CardReaderHubFragmentArgs(
+        viewModel = PaymentsHubViewModel(
+            PaymentsHubFragmentArgs(
                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(openInHub),
             ).initSavedStateHandle(),
             appPrefsWrapper,
@@ -1821,7 +1821,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus,
             appPrefs,
             feedbackRepository,
-            cardReaderHubTapToPayUnavailableHandler,
+            paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
         )
         viewModel.onViewVisible()

@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import javax.inject.Inject
 
-class CardReaderHubTapToPayUnavailableHandler @Inject constructor() {
+class PaymentsHubTapToPayUnavailableHandler @Inject constructor() {
     fun handleTTPUnavailable(
         status: TapToPayAvailabilityStatus.Result.NotAvailable,
         triggerEvent: (MultiLiveEvent.Event) -> Unit,

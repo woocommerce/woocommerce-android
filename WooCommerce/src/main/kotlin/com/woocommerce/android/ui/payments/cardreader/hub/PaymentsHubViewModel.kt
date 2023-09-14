@@ -24,16 +24,16 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.HeaderItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.LearnMoreListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.OnboardingErrorAction
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub.NONE
@@ -58,7 +58,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @HiltViewModel
-class CardReaderHubViewModel @Inject constructor(
+class PaymentsHubViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
@@ -73,10 +73,10 @@ class CardReaderHubViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs,
     private val feedbackRepository: FeedbackRepository,
-    private val tapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler,
+    private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
 ) : ScopedViewModel(savedState) {
-    private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
+    private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
     private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
         storeCountryCode
@@ -97,7 +97,7 @@ class CardReaderHubViewModel @Inject constructor(
     )
 
     private val initialState
-        get() = CardReaderHubViewState(
+        get() = PaymentsHubViewState(
             rows = createHubListWhenSinglePluginInstalled(
                 isOnboardingComplete = false,
                 cashOnDeliveryItem = cashOnDeliveryState.value!!
@@ -107,7 +107,7 @@ class CardReaderHubViewModel @Inject constructor(
         )
     private val viewState = MutableLiveData(initialState)
 
-    val viewStateData: LiveData<CardReaderHubViewState> = viewState
+    val viewStateData: LiveData<PaymentsHubViewState> = viewState
         .map { state ->
             state.copy(rows = state.rows.sortedBy { it.index })
         }
@@ -256,8 +256,8 @@ class CardReaderHubViewModel @Inject constructor(
         }
     }
 
-    private fun createOnboardingCompleteState(): CardReaderHubViewState {
-        return CardReaderHubViewState(
+    private fun createOnboardingCompleteState(): PaymentsHubViewState {
+        return PaymentsHubViewState(
             rows = if (isCardReaderPluginExplicitlySelected()) {
                 (
                     createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
@@ -279,8 +279,8 @@ class CardReaderHubViewModel @Inject constructor(
             )
         )
 
-    private fun createOnboardingFailedState(state: CardReaderOnboardingState): CardReaderHubViewState {
-        return CardReaderHubViewState(
+    private fun createOnboardingFailedState(state: CardReaderOnboardingState): PaymentsHubViewState {
+        return PaymentsHubViewState(
             rows = createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!),
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
@@ -292,18 +292,18 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onCollectPaymentClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToPaymentCollectionScreen)
+        triggerEvent(PaymentsHubEvents.NavigateToPaymentCollectionScreen)
     }
 
     private fun onManageCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderDetail(arguments.cardReaderFlowParam))
+        triggerEvent(PaymentsHubEvents.NavigateToCardReaderDetail(arguments.cardReaderFlowParam))
     }
 
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
         triggerEvent(
-            CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
+            PaymentsHubEvents.NavigateToPurchaseCardReaderFlow(
                 url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
                 titleRes = R.string.card_reader_purchase_card_reader
             )
@@ -313,7 +313,7 @@ class CardReaderHubViewModel @Inject constructor(
     private fun onLearnMoreCodClicked() {
         cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
         triggerEvent(
-            CardReaderHubEvents.OpenGenericWebView(
+            PaymentsHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
                     CASH_ON_DELIVERY
                 )
@@ -324,7 +324,7 @@ class CardReaderHubViewModel @Inject constructor(
     private fun onLearnMoreIppClicked() {
         cardReaderTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
-            CardReaderHubEvents.OpenGenericWebView(
+            PaymentsHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
                     LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
                 )
@@ -334,7 +334,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onTapToPayClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
+        triggerEvent(PaymentsHubEvents.NavigateToTapTooPaySummaryScreen)
     }
 
     private fun onTapToPayFeedbackClicked() {
@@ -343,12 +343,12 @@ class CardReaderHubViewModel @Inject constructor(
             FeatureFeedbackSettings.Feature.TAP_TO_PAY,
             FeatureFeedbackSettings.FeedbackState.GIVEN
         )
-        triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySurveyScreen)
+        triggerEvent(PaymentsHubEvents.NavigateToTapTooPaySurveyScreen)
     }
 
     private fun onCardReaderManualsClicked(countryConfig: CardReaderConfigForSupportedCountry) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_CARD_READER_MANUALS_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen(countryConfig))
+        triggerEvent(PaymentsHubEvents.NavigateToCardReaderManualsScreen(countryConfig))
     }
 
     private fun onCardReaderPaymentProviderClicked() {
@@ -356,7 +356,7 @@ class CardReaderHubViewModel @Inject constructor(
         trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
         triggerEvent(
-            CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+            PaymentsHubEvents.NavigateToCardReaderOnboardingScreen(
                 CardReaderOnboardingState.ChoosePaymentGatewayProvider
             )
         )
@@ -416,7 +416,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(state))
+        triggerEvent(PaymentsHubEvents.NavigateToCardReaderOnboardingScreen(state))
     }
 
     private fun handleOpenInHubParameter() {
@@ -438,7 +438,7 @@ class CardReaderHubViewModel @Inject constructor(
                             }
                         } else {
                             triggerEvent(
-                                CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
+                                PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
                             )
                         }
                     }
@@ -454,15 +454,15 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun handlePositiveButtonClickTTPUnavailable(
-        actionType: CardReaderHubTapToPayUnavailableHandler.ActionType
+        actionType: PaymentsHubTapToPayUnavailableHandler.ActionType
     ) = when (actionType) {
-        CardReaderHubTapToPayUnavailableHandler.ActionType.PURCHASE_READER -> {
+        PaymentsHubTapToPayUnavailableHandler.ActionType.PURCHASE_READER -> {
             onPurchaseCardReaderClicked()
         }
 
-        CardReaderHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS -> {
+        PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS -> {
             triggerEvent(
-                CardReaderHubEvents.OpenGenericWebView(
+                PaymentsHubEvents.OpenGenericWebView(
                     STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
                 )
             )
@@ -501,26 +501,26 @@ class CardReaderHubViewModel @Inject constructor(
                 )
         }
 
-    sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
-        data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
+    sealed class PaymentsHubEvents : MultiLiveEvent.Event() {
+        data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : PaymentsHubEvents()
         data class NavigateToPurchaseCardReaderFlow(
             val url: String,
             @StringRes val titleRes: Int
-        ) : CardReaderHubEvents()
+        ) : PaymentsHubEvents()
 
-        object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
-        object NavigateToTapTooPaySummaryScreen : CardReaderHubEvents()
-        object NavigateToTapTooPaySurveyScreen : CardReaderHubEvents()
+        object NavigateToPaymentCollectionScreen : PaymentsHubEvents()
+        object NavigateToTapTooPaySummaryScreen : PaymentsHubEvents()
+        object NavigateToTapTooPaySurveyScreen : PaymentsHubEvents()
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
-        ) : CardReaderHubEvents()
+        ) : PaymentsHubEvents()
 
         data class NavigateToCardReaderOnboardingScreen(val onboardingState: CardReaderOnboardingState) :
-            CardReaderHubEvents()
+            PaymentsHubEvents()
 
-        data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
-        data class ShowToastString(val message: String) : CardReaderHubEvents()
-        data class ShowToast(@StringRes val message: Int) : CardReaderHubEvents()
+        data class OpenGenericWebView(val url: String) : PaymentsHubEvents()
+        data class ShowToastString(val message: String) : PaymentsHubEvents()
+        data class ShowToast(@StringRes val message: Int) : PaymentsHubEvents()
     }
 
     enum class CashOnDeliverySource {

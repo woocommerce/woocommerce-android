@@ -16,14 +16,14 @@ import com.woocommerce.android.util.UiHelpers
 
 private const val DISABLED_BUTTON_ALPHA = 0.5f
 
-abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
+abstract class PaymentsHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
     RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false)) {
-    abstract fun onBind(uiState: CardReaderHubViewState.ListItem)
+    abstract fun onBind(uiState: PaymentsHubViewState.ListItem)
 
-    class RowViewHolder(parent: ViewGroup) : CardReaderHubViewHolder(parent, R.layout.card_reader_hub_list_item) {
+    class RowViewHolder(parent: ViewGroup) : PaymentsHubViewHolder(parent, R.layout.card_reader_hub_list_item) {
         var binding: CardReaderHubListItemBinding = CardReaderHubListItemBinding.bind(itemView)
-        override fun onBind(uiState: CardReaderHubViewState.ListItem) {
-            uiState as CardReaderHubViewState.ListItem.NonToggleableListItem
+        override fun onBind(uiState: PaymentsHubViewState.ListItem) {
+            uiState as PaymentsHubViewState.ListItem.NonToggleableListItem
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
@@ -52,10 +52,10 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
     }
 
     class ToggleableViewHolder(parent: ViewGroup) :
-        CardReaderHubViewHolder(parent, R.layout.card_reader_hub_toggelable_item) {
+        PaymentsHubViewHolder(parent, R.layout.card_reader_hub_toggelable_item) {
         var binding: CardReaderHubToggelableItemBinding = CardReaderHubToggelableItemBinding.bind(itemView)
-        override fun onBind(uiState: CardReaderHubViewState.ListItem) {
-            uiState as CardReaderHubViewState.ListItem.ToggleableListItem
+        override fun onBind(uiState: PaymentsHubViewState.ListItem) {
+            uiState as PaymentsHubViewState.ListItem.ToggleableListItem
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
@@ -78,27 +78,27 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
     }
 
     class HeaderViewHolder(parent: ViewGroup) :
-        CardReaderHubViewHolder(parent, R.layout.card_reader_hub_header) {
+        PaymentsHubViewHolder(parent, R.layout.card_reader_hub_header) {
         var binding: CardReaderHubHeaderBinding = CardReaderHubHeaderBinding.bind(itemView)
-        override fun onBind(uiState: CardReaderHubViewState.ListItem) {
-            uiState as CardReaderHubViewState.ListItem.HeaderItem
+        override fun onBind(uiState: PaymentsHubViewState.ListItem) {
+            uiState as PaymentsHubViewState.ListItem.HeaderItem
             binding.cardReaderHubHeaderTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
         }
     }
 
     class GapBetweenSectionsViewHolder(parent: ViewGroup) :
-        CardReaderHubViewHolder(parent, R.layout.card_reader_hub_gap_between_sections) {
-        override fun onBind(uiState: CardReaderHubViewState.ListItem) {
+        PaymentsHubViewHolder(parent, R.layout.card_reader_hub_gap_between_sections) {
+        override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             // no-op
         }
     }
 
     class LearnMoreViewHolder(parent: ViewGroup) :
-        CardReaderHubViewHolder(parent, R.layout.card_reader_learn_more_section) {
+        PaymentsHubViewHolder(parent, R.layout.card_reader_learn_more_section) {
 
         var binding: CardReaderLearnMoreSectionBinding = CardReaderLearnMoreSectionBinding.bind(itemView)
-        override fun onBind(uiState: CardReaderHubViewState.ListItem) {
-            uiState as CardReaderHubViewState.ListItem.LearnMoreListItem
+        override fun onBind(uiState: PaymentsHubViewState.ListItem) {
+            uiState as PaymentsHubViewState.ListItem.LearnMoreListItem
             UiHelpers.setTextOrHide(binding.learnMore, uiState.label)
             binding.learnMore.setCompoundDrawablesWithIntrinsicBounds(
                 AppCompatResources.getDrawable(parent.context, uiState.icon),

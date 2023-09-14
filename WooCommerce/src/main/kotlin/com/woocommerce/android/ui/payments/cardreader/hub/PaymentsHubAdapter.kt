@@ -3,14 +3,14 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.HeaderItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.LearnMoreListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 
-class CardReaderHubAdapter :
-    ListAdapter<CardReaderHubViewState.ListItem, CardReaderHubViewHolder>(ListItemDiffCallback) {
+class PaymentsHubAdapter :
+    ListAdapter<PaymentsHubViewState.ListItem, PaymentsHubViewHolder>(ListItemDiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -32,40 +32,40 @@ class CardReaderHubAdapter :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardReaderHubViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentsHubViewHolder {
         return when (viewType) {
             VIEW_TYPE_TOGGELABLE -> {
-                CardReaderHubViewHolder.ToggleableViewHolder(parent)
+                PaymentsHubViewHolder.ToggleableViewHolder(parent)
             }
             VIEW_TYPE_NON_TOGGELABLE -> {
-                CardReaderHubViewHolder.RowViewHolder(parent)
+                PaymentsHubViewHolder.RowViewHolder(parent)
             }
             VIEW_TYPE_HEADER -> {
-                CardReaderHubViewHolder.HeaderViewHolder(parent)
+                PaymentsHubViewHolder.HeaderViewHolder(parent)
             }
             VIEW_TYPE_GAP_BETWEEN_SECTIONS -> {
-                CardReaderHubViewHolder.GapBetweenSectionsViewHolder(parent)
+                PaymentsHubViewHolder.GapBetweenSectionsViewHolder(parent)
             }
             VIEW_TYPE_LEARN_MORE -> {
-                CardReaderHubViewHolder.LearnMoreViewHolder(parent)
+                PaymentsHubViewHolder.LearnMoreViewHolder(parent)
             }
             else -> error("Unknown section")
         }
     }
 
-    override fun onBindViewHolder(holder: CardReaderHubViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PaymentsHubViewHolder, position: Int) {
         holder.onBind(getItem(position))
     }
 
-    fun setItems(rows: List<CardReaderHubViewState.ListItem>) {
+    fun setItems(rows: List<PaymentsHubViewState.ListItem>) {
         submitList(rows)
     }
 
     @Suppress("ReturnCount")
-    object ListItemDiffCallback : DiffUtil.ItemCallback<CardReaderHubViewState.ListItem>() {
+    object ListItemDiffCallback : DiffUtil.ItemCallback<PaymentsHubViewState.ListItem>() {
         override fun areItemsTheSame(
-            oldItem: CardReaderHubViewState.ListItem,
-            newItem: CardReaderHubViewState.ListItem
+            oldItem: PaymentsHubViewState.ListItem,
+            newItem: PaymentsHubViewState.ListItem
         ) = if (oldItem::class.java == newItem::class.java) {
             oldItem.label == newItem.label
         } else {
@@ -73,8 +73,8 @@ class CardReaderHubAdapter :
         }
 
         override fun areContentsTheSame(
-            oldItem: CardReaderHubViewState.ListItem,
-            newItem: CardReaderHubViewState.ListItem
+            oldItem: PaymentsHubViewState.ListItem,
+            newItem: PaymentsHubViewState.ListItem
         ) = oldItem == newItem
     }
 
