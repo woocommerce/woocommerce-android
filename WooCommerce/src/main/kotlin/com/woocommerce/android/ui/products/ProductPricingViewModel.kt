@@ -72,7 +72,9 @@ class ProductPricingViewModel @Inject constructor(
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
             isTaxSectionVisible = isProductPricing,
-            showAISalePriceRecommendation = FeatureFlag.AI_PRICE_ADVISOR.isEnabled() && pricingData.salePrice == null
+            showAISalePriceRecommendation = FeatureFlag.AI_PRICE_ADVISOR.isEnabled() &&
+                selectedSite.get().isWPComAtomic &&
+                pricingData.salePrice == null
         )
 
         originalPricingData = navArgs.pricingData
