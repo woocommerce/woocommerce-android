@@ -10,9 +10,10 @@ class TaxRateListHandler @Inject constructor(private val repository: TaxRateRepo
     private var page = 1
     private var canLoadMore = true
 
-    val taxRatesFlow: Flow<List<TaxRate>> = repository.taxRates
+    val taxRatesFlow: Flow<List<TaxRate>> = repository.observeTaxRates()
 
-    suspend fun fetchTaxRates(): Result<Unit> = mutex.withLock {
+    suspend fun fetchTaxRates(
+    ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page = 1
         canLoadMore = true
