@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -7,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -124,7 +126,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
-import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -144,6 +145,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     private val getAddressFromTaxRate: GetAddressFromTaxRate,
+    private val prefs: AppPrefs,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -219,6 +221,14 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 handleCouponEditResult()
+                if (prefs.isAutoTaxRateEnabled()) {
+                    val taxRateId = prefs.getAutoTaxRateId()
+                    if (taxRateId != -1) {
+                        viewState = viewState.copy(
+
+                        )
+                    }
+                }
             }
             is Mode.Edit -> {
                 viewModelScope.launch {
@@ -1115,6 +1125,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
+        val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1123,6 +1134,13 @@ class OrderCreateEditViewModel @Inject constructor(
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
+
+    @Parcelize
+    data class AutoTaxRateSettingState(
+        val isActive: Boolean = false,
+        val taxRateTitle: String = "",
+        val taxRateValue: String = "",
+    ) : Parcelable
 
     sealed class Mode : Parcelable {
         @Parcelize

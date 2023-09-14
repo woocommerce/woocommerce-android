@@ -25,6 +25,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
@@ -123,7 +124,8 @@ object AppPrefs {
     private enum class DeletableSitePrefKey : PrefKey {
         TRACKING_EXTENSION_AVAILABLE,
         JETPACK_BENEFITS_BANNER_DISMISSAL_DATE,
-        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN
+        AI_PRODUCT_DESCRIPTION_CELEBRATION_SHOWN,
+        AUTO_TAX_RATE_ID,
     }
 
     /**
@@ -1092,6 +1094,25 @@ object AppPrefs {
         ),
         default = false
     )
+
+    /**
+     * Auto-tax-rate setting
+     */
+    fun isAutoTaxRateEnabled(): Boolean {
+        getInt(AUTO_TAX_RATE_ID, -1).let {
+            return it != -1
+        }
+    }
+
+    fun getAutoTaxRateId() = getInt(AUTO_TAX_RATE_ID, -1)
+
+    fun setAutoTaxRateId(taxRateId: Int) {
+        setInt(AUTO_TAX_RATE_ID, taxRateId)
+    }
+
+    fun disableAutoTaxRate() {
+        remove(AUTO_TAX_RATE_ID)
+    }
 
     /**
      * Remove all user and site-related preferences.
