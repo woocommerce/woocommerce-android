@@ -9,6 +9,9 @@ common_params:
       files: "WooCommerce/build/buildkite-test-analytics/*.xml"
       format: "junit"
 
+agents:
+  queue: "android"
+
 steps:
   - label: "Gradle Wrapper Validation"
     command: |
@@ -45,7 +48,7 @@ steps:
 
   - label: "Unit tests"
     command: .buildkite/commands/run-unit-tests.sh
-    plugins: 
+    plugins:
       - *ci_toolkit
       - *test_collector :
           <<: *test_collector_common_params
@@ -67,7 +70,7 @@ steps:
 
   - label: "Instrumented tests"
     command: .buildkite/commands/run-instrumented-tests.sh
-    plugins: 
+    plugins:
       - *ci_toolkit
       - *test_collector :
           <<: *test_collector_common_params
