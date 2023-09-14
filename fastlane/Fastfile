@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 default_platform(:android)
 fastlane_require 'dotenv'
 
@@ -484,7 +486,7 @@ platform :android do
           exclusions: lib[:exclusions]
         }]
         an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
-        File.delete(download_path) if File.exist?(download_path)
+        FileUtils.rm_f(download_path)
       end
     end
 
@@ -533,7 +535,7 @@ platform :android do
     android_create_xml_release_notes(
       download_path:,
       build_number: options[:build_number].to_s,
-      locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] }.to_h
+      locales: SUPPORTED_LOCALES.to_h { |hsh| [hsh[:glotpress], hsh[:google_play]] }
     )
     add_us_release_notes(
       release_notes_path: File.join(download_path, 'release_notes.xml'),
@@ -703,7 +705,7 @@ platform :android do
     }
 
     locales = SUPPORTED_LOCALES
-              .select { |hsh| hsh[:promo_config] != false }
+              .reject { |hsh| hsh[:promo_config] == false }
               .map { |hsh| [hsh[:glotpress], hsh[:google_play]] }
 
     gp_downloadmetadata(project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
@@ -788,7 +790,7 @@ platform :android do
   lane :create_promo_screenshots do |options|
     begin
       fastlane_require 'rmagick'
-    rescue LoadError => e
+    rescue LoadError
       UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
     end
 
@@ -801,14 +803,14 @@ platform :android do
     FileUtils.copy_entry(RAW_SCREENSHOTS_DIR, RAW_SCREENSHOTS_PROCESSING_DIR)
 
     locales = SUPPORTED_LOCALES
-              .select { |hsh| hsh[:promo_config] != false }
+              .reject { |hsh| hsh[:promo_config] == false }
               .map { |hsh| hsh[:google_play] }
               .append('en-US')
 
     # Allow creating promo screenshots for just one locale
     unless options[:locale].nil?
       locales.keep_if do |locale|
-        locale.casecmp(options[:locale]) == 0
+        locale.casecmp(options[:locale]).zero?
       end
     end
 
