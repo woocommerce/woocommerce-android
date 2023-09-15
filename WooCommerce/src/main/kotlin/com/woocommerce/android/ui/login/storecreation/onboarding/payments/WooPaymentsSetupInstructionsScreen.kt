@@ -97,17 +97,17 @@ private fun WooPaymentsSetupInstructionsContent(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_title),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_title),
             style = MaterialTheme.typography.body1,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_estimate_title),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_estimate_title),
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40),
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_estimate_time),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_estimate_time),
             style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.Bold
         )
@@ -119,12 +119,12 @@ private fun WooPaymentsSetupInstructionsContent(
         )
 
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_title),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_content_title),
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
 
-        val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_step_1_content)
+        val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_instructions_content_step_1_content)
         WooPaymentsSetupInstructionsStep(stepNumber = 1) {
             ClickableText(
                 text = text,
@@ -140,7 +140,7 @@ private fun WooPaymentsSetupInstructionsContent(
         WooPaymentsSetupInstructionsStep(
             stepNumber = 2
         ) {
-            Text(text = stringResource(id = string.store_onboarding_wcpay_pre_setup_content_step_2_content))
+            Text(text = stringResource(id = string.store_onboarding_wcpay_instructions_content_step_2_content))
         }
     }
 }
@@ -200,7 +200,7 @@ private fun WooPaymentsSetupInstructionsFooter(
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             onClick = onBeginButtonClick,
         ) {
-            Text(text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_button))
+            Text(text = stringResource(id = R.string.store_onboarding_wcpay_instructions_content_button))
         }
 
         Row(
@@ -217,7 +217,7 @@ private fun WooPaymentsSetupInstructionsFooter(
                     .align(Alignment.CenterVertically)
                     .padding(end = 8.dp)
             )
-            val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_learn_more)
+            val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_instructions_content_learn_more)
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle2

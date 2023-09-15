@@ -90,14 +90,14 @@ private fun PaymentsPreSetupContent(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_one),
+            text = stringResource(id = R.string.store_onboarding_payments_pre_setup_title_one),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
         )
         Text(
             text = stringResource(
-                id = if (isWooPaymentsTask) R.string.store_onboarding_wcpay_terms_title_two
-                else R.string.store_onboarding_payments_terms_title_two
+                id = if (isWooPaymentsTask) R.string.store_onboarding_payments_pre_setup_title_wcpay
+                else R.string.store_onboarding_payments_pre_setup_title_generic
             ),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
