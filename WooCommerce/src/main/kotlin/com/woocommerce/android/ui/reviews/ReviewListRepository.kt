@@ -201,7 +201,7 @@ class ReviewListRepository @Inject constructor(
      * specific unread product reviews from the API by using the #commentId as #reviewId in the
      * request payload.
      */
-    suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean) {
+    suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean): RequestResult {
         unreadProductReviewIds = notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
@@ -215,14 +215,16 @@ class ReviewListRepository @Inject constructor(
             .take(PAGE_SIZE)
 
         if (unreadProductReviewIdsToFetch.isNotEmpty()) {
-            productStore.fetchProductReviews(
+            val result = productStore.fetchProductReviews(
                 WCProductStore.FetchProductReviewsPayload(
                     site = selectedSite.get(),
                     reviewIds = unreadProductReviewIdsToFetch,
                     offset = 0 // Must be zero so the API filters only by ids and not page offset
                 )
             )
+            return if (result.isError) ERROR else SUCCESS
         }
+        return NO_ACTION_NEEDED
     }
 
     /**

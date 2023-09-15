@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -185,8 +186,11 @@ class ReviewListViewModel @Inject constructor(
                 isSkeletonShown = !loadMore,
                 isLoadingMore = loadMore,
             )
-            reviewRepository.fetchOnlyUnreadProductReviews(loadMore)
-            _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+            when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
+                SUCCESS -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+                ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                else -> {}
+            }
             viewState = viewState.copy(
                 isSkeletonShown = false,
                 isLoadingMore = false
