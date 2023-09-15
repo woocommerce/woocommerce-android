@@ -724,38 +724,44 @@ class ProductDetailViewModel @Inject constructor(
             ?.let { updateProductDraft(numVariation = variationAmount) }
     }
 
-    fun uploadDownloadableFile(uri: String) {
-        launch {
-            mediaFilesRepository.uploadFile(uri)
-                .onStart {
-                    viewState = viewState.copy(isUploadingDownloadableFile = true)
-                    productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
-                }
-                .onCompletion {
-                    viewState = viewState.copy(isUploadingDownloadableFile = false)
-                    productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
-                }
-                .collect {
-                    when (it) {
-                        is UploadFailure -> triggerEvent(
-                            ShowSnackbar(R.string.product_downloadable_files_upload_failed)
-                        )
-
-                        is UploadProgress -> {
-                            // TODO
-                        }
-
-                        is UploadSuccess -> showAddProductDownload(it.media.url)
+    fun handleSelectedDownloadableFile(uri: String) {
+        if (uri.startsWith("http")) {
+            // The file is already on the server, skip uploading
+            showAddProductDownload(uri)
+        } else {
+            launch {
+                mediaFilesRepository.uploadFile(uri)
+                    .onStart {
+                        viewState = viewState.copy(isUploadingDownloadableFile = true)
+                        productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
                     }
-                }
+                    .onCompletion {
+                        viewState = viewState.copy(isUploadingDownloadableFile = false)
+                        productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
+                    }
+                    .collect {
+                        when (it) {
+                            is UploadFailure -> triggerEvent(
+                                ShowSnackbar(R.string.product_downloadable_files_upload_failed)
+                            )
+
+                            is UploadProgress -> {
+                                // TODO
+                            }
+
+                            is UploadSuccess -> showAddProductDownload(it.media.url)
+                        }
+                    }
+            }
         }
     }
 
-    fun showAddProductDownload(url: String) {
+    private fun showAddProductDownload(url: String) {
+        val fileName = url.substringAfterLast(delimiter = "/", missingDelimiterValue = "")
         triggerEvent(
             ProductNavigationTarget.ViewProductDownloadDetails(
                 isEditing = false,
-                file = ProductFile(id = null, url = url, name = "")
+                file = ProductFile(id = null, url = url, name = fileName)
             )
         )
     }

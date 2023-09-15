@@ -381,28 +381,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and not connected and onboarding success, when vm init, then tracks onboarding state`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            val onboardingState = CardReaderOnboardingState.OnboardingCompleted(
-                PluginType.WOOCOMMERCE_PAYMENTS,
-                pluginVersion,
-                countryCode
-            )
-            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
-
-            // WHEN
-            initViewModel(param)
-
-            // THEN
-            verify(cardReaderTracker).trackOnboardingState(onboardingState)
-        }
-
-    @Test
     fun `given payment flow and not connected, when vm init, then navigate to connection`() =
         testBlocking {
             // GIVEN

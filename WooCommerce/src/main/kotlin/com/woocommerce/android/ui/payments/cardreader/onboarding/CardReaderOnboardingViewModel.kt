@@ -36,11 +36,11 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.NoConnectionErrorState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountOverdueRequirementsState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountPendingRequirementsState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountRejectedState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAcountError.StripeAccountUnderReviewState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAccountError.PluginInTestModeWithLiveAccountState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAccountError.StripeAccountOverdueRequirementsState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAccountError.StripeAccountPendingRequirementsState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAccountError.StripeAccountRejectedState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeAccountError.StripeAccountUnderReviewState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeExtensionError.StripeExtensionNotSetupState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.StripeExtensionError.StripeExtensionUnsupportedVersionState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewState.UnsupportedErrorState.Country
@@ -92,10 +92,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     init {
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
             is Check -> refreshState(onboardingParam.pluginType)
-            is Failed -> {
-                cardReaderTracker.trackOnboardingState(onboardingParam.onboardingState)
-                showOnboardingState(onboardingParam.onboardingState)
-            }
+            is Failed -> showOnboardingState(onboardingParam.onboardingState)
         }.exhaustive
     }
 
@@ -106,7 +103,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             }
             viewState.value = CardReaderOnboardingViewState.LoadingState
             val state = cardReaderChecker.getOnboardingState(pluginType)
-            cardReaderTracker.trackOnboardingState(state)
             showOnboardingState(state)
         }
     }
@@ -230,13 +226,17 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 viewState.value = StripeAccountPendingRequirementsState(
                     onContactSupportActionClicked = ::onContactSupportClicked,
                     onLearnMoreActionClicked = ::onLearnMoreClicked,
-                    onButtonActionClicked = { onSkipPendingRequirementsClicked() },
+                    onPrimaryActionClicked = { onSkipPendingRequirementsClicked() },
                     dueDate = formatDueDate(state)
                 )
             is StripeAccountOverdueRequirement ->
                 viewState.value = StripeAccountOverdueRequirementsState(
                     onContactSupportActionClicked = ::onContactSupportClicked,
-                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                    onLearnMoreActionClicked = ::onLearnMoreClicked,
+                    onPrimaryActionClicked = {
+                        handleErrorCtaClick(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
+                    },
+                    onSecondaryActionClicked = ::refreshState
                 )
             is StripeAccountRejected ->
                 viewState.value = StripeAccountRejectedState(
@@ -314,7 +314,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaTapped.CASH_ON_DELIVERY_TAPPED)
+        cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
         viewState.value = CashOnDeliveryDisabledState(
             onSkipCashOnDeliveryClicked = {
                 (::onSkipCashOnDeliveryClicked)(
