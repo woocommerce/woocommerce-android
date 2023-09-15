@@ -82,8 +82,8 @@ class TaxRateSelectorViewModel @Inject constructor(
         }
     }
 
-    fun onAutoRateSwitchStateChanged(selected: Boolean) {
-        autoRateSwitchState.value = selected
+    fun onAutoRateSwitchStateToggled() {
+        autoRateSwitchState.value = !autoRateSwitchState.value
     }
 
     @Parcelize

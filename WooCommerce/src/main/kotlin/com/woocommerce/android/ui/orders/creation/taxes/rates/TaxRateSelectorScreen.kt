@@ -67,7 +67,7 @@ fun TaxRateSelectorScreen(
     onDismiss: () -> Unit,
     onLoadMore: () -> Unit,
     onEmptyScreenButtonClicked: () -> Unit,
-    onAutoRateToggleStateChanged: (Boolean) -> Unit,
+    onAutoRateToggleStateToggled: () -> Unit,
 ) {
     val state = viewState.collectAsState().value
     Scaffold(
@@ -75,7 +75,7 @@ fun TaxRateSelectorScreen(
         topBar = { Toolbar(onDismiss, onInfoIconClicked) },
         bottomBar = {
             if (FeatureFlag.ORDER_CREATION_AUTO_TAX_RATE.isEnabled()) {
-                BottomBar(onAutoRateToggleStateChanged, state)
+                BottomBar(onAutoRateToggleStateToggled, state)
             }
         },
     ) {
@@ -171,8 +171,8 @@ private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
 }
 
 @Composable
-private fun BottomBar(onAutoRateSwitchStateChanged: (Boolean) -> Unit, state: ViewState) = ConstraintLayout(
-    modifier = Modifier.fillMaxWidth()
+private fun BottomBar(onAutoRateSwitchStateToggled: () -> Unit, state: ViewState) = ConstraintLayout(
+    modifier = Modifier.fillMaxWidth().clickable { onAutoRateSwitchStateToggled() }
 ) {
     val (label, subtitle, autoRateSwitch, divider) = createRefs()
     Divider(
@@ -191,7 +191,7 @@ private fun BottomBar(onAutoRateSwitchStateChanged: (Boolean) -> Unit, state: Vi
             }
             .padding(dimensionResource(id = R.dimen.major_100)),
         checked = state.isAutoRateEnabled,
-        onCheckedChange = onAutoRateSwitchStateChanged,
+        onCheckedChange = { onAutoRateSwitchStateToggled() },
         colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colors.primary)
     )
     Text(
@@ -273,19 +273,19 @@ private fun TaxRates(
                 itemsIndexed(state.taxRates) { _, taxRate ->
                     TaxRateRow(taxRate, onTaxRateClick)
                 }
+                if (state.isLoading) {
+                    item {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth()
+                                .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                        )
+                    }
+                }
                 item {
                     Footer(onEditTaxRatesInAdminClicked)
                 }
-            }
-        }
-        if (state.isLoading) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
             }
         }
     }
@@ -438,7 +438,7 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
         onDismiss = {},
         onLoadMore = {},
         onEmptyScreenButtonClicked = {},
-        onAutoRateToggleStateChanged = {},
+        onAutoRateToggleStateToggled = {},
     )
 }
 
