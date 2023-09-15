@@ -22,6 +22,7 @@
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFlow"
             app:destination="@id/paymentsHubFragment"
+            app:exitAnim="@null"
             app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
         <action
