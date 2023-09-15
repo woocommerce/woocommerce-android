@@ -113,7 +113,8 @@ class ReviewListViewModel @Inject constructor(
 
         viewState = viewState.copy(isLoadingMore = true)
         launch {
-            fetchReviewList(loadMore = true)
+            if (viewState.isUnreadFilterEnabled) applyUnreadFilter(loadMore = true)
+            else fetchReviewList(loadMore = true)
         }
     }
 
@@ -158,9 +159,7 @@ class ReviewListViewModel @Inject constructor(
             when (reviewRepository.fetchProductReviews(loadMore)) {
                 SUCCESS, NO_ACTION_NEEDED -> {
                     val productReviews = reviewRepository.getCachedProductReviews()
-                    if (viewState.isUnreadFilterEnabled) {
-                        applyUnreadFilter(productReviews)
-                    } else _reviewList.value = productReviews
+                    _reviewList.value = productReviews
                 }
 
                 else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
@@ -179,31 +178,19 @@ class ReviewListViewModel @Inject constructor(
         )
     }
 
-    private suspend fun applyUnreadFilter() {
+    private suspend fun applyUnreadFilter(loadMore: Boolean) {
         launch {
-            viewState = viewState.copy(isSkeletonShown = true)
-            _reviewList.value = reviewRepository.getUnreadProductReviews()
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(
+                isSkeletonShown = !loadMore,
+                isLoadingMore = loadMore,
+            )
+            reviewRepository.fetchOnlyUnreadProductReviews(loadMore)
+            _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingMore = false
+            )
         }
-//        val unreadReviews = productReviews.filter { it.read == false }
-//        if (shouldLoadMore(unreadReviews)) {
-//            viewState = viewState.copy(
-//                isLoadingMore = unreadReviews.isNotEmpty(),
-//                isSkeletonShown = unreadReviews.isEmpty()
-//            )
-//            if (unreadReviews.isNotEmpty()) _reviewList.value = unreadReviews
-//            fetchReviewList(loadMore = true)
-//        } else
-//            _reviewList.value = unreadReviews
-    }
-
-    private fun shouldLoadMore(unreadReviews: List<ProductReview>): Boolean {
-        val minAmountForScrolling = resourceProvider.getInteger(R.integer.min_number_of_items_to_make_list_scrollable)
-        return reviewRepository.canLoadMore &&
-            (
-                unreadReviews.size < minAmountForScrolling ||
-                    unreadReviews.size == _reviewList.value?.size
-                )
     }
 
     private fun showOfflineSnack() {
@@ -232,7 +219,7 @@ class ReviewListViewModel @Inject constructor(
         viewState = viewState.copy(isUnreadFilterEnabled = isEnabled)
         launch {
             if (isEnabled) {
-                applyUnreadFilter(reviewRepository.getCachedProductReviews())
+                applyUnreadFilter(loadMore = false)
             } else {
                 _reviewList.value = reviewRepository.getCachedProductReviews()
             }

@@ -49,7 +49,9 @@ class ReviewListRepository @Inject constructor(
     private var continuationNotification = ContinuationWrapper<Boolean>(REVIEWS)
 
     private var offset = 0
+    private var unreadReviewsOffset = 0
     private var isFetchingProductReviews = false
+    private var unreadProductReviewIds: List<Long> = emptyList()
 
     var canLoadMore: Boolean = false
         private set
@@ -195,29 +197,41 @@ class ReviewListRepository @Inject constructor(
     }
 
     /**
-     * Uses unread product review notifications [NotificationModel.#commentId] to fetch the
-     * specific unread product reviews from the API by setting and array of ids in
-     * [WCProductStore.FetchProductReviewsPayload.reviewIds] field.
+     * Uses unread product review notification [NotificationModel.commentId] to then fetch the
+     * specific unread product reviews from the API by using the #commentId as #reviewId in the
+     * request payload.
      */
-    suspend fun getUnreadProductReviews(): List<ProductReview> {
-        val unreadProductReviewIds = getReviewNotifReadValueByRemoteIdMap()
-            .filter { !it.value }
-            .map { it.key }
-            .toList()
-        val result = productStore.fetchProductReviews(
-            WCProductStore.FetchProductReviewsPayload(
-                selectedSite.get(),
-                reviewIds = unreadProductReviewIds
-            )
+    suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean) {
+        if (loadMore) unreadReviewsOffset += PAGE_SIZE
+        unreadProductReviewIds = notificationStore.getNotificationsForSite(
+            site = selectedSite.get(),
+            filterBySubtype = listOf(STORE_REVIEW.toString())
         )
-        return when {
-            result.isError -> emptyList()
-            else -> {
-                productStore.getProductReviewsByReviewId(unreadProductReviewIds)
-                    .map { it.toAppModel() }
-            }
+            .filter { !it.read }
+            .map { it.getCommentId() }
+
+        val unreadProductReviewIdsToFetch = unreadProductReviewIds
+            .drop(unreadReviewsOffset)
+            .take(PAGE_SIZE)
+        if (unreadProductReviewIdsToFetch.isEmpty()) canLoadMore = false
+
+        if (canLoadMore) {
+            productStore.fetchProductReviews(
+                WCProductStore.FetchProductReviewsPayload(
+                    selectedSite.get(),
+                    reviewIds = unreadProductReviewIdsToFetch
+                )
+            )
         }
     }
+
+
+    suspend fun getCachedUnreadProductReviews(): List<ProductReview> =
+        withContext(Dispatchers.IO) {
+            productStore.getProductReviewsByReviewId(unreadProductReviewIds)
+                .map { it.toAppModel() }
+                .map { it.copy(read = false) }
+        }
 
     /**
      * Fetch products from the API and suspends until finished.
