@@ -21,16 +21,16 @@ Language: nl
     <string name="tax_rates_info_dialog_primary_text">Belasting wordt berekend door het factuur- of verzendadres van je klant of je winkeladres te koppelen aan de locatie van een belastingtarief.</string>
     <string name="tax_rates_information_content_description">Informatie over belastingtarieven</string>
     <string name="store_onboarding_wcpay_setup_description">Door WooCommerce Payments te gebruiken ga je ermee akkoord dat je bent gebonden aan onze &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Servicevoorwaarden&lt;/u&gt;&lt;/a&gt; en bevestig je dat je ons &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacybeleid&lt;/u&gt;&lt;/a&gt; hebt gelezen.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">Instellen</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over je gegevens verifiëren met WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Installatie starten</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">We werken voor WooPayments samen met Stripe. Je wordt doorgestuurd naar de site van Stripe om je aan te melden. We zullen je vragen je bedrijfs- en betaalgegevens te verifiëren.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Je WooPayments-meldingen worden verzonden naar het e-mailadres van je WordPress.com-account. Heb je liever dat we het naar een nieuw account sturen? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie vind je hier.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">Voordat je met je installatie begint</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minuten</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Geschatte installatietijd</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">Beheer betalingen moeiteloos op één plek met WooPayments. Accepteer kaarten, Apple Pay, fysieke betalingen en meer dan 135 valuta, zonder installatie- of maandelijkse kosten.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Instellen</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over je gegevens verifiëren met WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Installatie starten</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">We werken voor WooPayments samen met Stripe. Je wordt doorgestuurd naar de site van Stripe om je aan te melden. We zullen je vragen je bedrijfs- en betaalgegevens te verifiëren.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Je WooPayments-meldingen worden verzonden naar het e-mailadres van je WordPress.com-account. Heb je liever dat we het naar een nieuw account sturen? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie vind je hier.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Voordat je met je installatie begint</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minuten</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Geschatte installatietijd</string>
+    <string name="store_onboarding_wcpay_instructions_title">Beheer betalingen moeiteloos op één plek met WooPayments. Accepteer kaarten, Apple Pay, fysieke betalingen en meer dan 135 valuta, zonder installatie- of maandelijkse kosten.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Winkelnaam kan niet worden opgeslagen. Probeer het opnieuw.</string>
     <string name="settings_name_your_store_dialog_loading">Nieuwe winkelnaam opslaan …</string>
     <string name="settings_name_your_store_dialog_success">Winkelnaam is ingesteld!</string>

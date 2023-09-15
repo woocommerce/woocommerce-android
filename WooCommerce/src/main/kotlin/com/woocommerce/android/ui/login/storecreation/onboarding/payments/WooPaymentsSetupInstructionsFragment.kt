@@ -14,10 +14,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
-class WooPaymentsPreSetupFragment : BaseFragment() {
+class WooPaymentsSetupInstructionsFragment : BaseFragment() {
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +29,7 @@ class WooPaymentsPreSetupFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    WooPaymentsPreSetupScreen(
+                    WooPaymentsSetupInstructionsScreen(
                         onCloseButtonClick = { findNavController().popBackStack() },
                         onWPComAccountMoreDetailsClick = { onWPComAccountMoreDetailsClick() },
                         onBeginButtonClick = { onBeginButtonClick() },
@@ -40,18 +41,18 @@ class WooPaymentsPreSetupFragment : BaseFragment() {
     }
 
     private fun onWPComAccountMoreDetailsClick() {
-        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_PRE_SETUP_WPCOM_ACCOUNT)
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_INSTRUCTIONS_WPCOM_ACCOUNT)
     }
 
     private fun onLearnMoreClick() {
-        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_PRE_SETUP_LEARN_MORE)
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_INSTRUCTIONS_LEARN_MORE)
     }
 
     private fun onBeginButtonClick() {
         AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_BEGIN_SETUP_TAPPED)
         findNavController().navigateSafely(
-            directions = WooPaymentsPreSetupFragmentDirections
-                .actionWooPaymentsPreSetupFragmentToWooPaymentsSetupFragment()
+            directions = WooPaymentsSetupInstructionsFragmentDirections
+                .actionWooPaymentsSetupInstructionsFragmentToPaymentsPreSetupFragment(OnboardingTaskType.WC_PAYMENTS.id)
         )
     }
 }
