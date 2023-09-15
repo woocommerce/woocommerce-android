@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.config.SupportedExtensionType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.PluginIsNotSupportedInTheCountry
@@ -58,6 +59,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
+    private val cardReaderTracker: CardReaderTracker = mock()
 
     private val site = SiteModel()
 
@@ -79,6 +81,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             cardReaderCountryConfigProvider,
             cashOnDeliverySettingsRepository,
             cardReaderOnboardingCheckResultCache,
+            cardReaderTracker,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)

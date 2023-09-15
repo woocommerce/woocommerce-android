@@ -8,17 +8,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
-class WooPaymentsTermsFragment : BaseFragment() {
+class PaymentsPreSetupFragment : BaseFragment() {
+    private val args: PaymentsPreSetupFragmentArgs by navArgs()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -29,7 +31,8 @@ class WooPaymentsTermsFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    WooPaymentsTermsScreen(
+                    PaymentsPreSetupScreen(
+                        isWooPaymentsTask = args.taskId == OnboardingTaskType.WC_PAYMENTS.id,
                         backButtonClick = { findNavController().popBackStack() },
                         onTermsOfServiceClick = { onTermsOfServiceClick() },
                         onPrivacyPolicyClick = { onPrivacyPolicyClick() },
@@ -50,15 +53,23 @@ class WooPaymentsTermsFragment : BaseFragment() {
     }
 
     private fun onContinueButtonClick() {
-        AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_TERMS_CONTINUE_TAPPED)
+        if (args.taskId == OnboardingTaskType.WC_PAYMENTS.id) {
+            AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_TERMS_CONTINUE_TAPPED)
+        }
         findNavController().navigateSafely(
-            directions = WooPaymentsTermsFragmentDirections.actionWooPaymentsTermsFragmentToGetPaidFragment(
-                taskId = WC_PAYMENTS.id
+            directions = PaymentsPreSetupFragmentDirections.actionPaymentsPreSetupFragmentToGetPaidFragment(
+                taskId = args.taskId
             )
         )
     }
 
     private fun onLearnMoreButtonClick() {
-        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.STORE_ONBOARDING_WCPAY_SETUP_GUIDE)
+        val url = when (args.taskId) {
+            OnboardingTaskType.WC_PAYMENTS.id -> AppUrls.STORE_ONBOARDING_WCPAY_SETUP_GUIDE
+            OnboardingTaskType.PAYMENTS.id -> AppUrls.STORE_ONBOARDING_PAYMENTS_SETUP_GUIDE
+            else -> error("Wrong task ID passed to the screen")
+        }
+
+        ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 }
