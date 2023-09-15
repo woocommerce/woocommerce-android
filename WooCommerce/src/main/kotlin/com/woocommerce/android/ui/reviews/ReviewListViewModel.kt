@@ -181,10 +181,7 @@ class ReviewListViewModel @Inject constructor(
     }
 
     private suspend fun applyUnreadFilter(loadMore: Boolean) {
-        viewState = viewState.copy(
-            isSkeletonShown = !loadMore,
-            isLoadingMore = loadMore,
-        )
+        viewState = viewState.copy(isLoadingMore = loadMore)
         when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
             SUCCESS,
             NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
@@ -212,11 +209,11 @@ class ReviewListViewModel @Inject constructor(
     }
 
     fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
+        fetchingReviewsJob?.cancel()
         viewState = viewState.copy(
             isUnreadFilterEnabled = isEnabled,
             isSkeletonShown = true
         )
-        fetchingReviewsJob?.cancel()
         fetchReviewList(loadMore = false)
     }
 
