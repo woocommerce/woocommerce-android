@@ -220,7 +220,8 @@ class ReviewListRepository @Inject constructor(
                     site = selectedSite.get(),
                     reviewIds = unreadProductReviewIdsToFetch,
                     offset = 0 // Must be zero so the API filters only by ids and not page offset
-                )
+                ),
+                deletePreviouslyCachedReviews = loadMore
             )
             return if (result.isError) ERROR else SUCCESS
         }
@@ -272,7 +273,7 @@ class ReviewListRepository @Inject constructor(
         isFetchingProductReviews = true
 
         val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), newOffset)
-        val result = productStore.fetchProductReviews(payload)
+        val result = productStore.fetchProductReviews(payload = payload, deletePreviouslyCachedReviews = loadMore)
         isFetchingProductReviews = false
         if (result.isError) {
             AnalyticsTracker.track(
