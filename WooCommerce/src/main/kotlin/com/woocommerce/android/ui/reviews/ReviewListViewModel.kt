@@ -181,21 +181,19 @@ class ReviewListViewModel @Inject constructor(
     }
 
     private suspend fun applyUnreadFilter(loadMore: Boolean) {
-        launch {
-            viewState = viewState.copy(
-                isSkeletonShown = !loadMore,
-                isLoadingMore = loadMore,
-            )
-            when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
-                SUCCESS -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
-                ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
-                else -> {}
-            }
-            viewState = viewState.copy(
-                isSkeletonShown = false,
-                isLoadingMore = false
-            )
+        viewState = viewState.copy(
+            isSkeletonShown = !loadMore,
+            isLoadingMore = loadMore,
+        )
+        when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
+            SUCCESS -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+            ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+            else -> {}
         }
+        viewState = viewState.copy(
+            isSkeletonShown = false,
+            isLoadingMore = false
+        )
     }
 
     private fun showOfflineSnack() {
