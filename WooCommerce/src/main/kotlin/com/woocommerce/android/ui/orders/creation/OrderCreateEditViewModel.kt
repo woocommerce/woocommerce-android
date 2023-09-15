@@ -51,6 +51,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteType.CUSTOMER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.PRODUCT_TYPES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -122,6 +123,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
@@ -929,16 +931,22 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackCreateOrderButtonClick() {
-        tracker.track(
-            ORDER_CREATE_BUTTON_TAPPED,
-            mapOf(
-                KEY_STATUS to _orderDraft.value.status,
-                KEY_PRODUCT_COUNT to products.value?.count(),
-                KEY_HAS_CUSTOMER_DETAILS to _orderDraft.value.billingAddress.hasInfo(),
-                KEY_HAS_FEES to _orderDraft.value.feesLines.isNotEmpty(),
-                KEY_HAS_SHIPPING_METHOD to _orderDraft.value.shippingLines.isNotEmpty()
+        launch {
+            val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
+            val productTypes = if (ids != null) orderDetailRepository.getUniqueProductTypes(ids) else null
+            tracker.track(
+                ORDER_CREATE_BUTTON_TAPPED,
+                buildMap {
+                    put(KEY_STATUS, _orderDraft.value.status)
+                    putIfNotNull(PRODUCT_TYPES to productTypes)
+                    put(KEY_PRODUCT_COUNT, products.value?.count())
+                    put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
+                    put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
+                    put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
+                }
+
             )
-        )
+        }
     }
 
     private fun trackOrderSyncFailed(throwable: Throwable) {
