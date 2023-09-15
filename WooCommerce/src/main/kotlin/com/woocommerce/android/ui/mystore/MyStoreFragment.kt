@@ -318,14 +318,14 @@ class MyStoreFragment :
 
             is StoreOnboardingViewModel.NavigateToSetupPayments ->
                 findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
+                    directions = MyStoreFragmentDirections.actionMyStoreToPaymentsPreSetupFragment(
                         taskId = taskId
                     )
                 )
 
             is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
                 findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsPreSetupFragment()
+                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsSetupInstructionsFragment()
                 )
 
             is StoreOnboardingViewModel.NavigateToAboutYourStore ->

@@ -37,7 +37,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -83,7 +82,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForL
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
-import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenStoreCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -108,7 +106,6 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
-import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -768,7 +765,6 @@ class MainActivity :
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
-                is ShortcutOpenStoreCreation -> shortcutOpenStoreCreation(event.storeName)
                 is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
@@ -805,22 +801,6 @@ class MainActivity :
         navController.navigateSafely(
             NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
         )
-    }
-
-    private fun shortcutOpenStoreCreation(storeName: String?) {
-        navController.apply {
-            navigate(
-                NavGraphMainDirections.actionGlobalLoginToSitePickerFragment(
-                    openedFromLogin = AppPrefs.getStoreCreationSource() != AnalyticsTracker.VALUE_SWITCHING_STORE
-                )
-            )
-            navigate(
-                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow(storeName),
-                navOptions {
-                    popUpTo(R.id.sitePickerFragment) { inclusive = true }
-                }
-            )
-        }
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
