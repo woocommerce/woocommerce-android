@@ -19,7 +19,6 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,8 +32,7 @@ class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val reviewsRepository: ProductReviewsRepository,
-    private val reviewModerationHandler: ReviewModerationHandler,
-    private val resourceProvider: ResourceProvider
+    private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
@@ -119,9 +117,7 @@ class ProductReviewsViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.product_review_list_fetching_failed))
             } else {
                 val productReviews = reviewsRepository.getProductReviewsFromDB(remoteProductId)
-                if (productReviewsViewState.isUnreadFilterEnabled) {
-                    applyUnreadFilter(productReviews)
-                } else _reviewList.value = productReviews
+                _reviewList.value = productReviews
             }
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))
@@ -162,36 +158,12 @@ class ProductReviewsViewModel @Inject constructor(
         productReviewsViewState = productReviewsViewState.copy(isUnreadFilterEnabled = isEnabled)
         launch {
             if (isEnabled) {
-                applyUnreadFilter(reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId))
+                _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
+//                applyUnreadFilter(reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId))
             } else {
                 _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
             }
         }
-    }
-
-    private suspend fun applyUnreadFilter(productReviews: List<ProductReview>) {
-        val unreadReviews = productReviews.filter { it.read == false }
-        if (shouldLoadMore(unreadReviews)) {
-            productReviewsViewState = productReviewsViewState.copy(
-                isLoadingMore = unreadReviews.isNotEmpty(),
-                isSkeletonShown = unreadReviews.isEmpty()
-            )
-            if (unreadReviews.isNotEmpty()) _reviewList.value = unreadReviews
-            fetchProductReviews(
-                remoteProductId = navArgs.remoteProductId,
-                loadMore = true
-            )
-        } else
-            _reviewList.value = unreadReviews
-    }
-
-    private fun shouldLoadMore(unreadReviews: List<ProductReview>): Boolean {
-        val minAmountForScrolling = resourceProvider.getInteger(R.integer.min_number_of_items_to_make_list_scrollable)
-        return reviewsRepository.canLoadMore &&
-            (
-                unreadReviews.size < minAmountForScrolling ||
-                    unreadReviews.size == _reviewList.value?.size
-                )
     }
 
     @Parcelize

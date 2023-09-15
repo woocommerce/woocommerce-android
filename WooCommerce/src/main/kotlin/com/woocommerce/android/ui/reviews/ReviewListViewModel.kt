@@ -22,7 +22,6 @@ import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -44,8 +43,7 @@ class ReviewListViewModel @Inject constructor(
     private val reviewRepository: ReviewListRepository,
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val reviewModerationHandler: ReviewModerationHandler,
-    private val resourceProvider: ResourceProvider
+    private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
