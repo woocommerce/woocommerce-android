@@ -151,14 +151,14 @@ class ReviewListViewModel @Inject constructor(
     }
 
     private fun fetchReviewList(loadMore: Boolean) {
-        fetchingReviewsJob?.cancel()
         fetchingReviewsJob = launch {
             if (networkStatus.isConnected()) {
                 if (viewState.isUnreadFilterEnabled) {
                     applyUnreadFilter(loadMore = loadMore)
                 } else {
                     when (reviewRepository.fetchProductReviews(loadMore)) {
-                        SUCCESS, NO_ACTION_NEEDED -> {
+                        SUCCESS,
+                        NO_ACTION_NEEDED -> {
                             val productReviews = reviewRepository.getCachedProductReviews()
                             _reviewList.value = productReviews
                         }
@@ -186,7 +186,9 @@ class ReviewListViewModel @Inject constructor(
             isLoadingMore = loadMore,
         )
         when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
-            SUCCESS -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+            SUCCESS,
+            NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+
             ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             else -> {}
         }
@@ -214,6 +216,7 @@ class ReviewListViewModel @Inject constructor(
             isUnreadFilterEnabled = isEnabled,
             isSkeletonShown = true
         )
+        fetchingReviewsJob?.cancel()
         fetchReviewList(loadMore = false)
     }
 
