@@ -25,6 +25,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -50,8 +51,9 @@ class ReviewListViewModel @Inject constructor(
         private const val TAG = "ReviewListViewModel"
     }
 
-    private val _reviewList = MutableLiveData<List<ProductReview>>()
+    private var fetchingReviewsJob: Job? = null
 
+    private val _reviewList = MutableLiveData<List<ProductReview>>()
     override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
         get() = _reviewList
 
@@ -91,8 +93,8 @@ class ReviewListViewModel @Inject constructor(
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            fetchReviewList(loadMore = false)
         }
+        fetchReviewList(loadMore = false)
     }
 
     override fun ReviewModerationConsumer.onReviewModerationSuccess() {
@@ -112,16 +114,12 @@ class ReviewListViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(isLoadingMore = true)
-        launch {
-            fetchReviewList(loadMore = true)
-        }
+        fetchReviewList(loadMore = true)
     }
 
     fun forceRefreshReviews() {
         viewState = viewState.copy(isRefreshing = true)
-        launch {
-            fetchReviewList(loadMore = false)
-        }
+        fetchReviewList(loadMore = false)
     }
 
     fun checkForUnreadReviews() {
@@ -153,31 +151,34 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchReviewList(loadMore: Boolean) {
-        if (networkStatus.isConnected()) {
-            if (viewState.isUnreadFilterEnabled) {
-                applyUnreadFilter(loadMore = loadMore)
-            } else {
-                when (reviewRepository.fetchProductReviews(loadMore)) {
-                    SUCCESS, NO_ACTION_NEEDED -> {
-                        val productReviews = reviewRepository.getCachedProductReviews()
-                        _reviewList.value = productReviews
+    private fun fetchReviewList(loadMore: Boolean) {
+        fetchingReviewsJob?.cancel()
+        fetchingReviewsJob = launch {
+            if (networkStatus.isConnected()) {
+                if (viewState.isUnreadFilterEnabled) {
+                    applyUnreadFilter(loadMore = loadMore)
+                } else {
+                    when (reviewRepository.fetchProductReviews(loadMore)) {
+                        SUCCESS, NO_ACTION_NEEDED -> {
+                            val productReviews = reviewRepository.getCachedProductReviews()
+                            _reviewList.value = productReviews
+                        }
+
+                        else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
                     }
-
-                    else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
                 }
+                checkForUnreadReviews()
+            } else {
+                // Network is not connected
+                showOfflineSnack()
             }
-            checkForUnreadReviews()
-        } else {
-            // Network is not connected
-            showOfflineSnack()
-        }
 
-        viewState = viewState.copy(
-            isSkeletonShown = false,
-            isLoadingMore = false,
-            isRefreshing = false
-        )
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingMore = false,
+                isRefreshing = false
+            )
+        }
     }
 
     private suspend fun applyUnreadFilter(loadMore: Boolean) {
@@ -208,22 +209,20 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
+    fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
+        viewState = viewState.copy(
+            isUnreadFilterEnabled = isEnabled,
+            isSkeletonShown = true
+        )
+        fetchReviewList(loadMore = false)
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             forceRefreshReviews()
-        }
-    }
-
-    fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
-        viewState = viewState.copy(
-            isUnreadFilterEnabled = isEnabled,
-            isSkeletonShown = true
-        )
-        launch {
-            fetchReviewList(loadMore = false)
         }
     }
 
