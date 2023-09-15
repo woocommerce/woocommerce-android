@@ -260,6 +260,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_FLOW_EDITING = "editing"
         const val VALUE_FLOW_LIST = "list"
 
+        const val AUTO_TAX_RATE_ENABLED = "auto_tax_rate_enabled"
+
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
