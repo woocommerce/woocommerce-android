@@ -72,7 +72,10 @@ class ReviewListRepository @Inject constructor(
      * from the API.
      * @return the result of the fetch as a [RequestResult]
      */
-    suspend fun fetchProductReviews(loadMore: Boolean): RequestResult {
+    suspend fun fetchProductReviews(
+        loadMore: Boolean,
+        remoteProductId: Long? = null
+    ): RequestResult {
         return if (!isFetchingProductReviews) {
             coroutineScope {
                 val fetchNotifs = async {
@@ -86,7 +89,7 @@ class ReviewListRepository @Inject constructor(
 
                 var wasFetchReviewsSuccess = false
                 val fetchReviews = async {
-                    wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore)
+                    wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore, remoteProductId)
 
                     /*
                      * Fetch any products associated with these reviews missing from the db.
@@ -201,7 +204,10 @@ class ReviewListRepository @Inject constructor(
      * specific unread product reviews from the API by using the #commentId as #reviewId in the
      * request payload.
      */
-    suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean): RequestResult {
+    suspend fun fetchOnlyUnreadProductReviews(
+        loadMore: Boolean,
+        remoteProductId: Long? = null
+    ): RequestResult {
         unreadProductReviewIds = notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
@@ -219,9 +225,10 @@ class ReviewListRepository @Inject constructor(
                 WCProductStore.FetchProductReviewsPayload(
                     site = selectedSite.get(),
                     reviewIds = unreadProductReviewIdsToFetch,
+                    productIds = if (remoteProductId != null) listOf(remoteProductId) else emptyList(),
                     offset = 0 // Must be zero so the API filters only by ids and not page offset
                 ),
-                deletePreviouslyCachedReviews = false
+                deletePreviouslyCachedReviews = !loadMore
             )
             return if (result.isError) ERROR else SUCCESS
         }
@@ -268,11 +275,15 @@ class ReviewListRepository @Inject constructor(
         }
     }
 
-    private suspend fun fetchProductReviewsFromApi(loadMore: Boolean): Boolean {
+    private suspend fun fetchProductReviewsFromApi(loadMore: Boolean, remoteProductId: Long?): Boolean {
         val newOffset = if (loadMore) offset + PAGE_SIZE else 0
         isFetchingProductReviews = true
+        val payload = WCProductStore.FetchProductReviewsPayload(
+            site = selectedSite.get(),
+            offset = newOffset,
+            productIds = if (remoteProductId != null) listOf(remoteProductId) else emptyList()
+        )
 
-        val payload = WCProductStore.FetchProductReviewsPayload(selectedSite.get(), newOffset)
         val result = productStore.fetchProductReviews(
             payload = payload,
             deletePreviouslyCachedReviews = !loadMore

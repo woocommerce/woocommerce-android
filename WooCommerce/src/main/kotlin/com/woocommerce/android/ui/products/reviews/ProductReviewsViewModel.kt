@@ -9,7 +9,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewListRepository
 import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
 import com.woocommerce.android.ui.reviews.ReviewModerationHandler
 import com.woocommerce.android.ui.reviews.observeModerationEvents
@@ -22,6 +26,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
@@ -31,8 +36,8 @@ import javax.inject.Inject
 class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val reviewsRepository: ProductReviewsRepository,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val reviewListRepository: ReviewListRepository
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
@@ -48,6 +53,7 @@ class ProductReviewsViewModel @Inject constructor(
     private val navArgs: ProductReviewsFragmentArgs by savedState.navArgs()
 
     private var hasModifiedReviews: Boolean = false
+    private var fetchingReviewsJob: Job? = null
 
     init {
         if (_reviewList.value == null) {
@@ -58,17 +64,17 @@ class ProductReviewsViewModel @Inject constructor(
 
     fun refreshProductReviews() {
         productReviewsViewState = productReviewsViewState.copy(isRefreshing = true)
-        launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = false) }
+        fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = false)
     }
 
     fun loadMoreReviews() {
-        if (!reviewsRepository.canLoadMore) {
+        if (!reviewListRepository.canLoadMore) {
             WooLog.d(PRODUCTS, "No more reviews to load for product: ${navArgs.remoteProductId}")
             return
         }
 
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = true)
-        launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true) }
+        fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true)
     }
 
     override fun ReviewModerationConsumer.onReviewModerationSuccess() {
@@ -86,48 +92,77 @@ class ProductReviewsViewModel @Inject constructor(
 
     private fun reloadReviewsFromCache() {
         launch {
-            _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
+            _reviewList.value = reviewListRepository.getCachedProductReviews()
             productReviewsViewState = productReviewsViewState.copy(
                 isEmptyViewVisible = _reviewList.value?.isEmpty() == true
             )
         }
     }
 
-    private fun loadProductReviews() = launch {
-        // Initial load. Get and show reviewList from the db if any
-        val reviewsInDb = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
-        if (reviewsInDb.isNotEmpty()) {
-            _reviewList.value = reviewsInDb
-            productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = false)
-        } else {
-            productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
+    private fun loadProductReviews() {
+        launch {
+            // Initial load. Get and show reviewList from the db if any
+            val reviewsInDb = reviewListRepository.getCachedProductReviews()
+            if (reviewsInDb.isNotEmpty()) {
+                _reviewList.value = reviewsInDb
+                productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = false)
+            } else {
+                productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
+            }
         }
-
         fetchProductReviews(navArgs.remoteProductId, loadMore = false)
     }
 
-    private suspend fun fetchProductReviews(
+    private fun fetchProductReviews(
         remoteProductId: Long,
         loadMore: Boolean
     ) {
-        if (networkStatus.isConnected()) {
-            val result = reviewsRepository.fetchApprovedProductReviewsFromApi(remoteProductId, loadMore)
-            trackFetchProductReviewsResult(result, loadMore)
-            if (result.isError) {
-                triggerEvent(ShowSnackbar(R.string.product_review_list_fetching_failed))
-            } else {
-                val productReviews = reviewsRepository.getProductReviewsFromDB(remoteProductId)
-                _reviewList.value = productReviews
-            }
-        } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
-        }
+        fetchingReviewsJob = launch {
+            if (networkStatus.isConnected()) {
+                if (productReviewsViewState.isUnreadFilterEnabled) {
+                    applyUnreadFilter(loadMore = loadMore)
+                } else {
+                    val result = reviewListRepository.fetchProductReviews(
+                        loadMore,
+                        remoteProductId
+                    )
+//                    trackFetchProductReviewsResult(result, loadMore)
+                    when (result) {
+                        SUCCESS,
+                        NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedProductReviews()
 
+                        ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                        else -> {}
+                    }
+                }
+            } else {
+                triggerEvent(ShowSnackbar(R.string.offline_error))
+            }
+
+            productReviewsViewState = productReviewsViewState.copy(
+                isSkeletonShown = false,
+                isLoadingMore = false,
+                isRefreshing = false,
+                isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            )
+        }
+    }
+
+    private suspend fun applyUnreadFilter(loadMore: Boolean) {
+        productReviewsViewState = productReviewsViewState.copy(isLoadingMore = loadMore)
+        when (reviewListRepository.fetchOnlyUnreadProductReviews(
+            loadMore,
+            navArgs.remoteProductId
+        )) {
+            SUCCESS,
+            NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedUnreadProductReviews()
+
+            ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+            else -> {}
+        }
         productReviewsViewState = productReviewsViewState.copy(
             isSkeletonShown = false,
-            isLoadingMore = false,
-            isRefreshing = false,
-            isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            isLoadingMore = false
         )
     }
 
@@ -155,15 +190,15 @@ class ProductReviewsViewModel @Inject constructor(
     }
 
     fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
-        productReviewsViewState = productReviewsViewState.copy(isUnreadFilterEnabled = isEnabled)
-        launch {
-            if (isEnabled) {
-                _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
-//                applyUnreadFilter(reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId))
-            } else {
-                _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
-            }
-        }
+        fetchingReviewsJob?.cancel()
+        productReviewsViewState = productReviewsViewState.copy(
+            isUnreadFilterEnabled = isEnabled,
+            isSkeletonShown = true
+        )
+        fetchProductReviews(
+            remoteProductId = navArgs.remoteProductId,
+            loadMore = false
+        )
     }
 
     @Parcelize
