@@ -53,7 +53,9 @@ class PaymentsPreSetupFragment : BaseFragment() {
     }
 
     private fun onContinueButtonClick() {
-        AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_TERMS_CONTINUE_TAPPED)
+        if (args.taskId == OnboardingTaskType.WC_PAYMENTS.id) {
+            AnalyticsTracker.track(AnalyticsEvent.STORE_ONBOARDING_WCPAY_TERMS_CONTINUE_TAPPED)
+        }
         findNavController().navigateSafely(
             directions = PaymentsPreSetupFragmentDirections.actionPaymentsPreSetupFragmentToGetPaidFragment(
                 taskId = args.taskId
