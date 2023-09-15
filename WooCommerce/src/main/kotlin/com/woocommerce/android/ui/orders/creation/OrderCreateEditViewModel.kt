@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -72,6 +71,7 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AutoTaxRateSettingDetails
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.CouponList
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
@@ -81,6 +81,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -1117,8 +1118,12 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onSetTaxRateClicked() = launch {
-        val state = getTaxRatesInfoDialogState(_orderDraft.value.taxLines)
-        triggerEvent(OrderCreateEditNavigationTarget.TaxRateSelector(state))
+        val state = viewState.autoTaxRateSetting
+        if (state.isActive) {
+            triggerEvent(AutoTaxRateSettingDetails(state))
+        } else {
+            triggerEvent(TaxRateSelector(getTaxRatesInfoDialogState(_orderDraft.value.taxLines)))
+        }
         tracker.track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
     }
 

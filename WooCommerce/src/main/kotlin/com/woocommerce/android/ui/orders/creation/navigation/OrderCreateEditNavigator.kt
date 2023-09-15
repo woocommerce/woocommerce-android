@@ -74,6 +74,11 @@ object OrderCreateEditNavigator {
                     target.state
                 )
             }
+            is OrderCreateEditNavigationTarget.AutoTaxRateSettingDetails -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToAutoTaxRateDetailsFragment(
+                    target.state
+                )
+            }
         }
         navController.navigate(action)
     }
