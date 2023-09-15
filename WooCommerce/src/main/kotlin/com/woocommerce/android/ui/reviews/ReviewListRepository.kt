@@ -195,6 +195,31 @@ class ReviewListRepository @Inject constructor(
     }
 
     /**
+     * Uses unread product review notifications [NotificationModel.#commentId] to fetch the
+     * specific unread product reviews from the API by setting and array of ids in
+     * [WCProductStore.FetchProductReviewsPayload.reviewIds] field.
+     */
+    suspend fun getUnreadProductReviews(): List<ProductReview> {
+        val unreadProductReviewIds = getReviewNotifReadValueByRemoteIdMap()
+            .filter { !it.value }
+            .map { it.key }
+            .toList()
+        val result = productStore.fetchProductReviews(
+            WCProductStore.FetchProductReviewsPayload(
+                selectedSite.get(),
+                reviewIds = unreadProductReviewIds
+            )
+        )
+        return when {
+            result.isError -> emptyList()
+            else -> {
+                productStore.getProductReviewsByReviewId(unreadProductReviewIds)
+                    .map { it.toAppModel() }
+            }
+        }
+    }
+
+    /**
      * Fetch products from the API and suspends until finished.
      */
     private suspend fun fetchProductsByRemoteId(remoteProductIds: List<Long>) {

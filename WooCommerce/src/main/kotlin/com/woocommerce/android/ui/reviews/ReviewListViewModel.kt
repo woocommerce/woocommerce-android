@@ -179,17 +179,22 @@ class ReviewListViewModel @Inject constructor(
         )
     }
 
-    private suspend fun applyUnreadFilter(productReviews: List<ProductReview>) {
-        val unreadReviews = productReviews.filter { it.read == false }
-        if (shouldLoadMore(unreadReviews)) {
-            viewState = viewState.copy(
-                isLoadingMore = unreadReviews.isNotEmpty(),
-                isSkeletonShown = unreadReviews.isEmpty()
-            )
-            if (unreadReviews.isNotEmpty()) _reviewList.value = unreadReviews
-            fetchReviewList(loadMore = true)
-        } else
-            _reviewList.value = unreadReviews
+    private suspend fun applyUnreadFilter() {
+        launch {
+            viewState = viewState.copy(isSkeletonShown = true)
+            _reviewList.value = reviewRepository.getUnreadProductReviews()
+            viewState = viewState.copy(isSkeletonShown = false)
+        }
+//        val unreadReviews = productReviews.filter { it.read == false }
+//        if (shouldLoadMore(unreadReviews)) {
+//            viewState = viewState.copy(
+//                isLoadingMore = unreadReviews.isNotEmpty(),
+//                isSkeletonShown = unreadReviews.isEmpty()
+//            )
+//            if (unreadReviews.isNotEmpty()) _reviewList.value = unreadReviews
+//            fetchReviewList(loadMore = true)
+//        } else
+//            _reviewList.value = unreadReviews
     }
 
     private fun shouldLoadMore(unreadReviews: List<ProductReview>): Boolean {
