@@ -25,6 +25,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
@@ -190,7 +191,8 @@ private fun BottomBar(onAutoRateSwitchStateChanged: (Boolean) -> Unit, state: Vi
             }
             .padding(dimensionResource(id = R.dimen.major_100)),
         checked = state.isAutoRateEnabled,
-        onCheckedChange = onAutoRateSwitchStateChanged
+        onCheckedChange = onAutoRateSwitchStateChanged,
+        colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colors.primary)
     )
     Text(
         text = stringResource(id = R.string.tax_rate_selector_auto_rate_label),
