@@ -933,7 +933,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun trackCreateOrderButtonClick() {
         launch {
             val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
-            val productTypes = if (ids != null) orderDetailRepository.getUniqueProductTypes(ids) else null
+            val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
             tracker.track(
                 ORDER_CREATE_BUTTON_TAPPED,
                 buildMap {
