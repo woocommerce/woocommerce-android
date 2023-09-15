@@ -229,9 +229,11 @@ class ReviewListRepository @Inject constructor(
 
     suspend fun getCachedUnreadProductReviews(): List<ProductReview> =
         withContext(Dispatchers.IO) {
-            productStore.getProductReviewsByReviewId(unreadProductReviewIds)
-                .map { it.toAppModel() }
-                .map { it.copy(read = false) }
+            if (unreadProductReviewIds.isNotEmpty()) {
+                productStore.getProductReviewsByReviewId(unreadProductReviewIds)
+                    .map { it.toAppModel() }
+                    .map { it.copy(read = false) }
+            } else emptyList()
         }
 
     /**
