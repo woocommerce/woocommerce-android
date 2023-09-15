@@ -113,8 +113,7 @@ class ReviewListViewModel @Inject constructor(
 
         viewState = viewState.copy(isLoadingMore = true)
         launch {
-            if (viewState.isUnreadFilterEnabled) applyUnreadFilter(loadMore = true)
-            else fetchReviewList(loadMore = true)
+            fetchReviewList(loadMore = true)
         }
     }
 
@@ -156,15 +155,18 @@ class ReviewListViewModel @Inject constructor(
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
-            when (reviewRepository.fetchProductReviews(loadMore)) {
-                SUCCESS, NO_ACTION_NEEDED -> {
-                    val productReviews = reviewRepository.getCachedProductReviews()
-                    _reviewList.value = productReviews
+            if (viewState.isUnreadFilterEnabled) {
+                applyUnreadFilter(loadMore = loadMore)
+            } else {
+                when (reviewRepository.fetchProductReviews(loadMore)) {
+                    SUCCESS, NO_ACTION_NEEDED -> {
+                        val productReviews = reviewRepository.getCachedProductReviews()
+                        _reviewList.value = productReviews
+                    }
+
+                    else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
                 }
-
-                else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             }
-
             checkForUnreadReviews()
         } else {
             // Network is not connected
@@ -216,13 +218,12 @@ class ReviewListViewModel @Inject constructor(
     }
 
     fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
-        viewState = viewState.copy(isUnreadFilterEnabled = isEnabled)
+        viewState = viewState.copy(
+            isUnreadFilterEnabled = isEnabled,
+            isSkeletonShown = true
+        )
         launch {
-            if (isEnabled) {
-                applyUnreadFilter(loadMore = false)
-            } else {
-                _reviewList.value = reviewRepository.getCachedProductReviews()
-            }
+            fetchReviewList(loadMore = false)
         }
     }
 
