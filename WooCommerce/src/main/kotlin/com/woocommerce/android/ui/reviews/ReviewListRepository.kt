@@ -202,7 +202,6 @@ class ReviewListRepository @Inject constructor(
      * request payload.
      */
     suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean) {
-        if (loadMore) unreadReviewsOffset += PAGE_SIZE else unreadReviewsOffset = 0
         unreadProductReviewIds = notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
@@ -210,12 +209,12 @@ class ReviewListRepository @Inject constructor(
             .filter { !it.read }
             .map { it.getCommentId() }
 
+        if (loadMore) unreadReviewsOffset += PAGE_SIZE else unreadReviewsOffset = 0
         val unreadProductReviewIdsToFetch = unreadProductReviewIds
             .drop(unreadReviewsOffset)
             .take(PAGE_SIZE)
-        if (unreadProductReviewIdsToFetch.isEmpty()) canLoadMore = false
 
-        if (canLoadMore) {
+        if (unreadProductReviewIdsToFetch.isNotEmpty()) {
             productStore.fetchProductReviews(
                 WCProductStore.FetchProductReviewsPayload(
                     site = selectedSite.get(),
@@ -226,6 +225,10 @@ class ReviewListRepository @Inject constructor(
         }
     }
 
+    /**
+     * Returns a list of [ProductReview]s from the db matching the [unreadProductReviewIds] list.
+     * If the unread review ids list is empty, then an empty list is returned.
+     */
     suspend fun getCachedUnreadProductReviews(): List<ProductReview> =
         withContext(Dispatchers.IO) {
             if (unreadProductReviewIds.isNotEmpty()) {
