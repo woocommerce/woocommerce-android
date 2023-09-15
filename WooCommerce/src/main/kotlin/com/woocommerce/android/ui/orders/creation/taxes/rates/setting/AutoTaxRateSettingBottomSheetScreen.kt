@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -31,11 +33,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun AutoTaxRateSettingBottomSheetScreen(
     state: State<OrderCreateEditViewModel.ViewState?>,
+    onSetNewTaxRateClicked: () -> Unit,
+    onStopUsingTaxRateClicked: () -> Unit,
 ) {
     val taxRateState = state.value?.autoTaxRateSetting
-    Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
-        Text("Automatically adding tax rate")
-        Spacer(Modifier.width(dimensionResource(id = R.dimen.major_100)))
+    Column(
+        modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(stringResource(R.string.tax_rate_selector_auto_rate_details_title))
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
         if (taxRateState != null) {
             Row(
                 modifier = Modifier
@@ -61,7 +67,7 @@ fun AutoTaxRateSettingBottomSheetScreen(
             }
         }
         Spacer(Modifier.width(dimensionResource(id = R.dimen.major_100)))
-        WCTextButton(onClick = {}) {
+        WCTextButton(onClick = onSetNewTaxRateClicked) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
                 contentDescription = null,
@@ -70,11 +76,11 @@ fun AutoTaxRateSettingBottomSheetScreen(
             Spacer(Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Text(
                 modifier = Modifier.weight(1F),
-                text = "Set a new tax rate for this order",
+                text = stringResource(R.string.tax_rate_selector_auto_rate_details_set_a_new_rate_button_label),
                 color = colorResource(id = R.color.color_on_surface)
             )
         }
-        TextButton(onClick = {}) {
+        TextButton(onClick = onStopUsingTaxRateClicked) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_clear),
                 contentDescription = null,
@@ -83,7 +89,7 @@ fun AutoTaxRateSettingBottomSheetScreen(
             Spacer(Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Text(
                 modifier = Modifier.weight(1F),
-                text = "Set a new tax rate for this order",
+                text = stringResource(R.string.tax_rate_selector_auto_rate_details_clear_button_label),
                 color = colorResource(id = R.color.woo_red_70)
             )
         }
@@ -94,6 +100,13 @@ fun AutoTaxRateSettingBottomSheetScreen(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AutoTaxRateSettingBottomSheetScreenPreview() = WooThemeWithBackground {
-    val viewState = MutableStateFlow(OrderCreateEditViewModel.ViewState()).collectAsState()
-    AutoTaxRateSettingBottomSheetScreen(viewState)
+    val viewState = MutableStateFlow(
+        OrderCreateEditViewModel.ViewState(
+            autoTaxRateSetting = OrderCreateEditViewModel.AutoTaxRateSettingState(
+                taxRateTitle = "VAT FR",
+                taxRateValue = "20.00%"
+            )
+        )
+    ).collectAsState()
+    AutoTaxRateSettingBottomSheetScreen(viewState, {}, {})
 }

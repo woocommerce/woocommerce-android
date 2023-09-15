@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -62,7 +63,6 @@ import com.woocommerce.android.model.Address.Companion.EMPTY
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -154,6 +154,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getAutoTaxRateSetting: GetAutoTaxRateSetting,
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val getTaxRateLabel: GetTaxRateLabel,
+    private val prefs: AppPrefs,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -258,12 +259,18 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private suspend fun updateAutoTaxRateSettingState() {
         val rate = getAutoTaxRateSetting()
-        if (rate != null) {
-            viewState = viewState.copy(
+        viewState = if (rate != null) {
+            viewState.copy(
                 autoTaxRateSetting = AutoTaxRateSettingState(
                     isActive = true,
                     taxRateTitle = getTaxRateLabel(rate),
                     taxRateValue = getTaxRatePercentageValueText(rate)
+                )
+            )
+        } else {
+            viewState.copy(
+                autoTaxRateSetting = AutoTaxRateSettingState(
+                    isActive = false,
                 )
             )
         }
@@ -741,6 +748,10 @@ class OrderCreateEditViewModel @Inject constructor(
             mapOf(KEY_FLOW to flow)
         )
 
+        clearCustomerAddresses()
+    }
+
+    private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
             order.copy(
                 customerId = null,
@@ -1148,6 +1159,17 @@ class OrderCreateEditViewModel @Inject constructor(
             updateAutoTaxRateSettingState()
             updateTaxRateSelectorButtonState()
         }
+    }
+
+    fun onSetNewTaxRateClicked() = launch{
+        triggerEvent(TaxRateSelector(getTaxRatesInfoDialogState(_orderDraft.value.taxLines)))
+    }
+
+    fun onStopUsingTaxRateClicked() = launch {
+        prefs.disableAutoTaxRate()
+        updateAutoTaxRateSettingState()
+        updateTaxRateSelectorButtonState()
+        clearCustomerAddresses()
     }
 
     @Parcelize

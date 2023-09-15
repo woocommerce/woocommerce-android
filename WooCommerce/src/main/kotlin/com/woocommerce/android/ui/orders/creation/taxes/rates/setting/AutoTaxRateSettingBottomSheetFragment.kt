@@ -29,13 +29,19 @@ class AutoTaxRateSettingBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    AutoTaxRateSettingBottomSheetScreen(sharedViewModel.viewStateData.liveData.observeAsState())
+                    AutoTaxRateSettingBottomSheetScreen(
+                        sharedViewModel.viewStateData.liveData.observeAsState(),
+                        {
+                            dismiss()
+                            sharedViewModel.onSetNewTaxRateClicked()
+                        },
+                        {
+                            dismiss()
+                            sharedViewModel.onStopUsingTaxRateClicked()
+                        }
+                    )
                 }
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 }
