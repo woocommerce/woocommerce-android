@@ -202,7 +202,7 @@ class ReviewListRepository @Inject constructor(
      * request payload.
      */
     suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean) {
-        if (loadMore) unreadReviewsOffset += PAGE_SIZE
+        if (loadMore) unreadReviewsOffset += PAGE_SIZE else unreadReviewsOffset = 0
         unreadProductReviewIds = notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
@@ -218,8 +218,9 @@ class ReviewListRepository @Inject constructor(
         if (canLoadMore) {
             productStore.fetchProductReviews(
                 WCProductStore.FetchProductReviewsPayload(
-                    selectedSite.get(),
-                    reviewIds = unreadProductReviewIdsToFetch
+                    site = selectedSite.get(),
+                    reviewIds = unreadProductReviewIdsToFetch,
+                    offset = 0 // Must be zero so the API filters only by ids and not page offset
                 )
             )
         }
