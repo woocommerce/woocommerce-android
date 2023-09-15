@@ -91,7 +91,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreA
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
-import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateRepository
+import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -116,6 +116,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -149,11 +150,9 @@ class OrderCreateEditViewModel @Inject constructor(
     private val productRestrictions: OrderCreationProductRestrictions,
     private val getTaxRatesInfoDialogState: GetTaxRatesInfoDialogViewState,
     private val getAddressFromTaxRate: GetAddressFromTaxRate,
-    taxRateRepository: TaxRateRepository,
-    prefs: AppPrefs,
-    selectedSite: SelectedSite,
-    getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
-    getTaxRateLabel: GetTaxRateLabel,
+    private val getAutoTaxRateSetting: GetAutoTaxRateSetting,
+    private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
+    private val getTaxRateLabel: GetTaxRateLabel,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -230,40 +229,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                 handleCouponEditResult()
                 launch {
-                    if (prefs.isAutoTaxRateEnabled()) {
-                        val taxRateId = prefs.getAutoTaxRateId()
-                        if (taxRateId != -1L) {
-                            val rate = taxRateRepository.getTaxRate(
-                                selectedSite = selectedSite,
-                                taxRateId = taxRateId
-                            )
-                            if (rate != null) {
-                                viewState = viewState.copy(
-                                    autoTaxRateSetting = AutoTaxRateSettingState(
-                                        isActive = true,
-                                        taxRateTitle = getTaxRateLabel(rate),
-                                        taxRateValue = getTaxRatePercentageValueText(rate)
-                                    )
-                                )
-                            }
-                        }
-                    }
-                    orderCreateEditRepository.fetchTaxBasedOnSetting().also {
-                        val isSetNewTaxRateButtonVisible: Boolean = when (it) {
-                            BillingAddress, ShippingAddress -> true
-                            else -> false
-                        } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
-                        viewState = viewState.copy(
-                            taxBasedOnSettingLabel = it?.label ?: "",
-                            taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
-                                isShown = isSetNewTaxRateButtonVisible,
-                                label =  if (viewState.autoTaxRateSetting.isActive) {
-                                    resourceProvider.getString(string.order_creation_edit_tax_rate)
-                                } else {
-                                    resourceProvider.getString(string.order_creation_set_tax_rate)
-                                }
-                            )
-                        )
+                    updateAutoTaxRateSettingState()
+                    updateTaxRateSelectorButtonState()
+                    getAutoTaxRateSetting()?.let {
+                        onTaxRateSelected(it)
                     }
                 }
             }
@@ -283,6 +252,39 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun updateAutoTaxRateSettingState() {
+        val rate = getAutoTaxRateSetting()
+        if (rate != null) {
+            viewState = viewState.copy(
+                autoTaxRateSetting = AutoTaxRateSettingState(
+                    isActive = true,
+                    taxRateTitle = getTaxRateLabel(rate),
+                    taxRateValue = getTaxRatePercentageValueText(rate)
+                )
+            )
+        }
+    }
+
+    private suspend fun updateTaxRateSelectorButtonState() {
+        orderCreateEditRepository.fetchTaxBasedOnSetting().also {
+            val isSetNewTaxRateButtonVisible: Boolean = when (it) {
+                BillingAddress, ShippingAddress -> true
+                else -> false
+            } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+            viewState = viewState.copy(
+                taxBasedOnSettingLabel = it?.label ?: "",
+                taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
+                    isShown = isSetNewTaxRateButtonVisible,
+                    label = if (viewState.autoTaxRateSetting.isActive) {
+                        resourceProvider.getString(string.order_creation_edit_tax_rate)
+                    } else {
+                        resourceProvider.getString(string.order_creation_set_tax_rate)
+                    }
+                )
+            )
         }
     }
 
@@ -1130,12 +1132,16 @@ class OrderCreateEditViewModel @Inject constructor(
         val updatedAddress: Address = with(getAddressFromTaxRate) {
             baseAddress(taxRate)
         }
-        _orderDraft.update { order ->
-            when (taxBasedOnSetting) {
-                BillingAddress -> order.copy(billingAddress = updatedAddress)
-                ShippingAddress -> order.copy(shippingAddress = updatedAddress)
-                else -> order
+        withContext(Main) {
+            _orderDraft.update { order ->
+                when (taxBasedOnSetting) {
+                    BillingAddress -> order.copy(billingAddress = updatedAddress)
+                    ShippingAddress -> order.copy(shippingAddress = updatedAddress)
+                    else -> order
+                }
             }
+            updateAutoTaxRateSettingState()
+            updateTaxRateSelectorButtonState()
         }
     }
 
