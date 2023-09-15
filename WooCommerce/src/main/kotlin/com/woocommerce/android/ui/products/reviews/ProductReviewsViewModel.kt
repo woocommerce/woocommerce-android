@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -29,7 +30,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
 import javax.inject.Inject
 
 @HiltViewModel
@@ -126,7 +126,7 @@ class ProductReviewsViewModel @Inject constructor(
                         loadMore,
                         remoteProductId
                     )
-//                    trackFetchProductReviewsResult(result, loadMore)
+                    trackFetchProductReviewsResult(result, loadMore)
                     when (result) {
                         SUCCESS,
                         NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedProductReviews()
@@ -167,25 +167,20 @@ class ProductReviewsViewModel @Inject constructor(
     }
 
     private fun trackFetchProductReviewsResult(
-        result: OnProductReviewChanged,
+        result: RequestResult,
         loadMore: Boolean
     ) {
-        if (result.isError) {
-            AnalyticsTracker.track(
-                PRODUCT_REVIEWS_LOAD_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to result.error?.type?.toString(),
-                    AnalyticsTracker.KEY_ERROR_DESC to result.error?.message
-                )
-            )
-        } else {
-            AnalyticsTracker.track(
+        when (result) {
+            SUCCESS -> AnalyticsTracker.track(
                 PRODUCT_REVIEWS_LOADED,
                 mapOf(
                     AnalyticsTracker.KEY_IS_LOADING_MORE to loadMore
                 )
             )
+
+            else -> {
+                AnalyticsTracker.track(PRODUCT_REVIEWS_LOAD_FAILED)
+            }
         }
     }
 
