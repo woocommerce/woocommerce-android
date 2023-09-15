@@ -150,10 +150,7 @@ class ProductReviewsViewModel @Inject constructor(
 
     private suspend fun applyUnreadFilter(loadMore: Boolean) {
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = loadMore)
-        when (reviewListRepository.fetchOnlyUnreadProductReviews(
-            loadMore,
-            navArgs.remoteProductId
-        )) {
+        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore, navArgs.remoteProductId)) {
             SUCCESS,
             NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedUnreadProductReviews()
 
