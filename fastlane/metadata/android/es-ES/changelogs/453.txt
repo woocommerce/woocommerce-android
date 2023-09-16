@@ -1,2 +1,0 @@
-15.2:
-Estamos encantados de anunciar una nueva actualización para nuestra aplicación de Android. En esta versión, hemos movido la opción «Cerrar cuenta» a una nueva sección llamada «Ajustes de la cuenta» para facilitar la navegación. También hemos solucionado algunos problemas con el contador de insignias del pedido para garantizar un seguimiento preciso. Además, hemos realizado mejoras en la tarea de incorporación de WooPayments para que el proceso de configuración sea más fluido. Actualiza ahora para una mejor experiencia de usuario.
