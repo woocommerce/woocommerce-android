@@ -32,6 +32,7 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.orNullIfEmpty
@@ -145,8 +146,7 @@ class ProductDetailViewModel @Inject constructor(
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
-    private val isBlazeEnabled: IsBlazeEnabled,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
+    private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -222,14 +222,14 @@ class ProductDetailViewModel @Inject constructor(
 
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(
-            this,
-            resources,
-            currencyFormatter,
-            parameters,
-            addonRepository,
-            variationRepository,
-            isAIProductDescriptionEnabled,
-            appPrefsWrapper
+            viewModel = this,
+            selectedSite = selectedSite,
+            resources = resources,
+            currencyFormatter = currencyFormatter,
+            parameters = parameters,
+            addonRepository = addonRepository,
+            variationRepository = variationRepository,
+            appPrefsWrapper = appPrefsWrapper
         )
     }
 
@@ -410,7 +410,7 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                if (canSiteUseSharingWithAI()) {
+                if (selectedSite.get().isEligibleForAI) {
                     triggerEvent(
                         ProductNavigationTarget.ShareProductWithAI(
                             it.permalink,
@@ -424,8 +424,6 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
-
-    private fun canSiteUseSharingWithAI(): Boolean = selectedSite.get().isWPComAtomic
 
     fun onWriteWithAIClicked() {
         val chosenDescription =

@@ -35,12 +35,12 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
 
         sut = ProductDetailCardBuilder(
             viewModel = mock(),
+            selectedSite = mock(),
             resources = resources,
             currencyFormatter = mock(),
             parameters = mock(),
             addonRepository = addonRepo,
             variationRepository = mock(),
-            isAIProductDescriptionEnabled = mock(),
             appPrefsWrapper = mock(),
         )
     }
