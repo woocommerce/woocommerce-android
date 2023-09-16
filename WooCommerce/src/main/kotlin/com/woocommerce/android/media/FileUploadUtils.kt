@@ -16,10 +16,11 @@ import org.wordpress.android.util.UrlUtils
 import java.io.File
 import org.wordpress.android.fluxc.utils.MediaUtils as FluxCMediaUtils
 
-object ProductImagesUtils {
+object FileUploadUtils {
     private const val OPTIMIZE_IMAGE_MAX_SIZE = 3000
     private const val OPTIMIZE_IMAGE_QUALITY = 85
 
+    @Suppress("ReturnCount")
     fun mediaModelFromLocalUri(
         context: Context,
         localSiteId: Int,
@@ -30,12 +31,16 @@ object ProductImagesUtils {
         // "fetch" the media - necessary to support choosing from Downloads, Google Photos, etc.
         fetchMedia(context, localUri)?.let { fetchedUri ->
             mediaPickerUtils.getFilePath(fetchedUri)?.let { filePath ->
-                // optimize the image if the setting is enabled
-                val path = getOptimizedPath(context, filePath)
+                val path = if (MediaUtils.isValidImage(filePath)) {
+                    // optimize the image if the setting is enabled
+                    getOptimizedImagePath(context, filePath)
+                } else filePath
+
+                val mimeType = getMimeType(context, localUri, fetchedUri) ?: return null
 
                 val file = File(path)
                 if (file.exists()) {
-                    return createMediaModel(mediaStore, fetchedUri, path, localSiteId)
+                    return createMediaModel(mediaStore, fetchedUri, path, localSiteId, mimeType)
                 } else {
                     WooLog.w(T.MEDIA, "mediaModelFromLocalUri > file does not exist, $path")
                 }
@@ -45,30 +50,39 @@ object ProductImagesUtils {
         return null
     }
 
+    private fun getMimeType(context: Context, originalUri: Uri, fetchedUri: Uri): String? {
+        return originalUri.takeIf { it.scheme == "content" }
+            ?.let { context.contentResolver.getType(originalUri) }
+            ?: UrlUtils.getUrlMimeType(fetchedUri.toString())
+            ?: FluxCMediaUtils.getExtension(fetchedUri.path).let { extension ->
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+            }
+    }
+
+    @Suppress("MagicNumber")
     private fun createMediaModel(
         mediaStore: MediaStore,
         fetchedUri: Uri,
         path: String,
-        localSiteId: Int
+        localSiteId: Int,
+        mimeType: String
     ): MediaModel? {
         val media = mediaStore.instantiateMediaModel()
         var filename = FluxCMediaUtils.getFileName(fetchedUri.path)
-        var fileExtension: String? = FluxCMediaUtils.getExtension(fetchedUri.path)
 
-        var mimeType = UrlUtils.getUrlMimeType(fetchedUri.toString())
-        if (mimeType == null) {
-            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
-            if (mimeType == null) {
-                // Default to image jpeg
-                mimeType = "image/jpeg"
+        val fileExtension: String = filename
+            .substringAfterLast(delimiter = ".", missingDelimiterValue = "")
+            .ifBlank {
+                MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)?.also {
+                    // Filename doesn't have an extension in this case
+                    filename += ".$it"
+                }
             }
-        }
-
-        // If file extension is null, upload won't work on wordpress.com
-        if (fileExtension.isNullOrBlank()) {
-            fileExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
-            filename += "." + fileExtension!!
-        }
+            ?: run {
+                // If file extension is null, upload won't work on wordpress.com
+                WooLog.w(T.MEDIA, "We couldn't identify the file's extension")
+                return null
+            }
 
         media.fileName = filename
         media.title = filename
@@ -82,11 +96,17 @@ object ProductImagesUtils {
     }
 
     @Suppress("TooGenericExceptionCaught")
-    private fun getOptimizedPath(
+    private fun getOptimizedImagePath(
         context: Context,
         filePath: String
     ) = if (AppPrefs.getImageOptimizationEnabled()) {
-        getOptimizedImagePath(context, filePath)?.let { optimizedPath ->
+        getOptimizedImageUri(context, filePath)?.let { uri ->
+            val realPath = MediaUtils.getRealPathFromURI(context, uri)
+            if (realPath == null) {
+                WooLog.w(T.MEDIA, "Finding real path for uri $uri failed")
+            }
+            realPath
+        }?.let { optimizedPath ->
             // Delete original file if it's in the cache directly
             if (filePath.contains(context.cacheDir.absolutePath)) File(filePath).delete()
             // Return optimized path
@@ -114,10 +134,10 @@ object ProductImagesUtils {
         return try {
             MediaUtils.downloadExternalMedia(context.applicationContext, mediaUri)
         } catch (e: IllegalStateException) {
-            WooLog.e(T.MEDIA, "Can't download the image at: $mediaUri", e)
+            WooLog.e(T.MEDIA, "Can't download the file at: $mediaUri", e)
             null
         } catch (e: SecurityException) {
-            WooLog.e(T.MEDIA, "Can't download the image at: $mediaUri", e)
+            WooLog.e(T.MEDIA, "Can't download the file at: $mediaUri", e)
             null
         }
     }
@@ -125,28 +145,16 @@ object ProductImagesUtils {
     /**
      * Resize and compress the passed image
      */
-    private fun getOptimizedImageUri(context: Context, path: String): Uri? {
-        ImageUtils.optimizeImage(context, path, OPTIMIZE_IMAGE_MAX_SIZE, OPTIMIZE_IMAGE_QUALITY)?.let { optPath ->
-            return Uri.parse(optPath)
-        }
-
-        WooLog.w(T.MEDIA, "getOptimizedMedia > Optimized picture was null!")
-        return null
-    }
-
     @Suppress("TooGenericExceptionCaught")
-    private fun getOptimizedImagePath(context: Context, path: String): String? {
+    private fun getOptimizedImageUri(context: Context, path: String): Uri? {
         try {
-            getOptimizedImageUri(context, path)?.let { optUri ->
-                val realPath = MediaUtils.getRealPathFromURI(context, optUri)
-                if (realPath != null) {
-                    return realPath
-                }
-            } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
+            ImageUtils.optimizeImage(context, path, OPTIMIZE_IMAGE_MAX_SIZE, OPTIMIZE_IMAGE_QUALITY)?.let { optPath ->
+                return Uri.parse(optPath)
+            }
+            WooLog.w(T.MEDIA, "getOptimizedMedia > Optimized picture was null!")
         } catch (e: Exception) {
             WooLog.e(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image", e)
         }
-
         return null
     }
 }

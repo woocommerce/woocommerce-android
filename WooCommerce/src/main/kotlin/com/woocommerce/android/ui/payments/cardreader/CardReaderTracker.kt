@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAY
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
@@ -65,7 +66,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
-import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaTapped
+import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaReasonTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -195,8 +196,11 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackOnboardingState(state: CardReaderOnboardingState) {
-        getOnboardingNotCompletedReason(state)?.let {
-            track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf(KEY_REASON to it))
+        when (state) {
+            is CardReaderOnboardingState.OnboardingCompleted -> track(CARD_PRESENT_ONBOARDING_COMPLETED)
+            else -> getOnboardingNotCompletedReason(state)?.let {
+                track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf(KEY_REASON to it))
+            }
         }
     }
 
@@ -212,14 +216,14 @@ class CardReaderTracker @Inject constructor(
         }
     }
 
-    fun trackOnboardingCtaTapped(reason: OnboardingCtaTapped) {
+    fun trackOnboardingCtaTapped(reason: OnboardingCtaReasonTapped) {
         track(
             CARD_PRESENT_ONBOARDING_CTA_TAPPED,
             mutableMapOf(KEY_REASON to reason.value)
         )
     }
 
-    fun trackOnboardingCtaFailed(reason: OnboardingCtaTapped, description: String) {
+    fun trackOnboardingCtaFailed(reason: OnboardingCtaReasonTapped, description: String) {
         track(
             CARD_PRESENT_ONBOARDING_CTA_FAILED,
             mutableMapOf(

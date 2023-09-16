@@ -21,6 +21,16 @@ Language: tr
     <string name="tax_rates_info_dialog_primary_text">Vergiler, müşterinizin fatura veya gönderim adresiyle ya da mağaza adresiniz bir vergi oranı konumuyla eşleşecek şekilde hesaplanır.</string>
     <string name="tax_rates_information_content_description">Veri oranları bilgileri</string>
     <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments\'ı kullanarak &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Hizmet Koşullarımıza&lt;/u&gt;&lt;/a&gt; bağlı kalmayı ve &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Gizlilik Politikamızı&lt;/u&gt;&lt;/a&gt; okuduğunuzu kabul etmiş olursunuz.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Ayarla</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">Bilgilerinizi WooPayments ile doğrulama hakkında &lt;a href=\'learnMore\'&gt;&lt;u&gt;daha fazla bilgi alın&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Kurulumu başlat</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Stripe for WooPayments ile iş ortaklığı kurdunuz. Kaydolmak için Stripe\'ın sitesine yönlendirileceksiniz. Ardından para yatırma işlevini etkinleştirmek için işletmenizi ve ödeme ayrıntılarınızı doğrulamanızı isteyeceğiz.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">WooPayments bildirimleriniz WordPress.com hesabınızın e-posta adresine gönderilecektir. Yeni bir hesabı mı tercih edersiniz? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Daha fazla ayrıntıyı burada bulabilirsiniz.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Kurulumu başlatmadan önce</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 dakika</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Tahmini kurulum süresi</string>
+    <string name="store_onboarding_wcpay_instructions_title">Tüm ödemeleri WooPayments ile tek bir yerden yönetin. Kartları, Apple Pay\'i, şahsi ödemeleri ve 135\'ten fazla para birimini hiçbir kurulum maliyeti veya aylık ücret olmadan kabul edin.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Mağaza adı kaydedilemiyor. Lütfen tekrar deneyin.</string>
     <string name="settings_name_your_store_dialog_loading">Yeni mağaza adı kaydediliyor…</string>
     <string name="settings_name_your_store_dialog_success">Mağaza adı ayarlandı!</string>
@@ -1887,7 +1897,7 @@ Language: tr
     <string name="product_downloadable_files_name_invalid">Lütfen geçerli bir ad girin</string>
     <string name="product_downloadable_files_add_manually">Dosya URL\'si girin</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Ortam Kütüphanesinden</string>
-    <string name="product_downloadable_files_add_from_device">Cihazdan</string>
+    <string name="product_downloadable_files_add_media_from_device">Cihazdan</string>
     <string name="product_downloadable_files_url_invalid">Girilen URL\'nin geçerli olup olmadığını kontrol edin</string>
     <string name="product_downloadable_files_upload_dialog_message">Lütfen bekleyin…</string>
     <string name="product_downloadable_files_upload_dialog_title">Dosyalar yükleniyor</string>

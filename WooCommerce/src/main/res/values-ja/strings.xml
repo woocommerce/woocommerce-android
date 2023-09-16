@@ -21,6 +21,16 @@ Language: ja_JP
     <string name="tax_rates_info_dialog_primary_text">税金は、顧客の請求先住所、配送先住所、または店舗の住所を税率の場所と一致させて計算されます。</string>
     <string name="tax_rates_information_content_description">税率に関する情報</string>
     <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments を使用することで、お客様は弊社の&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;に拘束されることに同意し、弊社&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;プライバシーポリシー&lt;/u&gt;&lt;/a&gt;を読んだものとみなされます。</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">セットアップ</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">WooPayments での情報の確認について&lt;a href=\'learnMore\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">セットアップを開始</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">WooPayments では Stripe と提携しています。 サインアップでは Stripe のサイトに移動します。 ビジネス情報と支払い情報の確認が求められます。</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">WooPayments の通知は WordPress.com アカウントのメールアドレスに送信されます。 新アカウントをご希望ですか ? &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳細はこちら。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">セットアップを始める前に</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4〜6分</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">推定所要時間</string>
+    <string name="store_onboarding_wcpay_instructions_title">WooPayments を使用すると、支払いをすべて1か所で簡単に管理できます。 セットアップ費用や月額料金なしで、カード、Apple Pay、オフラインでの支払い、135種類以上の通貨をすべて利用できます。</string>
     <string name="store_onboarding_name_your_store_dialog_failure">ストア名を保存できません。 もう一度お試しください。</string>
     <string name="settings_name_your_store_dialog_loading">新しいストア名を保存しています…</string>
     <string name="settings_name_your_store_dialog_success">ストア名が設定されました。</string>
@@ -1887,7 +1897,7 @@ Language: ja_JP
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">WordPress メディアライブラリから</string>
-    <string name="product_downloadable_files_add_from_device">端末から</string>
+    <string name="product_downloadable_files_add_media_from_device">端末から</string>
     <string name="product_downloadable_files_url_invalid">入力した URL が正しいかどうかを確認してください</string>
     <string name="product_downloadable_files_upload_dialog_message">しばらくお待ちください…</string>
     <string name="product_downloadable_files_upload_dialog_title">ファイルをアップロードしています</string>

@@ -34,7 +34,8 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WooPaymentsTermsScreen(
+fun PaymentsPreSetupScreen(
+    isWooPaymentsTask: Boolean,
     backButtonClick: () -> Unit = {},
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
@@ -44,20 +45,20 @@ fun WooPaymentsTermsScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = { Text("") },
                 navigationIcon = Icons.Filled.ArrowBack,
                 onNavigationButtonClick = backButtonClick,
             )
         },
         bottomBar = {
-            WooPaymentsTermsFooter(
+            PaymentsPreSetupFooter(
                 onContinueButtonClick,
                 onLearnMoreButtonClick
             )
         },
         modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
     ) { paddingValues ->
-        WooPaymentsTermsContent(
+        PaymentsPreSetupContent(
+            isWooPaymentsTask = isWooPaymentsTask,
             onTermsOfServiceClick = onTermsOfServiceClick,
             onPrivacyPolicyClick = onPrivacyPolicyClick,
             modifier = Modifier
@@ -69,7 +70,8 @@ fun WooPaymentsTermsScreen(
 }
 
 @Composable
-fun WooPaymentsTermsContent(
+private fun PaymentsPreSetupContent(
+    isWooPaymentsTask: Boolean,
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
     modifier: Modifier,
@@ -88,18 +90,24 @@ fun WooPaymentsTermsContent(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_one),
+            text = stringResource(id = R.string.store_onboarding_payments_pre_setup_title_one),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_terms_title_two),
+            text = stringResource(
+                id = if (isWooPaymentsTask) R.string.store_onboarding_payments_pre_setup_title_wcpay
+                else R.string.store_onboarding_payments_pre_setup_title_generic
+            ),
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
             color = colorResource(id = R.color.woo_purple_50)
         )
 
-        val bodyText = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_setup_description)
+        val bodyText = annotatedStringRes(
+            stringResId = if (isWooPaymentsTask) R.string.store_onboarding_wcpay_setup_description
+            else R.string.store_onboarding_payments_setup_description
+        )
         ClickableText(
             text = bodyText,
             style = MaterialTheme.typography.body1.copy(color = colorResource(id = R.color.color_on_surface_medium))
@@ -117,7 +125,7 @@ fun WooPaymentsTermsContent(
 }
 
 @Composable
-fun WooPaymentsTermsFooter(
+private fun PaymentsPreSetupFooter(
     onContinueButtonClick: () -> Unit = {},
     onLearnMoreButtonClick: () -> Unit = {}
 ) {
@@ -154,8 +162,16 @@ fun WooPaymentsTermsFooter(
 
 @Preview
 @Composable
-fun WooPaymentsTermsScreenPreview() {
+private fun WooPaymentsPreSetupPreview() {
     WooThemeWithBackground {
-        WooPaymentsTermsScreen()
+        PaymentsPreSetupScreen(isWooPaymentsTask = true)
+    }
+}
+
+@Preview
+@Composable
+private fun PaymentsPreSetupPreview() {
+    WooThemeWithBackground {
+        PaymentsPreSetupScreen(isWooPaymentsTask = false)
     }
 }

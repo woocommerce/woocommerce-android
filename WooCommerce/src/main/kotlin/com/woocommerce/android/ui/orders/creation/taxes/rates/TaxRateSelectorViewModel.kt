@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.orders.creation.taxes.rates
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -16,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaxRateSelectorViewModel @Inject constructor(
+    private val tracker: AnalyticsTrackerWrapper,
     private val ratesListHandler: TaxRateListHandler,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
@@ -81,13 +85,16 @@ class TaxRateSelectorViewModel @Inject constructor(
 
     fun onEditTaxRatesInAdminClicked() {
         triggerEvent(EditTaxRatesInAdmin)
+        tracker.track(AnalyticsEvent.TAX_RATE_SELECTOR_EDIT_IN_ADMIN_TAPPED)
     }
+
     fun onInfoIconClicked() {
         triggerEvent(ShowTaxesInfoDialog)
     }
 
     fun onTaxRateSelected(taxRate: TaxRateUiModel) {
         triggerEvent(TaxRateSelected(taxRate.taxRate))
+        tracker.track(AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED)
     }
 
     fun onDismissed() {
@@ -102,10 +109,16 @@ class TaxRateSelectorViewModel @Inject constructor(
         }
     }
 
+    fun onAutoRateSwitchStateChanged(selected: Boolean) {
+        Log.d("TaxRateSelectorViewModel", "onAutoRateToggleStateChanged: $selected")
+    }
+
     @Parcelize
     data class ViewState(
         val taxRates: List<TaxRateUiModel> = emptyList(),
         val isLoading: Boolean = false,
+        val isEmpty: Boolean = taxRates.isEmpty() && !isLoading,
+        val isAutoRateEnabled: Boolean = false
     ) : Parcelable
 
     @Parcelize

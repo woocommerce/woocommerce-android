@@ -39,7 +39,9 @@ class TaxRateSelectorFragment : BaseFragment() {
                     viewModel::onInfoIconClicked,
                     viewModel::onTaxRateSelected,
                     viewModel::onDismissed,
-                    viewModel::onLoadMore
+                    viewModel::onLoadMore,
+                    viewModel::onEditTaxRatesInAdminClicked,
+                    viewModel::onAutoRateSwitchStateChanged,
                 )
             }
         }
@@ -55,7 +57,6 @@ class TaxRateSelectorFragment : BaseFragment() {
                 is TaxRateSelectorViewModel.EditTaxRatesInAdmin -> {
                     args.dialogState.taxRatesSettingsUrl.let {
                         ChromeCustomTabUtils.launchUrl(requireContext(), it)
-                        findNavController().navigateUp()
                     }
                 }
                 is TaxRateSelectorViewModel.ShowTaxesInfoDialog -> {

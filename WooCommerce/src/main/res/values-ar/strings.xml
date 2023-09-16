@@ -21,6 +21,16 @@ Language: ar
     <string name="tax_rates_info_dialog_primary_text">تُحسب الضرائب عن طريق مطابقة الفوترة أو عنوان الشحن الخاصَين بعميلك، أو عنوان متجرك مع موقع معدل الضريبة.</string>
     <string name="tax_rates_information_content_description">معلومات معدلات الضرائب</string>
     <string name="store_onboarding_wcpay_setup_description">يعني استخدام WooCommerce Payments أنك توافق على الالتزام &lt;a href=\'termsOfService\'&gt;&lt;u&gt;بشروط الخدمة التي نقرِّها&lt;/u&gt;&lt;/a&gt;، والاعتراف بأنك قرأت &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;سياسة الخصوصية الخاصة بنا&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">الإعداد</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt; حول التحقق من معلوماتك باستخدام WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">بدء الإعداد</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">لقد عقدنا شراكة مع Stripe لـ WooPayments. سيُعاد توجيهك إلى موقع Stripe للتسجيل. سنطلب منك التحقق من تفاصيل أعمالك وعمليات الدفع.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">ستُرسَل تنبيهات WooPayments الخاصة بك إلى البريد الإلكتروني الخاص بحسابك على ووردبريس.كوم. هل تفضِّل حسابًا جديدًا؟ &lt;a href=\'learnMore\'&gt;&lt;u&gt;مزيد من التفاصيل هنا.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">قبل أن تبدأ الإعداد</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">من 4 إلى 6 دقائق</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">وقت الإعداد المُقدَّر</string>
+    <string name="store_onboarding_wcpay_instructions_title">أدر المدفوعات بكل يسر باستخدام WooPayments، وكل ذلك في مكان واحد. اقبل البطاقات وApple Pay والمدفوعات الشخصية وأكثر من 135 عملة، كل ذلك من دون تكاليف للإعداد أو رسوم شهرية.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">يتعذر حفظ اسم المتجر. ترجى المحاولة مجددًا.</string>
     <string name="settings_name_your_store_dialog_loading">جارٍ حفظ اسم المتجر الجديد…</string>
     <string name="settings_name_your_store_dialog_success">تم تعيين اسم المتجر!</string>
@@ -1887,7 +1897,7 @@ Language: ar
     <string name="product_downloadable_files_name_invalid">يرجى إدخال اسم صالح</string>
     <string name="product_downloadable_files_add_manually">إدخال عنوان URL للملف</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">من مكتبة وسائط ووردبريس</string>
-    <string name="product_downloadable_files_add_from_device">من الجهاز</string>
+    <string name="product_downloadable_files_add_media_from_device">من الجهاز</string>
     <string name="product_downloadable_files_url_invalid">تحقق من أن عنوان URL الذي تم إدخاله صحيح</string>
     <string name="product_downloadable_files_upload_dialog_message">يُرجى الانتظار…</string>
     <string name="product_downloadable_files_upload_dialog_title">رفع الملفات</string>

@@ -66,11 +66,11 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_myStore_to_getPaidFragment"
-            app:destination="@id/getPaidFragment" />
+            android:id="@+id/action_myStore_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
         <action
-            android:id="@+id/action_myStore_to_wooPaymentsPreSetupFragment"
-            app:destination="@id/wooPaymentsPreSetupFragment" />
+            android:id="@+id/action_myStore_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment" />
         <action
             android:id="@+id/action_myStore_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
@@ -543,12 +543,12 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"
-            app:destination="@id/getPaidFragment"
+            android:id="@+id/action_storeOnboardingFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment"
             app:popUpTo="@id/dashboard" />
         <action
-            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsPreSetupFragment"
-            app:destination="@id/wooPaymentsPreSetupFragment"
+            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment"
             app:popUpTo="@id/dashboard" />
     </fragment>
     <dialog
@@ -576,24 +576,24 @@
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
         android:label="WooPaymentsSetupCelebrationDialog" />
     <fragment
-        android:id="@+id/wooPaymentsPreSetupFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsPreSetupFragment"
-        android:label="WooPaymentsPreSetupFragment">
+        android:id="@+id/wooPaymentsSetupInstructionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupInstructionsFragment"
+        android:label="WooPaymentsSetupInstructionsFragment">
         <action
-            android:id="@+id/action_wooPaymentsPreSetupFragment_to_wooPaymentsSetupFragment"
-            app:destination="@id/wooPaymentsTermsFragment" />
+            android:id="@+id/action_wooPaymentsSetupInstructionsFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
     </fragment>
     <fragment
-        android:id="@+id/wooPaymentsTermsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsTermsFragment"
-        android:label="WooPaymentsTermsFragment">
+        android:id="@+id/paymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.PaymentsPreSetupFragment"
+        android:label="PaymentsPreSetupFragment">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
         <action
-            android:id="@+id/action_wooPaymentsTermsFragment_to_getPaidFragment"
+            android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
             app:popUpTo="@id/dashboard">
-            <argument
-                android:name="taskId"
-                app:argType="string" />
         </action>
     </fragment>
     <fragment

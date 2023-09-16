@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class TaxRate(
-    val id: Int,
+    val id: Long,
     val countryCode: String = "",
     val stateCode: String = "",
     val postcode: String = "",

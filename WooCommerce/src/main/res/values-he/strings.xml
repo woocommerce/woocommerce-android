@@ -21,6 +21,16 @@ Language: he_IL
     <string name="tax_rates_info_dialog_primary_text">המיסים מחושבים לפי הכתובת לחיוב או הכתובת למשלוח של הלקוח, או לפי הכתובת של החנות שלך, והתאמת הכתובת הנבחרת למיקום של שיעור המס.</string>
     <string name="tax_rates_information_content_description">מידע לגבי שיעורי מיסים</string>
     <string name="store_onboarding_wcpay_setup_description">השימוש ב-WooCommerce Payments מהווה את הסכמתך לפעול בכפוף &lt;a href=\'termsOfService\'&gt;&lt;u&gt;לתנאי השימוש&lt;/u&gt;&lt;/a&gt;, ומאשר שקראת את &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;מדיניות הפרטיות&lt;/u&gt;&lt;/a&gt; שלנו.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">הגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי אימות הפרטים שלך ב-WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">להתחיל בהגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">אנחנו משתפים פעולה עם Stripe בשירות של WooPayments. אנחנו נפנה אותך להרשמה באתר של Stripe. נבקש ממך לאמת את העסק ואת פרטי התשלום שלך.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">ההודעות של WooPayments יישלחו אל האימייל של חשבונך ב-WordPress.com. רוצה ליצור חשבון חדש? &lt;a href=\'learnMore\'&gt;&lt;u&gt;ניתן למצוא כאן פרטים נוספים.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">לפני שנתחיל בתהליך ההגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 דקות</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">זמן משוער להקמה</string>
+    <string name="store_onboarding_wcpay_instructions_title">לנהל תשלומים ללא מאמץ עם WooPayments ממקום אחד. ניתן לקבל תשלומים באמצעות כרטיסים, Apple Pay ותשלומים באופן אישי במעל 135 מטבעות שונים – כל התשלומים ללא עלויות הקמה או עמלות חודשיות.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">אין אפשרות לשמור את שם החנות. יש לנסות שוב.</string>
     <string name="settings_name_your_store_dialog_loading">שומר את שם החנות החדש…</string>
     <string name="settings_name_your_store_dialog_success">שם החנות הוגדר!</string>
@@ -1887,7 +1897,7 @@ Language: he_IL
     <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
     <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">מספריית המדיה של WordPress</string>
-    <string name="product_downloadable_files_add_from_device">מהמכשיר</string>
+    <string name="product_downloadable_files_add_media_from_device">מהמכשיר</string>
     <string name="product_downloadable_files_url_invalid">יש לוודא שכתובת ה-URL שהוזנה חוקית</string>
     <string name="product_downloadable_files_upload_dialog_message">רק רגע…</string>
     <string name="product_downloadable_files_upload_dialog_title">מעלה קבצים</string>

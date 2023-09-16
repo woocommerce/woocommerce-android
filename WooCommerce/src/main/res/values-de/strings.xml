@@ -21,6 +21,16 @@ Language: de
     <string name="tax_rates_info_dialog_primary_text">Steuern werden berechnet, indem die Rechnungs- oder Lieferadresse des Kunden oder deine Shop-Adresse dem entsprechenden Ort und dem dort geltenden Steuersatz zugeordnet werden.</string>
     <string name="tax_rates_information_content_description">Informationen zu Steuersätzen</string>
     <string name="store_onboarding_wcpay_setup_description">Durch die Verwendung von WooCommerce Payments stimmst du unseren &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Geschäftsbedingungen&lt;/u&gt;&lt;/a&gt; zu und bestätigst, dass du unsere &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Datenschutzerklärung&lt;/u&gt;&lt;/a&gt; gelesen hast.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Einrichten</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Weitere Informationen&lt;/u&gt;&lt;/a&gt; zur Verifizierung deiner Informationen mit WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Einrichtung beginnen</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Für WooPayments haben wir mit Stripe zusammengearbeitet. Du wirst an die Website von Stripe weitergeleitet, um dich zu registrieren. Wir werden dich bitten, deine Unternehmens- und Zahlungsdetails zu verifizieren.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Deine WooPayments-Benachrichtigungen werden an die E-Mail-Adresse deines WordPress.com-Kontos gesendet. Du bevorzugst ein neues Konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Weitere Informationen findest du hier.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Bevor du mit deiner Einrichtung beginnst</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 Minuten</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Geschätzte Einrichtungsdauer</string>
+    <string name="store_onboarding_wcpay_instructions_title">Verwalte Zahlungen mühelos an einem Ort mit WooPayments. Akzeptiere Kartenzahlungen, Apple Pay, persönliche Zahlungen und über 135 Währungen – ganz ohne Einrichtungskosten oder monatliche Gebühren.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Der Name des Shops konnte nicht gespeichert werden. Bitte versuche es erneut.</string>
     <string name="settings_name_your_store_dialog_loading">Neuer Name des Shops wird gespeichert…</string>
     <string name="settings_name_your_store_dialog_success">Name des Shops festgelegt!</string>
@@ -1887,7 +1897,7 @@ Language: de
     <string name="product_downloadable_files_name_invalid">Bitte gib einen gültigen Namen ein</string>
     <string name="product_downloadable_files_add_manually">Gib eine Datei-URL ein</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Von der WordPress-Mediathek</string>
-    <string name="product_downloadable_files_add_from_device">Vom Gerät</string>
+    <string name="product_downloadable_files_add_media_from_device">Vom Gerät</string>
     <string name="product_downloadable_files_url_invalid">Überprüfe, ob die eingegebene URL gültig ist</string>
     <string name="product_downloadable_files_upload_dialog_message">Bitte warten …</string>
     <string name="product_downloadable_files_upload_dialog_title">Dateien werden hochgeladen</string>

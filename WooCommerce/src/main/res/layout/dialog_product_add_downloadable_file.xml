@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -13,7 +14,7 @@
         android:textColor="@color/color_on_surface_medium" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/add_downloadable_from_device"
+        android:id="@+id/add_media_file_from_device"
         style="@style/TextAppearance.Woo.Body2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_tap_target"
@@ -24,7 +25,21 @@
         android:gravity="center_vertical"
         android:paddingStart="@dimen/major_150"
         android:paddingEnd="@dimen/major_150"
-        android:text="@string/product_downloadable_files_add_from_device" />
+        android:text="@string/product_downloadable_files_add_media_from_device" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/add_document_file_from_device"
+        style="@style/TextAppearance.Woo.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_tap_target"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_pages_white_24dp"
+        android:drawablePadding="@dimen/major_175"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/major_150"
+        android:paddingEnd="@dimen/major_150"
+        android:text="@string/product_downloadable_files_add_documents_from_device"
+        app:drawableTint="@color/color_icon" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/add_downloadable_from_wpmedia_library"

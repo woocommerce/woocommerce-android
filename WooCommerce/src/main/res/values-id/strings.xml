@@ -21,6 +21,16 @@ Language: id
     <string name="tax_rates_info_dialog_primary_text">Pajak dihitung dengan mencocokkan alamat penagihan atau pengiriman pelanggan, atau lokasi toko Anda, dengan lokasi tarif pajak.</string>
     <string name="tax_rates_information_content_description">Informasi tarif pajak</string>
     <string name="store_onboarding_wcpay_setup_description">Dengan menggunakan WooCommerce Payments, Anda sepakat untuk terikat pada &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Ketentuan Layanan&lt;/u&gt;&lt;/a&gt; kami dan mengonfirmasi bahwa Anda sudah membaca &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Kebijakan Privasi&lt;/u&gt;&lt;/a&gt; kami.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Siapkan</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more"> &lt;a href=\'learnMore\'&gt;&lt;u&gt;Pelajari lebih lanjut&lt;/u&gt;&lt;/a&gt; tentang memverifikasi informasi Anda dengan WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Mulai penyiapan</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Kami telah bermitra dengan Stripe untuk WooPayments. Anda akan diarahkan ke situs Stripe untuk mendaftar. Kami akan meminta Anda untuk memverifikasi informasi bisnis dan pembayaran Anda.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Pemberitahuan WooPayments Anda akan dikirim ke email akun WordPress.com Anda. Ingin akun baru? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Detail selengkapnya di sini.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Sebelum Anda memulai penyiapan</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 menit</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Perkiraan waktu penyiapan</string>
+    <string name="store_onboarding_wcpay_instructions_title">Kelola pembayaran dengan mudah bersama WooPayments, semua di satu tempat. Terima kartu kredit, Apple Pay, pembayaran langsung, dan 135+ mata uang, semua tanpa biaya penyiapan ataupun biaya bulanan.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Tidak dapat menyimpan nama toko. Coba lagi.</string>
     <string name="settings_name_your_store_dialog_loading">Menyimpan nama toko…</string>
     <string name="settings_name_your_store_dialog_success">Nama Toko Sudah Jadi!</string>
@@ -1887,7 +1897,7 @@ Language: id
     <string name="product_downloadable_files_name_invalid">Harap masukkan nama yang valid</string>
     <string name="product_downloadable_files_add_manually">Masukkan URL file</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Dari Pustaka Media WordPress</string>
-    <string name="product_downloadable_files_add_from_device">Dari perangkat</string>
+    <string name="product_downloadable_files_add_media_from_device">Dari perangkat</string>
     <string name="product_downloadable_files_url_invalid">Pastikan url yang dimasukkan valid</string>
     <string name="product_downloadable_files_upload_dialog_message">Harap tunggu…</string>
     <string name="product_downloadable_files_upload_dialog_title">Mengunggah file</string>

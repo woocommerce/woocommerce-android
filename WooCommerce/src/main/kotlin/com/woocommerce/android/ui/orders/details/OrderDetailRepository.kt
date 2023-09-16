@@ -200,6 +200,13 @@ class OrderDetailRepository @Inject constructor(
         } else 0
     }
 
+    suspend fun getUniqueProductTypes(remoteProductIds: List<Long>): String {
+        return if (remoteProductIds.isNotEmpty()) {
+            val products = productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+            products.map { product -> product.type }.toSet().joinToString()
+        } else ""
+    }
+
     fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
             productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
