@@ -143,50 +143,69 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         )
     }
 
-    sealed class StripeAcountError(
+    sealed class StripeAccountError(
         val headerLabel: UiString,
         val hintLabel: UiString,
-        val buttonLabel: UiString? = null
+        val actionButtonPrimary: ActionButton? = null,
+        val actionButtonSecondary: ActionButton? = null,
     ) : CardReaderOnboardingViewState(R.layout.fragment_card_reader_onboarding_stripe) {
         abstract val onContactSupportActionClicked: (() -> Unit)
         abstract val onLearnMoreActionClicked: (() -> Unit)
-        open val onButtonActionClicked: (() -> Unit?)? = null
 
         @DrawableRes
         val illustration = R.drawable.img_products_error
-        val contactSupportLabel =
-            UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true)
-        val learnMoreLabel =
-            UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true)
+        val learnMoreButton = ActionButton(
+            label = UiString.UiStringRes(R.string.card_reader_onboarding_learn_more, containsHtml = true),
+            action = { onLearnMoreActionClicked() }
+        )
+        val contactSupportButton = ActionButton(
+            label = UiString.UiStringRes(R.string.card_reader_onboarding_contact_support, containsHtml = true),
+            action = { onContactSupportActionClicked() }
+        )
 
         data class StripeAccountUnderReviewState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_header),
-            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint),
+            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_under_review_hint)
         )
 
         data class StripeAccountRejectedState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_rejected_hint)
         )
 
         data class StripeAccountOverdueRequirementsState(
             override val onContactSupportActionClicked: () -> Unit,
-            override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+            override val onLearnMoreActionClicked: () -> Unit,
+            val onPrimaryActionClicked: (() -> Unit),
+            val onSecondaryActionClicked: (() -> Unit),
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
-            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint)
+            hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint),
+            actionButtonPrimary = ActionButton(
+                label = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_overdue_requirements_take_care_button
+                ),
+                icon = R.drawable.ic_external,
+                action = onPrimaryActionClicked
+            ),
+            actionButtonSecondary = ActionButton(
+                label = UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_overdue_requirements_refresh_button
+                ),
+                action = onSecondaryActionClicked
+            )
         )
 
         data class PluginInTestModeWithLiveAccountState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(
                 R.string.card_reader_onboarding_wcpay_in_test_mode_with_live_account_header
             ),
@@ -196,9 +215,9 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
         data class StripeAccountPendingRequirementsState(
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit,
-            override val onButtonActionClicked: () -> Unit,
+            val onPrimaryActionClicked: () -> Unit,
             val dueDate: String?
-        ) : StripeAcountError(
+        ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
             hintLabel = if (dueDate != null) UiString.UiStringRes(
                 R.string.card_reader_onboarding_account_pending_requirements_hint,
@@ -206,7 +225,10 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             ) else UiString.UiStringRes(
                 R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
             ),
-            buttonLabel = UiString.UiStringRes(R.string.skip)
+            actionButtonPrimary = ActionButton(
+                label = UiString.UiStringRes(R.string.skip),
+                action = onPrimaryActionClicked
+            )
         )
     }
 

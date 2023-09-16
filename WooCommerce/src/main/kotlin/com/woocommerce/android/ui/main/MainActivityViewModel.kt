@@ -22,7 +22,6 @@ import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TR
 import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
 import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -288,7 +287,6 @@ class MainActivityViewModel @Inject constructor(
             )
             LocalNotificationType.fromString(notification.tag)?.let {
                 when (it) {
-                    STORE_CREATION_INCOMPLETE -> triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
                     FREE_TRIAL_EXPIRED,
                     FREE_TRIAL_EXPIRING,
                     SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
@@ -338,7 +336,6 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
-    data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
     data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
 
     sealed class RestartActivityEvent : Event()

@@ -47,7 +47,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun WooPaymentsPreSetupScreen(
+fun WooPaymentsSetupInstructionsScreen(
     onCloseButtonClick: () -> Unit = {},
     onWPComAccountMoreDetailsClick: () -> Unit = {},
     onBeginButtonClick: () -> Unit = {},
@@ -61,13 +61,13 @@ fun WooPaymentsPreSetupScreen(
             )
         },
         bottomBar = {
-            WooPaymentsPreSetupFooter(
+            WooPaymentsSetupInstructionsFooter(
                 onBeginButtonClick,
                 onLearnMoreClick
             )
         }
     ) { paddingValues ->
-        WooPaymentsPreSetupContent(
+        WooPaymentsSetupInstructionsContent(
             onWPComAccountMoreDetailsClick,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
@@ -78,7 +78,7 @@ fun WooPaymentsPreSetupScreen(
 }
 
 @Composable
-fun WooPaymentsPreSetupContent(
+private fun WooPaymentsSetupInstructionsContent(
     onWPComAccountMoreDetailsClick: () -> Unit = {},
     modifier: Modifier
 ) {
@@ -97,17 +97,17 @@ fun WooPaymentsPreSetupContent(
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_title),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_title),
             style = MaterialTheme.typography.body1,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_estimate_title),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_estimate_title),
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40),
         )
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_estimate_time),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_estimate_time),
             style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.Bold
         )
@@ -119,13 +119,13 @@ fun WooPaymentsPreSetupContent(
         )
 
         Text(
-            text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_title),
+            text = stringResource(id = R.string.store_onboarding_wcpay_instructions_content_title),
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
 
-        val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_step_1_content)
-        WooPaymentsPreSetupStep(stepNumber = 1) {
+        val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_instructions_content_step_1_content)
+        WooPaymentsSetupInstructionsStep(stepNumber = 1) {
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle1
@@ -137,16 +137,16 @@ fun WooPaymentsPreSetupContent(
             }
         }
 
-        WooPaymentsPreSetupStep(
+        WooPaymentsSetupInstructionsStep(
             stepNumber = 2
         ) {
-            Text(text = stringResource(id = string.store_onboarding_wcpay_pre_setup_content_step_2_content))
+            Text(text = stringResource(id = string.store_onboarding_wcpay_instructions_content_step_2_content))
         }
     }
 }
 
 @Composable
-fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
+private fun WooPaymentsSetupInstructionsStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
     val format = NumberFormat.getInstance(Locale.getDefault())
     val formattedNumber = format.format(stepNumber)
 
@@ -178,7 +178,7 @@ fun WooPaymentsPreSetupStep(stepNumber: Int, formattedText: @Composable () -> Un
 }
 
 @Composable
-fun WooPaymentsPreSetupFooter(
+private fun WooPaymentsSetupInstructionsFooter(
     onBeginButtonClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {}
 ) {
@@ -200,7 +200,7 @@ fun WooPaymentsPreSetupFooter(
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             onClick = onBeginButtonClick,
         ) {
-            Text(text = stringResource(id = R.string.store_onboarding_wcpay_pre_setup_content_button))
+            Text(text = stringResource(id = R.string.store_onboarding_wcpay_instructions_content_button))
         }
 
         Row(
@@ -217,7 +217,7 @@ fun WooPaymentsPreSetupFooter(
                     .align(Alignment.CenterVertically)
                     .padding(end = 8.dp)
             )
-            val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_pre_setup_content_learn_more)
+            val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_instructions_content_learn_more)
             ClickableText(
                 text = text,
                 style = MaterialTheme.typography.subtitle2
@@ -233,8 +233,8 @@ fun WooPaymentsPreSetupFooter(
 
 @Preview
 @Composable
-fun WooPaymentsPreSetupScreenPreview() {
+private fun WooPaymentsSetupInstructionsScreenPreview() {
     WooThemeWithBackground {
-        WooPaymentsPreSetupScreen()
+        WooPaymentsSetupInstructionsScreen()
     }
 }
