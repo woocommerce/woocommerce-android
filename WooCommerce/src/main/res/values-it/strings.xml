@@ -21,16 +21,6 @@ Language: it
     <string name="tax_rates_info_dialog_primary_text">Le tasse vengono calcolate abbinando l\'indirizzo di fatturazione o di spedizione del cliente o l\'indirizzo del tuo negozio a una località dell\'aliquota d\'imposta.</string>
     <string name="tax_rates_information_content_description">Informazioni sulle tasse</string>
     <string name="store_onboarding_wcpay_setup_description">Usando WooCommerce Payments, accetti di essere vincolato dai &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e confermi di aver letto la &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Politica sulla privacy&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">Configura</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sulla verifica delle tue informazioni con WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Inizia l\'impostazione</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Collaboriamo con Stripe per WooPayments. Verrai indirizzato al sito di Stripe per l\'iscrizione. Ti chiederemo di verificare i dettagli della tua attività e di pagamento.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Le notifiche di WooPayments verranno inviate all\'e-mail del tuo account WordPress.com. Preferisci un nuovo account? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Trovi ulteriori dettagli qui.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">Prima di iniziare l\'impostazione</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minuti</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Tempo di impostazione stimato</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">Gestisci senza problemi i pagamenti con WooPayments da un\'unica postazione. Accetta carte, Apple Pay, pagamenti di persona e oltre 135 valute, il tutto senza costi di impostazione o tariffe mensili.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Impossibile salvare il nome del negozio. Riprova.</string>
     <string name="settings_name_your_store_dialog_loading">Salvataggio del nuovo nome del negozio in corso…</string>
     <string name="settings_name_your_store_dialog_success">Nome del negozio impostato.</string>

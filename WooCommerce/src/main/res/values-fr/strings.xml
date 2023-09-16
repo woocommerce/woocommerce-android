@@ -21,16 +21,6 @@ Language: fr
     <string name="tax_rates_info_dialog_primary_text">Les taxes sont calculées en faisant correspondre l’adresse de facturation ou d’expédition du client, ou l’adresse de votre boutique, à un emplacement lié à un taux de taxe.</string>
     <string name="tax_rates_information_content_description">Informations sur le taux de taxe</string>
     <string name="store_onboarding_wcpay_setup_description">En utilisant WooCommerce Payments, vous acceptez de vous soumettre à nos &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Conditions d’utilisation&lt;/u&gt;&lt;/a&gt; et vous reconnaissez avoir lu notre &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Politique de confidentialité&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">Configurer</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;En savoir plus&lt;/u&gt;&lt;/a&gt; sur la vérification de vos informations avec WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Commencer la configuration</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Nous nous sommes associés à Stripe pour WooPayments. Vous accéderez alors au site de Stripe pour l’inscription. Nous vous demanderons de vérifier les détails relatifs à votre entreprise et au paiement.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Vos notifications WooPayments seront envoyées à l’adresse e-mail de votre compte WordPress.com. Vous préférez créer un nouveau compte ? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Plus de détails ici.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">Avant d’entamer votre configuration</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minutes</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Temps estimé pour la configuration</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">Gérez les paiements en toute transparence et au même endroit avec WooPayments. Acceptez les paiements par carte, via Apple Pay ou en personne, ainsi que plus de 135 devises, le tout sans aucuns frais de configuration ni frais mensuels.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Impossible d’enregistrer le nom de la boutique. Veuillez réessayer.</string>
     <string name="settings_name_your_store_dialog_loading">Enregistrement du nouveau nom de la boutique…</string>
     <string name="settings_name_your_store_dialog_success">Nom de la boutique défini !</string>

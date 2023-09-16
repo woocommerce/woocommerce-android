@@ -21,16 +21,6 @@ Language: zh_CN
     <string name="tax_rates_info_dialog_primary_text">以客户的账单或配送地址或您的商店地址作为税率计算地址来计算税款。</string>
     <string name="tax_rates_information_content_description">税率信息</string>
     <string name="store_onboarding_wcpay_setup_description">使用 WooCommerce Payments 即表示，您同意遵守我们的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;，并确认您已阅读我们的&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;隐私政策&lt;/u&gt;&lt;/a&gt;。</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">设置</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;进一步了解&lt;/u&gt;&lt;/a&gt;使用 WooPayments 验证您的信息的内容。</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">开始设置</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">我们与 Stripe 合作开发了 WooPayments。 系统将引导您至 Stripe 站点进行注册。 我们将要求验证您的业务和付款详细信息。</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments 通知将会发送至您的 WordPress.com 账户电子邮箱。 想要新建账户？ &lt;a href=\'learnMore\'&gt;&lt;u&gt;在此了解更多详细信息。&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">在开始设置前</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 分钟</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">预计设置时间</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">通过 WooPayments 一站式轻松管理付款。 接受银行卡付款、Apple Pay、现场付款和超过 135 种货币的付款，且无设置费或月费。</string>
     <string name="store_onboarding_name_your_store_dialog_failure">无法保存商店名称。 请重试。</string>
     <string name="settings_name_your_store_dialog_loading">正在保存新商店名称……</string>
     <string name="settings_name_your_store_dialog_success">商店名称已设置！</string>

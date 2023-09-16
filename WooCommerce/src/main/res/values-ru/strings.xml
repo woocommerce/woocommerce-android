@@ -21,16 +21,6 @@ Language: ru
     <string name="tax_rates_info_dialog_primary_text">Налоги рассчитываются на основе сопоставления платёжного адреса, адреса доставки или адреса магазина с адресом, где действует налоговая ставка.</string>
     <string name="tax_rates_information_content_description">Сведения о налоговых ставках</string>
     <string name="store_onboarding_wcpay_setup_description">Используя WooCommerce Payments, вы принимаете наши &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Условия предоставления услуг&lt;/u&gt;&lt;/a&gt; и подтверждаете, что ознакомились с &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Политикой конфиденциальности&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">Настроить</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt; о подтверждении вашей информации на WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Начать настройку</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Партнёр WooPayments — платёжная система Stripe. Вы будете перенаправлены на сайт Stripe для регистрации. Мы попросим вас подтвердить сведения о вашем бизнесе и платёжные данные.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Уведомления WooPayments будут приходить на адрес эл. почты, указанный в вашей учётной записи WordPress.com. Хотите использовать новую учётную запись? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробности см. здесь.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">Перед началом настройки</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 минут</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Примерное время настройки</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">Управляйте платежами без усилий с помощью WooPayments — всё на одной консоли. Принимайте карты, платежи Apple Pay, очные платежи и более 135 валют — без платы за настройку и ежемесячное использование.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Не удалось сохранить название магазина. Повторите попытку.</string>
     <string name="settings_name_your_store_dialog_loading">Сохранение нового названия магазина…</string>
     <string name="settings_name_your_store_dialog_success">Название магазина сохранено!</string>
