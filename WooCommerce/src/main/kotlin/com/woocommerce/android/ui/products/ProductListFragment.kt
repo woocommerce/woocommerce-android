@@ -93,6 +93,9 @@ class ProductListFragment :
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
+    @Inject
+    lateinit var addProductNavigator: AddProductNavigator
+
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
         get() = _productAdapter!!
@@ -716,10 +719,18 @@ class ProductListFragment :
     }
 
     private fun showAddProductBottomSheet() {
-        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-            isAddProduct = true
-        )
-        findNavController().navigateSafely(action)
+        with(addProductNavigator) {
+            findNavController().navigateToAddProducts(
+                // TODO replace with correct NavDirections when implemented
+                aiBottomSheetAction = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
+                    isAddProduct = true
+                ),
+                typesBottomSheetAction = ProductListFragmentDirections
+                    .actionProductListFragmentToProductTypesBottomSheet(
+                        isAddProduct = true
+                    )
+            )
+        }
     }
 
     override fun onRequestLoadMore() {
