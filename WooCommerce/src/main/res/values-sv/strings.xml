@@ -24,12 +24,7 @@ Language: sv_SE
     <string name="tax_rates_information_content_description">Information om momssatser</string>
     <string name="store_onboarding_wcpay_setup_description">Genom att använda WooCommerce Payments samtycker du till våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och intygar att du har läst vår &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;integritetspolicy&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om att verifiera din information med WooPayments.</string>
-    <string name="store_onboarding_wcpay_instructions_content_button">Börja installationen</string>
-    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minuter</string>
-    <string name="store_onboarding_wcpay_instructions_estimate_title">Beräknad installationstid</string>
     <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">Konfigurera</string>
-    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om att kontrollera din information med WooPayments.</string>
     <string name="store_onboarding_wcpay_instructions_content_button">Starta konfiguration</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Vi har slagit oss ihop med Stripe för WooPayments. Du kommer att bli omdirigerad till Stripes webbplats för registrering. Vi kommer att be dig att kontrollera dina företagsuppgifter och din betalningsinformation.</string>
     <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooCommerce-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
