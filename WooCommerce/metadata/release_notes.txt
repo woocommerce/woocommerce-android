@@ -1,5 +1,1 @@
-- [**] [Internal] In-Person Payments: if WcPay setup not finished then we allow a user to finish it from the app [https://github.com/woocommerce/woocommerce-android/pull/9732]
-- [*] [Internal] Store Onboarding: show an explanation screen before open the Payments task in a WebView [https://github.com/woocommerce/woocommerce-android/pull/9772]
-- [**] Order creation: Merchants can now select a tax rate when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9773]
-- [**] Product editing: Merchants can now add downloadable files from all supported file types [https://github.com/woocommerce/woocommerce-android/pull/9745]
-
+Merchants can now select a tax rate when creating an order and add downloadable files from all supported file types during product editing. We've improved In-Person Payments; if WcPay setup isn't finished, users can now complete it from the app. Minor updates include a fix for tracking the country when IPP onboarding isn't finished and an explanation screen before opening the Payments task.
