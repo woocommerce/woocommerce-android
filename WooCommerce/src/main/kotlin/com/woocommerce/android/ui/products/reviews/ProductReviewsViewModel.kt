@@ -39,6 +39,10 @@ class ProductReviewsViewModel @Inject constructor(
     private val reviewModerationHandler: ReviewModerationHandler,
     private val reviewListRepository: ReviewListRepository
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
+    companion object {
+        private const val NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLLABLE = 10
+    }
+
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
     override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
@@ -151,9 +155,14 @@ class ProductReviewsViewModel @Inject constructor(
 
     private suspend fun applyUnreadFilter(loadMore: Boolean) {
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = loadMore)
-        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore, navArgs.remoteProductId)) {
+        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore)) {
             SUCCESS,
-            NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedUnreadProductReviews()
+            NO_ACTION_NEEDED -> {
+                val unreadReviews = reviewListRepository.getCachedUnreadProductReviews()
+                    .filter { it.remoteProductId == navArgs.remoteProductId }
+                _reviewList.value = unreadReviews
+                loadMoreUnreadIfNeeded(unreadReviews)
+            }
 
             ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             else -> {}
@@ -162,6 +171,13 @@ class ProductReviewsViewModel @Inject constructor(
             isSkeletonShown = false,
             isLoadingMore = false
         )
+    }
+
+    private fun loadMoreUnreadIfNeeded(unreadReviews: List<ProductReview>) {
+        if (unreadReviews.size < NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLLABLE) {
+            productReviewsViewState = productReviewsViewState.copy(isLoadingMore = true)
+            fetchProductReviews(navArgs.remoteProductId, loadMore = true)
+        }
     }
 
     private fun trackFetchProductReviewsResult(
