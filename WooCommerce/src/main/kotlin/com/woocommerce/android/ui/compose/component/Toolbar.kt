@@ -131,7 +131,7 @@ fun Toolbar(
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
-    title: @Composable () -> Unit = {},
+    title: @Composable () -> Unit,
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = string.back),

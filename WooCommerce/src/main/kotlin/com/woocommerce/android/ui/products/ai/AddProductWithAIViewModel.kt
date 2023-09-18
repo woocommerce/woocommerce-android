@@ -7,8 +7,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -17,6 +18,8 @@ class AddProductWithAIViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
+    private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
+
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
         ProductNameSubViewModel(
             savedStateHandle = savedStateHandle,
@@ -27,11 +30,12 @@ class AddProductWithAIViewModel @Inject constructor(
         ),
     )
 
-    val state = step.map {
+    val state = combine(step, saveButtonState) { step, saveButtonState ->
         State(
-            progress = (it.ordinal + 1).toFloat() / Step.values().size,
-            subViewModel = subViewModels[it.ordinal],
-            isFirstStep = it.ordinal == 0
+            progress = (step.ordinal + 1).toFloat() / Step.values().size,
+            subViewModel = subViewModels[step.ordinal],
+            isFirstStep = step.ordinal == 0,
+            saveButtonState = saveButtonState
         )
     }.asLiveData()
 
@@ -71,8 +75,13 @@ class AddProductWithAIViewModel @Inject constructor(
     data class State(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
-        val isFirstStep: Boolean
+        val isFirstStep: Boolean,
+        val saveButtonState: SaveButtonState
     )
+
+    enum class SaveButtonState {
+        Hidden, Shown, Loading
+    }
 }
 
 private enum class Step {
