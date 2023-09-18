@@ -189,10 +189,6 @@ class ReviewListViewModel @Inject constructor(
             ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             else -> {}
         }
-        viewState = viewState.copy(
-            isSkeletonShown = false,
-            isLoadingMore = false
-        )
     }
 
     private fun showOfflineSnack() {
