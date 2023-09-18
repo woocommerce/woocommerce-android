@@ -80,6 +80,9 @@
         <action
             android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -553,6 +556,9 @@
             android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsSetupInstructionsFragment"
             app:destination="@id/wooPaymentsSetupInstructionsFragment"
             app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <dialog
         android:id="@+id/privacyBannerFragment"

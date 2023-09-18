@@ -318,8 +318,7 @@ class MyStoreFragment :
             is StoreOnboardingViewModel.NavigateToAddProduct ->
                 with(addProductNavigator) {
                     findNavController().navigateToAddProducts(
-                        // TODO replace with correct NavDirections when implemented
-                        aiBottomSheetAction = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet(),
+                        aiBottomSheetAction = MyStoreFragmentDirections.actionDashboardToAddProductWithAIBottomSheet(),
                         typesBottomSheetAction = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
                     )
                 }
