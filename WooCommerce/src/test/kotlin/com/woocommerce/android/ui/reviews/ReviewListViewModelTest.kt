@@ -36,7 +36,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val markAllReviewsAsSeen: MarkAllReviewsAsSeen = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock()
-    private val reviewModerationHandler: ReviewModerationHandler = mock() {
+    private val reviewModerationHandler: ReviewModerationHandler = mock {
         on { pendingModerationStatus } doReturn emptyFlow()
     }
 
@@ -73,7 +73,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
+        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -91,7 +91,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(reviewListRepository, times(1)).fetchProductReviews(any())
+        verify(reviewListRepository, times(1)).fetchProductReviews(loadMore = false)
         verify(reviewListRepository, times(2)).getCachedProductReviews()
         Assertions.assertThat(reviewList).isEqualTo(reviews)
         assertTrue(hasUnread)
@@ -114,7 +114,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(reviewListRepository, times(0)).fetchProductReviews(any())
+        verify(reviewListRepository, times(0)).fetchProductReviews(any(), any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
         Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
@@ -124,7 +124,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.ERROR).whenever(reviewListRepository).fetchProductReviews(any())
+        doReturn(RequestResult.ERROR).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -147,7 +147,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(reviewListRepository, times(1)).fetchProductReviews(any())
+        verify(reviewListRepository, times(1)).fetchProductReviews(loadMore = false)
         verify(reviewListRepository, times(1)).getCachedProductReviews()
         Assertions.assertThat(reviewList).isEqualTo(reviews)
         assertFalse(hasUnread)
@@ -157,7 +157,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Show and hide review list skeleton correctly`() = testBlocking {
         doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
+        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val skeletonShown = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -172,7 +172,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides review list load more progress correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).canLoadMore
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
+        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = true)
 
         val isLoadingMore = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -199,7 +199,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Refreshing reviews list handled correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(any())
+        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         var hasUnread = false
         val isRefreshing = mutableListOf<Boolean>()
