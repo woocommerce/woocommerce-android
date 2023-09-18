@@ -22,12 +22,18 @@ class AddProductWithAIViewModel @Inject constructor(
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
-        // TODO add subViewModels
+        ProductNameSubViewModel(
+            savedStateHandle = savedStateHandle,
+            onDone = {
+                // Pass the name to next ViewModel if needed
+                step.value = Step.AboutProduct
+            }
+        ),
     )
 
     val state = step.map {
         State(
-            progress = it.ordinal.toFloat() / Step.values().size,
+            progress = (it.ordinal + 1).toFloat() / Step.values().size,
             subViewModel = subViewModels[it.ordinal]
         )
     }.asLiveData()

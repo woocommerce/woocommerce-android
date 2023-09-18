@@ -54,8 +54,8 @@ fun AddProductWithAIScreen(
 }
 
 @Composable
-private fun SubScreen(subViewModel: AddProductWithAISubViewModel<*>) {
+private fun SubScreen(subViewModel: AddProductWithAISubViewModel<*>, modifier: Modifier) {
     when (subViewModel) {
-        else -> {}
+        is ProductNameSubViewModel -> ProductNameSubScreen(subViewModel, modifier)
     }
 }
