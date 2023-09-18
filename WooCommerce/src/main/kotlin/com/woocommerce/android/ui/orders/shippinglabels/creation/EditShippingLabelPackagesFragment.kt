@@ -62,7 +62,6 @@ class EditShippingLabelPackagesFragment :
             viewModel::onMoveButtonClicked,
             viewModel::onHazmatShippingChecked,
             viewModel::onHazmatCategoryClicked,
-            viewModel::onContainsHazmatChanged,
             viewModel::onURLClicked
         )
     }

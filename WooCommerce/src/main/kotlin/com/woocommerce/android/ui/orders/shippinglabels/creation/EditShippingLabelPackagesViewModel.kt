@@ -192,6 +192,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val packages = viewState.packagesUiModels.toMutableList()
         packages[position] = packages[position].copy(isHazmatShippingChecked = isChecked)
         viewState = viewState.copy(packagesUiModels = packages)
+
+        if (isChecked) analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
     }
 
     fun onHazmatCategoryClicked(
@@ -224,12 +226,6 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     fun onURLClicked(url: String) {
         triggerEvent(OpenURL(url))
-    }
-
-    fun onContainsHazmatChanged(isActive: Boolean) {
-        if (isActive) {
-            analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
-        }
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
