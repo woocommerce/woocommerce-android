@@ -136,6 +136,11 @@ class ShippingLabelPackagesAdapter(
                 TransitionManager.beginDelayedTransition(binding.root)
                 binding.hazmatContent.isVisible = isChecked
                 onHazmatShippingChecked(bindingAdapterPosition, isChecked)
+
+                if (isChecked.not()) {
+                    binding.hazmatCategory.text = context.getString(R.string.shipping_label_package_details_hazmat_select_category_action)
+                    currentHazmatSelection = null
+                }
             }
 
             binding.hazmatCategoryContainer.setOnClickListener {
@@ -229,7 +234,7 @@ class ShippingLabelPackagesAdapter(
             }
 
             shippingLabelPackage.selectedPackage?.hazmatCategory?.let {
-                binding.hazmatToggle.isChecked = true
+                binding.hazmatToggle.isChecked = uiModel.isHazmatShippingChecked
                 binding.hazmatCategory.text = context.getString(it.stringResourceID)
             }
         }

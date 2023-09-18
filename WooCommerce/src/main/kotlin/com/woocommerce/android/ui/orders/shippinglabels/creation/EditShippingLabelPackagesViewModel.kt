@@ -35,6 +35,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
 import kotlin.math.ceil
+import kotlinx.coroutines.Dispatchers
 
 @HiltViewModel
 class EditShippingLabelPackagesViewModel @Inject constructor(
@@ -194,7 +195,9 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
         val packages = viewState.packagesUiModels.toMutableList()
         packages[position] = packages[position].copy(isHazmatShippingChecked = isChecked)
-        viewState = viewState.copy(packagesUiModels = packages)
+        launch(context = Dispatchers.Main) {
+            viewState = viewState.copy(packagesUiModels = packages)
+        }
     }
 
     fun onHazmatCategoryClicked(
@@ -222,7 +225,9 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             selectedPackage?.copy(hazmatCategory = newSelection)
                 ?.let { copy(selectedPackage = it) }
         }?.let { packages[packagePosition] = packages[packagePosition].copy(data = it) }
-        viewState = viewState.copy(packagesUiModels = packages)
+        launch(context = Dispatchers.Main) {
+            viewState = viewState.copy(packagesUiModels = packages)
+        }
     }
 
     fun onURLClicked(url: String) {
