@@ -245,7 +245,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
             binding.optionDomain.isVisible ||
             binding.optionStoreOnboardingListVisibility.isVisible ||
-            binding.shippingClasses.isVisible
+            binding.shippingClasses.isVisible ||
+            binding.optionStoreName.isVisible
 
         binding.optionStoreName.setOnClickListener {
             findNavController()
