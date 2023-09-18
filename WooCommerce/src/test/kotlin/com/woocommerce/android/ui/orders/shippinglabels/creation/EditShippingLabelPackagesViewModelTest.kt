@@ -361,7 +361,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         setup(emptyArray())
 
         // When
-        viewModel.onContainsHazmatChanged(true)
+        viewModel.onHazmatShippingChecked(0, true)
 
         // Then
         verify(analyticsTrackerWrapper).track(
