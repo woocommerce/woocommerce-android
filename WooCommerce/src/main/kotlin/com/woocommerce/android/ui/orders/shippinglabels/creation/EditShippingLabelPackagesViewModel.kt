@@ -189,11 +189,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onHazmatShippingChecked(position: Int, isChecked: Boolean) {
+        if (isChecked) analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
+        else onHazmatCategorySelected(null, position)
+
         val packages = viewState.packagesUiModels.toMutableList()
         packages[position] = packages[position].copy(isHazmatShippingChecked = isChecked)
         viewState = viewState.copy(packagesUiModels = packages)
-
-        if (isChecked) analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
     }
 
     fun onHazmatCategoryClicked(
@@ -206,7 +207,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onHazmatCategorySelected(
-        newSelection: ShippingLabelHazmatCategory,
+        newSelection: ShippingLabelHazmatCategory?,
         packagePosition: Int
     ) {
         analyticsWrapper.track(
