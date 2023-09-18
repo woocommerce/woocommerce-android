@@ -48,6 +48,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
@@ -64,8 +65,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val productTagsRepository: ProductTagsRepository = mock()
     private val mediaFilesRepository: MediaFilesRepository = mock()
     private val variationRepository: VariationRepository = mock()
-    private val selectedSite: SelectedSite = mock()
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel()
+    }
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -157,35 +159,33 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(false).whenever(isAIProductDescriptionEnabled).invoke()
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
             ProductDetailViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                parameterRepository,
-                productRepository,
-                networkStatus,
-                currencyFormatter,
-                resources,
-                productCategoriesRepository,
-                productTagsRepository,
-                mediaFilesRepository,
-                variationRepository,
-                mediaFileUploadHandler,
-                prefs,
-                addonRepository,
-                generateVariationCandidates,
-                mock(),
-                tracker,
-                selectedSite,
-                mock(),
-                mock(),
-                mock(),
-                mock(),
-                isBlazeEnabled,
-                isAIProductDescriptionEnabled
+                savedState = savedState,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                parameterRepository = parameterRepository,
+                productRepository = productRepository,
+                networkStatus = networkStatus,
+                currencyFormatter = currencyFormatter,
+                resources = resources,
+                productCategoriesRepository = productCategoriesRepository,
+                productTagsRepository = productTagsRepository,
+                mediaFilesRepository = mediaFilesRepository,
+                variationRepository = variationRepository,
+                mediaFileUploadHandler = mediaFileUploadHandler,
+                appPrefsWrapper = prefs,
+                addonRepository = addonRepository,
+                generateVariationCandidates = generateVariationCandidates,
+                duplicateProduct = mock(),
+                tracker = tracker,
+                selectedSite = selectedSite,
+                getProductQuantityRules = mock(),
+                getBundledProductsCount = mock(),
+                getComponentProducts = mock(),
+                productListRepository = mock(),
+                isBlazeEnabled = isBlazeEnabled
             )
         )
 

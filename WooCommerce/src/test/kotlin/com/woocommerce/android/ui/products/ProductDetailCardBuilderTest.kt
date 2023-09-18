@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
@@ -16,6 +17,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class ProductDetailCardBuilderTest : BaseUnitTest() {
@@ -33,9 +35,13 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             onBlocking { hasAnyProductSpecificAddons(any()) } doReturn false
         }
 
+        val selectedSite: SelectedSite = mock {
+            on { get() } doReturn SiteModel()
+        }
+
         sut = ProductDetailCardBuilder(
             viewModel = mock(),
-            selectedSite = mock(),
+            selectedSite = selectedSite,
             resources = resources,
             currencyFormatter = mock(),
             parameters = mock(),
