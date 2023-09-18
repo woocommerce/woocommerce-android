@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,10 +32,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
@@ -76,18 +79,7 @@ private fun AddProductWithAIContent(
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .background(
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f),
-                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_150))
-                    )
-                    .size(
-                        width = dimensionResource(id = R.dimen.major_200),
-                        height = dimensionResource(id = R.dimen.minor_50)
-                    )
-            )
+            BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
             Text(
                 text = stringResource(id = R.string.product_creation_ai_entry_sheet_header),
                 color = colorResource(id = R.color.color_on_surface_medium),
