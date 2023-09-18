@@ -79,15 +79,14 @@ class StoreOnboardingFragment : BaseFragment() {
 
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment(
-                            taskId = event.taskId
-                        )
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToPaymentsPreSetupFragment(taskId = event.taskId)
                     )
 
                 is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
-                            .actionStoreOnboardingFragmentToWooPaymentsPreSetupFragment()
+                            .actionStoreOnboardingFragmentToWooPaymentsSetupInstructionsFragment()
                     )
 
                 is NavigateToAboutYourStore ->

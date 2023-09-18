@@ -43,7 +43,6 @@ import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuc
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
@@ -206,12 +205,6 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
-
-    val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
-    private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
-
-    private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
-    val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
 
     val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
@@ -724,38 +717,44 @@ class ProductDetailViewModel @Inject constructor(
             ?.let { updateProductDraft(numVariation = variationAmount) }
     }
 
-    fun uploadDownloadableFile(uri: String) {
-        launch {
-            mediaFilesRepository.uploadFile(uri)
-                .onStart {
-                    viewState = viewState.copy(isUploadingDownloadableFile = true)
-                    productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
-                }
-                .onCompletion {
-                    viewState = viewState.copy(isUploadingDownloadableFile = false)
-                    productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
-                }
-                .collect {
-                    when (it) {
-                        is UploadFailure -> triggerEvent(
-                            ShowSnackbar(R.string.product_downloadable_files_upload_failed)
-                        )
-
-                        is UploadProgress -> {
-                            // TODO
-                        }
-
-                        is UploadSuccess -> showAddProductDownload(it.media.url)
+    fun handleSelectedDownloadableFile(uri: String) {
+        if (uri.startsWith("http")) {
+            // The file is already on the server, skip uploading
+            showAddProductDownload(uri)
+        } else {
+            launch {
+                mediaFilesRepository.uploadFile(uri)
+                    .onStart {
+                        viewState = viewState.copy(isUploadingDownloadableFile = true)
+                        productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = true)
                     }
-                }
+                    .onCompletion {
+                        viewState = viewState.copy(isUploadingDownloadableFile = false)
+                        productDownloadsViewState = productDownloadsViewState.copy(isUploadingDownloadableFile = false)
+                    }
+                    .collect {
+                        when (it) {
+                            is UploadFailure -> triggerEvent(
+                                ShowSnackbar(R.string.product_downloadable_files_upload_failed)
+                            )
+
+                            is UploadProgress -> {
+                                // TODO
+                            }
+
+                            is UploadSuccess -> showAddProductDownload(it.media.url)
+                        }
+                    }
+            }
         }
     }
 
-    fun showAddProductDownload(url: String) {
+    private fun showAddProductDownload(url: String) {
+        val fileName = url.substringAfterLast(delimiter = "/", missingDelimiterValue = "")
         triggerEvent(
             ProductNavigationTarget.ViewProductDownloadDetails(
                 isEditing = false,
-                file = ProductFile(id = null, url = url, name = "")
+                file = ProductFile(id = null, url = url, name = fileName)
             )
         )
     }
@@ -1460,17 +1459,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
-     * Fetches terms for a global product attribute
-     */
-    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
-        launch {
-            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = true)
-            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
-            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = false)
-        }
-    }
-
-    /**
      * Returns the draft attribute matching the passed id and name
      */
     private fun getDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? {
@@ -1653,13 +1641,6 @@ class ProductDetailViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    /**
-     * Clears the global attribute terms
-     */
-    fun resetGlobalAttributeTerms() {
-        _attributeTermsList.value = emptyList()
     }
 
     /**

@@ -17,8 +17,12 @@ class AddProductDownloadViewModel @Inject constructor(
         triggerEvent(PickFileFromMedialLibrary)
     }
 
-    fun onDeviceClicked() {
-        triggerEvent(PickFileFromDevice)
+    fun onDeviceMediaFilesClicked() {
+        triggerEvent(PickMediaFileFromDevice)
+    }
+
+    fun onDeviceDocumentsClicked() {
+        triggerEvent(PickDocumentFromDevice)
     }
 
     fun onEnterURLClicked() {
@@ -31,10 +35,11 @@ class AddProductDownloadViewModel @Inject constructor(
     }
 
     fun launchFileUpload(uri: Uri) {
-        triggerEvent(UploadFile(uri))
+        triggerEvent(AddFile(uri))
     }
 
     object PickFileFromMedialLibrary : Event()
-    object PickFileFromDevice : Event()
-    data class UploadFile(val uri: Uri) : Event()
+    object PickMediaFileFromDevice : Event()
+    object PickDocumentFromDevice : Event()
+    data class AddFile(val uri: Uri) : Event()
 }

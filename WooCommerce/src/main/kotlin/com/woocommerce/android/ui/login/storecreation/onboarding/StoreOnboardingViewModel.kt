@@ -239,9 +239,7 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSetupPayments : MultiLiveEvent.Event() {
         val taskId = PAYMENTS.id
     }
-    object NavigateToSetupWooPayments : MultiLiveEvent.Event() {
-        val taskId = WC_PAYMENTS.id
-    }
+    object NavigateToSetupWooPayments : MultiLiveEvent.Event()
     object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
     object ShowNameYourStoreDialog : MultiLiveEvent.Event()

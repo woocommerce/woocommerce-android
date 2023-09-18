@@ -1,2 +1,0 @@
-15.2:
-Großartige Neuigkeiten: Unsere Android-App bekommt ein neues Update! In dieser Version wurde die Option „Konto schließen“ für eine einfachere Navigation in den neuen Bereich „Kontoeinstellungen“ verschoben. Außerdem wurden Probleme beim Badge-Zähler für Bestellungen behoben, um eine genaue Sendungsverfolgung zu ermöglichen. Für einen reibungsloseren Einrichtungsprozess haben wir zudem die Onboarding-Aufgabe für WooPayments verbessert. Führe jetzt ein Update durch, um von einem verbesserten Benutzererlebnis zu profitieren!
