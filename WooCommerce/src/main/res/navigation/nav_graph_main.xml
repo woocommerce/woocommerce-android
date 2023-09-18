@@ -180,6 +180,9 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_products_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/reviews"
@@ -658,5 +661,13 @@
             android:name="fromOnboarding"
             app:argType="boolean"
             android:defaultValue="false" />
+    </dialog>
+    <dialog
+        android:id="@+id/addProductWithAIBottomSheet"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIBottomSheet"
+        android:label="AddProductWithAIBottomSheet" >
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
+            app:destination="@id/productTypesBottomSheetFragment" />
     </dialog>
 </navigation>

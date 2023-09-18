@@ -56,15 +56,34 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
             setContent {
                 WooTheme {
                     AddProductWithAIContent(
-                        onAIClick = { /*TODO*/ },
-                        onManualClick = { /*TODO*/ },
-                        onLearnMoreClick = { /*TODO*/ }
+                        onAIClick = { showAICreationFlow() },
+                        onManualClick = { showManualCreationFlow() },
+                        onLearnMoreClick = { openAIGuidelinesPage() }
                     )
                 }
             }
         }
     }
 
+    private fun showAICreationFlow() {
+        // TODO
+    }
+
+    private fun showManualCreationFlow() {
+        findNavController().navigateSafely(
+            AddProductWithAIBottomSheetDirections
+                .actionAddProductWithAIBottomSheetToProductTypesBottomSheetFragment(
+                    isAddProduct = true
+                )
+        )
+    }
+
+    private fun openAIGuidelinesPage() {
+        ChromeCustomTabUtils.launchUrl(
+            requireContext(),
+            AppUrls.AUTOMATTIC_AI_GUIDELINES
+        )
+    }
 }
 
 @Composable
