@@ -265,4 +265,39 @@ class ReviewListViewModelTest : BaseUnitTest() {
         Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
         Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
     }
+
+    @Test
+    fun `Given unread filter is enabled, when fetching reviews, then skeleton is shown and then hidden`() =
+        testBlocking {
+            doReturn(true).whenever(networkStatus).isConnected()
+            doReturn(RequestResult.SUCCESS).whenever(reviewListRepository)
+                .fetchOnlyUnreadProductReviews(loadMore = false)
+            doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedUnreadProductReviews()
+
+            val skeletonShown = mutableListOf<Boolean>()
+            viewModel.viewStateData.observeForever { old, new ->
+                new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
+            }
+
+            viewModel.onUnreadReviewsFilterChanged(isEnabled = true)
+
+            Assertions.assertThat(skeletonShown).containsExactly(true, false)
+        }
+
+    @Test
+    fun `Given unread filter is enabled, when fetching reviews, then unread reviews are fetched`() = testBlocking {
+        doReturn(true).whenever(networkStatus).isConnected()
+        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchOnlyUnreadProductReviews(loadMore = false)
+        doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedUnreadProductReviews()
+
+        val skeletonShown = mutableListOf<Boolean>()
+        viewModel.viewStateData.observeForever { old, new ->
+            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { skeletonShown.add(it) }
+        }
+
+        viewModel.onUnreadReviewsFilterChanged(isEnabled = true)
+
+        verify(reviewListRepository, times(1)).fetchOnlyUnreadProductReviews(loadMore = false)
+        verify(reviewListRepository, times(1)).getCachedUnreadProductReviews()
+    }
 }
