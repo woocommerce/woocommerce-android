@@ -103,6 +103,7 @@ class ProductReviewsViewModel @Inject constructor(
         launch {
             // Initial load. Get and show reviewList from the db if any
             val reviewsInDb = reviewListRepository.getCachedProductReviews()
+                .filter { it.product?.remoteProductId == navArgs.remoteProductId }
             if (reviewsInDb.isNotEmpty()) {
                 _reviewList.value = reviewsInDb
                 productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = false)
