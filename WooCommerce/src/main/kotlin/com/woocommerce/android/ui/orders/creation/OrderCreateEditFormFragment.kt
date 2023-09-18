@@ -43,6 +43,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
 import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
+import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
@@ -52,6 +54,7 @@ import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusVie
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -112,6 +115,13 @@ class OrderCreateEditFormFragment :
         handleResult<String>(KEY_COUPON_SELECTOR_RESULT) {
             viewModel.onCouponAdded(it)
         }
+        handleTaxRateSelectionResult()
+    }
+
+    private fun handleTaxRateSelectionResult() {
+        handleResult<TaxRate>(KEY_SELECTED_TAX_RATE) {
+            viewModel.onTaxRateSelected(it)
+        }
     }
 
     private fun handleProductDetailsEditResult() {
@@ -165,6 +175,14 @@ class OrderCreateEditFormFragment :
         initCustomerSection()
         initProductsSection()
         initPaymentSection()
+        initTaxRateSelectorSection()
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initTaxRateSelectorSection() {
+        taxRateSelectorSection.isVisible = FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+        setTaxRateButton.setOnClickListener {
+            viewModel.onSetTaxRateClicked()
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
@@ -323,6 +341,9 @@ class OrderCreateEditFormFragment :
             }
             new.taxBasedOnSettingLabel.takeIfNotEqualTo(old?.taxBasedOnSettingLabel) {
                 bindTaxBasedOnSettingLabel(binding.paymentSection, it)
+            }
+            new.isSetNewTaxRateButtonVisible.takeIfNotEqualTo(old?.isSetNewTaxRateButtonVisible) {
+                binding.taxRateSelectorSection.isVisible = it
             }
         }
     }

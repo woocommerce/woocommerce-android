@@ -1,11 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-23 09:54:04+0000
+Translation-Revision-Date: 2023-09-15 09:37:42+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_onboarding_payments_pre_setup_title_two">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Ställ in</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Redigera momssatser i adminpanelen</string>
+    <string name="tax_rate_selector_header_label">Detta kommer att ändra kundens adress till platsen för den momssats du väljer.</string>
+    <string name="tax_rate_selector_info_icon_content_description">Knapp som öppnar dialogrutan för information om momssatser</string>
+    <string name="tax_rate_selector_list_header">VÄLJ EN MOMSSATS</string>
+    <string name="tax_rate_selector_footer_label">Kan du inte hitta satsen du letar efter?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Din momssats beräknas för närvarande baserat på din leveransadress%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Din momssats beräknas för närvarande baserat på din faktureringsadress%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Din momssats beräknas för närvarande baserat på din butiksadress%1$s</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Redigera momssatser i adminpanelen</string>
+    <string name="tax_rates_redirect_to_admin_content_description">Redigera momssatser med admin-knappen</string>
+    <string name="tax_rates_info_dialog_title">Moms och momssatser</string>
+    <string name="tax_rates_info_dialog_secondary_text">Momssatser för olika platser kan hanteras i din butiks adminpanel.</string>
+    <string name="tax_rates_info_dialog_primary_text">Moms beräknas genom att matcha din kunds fakturerings- eller leveransadress eller din butiksadress med en plats för momssats.</string>
+    <string name="tax_rates_information_content_description">Information om momssatser</string>
+    <string name="store_onboarding_wcpay_setup_description">Genom att använda WooCommerce Payments samtycker du till våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och intygar att du har läst vår &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;integritetspolicy&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om att verifiera din information med WooPayments.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Starta konfiguration</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Vi har slagit oss ihop med Stripe för WooPayments. Du kommer att bli omdirigerad till Stripes webbplats för registrering. Vi kommer att be dig att kontrollera dina företagsuppgifter och din betalningsinformation.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooCommerce-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Innan du startar konfigurationen</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minuter</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Beräknad tid</string>
+    <string name="store_onboarding_wcpay_instructions_title">Hantera betalningar utan ansträngning med WooPayments, allt på en och samma plats. Ta emot kortbetalningar, Apple Pay-betalningar, personliga betalningar och över 135 olika valutor, helt utan installationskostnader eller månadsavgifter.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Det gick inte att spara butiksnamnet. Försök igen.</string>
+    <string name="settings_name_your_store_dialog_loading">Sparar nytt butiksnamn…</string>
+    <string name="settings_name_your_store_dialog_success">Butiksnamn inställt.</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Butiksnamn inställt. \n För att ändra igen, gå till butiksinställningarna.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Uppdatera butiksnamn</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Grattis! Du har gått igenom konfigurationen och ditt betalningssystem är redo att användas.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">Du gjorde det!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Hantera betalningar sömlöst med WooPayments, utan installationskostnader eller månadsavgifter.</string>
+    <string name="store_creation_store_name_settings_option">Butiksnamn</string>
+    <string name="settings_account">Kontoinställningar</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Välj en kategori</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Kategori för farligt material</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping stöder för närvarande inte transporter av farligt material via %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS sökverktyg för farligt material</string>
+    <string name="shipping_label_usps_search_tool">Bestäm din produkts sändbarhet med hjälp av %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Läs mer om hur du packar, märker och skickar farligt material på ett säkert sätt via USPS® på %1$s</string>
+    <string name="order_creation_tax_based_on_shipping_address">Beräknat utifrån leveransadressen</string>
+    <string name="order_creation_tax_based_on_billing_address">Beräknat utifrån faktureringsadressen</string>
+    <string name="order_creation_tax_based_on_store_address">Beräknat utifrån butikens adress</string>
+    <string name="order_creation_price_after_discount_label">Pris efter avdragen rabatt</string>
+    <string name="order_creation_total_label">Beställningssumma</string>
+    <string name="order_creation_discount_percentage_label">Beräknad procentandel</string>
+    <string name="order_creation_discount_amount_label">Beräknat belopp</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Butiksnamn</string>
+    <string name="store_onboarding_task_name_store_description">Att anpassa ditt butiksnamn kan också förbättra din butiks sökmotoroptimering.</string>
+    <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
+    <string name="store_profiler_features_other">Annat</string>
+    <string name="store_profiler_features_plugins_and_extensions">Tillgång till en mängd olika tillägg och utökningar</string>
+    <string name="store_profiler_features_store_customization">Anpassningsalternativ för min butiksdesign</string>
+    <string name="store_profiler_features_scale_business">Möjlighet att skala allteftersom verksamheten växer</string>
+    <string name="store_profiler_features_ipp">Personliga betalningar</string>
+    <string name="store_profiler_features_payment_options">Flexibla och säkra betalningsalternativ</string>
+    <string name="store_profiler_features_sales_analytics">Heltäckande försäljnings- och analysrapporter</string>
+    <string name="store_profiler_features_product_management">Enkel produkthantering och lagerspårning</string>
+    <string name="store_profiler_features_main_button">Skapa min butik</string>
+    <string name="store_profiler_features_description">Berätta för oss vilka funktioner\ndu ser fram emot att använda i vår app.</string>
+    <string name="store_profiler_features_title">Vilka funktioner är du\nmest intresserad av?</string>
+    <string name="store_creation_store_name_default">Butiksnamn</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ta emot betalningar personligen:&lt;/b&gt; Öka försäljningen med personliga betalningar. Säkra korttransaktioner med vår app eller våra kompatibla läsare.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Hantera och skapa beställningar:&lt;/b&gt; Sök, uppdatera eller skapa nya beställningar direkt. Förenkla din beställningsprocess.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Spåra försäljning och populära produkter:&lt;/b&gt; Håll koll på försäljningen i realtid och populära produkter för att öka din butiks lönsamhet.</string>
+    <string name="store_creation_in_progress_title_2">Utöka din butiks \nmöjligheter</string>
+    <string name="store_creation_in_progress_title_1">Nästan där. Din butik\nbörjar ta form </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
+    <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
+    <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
+    <string name="shipping_label_hazmat_option_division_6_2">Avdelning 6.2 – Farliga material – Biologiska material (t.ex. laboratorietestkit, returer av auktoriserade covid-testkit)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">Avdelning 6.1 – Paket med giftiga material (med LD50 på 50 mg/kg eller mindre) – (bekämpningsmedel, herbicider, osv.)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">Avdelning 5.2 – Paket med organiska peroxider</string>
+    <string name="shipping_label_hazmat_option_division_5_1">Avdelning 5.1 – Paket med oxidationsmedel – Väteperoxid (koncentration: 8 till 20%%)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">Avdelning 4.1 – Paketet med postbara brandfarliga fasta ämnen och säkerhetständstickor – Säkerhetständstickor/tändstickor som tänds på asken, boktändstickor, postbara brandfarliga fasta ämnen</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">Klass 9 – Paket med magnetiserade material</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">Klass 9 – Litiumbatterier, omärkt paket – Nya elektroniska enheter installerade eller förpackade med litiumbatterier (ingen märkning)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">Klass 9 – Torrispaket (begränsat till 2,268 kg om det skickas med flyg)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">Klass 9 – Litiumbatterier, märkt paket – Nya elektroniska enheter förpackade med litiumbatterier (märkta UN3481 eller UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">Klass 9 – Litiumbatterier – Returpaket – Använda elektroniska enheter som innehåller eller är förpackade med litiumbatterier (märkning krävs)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">Klass 9 – Märkta litiumbatterier – Markpaket – Nya enskilda litiumbatterier eller reservlitiumbatterier (märkta UN3480 eller UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">Klass 8 – Ej spillbart vått batteripaket – Förseglade blybatterier</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">Klass 8 – Paket med frätande material – Luftkvalificerade frätande material (vissa rengöringsmedel eller träd-/ogräsdödande föreningar, osv.)</string>
+    <string name="shipping_label_hazmat_option_class_7">Klass 7 – Paket med radioaktivt material (t.ex. rökdetektorer, mineraler, sikten, osv.)</string>
+    <string name="shipping_label_hazmat_option_class_6">Klass 6 – Paket (giftiga material)</string>
+    <string name="shipping_label_hazmat_option_class_5">Klass 5 – Paket (oxidationsmedel)</string>
+    <string name="shipping_label_hazmat_option_class_4">Klass 4 – Paket (Brandfarliga fasta ämnen)</string>
+    <string name="shipping_label_hazmat_option_class_3">Klass 3 – Paket (Handdesinfektionsmedel, tvättsprit, etanolbaserade produkter, brandfarliga vätskor, osv.)</string>
+    <string name="shipping_label_hazmat_option_class_1">Klass 1 – Paket med leksaksdrivmedel/säkerhetssäkringar</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">Luftkvalificerat etanolpaket – (godkända försändelser av parfymer och handsprit)</string>
+    <string name="dialog_ok">OK</string>
     <string name="store_creation_country_list_picker_toolbar_title">Välj ett land</string>
     <string name="store_creation_country_picker_current_location_description">Vi har identifierat din plats automatiskt. Ändra den här om den är felaktig.</string>
     <string name="store_creation_country_picker_title">Var finns ditt företag?</string>
@@ -26,7 +125,6 @@ Language: sv_SE
     <string name="free_trial_feature_built_in_seo">Inbyggd SEO</string>
     <string name="free_trial_feature_design_editing">Designa och redigera utan kod</string>
     <string name="free_trial_feature_store_management">Butikshanteringsverktyg</string>
-    <string name="free_trial_summary_try_button">Skapa din butik</string>
     <string name="free_trial_summary_hassle_free_store_ownership">Problemfritt butiksägarskap</string>
     <string name="free_trial_summary_grow_your_business">Få ditt företag att växa</string>
     <string name="free_trial_summary_start_selling_quickly">Börja sälja snabbt</string>
@@ -159,13 +257,7 @@ Language: sv_SE
     <string name="more_settings">Fler inställningar</string>
     <string name="maybe_later">Kanske senare</string>
     <string name="product_sharing_regenerate">Skriv igen</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Bli meddelad om varje försäljning:&lt;/b&gt; Se till att du inte missar något med omedelbara försäljningsnotiser. Få meddelanden om varje ny försäljning, så att du kan fira din framgång och hålla koll på din butiksaktivitet.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Lägg till och redigera produkter med en beröring:&lt;/b&gt; Lägg till nya produkter, uppdatera information, ladda upp bilder och hantera variationer direkt i appen. Håll ditt lager uppdaterat utan ansträngning.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Ta emot personliga betalningar:&lt;/b&gt; Utöka dina försäljningsmöjligheter genom att ta emot personliga betalningar. Använd appen för att på ett säkert sätt behandla kreditkortstransaktioner. Du kan till och med ansluta till kompatibla kortläsare för bekväma personliga betalningar.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Hantera och skapa beställningar:&lt;/b&gt; Hantera beställningar enkelt. Bläddra, sök och ändra beställningsstatus. Skapa nya beställningar i farten för köp i butik eller via telefon. Förenkla din beställningshanteringsprocess.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Spåra försäljning och populära produkter:&lt;/b&gt; Håll dig uppdaterad med butiksresultat i realtid. Identifiera dina bästsäljande produkter och fatta välgrundade beslut för maximal lönsamhet.</string>
     <string name="store_creation_in_progress_description_1">Du kommer att få ett meddelande när butiken är klar. Luta dig tillbaka, slappna av och låt oss utöva vår magi samtidigt som vi delar med oss av användbara tips. 🔮</string>
-    <string name="store_creation_in_progress_title_1">Skapar din butik! Det tar bara några minuter</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">En PIN-kod krävs, men Tryck för att betala stöder inte detta än. Överväg att använda en extern kortläsare</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">Köp en kortläsare</string>
     <string name="order_sync_coupon_removed">Rabattkod kunde inte tillämpas och togs bort från beställningen</string>
@@ -277,11 +369,8 @@ Language: sv_SE
     <string name="store_creation_profiler_industry_home_furniture_garden">Hem, möbler och trädgård</string>
     <string name="store_creation_profiler_industry_food_drink">Mat och dryck</string>
     <string name="store_creation_profiler_industry_health_beauty">Hälsa och skönhet</string>
-    <string name="store_creation_in_progress_title_6">Öppnar dörrarna</string>
-    <string name="store_creation_in_progress_title_5">Slå på belysningen</string>
-    <string name="store_creation_in_progress_title_4">Slutför den sista finputsningen</string>
-    <string name="store_creation_in_progress_title_3">Organiserar lagerrummet</string>
-    <string name="store_creation_in_progress_title_2">Bygger grunden</string>
+    <string name="store_creation_in_progress_title_4">Öppnar dörrarna</string>
+    <string name="store_creation_in_progress_title_3">Tänder lamporna</string>
     <string name="notifications_permission_description">Vi behöver din tillåtelse för att skicka push-notiser för nya beställningar, recensioner med mera till din enhet.</string>
     <string name="notifications_permission_title">Aviseringar</string>
     <string name="product_type_composite">Sammansatt produkt</string>
@@ -321,6 +410,7 @@ Language: sv_SE
     <string name="free_trial_feature_social_advertising">Social annonsering</string>
     <string name="free_trial_feature_premium_themes">Premiumteman</string>
     <string name="free_trial_summary_credit_card_message">Inget kreditkort krävs.</string>
+    <string name="free_trial_summary_try_button">Prova gratis</string>
     <string name="free_trial_summary_try_it">Prova det gratis i 14 dagar.</string>
     <string name="free_trial_summary_advertise">Vi tillhandahåller allt du behöver för att bygga och utveckla en onlinebutik som drivs med WooCommerce och har WordPress.com som webbhotell.</string>
     <string name="free_trial_summary_title">Lansering på några dagar, med åratal av tillväxtmöjligheter</string>
@@ -1126,7 +1216,7 @@ Language: sv_SE
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Kontakta en webbplatsadministratör för att inaktivera ett av dessa tillägg och fortsätta:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Inaktivera ett av dessa tillägg för att fortsätta.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflikt mellan betalningstillägg upptäckt</string>
-    <string name="order_creation_payment_tax">Momsen</string>
+    <string name="order_creation_payment_tax">Momser totalt</string>
     <string name="exclusive_or">eller</string>
     <string name="settings_install_jetpack">Installera Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">Personliga betalningar är för närvarande inte tillgängliga</string>
@@ -1808,7 +1898,7 @@ Language: sv_SE
     <string name="product_downloadable_files_name_invalid">Ange ett giltigt namn</string>
     <string name="product_downloadable_files_add_manually">Ange fil-URL</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">Från WordPress-mediabiblioteket</string>
-    <string name="product_downloadable_files_add_from_device">Från enhet</string>
+    <string name="product_downloadable_files_add_media_from_device">Från enhet</string>
     <string name="product_downloadable_files_url_invalid">Kontrollera att den angivna URL:en är giltig</string>
     <string name="product_downloadable_files_upload_dialog_message">Vänta …</string>
     <string name="product_downloadable_files_upload_dialog_title">Laddar upp filer</string>

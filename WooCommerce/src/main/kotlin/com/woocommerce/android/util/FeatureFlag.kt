@@ -17,16 +17,14 @@ enum class FeatureFlag {
     STORE_CREATION_ONBOARDING,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
-    STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
     PRIVACY_CHOICES,
     BLAZE,
     ORDER_CREATION_PRODUCT_DISCOUNTS,
     SHIPPING_ZONES,
     BETTER_CUSTOMER_SEARCH_M2,
-    HAZMAT_SHIPPING,
-    NAME_YOUR_STORE_DIALOG,
-    OPTIMIZE_PROFILER_QUESTIONS;
+    ORDER_CREATION_TAX_RATE_SELECTOR,
+    ORDER_CREATION_AUTO_TAX_RATE;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -41,20 +39,17 @@ enum class FeatureFlag {
             REST_API_I2,
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
-            STORE_CREATION_PROFILER,
             EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
             BLAZE,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
-            SHIPPING_ZONES -> true
+            SHIPPING_ZONES,
+            ORDER_CREATION_TAX_RATE_SELECTOR -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            HAZMAT_SHIPPING,
-            NAME_YOUR_STORE_DIALOG,
-            OPTIMIZE_PROFILER_QUESTIONS
-            -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

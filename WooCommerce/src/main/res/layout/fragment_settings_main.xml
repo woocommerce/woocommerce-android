@@ -46,6 +46,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/settings_store" />
 
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_store_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:optionTitle="@string/store_creation_store_name_settings_option"
+                tools:visibility="visible" />
+
             <!--
                 Install Jetpack
             -->

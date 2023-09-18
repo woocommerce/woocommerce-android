@@ -108,7 +108,9 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors()
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = colorResource(id = R.color.woo_white)
+    )
 ) {
     WCColoredButton(
         onClick = onClick,
@@ -206,6 +208,7 @@ fun WCSelectableChip(
         backgroundColor = Color.Transparent,
     ),
     isSelected: Boolean,
+    shape: RoundedCornerShape = RoundedCornerShape(50),
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -214,7 +217,7 @@ fun WCSelectableChip(
         contentPadding = contentPadding,
         interactionSource = interactionSource,
         colors = if (isSelected) selectedButtonColors else defaultButtonColors,
-        shape = RoundedCornerShape(50),
+        shape = shape,
     ) {
         if (leadingIcon != null) {
             leadingIcon()

@@ -1,11 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-22 17:54:04+0000
+Translation-Revision-Date: 2023-09-06 15:54:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="tax_rate_selector_edit_rates_button_label">לערוך את שיעורי המיסים במקטע מנהל המערכת</string>
+    <string name="tax_rate_selector_header_label">הפעולה הזאת תשנה את כתובת הלקוח למיקום של שיעור המס שבחרת.</string>
+    <string name="tax_rate_selector_info_icon_content_description">כפתור שפותח את תיבת הדו-שיח לפרטים של שיעורי המיסים</string>
+    <string name="tax_rate_selector_list_header">לבחור שיעור מס</string>
+    <string name="tax_rate_selector_footer_label">לא הצלחת למצוא את שיעור המס שנדרש לך?</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">שיעור המס שלך מחושב כעת לפי כתובת המשלוח שלך⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">שיעור המס שלך מחושב כעת לפי כתובת החיוב שלך⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">שיעור המס שלך מחושב כעת לפי כתובת החנות שלך⁦%1$s⁩</string>
+    <string name="tax_rates_redirect_to_admin_button_label">לערוך את שיעורי המיסים במקטע מנהל המערכת</string>
+    <string name="tax_rates_redirect_to_admin_content_description">הכפתור \'לערוך את שיעורי המיסים במקטע מנהל המערכת\'</string>
+    <string name="tax_rates_info_dialog_title">מיסים ושיעורי מיסים</string>
+    <string name="tax_rates_info_dialog_secondary_text">ניתן לנהל שיעורי מיסים למיקומים שונים במקטע מנהל המערכת של החנות.</string>
+    <string name="tax_rates_info_dialog_primary_text">המיסים מחושבים לפי הכתובת לחיוב או הכתובת למשלוח של הלקוח, או לפי הכתובת של החנות שלך, והתאמת הכתובת הנבחרת למיקום של שיעור המס.</string>
+    <string name="tax_rates_information_content_description">מידע לגבי שיעורי מיסים</string>
+    <string name="store_onboarding_wcpay_setup_description">השימוש ב-WooCommerce Payments מהווה את הסכמתך לפעול בכפוף &lt;a href=\'termsOfService\'&gt;&lt;u&gt;לתנאי השימוש&lt;/u&gt;&lt;/a&gt;, ומאשר שקראת את &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;מדיניות הפרטיות&lt;/u&gt;&lt;/a&gt; שלנו.</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">הגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי אימות הפרטים שלך ב-WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">להתחיל בהגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">אנחנו משתפים פעולה עם Stripe בשירות של WooPayments. אנחנו נפנה אותך להרשמה באתר של Stripe. נבקש ממך לאמת את העסק ואת פרטי התשלום שלך.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">ההודעות של WooPayments יישלחו אל האימייל של חשבונך ב-WordPress.com. רוצה ליצור חשבון חדש? &lt;a href=\'learnMore\'&gt;&lt;u&gt;ניתן למצוא כאן פרטים נוספים.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">לפני שנתחיל בתהליך ההגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 דקות</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">זמן משוער להקמה</string>
+    <string name="store_onboarding_wcpay_instructions_title">לנהל תשלומים ללא מאמץ עם WooPayments ממקום אחד. ניתן לקבל תשלומים באמצעות כרטיסים, Apple Pay ותשלומים באופן אישי במעל 135 מטבעות שונים – כל התשלומים ללא עלויות הקמה או עמלות חודשיות.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">אין אפשרות לשמור את שם החנות. יש לנסות שוב.</string>
+    <string name="settings_name_your_store_dialog_loading">שומר את שם החנות החדש…</string>
+    <string name="settings_name_your_store_dialog_success">שם החנות הוגדר!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">שם החנות הוגדר! \n כדי לשנות את ההגדרה שוב, יש לעבור אל \'הגדרות החנות\'.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">לעדכן את שם החנות</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">איחולינו! השלמת בהצלחה את תהליך ההגדרה ומערכת התשלומים שלך מוכנה לשימוש.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">הצלחת!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">לנהל תשלומים בצורה יעילה עם WooPayments, ללא עלויות הקמה וללא עמלות חודשיות.</string>
+    <string name="store_creation_store_name_settings_option">שם החנות</string>
+    <string name="settings_account">הגדרות חשבון</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">בחר קטגוריה</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">קטגוריית חומרים מסוכנים</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">השירות של WooCommerce Shipping כרגע לא תומך במשלוחי HAZMAT דרך ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_search_tool_link_text">כלי החיפוש של USPS HAZMAT.</string>
+    <string name="shipping_label_usps_search_tool">להבין את אפשרויות השליחה של המוצר שלך בדואר באמצעות ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">ללמוד איך לארוז חבילות HAZMAT, להכין תוויות עבורן ולשלוח אותן דרך USPS®‎ בכתובת ⁦%1$s⁩</string>
+    <string name="order_creation_tax_based_on_shipping_address">לחשב לפי כתובת המשלוח</string>
+    <string name="order_creation_tax_based_on_billing_address">לחשב לפי כתובת החיוב</string>
+    <string name="order_creation_tax_based_on_store_address">לחשב לפי כתובת החנות</string>
+    <string name="order_creation_price_after_discount_label">מחיר לאחר הנחה</string>
+    <string name="order_creation_total_label">סך כל ההזמנה</string>
+    <string name="order_creation_discount_percentage_label">אחוז מחושב</string>
+    <string name="order_creation_discount_amount_label">סכום מחושב</string>
+    <string name="store_onboarding_name_your_store_dialog_label">שם החנות</string>
+    <string name="store_onboarding_task_name_store_description">התאמה אישית של שם החנות יכולה גם לעזור למיטוב של החנות במנועי החיפוש.</string>
+    <string name="store_onboarding_task_name_store_title">יש לציין שם לחנות שלך</string>
+    <string name="store_profiler_features_other">אחר</string>
+    <string name="store_profiler_features_plugins_and_extensions">גישה למגוון רחב של תוספים והרחבות</string>
+    <string name="store_profiler_features_store_customization">אפשרויות התאמה לעיצוב של החנות שלי</string>
+    <string name="store_profiler_features_scale_business">אפשרות להתאים השירות לפי היקף העסק</string>
+    <string name="store_profiler_features_ipp">תשלומים באופן אישי</string>
+    <string name="store_profiler_features_payment_options">אפשרויות תשלום גמישות ומאובטחות</string>
+    <string name="store_profiler_features_sales_analytics">דוחות מקיפים לגבי מכירות ונתונים אנליטיים</string>
+    <string name="store_profiler_features_product_management">ניהול מוצרים ומעקב אחר מלאי בקלות</string>
+    <string name="store_profiler_features_main_button">ליצור את החנות שלי</string>
+    <string name="store_profiler_features_description">אנחנו רוצים לדעת אילו אפשרויות יעניינו אותך\nבשימוש באפליקציה שלנו.</string>
+    <string name="store_profiler_features_title">אילו אפשרויות\nהכי מעניינות אותך?</string>
+    <string name="store_creation_store_name_default">שם החנות</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#לגבות תשלומים באופן אישי: &lt;/b&gt;לשפר את המכירות עם תשלומים באופן אישי. ניתן לבצע עסקאות מאובטחות בכרטיסים בעזרת האפליקציה שלנו או קוראים תואמים.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#לנהל וליצור הזמנות:&lt;/b&gt; לחפש, לעדכן או ליצור הזמנות באופן מיידי. תהליך פשוט יותר לניהול ההזמנות.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#לעקוב אחרי מכירות ומוצרים פופולריים:&lt;/b&gt; לקבל עדכונים בזמן אמת לגבי הביצועים והמוצרים הפופולריים בחנות שלך כדי לשפר את הרווחיות.</string>
+    <string name="store_creation_in_progress_title_2">הרחבת היכולות של \nהחנות שלך</string>
+    <string name="store_creation_in_progress_title_1">כמעט סיימת! החנות שלך\nמתחילה להיראות טוב </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">להפעיל NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">חבילת הקצאה לכמויות קטנות (יש לציין סימונים)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">חבילה להובלה יבשתית עם כמויות מוגבלות – תרסיסים, חומרי חיטוי במכל התזה, צבע במכל התזה, ספריי לשיער, פרופן, בוטאן, חומרי ניקוי וכו\'. - בשמים, לק לציפורניים, מסיר לק לציפורניים, חומרים ממסים, נוזל חיטוי לידיים, אלכוהול רפואי, מוצרים המבוססים על אתנול וכו\'. - מוצרים אחרים למשטחים בכמות מוגבלת (קוסמטיקה, חומרי ניקוי, צבעים וכו\').</string>
+    <string name="shipping_label_hazmat_option_lighters">חבילות במשקל נמוך יותר – מציתים מורשים</string>
+    <string name="shipping_label_hazmat_option_id8000">חבילת סחורות לצרכנים מסוג ID8000 – סחורה לצרכנים מסוג ID8000 שמורשית להובלה אווירית (תרסיסים שאינם דליקים, נוזלים דליקים שעלולים להתלקח, חומרים רעילים, חומרים מסוכנים שונים)</string>
+    <string name="shipping_label_hazmat_option_ground_only">חומרים מסוכנים להובלה יבשתית בלבד (לפריטים שלא רשומים כאן אך מוגבלים למשטחים בלבד)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">חבילה להקצאת כמות צפויה (למשל, נוזלים דליקים בכמויות קטנות, חומר שגורם לקורוזיה, חומרים רעילים או חומרים שמסוכנים לסביבה –יש לציין סימונים)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">סיווג 6.2 – חומרים מסוכנים – חומרים ביולוגיים (למשל, ערכות לבדיקות מעבדה, החזרות של ערכות מאושרות לבדיקת קורונה)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">סיווג 6.1 – חבילה עם חומרים רעילים (עם LD50 של 50 מיקרוגרם לק\"ג או פחות) – (חומרי הדברה, קוטלי עשבים וכו\').</string>
+    <string name="shipping_label_hazmat_option_division_5_2">סיווג 5.2 – חבילה עם על-תחמוצת אורגנית</string>
+    <string name="shipping_label_hazmat_option_division_5_1">סיווג 5.1 – חבילה עם חומרים מחמצנים – מימן על-חמצני (בריכוז של 8 עד ‎20%%‎)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">סיווג 4.1 – חבילה עם חומרים מוצקים דליקים שניתנים לשליחה בדואר וגפרורים – גפרורים עם פס בטיחות על האריזה, גפרורים נתלשים, חומרים מוצקים דליקים שניתנים לשליחה בדואר</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">סיווג 9 – חבילה עם חומרים מגנטיים</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">סיווג 9 – חבילה לא מסומנת עם סוללות ליתיום – מכשירים אלקטרוניים חדשים שהותקנו בהם סוללות ליתיום או שנארזו עם סוללות ליתיום (ללא סימון)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">סיווג 9 – חבילה עם קרח יבש (מוגבל ל-2.26 ק\"ג בהובלה אווירית)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">סיווג 9 – חבילה מסומנת עם סוללות ליתיום – מכשירים אלקטרוניים חדשים שנארזו עם סוללות ליתיום (עם סימון UN3481 או UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">סיווג 9 – סוללות ליתיום – חבילת החזרה – מכשירים אלקטרוניים משומשים שכוללים סוללות ליתיום או שנארזו עם סוללות ליתיום (יש לציין סימונים)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">סיווג 9 – חבילה מסומנת עם סוללות ליתיום – להובלה יבשתית בלבד – סוללות ליתיום חדשות יחידות או חלופיות (עם סימון UN3480 או UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">סיווג 8 – חבילה עם סוללות חשמליות אטומות – סוללות חומצת נחושת אטומות</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">סיווג 8 – חבילה עם חומרים שגורמים לקורוזיה – חומרים שגורמים לקורוזיה שמורשים להובלה אווירית (חומרים ניקוי או קוטלי צמחים/עשבים מסוימים וכו\')</string>
+    <string name="shipping_label_hazmat_option_class_7">סיווג 7 – חבילה עם חומרים רדיו-אקטיביים (למשל, גלאי עשן, מינרלים, כוונת לנשק וכו\')</string>
+    <string name="shipping_label_hazmat_option_class_6">סיווג 6 ‏– חבילה (חומרים רעילים)</string>
+    <string name="shipping_label_hazmat_option_class_5">סיווג 5 ‏– חבילה (חומרים מחמצנים)</string>
+    <string name="shipping_label_hazmat_option_class_4">סיווג 4 ‏– חבילה (חומרים מוצקים דליקים)</string>
+    <string name="shipping_label_hazmat_option_class_3">סיווג 3 – חבילה (נוזל חיטוי לידיים, אלכוהול רפואי, מוצרים המבוססים על אתנול, נוזלים דליקים וכו\').</string>
+    <string name="shipping_label_hazmat_option_class_1">סיווג 1 – חבילה עם חומרים מניעים לצעצועים/מנגנון בטיחות</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">חבילה עם אתנול שמותרת להובלה אווירית – (משלוח של בשמים או חומרי חיטוי לידיים מאושרים)</string>
+    <string name="dialog_ok">אישור</string>
     <string name="store_creation_country_list_picker_toolbar_title">יש לבחור ארץ</string>
     <string name="store_creation_country_picker_current_location_description">זיהינו את המיקום שלך באופן אוטומטי. אם הוא שגוי, ניתן ללחוץ כאן לשינוי.</string>
     <string name="store_creation_country_picker_title">איפה נמצא העסק שלך?</string>
@@ -26,7 +124,6 @@ Language: he_IL
     <string name="free_trial_feature_built_in_seo">כלי SEO מובנים</string>
     <string name="free_trial_feature_design_editing">עיצוב ועריכה של תוכן ללא כתיבת קוד</string>
     <string name="free_trial_feature_store_management">כלים לניהול החנות</string>
-    <string name="free_trial_summary_try_button">ליצור את החנות שלך</string>
     <string name="free_trial_summary_hassle_free_store_ownership">בעלות על חנות ללא מאמץ</string>
     <string name="free_trial_summary_grow_your_business">להגדיל את העסק שלך</string>
     <string name="free_trial_summary_start_selling_quickly">להתחיל למכור במהירות</string>
@@ -159,13 +256,7 @@ Language: he_IL
     <string name="more_settings">הגדרות נוספות</string>
     <string name="maybe_later">אולי מאוחר יותר</string>
     <string name="product_sharing_regenerate">לכתוב שוב</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#לקבל הודעות עם כל מכירה:&lt;/b&gt; הודעות מיידיות לגבי כל מכירה יבטיחו שתמיד יש לך את המידע המעודכן ביותר. ניתן לקבל התראות על כל מכירה חדשה, כדי לחגוג את ההצלחה ולהתעדכן בפעילות של החנות.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#להוסיף ולערוך מוצרים בהקשה פשוטה:&lt;/b&gt; ניתן להוסיף מוצרים חדשים, לעדכן פרטים, להעלות תמונות ולנהל סוגים – והכול אפשרי מתוך האפליקציה. כך אפשר לדאוג שהמלאי תמיד מעודכן ללא מאמץ.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#לקבל תשלומים באופן אישי:&lt;/b&gt; אפשר להגדיל את הזדמנויות המכירה על ידי קבלת תשלומים באופן אישי. ניתן להשתמש באפליקציה כדי לעבד בצורה מאובטחת עסקאות בכרטיסי אשראי, או אפילו כדי להתחבר לקוראי כרטיסים תואמים לגביית תשלומים באופן אישי בצורה נוחה.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#לנהל וליצור הזמנות:&lt;/b&gt; ניתן לטפל בהזמנות בקלות. אפשר לגלול, לחפש ולשנות סטטוס של הזמנה. ניתן ליצור הזמנות חדשות במהירות עבור הזמנות המבוצעות בחנות עצמה או דרך הטלפון. תהליך פשוט יותר לניהול ההזמנות.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#לעקוב אחרי מכירות ומוצרים פופולריים:&lt;/b&gt; באפשרותך לקבל עדכונים בזמן אמת לגבי הביצועים בחנות שלך. אפשר לזהות את המוצרים הנמכרים ביותר כדי לקבל החלטות מושכלות ולגרוף רווחים מקסימליים.</string>
     <string name="store_creation_in_progress_description_1">אנחנו נשלח לך הודעה כאשר החנות מוכנה! אפשר לשבת בנוח ולהמתין, אנחנו נפעיל את הקסמים שלנו ונשתף כמה עצות שימושיות. 🔮</string>
-    <string name="store_creation_in_progress_title_1">יוצר את החנות שלך! כמה דקות, תכף נסיים</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">קוד PIN הוא חובה, אבל שירות Tap To Pay עדיין לא תומך בו. כדאי להשתמש בקורא כרטיסים חיצוני</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">לקנות קורא כרטיסים</string>
     <string name="order_sync_coupon_removed">לא ניתן היה להחיל את הקופון, והוא הוסר מההזמנה</string>
@@ -277,11 +368,8 @@ Language: he_IL
     <string name="store_creation_profiler_industry_home_furniture_garden">בית, ריהוט וגינה</string>
     <string name="store_creation_profiler_industry_food_drink">אוכל ומשקאות</string>
     <string name="store_creation_profiler_industry_health_beauty">בריאות וקוסמטיקה</string>
-    <string name="store_creation_in_progress_title_6">פתיחת שערים</string>
-    <string name="store_creation_in_progress_title_5">מדליקים את האור</string>
-    <string name="store_creation_in_progress_title_4">עושים ליטושים אחרונים</string>
-    <string name="store_creation_in_progress_title_3">מסדרים את המדפים</string>
-    <string name="store_creation_in_progress_title_2">מניחים את היסודות</string>
+    <string name="store_creation_in_progress_title_4">פותחים את הדלתות</string>
+    <string name="store_creation_in_progress_title_3">מדליקים את האור</string>
     <string name="notifications_permission_description">אנחנו זקוקים להרשאה שלך כדי לשלוח אליך הודעות דחיפה לגבי הזמנות חדשות, ביקורות וכו\' במכשיר שלך.</string>
     <string name="notifications_permission_title">הודעות</string>
     <string name="product_type_composite">מוצר בהרכב</string>
@@ -321,6 +409,7 @@ Language: he_IL
     <string name="free_trial_feature_social_advertising">פרסום ברשתות חברתיות</string>
     <string name="free_trial_feature_premium_themes">ערכות פרימיום</string>
     <string name="free_trial_summary_credit_card_message">אין צורך בכרטיס אשראי.</string>
+    <string name="free_trial_summary_try_button">ניסיון בחינם</string>
     <string name="free_trial_summary_try_it">ניתן לנסות בחינם למשך 14 יום.</string>
     <string name="free_trial_summary_advertise">אנחנו מציעים כל מה שצריך כדי לבנות ולפתח את החנות המקוונת שלך. השירות מופעל על ידי WooCommerce באחסון של WordPress.com.</string>
     <string name="free_trial_summary_title">להשיק חנות תוך ימים ספורים ולצמוח במשך השנים</string>
@@ -1126,7 +1215,7 @@ Language: he_IL
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש ליצור קשר עם מנהל האתר כדי לכבות את אחד מהתוספים האלו על מנת להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש לכבות את אחד מהתוספים האלו כדי להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">תוספי תשלומים מתנגשים זוהו</string>
-    <string name="order_creation_payment_tax">מיסים</string>
+    <string name="order_creation_payment_tax">סך כל המיסים</string>
     <string name="exclusive_or">או</string>
     <string name="settings_install_jetpack">להתקין את Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">תשלומים באופן אישי אינם זמינים כרגע</string>
@@ -1808,7 +1897,7 @@ Language: he_IL
     <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
     <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>
     <string name="product_downloadable_files_add_from_wpmedia_library">מספריית המדיה של WordPress</string>
-    <string name="product_downloadable_files_add_from_device">מהמכשיר</string>
+    <string name="product_downloadable_files_add_media_from_device">מהמכשיר</string>
     <string name="product_downloadable_files_url_invalid">יש לוודא שכתובת ה-URL שהוזנה חוקית</string>
     <string name="product_downloadable_files_upload_dialog_message">רק רגע…</string>
     <string name="product_downloadable_files_upload_dialog_title">מעלה קבצים</string>

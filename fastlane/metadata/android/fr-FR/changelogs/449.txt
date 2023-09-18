@@ -1,2 +1,0 @@
-15.0 :
-Pour cette version, nous nous sommes concentrés sur les résolutions de bogues et les améliorations pour vous aider à lancer votre activité. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer.

@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/loadingProgress"
@@ -60,6 +61,24 @@
             <include
                 android:id="@+id/payment_section"
                 layout="@layout/order_creation_payment_section" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/tax_rate_selector_section"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/set_tax_rate_button"
+                    style="@style/Woo.Button.TextButton.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/order_creation_set_tax_rate"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </com.google.android.material.card.MaterialCardView>
 
             <com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
                 android:id="@+id/customer_section"

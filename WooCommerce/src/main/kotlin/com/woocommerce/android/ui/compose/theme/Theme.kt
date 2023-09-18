@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
-import com.google.android.material.composethemeadapter.createMdcTheme
 
 /**
  * This theme should be used to support light/dark colors if the composable root of the view tree
@@ -14,41 +12,28 @@ import com.google.android.material.composethemeadapter.createMdcTheme
  */
 @Composable
 fun WooThemeWithBackground(
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    WooTheme {
+    WooTheme(useDarkTheme) {
         SurfacedContent(content)
     }
 }
 
 @Composable
 fun WooTheme(
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val (colors, typography, shapes) = createMdcTheme(
-        context = LocalContext.current,
-        layoutDirection = LocalLayoutDirection.current
-    )
+    val colors = if (!useDarkTheme) {
+        LightColors
+    } else {
+        DarkColors
+    }
 
-    BaseWooTheme(
-        colors = colors,
-        typography = typography,
-        shapes = shapes,
-        content = content,
-    )
-}
-
-@Composable
-private fun BaseWooTheme(
-    colors: Colors? = null,
-    typography: Typography? = null,
-    shapes: Shapes? = null,
-    content: @Composable () -> Unit
-) {
     MaterialTheme(
-        colors = colors ?: MaterialTheme.colors,
-        typography = typography ?: MaterialTheme.typography,
-        shapes = shapes ?: MaterialTheme.shapes,
+        colors = colors,
+        typography = WooTypography,
         content = content
     )
 }
@@ -60,20 +45,4 @@ private fun SurfacedContent(
     Surface(color = MaterialTheme.colors.background) {
         content()
     }
-}
-
-@Composable
-internal fun WooThemePreview(
-    lightColors: Colors? = lightColors(),
-    darkColors: Colors? = darkColors(),
-    typography: Typography? = null,
-    shapes: Shapes? = null,
-    content: @Composable () -> Unit
-) {
-    BaseWooTheme(
-        colors = (if (isSystemInDarkTheme()) darkColors else lightColors),
-        typography = typography,
-        shapes = shapes,
-        content = content,
-    )
 }

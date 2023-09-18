@@ -66,14 +66,20 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_myStore_to_getPaidFragment"
-            app:destination="@id/getPaidFragment" />
+            android:id="@+id/action_myStore_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
+        <action
+            android:id="@+id/action_myStore_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment" />
         <action
             android:id="@+id/action_myStore_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
         <action
             android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
             app:destination="@id/AIProductDescriptionDialogFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
+            app:destination="@id/nameYourStoreDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -537,8 +543,12 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"
-            app:destination="@id/getPaidFragment"
+            android:id="@+id/action_storeOnboardingFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment"
+            app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment"
             app:popUpTo="@id/dashboard" />
     </fragment>
     <dialog
@@ -551,10 +561,40 @@
     <fragment
         android:id="@+id/getPaidFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
-        android:label="GetPaidFragment" >
+        android:label="GetPaidFragment">
         <argument
             android:name="taskId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_getPaidFragment_to_wooPaymentsSetupCelebrationDialog"
+            app:destination="@id/wooPaymentsSetupCelebrationDialog"
+            app:popUpTo="@id/getPaidFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <dialog
+        android:id="@+id/wooPaymentsSetupCelebrationDialog"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
+        android:label="WooPaymentsSetupCelebrationDialog" />
+    <fragment
+        android:id="@+id/wooPaymentsSetupInstructionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupInstructionsFragment"
+        android:label="WooPaymentsSetupInstructionsFragment">
+        <action
+            android:id="@+id/action_wooPaymentsSetupInstructionsFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.PaymentsPreSetupFragment"
+        android:label="PaymentsPreSetupFragment">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
+            app:destination="@id/getPaidFragment"
+            app:popUpTo="@id/dashboard">
+        </action>
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
@@ -604,10 +644,19 @@
     <dialog
         android:id="@+id/createTestOrderDialogFragment"
         android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
-        android:label="CreateTestOrderDialogFragment" >
+        android:label="CreateTestOrderDialogFragment">
         <argument
             android:name="siteUrl"
             app:argType="string"
             app:nullable="false" />
+    </dialog>
+    <dialog
+        android:id="@+id/nameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:label="NameYourStoreDialogFragment" >
+        <argument
+            android:name="fromOnboarding"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </dialog>
 </navigation>

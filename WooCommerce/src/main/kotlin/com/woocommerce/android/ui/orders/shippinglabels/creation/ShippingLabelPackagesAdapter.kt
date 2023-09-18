@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.PackageProductsAdapter.PackageProductViewHolder
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelPackagesAdapter.ShippingLabelPackageViewHolder
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WooClickableSpan
 
@@ -62,7 +61,6 @@ class ShippingLabelPackagesAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return ShippingLabelPackageViewHolder(
             ShippingLabelPackageDetailsListItemBinding.inflate(layoutInflater, parent, false)
-                .also { it.hazmatToggle.isVisible = FeatureFlag.HAZMAT_SHIPPING.isEnabled() }
         )
     }
 

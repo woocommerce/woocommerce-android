@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -36,7 +37,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -76,11 +76,12 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityEvent
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
-import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForLocalNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
-import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenStoreCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -105,8 +106,8 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
-import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
@@ -206,7 +207,7 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            if (isDialogDestination(navController.currentDestination!!)) return
+            if (f is DialogFragment) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -234,6 +235,7 @@ class MainActivity :
                     } else 0f
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
+
                 AppBarStatus.Hidden -> hideToolbar()
             }
 
@@ -578,6 +580,7 @@ class MainActivity :
                 }
                 return
             }
+
             RequestCodes.SETTINGS -> {
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
@@ -740,8 +743,8 @@ class MainActivity :
 
             viewModel.handleIncomingNotification(localPushId, notification)
         } else if (localNotification != null) {
-            viewModel.onLocalNotificationTapped(localNotification)
             intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
+            viewModel.onLocalNotificationTapped(localNotification)
         }
     }
     // endregion
@@ -756,12 +759,12 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForNotification -> restartActivityForNotification(event)
-                is RestartActivityForAppLink -> restartActivityForAppLink(event)
+                is RestartActivityForPushNotification -> onRestartActivityEvent(event)
+                is RestartActivityForLocalNotification -> onRestartActivityEvent(event)
+                is RestartActivityForAppLink -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
-                is ShortcutOpenStoreCreation -> shortcutOpenStoreCreation(event.storeName)
                 is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
@@ -798,22 +801,6 @@ class MainActivity :
         navController.navigateSafely(
             NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
         )
-    }
-
-    private fun shortcutOpenStoreCreation(storeName: String?) {
-        navController.apply {
-            navigate(
-                NavGraphMainDirections.actionGlobalLoginToSitePickerFragment(
-                    openedFromLogin = AppPrefs.getStoreCreationSource() != AnalyticsTracker.VALUE_SWITCHING_STORE
-                )
-            )
-            navigate(
-                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow(storeName),
-                navOptions {
-                    popUpTo(R.id.sitePickerFragment) { inclusive = true }
-                }
-            )
-        }
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
@@ -885,8 +872,10 @@ class MainActivity :
     }
 
     private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
-        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-        navController.navigateSafely(action)
+        if (!PackageUtils.isTesting()) {
+            val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+            navController.navigateSafely(action)
+        }
     }
 
     private fun navigateToWebView(event: ViewUrlInWebView) {
@@ -909,16 +898,18 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
-    private fun restartActivityForAppLink(event: RestartActivityForAppLink) {
-        intent.data = event.data
-        restart()
-    }
-
-    private fun restartActivityForNotification(event: RestartActivityForNotification) {
-        // Add flags for handling the push notification after restart
-        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+    private fun onRestartActivityEvent(event: RestartActivityEvent) {
+        intent.apply {
+            when (event) {
+                is RestartActivityForAppLink -> data = event.data
+                is RestartActivityForLocalNotification -> putExtra(FIELD_LOCAL_NOTIFICATION, event.notification)
+                is RestartActivityForPushNotification -> {
+                    putExtra(FIELD_OPENED_FROM_PUSH, true)
+                    putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+                    putExtra(FIELD_PUSH_ID, event.pushId)
+                }
+            }
+        }
         restart()
     }
 
