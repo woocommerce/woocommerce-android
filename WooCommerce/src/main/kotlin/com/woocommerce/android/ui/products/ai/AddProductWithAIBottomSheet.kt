@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.products.ai
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +34,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
@@ -40,6 +44,7 @@ import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
@@ -165,13 +170,22 @@ private fun BottomSheetButton(
 }
 
 @Composable
-@Preview
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
 private fun AddProductWithAIContentPreview() {
-    WooTheme {
-        AddProductWithAIContent(
-            onAIClick = {},
-            onManualClick = {},
-            onLearnMoreClick = {},
-        )
+    WooThemeWithBackground {
+        Box(
+            contentAlignment = Alignment.BottomCenter,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AddProductWithAIContent(
+                onAIClick = {},
+                onManualClick = {},
+                onLearnMoreClick = {},
+            )
+        }
     }
 }
