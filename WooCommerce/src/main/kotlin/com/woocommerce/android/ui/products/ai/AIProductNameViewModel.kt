@@ -5,11 +5,13 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_NAME_FEATURE
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,8 +51,59 @@ class AIProductNameViewModel @Inject constructor(
         }
     }
 
-        data class ViewState(
+    private suspend fun generateProductName(languageISOCode: String) {
+        _viewState.update {
+            _viewState.value.copy(
+                generationState = ViewState.GenerationState.Generating
+            )
+        }
+
+        val result = aiRepository.generateProductName(
+            site = selectedSite.get(),
+            keywords = _viewState.value.keywords,
+            languageISOCode = languageISOCode
+        )
+        result.fold(
+            onSuccess = ::handleCompletionsSuccess,
+            onFailure = ::handleCompletionsFailure
+        )
+    }
+
+    private fun handleCompletionsSuccess(completions: String) {
+        _viewState.update {
+            _viewState.value.copy(
+                generatedProductName = completions,
+                generationState = ViewState.GenerationState.Generated()
+            )
+        }
+    }
+
+    private fun handleCompletionsFailure(throwable: Throwable) {
+        when (throwable) {
+            is AIRepository.JetpackAICompletionsException -> {
+                WooLog.e(WooLog.T.AI, "Fetching Jetpack AI completions failed: ${throwable.errorMessage}")
+                _viewState.update {
+                    _viewState.value.copy(
+                        generationState = ViewState.GenerationState.Generated(hasError = true)
+                    )
+                }
+            }
+            else -> {
+                WooLog.e(WooLog.T.AI, "Unknown error occurred: ${throwable.message}")
+            }
+        }
+    }
+
+    fun onGenerateButtonClicked() {
+        launch {
+            val languageISOCode = _viewState.value.identifiedLanguageISOCode ?: identifyLanguage().getOrNull()
+            languageISOCode?.let { generateProductName(languageISOCode) }
+        }
+    }
+
+    data class ViewState(
         val keywords: String = "",
+        val generatedProductName: String = "",
         val identifiedLanguageISOCode: String? = null,
         val generationState: GenerationState = GenerationState.Start
     ) {
@@ -63,6 +116,3 @@ class AIProductNameViewModel @Inject constructor(
 
     data class CopyProductNameToClipboard(val productName: String) : MultiLiveEvent.Event()
 }
-
-
-
