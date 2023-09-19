@@ -6,7 +6,8 @@ import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_NAME_FEATURE
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -113,6 +114,10 @@ class AIProductNameViewModel @Inject constructor(
         triggerEvent(CopyProductNameToClipboard(_viewState.value.generatedProductName))
     }
 
+    fun onApplyButtonClicked() {
+        triggerEvent(ExitWithResult(_viewState.value.generatedProductName))
+    }
+
     data class ViewState(
         val keywords: String = "",
         val generatedProductName: String = "",
@@ -126,5 +131,5 @@ class AIProductNameViewModel @Inject constructor(
         }
     }
 
-    data class CopyProductNameToClipboard(val productName: String) : MultiLiveEvent.Event()
+    data class CopyProductNameToClipboard(val productName: String) : Event()
 }

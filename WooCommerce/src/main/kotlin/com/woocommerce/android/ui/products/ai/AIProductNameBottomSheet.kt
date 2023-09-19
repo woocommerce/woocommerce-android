@@ -56,7 +56,8 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
                     ResultLayout(
                         onKeywordsChanged = viewModel::onProductKeywordsChanged,
                         onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
-                        onCopyButtonClicked = viewModel::onCopyButtonClicked
+                        onCopyButtonClicked = viewModel::onCopyButtonClicked,
+                        onApplyButtonClicked = viewModel::onApplyButtonClicked,
                     )
                 }
             }
@@ -191,12 +192,13 @@ fun GeneratingLayout() {
 fun ResultLayout(
     onKeywordsChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
-    onCopyButtonClicked: () -> Unit
+    onCopyButtonClicked: () -> Unit,
+    onApplyButtonClicked: () -> Unit
 ) {
     MainLayout(onKeywordsChanged = onKeywordsChanged) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-        GeneratedTextLayout()
+        GeneratedTextLayout(onCopyButtonClicked)
 
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -227,7 +229,7 @@ fun ResultLayout(
                 )
             }
             WCColoredButton(
-                onClick = onCopyButtonClicked,
+                onClick = onApplyButtonClicked,
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
             ) {
@@ -241,7 +243,9 @@ fun ResultLayout(
 }
 
 @Composable
-fun GeneratedTextLayout() {
+fun GeneratedTextLayout(
+    onCopyButtonClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .background(
@@ -260,7 +264,7 @@ fun GeneratedTextLayout() {
 
         WCTextButton(
             modifier = Modifier.align(Alignment.End),
-            onClick = { },
+            onClick = onCopyButtonClicked,
             colors = ButtonDefaults.textButtonColors(
                 contentColor = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -335,7 +339,12 @@ fun GeneratingLayoutPreview() {
 @Preview
 @Composable
 fun ResultLayoutPreview() {
-    ResultLayout(onKeywordsChanged = {}, onGenerateButtonClicked = {}, onCopyButtonClicked = {})
+    ResultLayout(
+        onKeywordsChanged = {},
+        onGenerateButtonClicked = {},
+        onCopyButtonClicked = {},
+        onApplyButtonClicked = {}
+    )
 }
 
 @Preview
