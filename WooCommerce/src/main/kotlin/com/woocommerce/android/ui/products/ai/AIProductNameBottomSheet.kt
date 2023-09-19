@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.ai
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
