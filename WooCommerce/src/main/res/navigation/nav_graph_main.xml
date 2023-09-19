@@ -674,7 +674,9 @@
         android:label="AddProductWithAIBottomSheet" >
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
-            app:destination="@id/productTypesBottomSheetFragment" />
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:popUpTo="@id/addProductWithAIBottomSheet"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
             app:destination="@id/addProductWithAIFragment" />
