@@ -721,10 +721,7 @@ class ProductListFragment :
     private fun showAddProductBottomSheet() {
         with(addProductNavigator) {
             findNavController().navigateToAddProducts(
-                // TODO replace with correct NavDirections when implemented
-                aiBottomSheetAction = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-                    isAddProduct = true
-                ),
+                aiBottomSheetAction = ProductListFragmentDirections.actionProductsToAddProductWithAIBottomSheet(),
                 typesBottomSheetAction = ProductListFragmentDirections
                     .actionProductListFragmentToProductTypesBottomSheet(
                         isAddProduct = true

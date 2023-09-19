@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import com.woocommerce.android.extensions.isEligibleForAI
@@ -21,8 +20,6 @@ class AddProductNavigator @Inject constructor(
             selectedSite.get().isEligibleForAI &&
             !hasNonSampleProducts()
         ) {
-            // TODO remove this when the bottom sheet is implemented
-            Toast.makeText(context, "Will show product creation with AI bottom sheet", Toast.LENGTH_SHORT).show()
             navigateSafely(aiBottomSheetAction)
         } else {
             navigateSafely(typesBottomSheetAction)
