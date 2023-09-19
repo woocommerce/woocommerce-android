@@ -227,7 +227,7 @@ class ReviewListRepository @Inject constructor(
                     reviewIds = unreadProductReviewIdsToFetch,
                     offset = 0 // Must be zero so the API filters only by ids and not page offset
                 ),
-                deletePreviouslyCachedReviews = !loadMore
+                deletePreviouslyCachedReviews = false
             )
             return if (result.isError) ERROR else SUCCESS
         }
