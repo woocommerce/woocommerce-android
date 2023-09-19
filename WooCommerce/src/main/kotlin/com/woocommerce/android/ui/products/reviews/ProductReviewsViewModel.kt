@@ -39,10 +39,6 @@ class ProductReviewsViewModel @Inject constructor(
     private val reviewModerationHandler: ReviewModerationHandler,
     private val reviewListRepository: ReviewListRepository
 ) : ScopedViewModel(savedState), ReviewModerationConsumer {
-    companion object {
-        private const val NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLLABLE = 10
-    }
-
     private val _reviewList = MutableLiveData<List<ProductReview>>()
 
     override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
