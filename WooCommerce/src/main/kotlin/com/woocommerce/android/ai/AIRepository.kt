@@ -50,6 +50,21 @@ class AIRepository @Inject constructor(
         return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
+    suspend fun generateProductName(
+        site: SiteModel,
+        keywords: String,
+        languageISOCode: String = "en"
+    ) : Result<String> {
+        val prompt = AIPrompts.generateProductNamePrompt(
+            keywords,
+            languageISOCode
+        )
+
+        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_NAME_FEATURE)
+    }
+
+
+
     suspend fun identifyISOLanguageCode(site: SiteModel, text: String, feature: String): Result<String> {
         val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
         return fetchJetpackAICompletionsForSite(site, prompt, feature)
