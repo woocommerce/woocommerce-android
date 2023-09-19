@@ -17,6 +17,19 @@ object AIPrompts {
         return String.format(PRODUCT_DESCRIPTION_PROMPT, name, featuresPart, languageISOCode)
     }
 
+    private const val PRODUCT_NAME_PROMPT = "You are a WooCommerce SEO and marketing expert. \n" +
+        "Based on the following product keywords or key phrases:\n```\n%1\$s\n```\n" +
+        "Provide a product title to enhance the store's SEO performance and sales. " +
+        "The response should be in the ISO language code \"%2\$s\". " +
+        "Product titles should contain at least 20 characters.\n"
+
+    fun generateProductNamePrompt(
+        keywords: String,
+        languageISOCode: String = "en"
+    ): String {
+        return String.format(PRODUCT_NAME_PROMPT, keywords, languageISOCode)
+    }
+
     private const val PRODUCT_SHARING_PROMPT = "Your task is to help a merchant create a message to share with " +
         "their customers a product named \"%1\$s\". More information about the product:\n" +
         "%2\$s\n" +
