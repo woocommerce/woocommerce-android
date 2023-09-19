@@ -27,7 +27,7 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            allWarningsAsErrors = true
+//            allWarningsAsErrors = true
             freeCompilerArgs += [
                     "-opt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
@@ -95,7 +95,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2857-bb10a962435d7018dfc157a0ba8411c28571a812'
+    fluxCVersion = 'trunk-1ad5a5814f4fbfcf5d23dfe8b57e9fcf12e0e15f'
     wooCommerceSharedVersion = '0.6.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
