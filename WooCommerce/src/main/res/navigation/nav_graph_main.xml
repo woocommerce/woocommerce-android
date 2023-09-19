@@ -675,5 +675,12 @@
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
+            app:destination="@id/addProductWithAIFragment" />
     </dialog>
+    <fragment
+        android:id="@+id/addProductWithAIFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
+        android:label="AddProductWithAIFragment" />
 </navigation>

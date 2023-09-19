@@ -66,7 +66,9 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
     }
 
     private fun showAICreationFlow() {
-        // TODO
+        findNavController().navigateSafely(
+            AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
+        )
     }
 
     private fun showManualCreationFlow() {
