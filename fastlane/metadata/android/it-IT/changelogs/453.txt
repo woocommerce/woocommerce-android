@@ -1,2 +1,0 @@
-15.2:
-Siamo felici di annunciare un nuovo aggiornamento per l'app per Android. In questa versione, l'opzione "Chiudi l'account" è spostata in una nuova sezione, "Impostazioni dell'account", per una navigazione più semplice. Abbiamo anche risolto alcuni problemi al contatore dei badge dell'ordine per un monitoraggio accurato. Inoltre, abbiamo migliorato l'attività di avviamento di WooPayments per un processo di configurazione più fluido. Aggiorna ora per una migliore esperienza utente.
