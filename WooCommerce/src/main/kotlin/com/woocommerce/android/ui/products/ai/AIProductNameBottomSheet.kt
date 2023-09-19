@@ -55,7 +55,8 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
                 } else {
                     ResultLayout(
                         onKeywordsChanged = viewModel::onProductKeywordsChanged,
-                        onGenerateButtonClicked = viewModel::onGenerateButtonClicked
+                        onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
+                        onCopyButtonClicked = viewModel::onCopyButtonClicked
                     )
                 }
             }
@@ -189,7 +190,8 @@ fun GeneratingLayout() {
 @Composable
 fun ResultLayout(
     onKeywordsChanged: (String) -> Unit,
-    onGenerateButtonClicked: () -> Unit
+    onGenerateButtonClicked: () -> Unit,
+    onCopyButtonClicked: () -> Unit
 ) {
     MainLayout(onKeywordsChanged = onKeywordsChanged) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -225,7 +227,7 @@ fun ResultLayout(
                 )
             }
             WCColoredButton(
-                onClick = { },
+                onClick = onCopyButtonClicked,
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
             ) {
@@ -333,7 +335,7 @@ fun GeneratingLayoutPreview() {
 @Preview
 @Composable
 fun ResultLayoutPreview() {
-    ResultLayout(onKeywordsChanged = {}, onGenerateButtonClicked = {})
+    ResultLayout(onKeywordsChanged = {}, onGenerateButtonClicked = {}, onCopyButtonClicked = {})
 }
 
 @Preview

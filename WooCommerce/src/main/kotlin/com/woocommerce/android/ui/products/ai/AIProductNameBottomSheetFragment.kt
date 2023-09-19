@@ -11,7 +11,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,14 +49,14 @@ class AIProductNameBottomSheetFragment : WCBottomSheetDialogFragment() {
                     event.data
                 )
 
-                is AIProductDescriptionViewModel.CopyDescriptionToClipboard -> copyDescriptionToClipboard(
-                    event.description
+                is AIProductNameViewModel.CopyProductNameToClipboard -> copyProductNameToClipboard(
+                    event.productName
                 )
             }
         }
     }
 
-    private fun copyDescriptionToClipboard(description: String) {
+    private fun copyProductNameToClipboard(description: String) {
         context?.copyToClipboard(getString(R.string.ai_product_name_copy_label), description)
     }
 }

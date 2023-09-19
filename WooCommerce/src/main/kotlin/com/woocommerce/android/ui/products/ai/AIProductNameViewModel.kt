@@ -109,6 +109,10 @@ class AIProductNameViewModel @Inject constructor(
         }
     }
 
+    fun onCopyButtonClicked() {
+        triggerEvent(CopyProductNameToClipboard(_viewState.value.generatedProductName))
+    }
+
     data class ViewState(
         val keywords: String = "",
         val generatedProductName: String = "",
