@@ -101,6 +101,14 @@ class AIProductNameViewModel @Inject constructor(
         }
     }
 
+    fun onProductKeywordsChanged(keywords: String) {
+        _viewState.update {
+            _viewState.value.copy(
+                keywords = keywords,
+            )
+        }
+    }
+
     data class ViewState(
         val keywords: String = "",
         val generatedProductName: String = "",

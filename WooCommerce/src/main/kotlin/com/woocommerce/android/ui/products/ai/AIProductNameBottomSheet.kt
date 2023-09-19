@@ -42,13 +42,17 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
 
     viewModel.viewState.observeAsState().value?.let { state ->
         when (val generationState = state.generationState) {
-            is GenerationState.Start -> StartLayout()
+            is GenerationState.Start -> StartLayout(
+                onKeywordsChanged = viewModel::onProductKeywordsChanged
+            )
             is GenerationState.Generating -> GeneratingLayout()
             is GenerationState.Generated -> {
                 if (generationState.hasError) {
                     ErrorLayout()
                 } else {
-                    ResultLayout()
+                    ResultLayout(
+                        onKeywordsChanged = viewModel::onProductKeywordsChanged
+                    )
                 }
             }
         }
@@ -57,7 +61,8 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
 
 @Composable
 fun MainLayout(
-    enableProductHighlight: Boolean = true,
+    enableProductKeywords: Boolean = true,
+    onKeywordsChanged: (String) -> Unit = {},
     footer: @Composable () -> Unit
 ) {
     Column(
@@ -101,9 +106,9 @@ fun MainLayout(
             ) {
                 WCOutlinedTextField(
                     value = "Some entered text about the product",
-                    onValueChange = { },
+                    onValueChange = onKeywordsChanged,
                     label = "",
-                    enabled = enableProductHighlight,
+                    enabled = enableProductKeywords,
                     textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.major_400))
                 )
 
@@ -122,8 +127,12 @@ fun MainLayout(
 }
 
 @Composable
-fun StartLayout() {
-    MainLayout {
+fun StartLayout(
+    onKeywordsChanged: (String) -> Unit
+) {
+    MainLayout(
+        onKeywordsChanged = onKeywordsChanged
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_375)))
 
         WCColoredButton(
@@ -143,7 +152,7 @@ fun StartLayout() {
 
 @Composable
 fun GeneratingLayout() {
-    MainLayout(enableProductHighlight = false) {
+    MainLayout(enableProductKeywords = false) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
 
         Column(
@@ -173,8 +182,10 @@ fun GeneratingLayout() {
 }
 
 @Composable
-fun ResultLayout() {
-    MainLayout {
+fun ResultLayout(
+    onKeywordsChanged: (String) -> Unit
+) {
+    MainLayout(onKeywordsChanged = onKeywordsChanged) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         GeneratedTextLayout()
@@ -302,7 +313,7 @@ fun ErrorLayout() {
 @Preview
 @Composable
 fun StartLayoutPreview() {
-    StartLayout()
+    StartLayout(onKeywordsChanged = {})
 }
 
 @Preview
@@ -314,7 +325,7 @@ fun GeneratingLayoutPreview() {
 @Preview
 @Composable
 fun ResultLayoutPreview() {
-    ResultLayout()
+    ResultLayout(onKeywordsChanged = {})
 }
 
 @Preview
