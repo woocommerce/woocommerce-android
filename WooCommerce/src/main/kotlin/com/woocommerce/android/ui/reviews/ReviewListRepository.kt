@@ -166,8 +166,8 @@ class ReviewListRepository @Inject constructor(
      * Also populates the [ProductReview.read] field with the value of a matching Notification, or if
      * one doesn't exist, it is set to true.
      */
-    suspend fun getCachedProductReviews(): List<ProductReview> {
-        var cachedReviews = getProductReviewsFromDB().map { it.toAppModel() }
+    suspend fun getCachedProductReviews(productId: Long? = null): List<ProductReview> {
+        var cachedReviews = getProductReviewsFromDB(productId).map { it.toAppModel() }
         val readValueByRemoteIdMap = getReviewNotifReadValueByRemoteIdMap()
 
         if (cachedReviews.isNotEmpty()) {
@@ -316,9 +316,11 @@ class ReviewListRepository @Inject constructor(
     /**
      * Returns a list of all [WCProductReviewModel]s for the active site.
      */
-    private suspend fun getProductReviewsFromDB(): List<WCProductReviewModel> {
+    private suspend fun getProductReviewsFromDB(productId: Long? = null): List<WCProductReviewModel> {
         return withContext(Dispatchers.IO) {
-            productStore.getProductReviewsForSite(selectedSite.get())
+            productId?.let { productId ->
+                productStore.getProductReviewsForProductAndSiteId(selectedSite.get().id, productId)
+            } ?: productStore.getProductReviewsForSite(selectedSite.get())
         }
     }
 
