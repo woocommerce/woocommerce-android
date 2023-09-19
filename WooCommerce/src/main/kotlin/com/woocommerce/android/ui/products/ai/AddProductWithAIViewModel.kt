@@ -32,7 +32,7 @@ class AddProductWithAIViewModel @Inject constructor(
 
     val state = combine(step, saveButtonState) { step, saveButtonState ->
         State(
-            progress = (step.ordinal + 1).toFloat() / Step.values().size,
+            progress = step.order.toFloat() / Step.values().size,
             subViewModel = subViewModels[step.ordinal],
             isFirstStep = step.ordinal == 0,
             saveButtonState = saveButtonState
@@ -44,7 +44,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     fun onBackButtonClick() {
-        if (step.value.ordinal == 0) {
+        if (step.value.order == 1) {
             triggerEvent(Exit)
         } else {
             goToPreviousStep()
@@ -52,13 +52,13 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun goToNextStep() {
-        require(step.value.ordinal < Step.values().size - 1)
-        step.value = Step.values()[step.value.ordinal + 1]
+        require(step.value.order < Step.values().size)
+        step.value = Step.getValueForOrder(step.value.order + 1)
     }
 
     private fun goToPreviousStep() {
-        require(step.value.ordinal > 0)
-        step.value = Step.values()[step.value.ordinal - 1]
+        require(step.value.ordinal > 1)
+        step.value = Step.getValueForOrder(step.value.order - 1)
     }
 
     private fun wireSubViewModels() {
@@ -82,8 +82,13 @@ class AddProductWithAIViewModel @Inject constructor(
     enum class SaveButtonState {
         Hidden, Shown, Loading
     }
-}
 
-private enum class Step {
-    ProductName, AboutProduct, Preview
+    @Suppress("MagicNumber")
+    private enum class Step(val order: Int) {
+        ProductName(1), AboutProduct(2), Preview(3);
+
+        companion object {
+            fun getValueForOrder(order: Int) = values().first { it.order == order }
+        }
+    }
 }
