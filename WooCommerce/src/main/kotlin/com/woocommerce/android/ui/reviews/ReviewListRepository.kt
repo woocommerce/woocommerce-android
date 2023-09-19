@@ -213,6 +213,7 @@ class ReviewListRepository @Inject constructor(
             .filter { !it.read }
             .filter { if (productId == null) true else it.meta?.ids?.post == productId }
             .map { it.getCommentId() }
+            .sortedByDescending { it }
 
         if (loadMore) unreadReviewsOffset += PAGE_SIZE else unreadReviewsOffset = 0
         val unreadProductReviewIdsToFetch = unreadProductReviewIds
@@ -243,6 +244,7 @@ class ReviewListRepository @Inject constructor(
                 productStore.getProductReviewsByReviewId(unreadProductReviewIds)
                     .map { it.toAppModel() }
                     .map { it.copy(read = false) }
+                    .sortedByDescending { it.remoteId }
             } else emptyList()
         }
 
