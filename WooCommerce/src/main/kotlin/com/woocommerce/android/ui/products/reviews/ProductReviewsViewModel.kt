@@ -124,7 +124,7 @@ class ProductReviewsViewModel @Inject constructor(
         fetchingReviewsJob = launch {
             if (networkStatus.isConnected()) {
                 if (productReviewsViewState.isUnreadFilterEnabled) {
-                    applyUnreadFilter(loadMore = loadMore)
+                    fetchUnreadReviews(loadMore = loadMore, productId = remoteProductId)
                 } else {
                     val result = reviewListRepository.fetchProductReviews(
                         loadMore,
@@ -152,9 +152,9 @@ class ProductReviewsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun applyUnreadFilter(loadMore: Boolean) {
+    private suspend fun fetchUnreadReviews(loadMore: Boolean, productId: Long) {
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = loadMore)
-        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore, navArgs.remoteProductId)) {
+        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore, productId)) {
             SUCCESS,
             NO_ACTION_NEEDED -> {
                 val unreadReviews = reviewListRepository.getCachedUnreadProductReviews()

@@ -154,7 +154,7 @@ class ReviewListViewModel @Inject constructor(
         fetchingReviewsJob = launch {
             if (networkStatus.isConnected()) {
                 if (viewState.isUnreadFilterEnabled) {
-                    applyUnreadFilter(loadMore = loadMore)
+                    fetchUnreadReviews(loadMore = loadMore)
                 } else {
                     when (reviewRepository.fetchProductReviews(loadMore)) {
                         SUCCESS,
@@ -180,7 +180,7 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun applyUnreadFilter(loadMore: Boolean) {
+    private suspend fun fetchUnreadReviews(loadMore: Boolean) {
         viewState = viewState.copy(isLoadingMore = loadMore)
         when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
             SUCCESS,
