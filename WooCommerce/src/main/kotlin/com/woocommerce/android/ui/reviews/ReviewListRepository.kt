@@ -203,13 +203,15 @@ class ReviewListRepository @Inject constructor(
      * Uses unread product review notification [NotificationModel.commentId] to then fetch the
      * specific unread product reviews from the API by using the #commentId as #reviewId in the
      * request payload.
+     * If [productId] is provided, then only unread notifications for that product will be fetched.
      */
-    suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean): RequestResult {
+    suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean, productId: Long? = null): RequestResult {
         unreadProductReviewIds = notificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
         )
             .filter { !it.read }
+            .filter { if (productId == null) true else it.meta?.ids?.post == productId }
             .map { it.getCommentId() }
 
         if (loadMore) unreadReviewsOffset += PAGE_SIZE else unreadReviewsOffset = 0

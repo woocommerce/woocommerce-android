@@ -154,28 +154,15 @@ class ProductReviewsViewModel @Inject constructor(
 
     private suspend fun applyUnreadFilter(loadMore: Boolean) {
         productReviewsViewState = productReviewsViewState.copy(isLoadingMore = loadMore)
-        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore)) {
+        when (reviewListRepository.fetchOnlyUnreadProductReviews(loadMore, navArgs.remoteProductId)) {
             SUCCESS,
             NO_ACTION_NEEDED -> {
                 val unreadReviews = reviewListRepository.getCachedUnreadProductReviews()
-                    .filter { it.remoteProductId == navArgs.remoteProductId }
                 _reviewList.value = unreadReviews
-                loadMoreUnreadIfNeeded(unreadReviews)
             }
 
             ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
             else -> {}
-        }
-        productReviewsViewState = productReviewsViewState.copy(
-            isSkeletonShown = false,
-            isLoadingMore = false
-        )
-    }
-
-    private fun loadMoreUnreadIfNeeded(unreadReviews: List<ProductReview>) {
-        if (unreadReviews.size < NUMBER_OF_ITEMS_TO_MAKE_CONTENT_SCROLLABLE) {
-            productReviewsViewState = productReviewsViewState.copy(isLoadingMore = true)
-            fetchProductReviews(navArgs.remoteProductId, loadMore = true)
         }
     }
 
