@@ -17,6 +17,7 @@ class AIRepository @Inject constructor(
     companion object {
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
+        const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
     }
 
     suspend fun generateProductSharingText(
