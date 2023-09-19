@@ -43,15 +43,19 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         when (val generationState = state.generationState) {
             is GenerationState.Start -> StartLayout(
-                onKeywordsChanged = viewModel::onProductKeywordsChanged
+                onKeywordsChanged = viewModel::onProductKeywordsChanged,
+                onGenerateButtonClicked = viewModel::onGenerateButtonClicked
             )
             is GenerationState.Generating -> GeneratingLayout()
             is GenerationState.Generated -> {
                 if (generationState.hasError) {
-                    ErrorLayout()
+                    ErrorLayout(
+                        onGenerateButtonClicked = viewModel::onGenerateButtonClicked
+                    )
                 } else {
                     ResultLayout(
-                        onKeywordsChanged = viewModel::onProductKeywordsChanged
+                        onKeywordsChanged = viewModel::onProductKeywordsChanged,
+                        onGenerateButtonClicked = viewModel::onGenerateButtonClicked
                     )
                 }
             }
@@ -128,7 +132,8 @@ fun MainLayout(
 
 @Composable
 fun StartLayout(
-    onKeywordsChanged: (String) -> Unit
+    onKeywordsChanged: (String) -> Unit,
+    onGenerateButtonClicked: () -> Unit
 ) {
     MainLayout(
         onKeywordsChanged = onKeywordsChanged
@@ -136,7 +141,7 @@ fun StartLayout(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_375)))
 
         WCColoredButton(
-            onClick = { },
+            onClick = onGenerateButtonClicked,
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.ai_product_name_sheet_generate_button),
             leadingIcon = {
@@ -183,7 +188,8 @@ fun GeneratingLayout() {
 
 @Composable
 fun ResultLayout(
-    onKeywordsChanged: (String) -> Unit
+    onKeywordsChanged: (String) -> Unit,
+    onGenerateButtonClicked: () -> Unit
 ) {
     MainLayout(onKeywordsChanged = onKeywordsChanged) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -202,7 +208,7 @@ fun ResultLayout(
                 .fillMaxWidth()
         ) {
             WCTextButton(
-                onClick = { },
+                onClick = onGenerateButtonClicked,
                 modifier = Modifier.align(Alignment.CenterStart),
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = colorResource(id = R.color.color_on_surface)
@@ -271,7 +277,9 @@ fun GeneratedTextLayout() {
 }
 
 @Composable
-fun ErrorLayout() {
+fun ErrorLayout(
+    onGenerateButtonClicked: () -> Unit
+) {
     MainLayout {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
@@ -296,7 +304,7 @@ fun ErrorLayout() {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         WCColoredButton(
-            onClick = { },
+            onClick = onGenerateButtonClicked,
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.ai_product_name_sheet_generate_button),
             leadingIcon = {
@@ -313,7 +321,7 @@ fun ErrorLayout() {
 @Preview
 @Composable
 fun StartLayoutPreview() {
-    StartLayout(onKeywordsChanged = {})
+    StartLayout(onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }
 
 @Preview
@@ -325,11 +333,11 @@ fun GeneratingLayoutPreview() {
 @Preview
 @Composable
 fun ResultLayoutPreview() {
-    ResultLayout(onKeywordsChanged = {})
+    ResultLayout(onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }
 
 @Preview
 @Composable
 fun ErrorLayoutPreview() {
-    ErrorLayout()
+    ErrorLayout(onGenerateButtonClicked = {})
 }
