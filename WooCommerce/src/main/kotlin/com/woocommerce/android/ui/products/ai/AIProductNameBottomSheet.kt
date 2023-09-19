@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -35,6 +36,24 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ai.AIProductNameViewModel.ViewState.GenerationState
+@Composable
+fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
+
+    viewModel.viewState.observeAsState().value?.let { state ->
+        when (val generationState = state.generationState) {
+            is GenerationState.Start -> StartLayout()
+            is GenerationState.Generating -> GeneratingLayout()
+            is GenerationState.Generated -> {
+                if (generationState.hasError) {
+                    ErrorLayout()
+                } else {
+                    ResultLayout()
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun MainLayout(
