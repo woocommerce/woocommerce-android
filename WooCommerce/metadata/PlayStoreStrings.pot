@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_152"
+msgctxt "release_note_154"
 msgid ""
-"15.2:\n"
-"We're thrilled to announce a new update for our Android app! In this version, we've moved the 'Close Account' option to a new section called 'Account Settings' for easier navigation. We've also fixed some issues with the order's badge counter to ensure accurate tracking. Plus, we've made improvements to the WooPayments onboarding task for a smoother setup process. Update now for a better user experience!\n"
+"15.4:\n"
+"Merchants can now select a tax rate when creating an order and add downloadable files from all supported file types during product editing. We've improved In-Person Payments; if WcPay setup isn't finished, users can now complete it from the app. Minor updates include a fix for tracking the country when IPP onboarding isn't finished and an explanation screen before opening the Payments task.\n"
 msgstr ""
 
-msgctxt "release_note_151"
+msgctxt "release_note_153"
 msgid ""
-"15.1:\n"
-"Did you know that with Tap to Pay, you can accept card payments with your phone? We've enhanced the initial experience to make it even easier. This release also includes stability fixes for the login. Thank you for choosing WooCommerce!\n"
+"15.3:\n"
+"We're excited to roll out the latest update for our Android App. This release brings general improvements for a smoother, faster, and more user-friendly experience. Enjoy enhanced performance, a streamlined interface, and bug fixes. Happy selling!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

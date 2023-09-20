@@ -6,6 +6,9 @@
 
 15.4
 -----
+
+
+15.4
 - [*] [Internal] In-Person Payments: Fixed tracking of the country for the cases when IPP onboarding is not finished [https://github.com/woocommerce/woocommerce-android/pull/9764]
 - [**] [Internal] In-Person Payments: if WcPay setup not finished then we allow a user to finish it from the app [https://github.com/woocommerce/woocommerce-android/pull/9732]
 - [*] [Internal] Store Onboarding: show an explanation screen before open the Payments task in a WebView [https://github.com/woocommerce/woocommerce-android/pull/9772]
