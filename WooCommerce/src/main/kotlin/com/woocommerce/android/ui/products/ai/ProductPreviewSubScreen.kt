@@ -3,12 +3,20 @@ package com.woocommerce.android.ui.products.ai
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,9 +24,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -35,6 +45,7 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
+            .verticalScroll(rememberScrollState())
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -51,8 +62,113 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         when (state) {
-            ProductPreviewSubViewModel.State.Loading -> ProductPreviewLoading(Modifier.weight(1f))
-            is ProductPreviewSubViewModel.State.Success -> TODO()
+            ProductPreviewSubViewModel.State.Loading -> ProductPreviewLoading(
+                modifier = Modifier.fillMaxHeight()
+            )
+
+            is ProductPreviewSubViewModel.State.Success -> ProductPreviewContent(
+                state = state,
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Success, modifier: Modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+        modifier = modifier
+    ) {
+        val sectionsBackgroundModifier = Modifier.background(
+            color = colorResource(id = R.color.woo_gray_6),
+            shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+        )
+
+        Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_name_section),
+            style = MaterialTheme.typography.body2
+        )
+        Text(
+            text = state.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBackgroundModifier)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        )
+
+        Spacer(Modifier)
+
+        Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_description_section),
+            style = MaterialTheme.typography.body2
+        )
+        Text(
+            text = state.description,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBackgroundModifier)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        )
+
+        Spacer(Modifier)
+
+        Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_details_section),
+            style = MaterialTheme.typography.body2
+        )
+
+        state.propertyGroups.forEach { properties ->
+            ProductProperties(properties = properties, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier)
+        }
+    }
+}
+
+@Composable
+private fun ProductProperties(
+    properties: List<ProductPreviewSubViewModel.ProductPropertyCard>,
+    modifier: Modifier
+) {
+    val cornerSize = dimensionResource(id = R.dimen.minor_100)
+    Column(modifier) {
+        properties.forEachIndexed { index, property ->
+            Row(
+                Modifier
+                    .background(
+                        color = colorResource(id = R.color.woo_gray_6),
+                        shape = RoundedCornerShape(
+                            topStart = if (index == 0) cornerSize else 0.dp,
+                            topEnd = if (index == 0) cornerSize else 0.dp,
+                            bottomStart = if (index == properties.lastIndex) cornerSize else 0.dp,
+                            bottomEnd = if (index == properties.lastIndex) cornerSize else 0.dp
+                        )
+                    )
+                    .padding(dimensionResource(id = R.dimen.major_100))
+            ) {
+                Icon(
+                    painter = painterResource(id = property.icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_50))
+                )
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = property.title,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = colorResource(id = R.color.color_on_surface_high)
+                    )
+                    Text(
+                        text = property.content,
+                        style = MaterialTheme.typography.body2,
+                        color = colorResource(id = R.color.color_on_surface_medium)
+                    )
+                }
+            }
+
+            if (index != properties.lastIndex) {
+                Divider()
+            }
         }
     }
 }
@@ -98,7 +214,7 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_name_section),
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.body2
         )
         LoadingSkeleton(
             modifier = Modifier
@@ -110,7 +226,7 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_description_section),
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.body2
         )
         LoadingSkeleton(
             lines = 3,
@@ -123,7 +239,7 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_details_section),
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.body2
         )
         LoadingSkeleton(
             modifier = Modifier
@@ -144,5 +260,42 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 private fun ProductPreviewLoadingPreview() {
     WooThemeWithBackground {
         ProductPreviewSubScreen(ProductPreviewSubViewModel.State.Loading, Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+@Preview
+private fun ProductPreviewContentPreview() {
+    WooThemeWithBackground {
+        ProductPreviewSubScreen(
+            ProductPreviewSubViewModel.State.Success(
+                title = "Soft Black Tee: Elevate Your Everyday Style",
+                "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
+                    " everyday comfort and sustainability. Crafted with care from organic cotton, this tee is not" +
+                    " just soft on your skin but gentle on the environment.",
+                propertyGroups = listOf(
+                    listOf(
+                        ProductPreviewSubViewModel.ProductPropertyCard(
+                            icon = R.drawable.ic_gridicons_product,
+                            title = "Product Type",
+                            content = "Simple Product"
+                        )
+                    ),
+                    listOf(
+                        ProductPreviewSubViewModel.ProductPropertyCard(
+                            icon = R.drawable.ic_gridicons_money,
+                            title = "Price",
+                            content = "Regular price: $45.00"
+                        ),
+                        ProductPreviewSubViewModel.ProductPropertyCard(
+                            icon = R.drawable.ic_gridicons_list_checkmark,
+                            title = "Inventory",
+                            content = "In stock"
+                        )
+                    )
+                )
+            ),
+            Modifier.fillMaxSize()
+        )
     }
 }
