@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -49,7 +51,11 @@ fun AboutProductSubScreen(
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_200)
+            )
     ) {
         Column(
             modifier = Modifier.weight(1f),
@@ -61,7 +67,8 @@ fun AboutProductSubScreen(
             )
             Text(
                 text = stringResource(id = R.string.product_creation_ai_about_product_subtitle),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
             Column(
                 modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_150)),
@@ -75,7 +82,9 @@ fun AboutProductSubScreen(
                     value = state.productFeatures,
                     onValueChange = onProductFeaturesUpdated,
                     label = stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint),
-                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.major_400))
+                    textFieldModifier = Modifier.height(
+                        dimensionResource(id = R.dimen.large_outlined_text_field_min_height)
+                    )
                 )
                 Text(
                     text = stringResource(id = R.string.product_creation_ai_about_product_edit_text_caption),
@@ -83,16 +92,10 @@ fun AboutProductSubScreen(
                     color = colorResource(id = R.color.color_on_surface_medium),
                 )
             }
-            Text(
-                text = stringResource(id = R.string.product_creation_ai_about_product_edit_text_caption),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium),
-                modifier = Modifier
-                    .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-            )
             WCTextButton(
                 modifier = Modifier
-                    .padding(vertical = dimensionResource(id = R.dimen.minor_100)),
+                    .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                    .offset(x = (-16).dp),
                 contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
                 onClick = onChangeTone
             ) {
@@ -108,7 +111,7 @@ fun AboutProductSubScreen(
             onClick = onCreateProductDetails,
             enabled = state.productFeatures.isNotBlank()
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            Text(text = stringResource(id = R.string.product_creation_ai_about_product_continue_button))
         }
     }
 }

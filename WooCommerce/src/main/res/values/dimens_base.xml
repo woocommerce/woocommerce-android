@@ -153,4 +153,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="stats_widget_min_width">250dp</dimen>
     <dimen name="stats_widget_min_height">150dp</dimen>
 
+    <!-- Outlined text field -->
+    <dimen name="large_outlined_text_field_min_height">150dp</dimen>
+
 </resources>
