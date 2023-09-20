@@ -210,8 +210,7 @@ class ReviewListRepository @Inject constructor(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
         )
-            .filter { !it.read }
-            .filter { if (productId == null) true else it.meta?.ids?.post == productId }
+            .filter { !it.read && if (productId == null) true else it.meta?.ids?.post == productId }
             .map { it.getCommentId() }
             .sortedByDescending { it }
 
