@@ -28,6 +28,13 @@ class AddProductWithAIViewModel @Inject constructor(
                 goToNextStep()
             }
         ),
+        AboutProductSubViewModel(
+            savedStateHandle = savedStateHandle,
+            onDone = {
+                // Pass the about product to next ViewModel if needed
+                goToNextStep()
+            }
+        ),
     )
 
     val state = combine(step, saveButtonState) { step, saveButtonState ->
