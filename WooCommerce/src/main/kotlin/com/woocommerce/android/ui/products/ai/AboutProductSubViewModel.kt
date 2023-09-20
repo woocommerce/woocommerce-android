@@ -29,6 +29,10 @@ class AboutProductSubViewModel(
         productFeatures.value = features
     }
 
+    fun onChangeToneClicked() {
+        //TODO
+    }
+
     override fun close() {
         viewModelScope.cancel()
     }
