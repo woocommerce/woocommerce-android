@@ -1898,6 +1898,11 @@
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_preview_title">Preview</string>
+    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change those details later.</string>
+    <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_description_section">Product description</string>
+    <string name="product_creation_ai_preview_details_section">Details</string>
     <!--
         Product Add more details Bottom sheet
     -->
