@@ -64,7 +64,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun goToPreviousStep() {
-        require(step.value.ordinal > 1)
+        require(step.value.order > 1)
         step.value = Step.getValueForOrder(step.value.order - 1)
     }
 
