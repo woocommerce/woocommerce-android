@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -47,14 +46,18 @@ fun AboutProductSubScreen(
     onChangeTone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.background(MaterialTheme.colors.surface)) {
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface)
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+    ) {
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = stringResource(id = R.string.product_creation_ai_about_product_title),
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.h5
             )
             Text(
                 text = stringResource(id = R.string.product_creation_ai_about_product_subtitle),
@@ -90,7 +93,7 @@ fun AboutProductSubScreen(
             WCTextButton(
                 modifier = Modifier
                     .padding(vertical = dimensionResource(id = R.dimen.minor_100)),
-                contentPadding = PaddingValues(dimensionResource(id = dimen.major_100)),
+                contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
                 onClick = onChangeTone
             ) {
                 Text(

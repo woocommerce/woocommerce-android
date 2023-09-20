@@ -71,6 +71,7 @@ fun AddProductWithAIScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .padding(bottom = dimensionResource(id = R.dimen.major_200))
             )
         }
     }
