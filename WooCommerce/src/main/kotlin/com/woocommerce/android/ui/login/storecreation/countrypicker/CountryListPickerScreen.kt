@@ -79,9 +79,14 @@ fun CountryListPickerForm(
                 )
         )
 
+        // Depending on layout, CountryListPickerHeader will:
+        // - Stick to the top on portrait mode,
+        // - Scroll along with the country list on landscape mode (due to space restriction)
+
         val configuration = LocalConfiguration.current
+        val selectedCountry = countries.firstOrNull { it.isSelected }
+
         if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            val selectedCountry = countries.firstOrNull { it.isSelected }
             if (selectedCountry != null) {
                 CountryListPickerHeader(selectedCountry)
             }
@@ -93,7 +98,9 @@ fun CountryListPickerForm(
         ) {
             if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 item {
-                    CountryListPickerHeader(countries.first { it.isSelected })
+                    if (selectedCountry != null) {
+                        CountryListPickerHeader(selectedCountry)
+                    }
                 }
             }
 
