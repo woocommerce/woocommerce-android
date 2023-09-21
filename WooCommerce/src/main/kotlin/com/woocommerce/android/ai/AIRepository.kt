@@ -29,7 +29,6 @@ class AIRepository @Inject constructor(
     }
 
     suspend fun generateProductSharingText(
-        site: SiteModel,
         productName: String,
         permalink: String,
         productDescription: String?,
@@ -41,11 +40,10 @@ class AIRepository @Inject constructor(
             productDescription.orEmpty(),
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_SHARING_FEATURE)
+        return fetchJetpackAICompletionsForSite(selectedSite.get(), prompt, PRODUCT_SHARING_FEATURE)
     }
 
     suspend fun generateProductDescription(
-        site: SiteModel,
         productName: String,
         features: String,
         languageISOCode: String = "en"
@@ -55,7 +53,7 @@ class AIRepository @Inject constructor(
             features,
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(site, prompt, PRODUCT_DESCRIPTION_FEATURE)
+        return fetchJetpackAICompletionsForSite(selectedSite.get(), prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
     @Suppress("UNUSED_PARAMETER")
