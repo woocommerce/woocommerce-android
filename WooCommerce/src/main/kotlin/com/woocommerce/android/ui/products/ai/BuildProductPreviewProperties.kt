@@ -110,7 +110,8 @@ class BuildProductPreviewProperties @Inject constructor(
             content = """
                 ${resourceProvider.getString(R.string.product_weight)}: $weightFormatted
                 ${resourceProvider.getString(R.string.product_dimensions)}: $dimensionsFormatted
-                """.trimIndent()
+                """
+                .trimIndent()
         )
     }
 }
