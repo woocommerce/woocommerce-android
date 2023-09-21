@@ -602,8 +602,7 @@
         <action
             android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
-            app:popUpTo="@id/dashboard">
-        </action>
+            app:popUpTo="@id/dashboard"></action>
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
@@ -662,16 +661,16 @@
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
-        android:label="NameYourStoreDialogFragment" >
+        android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/addProductWithAIBottomSheet"
         android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIBottomSheet"
-        android:label="AddProductWithAIBottomSheet" >
+        android:label="AddProductWithAIBottomSheet">
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment"
@@ -684,5 +683,13 @@
     <fragment
         android:id="@+id/addProductWithAIFragment"
         android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
-        android:label="AddProductWithAIFragment" />
+        android:label="AddProductWithAIFragment">
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_addProductWithAISetToneBottomSheet"
+            app:destination="@id/addProductWithAISetToneBottomSheet" />
+    </fragment>
+    <dialog
+        android:id="@+id/addProductWithAISetToneBottomSheet"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAISetToneBottomSheet"
+        android:label="AddProductWithAIBottomSheet" />
 </navigation>

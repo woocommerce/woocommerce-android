@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.NavigateToAiToneBottomSheet
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +42,14 @@ class AddProductWithAIFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 Exit -> findNavController().navigateUp()
+                NavigateToAiToneBottomSheet -> openAiToneBottomSheet()
             }
         }
+    }
+
+    private fun openAiToneBottomSheet() {
+        findNavController().navigate(
+            AddProductWithAIFragmentDirections.actionAddProductWithAIFragmentToAddProductWithAISetToneBottomSheet()
+        )
     }
 }

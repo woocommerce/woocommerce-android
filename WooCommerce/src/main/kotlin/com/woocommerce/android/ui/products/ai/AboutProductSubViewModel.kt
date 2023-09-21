@@ -36,7 +36,7 @@ class AboutProductSubViewModel(
     }
 
     fun onChangeToneClicked() {
-        _events.tryEmit(NavigateToSetToneBottomSheet)
+        _events.tryEmit(NavigateToAiToneBottomSheet)
     }
 
     override fun close() {
@@ -47,5 +47,5 @@ class AboutProductSubViewModel(
         val productFeatures: String
     )
 
-    object NavigateToSetToneBottomSheet : Event()
+    object NavigateToAiToneBottomSheet : Event()
 }
