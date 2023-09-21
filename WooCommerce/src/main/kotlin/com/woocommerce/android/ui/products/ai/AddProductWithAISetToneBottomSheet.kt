@@ -99,12 +99,14 @@ private fun AiToneBottomSheetContent(
                     if (selectedTone == tone) {
                         Icon(
                             imageVector = Icons.Filled.Check,
-                            contentDescription = stringResource(id = R.string.product_creation_ai_tone_selected_content_desc),
+                            contentDescription = stringResource(
+                                id = R.string.product_creation_ai_tone_selected_content_desc
+                            ),
                             tint = colorResource(id = R.color.color_primary)
                         )
                     }
                 }
-                if (index < aiTones.size)
+                if (index < aiTones.size - 1)
                     Divider(
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_75)),
                     )
@@ -128,4 +130,3 @@ private fun AiToneBottomSheetContentPreview() {
         )
     }
 }
-
