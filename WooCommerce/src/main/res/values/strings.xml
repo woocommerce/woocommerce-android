@@ -3575,7 +3575,7 @@
     AI Product creation
     -->
     <string name="ai_product_creation_add_name_title">Add your product name</string>
-    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by typing for more name suggestions.</string>
+    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
