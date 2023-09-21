@@ -16,21 +16,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.ClipOp
-import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -132,40 +129,18 @@ private fun ProductProperties(
     properties: List<ProductPreviewSubViewModel.ProductPropertyCard>,
     modifier: Modifier
 ) {
-    val borderRadius = dimensionResource(id = R.dimen.minor_100)
     val borderWidth = dimensionResource(id = R.dimen.minor_10)
-    Column(modifier) {
+    val borderColor = colorResource(id = R.color.divider_color)
+    Column(
+        modifier.border(
+            width = borderWidth,
+            color = borderColor,
+            shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+        )
+    ) {
         properties.forEachIndexed { index, property ->
             Row(
                 Modifier
-                    .drawWithContent {
-                        if (index < properties.lastIndex) {
-                            // In order to avoid having duplicate dividers, we clip the last line from all items except
-                            // the last one
-                            val borderWidthInPx = (borderWidth.value * density)
-                            clipRect(
-                                left = borderWidthInPx,
-                                right = size.width - borderWidthInPx,
-                                top = size.height - borderWidthInPx,
-                                bottom = size.height,
-                                clipOp = ClipOp.Difference
-                            ) {
-                                this@drawWithContent.drawContent()
-                            }
-                        } else {
-                            drawContent()
-                        }
-                    }
-                    .border(
-                        width = borderWidth,
-                        color = colorResource(id = R.color.divider_color),
-                        shape = RoundedCornerShape(
-                            topStart = if (index == 0) borderRadius else 0.dp,
-                            topEnd = if (index == 0) borderRadius else 0.dp,
-                            bottomStart = if (index == properties.lastIndex) borderRadius else 0.dp,
-                            bottomEnd = if (index == properties.lastIndex) borderRadius else 0.dp
-                        )
-                    )
                     .padding(dimensionResource(id = R.dimen.major_100))
             ) {
                 Icon(
@@ -186,6 +161,10 @@ private fun ProductProperties(
                         color = colorResource(id = R.color.color_on_surface_medium)
                     )
                 }
+            }
+
+            if (index < properties.lastIndex) {
+                Divider(color = borderColor, thickness = borderWidth)
             }
         }
     }
