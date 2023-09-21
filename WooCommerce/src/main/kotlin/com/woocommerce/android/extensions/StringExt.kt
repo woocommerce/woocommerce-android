@@ -87,3 +87,7 @@ fun String.toCamelCase(delimiter: String = " "): String {
         word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 }
+
+fun String.capitalize(locale: Locale = Locale.getDefault()) = replaceFirstChar {
+    if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+}
