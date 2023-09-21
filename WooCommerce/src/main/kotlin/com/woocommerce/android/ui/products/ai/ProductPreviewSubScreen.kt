@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.ai
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,13 +16,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.ClipOp
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -80,8 +83,9 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
         modifier = modifier
     ) {
-        val sectionsBackgroundModifier = Modifier.background(
-            color = colorResource(id = R.color.woo_gray_6),
+        val sectionsBorder = Modifier.border(
+            width = dimensionResource(id = R.dimen.minor_10),
+            color = colorResource(id = R.color.divider_color),
             shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
         )
 
@@ -93,7 +97,7 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
             text = state.title,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(sectionsBackgroundModifier)
+                .then(sectionsBorder)
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
@@ -107,7 +111,7 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
             text = state.description,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(sectionsBackgroundModifier)
+                .then(sectionsBorder)
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
@@ -130,18 +134,38 @@ private fun ProductProperties(
     properties: List<ProductPreviewSubViewModel.ProductPropertyCard>,
     modifier: Modifier
 ) {
-    val cornerSize = dimensionResource(id = R.dimen.minor_100)
+    val borderRadius = dimensionResource(id = R.dimen.minor_100)
+    val borderWidth = dimensionResource(id = R.dimen.minor_10)
     Column(modifier) {
         properties.forEachIndexed { index, property ->
             Row(
                 Modifier
-                    .background(
-                        color = colorResource(id = R.color.woo_gray_6),
+                    .drawWithContent {
+                        if (index < properties.lastIndex) {
+                            // In order to avoid having duplicate dividers, we clip the last line from all items except
+                            // the last one
+                            val borderWidthInPx = (borderWidth.value * density)
+                            clipRect(
+                                left = borderWidthInPx,
+                                right = size.width - borderWidthInPx,
+                                top = size.height - borderWidthInPx,
+                                bottom = size.height,
+                                clipOp = ClipOp.Difference
+                            ) {
+                                this@drawWithContent.drawContent()
+                            }
+                        } else {
+                            drawContent()
+                        }
+                    }
+                    .border(
+                        width = borderWidth,
+                        color = colorResource(id = R.color.divider_color),
                         shape = RoundedCornerShape(
-                            topStart = if (index == 0) cornerSize else 0.dp,
-                            topEnd = if (index == 0) cornerSize else 0.dp,
-                            bottomStart = if (index == properties.lastIndex) cornerSize else 0.dp,
-                            bottomEnd = if (index == properties.lastIndex) cornerSize else 0.dp
+                            topStart = if (index == 0) borderRadius else 0.dp,
+                            topEnd = if (index == 0) borderRadius else 0.dp,
+                            bottomStart = if (index == properties.lastIndex) borderRadius else 0.dp,
+                            bottomEnd = if (index == properties.lastIndex) borderRadius else 0.dp
                         )
                     )
                     .padding(dimensionResource(id = R.dimen.major_100))
@@ -164,10 +188,6 @@ private fun ProductProperties(
                         color = colorResource(id = R.color.color_on_surface_medium)
                     )
                 }
-            }
-
-            if (index != properties.lastIndex) {
-                Divider()
             }
         }
     }
@@ -207,8 +227,9 @@ private fun ProductPreviewLoading(modifier: Modifier) {
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
         modifier = modifier
     ) {
-        val sectionsBackgroundModifier = Modifier.background(
-            color = colorResource(id = R.color.woo_gray_6),
+        val sectionsBorder = Modifier.border(
+            width = dimensionResource(id = R.dimen.minor_10),
+            color = colorResource(id = R.color.divider_color),
             shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
         )
 
@@ -219,7 +240,7 @@ private fun ProductPreviewLoading(modifier: Modifier) {
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(sectionsBackgroundModifier)
+                .then(sectionsBorder)
         )
 
         Spacer(Modifier)
@@ -232,7 +253,7 @@ private fun ProductPreviewLoading(modifier: Modifier) {
             lines = 3,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(sectionsBackgroundModifier)
+                .then(sectionsBorder)
         )
 
         Spacer(Modifier)
@@ -244,13 +265,13 @@ private fun ProductPreviewLoading(modifier: Modifier) {
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(sectionsBackgroundModifier)
+                .then(sectionsBorder)
         )
         Spacer(Modifier)
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(sectionsBackgroundModifier)
+                .then(sectionsBorder)
         )
     }
 }
