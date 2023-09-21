@@ -29,7 +29,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -54,13 +53,12 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_title),
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.h5
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_subtitle),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
