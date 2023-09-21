@@ -1906,6 +1906,13 @@
     <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
+    <string name="product_creation_ai_tone_title">Tone and voice</string>
+    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_flowery">Flowery</string>
+    <string name="product_creation_ai_tone_convincing">Convincing</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
 
     <!--
         Product Add more details Bottom sheet
