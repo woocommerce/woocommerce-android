@@ -80,6 +80,7 @@ fun AddProductWithAIScreen(
 private fun SubScreen(subViewModel: AddProductWithAISubViewModel<*>, modifier: Modifier) {
     when (subViewModel) {
         is ProductNameSubViewModel -> ProductNameSubScreen(subViewModel, modifier)
-        is ProductPreviewSubViewModel -> ProductPreviewSubScreen(viewModel = subViewModel, modifier = modifier)
+        is AboutProductSubViewModel -> AboutProductSubScreen(subViewModel, modifier)
+        is ProductPreviewSubViewModel -> ProductPreviewSubScreen(subViewModel, modifier)
     }
 }
