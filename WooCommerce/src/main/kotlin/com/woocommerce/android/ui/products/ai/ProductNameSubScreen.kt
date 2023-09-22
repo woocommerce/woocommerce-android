@@ -23,7 +23,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
@@ -69,11 +68,12 @@ fun ProductNameForm(
 ) {
     val orientation = LocalConfiguration.current.orientation
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = stringResource(id = R.string.ai_product_creation_add_name_title),
@@ -103,7 +103,7 @@ fun ProductNameForm(
                     onClick = onContinueClicked,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.major_100))
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(text = stringResource(id = R.string.continue_button))
                 }
@@ -115,9 +115,8 @@ fun ProductNameForm(
             WCColoredButton(
                 onClick = onContinueClicked,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
                 Text(text = stringResource(id = R.string.continue_button))
             }
@@ -150,7 +149,7 @@ fun ProductKeywordsTextFieldWithEmbeddedButton(
                 .clip(RoundedCornerShape(10.dp))
         ) {
             Box {
-                if(textFieldContent.isEmpty()) {
+                if (textFieldContent.isEmpty()) {
                     Text(
                         text = stringResource(id = R.string.ai_product_creation_add_name_keywords_placeholder),
                         style = MaterialTheme.typography.body1,
