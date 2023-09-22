@@ -21,8 +21,6 @@ class AddProductWithAIViewModel @Inject constructor(
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
-    private var tone: AiTone? = null
-
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
         ProductNameSubViewModel(
             savedStateHandle = savedStateHandle,
@@ -65,8 +63,8 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     fun updateAiTone(aiTone: AiTone) {
-        tone = aiTone
-        (subViewModels[1] as AboutProductSubViewModel).onNewToneSelected(aiTone)
+        (subViewModels.find { it is AboutProductSubViewModel } as AboutProductSubViewModel)
+            .onNewToneSelected(aiTone)
     }
 
     private fun goToNextStep() {
