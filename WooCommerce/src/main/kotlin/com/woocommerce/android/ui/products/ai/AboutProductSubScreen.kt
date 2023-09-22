@@ -30,16 +30,11 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -136,7 +131,7 @@ fun AboutProductSubScreen(
                         onValueChange = onProductFeaturesUpdated,
                         label = stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint),
                         textFieldModifier = Modifier.height(
-                            dimensionResource(id = R.dimen.large_outlined_text_field_min_height)
+                            dimensionResource(id = R.dimen.multiline_textfield_height)
                         )
                     )
                     Text(
