@@ -30,7 +30,7 @@ class AboutProductSubViewModel(
     }
 
     fun onChangeToneClicked() {
-        //TODO
+        // TODO
     }
 
     override fun close() {
