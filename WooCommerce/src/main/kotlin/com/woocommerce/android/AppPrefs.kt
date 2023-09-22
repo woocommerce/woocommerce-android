@@ -115,6 +115,7 @@ object AppPrefs {
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
+        AI_CONTENT_GENERATION_TONE,
     }
 
     /**
@@ -1033,6 +1034,13 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
+            value = value
+        )
+
+    var aiContentGenerationTone: String
+        get() = getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE)
+        set(value) = setString(
+            key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
             value = value
         )
 

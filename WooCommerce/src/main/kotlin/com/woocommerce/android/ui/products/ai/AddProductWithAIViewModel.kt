@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddProductWithAIViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
@@ -30,10 +32,8 @@ class AddProductWithAIViewModel @Inject constructor(
         ),
         AboutProductSubViewModel(
             savedStateHandle = savedStateHandle,
-            onDone = {
-                // Pass the about product to next ViewModel if needed
-                goToNextStep()
-            }
+            onDone = { goToNextStep() },
+            appsPrefsWrapper = appsPrefsWrapper
         ),
     )
 

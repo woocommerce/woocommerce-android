@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +15,8 @@ import kotlinx.parcelize.Parcelize
 
 class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
-    override val onDone: (String) -> Unit
+    override val onDone: (String) -> Unit,
+    private val appsPrefsWrapper: AppPrefsWrapper
 ) : AddProductWithAISubViewModel<String> {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -22,7 +24,7 @@ class AboutProductSubViewModel(
         viewModelScope,
         UiState(
             productFeatures = "",
-            selectedAiTone = AiTone.Casual
+            selectedAiTone = AiTone.fromString(appsPrefsWrapper.aiContentGenerationTone)
         )
     )
 
@@ -38,6 +40,7 @@ class AboutProductSubViewModel(
 
     fun onNewToneSelected(tone: AiTone) {
         productFeatures.value = productFeatures.value.copy(selectedAiTone = tone)
+        appsPrefsWrapper.aiContentGenerationTone = productFeatures.value.selectedAiTone.name
     }
 
     override fun close() {
@@ -55,5 +58,10 @@ class AboutProductSubViewModel(
         Formal(R.string.product_creation_ai_tone_formal),
         Flowery(R.string.product_creation_ai_tone_flowery),
         Convincing(R.string.product_creation_ai_tone_convincing);
+
+        companion object {
+            fun fromString(source: String): AiTone =
+                AiTone.values().firstOrNull { it.name == source } ?: Casual
+        }
     }
 }
