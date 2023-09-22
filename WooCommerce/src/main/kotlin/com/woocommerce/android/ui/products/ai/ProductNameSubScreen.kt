@@ -149,19 +149,33 @@ fun ProductKeywordsTextFieldWithEmbeddedButton(
                 )
                 .clip(RoundedCornerShape(10.dp))
         ) {
-            WCOutlinedTextField(
-                value = textFieldContent,
-                onValueChange = onTextFieldContentChanged,
-                label = "", // Can't use label here as it breaks the visual design.
-                placeholderText = stringResource(id = R.string.ai_product_creation_add_name_keywords_placeholder),
-                textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.multiline_textfield_height)),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Transparent, // Remove outline and use Column's border instead.
-                    unfocusedBorderColor = Color.Transparent
-                ),
-                modifier = Modifier
-                    .onFocusChanged { focusState -> isFocused = focusState.isFocused }
-            )
+            Box {
+                if(textFieldContent.isEmpty()) {
+                    Text(
+                        text = stringResource(id = R.string.ai_product_creation_add_name_keywords_placeholder),
+                        style = MaterialTheme.typography.body1,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(
+                            horizontal = dimensionResource(id = R.dimen.major_100),
+                            vertical = dimensionResource(id = R.dimen.major_150)
+                        )
+                    )
+                }
+
+                WCOutlinedTextField(
+                    value = textFieldContent,
+                    onValueChange = onTextFieldContentChanged,
+                    label = "", // Can't use label here as it breaks the visual design.
+                    placeholderText = "", // Uses Text() above instead.
+                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.multiline_textfield_height)),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Transparent, // Remove outline and use Column's border instead.
+                        unfocusedBorderColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .onFocusChanged { focusState -> isFocused = focusState.isFocused }
+                )
+            }
 
             Divider()
 
