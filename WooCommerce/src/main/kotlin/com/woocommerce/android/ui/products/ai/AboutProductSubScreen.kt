@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -126,14 +127,27 @@ fun AboutProductSubScreen(
                         text = stringResource(id = R.string.product_creation_ai_about_product_edit_text_header),
                         style = MaterialTheme.typography.subtitle2,
                     )
-                    WCOutlinedTextField(
-                        value = state.productFeatures,
-                        onValueChange = onProductFeaturesUpdated,
-                        label = stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint),
-                        textFieldModifier = Modifier.height(
-                            dimensionResource(id = R.dimen.multiline_textfield_height)
+                    Box {
+                        if (state.productFeatures.isEmpty()) {
+                            Text(
+                                text = stringResource(id = R.string.ai_product_creation_add_name_keywords_placeholder),
+                                style = MaterialTheme.typography.body1,
+                                color = colorResource(id = R.color.color_on_surface_medium),
+                                modifier = Modifier.padding(
+                                    horizontal = dimensionResource(id = R.dimen.major_100),
+                                    vertical = dimensionResource(id = R.dimen.major_150)
+                                )
+                            )
+                        }
+                        WCOutlinedTextField(
+                            value = state.productFeatures,
+                            onValueChange = onProductFeaturesUpdated,
+                            label = "",
+                            textFieldModifier = Modifier.height(
+                                dimensionResource(id = R.dimen.multiline_textfield_height)
+                            )
                         )
-                    )
+                    }
                     Text(
                         text = stringResource(id = R.string.product_creation_ai_about_product_edit_text_caption),
                         style = MaterialTheme.typography.caption,
