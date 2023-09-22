@@ -95,7 +95,7 @@ fun AboutProductSubScreen(
                     placeholderText = if (isFocused) stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint) else "",
                     label = if (isFocused) "" else stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint),
                     textFieldModifier = Modifier.height(
-                        dimensionResource(id = R.dimen.large_outlined_text_field_min_height)
+                        dimensionResource(id = R.dimen.multiline_textfield_height)
                     )
                 )
                 Text(
