@@ -1898,7 +1898,11 @@
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
-
+    <string name="ai_product_creation_add_name_title">Add your product name</string>
+    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Product name</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_header">My product</string>
@@ -1906,6 +1910,11 @@
     <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
+    <string name="product_creation_ai_preview_title">Preview</string>
+    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_description_section">Product description</string>
+    <string name="product_creation_ai_preview_details_section">Details</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3578,16 +3587,6 @@
     <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
     <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
-
-
-    <!--
-    AI Product creation
-    -->
-    <string name="ai_product_creation_add_name_title">Add your product name</string>
-    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Product name</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
 
     <!--
     Blaze banner
