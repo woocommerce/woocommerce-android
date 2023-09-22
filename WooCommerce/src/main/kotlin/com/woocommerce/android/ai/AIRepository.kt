@@ -101,8 +101,8 @@ class AIRepository @Inject constructor(
                 languageISOCode = languageISOCode
             ),
             PRODUCT_CREATION_FEATURE
-        ).mapCatching {
-            val parsedResponse = Gson().fromJson(it, JsonResponse::class.java)
+        ).mapCatching { json ->
+            val parsedResponse = Gson().fromJson(json, JsonResponse::class.java)
             ProductHelper.getDefaultNewProduct(
                 SIMPLE,
                 parsedResponse.isVirtual
@@ -111,8 +111,12 @@ class AIRepository @Inject constructor(
                 description = parsedResponse.description,
                 shortDescription = parsedResponse.shortDescription,
                 regularPrice = parsedResponse.price,
-                categories = parsedResponse.categories?.map { ProductCategory(name = it) }.orEmpty(),
-                tags = parsedResponse.tags?.map { ProductTag(name = it) }.orEmpty(),
+                categories = parsedResponse.categories.orEmpty()
+                    .filter { existingCategories.contains(it) }
+                    .map { ProductCategory(name = it) },
+                tags = parsedResponse.tags.orEmpty()
+                    .filter { existingTags.contains(it) }
+                    .map { ProductTag(name = it) },
                 weight = parsedResponse.shipping.weight,
                 height = parsedResponse.shipping.height,
                 length = parsedResponse.shipping.length,
