@@ -85,7 +85,10 @@ fun AboutProductSubScreen(
             AiToneBottomSheetContent(
                 aiTones = AiTone.values().toList(),
                 selectedTone = state.selectedAiTone,
-                onToneSelected = onToneSelected
+                onToneSelected = {
+                    coroutineScope.launch { modalSheetState.hide() }
+                    onToneSelected(it)
+                }
             )
         }
     ) {
@@ -163,7 +166,6 @@ fun AboutProductSubScreen(
             ) {
                 Text(text = stringResource(id = R.string.product_creation_ai_about_product_continue_button))
             }
-
         }
     }
 }
