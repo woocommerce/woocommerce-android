@@ -65,8 +65,8 @@ class AIRepository @Inject constructor(
         weightUnit: String,
         dimensionUnit: String,
         currency: String,
-        existingCategories: List<String>,
-        existingTags: List<String>,
+        existingCategories: List<ProductCategory>,
+        existingTags: List<ProductTag>,
         languageISOCode: String = "en"
     ): Result<Product> {
         data class Shipping(
@@ -96,8 +96,8 @@ class AIRepository @Inject constructor(
                 weightUnit = weightUnit,
                 dimensionUnit = dimensionUnit,
                 currency = currency,
-                existingCategories = existingCategories,
-                existingTags = existingTags,
+                existingCategories = existingCategories.map { it.name },
+                existingTags = existingTags.map { it.name },
                 languageISOCode = languageISOCode
             ),
             PRODUCT_CREATION_FEATURE
@@ -111,12 +111,8 @@ class AIRepository @Inject constructor(
                 description = parsedResponse.description,
                 shortDescription = parsedResponse.shortDescription,
                 regularPrice = parsedResponse.price,
-                categories = parsedResponse.categories.orEmpty()
-                    .filter { existingCategories.contains(it) }
-                    .map { ProductCategory(name = it) },
-                tags = parsedResponse.tags.orEmpty()
-                    .filter { existingTags.contains(it) }
-                    .map { ProductTag(name = it) },
+                categories = existingCategories.filter { parsedResponse.categories.orEmpty().contains(it.name) },
+                tags = existingTags.filter { parsedResponse.tags.orEmpty().contains(it.name) },
                 weight = parsedResponse.shipping.weight,
                 height = parsedResponse.shipping.height,
                 length = parsedResponse.shipping.length,

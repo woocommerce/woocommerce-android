@@ -57,8 +57,8 @@ class ProductPreviewSubViewModel(
                 weightUnit = siteParameters.weightUnit ?: "kg",
                 dimensionUnit = siteParameters.dimensionUnit ?: "cm",
                 currency = siteParameters.currencyCode ?: "USD",
-                existingCategories = categories.map { it.name },
-                existingTags = tags.map { it.name },
+                existingCategories = categories,
+                existingTags = tags,
                 languageISOCode = Locale.getDefault().language
             ).fold(
                 onSuccess = { product ->
