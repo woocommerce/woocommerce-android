@@ -28,6 +28,13 @@ class AddProductWithAIViewModel @Inject constructor(
                 goToNextStep()
             }
         ),
+        AboutProductSubViewModel(
+            savedStateHandle = savedStateHandle,
+            onDone = {
+                // Pass the about product to next ViewModel if needed
+                goToNextStep()
+            }
+        ),
     )
 
     val state = combine(step, saveButtonState) { step, saveButtonState ->
@@ -57,7 +64,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun goToPreviousStep() {
-        require(step.value.ordinal > 1)
+        require(step.value.order > 1)
         step.value = Step.getValueForOrder(step.value.order - 1)
     }
 
