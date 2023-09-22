@@ -92,8 +92,12 @@ fun AboutProductSubScreen(
                     modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
                     value = state.productFeatures,
                     onValueChange = onProductFeaturesUpdated,
-                    placeholderText = if (isFocused) stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint) else "",
-                    label = if (isFocused) "" else stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint),
+                    placeholderText =
+                    if (isFocused) stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint)
+                    else "",
+                    label =
+                    if (isFocused) ""
+                    else stringResource(id = R.string.product_creation_ai_about_product_edit_text_hint),
                     textFieldModifier = Modifier.height(
                         dimensionResource(id = R.dimen.multiline_textfield_height)
                     )
