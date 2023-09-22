@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
 import java.math.BigDecimal
@@ -41,7 +40,7 @@ class AIRepository @Inject constructor(
             productDescription.orEmpty(),
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(selectedSite.get(), prompt, PRODUCT_SHARING_FEATURE)
+        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_SHARING_FEATURE)
     }
 
     suspend fun generateProductDescription(
@@ -54,7 +53,7 @@ class AIRepository @Inject constructor(
             features,
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(selectedSite.get(), prompt, PRODUCT_DESCRIPTION_FEATURE)
+        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
     @Suppress("LongParameterList")
@@ -88,8 +87,7 @@ class AIRepository @Inject constructor(
         )
 
         return fetchJetpackAICompletionsForSite(
-            selectedSite.get(),
-            AIPrompts.generateProductCreationPrompt(
+            prompt = AIPrompts.generateProductCreationPrompt(
                 name = productName,
                 keywords = productKeyWords,
                 tone = tone,
@@ -100,7 +98,7 @@ class AIRepository @Inject constructor(
                 existingTags = existingTags.map { it.name },
                 languageISOCode = languageISOCode
             ),
-            PRODUCT_CREATION_FEATURE
+            feature = PRODUCT_CREATION_FEATURE
         ).mapCatching { json ->
             val parsedResponse = Gson().fromJson(json, JsonResponse::class.java)
             ProductHelper.getDefaultNewProduct(
@@ -121,17 +119,16 @@ class AIRepository @Inject constructor(
         }
     }
 
-    suspend fun identifyISOLanguageCode(site: SiteModel, text: String, feature: String): Result<String> {
+    suspend fun identifyISOLanguageCode(text: String, feature: String): Result<String> {
         val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
-        return fetchJetpackAICompletionsForSite(site, prompt, feature)
+        return fetchJetpackAICompletionsForSite(prompt, feature)
     }
 
     private suspend fun fetchJetpackAICompletionsForSite(
-        site: SiteModel,
         prompt: String,
         feature: String
     ): Result<String> = withContext(Dispatchers.IO) {
-        jetpackAIStore.fetchJetpackAICompletions(site, prompt, feature).run {
+        jetpackAIStore.fetchJetpackAICompletions(selectedSite.get(), prompt, feature).run {
             when (this) {
                 is JetpackAICompletionsResponse.Success -> {
                     WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")
