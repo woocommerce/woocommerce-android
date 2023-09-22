@@ -1,5 +1,7 @@
 package com.woocommerce.android.ai
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
@@ -8,7 +10,6 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
@@ -16,7 +17,6 @@ import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class AIRepository @Inject constructor(
@@ -26,6 +26,7 @@ class AIRepository @Inject constructor(
     companion object {
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
+        const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
     }
 
     suspend fun generateProductSharingText(
@@ -56,32 +57,68 @@ class AIRepository @Inject constructor(
         return fetchJetpackAICompletionsForSite(selectedSite.get(), prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("LongParameterList")
     suspend fun generateProduct(
         productName: String,
         productKeyWords: String,
+        tone: String,
+        weightUnit: String,
+        dimensionUnit: String,
+        currency: String,
+        existingCategories: List<String>,
+        existingTags: List<String>,
         languageISOCode: String = "en"
     ): Result<Product> {
-        // TODO implement the AI prompt and parsing
-        delay(5.seconds)
-        return Result.success(
+        data class Shipping(
+            val weight: Float,
+            val height: Float,
+            val length: Float,
+            val width: Float
+        )
+
+        data class JsonResponse(
+            val name: String,
+            val description: String,
+            @SerializedName("short_description") val shortDescription: String,
+            @SerializedName("virtual") val isVirtual: Boolean,
+            val price: BigDecimal,
+            val shipping: Shipping,
+            val categories: List<String>? = null,
+            val tags: List<String>? = null
+        )
+
+        return fetchJetpackAICompletionsForSite(
+            selectedSite.get(),
+            AIPrompts.generateProductCreationPrompt(
+                name = productName,
+                keywords = productKeyWords,
+                tone = tone,
+                weightUnit = weightUnit,
+                dimensionUnit = dimensionUnit,
+                currency = currency,
+                existingCategories = existingCategories,
+                existingTags = existingTags,
+                languageISOCode = languageISOCode
+            ),
+            PRODUCT_CREATION_FEATURE
+        ).mapCatching {
+            val parsedResponse = Gson().fromJson(it, JsonResponse::class.java)
             ProductHelper.getDefaultNewProduct(
                 SIMPLE,
-                false
+                parsedResponse.isVirtual
             ).copy(
-                name = "Soft Black Tee: Elevate Your Everyday Style",
-                description = "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for " +
-                    "everyday comfort and sustainability. Crafted with care from organic cotton, this tee is not" +
-                    " just soft on your skin but gentle on the environment.",
-                regularPrice = BigDecimal.TEN,
-                categories = listOf(ProductCategory(name = "Category 1"), ProductCategory(name = "Category 2")),
-                tags = listOf(ProductTag(name = "tag 1")),
-                weight = 10f,
-                height = 10f,
-                length = 10f,
-                width = 10f
+                name = parsedResponse.name,
+                description = parsedResponse.description,
+                shortDescription = parsedResponse.shortDescription,
+                regularPrice = parsedResponse.price,
+                categories = parsedResponse.categories?.map { ProductCategory(name = it) }.orEmpty(),
+                tags = parsedResponse.tags?.map { ProductTag(name = it) }.orEmpty(),
+                weight = parsedResponse.shipping.weight,
+                height = parsedResponse.shipping.height,
+                length = parsedResponse.shipping.length,
+                width = parsedResponse.shipping.width
             )
-        )
+        }
     }
 
     suspend fun identifyISOLanguageCode(site: SiteModel, text: String, feature: String): Result<String> {
