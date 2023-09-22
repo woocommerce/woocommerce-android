@@ -37,7 +37,7 @@ class ProductPreviewSubViewModel(
             aiRepository.generateProduct(
                 productName = name,
                 productKeyWords = keywords,
-                tone = "neutral",  // TODO,
+                tone = "neutral", // TODO,
                 weightUnit = siteParameters.weightUnit ?: "kg",
                 dimensionUnit = siteParameters.dimensionUnit ?: "cm",
                 currency = siteParameters.currencyCode ?: "USD",

@@ -1,3 +1,5 @@
+@file:Suppress("MaximumLineLength")
+
 package com.woocommerce.android.ai
 
 object AIPrompts {
@@ -37,7 +39,7 @@ object AIPrompts {
         return String.format(PRODUCT_SHARING_PROMPT, name, descriptionPart, url, languageISOCode)
     }
 
-    @Suppress("MaxLineLength", "LongParameterList")
+    @Suppress("LongParameterList")
     fun generateProductCreationPrompt(
         name: String,
         keywords: String,
@@ -49,6 +51,20 @@ object AIPrompts {
         existingTags: List<String>,
         languageISOCode: String
     ): String {
+        fun getTagsLine(): String {
+            return if (existingTags.isNotEmpty()) {
+                """tags":"Given the list of available tags "${existingTags.joinToString()}", suggest an array of the best matching tags for this product, if no matches are found return an empty array, don’t suggest any value other than the available ones",
+                    """"
+            } else ""
+        }
+
+        fun getCategoriesLine(): String {
+            return if (existingCategories.isNotEmpty()) {
+                """"categories":"Given the list of available categories "${existingCategories.joinToString()}", suggest an array of the best matching categories for this product, if no matches are found return an empty array, don’t suggest any value other than the available ones"
+                    """"
+            } else ""
+        }
+
         return """
             You are a WooCommerce SEO and marketing expert, perform in-depth research about the product using the provided name, keywords and tone, and give your response in the below JSON format
 
@@ -69,16 +85,8 @@ object AIPrompts {
                   "height":"Guess and provide only the number in $dimensionUnit"
                },
                "price":"Guess the price in $currency, return the price unformatted",
-            ${
-                @Suppress("MaxLineLength")
-                if (existingTags.isNotEmpty()) """"tags":"Given the list of available tags "${existingTags.joinToString()}", suggest an array of the best matching tags for this product, if no matches are found return an empty array, don’t suggest any value other than the available ones","""
-                else ""
-            }
-            ${
-                @Suppress("MaxLineLength")
-                if (existingCategories.isNotEmpty()) """"categories":"Given the list of available categories "${existingCategories.joinToString()}", suggest an array of the best matching categories for this product, if no matches are found return an empty array, don’t suggest any value other than the available ones""""
-                else ""
-            }
+               ${getTagsLine()}
+               ${getCategoriesLine()}
             }"
         """.trimIndent()
     }
