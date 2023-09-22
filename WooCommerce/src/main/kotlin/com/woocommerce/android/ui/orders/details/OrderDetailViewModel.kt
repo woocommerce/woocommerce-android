@@ -784,12 +784,14 @@ class OrderDetailViewModel @Inject constructor(
                 order,
                 orderEligibleForInPersonPayments
             ),
-            isAIThankYouNoteButtonShown = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
-                selectedSite.get().isWPComAtomic &&
-                order.status == Order.Status.Completed &&
-                productList.value?.isNotEmpty() == true
+            isAIThankYouNoteButtonShown = shouldShowThankYouNoteButton()
         )
     }
+
+    private fun shouldShowThankYouNoteButton() = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
+        selectedSite.get().isWPComAtomic &&
+        order.status == Order.Status.Completed &&
+        productList.value?.isNotEmpty() == true
 
     override fun onProductFetched(remoteProductId: Long) {
         viewState = viewState.copy(refreshedProductId = remoteProductId)
