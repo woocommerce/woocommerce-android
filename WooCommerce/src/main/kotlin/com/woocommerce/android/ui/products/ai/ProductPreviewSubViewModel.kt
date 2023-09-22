@@ -14,6 +14,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class ProductPreviewSubViewModel(
@@ -32,8 +33,23 @@ class ProductPreviewSubViewModel(
     val state = _state.asLiveData()
 
     fun startGeneratingProduct(name: String, keywords: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _state.value = State.Loading
+
+            val categories = withContext(Dispatchers.IO) {
+                categoriesRepository.getProductCategoriesList().ifEmpty {
+                    categoriesRepository.fetchProductCategories()
+                    categoriesRepository.getProductCategoriesList()
+                }
+            }
+
+            val tags = withContext(Dispatchers.IO) {
+                tagsRepository.getProductTags().ifEmpty {
+                    tagsRepository.fetchProductTags()
+                    tagsRepository.getProductTags()
+                }
+            }
+
             aiRepository.generateProduct(
                 productName = name,
                 productKeyWords = keywords,
@@ -41,8 +57,8 @@ class ProductPreviewSubViewModel(
                 weightUnit = siteParameters.weightUnit ?: "kg",
                 dimensionUnit = siteParameters.dimensionUnit ?: "cm",
                 currency = siteParameters.currencyCode ?: "USD",
-                existingCategories = categoriesRepository.getProductCategoriesList().map { it.name },
-                existingTags = tagsRepository.getProductTags().map { it.name },
+                existingCategories = categories.map { it.name },
+                existingTags = tags.map { it.name },
                 languageISOCode = Locale.getDefault().language
             ).fold(
                 onSuccess = { product ->
