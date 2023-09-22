@@ -37,10 +37,7 @@ class AddProductWithAIViewModel @Inject constructor(
         ),
     )
 
-    val state = combine(
-        step,
-        saveButtonState
-    ) { step, saveButtonState ->
+    val state = combine(step, saveButtonState) { step, saveButtonState ->
         State(
             progress = step.order.toFloat() / Step.values().size,
             subViewModel = subViewModels[step.ordinal],
