@@ -198,13 +198,15 @@ class VariationDetailCardBuilder(
         ) {
             viewModel.onEditVariationCardClicked(
                 ViewPricing(
-                    PricingData(
+                    pricingData = PricingData(
                         isSaleScheduled = isSaleScheduled,
                         saleStartDate = saleStartDateGmt,
                         saleEndDate = saleEndDateGmt,
                         regularPrice = regularPrice,
                         salePrice = salePrice
-                    )
+                    ),
+                    productName = parentProduct?.name ?: "",
+                    productDescription = parentProduct?.description
                 ),
                 PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
             )

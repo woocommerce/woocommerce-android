@@ -67,7 +67,9 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         salePrice = BigDecimal.ONE
     )
 
-    private val savedState = ProductPricingFragmentArgs(RequestCodes.PRODUCT_DETAIL_PRICING, pricingData)
+    private val productName = "Example product"
+
+    private val savedState = ProductPricingFragmentArgs(RequestCodes.PRODUCT_DETAIL_PRICING, pricingData, productName)
         .initSavedStateHandle()
 
     private lateinit var viewModel: ProductPricingViewModel
@@ -167,7 +169,7 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hides the tax section for variation pricing`() = testBlocking {
-        val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData)
+        val savedState = ProductPricingFragmentArgs(RequestCodes.VARIATION_DETAIL_PRICING, pricingData, productName)
             .initSavedStateHandle()
 
         viewModel = spy(

@@ -460,7 +460,9 @@ class ProductDetailCardBuilder(
                         saleEndDateGmt,
                         regularPrice,
                         salePrice
-                    )
+                    ),
+                    name,
+                    description
                 ),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_PRICE_SETTINGS_TAPPED
             )

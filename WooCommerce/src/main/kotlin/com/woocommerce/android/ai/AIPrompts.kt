@@ -1,5 +1,8 @@
 package com.woocommerce.android.ai
 
+import org.wordpress.android.fluxc.utils.DateUtils
+import java.math.BigDecimal
+
 object AIPrompts {
     private const val PRODUCT_DESCRIPTION_PROMPT = "Write a description for a product with title \"%1\$s\"%2\$s.\n" +
         "Your response should be in the ISO language code \"%3\$s\". \n" +
@@ -59,6 +62,55 @@ object AIPrompts {
             productName,
             descriptionPart,
             languageISOCode
+        )
+    }
+
+    private const val SALES_PRICE_ADVICE_PROMPT = "Please provide a sales/discount price recommendation " +
+        "for a product currently priced at \"%1\$s\". " +
+        "%2\$s" +
+        "The product's name is \"%3\$s\". \n" +
+        "%4\$s\n" +
+        "Consider the location of the store which is in the country with the code \"%5\$s\" and the state " +
+        "with the code \"%6\$s\". When looking into the state code, ensure that the state actually exists in the " +
+        "country. If not, please only use the country location as consideration." +
+        "Some rules to follow:\n" +
+        "1. Never refer to yourself. Don't say things like `I recommend` or `I advise`. Instead say it " +
+        " passively like `a possible recommendation is...` or in variations of that." +
+        "2. Your sales advice should be in the ISO language code \"%7\$s\". \n" +
+        "3. Never mention the country code or state code, or any location code in general. Instead, you must always " +
+        "use the country name and state name. \n" +
+        "4. Keep in mind that this is pricing for an e-commerce store, not a physical store. \n" +
+        "5. Ensure the advice is clear, concise, and takes into account the local market conditions. It should aim " +
+        "to maximize sales while maintaining a competitive price. " +
+        "6. Most importantly, the advised price must be lower than the current product price." +
+        "7. The current date is %8\$s .\n" +
+        "Based on that date, recommend the next best times to run a sale, with your reasoning. " +
+        "But don't recommend a time or month or season that is already in the past."
+
+    @Suppress("LongParameterList")
+    fun generateSalesPriceAdvicePrompt(
+        currentPrice: BigDecimal,
+        currency: String?,
+        productName: String,
+        productDescription: String = "",
+        countryCode: String,
+        stateCode: String,
+        languageISOCode: String = "en",
+    ): String {
+        val descriptionPart = if (productDescription.isNotEmpty()) "The product description is as " +
+            "follows: \"$productDescription\". " else ""
+
+        val currencyPart = currency?.let { "The current currency is $it. " } ?: ""
+        return String.format(
+            SALES_PRICE_ADVICE_PROMPT,
+            currentPrice,
+            currencyPart,
+            productName,
+            descriptionPart,
+            countryCode,
+            stateCode,
+            languageISOCode,
+            DateUtils.getCurrentDateString()
         )
     }
 

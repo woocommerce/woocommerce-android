@@ -14,7 +14,9 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -33,8 +35,8 @@ import javax.inject.Inject
 class ProductPricingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductDetailRepository,
-    wooCommerceStore: WooCommerceStore,
-    selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore,
+    private val selectedSite: SelectedSite,
     parameterRepository: ParameterRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
@@ -69,7 +71,10 @@ class ProductPricingViewModel @Inject constructor(
             currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
             decimals = decimals,
             taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
-            isTaxSectionVisible = isProductPricing
+            isTaxSectionVisible = isProductPricing,
+            showAISalePriceRecommendation = FeatureFlag.AI_PRICE_ADVISOR.isEnabled() &&
+                selectedSite.get().isWPComAtomic &&
+                pricingData.salePrice == null
         )
 
         originalPricingData = navArgs.pricingData
@@ -172,6 +177,20 @@ class ProductPricingViewModel @Inject constructor(
         onDataChanged(saleEndDate = null)
     }
 
+    fun onRecommendSalePriceButtonClicked() {
+        triggerEvent(
+            NavigateToAIPriceAdvisor(
+                adviceTypeValue = AIPriceAdvisorViewModel.AdviceType.SALE_PRICE.value,
+                currentPrice = pricingData.regularPrice ?: BigDecimal.ZERO,
+                currency = parameters.currencyCode,
+                productName = navArgs.productName,
+                productDescription = navArgs.productDescription,
+                countryCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.countryCode ?: "",
+                stateCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.stateCode ?: ""
+            )
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val currency: String? = null,
@@ -180,6 +199,7 @@ class ProductPricingViewModel @Inject constructor(
         val salePriceErrorMessage: Int? = null,
         val pricingData: PricingData = PricingData(),
         val isTaxSectionVisible: Boolean? = null,
+        val showAISalePriceRecommendation: Boolean = false,
         private val currencyPosition: CurrencyPosition? = null
     ) : Parcelable {
         val isRemoveEndDateButtonVisible: Boolean
@@ -217,4 +237,13 @@ class ProductPricingViewModel @Inject constructor(
             return super.hashCode()
         }
     }
+    data class NavigateToAIPriceAdvisor(
+        val adviceTypeValue: Int,
+        val currentPrice: BigDecimal,
+        val currency: String?,
+        val productName: String,
+        val productDescription: String?,
+        val countryCode: String,
+        val stateCode: String
+    ) : MultiLiveEvent.Event()
 }

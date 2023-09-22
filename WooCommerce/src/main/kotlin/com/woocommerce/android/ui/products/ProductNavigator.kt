@@ -167,8 +167,10 @@ class ProductNavigator @Inject constructor() {
             is ViewProductPricing -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToProductPricingFragment(
-                        RequestCodes.PRODUCT_DETAIL_PRICING,
-                        target.pricingData
+                        pricingData = target.pricingData,
+                        requestCode = RequestCodes.PRODUCT_DETAIL_PRICING,
+                        productName = target.productName,
+                        productDescription = target.productDescription
                     )
                 fragment.findNavController().navigateSafely(action)
             }

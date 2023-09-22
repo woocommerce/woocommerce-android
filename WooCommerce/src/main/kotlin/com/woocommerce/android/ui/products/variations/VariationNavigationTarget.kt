@@ -17,7 +17,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
  */
 sealed class VariationNavigationTarget : Event() {
     data class ViewInventory(val inventoryData: InventoryData, val sku: String) : VariationNavigationTarget()
-    data class ViewPricing(val pricingData: PricingData) : VariationNavigationTarget()
+    data class ViewPricing(
+        val pricingData: PricingData,
+        val productName: String,
+        val productDescription: String?
+    ) : VariationNavigationTarget()
     data class ViewShipping(val shippingData: ShippingData) : VariationNavigationTarget()
     data class ViewDescriptionEditor(val description: String, val title: String) : VariationNavigationTarget()
     data class ViewMediaUploadErrors(val remoteId: Long) : VariationNavigationTarget()

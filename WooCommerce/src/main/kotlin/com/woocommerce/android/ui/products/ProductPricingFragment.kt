@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -105,6 +106,13 @@ class ProductPricingFragment :
                 }
             }
             new.salePriceErrorMessage?.takeIfNotEqualTo(old?.salePriceErrorMessage) { displaySalePriceError(it) }
+            new.showAISalePriceRecommendation.takeIfNotEqualTo(old?.showAISalePriceRecommendation) { show ->
+                if (show) {
+                    binding.suggestPriceButton.show()
+                } else {
+                    binding.suggestPriceButton.hide()
+                }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -112,6 +120,7 @@ class ProductPricingFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_PRICING_DIALOG_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
+                is ProductPricingViewModel.NavigateToAIPriceAdvisor -> navigateToAIPriceAdvisor(event)
                 else -> event.isHandled = false
             }
         }
@@ -203,6 +212,25 @@ class ProductPricingFragment :
                 }
             }
         }
+
+        with(binding.suggestPriceButton) {
+            setOnClickListener {
+                viewModel.onRecommendSalePriceButtonClicked()
+            }
+        }
+    }
+
+    private fun navigateToAIPriceAdvisor(event: ProductPricingViewModel.NavigateToAIPriceAdvisor) {
+        val action = ProductPricingFragmentDirections.actionProductPricingFragmentToAIPriceAdvisorFragment(
+            adviceTypeValue = event.adviceTypeValue,
+            currentPrice = event.currentPrice,
+            currency = event.currency,
+            productName = event.productName,
+            productDescription = event.productDescription,
+            countryCode = event.countryCode,
+            stateCode = event.stateCode
+        )
+        findNavController().navigateSafely(action)
     }
 
     override fun onExit() {

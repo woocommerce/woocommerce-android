@@ -604,6 +604,9 @@ class AnalyticsTracker private constructor(
         // -- AI thank-you note
         const val VALUE_ORDER_THANK_YOU_NOTE = "order_thank_you_note"
 
+        // -- AI sales price advisor
+        const val VALUE_AI_SALES_PRICE_ADVISOR = "ai_sales_price_advisor"
+
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
