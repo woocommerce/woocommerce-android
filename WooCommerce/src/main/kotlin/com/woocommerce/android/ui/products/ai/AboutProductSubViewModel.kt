@@ -5,23 +5,17 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.parcelize.Parcelize
 
 class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
     override val onDone: (String) -> Unit
 ) : AddProductWithAISubViewModel<String> {
-    private val _events = MutableSharedFlow<Event>(extraBufferCapacity = 1)
-    override val events: Flow<Event> get() = _events
-
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val productFeatures = savedStateHandle.getStateFlow(
