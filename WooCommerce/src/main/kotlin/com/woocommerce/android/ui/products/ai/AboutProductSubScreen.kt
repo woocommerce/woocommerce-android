@@ -182,7 +182,9 @@ private fun AiToneBottomSheetContent(
             topEnd = dimensionResource(id = R.dimen.minor_100)
         )
     ) {
-        Column {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
             BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
             Text(
