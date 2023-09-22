@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -60,11 +59,6 @@ class AddProductWithAIViewModel @Inject constructor(
         } else {
             goToPreviousStep()
         }
-    }
-
-    fun updateAiTone(aiTone: AiTone) {
-        (subViewModels.find { it is AboutProductSubViewModel } as AboutProductSubViewModel)
-            .onNewToneSelected(aiTone)
     }
 
     private fun goToNextStep() {

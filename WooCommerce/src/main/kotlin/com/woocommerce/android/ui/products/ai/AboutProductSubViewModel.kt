@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.products.ai
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -41,10 +42,6 @@ class AboutProductSubViewModel(
         productFeatures.value = productFeatures.value.copy(productFeatures = features)
     }
 
-    fun onChangeToneClicked() {
-        _events.tryEmit(NavigateToAiToneBottomSheet(productFeatures.value.selectedAiTone))
-    }
-
     fun onNewToneSelected(tone: AiTone) {
         productFeatures.value = productFeatures.value.copy(selectedAiTone = tone)
     }
@@ -59,5 +56,10 @@ class AboutProductSubViewModel(
         val selectedAiTone: AiTone
     ) : Parcelable
 
-    data class NavigateToAiToneBottomSheet(val aiTone: AiTone) : Event()
+    enum class AiTone(@StringRes val displayName: Int) {
+        Casual(R.string.product_creation_ai_tone_casual),
+        Formal(R.string.product_creation_ai_tone_formal),
+        Flowery(R.string.product_creation_ai_tone_flowery),
+        Convincing(R.string.product_creation_ai_tone_convincing);
+    }
 }
