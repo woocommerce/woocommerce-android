@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,5 +28,10 @@ class AddProductWithAISetToneViewModel @Inject constructor(
 
     data class ViewState(val selectedAiTone: AiTone)
 
-    enum class AiTone { Casual, Formal, Flowery, Convincing }
+    enum class AiTone(@StringRes val displayName: Int) {
+        Casual(R.string.product_creation_ai_tone_casual),
+        Formal(R.string.product_creation_ai_tone_formal),
+        Flowery(R.string.product_creation_ai_tone_flowery),
+        Convincing(R.string.product_creation_ai_tone_convincing);
+    }
 }

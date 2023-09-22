@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone
-import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Casual
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.parcelize.Parcelize
 
 class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
@@ -26,7 +27,7 @@ class AboutProductSubViewModel(
         viewModelScope,
         UiState(
             productFeatures = "",
-            selectedAiTone = Casual
+            selectedAiTone = AiTone.Casual
         )
     )
 
@@ -44,14 +45,19 @@ class AboutProductSubViewModel(
         _events.tryEmit(NavigateToAiToneBottomSheet(productFeatures.value.selectedAiTone))
     }
 
+    fun onNewToneSelected(tone: AiTone) {
+        productFeatures.value = productFeatures.value.copy(selectedAiTone = tone)
+    }
+
     override fun close() {
         viewModelScope.cancel()
     }
 
+    @Parcelize
     data class UiState(
         val productFeatures: String,
         val selectedAiTone: AiTone
-    )
+    ) : Parcelable
 
     data class NavigateToAiToneBottomSheet(val aiTone: AiTone) : Event()
 }

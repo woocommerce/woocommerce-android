@@ -39,9 +39,6 @@ import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone
 import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Casual
-import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Convincing
-import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Flowery
-import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Formal
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -126,15 +123,7 @@ private fun AiToneBottomSheetContent(
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = stringResource(
-                            id =
-                            when (tone) {
-                                Casual -> R.string.product_creation_ai_tone_casual
-                                Formal -> R.string.product_creation_ai_tone_formal
-                                Flowery -> R.string.product_creation_ai_tone_flowery
-                                Convincing -> R.string.product_creation_ai_tone_convincing
-                            }
-                        ),
+                        text = stringResource(id = tone.displayName),
                         style = MaterialTheme.typography.subtitle1,
                     )
                     if (selectedTone == tone) {

@@ -66,6 +66,7 @@ class AddProductWithAIViewModel @Inject constructor(
 
     fun updateAiTone(aiTone: AiTone) {
         tone = aiTone
+        (subViewModels[1] as AboutProductSubViewModel).onNewToneSelected(aiTone)
     }
 
     private fun goToNextStep() {
