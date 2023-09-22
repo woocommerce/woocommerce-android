@@ -789,7 +789,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun shouldShowThankYouNoteButton() = FeatureFlag.AI_ORDER_DETAIL_THANK_YOU_NOTE.isEnabled() &&
-        selectedSite.get().isWPComAtomic &&
+        selectedSite.getIfExists()?.isWPComAtomic == true &&
         order.status == Order.Status.Completed &&
         productList.value?.isNotEmpty() == true
 
