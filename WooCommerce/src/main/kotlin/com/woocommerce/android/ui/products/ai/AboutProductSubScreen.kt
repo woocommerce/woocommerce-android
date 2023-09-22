@@ -34,6 +34,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -76,8 +77,9 @@ fun AboutProductSubScreen(
     val modalSheetState = rememberModalBottomSheetState(
         initialValue = Hidden,
         confirmStateChange = { it != HalfExpanded },
-        skipHalfExpanded = true,
     )
+    val configuration = LocalConfiguration.current
+
     ModalBottomSheetLayout(
         sheetState = modalSheetState,
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
@@ -147,8 +149,13 @@ fun AboutProductSubScreen(
                         coroutineScope.launch {
                             if (modalSheetState.isVisible)
                                 modalSheetState.hide()
-                            else
-                                modalSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                            else {
+                                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                    modalSheetState.animateTo(ModalBottomSheetValue.HalfExpanded)
+                                } else {
+                                    modalSheetState.animateTo(ModalBottomSheetValue.Expanded)
+                                }
+                            }
                         }
                     }
                 ) {
@@ -224,14 +231,11 @@ private fun AiToneBottomSheetContent(
                     }
                 }
                 if (index < aiTones.size - 1)
-                    Divider(
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_75)),
-                    )
+                    Divider(modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_75)))
             }
         }
     }
 }
-
 
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
