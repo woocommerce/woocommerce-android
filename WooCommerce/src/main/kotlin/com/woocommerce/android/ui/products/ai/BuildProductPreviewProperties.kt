@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductDetailCardBuilder
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.ProductPreviewSubViewModel.ProductPropertyCard
 import com.woocommerce.android.util.CurrencyFormatter
@@ -11,6 +12,11 @@ import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
+/**
+ * This is a simplified version of [ProductDetailCardBuilder], we decided to create it instead of reusing the other
+ * class because our usage for now is quite simple, and [ProductDetailCardBuilder] is tightly coupled with the Product
+ * Detail ViewModel.
+ */
 class BuildProductPreviewProperties @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
