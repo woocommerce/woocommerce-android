@@ -138,7 +138,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="prologue_logo_height">36dp</dimen>
     <dimen name="prologue_button_wide">300dp</dimen>
     <dimen name="support_request_message_height">400dp</dimen>
-    <dimen name="product_sharing_message_height">155dp</dimen>
+    <dimen name="multiline_textfield_height">155dp</dimen>
 
     <!-- More Menu dimens -->
     <dimen name="more_menu_button_height">190dp</dimen>
@@ -152,8 +152,5 @@ so that's the baseline as defined in `major_100`.
     <dimen name="stats_widget_content_height">120dp</dimen>
     <dimen name="stats_widget_min_width">250dp</dimen>
     <dimen name="stats_widget_min_height">150dp</dimen>
-
-    <!-- Outlined text field -->
-    <dimen name="large_outlined_text_field_min_height">150dp</dimen>
 
 </resources>

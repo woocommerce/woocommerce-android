@@ -104,7 +104,7 @@ fun ProductShareWithAI(
                     label = stringResource(id = R.string.product_sharing_optional_message_label),
                     isError = isError,
                     helperText = if (isError) viewState.errorMessage else null,
-                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.product_sharing_message_height))
+                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.multiline_textfield_height))
                 )
 
                 AnimatedVisibility(
