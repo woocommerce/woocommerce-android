@@ -686,10 +686,18 @@
         android:label="AddProductWithAIFragment">
         <action
             android:id="@+id/action_addProductWithAIFragment_to_addProductWithAISetToneBottomSheet"
-            app:destination="@id/addProductWithAISetToneBottomSheet" />
+            app:destination="@id/addProductWithAISetToneBottomSheet">
+            <argument
+                android:name="aiTone"
+                app:argType="com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel$AiTone" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/addProductWithAISetToneBottomSheet"
         android:name="com.woocommerce.android.ui.products.ai.AddProductWithAISetToneBottomSheet"
-        android:label="AddProductWithAIBottomSheet" />
+        android:label="AddProductWithAIBottomSheet">
+        <argument
+            android:name="aiTone"
+            app:argType="com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel$AiTone" />
+    </dialog>
 </navigation>

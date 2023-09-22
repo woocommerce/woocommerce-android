@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.UiState
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Casual
 
 @Composable
 fun AboutProductSubScreen(viewModel: AboutProductSubViewModel, modifier: Modifier) {
@@ -130,7 +131,8 @@ fun AboutProductSubScreen(
 fun AboutProductSubScreenPreview() {
     AboutProductSubScreen(
         state = UiState(
-            productFeatures = "productFeatures"
+            productFeatures = "productFeatures",
+            selectedAiTone = Casual
         ),
         onProductFeaturesUpdated = {},
         onCreateProductDetails = {},

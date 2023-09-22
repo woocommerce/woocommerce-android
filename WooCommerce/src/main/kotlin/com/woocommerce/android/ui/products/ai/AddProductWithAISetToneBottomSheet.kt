@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -30,34 +31,66 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.AiTone
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Casual
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Convincing
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Flowery
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone.Formal
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddProductWithAISetToneBottomSheet : WCBottomSheetDialogFragment() {
+    companion object {
+        const val KEY_PRODUCT_CREATION_AI_TONE = "key_product_creation_ai_tone"
+    }
+
+    private val viewmodel: AddProductWithAISetToneViewModel by viewModels()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 WooTheme {
-                    AiToneBottomSheetContent(
-                        aiTones = AddProductWithAIViewModel.AiTone.values(),
-                        selectedTone = AiTone.Casual,
-                        onToneSelected = { /*TODO*/ }
-                    )
+                    AiToneBottomSheetContent(viewmodel)
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewmodel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_PRODUCT_CREATION_AI_TONE, event.data)
             }
         }
     }
 }
 
 @Composable
+private fun AiToneBottomSheetContent(viewModel: AddProductWithAISetToneViewModel) {
+    viewModel.viewState.observeAsState().value?.let { state ->
+        AiToneBottomSheetContent(
+            aiTones = AiTone.values().toList(),
+            selectedTone = state.selectedAiTone,
+            onToneSelected = viewModel::onToneSelected
+        )
+    }
+}
+
+@Composable
 private fun AiToneBottomSheetContent(
-    aiTones: Array<AiTone>,
+    aiTones: List<AiTone>,
     selectedTone: AiTone,
     onToneSelected: (AiTone) -> Unit
 ) {
@@ -93,7 +126,15 @@ private fun AiToneBottomSheetContent(
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = stringResource(id = tone.displayName),
+                        text = stringResource(
+                            id =
+                            when (tone) {
+                                Casual -> R.string.product_creation_ai_tone_casual
+                                Formal -> R.string.product_creation_ai_tone_formal
+                                Flowery -> R.string.product_creation_ai_tone_flowery
+                                Convincing -> R.string.product_creation_ai_tone_convincing
+                            }
+                        ),
                         style = MaterialTheme.typography.subtitle1,
                     )
                     if (selectedTone == tone) {
@@ -124,8 +165,8 @@ private fun AiToneBottomSheetContent(
 private fun AiToneBottomSheetContentPreview() {
     WooThemeWithBackground {
         AiToneBottomSheetContent(
-            aiTones = AddProductWithAIViewModel.AiTone.values(),
-            selectedTone = AiTone.Casual,
+            aiTones = AiTone.values().toList(),
+            selectedTone = Casual,
             onToneSelected = {}
         )
     }

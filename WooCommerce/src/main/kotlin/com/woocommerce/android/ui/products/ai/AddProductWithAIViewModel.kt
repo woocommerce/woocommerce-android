@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
+import com.woocommerce.android.ui.products.ai.AddProductWithAISetToneViewModel.AiTone
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -21,7 +20,8 @@ class AddProductWithAIViewModel @Inject constructor(
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
-    private val aiTone = savedStateHandle.getStateFlow(viewModelScope, AiTone.Casual)
+
+    private var tone: AiTone? = null
 
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
         ProductNameSubViewModel(
@@ -42,15 +42,13 @@ class AddProductWithAIViewModel @Inject constructor(
 
     val state = combine(
         step,
-        saveButtonState,
-        aiTone
-    ) { step, saveButtonState, aiTone ->
+        saveButtonState
+    ) { step, saveButtonState ->
         State(
             progress = step.order.toFloat() / Step.values().size,
             subViewModel = subViewModels[step.ordinal],
             isFirstStep = step.ordinal == 0,
-            saveButtonState = saveButtonState,
-            aiTone = aiTone
+            saveButtonState = saveButtonState
         )
     }.asLiveData()
 
@@ -64,6 +62,10 @@ class AddProductWithAIViewModel @Inject constructor(
         } else {
             goToPreviousStep()
         }
+    }
+
+    fun updateAiTone(aiTone: AiTone) {
+        tone = aiTone
     }
 
     private fun goToNextStep() {
@@ -91,8 +93,7 @@ class AddProductWithAIViewModel @Inject constructor(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
         val isFirstStep: Boolean,
-        val saveButtonState: SaveButtonState,
-        val aiTone: AiTone
+        val saveButtonState: SaveButtonState
     )
 
     enum class SaveButtonState {
@@ -106,12 +107,5 @@ class AddProductWithAIViewModel @Inject constructor(
         companion object {
             fun getValueForOrder(order: Int) = values().first { it.order == order }
         }
-    }
-
-    enum class AiTone(@StringRes val displayName: Int) {
-        Casual(displayName = R.string.product_creation_ai_tone_casual),
-        Formal(displayName = R.string.product_creation_ai_tone_formal),
-        Flowery(displayName = R.string.product_creation_ai_tone_flowery),
-        Convincing(displayName = R.string.product_creation_ai_tone_convincing);
     }
 }
