@@ -50,10 +50,10 @@ class AboutProductSubViewModel(
         val selectedAiTone: AiTone
     ) : Parcelable
 
-    enum class AiTone(@StringRes val displayName: Int) {
-        Casual(R.string.product_creation_ai_tone_casual),
-        Formal(R.string.product_creation_ai_tone_formal),
-        Flowery(R.string.product_creation_ai_tone_flowery),
-        Convincing(R.string.product_creation_ai_tone_convincing);
+    enum class AiTone(@StringRes val displayName: Int, val slug: String) {
+        Casual(R.string.product_creation_ai_tone_casual, "Casual"),
+        Formal(R.string.product_creation_ai_tone_formal, "Formal"),
+        Flowery(R.string.product_creation_ai_tone_flowery, "Flowery"),
+        Convincing(R.string.product_creation_ai_tone_convincing, "Convincing");
     }
 }
