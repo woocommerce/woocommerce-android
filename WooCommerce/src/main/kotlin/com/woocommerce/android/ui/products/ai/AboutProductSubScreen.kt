@@ -83,7 +83,10 @@ fun AboutProductSubScreen(
 
     ModalBottomSheetLayout(
         sheetState = modalSheetState,
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+        sheetShape = RoundedCornerShape(
+            topStart = dimensionResource(id = R.dimen.minor_100),
+            topEnd = dimensionResource(id = R.dimen.minor_100)
+        ),
         sheetContent = {
             AiToneBottomSheetContent(
                 aiTones = AiTone.values().toList(),
