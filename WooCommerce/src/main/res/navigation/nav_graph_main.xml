@@ -602,7 +602,7 @@
         <action
             android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
-            app:popUpTo="@id/dashboard"></action>
+            app:popUpTo="@id/dashboard" />
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
