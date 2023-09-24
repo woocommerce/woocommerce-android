@@ -37,7 +37,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
-fun MainLayout(
+private fun MainLayout(
     enableProductHighlight: Boolean = true,
     footer: @Composable () -> Unit
 ) {
