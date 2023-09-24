@@ -51,7 +51,7 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
         ) {
             ProductNameForm(
                 enteredName = state.name,
-                onProductNameChanged = {},
+                onProductNameChanged = viewModel::onProductNameChanged,
                 onSuggestNameClicked = {},
                 onContinueClicked = {}
             )

@@ -21,6 +21,10 @@ class ProductNameSubViewModel(
         UiState(it)
     }.asLiveData()
 
+    fun onProductNameChanged(enteredName: String) {
+        name.value = enteredName
+    }
+
     fun onDoneClick() {
         onDone(name.value)
     }
