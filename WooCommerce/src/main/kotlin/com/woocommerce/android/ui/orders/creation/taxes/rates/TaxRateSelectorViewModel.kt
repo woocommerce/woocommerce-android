@@ -87,6 +87,7 @@ class TaxRateSelectorViewModel @Inject constructor(
         triggerEvent(EditTaxRatesInAdmin)
         tracker.track(AnalyticsEvent.TAX_RATE_SELECTOR_EDIT_IN_ADMIN_TAPPED)
     }
+
     fun onInfoIconClicked() {
         triggerEvent(ShowTaxesInfoDialog)
     }

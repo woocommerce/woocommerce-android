@@ -2,9 +2,10 @@ package com.woocommerce.android.ui.orders.creation.taxes.rates
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient.TaxRateModel
+import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 
@@ -12,9 +13,6 @@ class TaxRateRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
 ) {
-    private val _taxRates: MutableStateFlow<List<TaxRate>> = MutableStateFlow(emptyList())
-    val taxRates: Flow<List<TaxRate>> = _taxRates
-
     /**
      * Fetches the tax rates for the selected site.
      *
@@ -24,33 +22,38 @@ class TaxRateRepository @Inject constructor(
      * @return A [Boolean] indicating whether more items can be fetched.
      */
     suspend fun fetchTaxRates(page: Int, pageSize: Int): Result<Boolean> {
-        return taxStore.fetchTaxRateList(selectedSite.get(), page, pageSize).let { result ->
-            if (result.isError) {
-                Result.failure(WooException(result.error))
-            } else {
-                val taxRates = result.model!!.toAppModel()
-                _taxRates.value += taxRates
-                Result.success(taxRates.size == pageSize)
+        return taxStore.fetchTaxRateList(selectedSite.get(), page, pageSize)
+            .let { result ->
+                if (result.isError) {
+                    Result.failure(WooException(result.error))
+                } else {
+                    Result.success(result.model!!)
+                }
             }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun observeTaxRates(): Flow<List<TaxRate>> = taxStore.observeTaxRates(selectedSite.get()).map {
+        it.map { taxRateEntity ->
+            taxRateEntity.toAppModel()
         }
     }
 
-    private fun Collection<TaxRateModel>.toAppModel() = map {
+    fun TaxRateEntity.toAppModel(): TaxRate =
         TaxRate(
-            id = it.id,
-            name = it.name ?: "",
-            rate = it.rate ?: "",
-            shipping = it.shipping ?: false,
-            compound = it.compound ?: false,
-            order = it.order ?: 0,
-            taxClass = it.taxClass ?: "",
-            postcode = it.postcode ?: "",
-            city = it.city ?: "",
-            priority = it.priority ?: 0,
-            countryCode = it.country ?: "",
-            stateCode = it.state ?: "",
-            postCodes = it.postCodes,
-            cities = it.cities,
+            id = id.value,
+            countryCode = country ?: "",
+            stateCode = state ?: "",
+            postcode = postcode ?: "",
+            city = city ?: "",
+            postCodes = null,
+            cities = null,
+            rate = rate ?: "",
+            name = name ?: "",
+            priority = 0,
+            compound = false,
+            shipping = false,
+            order = 0,
+            taxClass = taxClass ?: "",
         )
-    }
 }

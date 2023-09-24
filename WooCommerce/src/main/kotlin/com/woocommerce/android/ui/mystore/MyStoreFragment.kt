@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
+import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -124,6 +125,9 @@ class MyStoreFragment :
 
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
+
+    @Inject
+    lateinit var addProductNavigator: AddProductNavigator
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -312,20 +316,23 @@ class MyStoreFragment :
                 )
 
             is StoreOnboardingViewModel.NavigateToAddProduct ->
-                findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
-                )
+                with(addProductNavigator) {
+                    findNavController().navigateToAddProducts(
+                        aiBottomSheetAction = MyStoreFragmentDirections.actionDashboardToAddProductWithAIBottomSheet(),
+                        typesBottomSheetAction = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
+                    )
+                }
 
             is StoreOnboardingViewModel.NavigateToSetupPayments ->
                 findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment(
+                    directions = MyStoreFragmentDirections.actionMyStoreToPaymentsPreSetupFragment(
                         taskId = taskId
                     )
                 )
 
             is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
                 findNavController().navigateSafely(
-                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsPreSetupFragment()
+                    directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsSetupInstructionsFragment()
                 )
 
             is StoreOnboardingViewModel.NavigateToAboutYourStore ->
