@@ -3,6 +3,7 @@
 15.5
 -----
 - [*] Add new filter for unread product reviews [https://github.com/woocommerce/woocommerce-android/pull/9753]
+- [*] AI: Thank-you note can now be generated on completed order's details screen. [https://github.com/woocommerce/woocommerce-android/pull/9749/]
 
 15.4
 -----
@@ -11,7 +12,6 @@
 - [*] [Internal] Store Onboarding: show an explanation screen before open the Payments task in a WebView [https://github.com/woocommerce/woocommerce-android/pull/9772]
 - [**] Order creation: Merchants can now select a tax rate when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9773]
 - [**] Product editing: Merchants can now add downloadable files from all supported file types [https://github.com/woocommerce/woocommerce-android/pull/9745]
-- [*] AI: Thank-you note can now be generated on completed order's details screen. [https://github.com/woocommerce/woocommerce-android/pull/9749/]
 
 15.3
 -----
