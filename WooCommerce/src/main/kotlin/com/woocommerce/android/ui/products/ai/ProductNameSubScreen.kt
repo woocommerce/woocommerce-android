@@ -53,7 +53,7 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
                 enteredName = state.name,
                 onProductNameChanged = viewModel::onProductNameChanged,
                 onSuggestNameClicked = {},
-                onContinueClicked = {}
+                onContinueClicked = viewModel::onDoneClick
             )
         }
     }
@@ -100,6 +100,7 @@ fun ProductNameForm(
             // Button will scroll with the rest of UI on landscape mode, or... (see below)
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 WCColoredButton(
+                    enabled = enteredName.isNotEmpty(),
                     onClick = onContinueClicked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -113,6 +114,7 @@ fun ProductNameForm(
         // Button will stick to the bottom on portrait mode
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             WCColoredButton(
+                enabled = enteredName.isNotEmpty(),
                 onClick = onContinueClicked,
                 modifier = Modifier
                     .fillMaxWidth()
