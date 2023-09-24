@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
@@ -86,7 +88,9 @@ fun AboutProductSubScreen(
             topStart = dimensionResource(id = R.dimen.minor_100),
             topEnd = dimensionResource(id = R.dimen.minor_100)
         ),
-        scrimColor = colorResource(id = R.color.color_scrim_background),
+        scrimColor =
+        if (isSystemInDarkTheme()) colorResource(id = R.color.color_scrim_background)
+        else ModalBottomSheetDefaults.scrimColor,
         sheetContent = {
             AiToneBottomSheetContent(
                 aiTones = AiTone.values().toList(),
