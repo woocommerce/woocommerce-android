@@ -16,9 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AutoTaxRateSettingBottomSheetFragment : WCBottomSheetDialogFragment() {
-    private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(
-        R.id.nav_graph_order_creations
-    )
+    private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
 
     override fun onCreateView(
         inflater: LayoutInflater,
