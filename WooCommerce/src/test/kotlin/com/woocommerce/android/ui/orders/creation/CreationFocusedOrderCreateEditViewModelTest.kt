@@ -145,6 +145,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when onSetNewTaxRateClicked, then should track event`() = testBlocking {
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        sut.onSetNewTaxRateClicked()
+        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
+    }
+
+    @Test
     fun `when submitting customer note, then update orderDraft liveData`() {
         var orderDraft: Order? = null
 
