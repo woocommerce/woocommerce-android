@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 15:54:41+0000
+Translation-Revision-Date: 2023-09-22 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">Dit heeft niet alleen effect op online bestellingen</string>
+    <string name="tax_rate_selector_auto_rate_label">Voeg dit tarief toe aan alle gecreëerde bestellingen</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Belastingtarieven bewerken</string>
+    <string name="tax_rate_selector_empty_list_button">Belastingtarieven bewerken in Beheer</string>
+    <string name="tax_rate_selector_empty_list_message">Belastingtarieven toevoegen in beheer. Alleen belastingtarieven met locatie-informatie worden hier getoond.</string>
+    <string name="tax_rate_selector_empty_list_title">We konden geen belastingtarieven vinden</string>
+    <string name="store_onboarding_payments_setup_description">Ontdek andere betaalproviders en \nKies een betaalprovider.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Betaalmethodes</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documenten op apparaat</string>
+    <string name="product_downloadable_files_add_media_from_device">Mediabestanden op apparaat</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Nu oplossen</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Configuratie voltooien</string>
+    <string name="tax_rate_selector_title">Belastingtarief instellen</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Activeren</string>
+    <string name="order_creation_set_tax_rate">Nieuw belastingtarief instellen</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Instellen</string>
     <string name="tax_rate_selector_edit_rates_button_label">Belastingtarieven bewerken in beheer</string>
     <string name="tax_rate_selector_header_label">Dit zal het adres van de klant veranderen naar de locatie van het belastingtarief dat je selecteert.</string>
     <string name="tax_rate_selector_info_icon_content_description">Knop om het informatievenster over belastingtarieven te openen</string>
@@ -21,16 +38,14 @@ Language: nl
     <string name="tax_rates_info_dialog_primary_text">Belasting wordt berekend door het factuur- of verzendadres van je klant of je winkeladres te koppelen aan de locatie van een belastingtarief.</string>
     <string name="tax_rates_information_content_description">Informatie over belastingtarieven</string>
     <string name="store_onboarding_wcpay_setup_description">Door WooCommerce Payments te gebruiken ga je ermee akkoord dat je bent gebonden aan onze &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Servicevoorwaarden&lt;/u&gt;&lt;/a&gt; en bevestig je dat je ons &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacybeleid&lt;/u&gt;&lt;/a&gt; hebt gelezen.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">Instellen</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over je gegevens verifiëren met WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Installatie starten</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">We werken voor WooPayments samen met Stripe. Je wordt doorgestuurd naar de site van Stripe om je aan te melden. We zullen je vragen je bedrijfs- en betaalgegevens te verifiëren.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Je WooPayments-meldingen worden verzonden naar het e-mailadres van je WordPress.com-account. Heb je liever dat we het naar een nieuw account sturen? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie vind je hier.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">Voordat je met je installatie begint</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minuten</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Geschatte installatietijd</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">Beheer betalingen moeiteloos op één plek met WooPayments. Accepteer kaarten, Apple Pay, fysieke betalingen en meer dan 135 valuta, zonder installatie- of maandelijkse kosten.</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over je gegevens verifiëren met WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Installatie starten</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">We werken voor WooPayments samen met Stripe. Je wordt doorgestuurd naar de site van Stripe om je aan te melden. We zullen je vragen je bedrijfs- en betaalgegevens te verifiëren.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Je WooPayments-meldingen worden verzonden naar het e-mailadres van je WordPress.com-account. Heb je liever dat we het naar een nieuw account sturen? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Meer informatie vind je hier.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Voordat je met je installatie begint</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minuten</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Geschatte installatietijd</string>
+    <string name="store_onboarding_wcpay_instructions_title">Beheer betalingen moeiteloos op één plek met WooPayments. Accepteer kaarten, Apple Pay, fysieke betalingen en meer dan 135 valuta, zonder installatie- of maandelijkse kosten.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Winkelnaam kan niet worden opgeslagen. Probeer het opnieuw.</string>
     <string name="settings_name_your_store_dialog_loading">Nieuwe winkelnaam opslaan …</string>
     <string name="settings_name_your_store_dialog_success">Winkelnaam is ingesteld!</string>
@@ -279,8 +294,6 @@ Language: nl
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Houd je bedrijf draaiende met ons abonnement!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Je gratis proefabonnement op Woo Express loopt morgen af (%1$s). Dit is hét moment om in je toekomst te investeren: kies een abonnement en bereid je voor om door te groeien.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Je gratis proefperiode is bijna ten einde!</string>
-    <string name="local_notification_without_free_trial_description">Hoi %1$s, %2$s staat voor je klaar! Begin je 14-daagse proefabonnement van Woo Express op de juiste manier en start jouw online bedrijf met één klik.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Je winkel wacht op je!</string>
     <string name="local_notification_store_creation_complete_description">Hallo %1$s! Welkom bij je 14-daagse proefabonnement van Woo Express. Op deze centrale plek vind je alles wat je nodig hebt om een succesvolle online onderneming te starten en uit te laten groeien. Klaar om op ontdekkingsreis te gaan?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Je winkel is klaar!</string>
     <string name="product_type_variation">Variabel product</string>
@@ -1312,7 +1325,6 @@ Language: nl
     <string name="order_creation_customer_note">Klantnotitie</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Er is een verouderde versie van de WooCommerce Stripe gateway-extensie geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Vernieuwen</string>
     <string name="card_reader_payment_failed_unknown">Betaling mislukt om onbekende reden</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Er werd een live kaart gebruikt op een site in de testmodus</string>
     <string name="card_reader_payment_failed_test_card">Er mag niet worden betaald met systeemtestkaarten</string>
@@ -1532,7 +1544,6 @@ Language: nl
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Vernieuwen na bijwerken</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Verouderde versie van de WooCommerce Payments-extensie is geïnstalleerd in je winkel. Werk deze bij om fysieke betalingen aan te nemen.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments bijwerken</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Vernieuw</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Je bent bijna klaar! Rond het instellen van WooCommerce Payments af om betalingen met fysieke betaalkaart aan te nemen.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Rond het instellen van WooCommerce Payments af bij je winkelbeheer</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Vernieuwen na activeren</string>
@@ -1896,8 +1907,7 @@ Language: nl
     <string name="product_downloadable_files_download_settings">Downloadinstellingen</string>
     <string name="product_downloadable_files_name_invalid">Voer een geldige naam in</string>
     <string name="product_downloadable_files_add_manually">Voer bestand-URL in</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Vanuit WordPress-mediabibliotheek</string>
-    <string name="product_downloadable_files_add_media_from_device">Vanuit apparaat</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress-mediabibliotheek</string>
     <string name="product_downloadable_files_url_invalid">Controleer of de ingevoerde URL geldig is</string>
     <string name="product_downloadable_files_upload_dialog_message">Een moment geduld …</string>
     <string name="product_downloadable_files_upload_dialog_title">Bestanden worden geüpload</string>

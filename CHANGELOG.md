@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 15.5
+We're excited to introduce a new feature in this new update! To help you stay on top of customer feedback, we've added a new filter for unread product reviews. This will allow you to easily sort and prioritize your responses, ensuring that all your customers feel heard and valued. Enjoy this new level or efficiency in managing your online store.
+
+## 15.4
+Merchants can now select a tax rate when creating an order and add downloadable files from all supported file types during product editing. We've improved In-Person Payments; if WcPay setup isn't finished, users can now complete it from the app. Minor updates include a fix for tracking the country when IPP onboarding isn't finished and an explanation screen before opening the Payments task.
+
 ## 15.3
 We're excited to roll out the latest update for our Android App. This release brings general improvements for a smoother, faster, and more user-friendly experience. Enjoy enhanced performance, a streamlined interface, and bug fixes. Happy selling!
 

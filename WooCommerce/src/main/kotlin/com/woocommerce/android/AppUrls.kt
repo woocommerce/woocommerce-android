@@ -106,9 +106,11 @@ object AppUrls {
         "https://www.dhl.com/global-en/home/our-divisions/freight/customer-service/" +
             "dangerous-goods-and-prohibited-items.html"
 
-    const val STORE_ONBOARDING_WCPAY_PRE_SETUP_WPCOM_ACCOUNT =
+    const val STORE_ONBOARDING_WCPAY_INSTRUCTIONS_WPCOM_ACCOUNT =
         "https://woocommerce.com/document/woopayments/startup-guide/#signing-up"
-    const val STORE_ONBOARDING_WCPAY_PRE_SETUP_LEARN_MORE =
+    const val STORE_ONBOARDING_WCPAY_INSTRUCTIONS_LEARN_MORE =
         "https://woocommerce.com/document/woopayments/our-policies/know-your-customer/"
     const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woocommerce.com/document/woopayments/startup-guide/"
+    const val STORE_ONBOARDING_PAYMENTS_SETUP_GUIDE =
+        "https://woocommerce.com/documentation/woocommerce/getting-started/sell-products/core-payment-options"
 }

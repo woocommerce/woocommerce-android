@@ -1,68 +1,68 @@
 <ar>
-15.2:
-يسرنا الإعلان عن تحديث جديد لتطبيق Android لدينا! في هذا الإصدار، قمنا بنقل خيار "إغلاق الحساب" إلى قسم جديد يُسمى "إعدادات الحساب" لتسهيل التنقل. لقد أصلحنا بعض المشكلات المتعلقة بعدد شارات الطلبات لضمان التتبُّع الدقيق. بالإضافة إلى ذلك، أجرينا تحسينات إلى مهمة إعداد WooPayments من أجل عملية إعداد أكثر سلاسة. التحديث الآن للحصول على تجربة مستخدم أفضل!
+15.4:
+يمكن للتجار الآن تحديد معدل الضرائب عند إنشاء طلب وإضافة ملفات قابلة للتنزيل من كل أنواع الملفات المدعومة في أثناء تحرير المنتج. قمنا بتحسين المدفوعات الشخصية؛ في حال عدم الانتهاء من إعداد WcPay، يمكن للمستخدمين الآن إكماله من التطبيق. تشتمل التحديثات الطفيفة على إصلاح تتبع البلدان عند عدم الانتهاء من إعداد IPP وشاشة التوضيح قبل فتح مهمة المدفوعات.
 </ar>
 <de-DE>
-15.2:
-Großartige Neuigkeiten: Unsere Android-App bekommt ein neues Update! In dieser Version wurde die Option „Konto schließen“ für eine einfachere Navigation in den neuen Bereich „Kontoeinstellungen“ verschoben. Außerdem wurden Probleme beim Badge-Zähler für Bestellungen behoben, um eine genaue Sendungsverfolgung zu ermöglichen. Für einen reibungsloseren Einrichtungsprozess haben wir zudem die Onboarding-Aufgabe für WooPayments verbessert. Führe jetzt ein Update durch, um von einem verbesserten Benutzererlebnis zu profitieren!
+15.4:
+Verkäufer können ab sofort einen Steuersatz auswählen, wenn sie eine Bestellung erstellen, und während der Produktbearbeitung herunterladbare Dateien aus allen unterstützten Dateitypen hinzufügen. Persönliche Zahlungen wurden verbessert: Wenn die Einrichtung von WCPay nicht abgeschlossen ist, können Benutzer dies nun über die App tun. Kleinere Updates umfassen das Tracking des Landes, wenn die IPP-Einrichtung nicht abgeschlossen ist, sowie ein Erläuterungsbildschirm, der vor dem Öffnen der Zahlungsaufgabe angezeigt wird.
 </de-DE>
 <es-ES>
-15.2:
-Estamos encantados de anunciar una nueva actualización para nuestra aplicación de Android. En esta versión, hemos movido la opción «Cerrar cuenta» a una nueva sección llamada «Ajustes de la cuenta» para facilitar la navegación. También hemos solucionado algunos problemas con el contador de insignias del pedido para garantizar un seguimiento preciso. Además, hemos realizado mejoras en la tarea de incorporación de WooPayments para que el proceso de configuración sea más fluido. Actualiza ahora para una mejor experiencia de usuario.
+15,4:
+Ahora los vendedores pueden seleccionar un tipo impositivo al crear un pedido y añadir archivos descargables de todos los tipos de archivo compatibles durante la edición del producto. Hemos mejorado los pagos en persona; si la configuración de WcPay no ha finalizado, ahora los usuarios pueden completarla desde la aplicación. Entre las actualizaciones menores se incluye una corrección para el seguimiento del país cuando no se ha finalizado la incorporación de IPP y una pantalla de explicación antes de abrir la tarea de pagos.
 </es-ES>
 <fr-FR>
-15.2 :
-Nous sommes ravis d’annoncer une nouvelle mise à jour de notre application Android ! Dans cette version, nous avons déplacé l’option « Fermer le compte » dans une nouvelle section appelée « Réglages du compte » afin de faciliter la navigation. Nous avons également corrigé certains problèmes liés au compteur de badges des commandes afin d’assurer un suivi précis. De plus, nous avons apporté des améliorations à la tâche d’accueil de WooPayments pour un processus d’installation plus fluide. Effectuez la mise à jour dès maintenant afin de profiter d’une meilleure expérience utilisateur !
+15.4:
+Les commerçants peuvent désormais sélectionner un taux de taxation lors de la création d’une commande et ajouter des fichiers téléchargeables à partir de tous les types de fichiers pris en charge lors de la modification des produits. Nous avons amélioré les paiements en personne ; si la configuration de WcPay n’est pas terminée, les utilisateurs peuvent maintenant la finaliser depuis l’application. Les mises à jour mineures comprennent un correctif permettant de suivre le pays lorsque l’intégration IPP n’est pas terminée et un écran d’explication avant l’ouverture de la tâche Paiements.
 </fr-FR>
 <iw-IL>
-15.2:
-אנחנו שמחים להכריז על העדכון החדש של האפליקציה! בגרסה הזאת העברנו את האפשרות 'לסגור את החשבון' למקטע חדש בשם 'הגדרות חשבון' כדי לשפר את הניווט. תיקנו גם כמה בעיות במונה הסמלים של ההזמנה כדי להבטיח מעקב מדויק. בנוסף, הוספנו שיפורים למשימת ההצטרפות ל-WooPayments כדי לאפשר תהליך התקנה חלק יותר. כדאי לעדכן עכשיו לחוויית שימוש טובה יותר!
+15.4:
+סוחרים יכולים כעת לבחור שיעור מס במהלך יצירת הזמנה ולהוסיף קבצים שניתנים להורדה מכל סוגי הקבצים הנתמכים במהלך עריכת מוצר. שיפרנו את האפשרות 'תשלומים באופן אישי', אם ההגדרה של WcPay לא הושלמה, המשתמשים יכולים כעת להשלים אותה דרך האפליקציה. העדכונים הקטנים שהוספנו כוללים תיקון למעקב של הארץ כאשר ההצטרפות של IPP לא הושלמה ומסך עם הסבר שמוצג לפני פתיחת המשימה 'תשלומים'.
 </iw-IL>
 <id>
-15.2:
-Dengan gembira kami umumkan pembaruan untuk aplikasi Android kami! Di versi ini, kami memindahkan opsi 'Tutup Akun' ke bagian baru dengan nama 'Pengaturan Akun' agar navigasi lebih mudah. Kami juga memperbaiki beberapa isu terkait penghitung lencana pesanan untuk memastikan pelacakan yang akurat. Dan, kami juga menyempurnakan langkah penyiapan WooPayments agar proses penyiapan berjalan lebih lancar. Perbarui sekarang untuk pengalaman lebih baik!
+15.4:
+Penjual kini dapat memilih tarif pajak ketika membuat pesanan dan menambahkan berkas yang dapat diunduh dari semua jenis berkas yang didukung selama penyuntingan produk. Kami memperbaiki Pembayaran Langsung (IPP). Jika penyiapan WcPay belum selesai, pengguna kini dapat menyelesaikannya dari aplikasi. Pembaruan minor meliputi perbaikan pelacakan negara jika penyiapan IPP belum selesai dan layar penjelasan sebelum membuka tugas Pembayaran.
 </id>
 <it-IT>
-15.2:
-Siamo felici di annunciare un nuovo aggiornamento per l'app per Android. In questa versione, l'opzione "Chiudi l'account" è spostata in una nuova sezione, "Impostazioni dell'account", per una navigazione più semplice. Abbiamo anche risolto alcuni problemi al contatore dei badge dell'ordine per un monitoraggio accurato. Inoltre, abbiamo migliorato l'attività di avviamento di WooPayments per un processo di configurazione più fluido. Aggiorna ora per una migliore esperienza utente.
+15.4:
+I venditori ora possono selezionare un'aliquota d'imposta durante la creazione di un ordine e aggiungere file scaricabili di qualunque tipo supportato durante la modifica del prodotto. Abbiamo migliorato Pagamenti di persona; se la configurazione di WcPay non è terminata, gli utenti possono ora completarla dall'app. Gli aggiornamenti minori includono una correzione per il monitoraggio del Paese quando l'avviamento di IPP non è terminato e una schermata esplicativa prima di aprire l'attività Pagamenti.
 </it-IT>
 <ja-JP>
-15.2:
-Android アプリの新しいアップデートを発表できることを大変嬉しく思います。 このバージョンでは、「アカウントを閉じる」オプションを「アカウント設定」という新しいセクションに移動し、操作しやすくなりました。 正確に追跡できるよう、注文のバッジカウンターに関する問題もいくつか修正しました。 さらに、WooPayments のオンボーディングタスクを改善し、セットアッププロセスがよりスムーズになりました。 今すぐ更新してさらに便利にご利用ください。
+15.4:
+マーチャントは、注文の作成時に税率を選択し、商品の編集中にサポートされているすべてのファイルタイプからダウンロード可能なファイルを追加できるようになりました。 オフラインでの支払いを改善しました。WcPay のセットアップが完了していない場合、ユーザーはアプリからセットアップを完了できるようになりました。マイナーアップデートには、IPP オンボーディングが完了していない場合に国を追跡する際の修正と、支払いタスクを開く前の説明画面が含まれます。
 </ja-JP>
 <ko-KR>
-15.2:
-Android 앱의 새로운 업데이트를 발표합니다! 이 버전에서는 더 쉽게 탐색할 수 있도록 '계정 종료' 옵션을 '계정 설정'이라는 새로운 섹션으로 이동했습니다. 정확하게 추적할 수 있도록 주문의 몇 가지 배치 카운터 문제도 해결했습니다. 또한 설정 프로세스를 더 원활하게 진행할 수 있도록 WooPayments 온보딩 작업을 개선했습니다. 사용자 환경이 나아지도록 지금 업데이트하세요!
+15.4:
+이제는 판매자가 주문을 생성할 때 세율을 선택하고, 상품을 편집하면서 지원되는 모든 파일 형식 중에서 다운로드 가능한 파일을 추가할 수 있습니다. 직접 결제를 개선했습니다. WCPay 설정이 마무리되지 않는 경우 이제는 사용자가 앱에서 완료할 수 있습니다. IPP 온보딩이 마무리되지 않을 때의 국가 추적을 조금 수정하고 결제 작업을 열기 전의 설명 화면도 조금 업데이트했습니다.
 </ko-KR>
 <nl-NL>
-15.2:
-We kondigen vol blijdschap de nieuwe update aan voor onze Android-app! In deze versie hebben we optie Account sluiten verplaatst naar een nieuw gedeelte genaamd Accountinstelling voor eenvoudiger navigeren. We hebben ook een aantal problemen opgelost met de badgeteller van bestellingen om voor nauwkeurigere tracking te zorgen. Daarnaast hebben we ook verbeteringen aangebracht aan de WooPayments-onboardingstaken voor een soepeler instellingsproces. Update nu voor een betere gebruikerservaring!
+15.4:
+Winkeliers kunnen nu bij het creëren van een bestelling een belastingtarief selecteren en downloadbare bestanden toevoegen van alle ondersteunde bestandtypen tijdens het bewerken van het product. We hebben fysieke betalingen verbeterd; als het instellen van WcPay niet voltooid is, kunnen gebruikers het nu voltooien vanuit de app. Kleinere updates bevatten een fix voor het volgen van het land wanneer het IPP onboarden niet voltooid is en een uitlegscherm voordat een Payments-taak geopend wordt.
 </nl-NL>
 <pt-BR>
-15.2:
-Apresentamos uma nova atualização para nosso aplicativo no Android! Nesta versão, transferimos a opção “Encerrar conta” para uma nova seção chamada “Configurações da conta“ para facilitar a navegação. Também corrigimos alguns problemas com o contador de selo do pedido para garantir a precisão no rastreamento. Além disso, aprimoramos a tarefa de integração do WooPayments para uma configuração mais tranquila. Atualize agora mesmo para uma experiência do usuário ainda melhor!
+15.4:
+Agora comerciantes podem selecionar o valor do imposto ao criar um pedido, além de adicionar durante a edição do produto arquivos de todos os tipos compatíveis para download. Aprimoramos o pagamento presencial. Se os usuários não terminaram de configurar o WcPay, agora podem fazer isso pelo aplicativo. Atualizações mais simples incluem uma correção no rastreamento do país quando a integração do pagamento presencial não foi concluída e uma tela explicativa antes de abrir a tarefa Pagamentos.
 </pt-BR>
 <ru-RU>
-15.2.
-Рады сообщить вам об обновлении приложения для устройств на базе Android! В этой версии мы переместили опцию «Закрыть учётную запись» в новый раздел «Настройки учётной записи», чтобы упростить навигацию. Мы также исправили ряд проблем со счётчиком значка заказа, чтобы обеспечить точный подсчёт. Кроме того, мы усовершенствовали задачу адаптации WooPayments, чтобы сделать процесс настройки более плавным. Обновите приложение прямо сейчас!
+15.4:
+Продавцы могут теперь выбирать налоговую ставку при создании заказа и добавлять загружаемые файлы любых поддерживаемых типов при редактировании товаров. Очные платежи усовершенствованы: если настройка WcPay не завершена, пользователь может завершить её в приложении. Второстепенные обновления включают исправление отслеживания страны при незавершённой регистрации IPP, а также экран с пояснениями перед открытием платёжного задания.
 </ru-RU>
 <sv-SE>
-15.2:
-Vi är glada att kunna presentera en ny uppdatering av vår Android-app! In this version, we've moved the 'Close Account' option to a new section called 'Account Settings' for easier navigation. We've also fixed some issues with the order's badge counter to ensure accurate tracking. Plus, we've made improvements to the WooPayments onboarding task for a smoother setup process. Uppdatera nu för en bättre upplevelse.
+15.4:
+Handlare kan nu välja en momssats vid beställningsskapande och lägga till alla typer av nedladdningsbara filer som stöds under produktredigering. Vi har förbättrat personliga betalningar: Om WcPay-konfigurationen inte är klar kan användare nu slutföra den från appen. Mindre uppdateringar inkluderar en korrigering för att spåra land när IPP-onboarding inte har slutförts och en förklaringsskärm som visas innan uppgiften Betalningar öppnas.
 </sv-SE>
 <tr-TR>
-15.2:
-Android uygulamamız için yeni bir güncellemeyi duyurmaktan büyük heyecan duyuyoruz! Bu sürümde, daha kolay gezinme deneyimi için 'Hesabı Kapat' seçeneğini 'Hesap Ayarları' adlı yeni bir bölüme taşıdık. Ayrıca, doğru takibi sağlamak için siparişin rozet sayacındaki bazı sorunları giderdik. Ayrıca, daha sorunsuz bir kurulum süreci için WooPayments yeni müşteri görevinde iyileştirmeler yaptık. Daha iyi bir kullanıcı deneyimi için şimdi güncelleyin!
+15.4:
+Satıcılar artık sipariş oluştururken bir vergi oranı seçebilir ve ürün düzenleme sırasında desteklenen tüm dosya türlerinden indirilebilir dosyalar ekleyebilirler. Şahsen Ödemeleri iyileştirdik. WcPay kurulumu tamamlanmadıysa, kullanıcılar artık bunu uygulamadan tamamlayabilirler. Ufak güncellemeler arasında IPP kurulumu tamamlanmadığında ülkeyi takip etmek için bir düzeltme ve Ödemeler görevini açmadan önce bir açıklama ekranı var.
 </tr-TR>
 <zh-CN>
-15.2：
-我们很高兴地宣布，Android 版应用程序已更新！ 在此版本中，我们将“关闭账户”选项移动到了名为“账户设置”的新部分，以方便导航。 我们还修复了订单徽章计数器的一些问题，以确保跟踪的准确性。 此外，我们还对 WooPayments 的登录任务进行了改进，使设置过程更加顺畅。 立即更新，获得更优用户体验！
+15.4：
+商家现在可以在创建订单时选择税率，并在产品编辑过程中添加所有受支持文件类型的可下载文件。 我们改进了现场付款功能；用户现在可以在应用程序中完成未完成的 WcPay 设置。此外，我们还进行了一些细微更新，包括修复了在 IPP 登录未完成时跟踪国家/地区的问题，以及新增了在打开付款任务之前出现的说明界面。
 </zh-CN>
 <zh-TW>
-15.2：
-很高興在此宣布 Android 應用程式推出全新更新！ 此版本將「關閉帳號」選項移到稱為「帳號設定」的新區塊，瀏覽起來更加輕鬆。 這次也修正了一些訂單徽章計數器問題，確保能準確追蹤。 此外也改善了 WooPayments 入門任務，設定過程更順暢。 立即更新就能享受更優秀的使用者體驗！
+15.4:
+商家現在可以於建立訂單時選取稅率，並於編輯商品時，新增所有支援檔案類型的可下載檔案。 我們已改善親自收款功能，若 WcPay 設定尚未完成，使用者現在可以從應用程式中完成設定。部分更新包括：修正 IPP 申請尚未完成時的國家/地區追蹤功能，以及開啟付款工作時的說明視窗。
 </zh-TW>
 <en-US>
-15.2:
-We're thrilled to announce a new update for our Android app! In this version, we've moved the 'Close Account' option to a new section called 'Account Settings' for easier navigation. We've also fixed some issues with the order's badge counter to ensure accurate tracking. Plus, we've made improvements to the WooPayments onboarding task for a smoother setup process. Update now for a better user experience!
+15.4:
+Merchants can now select a tax rate when creating an order and add downloadable files from all supported file types during product editing. We've improved In-Person Payments; if WcPay setup isn't finished, users can now complete it from the app. Minor updates include a fix for tracking the country when IPP onboarding isn't finished and an explanation screen before opening the Payments task.
 </en-US>

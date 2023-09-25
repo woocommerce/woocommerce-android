@@ -85,7 +85,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on { get() } doReturn SiteModel()
     }
 
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
         on(it.getString(any(), any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -238,36 +237,33 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        doReturn(false).whenever(isAIProductDescriptionEnabled).invoke()
-
         doReturn(true).whenever(networkStatus).isConnected()
 
         viewModel = spy(
             ProductDetailViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                parameterRepository,
-                productRepository,
-                networkStatus,
-                currencyFormatter,
-                resources,
-                productCategoriesRepository,
-                productTagsRepository,
-                mediaFilesRepository,
-                variationRepository,
-                mediaFileUploadHandler,
-                prefsWrapper,
-                addonRepository,
-                generateVariationCandidates,
-                mock(),
-                tracker,
-                selectedSite,
-                mock(),
-                mock(),
-                mock(),
-                mock(),
-                isBlazeEnabled,
-                isAIProductDescriptionEnabled
+                savedState = savedState,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                parameterRepository = parameterRepository,
+                productRepository = productRepository,
+                networkStatus = networkStatus,
+                currencyFormatter = currencyFormatter,
+                resources = resources,
+                productCategoriesRepository = productCategoriesRepository,
+                productTagsRepository = productTagsRepository,
+                mediaFilesRepository = mediaFilesRepository,
+                variationRepository = variationRepository,
+                mediaFileUploadHandler = mediaFileUploadHandler,
+                appPrefsWrapper = prefsWrapper,
+                addonRepository = addonRepository,
+                generateVariationCandidates = generateVariationCandidates,
+                duplicateProduct = mock(),
+                tracker = tracker,
+                selectedSite = selectedSite,
+                getProductQuantityRules = mock(),
+                getBundledProductsCount = mock(),
+                getComponentProducts = mock(),
+                productListRepository = mock(),
+                isBlazeEnabled = isBlazeEnabled
             )
         )
 

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -24,6 +25,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -47,8 +49,10 @@ class ReviewListViewModel @Inject constructor(
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
-    private val _reviewList = MutableLiveData<List<ProductReview>>()
 
+    private var fetchingReviewsJob: Job? = null
+
+    private val _reviewList = MutableLiveData<List<ProductReview>>()
     override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
         get() = _reviewList
 
@@ -88,8 +92,8 @@ class ReviewListViewModel @Inject constructor(
             } else {
                 viewState = viewState.copy(isSkeletonShown = true)
             }
-            fetchReviewList(loadMore = false)
         }
+        fetchReviewList(loadMore = false)
     }
 
     override fun ReviewModerationConsumer.onReviewModerationSuccess() {
@@ -109,16 +113,12 @@ class ReviewListViewModel @Inject constructor(
         }
 
         viewState = viewState.copy(isLoadingMore = true)
-        launch {
-            fetchReviewList(loadMore = true)
-        }
+        fetchReviewList(loadMore = true)
     }
 
     fun forceRefreshReviews() {
         viewState = viewState.copy(isRefreshing = true)
-        launch {
-            fetchReviewList(loadMore = false)
-        }
+        fetchReviewList(loadMore = false)
     }
 
     fun checkForUnreadReviews() {
@@ -137,6 +137,7 @@ class ReviewListViewModel @Inject constructor(
                         triggerEvent(MarkAllAsRead(ActionStatus.ERROR))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_error))
                     }
+
                     Success -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.SUCCESS))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_success))
@@ -149,26 +150,45 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchReviewList(loadMore: Boolean) {
-        if (networkStatus.isConnected()) {
-            when (reviewRepository.fetchProductReviews(loadMore)) {
-                SUCCESS, NO_ACTION_NEEDED -> {
-                    _reviewList.value = reviewRepository.getCachedProductReviews()
+    private fun fetchReviewList(loadMore: Boolean) {
+        fetchingReviewsJob = launch {
+            if (networkStatus.isConnected()) {
+                if (viewState.isUnreadFilterEnabled) {
+                    fetchUnreadReviews(loadMore = loadMore)
+                } else {
+                    when (reviewRepository.fetchProductReviews(loadMore)) {
+                        SUCCESS,
+                        NO_ACTION_NEEDED -> {
+                            val productReviews = reviewRepository.getCachedProductReviews()
+                            _reviewList.value = productReviews
+                        }
+
+                        else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                    }
                 }
-                else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                checkForUnreadReviews()
+            } else {
+                // Network is not connected
+                showOfflineSnack()
             }
 
-            checkForUnreadReviews()
-        } else {
-            // Network is not connected
-            showOfflineSnack()
+            viewState = viewState.copy(
+                isSkeletonShown = false,
+                isLoadingMore = false,
+                isRefreshing = false
+            )
         }
+    }
 
-        viewState = viewState.copy(
-            isSkeletonShown = false,
-            isLoadingMore = false,
-            isRefreshing = false
-        )
+    private suspend fun fetchUnreadReviews(loadMore: Boolean) {
+        viewState = viewState.copy(isLoadingMore = loadMore)
+        when (reviewRepository.fetchOnlyUnreadProductReviews(loadMore)) {
+            SUCCESS,
+            NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedUnreadProductReviews()
+
+            ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+            else -> {}
+        }
     }
 
     private fun showOfflineSnack() {
@@ -182,6 +202,15 @@ class ReviewListViewModel @Inject constructor(
                 .drop(1)
                 .collectLatest { forceRefreshReviews() }
         }
+    }
+
+    fun onUnreadReviewsFilterChanged(isEnabled: Boolean) {
+        fetchingReviewsJob?.cancel()
+        viewState = viewState.copy(
+            isUnreadFilterEnabled = isEnabled,
+            isSkeletonShown = true
+        )
+        fetchReviewList(loadMore = false)
     }
 
     @Suppress("unused")
@@ -198,7 +227,8 @@ class ReviewListViewModel @Inject constructor(
         val isSkeletonShown: Boolean? = null,
         val isLoadingMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val hasUnreadReviews: Boolean? = null
+        val hasUnreadReviews: Boolean? = null,
+        val isUnreadFilterEnabled: Boolean = false
     ) : Parcelable
 
     sealed class ReviewListEvent : Event() {

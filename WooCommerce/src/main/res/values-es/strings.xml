@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 15:54:23+0000
+Translation-Revision-Date: 2023-09-21 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">Esto no afectará a los pedidos en línea</string>
+    <string name="tax_rate_selector_auto_rate_label">Añadir este tipo a todos los pedidos creados</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Editar tipos impositivos</string>
+    <string name="tax_rate_selector_empty_list_button">Editar tipos impositivos en el escritorio</string>
+    <string name="tax_rate_selector_empty_list_message">Añade tipos impositivos al escritorio. Solo se mostrarán aquí los tipos impositivos con información sobre la ubicación.</string>
+    <string name="tax_rate_selector_empty_list_title">No hemos encontrado tipos impositivos</string>
+    <string name="store_onboarding_payments_setup_description">Descubre otros proveedores de pago y \nelige un proveedor de pago.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Métodos de pago</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documentos en el dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">Archivos multimedia en el dispositivo</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolver ahora</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Finalizar configuración</string>
+    <string name="tax_rate_selector_title">Fijar el tipo impositivo</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Activar</string>
+    <string name="order_creation_set_tax_rate">Fijar el nuevo tipo impositivo</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Configurar</string>
     <string name="tax_rate_selector_edit_rates_button_label">Editar los tipos impositivos en el escritorio</string>
     <string name="tax_rate_selector_header_label">Esto cambiará la dirección del cliente a la ubicación del tipo impositivo que selecciones.</string>
     <string name="tax_rate_selector_info_icon_content_description">Botón que abre el cuadro de diálogo de información sobre tipos impositivos</string>
@@ -21,16 +38,14 @@ Language: es
     <string name="tax_rates_info_dialog_primary_text">Los impuestos se calculan cotejando la dirección de facturación o de envío de tu cliente, o la dirección de tu tienda con una ubicación de tipo impositivo.</string>
     <string name="tax_rates_information_content_description">Información sobre tipos impositivos</string>
     <string name="store_onboarding_wcpay_setup_description">Si utilizas WooCommerce Payments, aceptas regirte por nuestros &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Términos y condiciones&lt;/u&gt;&lt;/a&gt; y confirmas que has leído nuestra &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Política de privacidad&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">Configurar</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Más información&lt;/u&gt;&lt;/a&gt; sobre la verificación de tu información con WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">Iniciar la configuración</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">Nos hemos asociado con Stripe para desarrollar WooPayments. Se te dirigirá al sitio web de Stripe para que te inscribas. Te pediremos que verifiques los datos de pago y del negocio.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">Tus notificaciones de WooPayments se enviarán al correo electrónico de tu cuenta de WordPress. ¿Prefieres crear una cuenta nueva? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Encontrarás más información aquí.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">Antes de iniciar la configuración</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 minutos</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">Tiempo estimado de configuración</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">Gestiona los pagos sin esfuerzo con WooPayments todo en un solo lugar. Acepta tarjetas, Apple Pay, pagos en persona y más de 135 monedas, todo ello sin costes de configuración ni tarifas mensuales.</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Más información&lt;/u&gt;&lt;/a&gt; sobre la verificación de tu información con WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Iniciar la configuración</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">Nos hemos asociado con Stripe para desarrollar WooPayments. Se te dirigirá al sitio web de Stripe para que te inscribas. Te pediremos que verifiques los datos de pago y del negocio.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Tus notificaciones de WooPayments se enviarán al correo electrónico de tu cuenta de WordPress. ¿Prefieres crear una cuenta nueva? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Encontrarás más información aquí.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Antes de iniciar la configuración</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minutos</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Tiempo estimado de configuración</string>
+    <string name="store_onboarding_wcpay_instructions_title">Gestiona los pagos sin esfuerzo con WooPayments todo en un solo lugar. Acepta tarjetas, Apple Pay, pagos en persona y más de 135 monedas, todo ello sin costes de configuración ni tarifas mensuales.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">No se puede guardar el nombre de la tienda. Inténtalo de nuevo.</string>
     <string name="settings_name_your_store_dialog_loading">Guardando nuevo nombre de tienda…</string>
     <string name="settings_name_your_store_dialog_success">Nombre de la tienda configurado.</string>
@@ -279,8 +294,6 @@ Language: es
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Mantén tu negocio en marcha con nuestro plan.</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Tu prueba gratuita de Woo Express termina mañana (%1$s). Es el momento de tomar las riendas de tu futuro: elige un plan y prepárate para crecer.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Se está acabando el tiempo de tu prueba gratuita.</string>
-    <string name="local_notification_without_free_trial_description">Hola %1$s, ya te hemos preparado %2$s. Comienza tu prueba gratuita de 14 días de Woo Express con un solo clic para poner en marcha tu negocio online.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Tu tienda te espera.</string>
     <string name="local_notification_store_creation_complete_description">¡Hola, %1$s! Te damos la bienvenida a la prueba gratuita de 14 días de Woo Express, todo lo que necesitas para empezar un negocio online de éxito y hacerlo crecer, en un solo lugar. ¿Todo listo para descubrirlo?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Tu tienda está lista.</string>
     <string name="product_type_variation">Producto con variaciones</string>
@@ -1312,7 +1325,6 @@ Language: es
     <string name="order_creation_customer_note">Nota para el cliente</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Recarga la página después de actualizar</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Se ha instalado una versión obsoleta de la extensión WooCommerce Stripe Gateway en tu tienda. Actualízala para aceptar pagos en persona.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refrescar</string>
     <string name="card_reader_payment_failed_unknown">Se ha rechazado el pago por motivos desconocidos.</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Se ha utilizado una tarjeta real en un sitio que se encuentra en modo de prueba.</string>
     <string name="card_reader_payment_failed_test_card">No se pueden realizar pagos con las tarjetas de prueba del sistema.</string>
@@ -1532,7 +1544,6 @@ Language: es
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Recarga la página después de actualizar</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Se ha instalado una versión obsoleta de la extensión WooCommerce Payments en tu tienda. Actualízala para aceptar Pagos en Persona.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Actualizar WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refrescar</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Ya casi has acabado. Termina de configurar WooCommerce Payments para empezar a aceptar pagos en persona.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Termina de configurar WooCommerce Payments en la administración de tu tienda</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Recarga la página después de activar</string>
@@ -1896,14 +1907,13 @@ Language: es
     <string name="product_downloadable_files_download_settings">Ajustes de descarga</string>
     <string name="product_downloadable_files_name_invalid">Introduce un nombre válido</string>
     <string name="product_downloadable_files_add_manually">Introduce la URL del archivo</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Desde la Biblioteca de medios de WordPress</string>
-    <string name="product_downloadable_files_add_media_from_device">Desde el dispositivo</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Biblioteca multimedia de WordPress</string>
     <string name="product_downloadable_files_url_invalid">Comprueba que la URL introducida es válida</string>
     <string name="product_downloadable_files_upload_dialog_message">Por favor, espera…</string>
     <string name="product_downloadable_files_upload_dialog_title">Subiendo archivos</string>
     <string name="product_downloadable_files_upload_failed">Error al subir el archivo</string>
     <string name="product_downloadable_files_add_title">Añadir archivo descargable</string>
-    <string name="product_downloadable_add_bottomsheet_header">Añadir archivo descargable</string>
+    <string name="product_downloadable_add_bottomsheet_header">Añadir archivo descargable de</string>
     <string name="bottom_sheet_downloadable_files_desc">Incluir archivos descargables con compras</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Cancelar</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Sí, cambiar</string>

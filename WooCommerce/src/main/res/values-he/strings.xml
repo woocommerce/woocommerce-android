@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 15:54:22+0000
+Translation-Revision-Date: 2023-09-21 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">הפעולה לא תשפיע על הזמנות שבוצעו באופן מקוון</string>
+    <string name="tax_rate_selector_auto_rate_label">להוסיף את השיעור לכל ההזמנות שנוצרו</string>
+    <string name="tax_rate_selector_empty_list_button_alt">לערוך שיעורי מיסים</string>
+    <string name="tax_rate_selector_empty_list_button">לערוך את שיעורי המיסים במקטע מנהל המערכת</string>
+    <string name="tax_rate_selector_empty_list_message">להוסיף שיעורי מס באזור של מנהל המערכת. רק שיעורי מיסים עם פרטי מיקום יוצגו כאן.</string>
+    <string name="tax_rate_selector_empty_list_title">לא הצלחנו למצוא שיעורי מיסים</string>
+    <string name="store_onboarding_payments_setup_description">לעיין בספקי תשלום אחרים \nולבחור ספק תשלום.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">אמצעי תשלום</string>
+    <string name="product_downloadable_files_add_documents_from_device">מסמכים במכשיר</string>
+    <string name="product_downloadable_files_add_media_from_device">קובצי מדיה במכשיר</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">לטפל בבעיה כעת</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">להשלים את ההגדרה</string>
+    <string name="tax_rate_selector_title">להגדיר שיעור מס</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">להפעיל</string>
+    <string name="order_creation_set_tax_rate">להגדיר שיעור מס חדש</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">הגדרה</string>
     <string name="tax_rate_selector_edit_rates_button_label">לערוך את שיעורי המיסים במקטע מנהל המערכת</string>
     <string name="tax_rate_selector_header_label">הפעולה הזאת תשנה את כתובת הלקוח למיקום של שיעור המס שבחרת.</string>
     <string name="tax_rate_selector_info_icon_content_description">כפתור שפותח את תיבת הדו-שיח לפרטים של שיעורי המיסים</string>
@@ -21,16 +38,14 @@ Language: he_IL
     <string name="tax_rates_info_dialog_primary_text">המיסים מחושבים לפי הכתובת לחיוב או הכתובת למשלוח של הלקוח, או לפי הכתובת של החנות שלך, והתאמת הכתובת הנבחרת למיקום של שיעור המס.</string>
     <string name="tax_rates_information_content_description">מידע לגבי שיעורי מיסים</string>
     <string name="store_onboarding_wcpay_setup_description">השימוש ב-WooCommerce Payments מהווה את הסכמתך לפעול בכפוף &lt;a href=\'termsOfService\'&gt;&lt;u&gt;לתנאי השימוש&lt;/u&gt;&lt;/a&gt;, ומאשר שקראת את &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;מדיניות הפרטיות&lt;/u&gt;&lt;/a&gt; שלנו.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">הגדרה</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי אימות הפרטים שלך ב-WooPayments.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">להתחיל בהגדרה</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">אנחנו משתפים פעולה עם Stripe בשירות של WooPayments. אנחנו נפנה אותך להרשמה באתר של Stripe. נבקש ממך לאמת את העסק ואת פרטי התשלום שלך.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">ההודעות של WooPayments יישלחו אל האימייל של חשבונך ב-WordPress.com. רוצה ליצור חשבון חדש? &lt;a href=\'learnMore\'&gt;&lt;u&gt;ניתן למצוא כאן פרטים נוספים.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">לפני שנתחיל בתהליך ההגדרה</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 דקות</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">זמן משוער להקמה</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">לנהל תשלומים ללא מאמץ עם WooPayments ממקום אחד. ניתן לקבל תשלומים באמצעות כרטיסים, Apple Pay ותשלומים באופן אישי במעל 135 מטבעות שונים – כל התשלומים ללא עלויות הקמה או עמלות חודשיות.</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי אימות הפרטים שלך ב-WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">להתחיל בהגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">אנחנו משתפים פעולה עם Stripe בשירות של WooPayments. אנחנו נפנה אותך להרשמה באתר של Stripe. נבקש ממך לאמת את העסק ואת פרטי התשלום שלך.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">ההודעות של WooPayments יישלחו אל האימייל של חשבונך ב-WordPress.com. רוצה ליצור חשבון חדש? &lt;a href=\'learnMore\'&gt;&lt;u&gt;ניתן למצוא כאן פרטים נוספים.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">לפני שנתחיל בתהליך ההגדרה</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 דקות</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">זמן משוער להקמה</string>
+    <string name="store_onboarding_wcpay_instructions_title">לנהל תשלומים ללא מאמץ עם WooPayments ממקום אחד. ניתן לקבל תשלומים באמצעות כרטיסים, Apple Pay ותשלומים באופן אישי במעל 135 מטבעות שונים – כל התשלומים ללא עלויות הקמה או עמלות חודשיות.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">אין אפשרות לשמור את שם החנות. יש לנסות שוב.</string>
     <string name="settings_name_your_store_dialog_loading">שומר את שם החנות החדש…</string>
     <string name="settings_name_your_store_dialog_success">שם החנות הוגדר!</string>
@@ -279,8 +294,6 @@ Language: he_IL
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 ניתן להמשיך לתפעל את העסק עם התוכנית שלנו!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">תקופת הניסיון שלך עם Woo Express מסתיימת מחר (⁦%1$s⁩). זה הזמן המושלם לקבל שליטה על העתיד שלך – כדאי לבחור תוכנית ולהתחיל לצמוח כבר עכשיו.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ תקופת הניסיון בחינם שקיבלת תכף מסתיימת!</string>
-    <string name="local_notification_without_free_trial_description">שלום ⁦%1$s⁩,‏ תקופת הניסיון של ⁦%2$s⁩ מוכנה עבורך! כדאי להתחיל תקופת הניסיון של 14 ימים ב-Woo Express – נדרשת רק הקשה אחת כדי לפתוח עסק מקוון ברגל ימין.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ החנות שלך ממתינה!</string>
     <string name="local_notification_store_creation_complete_description">שלום ⁦%1$s⁩! שמחים שהצטרפת לתקופת הניסיון של 14 ימים ב-Woo Express – השירות מעניק לך כל מה שנדרש כדי לפתוח ולפתח חנות מקוונת מוצלחת, והכול ממקום מרוכז אחד. רוצה לצאת לסיור?</string>
     <string name="local_notification_store_creation_complete_title">🎉 החנות שלך מוכנה!</string>
     <string name="product_type_variation">מוצר עם סוגים</string>
@@ -1312,7 +1325,6 @@ Language: he_IL
     <string name="order_creation_customer_note">הערת לקוח</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">לרענן לאחר עדכון</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">בחנות שלך הותקנה גרסה מיושנת של ההרחבה WooCommerce Stripe Gateway. יש לעדכן אותה כדי לקבל תשלומים באופן אישי.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">לריענון</string>
     <string name="card_reader_payment_failed_unknown">התשלום נדחה מסיבה לא ידועה</string>
     <string name="card_reader_payment_failed_test_mode_live_card">נעשה שימוש בכרטיס אמיתי באתר במצב בדיקה</string>
     <string name="card_reader_payment_failed_test_card">כרטיסי בדיקה של המערכת לא מותרים לשימוש לצורך תשלום</string>
@@ -1532,7 +1544,6 @@ Language: he_IL
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">לרענן לאחר עדכון</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">בחנות שלך הותקנה גרסה מיושנת של ההרחבה WooCommerce Payments. יש לעדכן אותה כדי לקבל תשלומים באופן אישי.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">עדכון WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">רענון</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">כמעט סיימת! על מנת להתחיל לקבל תשלומים באופן אישי, יש לסיים את ההגדרה של WooCommerce Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">השלמת ההגדרה של WooCommerce Payments במנהל המערכת של החנות שלך</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">לרענן לאחר עדכון</string>
@@ -1896,14 +1907,13 @@ Language: he_IL
     <string name="product_downloadable_files_download_settings">הגדרות הורדה</string>
     <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
     <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">מספריית המדיה של WordPress</string>
-    <string name="product_downloadable_files_add_media_from_device">מהמכשיר</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">ספריית המדיה של WordPress</string>
     <string name="product_downloadable_files_url_invalid">יש לוודא שכתובת ה-URL שהוזנה חוקית</string>
     <string name="product_downloadable_files_upload_dialog_message">רק רגע…</string>
     <string name="product_downloadable_files_upload_dialog_title">מעלה קבצים</string>
     <string name="product_downloadable_files_upload_failed">אירעה שגיאה בהעלאת הקובץ</string>
     <string name="product_downloadable_files_add_title">להוסיף קובץ להורדה</string>
-    <string name="product_downloadable_add_bottomsheet_header">להוסיף קובץ להורדה</string>
+    <string name="product_downloadable_add_bottomsheet_header">להוסיף קובץ שניתן להורדה מתוך</string>
     <string name="bottom_sheet_downloadable_files_desc">לכלול קבצים להורדה עם רכישות</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">ביטול</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">כן, אני רוצה לשנות</string>

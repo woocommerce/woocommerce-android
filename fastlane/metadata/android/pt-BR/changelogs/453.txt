@@ -1,2 +1,0 @@
-15.2:
-Apresentamos uma nova atualização para nosso aplicativo no Android! Nesta versão, transferimos a opção “Encerrar conta” para uma nova seção chamada “Configurações da conta“ para facilitar a navegação. Também corrigimos alguns problemas com o contador de selo do pedido para garantir a precisão no rastreamento. Além disso, aprimoramos a tarefa de integração do WooPayments para uma configuração mais tranquila. Atualize agora mesmo para uma experiência do usuário ainda melhor!

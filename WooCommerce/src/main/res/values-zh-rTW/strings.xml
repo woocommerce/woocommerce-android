@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-07 09:54:04+0000
+Translation-Revision-Date: 2023-09-21 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">這不會影響線上訂單</string>
+    <string name="tax_rate_selector_auto_rate_label">將此稅率新增至所有已建立的訂單</string>
+    <string name="tax_rate_selector_empty_list_button_alt">編輯稅率</string>
+    <string name="tax_rate_selector_empty_list_button">使用管理員編輯稅率</string>
+    <string name="tax_rate_selector_empty_list_message">使用管理員新增稅率。 僅附帶國家/地區資訊的稅率會顯示於此。</string>
+    <string name="tax_rate_selector_empty_list_title">我們找不到任何稅率</string>
+    <string name="store_onboarding_payments_setup_description">探索其他付款服務供應商並且 \n選擇付款供應商。</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">付款方式</string>
+    <string name="product_downloadable_files_add_documents_from_device">裝置文件</string>
+    <string name="product_downloadable_files_add_media_from_device">裝置媒體檔案</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">立即解決</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">完成設定</string>
+    <string name="tax_rate_selector_title">設定稅率</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">啟用</string>
+    <string name="order_creation_set_tax_rate">設定新的稅率</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">設定</string>
     <string name="tax_rate_selector_edit_rates_button_label">使用管理員編輯稅率</string>
     <string name="tax_rate_selector_header_label">如此顧客地址即會變更至所選稅率的地點。</string>
     <string name="tax_rate_selector_info_icon_content_description">開啟稅率資訊對話方塊的按鈕</string>
@@ -21,16 +38,14 @@ Language: zh_TW
     <string name="tax_rates_info_dialog_primary_text">稅金計算方式是根據顧客帳單或運送地址的比對結果，或依照稅率地點的商店地址。</string>
     <string name="tax_rates_information_content_description">稅率資訊</string>
     <string name="store_onboarding_wcpay_setup_description">使用 WooCommerce Payments，即表示你同意遵守我們的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服務條款&lt;/u&gt;&lt;/a&gt;，並確認已詳閱我們的&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;隱私權政策&lt;/u&gt;&lt;/a&gt;。</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">設定</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;如何向 WooPayments 驗證個人資訊。</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">開始設定</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">我們已與 Stripe 合作，為 WooPayments 提供支援。 系統會將你導入 Stripe 的網站進行註冊。 我們會要求你驗證商家和付款詳細資料。</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments 通知會傳送至您的 WordPress.com 帳號電子郵件信箱。 想要使用新帳號嗎？ &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳情請見此處。&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">開始設定之前</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4–6 分鐘</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">預估設定時間</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">運用 WooPayments，集中一處輕鬆管理付款。 接受金融卡、Apple Pay、親自收款，以及超過 135 種不同貨幣，完全免設定費或月費。</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;如何向 WooPayments 驗證個人資訊。</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">開始設定</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">我們已與 Stripe 合作，為 WooPayments 提供支援。 系統會將你導入 Stripe 的網站進行註冊。 我們會要求你驗證商家和付款詳細資料。</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">WooPayments 通知會傳送至您的 WordPress.com 帳號電子郵件信箱。 想要使用新帳號嗎？ &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳情請見此處。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">開始設定之前</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 分鐘</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">預估設定時間</string>
+    <string name="store_onboarding_wcpay_instructions_title">運用 WooPayments，集中一處輕鬆管理付款。 接受卡片、Apple Pay、親自收款選項，以及超過 135 種不同貨幣，完全免設定費或月費。</string>
     <string name="store_onboarding_name_your_store_dialog_failure">無法儲存商店名稱， 請再試一次。</string>
     <string name="settings_name_your_store_dialog_loading">正在儲存新商店名稱……</string>
     <string name="settings_name_your_store_dialog_success">商店名稱設定完成！</string>
@@ -279,8 +294,6 @@ Language: zh_TW
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我們的方案維持業務運作！</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">你的 Woo Express 免費試用將於明天 (%1$s) 結束。 掌握未來就趁現在：快挑選一個方案，準備迎接業務成長。</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 免費試用的機會就快消失！</string>
-    <string name="local_notification_without_free_trial_description">%1$s，你好！我們已為你備妥 %2$s！ 只要按一下即可開始免費試用 14 天 Woo Express，展開你的網路事業。  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ 你的商店蓄勢待發！</string>
     <string name="local_notification_store_creation_complete_description">%1$s，你好！ 歡迎免費試用 14 天 Woo Express。建立及發展成功的網路事業，你所需的一切盡在這裡。 準備好開始探索了嗎？</string>
     <string name="local_notification_store_creation_complete_title">🎉 你的商店已準備就緒！</string>
     <string name="product_type_variation">商品款式</string>
@@ -1312,7 +1325,6 @@ Language: zh_TW
     <string name="order_creation_customer_note">顧客備註</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">在更新後重新整理</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">貴店安裝的 WooCommerce Stripe Gateway 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">更新</string>
     <string name="card_reader_payment_failed_unknown">付款因不明原因遭拒</string>
     <string name="card_reader_payment_failed_test_mode_live_card">在測試模式下的網站上使用了有效信用卡</string>
     <string name="card_reader_payment_failed_test_card">不允許使用系統測試卡片付款</string>
@@ -1532,7 +1544,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">在更新後重新整理</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">貴店安裝的 WooCommerce Payments 擴充功能版本已過期。 若要使用親自收款功能，請更新擴充功能。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">更新 WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">重新整理</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">快完成了！ 請完成 WooCommerce Payments 設定以開始接受親自收款。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">在商店管理員中完成 WooCommerce Payments 設定</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">在啟用後重新整理</string>
@@ -1896,14 +1907,13 @@ Language: zh_TW
     <string name="product_downloadable_files_download_settings">下載設定</string>
     <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
     <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">來自 WordPress 媒體庫</string>
-    <string name="product_downloadable_files_add_media_from_device">來自裝置</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress 媒體庫</string>
     <string name="product_downloadable_files_url_invalid">檢查輸入的 URL 是否有效</string>
     <string name="product_downloadable_files_upload_dialog_message">請稍候…</string>
     <string name="product_downloadable_files_upload_dialog_title">正在上傳檔案</string>
     <string name="product_downloadable_files_upload_failed">上傳檔案時發生錯誤</string>
     <string name="product_downloadable_files_add_title">新增可下載的檔案</string>
-    <string name="product_downloadable_add_bottomsheet_header">新增可下載的檔案</string>
+    <string name="product_downloadable_add_bottomsheet_header">從以下位置新增可下載的檔案：</string>
     <string name="bottom_sheet_downloadable_files_desc">在購買項目包含可下載的檔案</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">取消</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">是，請變更</string>

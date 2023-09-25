@@ -66,11 +66,11 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_myStore_to_getPaidFragment"
-            app:destination="@id/getPaidFragment" />
+            android:id="@+id/action_myStore_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
         <action
-            android:id="@+id/action_myStore_to_wooPaymentsPreSetupFragment"
-            app:destination="@id/wooPaymentsPreSetupFragment" />
+            android:id="@+id/action_myStore_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment" />
         <action
             android:id="@+id/action_myStore_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
@@ -80,6 +80,9 @@
         <action
             android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -180,6 +183,9 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_products_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/reviews"
@@ -250,6 +256,7 @@
             app:destination="@id/nav_graph_coupons" />
         <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
+            app:enterAnim="@null"
             app:destination="@id/paymentFlow">
             <argument
                 android:name="cardReaderFlowParam"
@@ -543,13 +550,16 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"
-            app:destination="@id/getPaidFragment"
+            android:id="@+id/action_storeOnboardingFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment"
             app:popUpTo="@id/dashboard" />
         <action
-            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsPreSetupFragment"
-            app:destination="@id/wooPaymentsPreSetupFragment"
+            android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsSetupInstructionsFragment"
+            app:destination="@id/wooPaymentsSetupInstructionsFragment"
             app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <dialog
         android:id="@+id/privacyBannerFragment"
@@ -576,25 +586,24 @@
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
         android:label="WooPaymentsSetupCelebrationDialog" />
     <fragment
-        android:id="@+id/wooPaymentsPreSetupFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsPreSetupFragment"
-        android:label="WooPaymentsPreSetupFragment">
+        android:id="@+id/wooPaymentsSetupInstructionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupInstructionsFragment"
+        android:label="WooPaymentsSetupInstructionsFragment">
         <action
-            android:id="@+id/action_wooPaymentsPreSetupFragment_to_wooPaymentsSetupFragment"
-            app:destination="@id/wooPaymentsTermsFragment" />
+            android:id="@+id/action_wooPaymentsSetupInstructionsFragment_to_paymentsPreSetupFragment"
+            app:destination="@id/paymentsPreSetupFragment" />
     </fragment>
     <fragment
-        android:id="@+id/wooPaymentsTermsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsTermsFragment"
-        android:label="WooPaymentsTermsFragment">
+        android:id="@+id/paymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.PaymentsPreSetupFragment"
+        android:label="PaymentsPreSetupFragment">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
         <action
-            android:id="@+id/action_wooPaymentsTermsFragment_to_getPaidFragment"
+            android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
-            app:popUpTo="@id/dashboard">
-            <argument
-                android:name="taskId"
-                app:argType="string" />
-        </action>
+            app:popUpTo="@id/dashboard" />
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
@@ -653,10 +662,27 @@
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
-        android:label="NameYourStoreDialogFragment" >
+        android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
+    <dialog
+        android:id="@+id/addProductWithAIBottomSheet"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIBottomSheet"
+        android:label="AddProductWithAIBottomSheet">
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:popUpTo="@id/addProductWithAIBottomSheet"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
+            app:destination="@id/addProductWithAIFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/addProductWithAIFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
+        android:label="AddProductWithAIFragment" />
 </navigation>

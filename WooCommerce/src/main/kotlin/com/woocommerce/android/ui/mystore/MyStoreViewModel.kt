@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.offsetInHours
@@ -38,7 +39,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
-import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.TimezoneProvider
@@ -87,7 +87,6 @@ class MyStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
     private val observeLastUpdate: ObserveLastUpdate,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
@@ -165,7 +164,9 @@ class MyStoreViewModel @Inject constructor(
             }
         }
 
-        if (isAIProductDescriptionEnabled() && !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown) {
+        if (selectedSite.getOrNull()?.isEligibleForAI == true &&
+            !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown
+        ) {
             triggerEvent(ShowAIProductDescriptionDialog)
             appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }

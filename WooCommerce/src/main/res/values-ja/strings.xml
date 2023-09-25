@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-07 09:54:26+0000
+Translation-Revision-Date: 2023-09-22 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">オンラインの注文には影響しません</string>
+    <string name="tax_rate_selector_auto_rate_label">作成されたすべての注文にこのレートを追加します</string>
+    <string name="tax_rate_selector_empty_list_button_alt">税率を編集</string>
+    <string name="tax_rate_selector_empty_list_button">管理画面で税率を編集</string>
+    <string name="tax_rate_selector_empty_list_message">管理画面で税率を追加します。 ここには位置情報を含む税率のみが表示されます。</string>
+    <string name="tax_rate_selector_empty_list_title">税率が見つかりませんでした</string>
+    <string name="store_onboarding_payments_setup_description">その他の決済サービス業者を探し\n決済サービス業者を選択します。</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">お支払い方法</string>
+    <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメント</string>
+    <string name="product_downloadable_files_add_media_from_device">端末上のメディアファイル</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">今すぐ解決</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">設定完了</string>
+    <string name="tax_rate_selector_title">税率を設定する</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">有効化</string>
+    <string name="order_creation_set_tax_rate">新しい税率を設定</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">セットアップ</string>
     <string name="tax_rate_selector_edit_rates_button_label">管理画面で税率を編集</string>
     <string name="tax_rate_selector_header_label">これにより顧客の住所が選択した税率の場所に変更されます。</string>
     <string name="tax_rate_selector_info_icon_content_description">税率情報ダイアログを開くボタン</string>
@@ -21,16 +38,14 @@ Language: ja_JP
     <string name="tax_rates_info_dialog_primary_text">税金は、顧客の請求先住所、配送先住所、または店舗の住所を税率の場所と一致させて計算されます。</string>
     <string name="tax_rates_information_content_description">税率に関する情報</string>
     <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments を使用することで、お客様は弊社の&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;に拘束されることに同意し、弊社&lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;プライバシーポリシー&lt;/u&gt;&lt;/a&gt;を読んだものとみなされます。</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">セットアップ</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">WooPayments での情報の確認について&lt;a href=\'learnMore\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">セットアップを開始</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">WooPayments では Stripe と提携しています。 サインアップでは Stripe のサイトに移動します。 ビジネス情報と支払い情報の確認が求められます。</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments の通知は WordPress.com アカウントのメールアドレスに送信されます。 新アカウントをご希望ですか ? &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳細はこちら。&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">セットアップを始める前に</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4〜6分</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">推定所要時間</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">WooPayments を使用すると、支払いをすべて1か所で簡単に管理できます。 セットアップ費用や月額料金なしで、カード、Apple Pay、オフラインでの支払い、135種類以上の通貨をすべて利用できます。</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">WooPayments での情報の確認について&lt;a href=\'learnMore\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">セットアップを開始</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">WooPayments では Stripe と提携しています。 サインアップでは Stripe のサイトに移動します。 ビジネス情報と支払い情報の確認が求められます。</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">WooPayments の通知は WordPress.com アカウントのメールアドレスに送信されます。 新アカウントをご希望ですか ? &lt;a href=\'learnMore\'&gt;&lt;u&gt;詳細はこちら。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">セットアップを始める前に</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4〜6分</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">推定所要時間</string>
+    <string name="store_onboarding_wcpay_instructions_title">WooPayments を使用すると、支払いをすべて1か所で簡単に管理できます。 セットアップ費用や月額料金なしで、カード、Apple Pay、オフラインでの支払い、135種類以上の通貨をすべて利用できます。</string>
     <string name="store_onboarding_name_your_store_dialog_failure">ストア名を保存できません。 もう一度お試しください。</string>
     <string name="settings_name_your_store_dialog_loading">新しいストア名を保存しています…</string>
     <string name="settings_name_your_store_dialog_success">ストア名が設定されました。</string>
@@ -279,8 +294,6 @@ Language: ja_JP
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 プランを利用してビジネスを順調に進めましょう !</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express の無料お試し期間は明日 (%1$s) までです。 今こそ、未来を自分で創るときです。プランを選び、大きく成長する第一歩を踏み出しましょう。</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 無料お試し期間はまもなく終了です !</string>
-    <string name="local_notification_without_free_trial_description">こんにちは、%1$s さん。%2$s の準備ができました。 Woo Express の14日間の無料お試しを開始して、ワンクリックでオンラインビジネスを立ち上げましょう。  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ ストアを利用できます。</string>
     <string name="local_notification_store_creation_complete_description">%1$s さん、こんにちは ! Woo Express の14日間のお試し期間にようこそ。Woo Express は、成功するオンラインビジネスを立ち上げ、大きく育てるために必要なものがすべて1か所にそろっています。 Woo Express を使う準備はできましたか ?</string>
     <string name="local_notification_store_creation_complete_title">🎉 ストアの準備ができました。</string>
     <string name="product_type_variation">バリエーション商品</string>
@@ -1312,7 +1325,6 @@ Language: ja_JP
     <string name="order_creation_customer_note">注文メモ</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">更新後に再読み込みする</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Stripe Gateway 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">再読み込み</string>
     <string name="card_reader_payment_failed_unknown">不明な理由により支払いが拒否されました</string>
     <string name="card_reader_payment_failed_test_mode_live_card">本番用カードがテストモードのサイトで使用されました</string>
     <string name="card_reader_payment_failed_test_card">システムテストカードは支払いが許可されていません</string>
@@ -1532,7 +1544,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">更新後に再読み込みする</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">ご使用のストアには、古いバージョンの WooCommerce Payments 拡張機能がインストールされています。 オフラインでの支払いを受け取るには、この拡張機能を更新してください。</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce Payments を更新する</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">再読み込み</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">あともう少しです。 オフラインでの支払いを開始するには、WooCommerce Payments のセットアップを完了させてください。</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">ストア管理で WooCommerce Payments のセットアップを完了させる</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">有効化後に再読み込みする</string>
@@ -1896,14 +1907,13 @@ Language: ja_JP
     <string name="product_downloadable_files_download_settings">ダウンロード設定</string>
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress メディアライブラリから</string>
-    <string name="product_downloadable_files_add_media_from_device">端末から</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress メディアライブラリ</string>
     <string name="product_downloadable_files_url_invalid">入力した URL が正しいかどうかを確認してください</string>
     <string name="product_downloadable_files_upload_dialog_message">しばらくお待ちください…</string>
     <string name="product_downloadable_files_upload_dialog_title">ファイルをアップロードしています</string>
     <string name="product_downloadable_files_upload_failed">ファイルのアップロードの際にエラーが発生しました</string>
     <string name="product_downloadable_files_add_title">ダウンロード可能なファイルを追加</string>
-    <string name="product_downloadable_add_bottomsheet_header">ダウンロード可能なファイルを追加</string>
+    <string name="product_downloadable_add_bottomsheet_header">ダウンロード可能なファイルを追加する</string>
     <string name="bottom_sheet_downloadable_files_desc">ダウンロード可能なファイルを購入に含める</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">キャンセル</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">変更する</string>

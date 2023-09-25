@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-07 09:54:04+0000
+Translation-Revision-Date: 2023-09-21 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">온라인 주문은 영향을 받지 않음</string>
+    <string name="tax_rate_selector_auto_rate_label">생성한 모든 주문에 이 요율 추가</string>
+    <string name="tax_rate_selector_empty_list_button_alt">세율 편집</string>
+    <string name="tax_rate_selector_empty_list_button">관리자에서 세율 편집</string>
+    <string name="tax_rate_selector_empty_list_message">관리자에서 세율을 추가합니다. 위치 정보가 있는 세율만 여기에 표시됩니다.</string>
+    <string name="tax_rate_selector_empty_list_title">어떠한 세율도 찾을 수 없음</string>
+    <string name="store_onboarding_payments_setup_description">다른 결제 제공업체를 살펴보고 \n결제 제공업체를 선택합니다.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">결제 수단</string>
+    <string name="product_downloadable_files_add_documents_from_device">기기의 문서</string>
+    <string name="product_downloadable_files_add_media_from_device">기기의 미디어 파일</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">지금 해결</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">설정 완료</string>
+    <string name="tax_rate_selector_title">세율 설정</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">활성화</string>
+    <string name="order_creation_set_tax_rate">새 세율 설정</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">설정</string>
     <string name="tax_rate_selector_edit_rates_button_label">관리자에서 세율 편집</string>
     <string name="tax_rate_selector_header_label">그러면 고객의 주소가 선택한 세율이 적용되는 위치로 변경됩니다.</string>
     <string name="tax_rate_selector_info_icon_content_description">세율 정보 대화 상자 열기 버튼</string>
@@ -21,16 +38,14 @@ Language: ko_KR
     <string name="tax_rates_info_dialog_primary_text">세금은 고객의 청구 주소, 배송 주소 또는 상점 주소를 세율 위치와 일치시켜 계산됩니다.</string>
     <string name="tax_rates_information_content_description">세율 정보</string>
     <string name="store_onboarding_wcpay_setup_description">WooCommerce Payments를 사용하면 &lt;a href=\'termsOfService\'&gt;&lt;u&gt;서비스 약관&lt;/u&gt;&lt;/a&gt; 적용에 동의하고 &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;개인정보 취급방침&lt;/u&gt;&lt;/a&gt;을 읽었다는 것을 확인하는 것입니다.</string>
-    <string name="store_onboarding_wcpay_terms_title_two">WooPayments</string>
-    <string name="store_onboarding_wcpay_terms_title_one">설정</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_learn_more">WooPayments와 관련한 자신의 정보를 확인하는 방법을 &lt;a href=\'learnMore\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_button">설정 시작</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_2_content">WooPayments는 Stripe와 제휴되어 있습니다. 가입을 위해 Stripe 사이트로 이동됩니다. 비즈니스 및 결제 상세 정보를 확인하라는 메시지가 표시됩니다.</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_step_1_content">WooPayments 알림이 워드프레스닷컴 계정 이메일로 발송됩니다. 새 계정을 선호하시나요? &lt;a href=\'learnMore\'&gt;&lt;u&gt;여기에서 자세히 알아보세요.&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_wcpay_pre_setup_content_title">설정을 시작하기 전에</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_time">4~6분</string>
-    <string name="store_onboarding_wcpay_pre_setup_estimate_title">예상 설정 시간</string>
-    <string name="store_onboarding_wcpay_pre_setup_title">WooPayments를 사용하여 한곳에서 간편하게 결제를 관리하세요. 설정 비용이나 월 수수료 없이 카드, Apple Pay, 직접 결제, 135개 이상의 통화를 사용할 수 있습니다.</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">WooPayments와 관련한 자신의 정보를 확인하는 방법을 &lt;a href=\'learnMore\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">설정 시작</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">WooPayments는 Stripe와 제휴되어 있습니다. 가입을 위해 Stripe 사이트로 이동됩니다. 비즈니스 및 결제 상세 정보를 확인하라는 메시지가 표시됩니다.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">WooPayments 알림이 워드프레스닷컴 계정 이메일로 발송됩니다. 새 계정을 선호하시나요? &lt;a href=\'learnMore\'&gt;&lt;u&gt;여기에서 자세히 알아보세요.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">설정을 시작하기 전에</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4~6분</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">예상 설정 시간</string>
+    <string name="store_onboarding_wcpay_instructions_title">WooPayments를 사용하여 한곳에서 간편하게 결제를 관리하세요. 설정 비용이나 월 수수료 없이 카드, Apple Pay, 직접 결제, 135개 이상의 통화를 사용할 수 있습니다.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">스토어 이름을 저장할 수 없습니다. 다시 시도하세요.</string>
     <string name="settings_name_your_store_dialog_loading">새 스토어 이름 저장 중…</string>
     <string name="settings_name_your_store_dialog_success">스토어 이름이 설정되었습니다!</string>
@@ -279,8 +294,6 @@ Language: ko_KR
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 요금제를 이용하여 비즈니스를 계속 운영하세요!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express 무료 평가판이 내일(%1$s) 종료됩니다. 지금이 회원님 자신의 미래를 소유할 때입니다. 요금제를 선택하고 성장할 준비를 하세요.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 무료 평가판 기간이 끝나가고 있습니다.</string>
-    <string name="local_notification_without_free_trial_description">%1$s 님, 안녕하세요. %2$s이(가) 회원님을 위해 준비되어 있습니다! 단 한 번 클릭으로 Woo Express 14일 무료 평가판을 바로 시작하여 온라인 비즈니스를 시작하세요.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ 회원님의 스토어가 기다리고 있습니다!</string>
     <string name="local_notification_store_creation_complete_description">%1$s 님, 안녕하세요! Woo Express 14일 무료 평가판에 오신 것을 환영합니다. 성공적인 온라인 비즈니스의 시작과 성장에 필요한 모든 것이 한곳에 다 있습니다. 둘러볼 준비가 되셨나요?</string>
     <string name="local_notification_store_creation_complete_title">🎉 회원님의 스토어가 준비되어 있습니다!</string>
     <string name="product_type_variation">변형 상품</string>
@@ -1312,7 +1325,6 @@ Language: ko_KR
     <string name="order_creation_customer_note">고객 메모</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">업데이트 후 새로 고침</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">WooCommerce Stripe 게이트웨이 확장 기능의 오래된 버전이 스토어에 설치되어 있습니다. 대면 결제를 수락하려면 해당 확장 기능을 업데이트하세요.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">새로 고침</string>
     <string name="card_reader_payment_failed_unknown">알 수 없는 사유로 결제가 거부되었습니다.</string>
     <string name="card_reader_payment_failed_test_mode_live_card">테스트 모드로 사이트에서 실시간 카드가 사용되었습니다.</string>
     <string name="card_reader_payment_failed_test_card">시스템 테스트 카드는 결제에 사용할 수 없습니다.</string>
@@ -1532,7 +1544,6 @@ Language: ko_KR
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">업데이트 후 새로 고침</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">WooCommerce 결제 확장 기능의 오래된 버전이 스토어에 설치되어 있습니다. 대면 결제를 수락하려면 해당 확장 기능을 업데이트하세요.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">WooCommerce 결제 업데이트</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">새로 고침</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">거의 완료되었습니다! 대면 결제 수락을 시작하려면 WooCommerce 결제 설정을 마무리하세요.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">스토어 관리자에서 WooCommerce 결제 설정 마무리</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">활성화 후 새로 고침</string>
@@ -1896,14 +1907,13 @@ Language: ko_KR
     <string name="product_downloadable_files_download_settings">설정 다운로드</string>
     <string name="product_downloadable_files_name_invalid">유효한 이름을 입력하세요</string>
     <string name="product_downloadable_files_add_manually">파일 URL 입력</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">워드프레스 미디어 라이브러리에서</string>
-    <string name="product_downloadable_files_add_media_from_device">기기에서</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">워드프레스 미디어 라이브러리</string>
     <string name="product_downloadable_files_url_invalid">입력한 URL이 올바른지 확인</string>
     <string name="product_downloadable_files_upload_dialog_message">기다려주세요…</string>
     <string name="product_downloadable_files_upload_dialog_title">파일 업로드 중</string>
     <string name="product_downloadable_files_upload_failed">파일 업로드 중 오류 발생</string>
     <string name="product_downloadable_files_add_title">다운로드 가능한 파일 추가</string>
-    <string name="product_downloadable_add_bottomsheet_header">다운로드 가능한 파일 추가</string>
+    <string name="product_downloadable_add_bottomsheet_header">다음 중에서 다운로드 가능한 파일 추가</string>
     <string name="bottom_sheet_downloadable_files_desc">구매 항목이 포함된 다운로드 가능한 파일 포함</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">취소</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">예. 변경합니다.</string>
