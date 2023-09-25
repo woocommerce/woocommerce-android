@@ -759,7 +759,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 shippingAddress = EMPTY
             )
         }
-        tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED)
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
@@ -1173,6 +1172,7 @@ class OrderCreateEditViewModel @Inject constructor(
         updateAutoTaxRateSettingState()
         updateTaxRateSelectorButtonState()
         clearCustomerAddresses()
+        tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED)
     }
 
     @Parcelize
