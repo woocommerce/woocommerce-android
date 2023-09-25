@@ -29,7 +29,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
-class SimplePaymentsFragmentViewModel @Inject constructor(
+class SimplePaymentsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val simplePaymentsRepository: SimplePaymentsRepository,
     private val networkStatus: NetworkStatus,

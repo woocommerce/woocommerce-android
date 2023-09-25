@@ -12,7 +12,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
-class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
+class SimplePaymentsViewModelTests : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
         private const val REMOTE_ORDER_NUMBER = "100"
@@ -41,7 +41,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
             )
         }
 
-    private lateinit var viewModel: SimplePaymentsFragmentViewModel
+    private lateinit var viewModel: SimplePaymentsViewModel
 
     private val savedState: SavedStateHandle =
         SimplePaymentsFragmentArgs(
@@ -50,7 +50,7 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
         ).initSavedStateHandle()
 
     private fun initViewModel() {
-        viewModel = SimplePaymentsFragmentViewModel(savedState, mock(), mock(), mock())
+        viewModel = SimplePaymentsViewModel(savedState, mock(), mock(), mock())
     }
 
     @Test

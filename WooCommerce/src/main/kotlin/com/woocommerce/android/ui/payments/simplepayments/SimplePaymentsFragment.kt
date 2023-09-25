@@ -31,7 +31,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), BackPressListener {
     private val args: SimplePaymentsFragmentArgs by navArgs()
-    private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
+    private val viewModel: SimplePaymentsViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -99,13 +99,13 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
-                is SimplePaymentsFragmentViewModel.ShowCustomerNoteEditor -> {
+                is SimplePaymentsViewModel.ShowCustomerNoteEditor -> {
                     showCustomerNoteEditor()
                 }
-                is SimplePaymentsFragmentViewModel.ShowTakePaymentScreen -> {
+                is SimplePaymentsViewModel.ShowTakePaymentScreen -> {
                     showTakePaymentScreen()
                 }
-                is SimplePaymentsFragmentViewModel.CancelSimplePayment -> {
+                is SimplePaymentsViewModel.CancelSimplePayment -> {
                     viewModel.deleteDraftOrder(viewModel.orderDraft)
                 }
             }
