@@ -105,7 +105,6 @@ class AIProductDescriptionViewModel @Inject constructor(
 
     private suspend fun generateProductDescriptionText(languageISOCode: String) {
         val result = aiRepository.generateProductDescription(
-            site = selectedSite.get(),
             productName = navArgs.productTitle,
             features = _viewState.value.features,
             languageISOCode = languageISOCode

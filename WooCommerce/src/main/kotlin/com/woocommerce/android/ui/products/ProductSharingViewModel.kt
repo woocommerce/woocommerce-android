@@ -94,7 +94,6 @@ class ProductSharingViewModel @Inject constructor(
 
     private suspend fun generateProductSharingText(languageISOCode: String) {
         val result = aiRepository.generateProductSharingText(
-            site = selectedSite.get(),
             navArgs.productName,
             navArgs.permalink,
             navArgs.productDescription.orEmpty(),
