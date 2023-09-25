@@ -939,7 +939,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 buildMap {
                     put(KEY_STATUS, _orderDraft.value.status)
                     putIfNotNull(PRODUCT_TYPES to productTypes)
-                    put(KEY_PRODUCT_COUNT, products.value?.count())
+                    putIfNotNull(KEY_PRODUCT_COUNT to products.value?.count())
                     put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
                     put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
                     put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
