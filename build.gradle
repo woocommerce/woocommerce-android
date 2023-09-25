@@ -95,7 +95,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-8e00df670054929fe9e48980d5c4e9b7f1977363'
+    fluxCVersion = '2858-8e00df670054929fe9e48980d5c4e9b7f1977363'
     wooCommerceSharedVersion = '0.6.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
