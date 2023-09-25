@@ -128,7 +128,7 @@ fun AboutProductSubScreen(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
                 ) {
                     Text(
-                        text = stringResource(id = R.string.product_creation_ai_about_product_edit_text_header),
+                        text = state.productName,
                         style = MaterialTheme.typography.body2,
                     )
                     Box {
@@ -282,6 +282,7 @@ private fun AiToneBottomSheetContent(
 fun AboutProductSubScreenPreview() {
     AboutProductSubScreen(
         state = UiState(
+            productName = "productName",
             productFeatures = "productFeatures",
             selectedAiTone = Casual
         ),

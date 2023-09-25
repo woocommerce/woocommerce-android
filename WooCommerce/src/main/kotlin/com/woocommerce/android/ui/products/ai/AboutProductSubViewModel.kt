@@ -22,6 +22,7 @@ class AboutProductSubViewModel(
     private val productFeatures = savedStateHandle.getStateFlow(
         viewModelScope,
         UiState(
+            productName = "",
             productFeatures = "",
             selectedAiTone = AiTone.Casual
         )
@@ -30,7 +31,7 @@ class AboutProductSubViewModel(
     val state = productFeatures.asLiveData()
 
     fun onDoneClick() {
-        productFeatures.value.let { (productFeatures, selectedAiTone) ->
+        productFeatures.value.let { (_, productFeatures, selectedAiTone) ->
             onDone(Pair(productFeatures, selectedAiTone))
         }
     }
@@ -43,12 +44,17 @@ class AboutProductSubViewModel(
         productFeatures.value = productFeatures.value.copy(selectedAiTone = tone)
     }
 
+    fun updateProductName(name: String) {
+        productFeatures.value = productFeatures.value.copy(productName = name)
+    }
+
     override fun close() {
         viewModelScope.cancel()
     }
 
     @Parcelize
     data class UiState(
+        val productName: String,
         val productFeatures: String,
         val selectedAiTone: AiTone
     ) : Parcelable

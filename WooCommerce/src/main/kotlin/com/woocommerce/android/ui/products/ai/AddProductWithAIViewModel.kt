@@ -28,6 +28,24 @@ class AddProductWithAIViewModel @Inject constructor(
     tagsRepository: ProductTagsRepository,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState = savedStateHandle) {
+    private val nameSubViewModel = ProductNameSubViewModel(
+        savedStateHandle = savedStateHandle,
+        onDone = { name ->
+            aboutSubViewModel.updateProductName(name)
+            previewSubViewModel.updateName(name)
+            goToNextStep()
+        }
+    )
+    private val aboutSubViewModel = AboutProductSubViewModel(
+        savedStateHandle = savedStateHandle,
+        onDone = { result ->
+            result.let { (productFeatures, selectedAiTone) ->
+                previewSubViewModel.updateKeywords(productFeatures)
+                previewSubViewModel.updateTone(selectedAiTone)
+            }
+            goToNextStep()
+        }
+    )
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
         buildProductPreviewProperties = buildProductPreviewProperties,
@@ -42,23 +60,8 @@ class AddProductWithAIViewModel @Inject constructor(
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
-        ProductNameSubViewModel(
-            savedStateHandle = savedStateHandle,
-            onDone = { name ->
-                previewSubViewModel.updateName(name)
-                goToNextStep()
-            }
-        ),
-        AboutProductSubViewModel(
-            savedStateHandle = savedStateHandle,
-            onDone = { result ->
-                result.let { (productFeatures, selectedAiTone) ->
-                    previewSubViewModel.updateKeywords(productFeatures)
-                    previewSubViewModel.updateTone(selectedAiTone)
-                }
-                goToNextStep()
-            }
-        ),
+        nameSubViewModel,
+        aboutSubViewModel,
         previewSubViewModel
     )
 
