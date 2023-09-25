@@ -53,12 +53,6 @@ class AIProductNameViewModel @Inject constructor(
     }
 
     private suspend fun generateProductName(languageISOCode: String) {
-        _viewState.update {
-            _viewState.value.copy(
-                generationState = ViewState.GenerationState.Generating
-            )
-        }
-
         val result = aiRepository.generateProductName(
             site = selectedSite.get(),
             keywords = _viewState.value.keywords,
@@ -96,9 +90,20 @@ class AIProductNameViewModel @Inject constructor(
     }
 
     fun onGenerateButtonClicked() {
+        _viewState.update {
+            _viewState.value.copy(
+                generationState = ViewState.GenerationState.Generating
+            )
+        }
         launch {
             val languageISOCode = _viewState.value.identifiedLanguageISOCode ?: identifyLanguage().getOrNull()
-            languageISOCode?.let { generateProductName(languageISOCode) }
+            languageISOCode?.let { generateProductName(languageISOCode) } ?: run {
+                _viewState.update {
+                    _viewState.value.copy(
+                        generationState = ViewState.GenerationState.Generated(hasError = true)
+                    )
+                }
+            }
         }
     }
 
