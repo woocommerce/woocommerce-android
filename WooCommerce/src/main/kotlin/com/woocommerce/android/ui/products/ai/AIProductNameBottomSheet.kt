@@ -58,6 +58,7 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
                 } else {
                     ResultLayout(
                         keywords = state.keywords,
+                        generatedProductName = state.generatedProductName,
                         onKeywordsChanged = viewModel::onProductKeywordsChanged,
                         onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
                         onCopyButtonClicked = viewModel::onCopyButtonClicked,
@@ -204,6 +205,7 @@ fun GeneratingLayout(
 @Composable
 fun ResultLayout(
     keywords: String,
+    generatedProductName: String,
     onKeywordsChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onCopyButtonClicked: () -> Unit,
@@ -215,7 +217,10 @@ fun ResultLayout(
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-        GeneratedTextLayout(onCopyButtonClicked)
+        GeneratedTextLayout(
+            generatedProductName = generatedProductName,
+            onCopyButtonClicked = onCopyButtonClicked
+        )
 
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -262,6 +267,7 @@ fun ResultLayout(
 
 @Composable
 fun GeneratedTextLayout(
+    generatedProductName: String,
     onCopyButtonClicked: () -> Unit
 ) {
     Column(
@@ -276,7 +282,7 @@ fun GeneratedTextLayout(
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "The generated product name made by AI",
+            text = generatedProductName,
             style = MaterialTheme.typography.body1
         )
 
@@ -359,7 +365,8 @@ fun GeneratingLayoutPreview() {
 @Composable
 fun ResultLayoutPreview() {
     ResultLayout(
-        keywords = "",
+        keywords = "some keywords here",
+        generatedProductName = "AI-generated product name here",
         onKeywordsChanged = {},
         onGenerateButtonClicked = {},
         onCopyButtonClicked = {},
