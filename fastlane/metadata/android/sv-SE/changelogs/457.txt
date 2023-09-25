@@ -1,0 +1,2 @@
+15.4:
+Handlare kan nu välja en momssats vid beställningsskapande och lägga till alla typer av nedladdningsbara filer som stöds under produktredigering. Vi har förbättrat personliga betalningar: Om WcPay-konfigurationen inte är klar kan användare nu slutföra den från appen. Mindre uppdateringar inkluderar en korrigering för att spåra land när IPP-onboarding inte har slutförts och en förklaringsskärm som visas innan uppgiften Betalningar öppnas.

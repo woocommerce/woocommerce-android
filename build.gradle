@@ -95,7 +95,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-f8f31bf520a86f145866940e714d187ffd098e44'
+    fluxCVersion = 'trunk-e28999f1c88bf0650bf0e08cf5d4cce762c303b7'
     wooCommerceSharedVersion = '0.6.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
@@ -113,7 +113,7 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
-    mediapickerVersion = 'trunk-8433c27abbcabb6501fa537b1deee7248417966d'
+    mediapickerVersion = '0.2'
     wordPressLoginVersion = '1.4.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '3.2.0'

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -24,6 +25,9 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
+import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -79,6 +83,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     private lateinit var productRestrictions: OrderCreationProductRestrictions
     private lateinit var taxRateToAddress: GetAddressFromTaxRate
+    private lateinit var getAutoTaxRateSetting: GetAutoTaxRateSetting
+    private lateinit var getTaxRatePercentageValueText: GetTaxRatePercentageValueText
+    private lateinit var getTaxRateLabel: GetTaxRateLabel
+    private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
 
@@ -94,6 +102,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
 
+    @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
@@ -152,6 +161,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         productRestrictions = mock()
         selectedSite = mock()
         taxRateToAddress = mock()
+        getAutoTaxRateSetting = mock {
+            onBlocking { invoke() } doReturn null
+        }
+        getTaxRatePercentageValueText = mock()
+        getTaxRateLabel = mock()
+        prefs = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2165,7 +2180,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 selectedSite,
                 resourceProvider
             ),
-            getAddressFromTaxRate = taxRateToAddress
+            getAddressFromTaxRate = taxRateToAddress,
+            getAutoTaxRateSetting = getAutoTaxRateSetting,
+            getTaxRatePercentageValueText = getTaxRatePercentageValueText,
+            getTaxRateLabel = getTaxRateLabel,
+            prefs = prefs,
         )
     }
 

@@ -232,10 +232,16 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Fetches the list of terms for an attribute
      */
-    suspend fun fetchGlobalAttributeTerms(remoteAttributeId: Long): List<ProductAttributeTerm> {
+    suspend fun fetchGlobalAttributeTerms(
+        remoteAttributeId: Long,
+        page: Int,
+        pageSize: Int
+    ): List<ProductAttributeTerm> {
         val wooResult = globalAttributeStore.fetchAttributeTerms(
             selectedSite.get(),
-            remoteAttributeId
+            remoteAttributeId,
+            page,
+            pageSize
         )
         return wooResult?.model?.map { it.toAppModel() } ?: emptyList()
     }

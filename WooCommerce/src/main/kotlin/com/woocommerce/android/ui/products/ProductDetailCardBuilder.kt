@@ -14,8 +14,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.filterNotEmpty
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -69,12 +71,12 @@ import java.math.BigDecimal
 @Suppress("LargeClass", "LongParameterList")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
+    private val selectedSite: SelectedSite,
     private val resources: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
     private val variationRepository: VariationRepository,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
     private val appPrefsWrapper: AppPrefsWrapper
 ) {
     private lateinit var originalSku: String
@@ -115,7 +117,7 @@ class ProductDetailCardBuilder(
             properties = (
                 listOf(product.title()) +
                     product.description(
-                        showAIButton = isAIProductDescriptionEnabled(),
+                        showAIButton = selectedSite.get().isEligibleForAI,
                         showTooltip = showTooltip,
                         onWriteWithAIClicked = viewModel::onWriteWithAIClicked,
                         onLearnMoreClicked = viewModel::onLearnMoreClicked

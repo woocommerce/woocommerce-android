@@ -5,8 +5,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.sumByFloat
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.IProduct
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.model.createIndividualShippingPackage
+import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage
@@ -17,7 +23,9 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +43,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val variationDetailRepository: VariationDetailRepository,
-    private val shippingLabelRepository: ShippingLabelRepository
+    private val shippingLabelRepository: ShippingLabelRepository,
+    private val analyticsWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -175,7 +184,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
+        analyticsWrapper.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
@@ -184,6 +193,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         packagePosition: Int,
         onHazmatCategorySelected: OnHazmatCategorySelected
     ) {
+        analyticsWrapper.track(AnalyticsEvent.HAZMAT_CATEGORY_SELECTOR_OPENED)
         triggerEvent(OpenHazmatCategorySelector(packagePosition, currentSelection, onHazmatCategorySelected))
     }
 
@@ -191,6 +201,13 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         newSelection: ShippingLabelHazmatCategory,
         packagePosition: Int
     ) {
+        analyticsWrapper.track(
+            AnalyticsEvent.HAZMAT_CATEGORY_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_CATEGORY to newSelection.toString(),
+                AnalyticsTracker.KEY_ORDER_ID to arguments.orderId
+            )
+        )
         val packages = viewState.packagesUiModels.toMutableList()
         with(packages[packagePosition].data) {
             selectedPackage?.copy(hazmatCategory = newSelection)
@@ -201,6 +218,12 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     fun onURLClicked(url: String) {
         triggerEvent(OpenURL(url))
+    }
+
+    fun onContainsHazmatChanged(isActive: Boolean) {
+        if (isActive) {
+            analyticsWrapper.track(AnalyticsEvent.CONTAINS_HAZMAT_CHECKED)
+        }
     }
 
     // all the logic is inside local functions, so it should be OK, but detekt complains still
