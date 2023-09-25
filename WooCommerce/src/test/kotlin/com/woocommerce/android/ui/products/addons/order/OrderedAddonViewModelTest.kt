@@ -59,7 +59,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should trigger a successful parse to all data at once`() =
         testBlocking {
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
@@ -80,7 +80,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, orderAttributesWithPercentageBasedItem))
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(false)
 
             val expectedResult = orderedAddonWithPercentageBasedDeliveryOptionList
 
@@ -99,7 +99,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(false)
 
             val expectedResult = defaultOrderedAddonList
 
@@ -127,7 +127,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(mockResponse)
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(true)
 
             val expectedResult = emptyProductAddon.copy(
                 name = "Delivery",
@@ -168,7 +168,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(true)
 
             val expectedResult = emptyProductAddon.copy(
                 name = "test-name",
@@ -213,7 +213,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(true)
 
             val expectedResult = listOf(
                 emptyProductAddon.copy(
@@ -257,7 +257,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should enable and disable skeleton view when loading the view data`() =
         testBlocking {
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
@@ -284,7 +284,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should enable and disable skeleton view when loading the view data fails`() =
         testBlocking {
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(false)
 
             var timesCalled = 0
             var viewModelStarted = false
@@ -309,7 +309,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should change isLoadingFailure to true when loading the view data fails`() =
         testBlocking {
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(false)
 
             var timesCalled = 0
             var viewModelStarted = false
@@ -334,7 +334,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should change isLoadingFailure to true when the Ordered Addons data is empty`() =
         testBlocking {
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(false)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(emptyList(), emptyList()))
 
@@ -361,7 +361,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
     @Test
     fun `should keep isLoadingFailure to false when loading the view data succeeds`() =
         testBlocking {
-            whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
+            whenever(addonRepositoryMock.fetchGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 

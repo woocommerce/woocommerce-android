@@ -66,7 +66,7 @@ class OrderedAddonViewModel @Inject constructor(
         productID: Long
     ) = viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
         launch(dispatchers.computation) {
-            addonsRepository.updateGlobalAddonsSuccessfully()
+            addonsRepository.fetchGlobalAddonsSuccessfully()
             loadOrderAddonsData(orderID, orderItemID, productID)
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { dispatchResult(it) }

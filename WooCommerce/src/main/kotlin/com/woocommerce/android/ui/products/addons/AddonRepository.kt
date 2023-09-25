@@ -18,7 +18,7 @@ class AddonRepository @Inject constructor(
     private val addonsStore: WCAddonsStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend fun updateGlobalAddonsSuccessfully() =
+    suspend fun fetchGlobalAddonsSuccessfully() =
         addonsStore.fetchAllGlobalAddonsGroups(selectedSite.get())
             .isError.not()
 
