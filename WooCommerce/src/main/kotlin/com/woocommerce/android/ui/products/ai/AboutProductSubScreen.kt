@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +22,11 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Check
@@ -83,7 +84,15 @@ fun AboutProductSubScreen(
 
     ModalBottomSheetLayout(
         sheetState = modalSheetState,
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+        sheetShape = RoundedCornerShape(
+            topStart = dimensionResource(id = R.dimen.minor_100),
+            topEnd = dimensionResource(id = R.dimen.minor_100)
+        ),
+        scrimColor =
+        // Overriding scrim color for dark theme because of the following bug affecting ModalBottomSheetLayout:
+        // https://issuetracker.google.com/issues/183697056
+        if (isSystemInDarkTheme()) colorResource(id = R.color.color_scrim_background)
+        else ModalBottomSheetDefaults.scrimColor,
         sheetContent = {
             AiToneBottomSheetContent(
                 aiTones = AiTone.values().toList(),
@@ -197,56 +206,49 @@ private fun AiToneBottomSheetContent(
     selectedTone: AiTone,
     onToneSelected: (AiTone) -> Unit
 ) {
-    Surface(
-        shape = RoundedCornerShape(
-            topStart = dimensionResource(id = R.dimen.minor_100),
-            topEnd = dimensionResource(id = R.dimen.minor_100)
-        )
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
-        ) {
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-            BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-            Text(
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+        Text(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .align(Alignment.CenterHorizontally),
+            text = stringResource(id = R.string.product_creation_ai_tone_title),
+            style = MaterialTheme.typography.h6,
+        )
+        Divider()
+        Text(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+            text = stringResource(id = R.string.product_creation_ai_tone_description),
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        aiTones.forEachIndexed { index, tone ->
+            Row(
                 modifier = Modifier
+                    .clickable { onToneSelected(tone) }
+                    .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_100))
-                    .align(Alignment.CenterHorizontally),
-                text = stringResource(id = R.string.product_creation_ai_tone_title),
-                style = MaterialTheme.typography.h6,
-            )
-            Divider()
-            Text(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(id = R.string.product_creation_ai_tone_description),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-            aiTones.forEachIndexed { index, tone ->
-                Row(
-                    modifier = Modifier
-                        .clickable { onToneSelected(tone) }
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(id = tone.displayName),
-                        style = MaterialTheme.typography.subtitle1,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = tone.displayName),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                if (selectedTone == tone) {
+                    Icon(
+                        imageVector = Filled.Check,
+                        contentDescription = stringResource(
+                            id = R.string.product_creation_ai_tone_selected_content_desc
+                        ),
+                        tint = colorResource(id = R.color.color_primary)
                     )
-                    if (selectedTone == tone) {
-                        Icon(
-                            imageVector = Filled.Check,
-                            contentDescription = stringResource(
-                                id = R.string.product_creation_ai_tone_selected_content_desc
-                            ),
-                            tint = colorResource(id = R.color.color_primary)
-                        )
-                    }
                 }
-                if (index < aiTones.size - 1)
-                    Divider(modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_75)))
             }
+            if (index < aiTones.size - 1)
+                Divider(modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_75)))
         }
     }
 }

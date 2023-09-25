@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-15 09:37:42+0000
+Translation-Revision-Date: 2023-09-21 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="store_onboarding_payments_pre_setup_title_two">WooPayments</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">Detta kommer inte att påverka onlinebeställningar</string>
+    <string name="tax_rate_selector_auto_rate_label">Lägg till den här momssatsen till alla skapade beställningar</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Redigera momssatser</string>
+    <string name="tax_rate_selector_empty_list_button">Redigera momssatser i adminpanelen</string>
+    <string name="tax_rate_selector_empty_list_message">Lägg till momssatser i adminpanelen. Endast momssatser med platsinformation kommer att visas här.</string>
+    <string name="tax_rate_selector_empty_list_title">Vi kunde inte hitta några momssatser</string>
+    <string name="store_onboarding_payments_setup_description">Upptäck andra betalningsleverantörer och \nvälj en betalningsleverantör.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Betalningsmetoder</string>
+    <string name="product_downloadable_files_add_documents_from_device">Dokument på enheten</string>
+    <string name="product_downloadable_files_add_media_from_device">Mediafiler på enheten</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Lös nu</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Slutför inställning</string>
+    <string name="tax_rate_selector_title">Ange momssats</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Aktivera</string>
+    <string name="order_creation_set_tax_rate">Ange ny momssats</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
     <string name="store_onboarding_payments_pre_setup_title_one">Ställ in</string>
     <string name="tax_rate_selector_edit_rates_button_label">Redigera momssatser i adminpanelen</string>
     <string name="tax_rate_selector_header_label">Detta kommer att ändra kundens adress till platsen för den momssats du väljer.</string>
@@ -24,13 +39,12 @@ Language: sv_SE
     <string name="tax_rates_information_content_description">Information om momssatser</string>
     <string name="store_onboarding_wcpay_setup_description">Genom att använda WooCommerce Payments samtycker du till våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och intygar att du har läst vår &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;integritetspolicy&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om att verifiera din information med WooPayments.</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_wcpay_instructions_content_button">Starta konfiguration</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Börja installationen</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Vi har slagit oss ihop med Stripe för WooPayments. Du kommer att bli omdirigerad till Stripes webbplats för registrering. Vi kommer att be dig att kontrollera dina företagsuppgifter och din betalningsinformation.</string>
-    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooCommerce-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooPayments-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_content_title">Innan du startar konfigurationen</string>
     <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minuter</string>
-    <string name="store_onboarding_wcpay_instructions_estimate_title">Beräknad tid</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Beräknad installationstid</string>
     <string name="store_onboarding_wcpay_instructions_title">Hantera betalningar utan ansträngning med WooPayments, allt på en och samma plats. Ta emot kortbetalningar, Apple Pay-betalningar, personliga betalningar och över 135 olika valutor, helt utan installationskostnader eller månadsavgifter.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Det gick inte att spara butiksnamnet. Försök igen.</string>
     <string name="settings_name_your_store_dialog_loading">Sparar nytt butiksnamn…</string>
@@ -280,8 +294,6 @@ Language: sv_SE
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Din kostnadsfria Woo Express-provperiod löper ut imorgon (%1$s). Det är dags att ta kontroll över din framtid – välj ett paket och gör dig redo att börja växa.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Tiden med din kostnadsfria provperiod håller på att löpa ut.</string>
-    <string name="local_notification_without_free_trial_description">Hej %1$s, %2$s är redo för dig. Inled din kostnadsfria Woo Express-provperiod på 14 dagar med bara ett klick för att starta din onlineverksamhet.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Din butik väntar!</string>
     <string name="local_notification_store_creation_complete_description">Hej %1$s. Välkommen till din kostnadsfria Woo Express-provperiod på 14 dagar – allt du behöver för att starta en framgångsrik onlineverksamhet, på en och samma plats. Är du redo att utforska?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Din butik är redo!</string>
     <string name="product_type_variation">Variationsprodukt</string>
@@ -1313,7 +1325,6 @@ Language: sv_SE
     <string name="order_creation_customer_note">Kundmeddelande</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Stripe Gateway är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Uppdatera</string>
     <string name="card_reader_payment_failed_unknown">Betalningen avvisades av okänd anledning</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Ett live-kort användes på en webbplats i testläge</string>
     <string name="card_reader_payment_failed_test_card">Systemtestkort är inte tillåtna för betalning</string>
@@ -1533,7 +1544,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Uppdatera efter uppdatering</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">En föråldrad version av utökningen WooCommerce Payments är installerad för din butik. Uppdatera den för att ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Uppdatera WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Uppdatera</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Du är nästan där! Slutför konfigurationen av WooCommerce Payments för att börja ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Slutför konfigurationen av WooCommerce Payments i adminpanelen för din butik</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Uppdatera efter aktivering</string>
@@ -1897,14 +1907,13 @@ Language: sv_SE
     <string name="product_downloadable_files_download_settings">Inställningar för nedladdning</string>
     <string name="product_downloadable_files_name_invalid">Ange ett giltigt namn</string>
     <string name="product_downloadable_files_add_manually">Ange fil-URL</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Från WordPress-mediabiblioteket</string>
-    <string name="product_downloadable_files_add_media_from_device">Från enhet</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress mediabibliotek</string>
     <string name="product_downloadable_files_url_invalid">Kontrollera att den angivna URL:en är giltig</string>
     <string name="product_downloadable_files_upload_dialog_message">Vänta …</string>
     <string name="product_downloadable_files_upload_dialog_title">Laddar upp filer</string>
     <string name="product_downloadable_files_upload_failed">Fel vid uppladdning av filen</string>
     <string name="product_downloadable_files_add_title">Lägg till nedladdningsbar fil</string>
-    <string name="product_downloadable_add_bottomsheet_header">Lägg till nedladdningsbar fil</string>
+    <string name="product_downloadable_add_bottomsheet_header">Lägg till nedladdningsbar fil från</string>
     <string name="bottom_sheet_downloadable_files_desc">Inkludera nedladdningsbara filer med köp</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Avbryt</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Ja, ändra</string>
