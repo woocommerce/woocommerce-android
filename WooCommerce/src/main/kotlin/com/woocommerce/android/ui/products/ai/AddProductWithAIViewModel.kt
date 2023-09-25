@@ -53,6 +53,7 @@ class AddProductWithAIViewModel @Inject constructor(
         tagsRepository = tagsRepository,
         parametersRepository = parameterRepository
     ) {
+        // TODO keep reference to the product for the saving step
         saveButtonState.value = SaveButtonState.Shown
     }
 
