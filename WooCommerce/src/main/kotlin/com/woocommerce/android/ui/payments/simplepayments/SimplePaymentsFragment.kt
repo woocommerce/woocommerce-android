@@ -145,6 +145,10 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
                     binding.editEmail.error = getString(R.string.email_invalid)
                 }
             }
+            new.isLoading.takeIfNotEqualTo(old?.isLoading) { isLoading ->
+                binding.progressBar.isVisible = isLoading
+                binding.buttonDone.isEnabled = !isLoading
+            }
         }
     }
 
