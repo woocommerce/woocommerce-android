@@ -102,6 +102,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
 
+    @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
