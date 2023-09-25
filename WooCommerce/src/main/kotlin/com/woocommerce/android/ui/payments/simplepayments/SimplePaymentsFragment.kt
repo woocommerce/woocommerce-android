@@ -102,7 +102,7 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
                 is SimplePaymentsViewModel.ShowCustomerNoteEditor -> {
                     showCustomerNoteEditor()
                 }
-                is SimplePaymentsViewModel.ShowTakePaymentScreen -> {
+                is SimplePaymentsViewModel.ShowPaymentMethodSelectionScreen -> {
                     showTakePaymentScreen()
                 }
                 is SimplePaymentsViewModel.CancelSimplePayment -> {

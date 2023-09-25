@@ -139,9 +139,15 @@ class SimplePaymentsViewModel @Inject constructor(
         collect { result ->
             if (result.event.isError) {
                 recordUpdateSimplePaymentError(result)
-            } else if (result is UpdateOrderResult.RemoteUpdateResult) {
+            }
+
+            if (result is UpdateOrderResult.RemoteUpdateResult) {
                 viewState = viewState.copy(isLoading = false)
-                triggerEvent(ShowTakePaymentScreen)
+                if (result.event.isError) {
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_update_error))
+                } else {
+                    triggerEvent(ShowPaymentMethodSelectionScreen)
+                }
             }
         }
     }
@@ -186,6 +192,6 @@ class SimplePaymentsViewModel @Inject constructor(
     ) : Parcelable
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()
-    object ShowTakePaymentScreen : MultiLiveEvent.Event()
+    object ShowPaymentMethodSelectionScreen : MultiLiveEvent.Event()
     object CancelSimplePayment : MultiLiveEvent.Event()
 }
