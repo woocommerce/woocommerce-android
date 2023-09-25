@@ -8,6 +8,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -37,6 +39,7 @@ class AddProductWithAIFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
+        handleResults(viewModel)
     }
 
     private fun handleEvents() {
@@ -45,6 +48,15 @@ class AddProductWithAIFragment : BaseFragment() {
                 NavigateToAIProductNameBottomSheet -> navigateToAIProductName()
                 Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun handleResults(viewModel: AddProductWithAIViewModel) {
+        handleDialogResult<String>(
+            key = AIProductNameBottomSheetFragment.KEY_AI_GENERATED_PRODUCT_NAME_RESULT,
+            entryId = R.id.addProductWithAIFragment
+        ) { productName ->
+            viewModel.onProductNameGenerated(productName)
         }
     }
 

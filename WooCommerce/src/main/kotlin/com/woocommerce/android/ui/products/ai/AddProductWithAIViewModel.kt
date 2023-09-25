@@ -79,6 +79,11 @@ class AddProductWithAIViewModel @Inject constructor(
         }
     }
 
+    fun onProductNameGenerated(productName: String) {
+        val productNameVm= subViewModels[0] as ProductNameSubViewModel
+        productNameVm.onProductNameChanged(productName)
+    }
+
     data class State(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
