@@ -22,6 +22,31 @@ class AddonRepository @Inject constructor(
         addonsStore.fetchAllGlobalAddonsGroups(selectedSite.get())
             .isError.not()
 
+    suspend fun createGlobalAddonGroup(groupName: String, categoriesIds: List<Long>) {
+        addonsStore.createGlobalAddonGroup(
+            groupName,
+            categoriesIds,
+            selectedSite.get()
+        )
+    }
+
+    suspend fun updateGlobalAddonsGroup(
+        groupId: Long,
+        groupName: String? = null,
+        categoriesIds: List<Long>? = null
+    ) {
+        addonsStore.updateGlobalAddonGroup(
+            groupId,
+            groupName,
+            categoriesIds,
+            selectedSite.get()
+        )
+    }
+
+    suspend fun deleteGlobalAddonsGroup(groupId: Long) {
+        addonsStore.deleteGlobalAddonGroup(groupId, selectedSite.get())
+    }
+
     suspend fun containsAddonsFrom(orderItem: Order.Item) =
         getAddonsFrom(orderItem.productId)
             ?.any { addon -> orderItem.attributesList.any { it.addonName == addon.name } }
