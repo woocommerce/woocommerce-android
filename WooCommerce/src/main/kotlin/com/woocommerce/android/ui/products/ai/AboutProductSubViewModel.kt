@@ -40,7 +40,7 @@ class AboutProductSubViewModel(
 
     fun onNewToneSelected(tone: AiTone) {
         productFeatures.value = productFeatures.value.copy(selectedAiTone = tone)
-        appsPrefsWrapper.aiContentGenerationTone = productFeatures.value.selectedAiTone.name
+        appsPrefsWrapper.aiContentGenerationTone = productFeatures.value.selectedAiTone.slug
     }
 
     override fun close() {
@@ -61,7 +61,7 @@ class AboutProductSubViewModel(
 
         companion object {
             fun fromString(source: String): AiTone =
-                AiTone.values().firstOrNull { it.name == source } ?: Casual
+                AiTone.values().firstOrNull { it.slug == source } ?: Casual
         }
     }
 }
