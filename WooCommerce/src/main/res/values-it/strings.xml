@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 11:54:05+0000
+Translation-Revision-Date: 2023-09-21 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">Ciò non influirà sugli ordini online</string>
+    <string name="tax_rate_selector_auto_rate_label">Aggiungi questa aliquota a tutti gli ordini creati</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Modifica le aliquote d\'imposta</string>
+    <string name="tax_rate_selector_empty_list_button">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
+    <string name="tax_rate_selector_empty_list_message">Aggiungi le aliquote d\'imposta nella pagina dell\'amministratore. Qui verranno visualizzate solo le aliquote d\'imposta con le informazioni sulla posizione.</string>
+    <string name="tax_rate_selector_empty_list_title">Impossibile trovare le aliquote d\'imposta</string>
+    <string name="store_onboarding_payments_setup_description">Scopri altri fornitori di servizi di pagamento e \nscegline uno.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Metodi di pagamento</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documenti sul dispositivo</string>
+    <string name="product_downloadable_files_add_media_from_device">File multimediali sul dispositivo</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Risolvi ora</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Completa la configurazione</string>
+    <string name="tax_rate_selector_title">Imposta l\'aliquota d\'imposta</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Attiva</string>
+    <string name="order_creation_set_tax_rate">Imposta la nuova aliquota d\'imposta</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Configura</string>
     <string name="tax_rate_selector_edit_rates_button_label">Modifica le aliquote d\'imposta nella pagina dell\'amministratore</string>
     <string name="tax_rate_selector_header_label">Questa azione modificherà l\'indirizzo del cliente nella località dell\'aliquota d\'imposta selezionata.</string>
     <string name="tax_rate_selector_info_icon_content_description">Pulsante che apre la finestra di dialogo delle informazioni sulle aliquote d\'imposta</string>
@@ -21,8 +38,6 @@ Language: it
     <string name="tax_rates_info_dialog_primary_text">Le tasse vengono calcolate abbinando l\'indirizzo di fatturazione o di spedizione del cliente o l\'indirizzo del tuo negozio a una località dell\'aliquota d\'imposta.</string>
     <string name="tax_rates_information_content_description">Informazioni sulle tasse</string>
     <string name="store_onboarding_wcpay_setup_description">Usando WooCommerce Payments, accetti di essere vincolato dai &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e confermi di aver letto la &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Politica sulla privacy&lt;/u&gt;&lt;/a&gt;</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">Configura</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sulla verifica delle tue informazioni con WooPayments.</string>
     <string name="store_onboarding_wcpay_instructions_content_button">Inizia l\'impostazione</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Collaboriamo con Stripe per WooPayments. Verrai indirizzato al sito di Stripe per l\'iscrizione. Ti chiederemo di verificare i dettagli della tua attività e di pagamento.</string>
@@ -279,8 +294,6 @@ Language: it
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Mantieni attiva la tua attività con il nostro piano.</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">La tua prova gratuita di Woo Express termina domani (%1$s). Ora è il momento di pensare al tuo futuro: scegli un piano e preparati a crescere.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Il periodo della prova gratuita sta per scadere.</string>
-    <string name="local_notification_without_free_trial_description">Salve %1$s, %2$s è pronto per te. Inizia la prova gratuita di 14 giorni di Woo Express con un solo clic per far partire l\'attività online.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Il tuo negozio attende.</string>
     <string name="local_notification_store_creation_complete_description">Salve, %1$s. Ti diamo il benvenuto nella prova gratuita di 14 giorni di Woo Express: tutto ciò di cui hai bisogno per avviare e far crescere un\'attività di successo online, tutto in un unico posto. Tutto pronto per iniziare a esplorare?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Il tuo negozio è pronto.</string>
     <string name="product_type_variation">Prodotto con varianti</string>
@@ -1312,7 +1325,6 @@ Language: it
     <string name="order_creation_customer_note">Nota cliente</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Ricarica dopo l\'aggiornamento</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Sul tuo negozio è installata una versione non aggiornata dell\'estensione WooCommerce Stripe Gateway. Esegui l\'aggiornamento per accettare Pagamenti di persona.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Aggiorna</string>
     <string name="card_reader_payment_failed_unknown">Il pagamento è stato rifiutato per una ragione sconosciuta</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Una carta in tempo reale è stata usata su un sito in modalità di prova</string>
     <string name="card_reader_payment_failed_test_card">Le carte di prova del sistema non sono autorizzate al pagamento</string>
@@ -1532,7 +1544,6 @@ Language: it
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Ricarica dopo l\'aggiornamento</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Sul tuo negozio è installata una versione non aggiornata dell\'estensione WooCommerce Payments. Esegui l\'aggiornamento per accettare Pagamenti di persona.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Aggiorna WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Aggiorna</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Ci sei quasi! Completa l\'impostazione di WooCommerce Payments per iniziare ad accettare pagamenti di persona.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Completa la configurazione di WooCommerce Payments nella pagina di amministrazione del negozio</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Ricarica dopo l\'attivazione</string>
@@ -1896,14 +1907,13 @@ Language: it
     <string name="product_downloadable_files_download_settings">Impostazioni download</string>
     <string name="product_downloadable_files_name_invalid">Inserisci un nome valido</string>
     <string name="product_downloadable_files_add_manually">Inserisci URL file</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Dalla libreria multimediale WordPress</string>
-    <string name="product_downloadable_files_add_media_from_device">Dal dispositivo</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Libreria multimediale WordPress</string>
     <string name="product_downloadable_files_url_invalid">Verifica che l\'URL inserito sia valido</string>
     <string name="product_downloadable_files_upload_dialog_message">Attendi…</string>
     <string name="product_downloadable_files_upload_dialog_title">Caricamento file</string>
     <string name="product_downloadable_files_upload_failed">Errore durante il caricamento del file</string>
     <string name="product_downloadable_files_add_title">Aggiungi file scaricabile</string>
-    <string name="product_downloadable_add_bottomsheet_header">Aggiungi file scaricabile</string>
+    <string name="product_downloadable_add_bottomsheet_header">Aggiungi file scaricabile da</string>
     <string name="bottom_sheet_downloadable_files_desc">Includi i file scaricabili con gli acquisti</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Annulla</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Sì, modifica</string>

@@ -17,6 +17,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEligibleForAI
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
@@ -27,7 +29,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
-import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,10 +39,10 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val selectedSite: SelectedSite,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val shouldShowOnboarding: ShouldShowOnboarding,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
+    private val shouldShowOnboarding: ShouldShowOnboarding
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -84,7 +85,7 @@ class StoreOnboardingViewModel @Inject constructor(
             ADD_FIRST_PRODUCT -> OnboardingTaskUi(
                 taskUiResources = AddProductTaskRes,
                 isCompleted = task.isComplete,
-                isLabelVisible = isAIProductDescriptionEnabled()
+                isLabelVisible = selectedSite.get().isEligibleForAI
             )
 
             LOCAL_NAME_STORE -> OnboardingTaskUi(

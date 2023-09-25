@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-06 23:54:03+0000
+Translation-Revision-Date: 2023-09-21 15:54:22+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">Это не затронет онлайн-заказы</string>
+    <string name="tax_rate_selector_auto_rate_label">Добавить эту ставку ко всем созданным заказам</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Изменить налоговые ставки</string>
+    <string name="tax_rate_selector_empty_list_button">Изменить налоговые ставки в консоли</string>
+    <string name="tax_rate_selector_empty_list_message">Добавьте налоговые ставки в консоли. Будут показаны только налоговые ставки с информацией о местоположении.</string>
+    <string name="tax_rate_selector_empty_list_title">Налоговые ставки не найдены</string>
+    <string name="store_onboarding_payments_setup_description">Посмотрите другие платёжные системы и \nвыберите одну из них.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Способы оплаты</string>
+    <string name="product_downloadable_files_add_documents_from_device">Документы на устройстве</string>
+    <string name="product_downloadable_files_add_media_from_device">Медиафайлы на устройстве</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Исправить</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Завершить настройку</string>
+    <string name="tax_rate_selector_title">Установить налоговую ставку</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Активировать</string>
+    <string name="order_creation_set_tax_rate">Установить новую налоговую ставку</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Настроить</string>
     <string name="tax_rate_selector_edit_rates_button_label">Изменить налоговые ставки в консоли</string>
     <string name="tax_rate_selector_header_label">Адрес клиента будет изменён на адрес, где действует выбранная вами налоговая ставка.</string>
     <string name="tax_rate_selector_info_icon_content_description">Кнопка открытия диалогового окна с информацией о налоговых ставках</string>
@@ -21,8 +38,6 @@ Language: ru
     <string name="tax_rates_info_dialog_primary_text">Налоги рассчитываются на основе сопоставления платёжного адреса, адреса доставки или адреса магазина с адресом, где действует налоговая ставка.</string>
     <string name="tax_rates_information_content_description">Сведения о налоговых ставках</string>
     <string name="store_onboarding_wcpay_setup_description">Используя WooCommerce Payments, вы принимаете наши &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Условия предоставления услуг&lt;/u&gt;&lt;/a&gt; и подтверждаете, что ознакомились с &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Политикой конфиденциальности&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
-    <string name="store_onboarding_payments_pre_setup_title_one">Настроить</string>
     <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt; о подтверждении вашей информации на WooPayments.</string>
     <string name="store_onboarding_wcpay_instructions_content_button">Начать настройку</string>
     <string name="store_onboarding_wcpay_instructions_content_step_2_content">Партнёр WooPayments — платёжная система Stripe. Вы будете перенаправлены на сайт Stripe для регистрации. Мы попросим вас подтвердить сведения о вашем бизнесе и платёжные данные.</string>
@@ -279,8 +294,6 @@ Language: ru
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Развивайте бизнес с нашим планом!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Пробный период использования Woo Express завершается завтра (%1$s). Пришло время стать хозяином своего будущего — выберите тарифный план и приготовьтесь к росту.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Срок действия вашей бесплатной пробной версии истекает!</string>
-    <string name="local_notification_without_free_trial_description">Здравствуйте, %1$s! %2$s ждёт вас! Начните свой интернет-бизнес с бесплатной 14-дневной пробной версией Woo Express всего одним щелчком мыши.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ Магазин уже ждёт вас!</string>
     <string name="local_notification_store_creation_complete_description">Здравствуйте, %1$s! Начался 14-дневный пробный период использования Woo Express — здесь есть всё, что нужно для создания и развития успешного интернет-бизнеса. Готовы узнать больше?</string>
     <string name="local_notification_store_creation_complete_title">🎉 Ваш магазин готов!</string>
     <string name="product_type_variation">Товар с вариациями</string>
@@ -1312,7 +1325,6 @@ Language: ru
     <string name="order_creation_customer_note">Примечание для клиента</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">Перезагрузите после обновления</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Stripe Gateway. Обновите его, чтобы принимать очные платежи.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Обновить</string>
     <string name="card_reader_payment_failed_unknown">Платёж отклонён по неизвестной причине</string>
     <string name="card_reader_payment_failed_test_mode_live_card">Действующая карта была использована на сайте в тестовом режиме</string>
     <string name="card_reader_payment_failed_test_card">Карты для тестирования системы нельзя использовать для платежа</string>
@@ -1532,7 +1544,6 @@ Language: ru
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Перезагрузите после обновления</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">В вашем магазине установлена устаревшая версия расширения WooCommerce Payments. Обновите его, чтобы получать очные платежи.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Обновить WooCommerce Payments</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Обновить</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">Почти готово. Завершите настройку WooCommerce Payments, чтобы начать принимать очные платежи.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">Закончите настройку WooCommerce Payments в учётной записи администратора магазина.</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Обновите после активации</string>
@@ -1896,14 +1907,13 @@ Language: ru
     <string name="product_downloadable_files_download_settings">Настройки загрузки</string>
     <string name="product_downloadable_files_name_invalid">Введите правильное имя</string>
     <string name="product_downloadable_files_add_manually">Введите URL-адрес файла</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">Из библиотеки файлов WordPress</string>
-    <string name="product_downloadable_files_add_media_from_device">С устройства</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">Библиотека файлов WordPress</string>
     <string name="product_downloadable_files_url_invalid">Убедитесь, что введен допустимый URL-адрес</string>
     <string name="product_downloadable_files_upload_dialog_message">Пожалуйста, подождите…</string>
     <string name="product_downloadable_files_upload_dialog_title">Загрузка файлов</string>
     <string name="product_downloadable_files_upload_failed">Ошибка загрузки файлов</string>
     <string name="product_downloadable_files_add_title">Добавьте скачиваемый файл</string>
-    <string name="product_downloadable_add_bottomsheet_header">Добавьте скачиваемый файл</string>
+    <string name="product_downloadable_add_bottomsheet_header">Добавьте скачиваемый файл из</string>
     <string name="bottom_sheet_downloadable_files_desc">Добавлять к покупкам скачиваемый файл</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Отмена</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">Да, изменить</string>

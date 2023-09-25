@@ -80,6 +80,9 @@
         <action
             android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -180,6 +183,9 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_products_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/reviews"
@@ -550,6 +556,9 @@
             android:id="@+id/action_storeOnboardingFragment_to_wooPaymentsSetupInstructionsFragment"
             app:destination="@id/wooPaymentsSetupInstructionsFragment"
             app:popUpTo="@id/dashboard" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_addProductWithAIBottomSheet"
+            app:destination="@id/addProductWithAIBottomSheet" />
     </fragment>
     <dialog
         android:id="@+id/privacyBannerFragment"
@@ -593,8 +602,7 @@
         <action
             android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
-            app:popUpTo="@id/dashboard">
-        </action>
+            app:popUpTo="@id/dashboard" />
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
@@ -653,10 +661,27 @@
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
-        android:label="NameYourStoreDialogFragment" >
+        android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
+    <dialog
+        android:id="@+id/addProductWithAIBottomSheet"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIBottomSheet"
+        android:label="AddProductWithAIBottomSheet">
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:popUpTo="@id/addProductWithAIBottomSheet"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
+            app:destination="@id/addProductWithAIFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/addProductWithAIFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
+        android:label="AddProductWithAIFragment" />
 </navigation>

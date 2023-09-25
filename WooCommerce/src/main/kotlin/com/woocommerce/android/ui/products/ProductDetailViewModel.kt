@@ -32,6 +32,7 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.orNullIfEmpty
@@ -43,7 +44,6 @@ import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuc
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
@@ -146,8 +146,7 @@ class ProductDetailViewModel @Inject constructor(
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
-    private val isBlazeEnabled: IsBlazeEnabled,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
+    private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -207,12 +206,6 @@ class ProductDetailViewModel @Inject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
-    val globalAttributeTermsViewStateData = LiveDataDelegate(savedState, GlobalAttributesTermsViewState())
-    private var globalAttributesTermsViewState by globalAttributeTermsViewStateData
-
-    private val _attributeTermsList = MutableLiveData<List<ProductAttributeTerm>>()
-    val attributeTermsList: LiveData<List<ProductAttributeTerm>> = _attributeTermsList
-
     val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
 
@@ -229,14 +222,14 @@ class ProductDetailViewModel @Inject constructor(
 
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(
-            this,
-            resources,
-            currencyFormatter,
-            parameters,
-            addonRepository,
-            variationRepository,
-            isAIProductDescriptionEnabled,
-            appPrefsWrapper
+            viewModel = this,
+            selectedSite = selectedSite,
+            resources = resources,
+            currencyFormatter = currencyFormatter,
+            parameters = parameters,
+            addonRepository = addonRepository,
+            variationRepository = variationRepository,
+            appPrefsWrapper = appPrefsWrapper
         )
     }
 
@@ -417,7 +410,7 @@ class ProductDetailViewModel @Inject constructor(
             )
 
             viewState.productDraft?.let {
-                if (canSiteUseSharingWithAI()) {
+                if (selectedSite.get().isEligibleForAI) {
                     triggerEvent(
                         ProductNavigationTarget.ShareProductWithAI(
                             it.permalink,
@@ -431,8 +424,6 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
-
-    private fun canSiteUseSharingWithAI(): Boolean = selectedSite.get().isWPComAtomic
 
     fun onWriteWithAIClicked() {
         val chosenDescription =
@@ -1466,17 +1457,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
-     * Fetches terms for a global product attribute
-     */
-    fun fetchGlobalAttributeTerms(remoteAttributeId: Long) {
-        launch {
-            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = true)
-            _attributeTermsList.value = productRepository.fetchGlobalAttributeTerms(remoteAttributeId)
-            globalAttributesTermsViewState = globalAttributesTermsViewState.copy(isSkeletonShown = false)
-        }
-    }
-
-    /**
      * Returns the draft attribute matching the passed id and name
      */
     private fun getDraftAttribute(attributeId: Long, attributeName: String): ProductAttribute? {
@@ -1659,13 +1639,6 @@ class ProductDetailViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    /**
-     * Clears the global attribute terms
-     */
-    fun resetGlobalAttributeTerms() {
-        _attributeTermsList.value = emptyList()
     }
 
     /**
