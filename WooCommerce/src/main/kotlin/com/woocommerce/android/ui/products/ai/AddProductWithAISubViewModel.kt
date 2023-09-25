@@ -9,4 +9,7 @@ sealed interface AddProductWithAISubViewModel<T> : Closeable {
     val events: Flow<Event>
         get() = emptyFlow()
     val onDone: (T) -> Unit
+
+    fun onStart() {}
+    fun onStop() {}
 }

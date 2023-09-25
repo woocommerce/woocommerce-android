@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,8 +38,10 @@ class ProductPreviewSubViewModel(
     private lateinit var productKeywords: String
     private lateinit var tone: AiTone
 
-    fun startGeneratingProduct() {
-        viewModelScope.launch {
+    private var generationJob: Job? = null
+
+    override fun onStart() {
+        generationJob = viewModelScope.launch {
             _state.value = State.Loading
 
             val categories = withContext(Dispatchers.IO) {
@@ -79,6 +82,10 @@ class ProductPreviewSubViewModel(
                 }
             )
         }
+    }
+
+    override fun onStop() {
+        generationJob?.cancel()
     }
 
     fun updateName(name: String) {

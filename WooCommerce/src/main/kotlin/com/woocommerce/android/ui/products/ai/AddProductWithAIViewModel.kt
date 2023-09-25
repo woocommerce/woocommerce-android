@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.scan
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +55,6 @@ class AddProductWithAIViewModel @Inject constructor(
                     previewSubViewModel.updateKeywords(productFeatures)
                     previewSubViewModel.updateTone(selectedAiTone)
                 }
-                previewSubViewModel.startGeneratingProduct()
                 goToNextStep()
             }
         ),
@@ -93,6 +93,13 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun wireSubViewModels() {
+        step.scan<Step, Step?>(null) { previousStep, newStep ->
+            previousStep?.let { subViewModels[it.ordinal].onStop() }
+            subViewModels[newStep.ordinal].onStart()
+
+            newStep
+        }.launchIn(viewModelScope)
+
         subViewModels.forEach { subViewModel ->
             addCloseable(subViewModel)
 
