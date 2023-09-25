@@ -164,12 +164,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         getAutoTaxRateSetting = mock {
             onBlocking { invoke() } doReturn null
         }
-        getTaxRatePercentageValueText = mock {
-//            onBlocking { invoke(any()) } doReturn "1%"
-        }
-        getTaxRateLabel = mock {
-//            onBlocking { invoke(any()) } doReturn "Tax"
-        }
+        getTaxRatePercentageValueText = mock()
+        getTaxRateLabel = mock()
         prefs = mock()
     }
 
