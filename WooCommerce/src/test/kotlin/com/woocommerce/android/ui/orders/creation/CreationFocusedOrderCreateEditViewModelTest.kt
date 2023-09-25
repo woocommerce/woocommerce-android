@@ -105,6 +105,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
             whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_shipping_address))
                 .thenReturn("Calculated on shipping address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
             createSut()
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on shipping address")
@@ -116,6 +118,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
             whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address))
                 .thenReturn("Calculated on billing address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
             createSut()
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on billing address")
