@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -67,7 +68,12 @@ class TaxRateSelectorViewModel @Inject constructor(
             prefs.disableAutoTaxRate()
         }
         triggerEvent(TaxRateSelected(taxRate.taxRate))
-        tracker.track(AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED)
+        tracker.track(
+            AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED,
+            mapOf(
+                AnalyticsTracker.AUTO_TAX_RATE_ENABLED to autoRateSwitchState.value
+            )
+        )
     }
 
     fun onDismissed() {

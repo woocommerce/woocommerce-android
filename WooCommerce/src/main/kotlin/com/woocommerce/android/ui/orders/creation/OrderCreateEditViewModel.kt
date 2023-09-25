@@ -1132,6 +1132,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val state = viewState.autoTaxRateSetting
         if (state.isActive) {
             triggerEvent(AutoTaxRateSettingDetails(state))
+            tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_BOTTOM_SHEET_DISPLAYED)
         } else {
             triggerEvent(TaxRateSelector(getTaxRatesInfoDialogState(_orderDraft.value.taxLines)))
         }
@@ -1163,6 +1164,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onSetNewTaxRateClicked() = launch {
         triggerEvent(TaxRateSelector(getTaxRatesInfoDialogState(_orderDraft.value.taxLines)))
+        tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
     }
 
     fun onStopUsingTaxRateClicked() = launch {
@@ -1170,6 +1172,7 @@ class OrderCreateEditViewModel @Inject constructor(
         updateAutoTaxRateSettingState()
         updateTaxRateSelectorButtonState()
         clearCustomerAddresses()
+        tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED)
     }
 
     @Parcelize

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.taxes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
@@ -41,7 +42,28 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when tax rate selected, then should track event`() = testBlocking {
+    fun `given autoTaxRate enabled, when tax rate selected, then should track event`() = testBlocking {
+        // Create a TaxRateUiModel for testing
+        val taxRate = TaxRate(1, "US", "NY", "12345", "New York")
+        val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
+            "Test Rate · US NY 12345 New York", "10%", taxRate
+        )
+
+        // GIVEN
+        viewModel.onAutoRateSwitchStateToggled()
+
+        // WHEN
+        viewModel.onTaxRateSelected(taxRateUiModel)
+
+        // THEN
+        verify(tracker).track(
+            AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED,
+            mapOf(AnalyticsTracker.AUTO_TAX_RATE_ENABLED to true)
+        )
+    }
+
+    @Test
+    fun `given autoTaxRate disabled, when tax rate selected, then should track event`() = testBlocking {
         // Create a TaxRateUiModel for testing
         val taxRate = TaxRate(1, "US", "NY", "12345", "New York")
         val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
@@ -52,7 +74,10 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         viewModel.onTaxRateSelected(taxRateUiModel)
 
         // THEN
-        verify(tracker).track(AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED)
+        verify(tracker).track(
+            AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED,
+            mapOf(AnalyticsTracker.AUTO_TAX_RATE_ENABLED to false)
+        )
     }
 
     @Test
