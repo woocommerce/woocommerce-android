@@ -1906,7 +1906,7 @@
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_header">My product</string>
-    <string name="product_creation_ai_about_product_edit_text_hint">For example, Soft fabric, durable stitching, unique design</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
@@ -1915,6 +1915,13 @@
     <string name="product_creation_ai_preview_name_section">Product name</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
+    <string name="product_creation_ai_tone_title">Tone and voice</string>
+    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_flowery">Flowery</string>
+    <string name="product_creation_ai_tone_convincing">Convincing</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
 
     <!--
         Product Add more details Bottom sheet
