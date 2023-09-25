@@ -150,6 +150,7 @@ fun StartLayout(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_375)))
 
         WCColoredButton(
+            enabled = keywords.isNotEmpty(),
             onClick = onGenerateButtonClicked,
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.ai_product_name_sheet_generate_button),
@@ -228,6 +229,7 @@ fun ResultLayout(
                 .fillMaxWidth()
         ) {
             WCTextButton(
+                enabled = keywords.isNotEmpty(),
                 onClick = onGenerateButtonClicked,
                 modifier = Modifier.align(Alignment.CenterStart),
                 colors = ButtonDefaults.textButtonColors(
