@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -28,7 +29,8 @@ fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
     viewModel.state.observeAsState().value?.let {
         AddProductWithAIScreen(
             state = it,
-            onBackButtonClick = viewModel::onBackButtonClick
+            onBackButtonClick = viewModel::onBackButtonClick,
+            onSaveButtonClick = viewModel::onSaveButtonClick
         )
     }
 }
@@ -36,7 +38,8 @@ fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
 @Composable
 fun AddProductWithAIScreen(
     state: AddProductWithAIViewModel.State,
-    onBackButtonClick: () -> Unit
+    onBackButtonClick: () -> Unit,
+    onSaveButtonClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -45,8 +48,8 @@ fun AddProductWithAIScreen(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
                     when (state.saveButtonState) {
-                        AddProductWithAIViewModel.SaveButtonState.Shown -> WCTextButton(onClick = { /*TODO*/ }) {
-                            Text(text = "Save as draft") // TODO localize this
+                        AddProductWithAIViewModel.SaveButtonState.Shown -> WCTextButton(onClick = onSaveButtonClick) {
+                            Text(text = stringResource(id = R.string.product_detail_save_as_draft))
                         }
 
                         AddProductWithAIViewModel.SaveButtonState.Loading -> CircularProgressIndicator(

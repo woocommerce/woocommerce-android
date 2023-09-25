@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -53,10 +54,12 @@ class AddProductWithAIViewModel @Inject constructor(
         tagsRepository = tagsRepository,
         parametersRepository = parameterRepository
     ) {
-        // TODO keep reference to the product for the saving step
+        product = it
         saveButtonState.value = SaveButtonState.Shown
     }
 
+
+    private lateinit var product: Product
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
@@ -85,6 +88,10 @@ class AddProductWithAIViewModel @Inject constructor(
         } else {
             goToPreviousStep()
         }
+    }
+
+    fun onSaveButtonClick() {
+        require(::product.isInitialized)
     }
 
     private fun goToNextStep() {
