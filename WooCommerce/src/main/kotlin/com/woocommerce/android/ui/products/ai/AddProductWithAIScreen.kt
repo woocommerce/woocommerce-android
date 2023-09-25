@@ -53,10 +53,18 @@ fun AddProductWithAIScreen(
                         }
 
                         AddProductWithAIViewModel.SaveButtonState.Loading -> CircularProgressIndicator(
-                            modifier = Modifier.size(dimensionResource(id = R.dimen.major_150))
+                            modifier = Modifier
+                                .size(
+                                    width = dimensionResource(id = R.dimen.major_325),
+                                    height = dimensionResource(id = R.dimen.major_100)
+                                )
+                                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                         )
 
-                        else -> {} // No-op
+                        else
+
+                        -> {
+                        } // No-op
                     }
                 }
             )

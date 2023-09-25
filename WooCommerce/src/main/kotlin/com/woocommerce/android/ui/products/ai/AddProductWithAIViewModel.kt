@@ -97,9 +97,11 @@ class AddProductWithAIViewModel @Inject constructor(
     fun onSaveButtonClick() {
         require(::product.isInitialized)
         viewModelScope.launch {
+            saveButtonState.value = SaveButtonState.Loading
             val (success, productId) = productDetailRepository.addProduct(product)
             if (!success) {
                 // TODO Show error message
+                saveButtonState.value = SaveButtonState.Shown
                 return@launch
             }
 
