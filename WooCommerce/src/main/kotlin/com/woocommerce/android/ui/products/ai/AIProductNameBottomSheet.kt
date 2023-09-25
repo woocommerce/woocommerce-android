@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.AIProductNameViewModel.ViewState.GenerationState
+
 @Composable
 fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
 

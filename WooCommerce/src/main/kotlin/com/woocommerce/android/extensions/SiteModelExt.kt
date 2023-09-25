@@ -66,3 +66,6 @@ val SiteModel?.isFreeTrial: Boolean
 
 val SiteModel?.isSitePublic: Boolean
     get() = this?.publishedStatus == PUBLIC.value()
+
+val SiteModel.isEligibleForAI: Boolean
+    get() = isWPComAtomic || planActiveFeatures.orEmpty().contains("ai-assistant")

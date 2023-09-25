@@ -12,7 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewsListBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.base.BaseFragment
@@ -28,6 +30,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.UnreadItemDecoration
+import com.woocommerce.android.widgets.UnreadItemDecoration.ItemDecorationListener
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,10 +41,12 @@ class ProductReviewsFragment :
     BaseFragment(R.layout.fragment_reviews_list),
     ReviewListAdapter.OnReviewClickListener,
     ReviewModerationUi,
-    BackPressListener {
+    BackPressListener,
+    ItemDecorationListener {
     companion object {
         const val PRODUCT_REVIEWS_MODIFIED = "product-reviews-modified"
     }
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     val viewModel: ProductReviewsViewModel by viewModels()
@@ -72,15 +78,16 @@ class ProductReviewsFragment :
 
     private fun setupViews() {
         _reviewsAdapter = ReviewListAdapter(this)
+        val unreadReviewItemDecoration = UnreadItemDecoration(requireContext(), this)
 
         binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
+            addItemDecoration(unreadReviewItemDecoration)
 
             adapter = reviewsAdapter
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) { }
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
 
@@ -99,6 +106,7 @@ class ProductReviewsFragment :
                 viewModel.refreshProductReviews()
             }
         }
+        setUnreadFilterChangedListener()
     }
 
     private fun setupObservers() {
@@ -142,17 +150,30 @@ class ProductReviewsFragment :
                 skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
+
             false -> skeletonView.hide()
         }
     }
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
-                ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+            if (binding.unreadFilterSwitch.isChecked) {
+                binding.unreadReviewsFilterLayout.show()
+                binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
+            } else {
+                binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
+                }
+                binding.unreadReviewsFilterLayout.hide()
             }
         } else {
             binding.emptyView.hide()
+        }
+    }
+
+    private fun setUnreadFilterChangedListener() {
+        binding.unreadFilterSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onUnreadReviewsFilterChanged(isChecked)
         }
     }
 
@@ -168,4 +189,6 @@ class ProductReviewsFragment :
         viewModel.onBackButtonClicked()
         return false
     }
+
+    override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 }

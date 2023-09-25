@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,9 +33,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -80,17 +79,7 @@ private fun WooPaymentsSetupCelebrationScreen(
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_50)))
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f),
-                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_150))
-                    )
-                    .size(
-                        width = dimensionResource(id = R.dimen.major_200),
-                        height = dimensionResource(id = R.dimen.minor_50)
-                    )
-            )
+            BottomSheetHandle()
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
             Box(
                 modifier = Modifier
