@@ -3589,6 +3589,16 @@
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
 
     <!--
+    AI Product name description
+    -->
+    <string name="ai_product_name_sheet_title">✨ Product name</string>
+    <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
+    <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
+    <string name="ai_product_name_sheet_generate_button">Write it for me</string>
+    <string name="ai_product_name_sheet_regenerate_button">Regenerate</string>
+    <string name="ai_product_name_sheet_error_message">There was a problem generating the product name. Please try again.</string>
+
+    <!--
     Blaze banner
     -->
     <string name="blaze_banner_title">Promote products with Blaze</string>
