@@ -8,35 +8,35 @@
     android:foreground="?attr/selectableItemBackground">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/cardReaderMenuIcon"
+        android:id="@+id/paymentsHubMenuIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_10"
         android:paddingVertical="@dimen/major_100"
         android:paddingStart="@dimen/major_100"
         android:paddingEnd="@dimen/minor_100"
-        app:layout_constraintBottom_toBottomOf="@id/cardReaderHubListItemLabelTv"
+        app:layout_constraintBottom_toBottomOf="@id/paymentsHubListItemLabelTv"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/cardReaderHubListItemLabelTv"
+        app:layout_constraintTop_toTopOf="@id/paymentsHubListItemLabelTv"
         app:srcCompat="@drawable/ic_manage_card_reader" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/cardReaderHubListItemLabelTv"
+        android:id="@+id/paymentsHubListItemLabelTv"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
-        app:layout_constraintBottom_toTopOf="@id/cardReaderHubListItemDescriptionTv"
-        app:layout_constraintStart_toEndOf="@id/cardReaderMenuIcon"
+        app:layout_constraintBottom_toTopOf="@id/paymentsHubListItemDescriptionTv"
+        app:layout_constraintStart_toEndOf="@id/paymentsHubMenuIcon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_goneMarginBottom="@dimen/major_100"
         tools:text="Manage card reader" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/cardReaderHubListItemDescriptionTv"
+        android:id="@+id/paymentsHubListItemDescriptionTv"
         style="@style/Woo.TextView.Body2"
         android:layout_width="@dimen/minor_00"
         android:layout_height="wrap_content"
@@ -46,22 +46,22 @@
         android:textColor="@color/color_surface_variant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/cardReaderHubListItemLabelTv"
-        app:layout_constraintTop_toBottomOf="@id/cardReaderHubListItemLabelTv"
+        app:layout_constraintStart_toStartOf="@id/paymentsHubListItemLabelTv"
+        app:layout_constraintTop_toBottomOf="@id/paymentsHubListItemLabelTv"
         tools:text="Use your phone to accept card payments" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/cardReaderHubBadgeIcon"
+        android:id="@+id/paymentsHubBadgeIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_10"
         android:padding="@dimen/minor_100"
-        app:layout_constraintStart_toEndOf="@id/cardReaderHubListItemLabelTv"
+        app:layout_constraintStart_toEndOf="@id/paymentsHubListItemLabelTv"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/ic_badge_new" />
 
     <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/cardReaderHubListItemDivider"
+        android:id="@+id/paymentsHubListItemDivider"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
