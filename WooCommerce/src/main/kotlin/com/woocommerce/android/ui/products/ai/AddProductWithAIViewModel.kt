@@ -13,6 +13,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
@@ -93,6 +94,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun wireSubViewModels() {
+        // Notify the sub view models when the user navigates to their screen
         step.scan<Step, Step?>(null) { previousStep, newStep ->
             previousStep?.let { subViewModels[it.ordinal].onStop() }
             subViewModels[newStep.ordinal].onStart()
@@ -100,6 +102,12 @@ class AddProductWithAIViewModel @Inject constructor(
             newStep
         }.launchIn(viewModelScope)
 
+        // Hide the save button when the user leaves the preview screen
+        step.filter { it != Step.Preview }
+            .onEach { saveButtonState.value = SaveButtonState.Hidden }
+            .launchIn(viewModelScope)
+
+        // Handle SubViewModel events
         subViewModels.forEach { subViewModel ->
             addCloseable(subViewModel)
 
