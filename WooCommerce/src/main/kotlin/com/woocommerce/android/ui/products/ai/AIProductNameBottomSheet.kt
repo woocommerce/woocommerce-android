@@ -44,17 +44,20 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         when (val generationState = state.generationState) {
             is GenerationState.Start -> StartLayout(
+                keywords = state.keywords,
                 onKeywordsChanged = viewModel::onProductKeywordsChanged,
                 onGenerateButtonClicked = viewModel::onGenerateButtonClicked
             )
-            is GenerationState.Generating -> GeneratingLayout()
+            is GenerationState.Generating -> GeneratingLayout(keywords = state.keywords)
             is GenerationState.Generated -> {
                 if (generationState.hasError) {
                     ErrorLayout(
+                        keywords = state.keywords,
                         onGenerateButtonClicked = viewModel::onGenerateButtonClicked
                     )
                 } else {
                     ResultLayout(
+                        keywords = state.keywords,
                         onKeywordsChanged = viewModel::onProductKeywordsChanged,
                         onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
                         onCopyButtonClicked = viewModel::onCopyButtonClicked,
@@ -68,6 +71,7 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
 
 @Composable
 fun MainLayout(
+    keywords: String,
     enableProductKeywords: Boolean = true,
     onKeywordsChanged: (String) -> Unit = {},
     footer: @Composable () -> Unit
@@ -112,7 +116,7 @@ fun MainLayout(
                     .padding(dimensionResource(id = R.dimen.major_100))
             ) {
                 WCOutlinedTextField(
-                    value = "Some entered text about the product",
+                    value = keywords,
                     onValueChange = onKeywordsChanged,
                     label = "",
                     enabled = enableProductKeywords,
@@ -135,10 +139,12 @@ fun MainLayout(
 
 @Composable
 fun StartLayout(
+    keywords: String,
     onKeywordsChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit
 ) {
     MainLayout(
+        keywords = keywords,
         onKeywordsChanged = onKeywordsChanged
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_375)))
@@ -159,8 +165,13 @@ fun StartLayout(
 }
 
 @Composable
-fun GeneratingLayout() {
-    MainLayout(enableProductKeywords = false) {
+fun GeneratingLayout(
+    keywords: String
+) {
+    MainLayout(
+        keywords = keywords,
+        enableProductKeywords = false
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
 
         Column(
@@ -191,12 +202,16 @@ fun GeneratingLayout() {
 
 @Composable
 fun ResultLayout(
+    keywords: String,
     onKeywordsChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit,
     onCopyButtonClicked: () -> Unit,
     onApplyButtonClicked: () -> Unit
 ) {
-    MainLayout(onKeywordsChanged = onKeywordsChanged) {
+    MainLayout(
+        keywords = keywords,
+        onKeywordsChanged = onKeywordsChanged
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         GeneratedTextLayout(onCopyButtonClicked)
@@ -285,9 +300,10 @@ fun GeneratedTextLayout(
 
 @Composable
 fun ErrorLayout(
+    keywords: String,
     onGenerateButtonClicked: () -> Unit
 ) {
-    MainLayout {
+    MainLayout(keywords = keywords) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         Box(
@@ -328,19 +344,20 @@ fun ErrorLayout(
 @Preview
 @Composable
 fun StartLayoutPreview() {
-    StartLayout(onKeywordsChanged = {}, onGenerateButtonClicked = {})
+    StartLayout("", onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }
 
 @Preview
 @Composable
 fun GeneratingLayoutPreview() {
-    GeneratingLayout()
+    GeneratingLayout("")
 }
 
 @Preview
 @Composable
 fun ResultLayoutPreview() {
     ResultLayout(
+        keywords = "",
         onKeywordsChanged = {},
         onGenerateButtonClicked = {},
         onCopyButtonClicked = {},
@@ -351,5 +368,5 @@ fun ResultLayoutPreview() {
 @Preview
 @Composable
 fun ErrorLayoutPreview() {
-    ErrorLayout(onGenerateButtonClicked = {})
+    ErrorLayout(keywords = "", onGenerateButtonClicked = {})
 }
