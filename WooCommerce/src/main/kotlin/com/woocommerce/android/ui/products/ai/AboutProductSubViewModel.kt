@@ -13,9 +13,13 @@ class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
     override val onDone: (String) -> Unit
 ) : AddProductWithAISubViewModel<String> {
+    companion object {
+        private const val KEY_SUBSCREEN_NAME = "about_product"
+    }
+
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val productFeatures = savedStateHandle.getStateFlow(viewModelScope, "")
+    private val productFeatures = savedStateHandle.getStateFlow(viewModelScope, "", KEY_SUBSCREEN_NAME)
 
     val state = productFeatures.map {
         UiState(it)
