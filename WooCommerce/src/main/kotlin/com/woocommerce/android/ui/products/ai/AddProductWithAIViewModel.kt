@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -18,12 +20,14 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProductWithAIViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     aiRepository: AIRepository,
+    private val productDetailRepository: ProductDetailRepository,
     buildProductPreviewProperties: BuildProductPreviewProperties,
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
@@ -92,6 +96,15 @@ class AddProductWithAIViewModel @Inject constructor(
 
     fun onSaveButtonClick() {
         require(::product.isInitialized)
+        viewModelScope.launch {
+            val (success, productId) = productDetailRepository.addProduct(product)
+            if (!success) {
+                // TODO Show error message
+                return@launch
+            }
+
+            triggerEvent(NavigateToProductDetailScreen(productId))
+        }
     }
 
     private fun goToNextStep() {
@@ -139,6 +152,8 @@ class AddProductWithAIViewModel @Inject constructor(
     enum class SaveButtonState {
         Hidden, Shown, Loading
     }
+
+    data class NavigateToProductDetailScreen(val productId: Long): MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {
