@@ -76,7 +76,7 @@ fun AddProductWithAIScreen(
             LinearProgressIndicator(
                 progress = animatedProgress,
                 modifier = Modifier.fillMaxWidth(),
-                backgroundColor = colorResource(id = color.creating_store_linear_progress_background),
+                backgroundColor = colorResource(id = color.linear_progress_background),
             )
 
             SubScreen(
