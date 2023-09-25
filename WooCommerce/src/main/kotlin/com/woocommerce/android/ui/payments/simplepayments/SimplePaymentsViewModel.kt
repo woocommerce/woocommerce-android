@@ -21,10 +21,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
-import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -53,7 +51,7 @@ class SimplePaymentsViewModel @Inject constructor(
     // check for an empty list here to simplify our test. note the single fee line is the only way to get the price w/o
     // taxes, and FluxC sets the tax status to "taxable" so when the order is created core automatically sets the total
     // tax if the store has taxes enabled.
-    val feeLineTotal: BigDecimal
+    private val feeLineTotal: BigDecimal
         get() = if (order.feesLines.isNotEmpty()) {
             order.feesLines[0].total
         } else {
@@ -126,6 +124,7 @@ class SimplePaymentsViewModel @Inject constructor(
         viewState = viewState.copy(isBillingEmailValid = true)
 
         launch {
+            viewState = viewState.copy(isLoading = true)
             simplePaymentsRepository.updateSimplePayment(
                 order.id,
                 order.feesTotal.toString(),
@@ -138,42 +137,11 @@ class SimplePaymentsViewModel @Inject constructor(
 
     private suspend fun Flow<UpdateOrderResult>.collectUpdate() {
         collect { result ->
-            when (result) {
-                is OptimisticUpdateResult -> {
-                    if (result.event.isError) {
-                        AnalyticsTracker.track(
-                            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY,
-                                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                            )
-                        )
-                        result.event.error?.let {
-                            WooLog.e(WooLog.T.ORDERS, "Simple payment optimistic update failed with ${it.message}")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            triggerEvent(ShowTakePaymentScreen)
-                        }
-                    }
-                }
-                is UpdateOrderResult.RemoteUpdateResult -> {
-                    if (result.event.isError) {
-                        AnalyticsTracker.track(
-                            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT,
-                                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
-                            )
-                        )
-                        result.event.error?.let {
-                            WooLog.e(WooLog.T.ORDERS, "Simple payment remote update failed with ${it.message}")
-                        }
-                        withContext(Dispatchers.Main) {
-                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.simple_payments_update_error))
-                        }
-                    }
-                }
+            if (result.event.isError) {
+                recordUpdateSimplePaymentError(result)
+            } else if (result is UpdateOrderResult.RemoteUpdateResult) {
+                viewState = viewState.copy(isLoading = false)
+                triggerEvent(ShowTakePaymentScreen)
             }
         }
     }
@@ -192,6 +160,19 @@ class SimplePaymentsViewModel @Inject constructor(
         triggerEvent(CancelSimplePayment)
     }
 
+    private fun recordUpdateSimplePaymentError(result: UpdateOrderResult) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+            )
+        )
+        result.event.error?.let {
+            WooLog.e(WooLog.T.ORDERS, "Simple payment update failed with ${it.message}")
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val chargeTaxes: Boolean = false,
@@ -200,7 +181,8 @@ class SimplePaymentsViewModel @Inject constructor(
         val orderTotal: BigDecimal = BigDecimal.ZERO,
         val customerNote: String = "",
         val billingEmail: String = "",
-        val isBillingEmailValid: Boolean = true
+        val isBillingEmailValid: Boolean = true,
+        val isLoading: Boolean = false,
     ) : Parcelable
 
     object ShowCustomerNoteEditor : MultiLiveEvent.Event()
