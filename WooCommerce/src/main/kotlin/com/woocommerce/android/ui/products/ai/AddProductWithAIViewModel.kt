@@ -42,18 +42,19 @@ class AddProductWithAIViewModel @Inject constructor(
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
         ProductNameSubViewModel(
             savedStateHandle = savedStateHandle,
-            onDone = {
-                // Pass the name to next ViewModel if needed
+            onDone = { name ->
+                previewSubViewModel.updateName(name)
                 goToNextStep()
             }
         ),
         AboutProductSubViewModel(
             savedStateHandle = savedStateHandle,
-            onDone = {
-                previewSubViewModel.startGeneratingProduct(
-                    name = "T-Shirt", // TODO pass data from the name SubViewModel
-                    keywords = it
-                )
+            onDone = { result ->
+                result.let { (productFeatures, selectedAiTone) ->
+                    previewSubViewModel.updateKeywords(productFeatures)
+                    previewSubViewModel.updateTone(selectedAiTone)
+                }
+                previewSubViewModel.startGeneratingProduct()
                 goToNextStep()
             }
         ),

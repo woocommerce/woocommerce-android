@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +33,11 @@ class ProductPreviewSubViewModel(
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asLiveData()
 
-    fun startGeneratingProduct(name: String, keywords: String) {
+    private lateinit var productName: String
+    private lateinit var productKeywords: String
+    private lateinit var tone: AiTone
+
+    fun startGeneratingProduct() {
         viewModelScope.launch {
             _state.value = State.Loading
 
@@ -51,9 +56,9 @@ class ProductPreviewSubViewModel(
             }
 
             aiRepository.generateProduct(
-                productName = name,
-                productKeyWords = keywords,
-                tone = "neutral", // TODO,
+                productName = productName,
+                productKeyWords = productKeywords,
+                tone = tone.slug,
                 weightUnit = siteParameters.weightUnit ?: "kg",
                 dimensionUnit = siteParameters.dimensionUnit ?: "cm",
                 currency = siteParameters.currencyCode ?: "USD",
@@ -74,6 +79,18 @@ class ProductPreviewSubViewModel(
                 }
             )
         }
+    }
+
+    fun updateName(name: String) {
+        this.productName = name
+    }
+
+    fun updateKeywords(keywords: String) {
+        this.productKeywords = keywords
+    }
+
+    fun updateTone(tone: AiTone) {
+        this.tone = tone
     }
 
     override fun close() {

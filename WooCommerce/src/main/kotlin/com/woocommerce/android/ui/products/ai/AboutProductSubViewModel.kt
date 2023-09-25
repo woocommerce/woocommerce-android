@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,8 +15,8 @@ import kotlinx.parcelize.Parcelize
 
 class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
-    override val onDone: (String) -> Unit
-) : AddProductWithAISubViewModel<String> {
+    override val onDone: (Pair<String, AiTone>) -> Unit
+) : AddProductWithAISubViewModel<Pair<String, AiTone>> {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val productFeatures = savedStateHandle.getStateFlow(
@@ -29,7 +30,9 @@ class AboutProductSubViewModel(
     val state = productFeatures.asLiveData()
 
     fun onDoneClick() {
-        onDone(productFeatures.value.productFeatures)
+        productFeatures.value.let { (productFeatures, selectedAiTone) ->
+            onDone(Pair(productFeatures, selectedAiTone))
+        }
     }
 
     fun onProductFeaturesUpdated(features: String) {
