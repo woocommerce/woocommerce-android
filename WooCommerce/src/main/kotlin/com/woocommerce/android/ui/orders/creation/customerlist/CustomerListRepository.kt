@@ -41,20 +41,6 @@ class CustomerListRepository @Inject constructor(
             .find { it.code == stateCode }?.toAppModel()
             ?: Location.EMPTY
 
-    /**
-     * Submits a fetch request to get the first page of customers matching the passed query
-     */
-    suspend fun searchCustomerList(
-        searchQuery: String,
-    ): List<WCCustomerModel>? = withContext(dispatchers.io) {
-        customerStore.fetchCustomersFromAnalytics(
-            site = selectedSite.get(),
-            searchQuery = searchQuery,
-            pageSize = 50,
-            page = 1,
-        ).takeUnless { it.isError }?.model
-    }
-
     suspend fun searchCustomerListWithEmail(
         searchQuery: String,
         searchBy: String,
@@ -81,10 +67,6 @@ class CustomerListRepository @Inject constructor(
 
     suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> = withContext(dispatchers.io) {
         customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
-    }
-
-    suspend fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? = withContext(dispatchers.io) {
-        customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
     }
 
     private companion object {
