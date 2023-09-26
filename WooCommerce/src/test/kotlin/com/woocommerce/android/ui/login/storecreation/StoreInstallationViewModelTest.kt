@@ -2,11 +2,10 @@ package com.woocommerce.android.ui.login.storecreation
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
@@ -18,7 +17,6 @@ import com.woocommerce.android.ui.login.storecreation.installation.StoreInstalla
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +30,6 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import kotlin.test.assertEquals
 
@@ -46,9 +43,6 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
     private val storeInstallationLoadingTimer: StoreInstallationLoadingTimer = mock()
     private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
     private val observeSiteInstallation: ObserveSiteInstallation = mock()
-    private val localNotificationScheduler: LocalNotificationScheduler = mock()
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
-    private val accountStore: AccountStore = mock()
 
     private lateinit var viewModel: StoreInstallationViewModel
 
@@ -56,8 +50,9 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         const val SITE_ID = 123L
         val INITIAL_LOADING_STATE = StoreCreationLoadingState(
             progress = 0F,
-            title = string.store_creation_in_progress_title_1,
-            description = string.store_creation_in_progress_description_1
+            title = R.string.store_creation_in_progress_title_1,
+            description = R.string.store_creation_in_progress_description_1,
+            image = R.drawable.store_creation_loading_almost_there
         )
     }
 
@@ -71,10 +66,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             selectedSite,
             storeInstallationLoadingTimer,
             installationTransactionLauncher,
-            observeSiteInstallation,
-            localNotificationScheduler,
-            isRemoteFeatureFlagEnabled,
-            accountStore
+            observeSiteInstallation
         )
         viewModel.viewState.observeForever {}
     }

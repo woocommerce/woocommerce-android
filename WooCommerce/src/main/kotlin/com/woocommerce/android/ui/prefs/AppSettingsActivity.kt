@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.prefs
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
@@ -23,13 +23,14 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.parcelable
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -95,6 +96,8 @@ class AppSettingsActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            if (f is DialogFragment) return
+
             when ((f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 AppBarStatus.Hidden -> {
                     toolbar?.isVisible = false
@@ -148,15 +151,12 @@ class AppSettingsActivity :
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
         statsWidgetUpdaters.updateTodayWidget()
 
-        val mainIntent = Intent(this, MainActivity::class.java)
-        mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(mainIntent)
-        setResult(Activity.RESULT_OK)
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            LoginMode.WOO_LOGIN_MODE.putInto(this)
+        }
 
-        close()
-    }
-
-    override fun close() {
+        startActivity(intent)
         finish()
     }
 

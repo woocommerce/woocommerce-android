@@ -84,6 +84,7 @@ data class Product(
     override val height: Float,
     override val weight: Float,
     val subscription: SubscriptionDetails?,
+    val isSampleProduct: Boolean,
     val specialStockStatus: ProductStockStatus? = null
 ) : Parcelable, IProduct {
     companion object {
@@ -565,6 +566,7 @@ fun WCProductModel.toAppModel(): Product {
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
         subscription = subscription,
+        isSampleProduct = isSampleProduct,
         specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
             ProductStockStatus.fromString(this.specialStockStatus)
         } else {

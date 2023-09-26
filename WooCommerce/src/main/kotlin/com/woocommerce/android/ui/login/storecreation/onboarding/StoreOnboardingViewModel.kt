@@ -15,7 +15,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOCAL_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEligibleForAI
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
@@ -26,7 +29,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
-import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,10 +39,10 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val selectedSite: SelectedSite,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val shouldShowOnboarding: ShouldShowOnboarding,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled
+    private val shouldShowOnboarding: ShouldShowOnboarding
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -77,17 +79,17 @@ class StoreOnboardingViewModel @Inject constructor(
             ABOUT_YOUR_STORE -> OnboardingTaskUi(AboutYourStoreTaskRes, isCompleted = task.isComplete)
             LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
             CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
-            WC_PAYMENTS,
+            WC_PAYMENTS -> OnboardingTaskUi(SetupWooPaymentsTaskRes, isCompleted = task.isComplete)
             PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
 
             ADD_FIRST_PRODUCT -> OnboardingTaskUi(
-                AddProductTaskRes,
+                taskUiResources = AddProductTaskRes,
                 isCompleted = task.isComplete,
-                isLabelVisible = isAIProductDescriptionEnabled()
+                isLabelVisible = selectedSite.get().isEligibleForAI
             )
 
             LOCAL_NAME_STORE -> OnboardingTaskUi(
-                NameYourStoreTaskRes,
+                taskUiResources = NameYourStoreTaskRes,
                 isCompleted = task.isComplete
             )
 
@@ -134,6 +136,7 @@ class StoreOnboardingViewModel @Inject constructor(
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             NameYourStoreTaskRes -> triggerEvent(ShowNameYourStoreDialog)
             SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)
+            SetupWooPaymentsTaskRes -> triggerEvent(NavigateToSetupWooPayments)
         }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
@@ -148,6 +151,7 @@ class StoreOnboardingViewModel @Inject constructor(
             CustomizeDomainTaskRes -> VALUE_ADD_DOMAIN
             LaunchStoreTaskRes -> VALUE_LAUNCH_SITE
             SetupPaymentsTaskRes -> VALUE_PAYMENTS
+            SetupWooPaymentsTaskRes -> VALUE_WOO_PAYMENTS
             NameYourStoreTaskRes -> VALUE_LOCAL_NAME_STORE
         }
 
@@ -223,11 +227,20 @@ class StoreOnboardingViewModel @Inject constructor(
         description = R.string.store_onboarding_task_payments_setup_description
     )
 
+    object SetupWooPaymentsTaskRes : OnboardingTaskUiResources(
+        icon = R.drawable.ic_onboarding_payments_setup,
+        title = R.string.store_onboarding_task_payments_setup_title,
+        description = R.string.store_onboarding_task_woopayments_setup_description
+    )
+
     object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
-    object NavigateToSetupPayments : MultiLiveEvent.Event()
+    object NavigateToSetupPayments : MultiLiveEvent.Event() {
+        val taskId = PAYMENTS.id
+    }
+    object NavigateToSetupWooPayments : MultiLiveEvent.Event()
     object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
     object ShowNameYourStoreDialog : MultiLiveEvent.Event()

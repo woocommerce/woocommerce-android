@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -214,14 +213,6 @@ private fun SummaryBottom(
     onTryForFreeButtonPressed: () -> Unit,
     isLoading: Boolean
 ) {
-    val primaryPurple = colorResource(id = R.color.color_primary)
-    val buttonColors = ButtonDefaults.buttonColors(
-        backgroundColor = primaryPurple,
-        contentColor = MaterialTheme.colors.onPrimary,
-        disabledBackgroundColor = primaryPurple.copy(alpha = 0.38f),
-        disabledContentColor = MaterialTheme.colors.onPrimary
-    )
-
     Column(modifier = modifier) {
         Divider()
         WCColoredButton(
@@ -232,7 +223,6 @@ private fun SummaryBottom(
                     vertical = dimensionResource(id = R.dimen.minor_100)
                 ),
             onClick = onTryForFreeButtonPressed,
-            colors = buttonColors
         ) {
             if (isLoading) {
                 CircularProgressIndicator(

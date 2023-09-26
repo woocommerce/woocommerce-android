@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
@@ -25,8 +24,6 @@ class CheckIapEligibilityFragment : BaseFragment() {
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
-
-    private val navArgs by navArgs<CheckIapEligibilityFragmentArgs>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -48,7 +45,7 @@ class CheckIapEligibilityFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToNextStep -> navigateToStoreCreationNative()
+                is NavigateToNextStep -> navigateToCreateStoreSummaryStep()
                 is Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> {
@@ -59,11 +56,11 @@ class CheckIapEligibilityFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToStoreCreationNative() {
+    private fun navigateToCreateStoreSummaryStep() {
         findNavController()
             .navigateSafely(
                 CheckIapEligibilityFragmentDirections
-                    .actionCheckIapEligibilityFragmentToStoreNamePickerFragment(navArgs.storeName),
+                    .actionCheckIapEligibilityFragmentToStoreCreationSummaryFragment(),
                 skipThrottling = true
             )
     }

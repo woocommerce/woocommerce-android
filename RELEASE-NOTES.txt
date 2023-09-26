@@ -1,12 +1,37 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+15.5
+-----
+- [*] Add new filter for unread product reviews [https://github.com/woocommerce/woocommerce-android/pull/9753]
+
+15.4
+-----
+- [*] [Internal] In-Person Payments: Fixed tracking of the country for the cases when IPP onboarding is not finished [https://github.com/woocommerce/woocommerce-android/pull/9764]
+- [**] [Internal] In-Person Payments: if WcPay setup not finished then we allow a user to finish it from the app [https://github.com/woocommerce/woocommerce-android/pull/9732]
+- [*] [Internal] Store Onboarding: show an explanation screen before open the Payments task in a WebView [https://github.com/woocommerce/woocommerce-android/pull/9772]
+- [**] Order creation: Merchants can now select a tax rate when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9773]
+- [**] Product editing: Merchants can now add downloadable files from all supported file types [https://github.com/woocommerce/woocommerce-android/pull/9745]
+
+15.3
+-----
+- [**] [Internal] In-Person Payments: if WcPay not install then we allow a user to install that from the app using API [https://github.com/woocommerce/woocommerce-android/pull/9690]
+- [**] [Internal] In-Person Payments: if WcPay not activated then we allow a user to install that from the app using API [https://github.com/woocommerce/woocommerce-android/pull/9728]
+
+15.2
+-----
+- [*] [Internal] Improved Product Discount Screen [https://github.com/woocommerce/woocommerce-android/pull/9639]
+- [*] Settings: Close Account option is moved to a new section Account Settings. [https://github.com/woocommerce/woocommerce-android/pull/9659]
+- [*] Fix some issues with the order's badge counter [https://github.com/woocommerce/woocommerce-android/pull/9671]
+- [*] Improvements to the WooPayments onboarding task [https://github.com/woocommerce/woocommerce-android/pull/9714]
+
 15.1
 -----
 - [*] [Internal] Tap To Pay: Enable NFC button to the NFC disabled error state to help merchants to enable NFC on their devices [https://github.com/woocommerce/woocommerce-android/pull/9611]
 - [*] [Internal] Add application_store_snapshot event tracking with fetching of orders and products count and payment gateways [https://github.com/woocommerce/woocommerce-android/pull/9597]
 - [*] Fix a crash that occurs when using Magic Link to login during the Jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/9642]
 - [**] [Internal] Handle "enabled" WCPay account status the same way as "completed" [https://github.com/woocommerce/woocommerce-android/pull/9637]
-
+- [*] Onboarding: A new onboarding item, "Name Your Store", is added. Also, changing store name is now possible in Settings. [https://github.com/woocommerce/woocommerce-android/issues/9621]
+- [**] Store creation: Store creation flow has been revamped and now profiler steps are shown while the site is being created [https://github.com/woocommerce/woocommerce-android/issues/9587]
 15.0
 -----
 - [*] Store creation: Country selector screen is now more intuitive and easier to use. [https://github.com/woocommerce/woocommerce-android/issues/9606]

@@ -526,6 +526,8 @@
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
+    <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
+    <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_select_coupon">Select a coupon</string>
@@ -543,6 +545,10 @@
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
     <string name="order_creation_product_details_title">Product</string>
     <string name="order_creation_add_discount">Add discount</string>
+    <string name="order_creation_discount_amount_label">Calculated Amount</string>
+    <string name="order_creation_discount_percentage_label">Calculated Percentage</string>
+    <string name="order_creation_total_label">Order total</string>
+    <string name="order_creation_price_after_discount_label">Price after discount</string>
     <string name="order_creation_remove_discount">Remove discount</string>
     <string name="order_creation_discount_too_big_error">Discount cannot be greater than the price</string>
     <string name="order_creation_discount_invalid_number_error">Discount is not a valid number</string>
@@ -563,7 +569,7 @@
     <string name="order_creation_loading_dialog_message">Please wait…</string>
     <string name="order_creation_failure_snackbar">Order creation failed</string>
     <string name="order_creation_success_snackbar">Order created</string>
-    <string name="order_creation_payment_tax">Taxes</string>
+    <string name="order_creation_payment_tax">Taxes Total</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
@@ -592,6 +598,9 @@
     <string name="order_creation_barcode_scanning_process_death">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
     <string name="order_creation_coupon_invalid_code">We couldn\'t find a coupon with that code. Please try again</string>
     <string name="order_creation_coupon_network_error">Something went wrong when validating your coupon code. Please try again</string>
+    <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
+    <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
+    <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
 
     <!--
          Barcode Scanning
@@ -964,6 +973,14 @@
     <string name="shipping_label_package_details_individual_package_dimensions_error">Package dimensions must be greater than zero. Please update your item’s dimensions in the Shipping section of your product page to continue.</string>
     <string name="shipping_label_package_details_hazmat_content_checkbox_title">Contains Hazardous Materials</string>
     <string name="shipping_label_package_details_hazmat_content_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
+    <string name="shipping_label_usps_hazmat_instructions">Learn how to securely package, label, and ship HAZMAT through USPS® at %1$s</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_search_tool">Determine your product\'s mailability using the %1$s</string>
+    <string name="shipping_label_usps_search_tool_link_text">USPS HAZMAT Search Tool.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">WooCommerce Shipping does not currently support HAZMAT shipments through %1$s</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">Hazardous material category</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">Select a category</string>
     <string name="shipping_label_items_count_placeholder">Items count</string>
     <string name="shipping_label_package_details_title_template">Package %1$d</string>
     <string name="shipping_label_packages_loading_title">Loading Packages!</string>
@@ -1496,14 +1513,17 @@
     <string name="card_reader_onboarding_wcpay_not_installed_header">Install WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_installed_hint">You\’ll need to install the free WooCommerce Payments extension on your store to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_installed_refresh_button">Refresh after installing</string>
+    <string name="card_reader_onboarding_wcpay_not_installed_install_button" translatable="false">@string/install</string>
 
     <string name="card_reader_onboarding_wcpay_not_activated_header">Activate WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_not_activated_hint">The WooCommerce Payments extension is installed on your store but not activated. Please activate it to accept In-Person Payments.</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">Refresh after activating</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">Activate</string>
 
     <string name="card_reader_onboarding_wcpay_not_setup_header">Finish setup WooCommerce Payments in your store admin</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">You’re almost there! Please finish setting up WooCommerce Payments to start accepting In-Person Payments.</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button" translatable="false">@string/refresh_button</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">Finish setup</string>
 
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">Update WooCommerce Payments</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Outdated version of the WooCommerce Payments extension is installed on your store. Please update it to accept In-Person Payments.</string>
@@ -1511,7 +1531,7 @@
 
     <string name="card_reader_onboarding_stripe_extension_not_setup_header">Finish Stripe setup on your store admin</string>
     <string name="card_reader_onboarding_stripe_extension_not_setup_hint">You’re almost there! Please finish setting up Stripe to start accepting Card-Present Payments.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">Refresh</string>
+    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button" translatable="false">@string/refresh_button</string>
 
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_header">Update Stripe</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">Outdated version of the WooCommerce Stripe Gateway extension is installed on your store. Please update it to accept In-Person Payments.</string>
@@ -1526,6 +1546,8 @@
 
     <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_refresh_button" translatable="false">@string/refresh_button</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolve now</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
@@ -1616,6 +1638,8 @@
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <string name="product_review_list_fetching_failed">Error fetching product reviews</string>
     <string name="pending_review_label">Pending Review</string>
+    <string name="product_review_list_unread_reviews_filter">Unread reviews only</string>
+
     <!--
         Products
     -->
@@ -1869,6 +1893,37 @@
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <string name="product_list_multiselect">Select multiple</string>
     <string name="product_detail_menu_item_promote_with_blaze">Promote with Blaze</string>
+    <string name="product_creation_ai_entry_sheet_header">Add a product</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Create a product with AI</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Quickly generate details for you</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="ai_product_creation_add_name_title">Add your product name</string>
+    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Product name</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="product_creation_ai_about_product_title">About your product</string>
+    <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
+    <string name="product_creation_ai_about_product_edit_text_header">My product</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
+    <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
+    <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
+    <string name="product_creation_ai_preview_title">Preview</string>
+    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_description_section">Product description</string>
+    <string name="product_creation_ai_preview_details_section">Details</string>
+    <string name="product_creation_ai_tone_title">Tone and voice</string>
+    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_flowery">Flowery</string>
+    <string name="product_creation_ai_tone_convincing">Convincing</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
+
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1983,6 +2038,8 @@
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+    <string name="empty_review_filtered_list_title">No unread product reviews</string>
+    <string name="empty_review_filtered_list_message">Try disabling the unread filter to see all your product reviews</string>
     <string name="empty_wpmedia_list_message">No images yet</string>
 
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
@@ -2108,6 +2165,7 @@
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
+    <string name="settings_account">Account Settings</string>
 
     <!--
         Developer Options Screen
@@ -3019,14 +3077,15 @@
     <string name="product_uncheck_is_downloadable_warning_yes_button">Yes, change</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">Cancel</string>
     <string name="bottom_sheet_downloadable_files_desc">Include downloadable files with purchases</string>
-    <string name="product_downloadable_add_bottomsheet_header">Add downloadable file</string>
+    <string name="product_downloadable_add_bottomsheet_header">Add downloadable file from</string>
     <string name="product_downloadable_files_add_title">Add downloadable file</string>
     <string name="product_downloadable_files_upload_failed">Error uploading the file</string>
     <string name="product_downloadable_files_upload_dialog_title">Uploading files</string>
     <string name="product_downloadable_files_upload_dialog_message">Please wait…</string>
     <string name="product_downloadable_files_url_invalid">Check that the url entered is valid</string>
-    <string name="product_downloadable_files_add_from_device">From device</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">From WordPress Media Library</string>
+    <string name="product_downloadable_files_add_media_from_device">Media files on device</string>
+    <string name="product_downloadable_files_add_documents_from_device">Documents on device</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">WordPress Media Library</string>
     <string name="product_downloadable_files_add_manually">Enter file URL</string>
     <string name="product_downloadable_files_name_invalid">Please enter a valid name</string>
     <string name="product_downloadable_files_download_settings">Download Settings</string>
@@ -3103,18 +3162,14 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
-    <string name="store_creation_in_progress_title_1">Creating Your Store! It\'ll be just a few minutes</string>
-    <string name="store_creation_in_progress_title_2">Building the foundations</string>
-    <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
-    <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
-    <string name="store_creation_in_progress_title_5">Turning on the lights</string>
-    <string name="store_creation_in_progress_title_6">Opening the doors</string>
+    <string name="store_creation_in_progress_title_1">Almost there! Your store\nis taking shape </string>
+    <string name="store_creation_in_progress_title_2">Extending your store\'s \ncapabilities</string>
+    <string name="store_creation_in_progress_title_3">Turning on the lights</string>
+    <string name="store_creation_in_progress_title_4">Opening the doors</string>
     <string name="store_creation_in_progress_description_1">You will be notified once the store is ready! Sit back, relax, and let us work our magic while sharing helpful tips. 🔮</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay updated on your store\'s real-time performance. Identify your top-selling products and make informed decisions for maximum profitability.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Handle orders with ease. Scroll, search, and change order status. Create new orders on the fly for in-store or phone purchases. Simplify your order management process.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Expand your sales opportunities by accepting payments in person. Use the app to securely process credit card transactions or even connect with compatible card readers for convenient in-person payments.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#Add and edit products with a touch:&lt;/b&gt; Add new products, update details, upload images, and manage variations, all from the app. Keep your inventory up to date effortlessly.</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#Get notified of every sale:&lt;/b&gt; Never miss a beat with instant sale notifications. Receive alerts for each new sale, allowing you to celebrate your success and stay on top of your store\'s activity.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay on top of real-time sales and popular products to boost your store\'s profitability.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Search, update, or create new orders instantly. Simplify your order process.</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Enhance sales with in-person payments. Secure card transactions with our app or compatible readers.</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
@@ -3156,6 +3211,7 @@
     <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
     <string name="store_creation_store_name_default">Store name</string>
+    <string name="store_creation_store_name_settings_option">Store name</string>
 
     <string name="store_creation_store_profiler_industries_header">About your store</string>
     <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
@@ -3225,6 +3281,9 @@
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">Manage payments seamlessly with WooPayments, free from setup or monthly fees.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">You did it!</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">Congratulations! You\'ve successfully navigated through the setup and your payment system is ready to roll.</string>
     <string name="store_onboarding_task_name_store_title">Name your store</string>
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
@@ -3254,7 +3313,25 @@
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
     <string name="store_onboarding_setting_title">Store Setup List</string>
     <string name="store_onboarding_setting_description">Show or hide store setup list</string>
-    <string name="store_onboarding_name_your_store_dialog_title">Site Title</string>
+    <string name="store_onboarding_name_your_store_dialog_title">Update store name</string>
+    <string name="store_onboarding_name_your_store_dialog_label">Store name</string>
+    <string name="store_onboarding_name_your_store_dialog_success">Store name set! \n To change again, visit Store Settings.</string>
+    <string name="settings_name_your_store_dialog_success">Store name set!</string>
+    <string name="settings_name_your_store_dialog_loading">Saving new store name…</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">Unable to save store name. Please try again.</string>
+    <string name="store_onboarding_wcpay_instructions_title">Manage payments effortlessly with WooPayments all in one place. Accept cards, Apple Pay, in-person payments, and 135+ currencies, all with zero setup costs or monthly fees.</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">Estimated setup time</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">4–6 minutes</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">Before your start setup</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">Your WooPayments notifications will be sent to your WordPress.com account email. Prefer a new account? &lt;a href=\'learnMore\'&gt;&lt;u&gt;More details here.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">We\'ve partnered with Stripe for WooPayments. You\'ll be directed to Stripe\'s site for sign-up. We\'ll ask you to verify your business and payment details.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">Begin setup</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about verifying your information with WooPayments.</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">Set up</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">Payment Methods</string>
+    <string name="store_onboarding_wcpay_setup_description">By using WooCommerce Payments you agree to be bound by our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and acknowledge that you have read our &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacy Policy&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_payments_setup_description">Discover other payment providers and \nchoose a payment provider.</string>
 
     <!--
     Support Request
@@ -3467,8 +3544,6 @@
     -->
     <string name="local_notification_store_creation_complete_title">🎉 Your store is ready!</string>
     <string name="local_notification_store_creation_complete_description">Hi %1$s! Welcome to your 14-day free trial of Woo Express – everything you need to start and grow a successful online business, all in one place. Ready to explore?</string>
-    <string name="local_notification_without_free_trial_title">🛍️ Your store is waiting!</string>
-    <string name="local_notification_without_free_trial_description">Hi %1$s, %2$s is ready for you! Start your 14-day free trial of Woo Express right in just one click to start your online business.  </string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Time’s running out on your free trial!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
@@ -3522,6 +3597,16 @@
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
 
     <!--
+    AI Product name description
+    -->
+    <string name="ai_product_name_sheet_title">✨ Product name</string>
+    <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
+    <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
+    <string name="ai_product_name_sheet_generate_button">Write it for me</string>
+    <string name="ai_product_name_sheet_regenerate_button">Regenerate</string>
+    <string name="ai_product_name_sheet_error_message">There was a problem generating the product name. Please try again.</string>
+
+    <!--
     Blaze banner
     -->
     <string name="blaze_banner_title">Promote products with Blaze</string>
@@ -3559,5 +3644,37 @@
     Product Configuration
     -->
     <string name="product_configuration_title">Configuration</string>
+
+    <!--
+    Tax rates info dialog
+    -->
+    <string name="tax_rates_information_content_description">Tax rates information</string>
+    <string name="tax_rates_info_dialog_primary_text">Taxes are calculated by matching your customer’s billing or shipping address, or your shop address to a tax rate location.</string>
+    <string name="tax_rates_info_dialog_secondary_text">Tax rates for different locations can be managed in your store’s admin.</string>
+    <string name="tax_rates_info_dialog_title"><![CDATA[Taxes & Tax Rates]]></string>
+    <string name="tax_rates_redirect_to_admin_content_description">Edit Tax Rates in Admin Button</string>
+    <string name="tax_rates_redirect_to_admin_button_label">Edit Tax Rates in Admin</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">Your tax rate is currently calculated based on your shop address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">Your tax rate is currently calculated based on your billing address%1$s</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">Your tax rate is currently calculated based on your shipping address%1$s</string>
+
+    <!--
+    Tax rate selector
+    -->
+    <string name="tax_rate_selector_footer_label">Can\'t find the rate you\'re looking for?</string>
+    <string name="tax_rate_selector_list_header">SELECT A TAX RATE</string>
+    <string name="tax_rate_selector_info_icon_content_description">Button opening tax rates info dialog</string>
+    <string name="tax_rate_selector_header_label">This will change the customer’s address to the location of the tax rate you select.</string>
+    <string name="tax_rate_selector_edit_rates_button_label">Edit tax rates in admin</string>
+    <string name="tax_rate_selector_title">Set Tax Rate</string>
+    <string name="tax_rate_selector_empty_list_title">We couldn\'t find any tax rates</string>
+    <string name="tax_rate_selector_empty_list_message">Add tax rates in admin. Only tax rates with location information will be shown here.</string>
+    <string name="tax_rate_selector_empty_list_button">Edit Tax Rates in Admin</string>
+    <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
+    <string name="tax_rate_selector_auto_rate_label">Add this rate to all created orders</string>
+    <string name="tax_rate_selector_auto_rate_subtitle">This will not affect online orders</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
 
 </resources>

@@ -17,7 +17,7 @@
 
     <color name="color_surface_elevated_04">@color/woo_white</color>
 
-    <color name="color_on_surface">@android:color/black</color>
+    <color name="color_on_surface">@color/woo_black</color>
     <color name="color_on_surface_high">@color/woo_black_90_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_black_90_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_black_90_alpha_038</color>
@@ -170,6 +170,7 @@
     -->
     <color name="skeleton_color">@color/woo_black_90_alpha_012</color>
     <color name="skeleton_color_inverse">@color/color_surface</color>
+    <color name="skeleton_compose_background">@color/woo_gray_6</color>
 
     <!--
         Empty state view
@@ -247,6 +248,7 @@
     Store creation
     -->
     <color name="creating_store_linear_progress_background">@color/woo_purple_0</color>
+    <color name="store_creation_summary_top_illustration_background">@color/woo_purple_0</color>
 
     <!--
     Highlight tooltip
@@ -258,4 +260,16 @@
     Test order step number
     -->
     <color name="try_test_order_step">#F7F5FB</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="woo_payments_setup_bullet_background">@color/woo_purple_0</color>
+
+    <!--
+    AI
+    -->
+    <color name="ai_generated_text_background">@color/woo_gray_6</color>
+
+
 </resources>

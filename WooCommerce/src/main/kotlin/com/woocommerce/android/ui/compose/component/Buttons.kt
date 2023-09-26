@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ButtonElevation
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -55,8 +56,11 @@ fun WCColoredButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = colorResource(id = R.color.woo_white)
+    ),
     rippleColor: Color = MaterialTheme.colors.primaryVariant,
+    elevation: ButtonElevation? = null,
     content: @Composable RowScope.() -> Unit
 ) {
     val contentColor by colors.contentColor(enabled = enabled)
@@ -80,15 +84,13 @@ fun WCColoredButton(
             onClick = onClick,
             enabled = enabled,
             colors = colors,
-            elevation = null,
+            elevation = elevation,
             interactionSource = interactionSource,
             contentPadding = contentPadding,
             modifier = modifier
         ) {
             ProvideTextStyle(
-                value = MaterialTheme.typography.subtitle2.copy(
-                    color = colorResource(id = R.color.woo_white)
-                )
+                value = MaterialTheme.typography.subtitle2
             ) {
                 content()
             }
@@ -106,7 +108,9 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors()
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = colorResource(id = R.color.woo_white)
+    )
 ) {
     WCColoredButton(
         onClick = onClick,
@@ -204,6 +208,7 @@ fun WCSelectableChip(
         backgroundColor = Color.Transparent,
     ),
     isSelected: Boolean,
+    shape: RoundedCornerShape = RoundedCornerShape(50),
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -212,7 +217,7 @@ fun WCSelectableChip(
         contentPadding = contentPadding,
         interactionSource = interactionSource,
         colors = if (isSelected) selectedButtonColors else defaultButtonColors,
-        shape = RoundedCornerShape(50),
+        shape = shape,
     ) {
         if (leadingIcon != null) {
             leadingIcon()

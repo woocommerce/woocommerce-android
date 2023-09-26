@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.AttributeTermListItemBinding
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.TermViewHolder
 
+typealias OnLoadMore = () -> Unit
+
 /**
  * Adapter which shows a simple list of attribute term names
  */
@@ -21,7 +23,8 @@ class AttributeTermsListAdapter(
     private val enableDragAndDrop: Boolean,
     private val enableDeleting: Boolean,
     private val defaultItemBackground: TypedValue,
-    private val dragHelper: ItemTouchHelper? = null
+    private val dragHelper: ItemTouchHelper? = null,
+    private val loadMoreListener: OnLoadMore? = null
 ) : RecyclerView.Adapter<TermViewHolder>() {
     interface OnTermListener {
         fun onTermClick(termName: String)
@@ -58,6 +61,10 @@ class AttributeTermsListAdapter(
 
     override fun onBindViewHolder(holder: TermViewHolder, position: Int) {
         holder.bind(termNames[position])
+
+        loadMoreListener
+            ?.takeIf { position == itemCount - 1 }
+            ?.invoke()
     }
 
     fun setOnTermListener(listener: OnTermListener) {

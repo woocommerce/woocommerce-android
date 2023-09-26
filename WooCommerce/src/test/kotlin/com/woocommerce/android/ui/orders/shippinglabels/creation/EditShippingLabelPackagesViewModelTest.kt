@@ -1,11 +1,17 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CATEGORY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository
+import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ViewState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -44,6 +50,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
     private val variationDetailRepository: VariationDetailRepository = mock()
     private val shippingLabelRepository: ShippingLabelRepository = mock()
     private val parameterRepository: ParameterRepository = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val defaultItem = ShippingLabelPackage.Item(
         productId = 15,
         name = "test",
@@ -69,7 +76,8 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             orderDetailRepository = orderDetailRepository,
             variationDetailRepository = variationDetailRepository,
             shippingLabelRepository = shippingLabelRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            analyticsWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -303,5 +311,100 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             assertThat(length).isEqualTo(testProduct.length)
             assertThat(height).isEqualTo(testProduct.height)
         }
+    }
+
+    @Test
+    fun `when select hazmat category is clicked, then trigger hazmat dialog event`() = testBlocking {
+        setup(emptyArray())
+        var event: MultiLiveEvent.Event? = null
+        val onHazmatCategorySelected: OnHazmatCategorySelected = { _ -> }
+        viewModel.event.observeForever { event = it }
+
+        viewModel.onHazmatCategoryClicked(
+            currentSelection = AIR_ELIGIBLE_ETHANOL,
+            packagePosition = 0,
+            onHazmatCategorySelected = onHazmatCategorySelected
+        )
+
+        assertThat(event).isEqualTo(
+            OpenHazmatCategorySelector(
+                packagePosition = 0,
+                currentSelection = AIR_ELIGIBLE_ETHANOL,
+                onHazmatCategorySelected = onHazmatCategorySelected
+            )
+        )
+    }
+
+    @Test
+    fun `when onHazmatCategorySelected, then update the packages info`() = testBlocking {
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                position = 1,
+                items = listOf(defaultItem)
+            )
+        )
+        setup(currentShippingPackages)
+
+        viewModel.onHazmatCategorySelected(
+            packagePosition = 0,
+            newSelection = AIR_ELIGIBLE_ETHANOL
+        )
+
+        val newPackages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(newPackages.size).isEqualTo(1)
+        assertThat(newPackages[0].selectedPackage?.hazmatCategory).isEqualTo(AIR_ELIGIBLE_ETHANOL)
+    }
+
+    @Test
+    fun `when onContainsHazmatChanged is true, then trigger expected track event`() = testBlocking {
+        // Given
+        setup(emptyArray())
+
+        // When
+        viewModel.onContainsHazmatChanged(true)
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.CONTAINS_HAZMAT_CHECKED
+        )
+    }
+
+    @Test
+    fun `when onHazmatCategoryClicked, then trigger expected track event`() = testBlocking {
+        // Given
+        setup(emptyArray())
+
+        // When
+        viewModel.onHazmatCategoryClicked(
+            currentSelection = AIR_ELIGIBLE_ETHANOL,
+            packagePosition = 0,
+            onHazmatCategorySelected = {}
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.HAZMAT_CATEGORY_SELECTOR_OPENED
+        )
+    }
+
+    @Test
+    fun `when onHazmatCategorySelected, then trigger expected track event`() = testBlocking {
+        // Given
+        setup(emptyArray())
+
+        // When
+        viewModel.onHazmatCategorySelected(
+            packagePosition = 0,
+            newSelection = AIR_ELIGIBLE_ETHANOL
+        )
+
+        // Then
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.HAZMAT_CATEGORY_SELECTED,
+            properties = mapOf(
+                KEY_CATEGORY to AIR_ELIGIBLE_ETHANOL.toString(),
+                KEY_ORDER_ID to ORDER_ID
+            )
+        )
     }
 }
