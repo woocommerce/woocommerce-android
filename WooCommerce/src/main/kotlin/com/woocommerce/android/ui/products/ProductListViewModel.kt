@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -61,6 +63,7 @@ class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
+    private val listHandler: ProductListHandler,
     mediaFileUploadHandler: MediaFileUploadHandler,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
@@ -68,6 +71,8 @@ class ProductListViewModel @Inject constructor(
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
+
+    private val products = listHandler.productsFlow
 
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList
@@ -452,34 +457,23 @@ class ProductListViewModel @Inject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
-        if (!isSearching()) {
-            val products = productRepository.fetchProductList(loadMore, productFilterOptions)
-            // don't update the product list if a search was initiated while fetching
-            if (isSearching()) {
-                WooLog.i(WooLog.T.PRODUCTS, "Search initiated while fetching products")
-            } else {
-                _productList.value = products
+        loadMoreJob?.cancel()
+        fetchProductsJob?.cancel()
+        fetchProductsJob = viewModelScope.launch {
+            // TODO show loading state
+//            loadingState.value = ProductSelectorViewModel.LoadingState.LOADING
+            listHandler.loadFromCacheAndFetch(
+                filters = emptyMap(), // TODO pass filters
+                searchQuery = searchQuery ?: "",
+                searchType = ProductListHandler.SearchType.DEFAULT, // TODO make sure to pass default vs SKU based on the selected tab.
+            ).onFailure {
+                val isSearch = searchQuery?.isEmpty() != false
+                val message = if (isSearch) R.string.product_selector_loading_failed
+                else R.string.product_selector_search_failed
+                triggerEvent(ShowSnackbar(message))
             }
-        } else if (searchQuery?.isNotEmpty() == true) {
-            productRepository.searchProductList(
-                searchQuery = searchQuery,
-                skuSearchOptions = skuSearchOptions,
-                loadMore = loadMore,
-                productFilterOptions = productFilterOptions
-            )?.let { products ->
-                // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery &&
-                    skuSearchOptions == productRepository.lastIsSkuSearch
-                ) {
-                    if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + products
-                    } else {
-                        _productList.value = products
-                    }
-                } else {
-                    WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
-                }
-            }
+            // TODO disable loading state
+//            loadingState.value = ProductSelectorViewModel.LoadingState.IDLE
         }
 
         if (scrollToTop) {
