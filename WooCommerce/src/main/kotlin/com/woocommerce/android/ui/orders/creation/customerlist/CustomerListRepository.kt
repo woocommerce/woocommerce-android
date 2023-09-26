@@ -46,6 +46,7 @@ class CustomerListRepository @Inject constructor(
         searchBy: String,
         pageSize: Int,
         page: Int,
+        cacheResult: Boolean,
     ): Result<List<WCCustomerModel>> = withContext(dispatchers.io) {
         val result = customerStore.fetchCustomersFromAnalytics(
             site = selectedSite.get(),
@@ -61,9 +62,20 @@ class CustomerListRepository @Inject constructor(
         } else if (result.model == null) {
             Result.failure(IllegalStateException("empty model returned"))
         } else {
+            if (cacheResult) {
+                customerStore.deleteCustomersForSite(selectedSite.get())
+                customerStore.saveCustomers(result.model!!)
+            }
             Result.success(result.model!!)
         }
     }
+
+    suspend fun getCustomerList(count: Int): List<WCCustomerModel> =
+        withContext(dispatchers.io) {
+            val cachedCustomers = customerStore.getCustomersForSite(selectedSite.get())
+            cachedCustomers
+                .subList(0, count.coerceAtMost(cachedCustomers.size))
+        }
 
     suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> = withContext(dispatchers.io) {
         customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
