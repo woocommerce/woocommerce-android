@@ -44,21 +44,12 @@ class ProductPreviewSubViewModel(
         generationJob = viewModelScope.launch {
             _state.value = State.Loading
 
-            val categories = withContext(Dispatchers.IO) {
-                categoriesRepository.getProductCategoriesList().ifEmpty {
-                    categoriesRepository.fetchProductCategories()
-                    categoriesRepository.getProductCategoriesList()
-                }
-            }
+            val categories = getCategories()
 
-            val tags = withContext(Dispatchers.IO) {
-                tagsRepository.getProductTags().ifEmpty {
-                    tagsRepository.fetchProductTags()
-                    tagsRepository.getProductTags()
-                }
-            }
+            val tags = getTags()
 
             val siteParameters = getSiteParameters() ?: run {
+                // We can't create a product without site parameters, so show an error and abort
                 // TOOD show error alert
                 return@launch
             }
@@ -122,6 +113,20 @@ class ProductPreviewSubViewModel(
                     onSuccess = { it.takeIf(::predicate) },
                     onFailure = { null }
                 )
+    }
+
+    private suspend fun getTags() = withContext(Dispatchers.IO) {
+        tagsRepository.getProductTags().ifEmpty {
+            tagsRepository.fetchProductTags()
+            tagsRepository.getProductTags()
+        }
+    }
+
+    private suspend fun getCategories() = withContext(Dispatchers.IO) {
+        categoriesRepository.getProductCategoriesList().ifEmpty {
+            categoriesRepository.fetchProductCategories()
+            categoriesRepository.getProductCategoriesList()
+        }
     }
 
     sealed interface State {
