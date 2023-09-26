@@ -69,13 +69,12 @@ fun ProductNameForm(
     val orientation = LocalConfiguration.current.orientation
 
     @Composable
-    fun ContinueButton() {
+    fun ContinueButton(modifier: Modifier = Modifier) {
         WCColoredButton(
             enabled = enteredName.isNotEmpty(),
             onClick = onContinueClicked,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
@@ -117,7 +116,7 @@ fun ProductNameForm(
 
             // Button will scroll with the rest of UI on landscape mode, or... (see below)
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                ContinueButton()
+                ContinueButton(Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
             }
         }
 
