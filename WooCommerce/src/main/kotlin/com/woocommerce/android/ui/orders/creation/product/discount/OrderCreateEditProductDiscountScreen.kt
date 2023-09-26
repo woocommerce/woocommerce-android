@@ -440,7 +440,7 @@ fun OrderCreateEditProductDiscountScreenPreview() =
                     imageUrl = "",
                     isStockManaged = false,
                     stockQuantity = 0.0,
-                    stockStatus =  ProductStockStatus.InStock
+                    stockStatus = ProductStockStatus.InStock
                 )
             )
         )

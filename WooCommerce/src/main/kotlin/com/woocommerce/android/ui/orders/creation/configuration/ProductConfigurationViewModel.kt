@@ -34,7 +34,7 @@ class ProductConfigurationViewModel @Inject constructor(
         }
     }
 
-    fun onCancel(){
+    fun onCancel() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
