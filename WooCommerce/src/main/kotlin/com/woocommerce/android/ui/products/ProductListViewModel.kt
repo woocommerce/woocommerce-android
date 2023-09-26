@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.selector.ProductListHandler
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -64,7 +65,6 @@ class ProductListViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
     private val listHandler: ProductListHandler,
-    mediaFileUploadHandler: MediaFileUploadHandler,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -72,10 +72,14 @@ class ProductListViewModel @Inject constructor(
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
 
-    private val products = listHandler.productsFlow
+     val products = listHandler.productsFlow
 
-    private val _productList = MutableLiveData<List<Product>>()
-    val productList: LiveData<List<Product>> = _productList
+    private var fetchProductsJob: Job? = null
+
+    private var loadMoreJob: Job? = null
+
+//    private val _productList = MutableLiveData<List<Product>>()
+//    val productList: LiveData<List<Product>> = _productList
 
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
@@ -88,22 +92,17 @@ class ProductListViewModel @Inject constructor(
     }
 
     private var selectedCategoryName: String? = null
-    private var searchJob: Job? = null
-    private var loadJob: Job? = null
+//    private var searchJob: Job? = null
+//    private var loadJob: Job? = null
 
     init {
         EventBus.getDefault().register(this)
-        if (_productList.value == null) {
-            loadProducts()
+        launch {
+            listHandler.loadFromCacheAndFetch("", emptyMap(),  ProductListHandler.SearchType.DEFAULT)
         }
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
 
         selectedCategoryName = savedState.get<String>(KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME)
-
-        // Reload products if any image changes occur
-        mediaFileUploadHandler.observeProductImageChanges()
-            .onEach { loadProducts() }
-            .launchIn(this)
     }
 
     override fun onCleared() {
@@ -136,9 +135,7 @@ class ProductListViewModel @Inject constructor(
             onSearchRequested()
         } else {
             launch {
-                searchJob?.cancelAndJoin()
-
-                _productList.value = emptyList()
+                fetchProductList(query, skuSearchOptions = SkuSearchOptions.Disabled)
                 viewState = viewState.copy(isEmptyViewVisible = false)
             }
         }
@@ -210,7 +207,6 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchOpened() {
-        _productList.value = emptyList()
         viewState = viewState.copy(
             isSearchActive = true,
             displaySortAndFilterCard = false,
@@ -220,7 +216,6 @@ class ProductListViewModel @Inject constructor(
 
     fun onSearchClosed() {
         launch {
-            searchJob?.cancelAndJoin()
             viewState = viewState.copy(
                 query = null,
                 isSearchActive = false,
@@ -228,12 +223,8 @@ class ProductListViewModel @Inject constructor(
                 displaySortAndFilterCard = true,
                 isAddProductButtonVisible = true
             )
-            loadProducts()
+            fetchProductList(null, skuSearchOptions = SkuSearchOptions.Disabled)
         }
-    }
-
-    fun onLoadMoreRequested() {
-        loadProducts(loadMore = true)
     }
 
     fun onSearchTypeChanged(isSkuSearch: Boolean) {
@@ -261,97 +252,6 @@ class ProductListViewModel @Inject constructor(
         refreshProducts()
     }
 
-    fun reloadProductsFromDb(excludeProductId: Long? = null) {
-        val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
-            ArrayList<Long>().also { it.add(id) }
-        }
-        val products = productRepository.getProductList(productFilterOptions, excludedProductIds)
-        _productList.value = products
-
-        viewState = viewState.copy(
-            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
-            /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
-            displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
-        )
-    }
-
-    @Suppress("LongMethod")
-    fun loadProducts(
-        loadMore: Boolean = false,
-        scrollToTop: Boolean = false,
-        isRefreshing: Boolean = false
-    ) {
-        if (isLoading()) {
-            WooLog.d(WooLog.T.PRODUCTS, "already loading products")
-            return
-        }
-
-        if (loadMore && !productRepository.canLoadMoreProducts) {
-            resetViewState()
-            WooLog.d(WooLog.T.PRODUCTS, "can't load more products")
-            return
-        }
-
-        if (isSearching()) {
-            // cancel any existing search, then start a new one after a brief delay so we don't actually perform
-            // the fetch until the user stops typing
-            searchJob?.cancel()
-            searchJob = launch {
-                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
-                if (checkConnection()) {
-                    viewState = viewState.copy(
-                        isLoading = true,
-                        isLoadingMore = loadMore,
-                        isSkeletonShown = !loadMore,
-                        isEmptyViewVisible = false,
-                        displaySortAndFilterCard = false,
-                        isAddProductButtonVisible = false,
-                    )
-                    fetchProductList(
-                        viewState.query,
-                        skuSearchOptions = if (viewState.isSkuSearch)
-                            SkuSearchOptions.PartialMatch
-                        else
-                            SkuSearchOptions.Disabled,
-                        loadMore = loadMore
-                    )
-                }
-            }
-        } else {
-            // if a fetch is already active, wait for it to finish before we start another one
-            waitForExistingLoad()
-
-            loadJob = launch {
-                val showSkeleton: Boolean
-                if (loadMore) {
-                    showSkeleton = false
-                } else {
-                    // if this is the initial load, first get the products from the db and show them immediately
-                    val productsInDb = productRepository.getProductList(productFilterOptions)
-                    if (productsInDb.isEmpty()) {
-                        showSkeleton = true
-                    } else {
-                        _productList.value = productsInDb
-                        showSkeleton = false
-                    }
-                }
-                if (checkConnection()) {
-                    viewState = viewState.copy(
-                        isLoading = true,
-                        isLoadingMore = loadMore,
-                        isSkeletonShown = showSkeleton,
-                        isEmptyViewVisible = false,
-                        isRefreshing = isRefreshing,
-                        displaySortAndFilterCard = !showSkeleton,
-                        isAddProductButtonVisible = false
-                    )
-                    fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
-                }
-            }
-        }
-    }
-
     /**
      * Resets the view state following a refresh
      */
@@ -362,22 +262,24 @@ class ProductListViewModel @Inject constructor(
         // - in search/filter result view, show the Add Product FAB, because the empty view doesn't have add button.
         //
         // If there is at least one product in default or search/filter result view, show the Add Product FAB.
-        val shouldShowAddProductButton =
-            if (_productList.value?.isEmpty() == true) {
-                when {
-                    viewState.query != null -> true
-                    productFilterOptions.isNotEmpty() -> true
-                    else -> false
-                }
-            } else {
-                !isSearching() && !isSelecting()
-            }
 
-        val shouldShowEmptyView = if (isSearching()) {
-            viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
-        } else {
-            _productList.value?.isEmpty() == true
-        }
+        // TODO: Need to handle this in a better way
+//        val shouldShowAddProductButton =
+//            if (_productList.value?.isEmpty() == true) {
+//                when {
+//                    viewState.query != null -> true
+//                    productFilterOptions.isNotEmpty() -> true
+//                    else -> false
+//                }
+//            } else {
+//                !isSearching() && !isSelecting()
+//            }
+//
+//        val shouldShowEmptyView = if (isSearching()) {
+//            viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
+//        } else {
+//            _productList.value?.isEmpty() == true
+//        }
 
         viewState = viewState.copy(
             isSkeletonShown = false,
@@ -385,26 +287,11 @@ class ProductListViewModel @Inject constructor(
             isLoadingMore = false,
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
-            isEmptyViewVisible = shouldShowEmptyView,
-            isAddProductButtonVisible = shouldShowAddProductButton,
+            isEmptyViewVisible = true,
+            isAddProductButtonVisible = true,
             displaySortAndFilterCard = !isSearching() &&
-                (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
+                (productFilterOptions.isNotEmpty() || true)
         )
-    }
-
-    /**
-     * If products are already being fetched, wait for the existing job to finish
-     */
-    private fun waitForExistingLoad() {
-        if (loadJob?.isActive == true) {
-            launch {
-                try {
-                    loadJob?.join()
-                } catch (e: CancellationException) {
-                    WooLog.d(WooLog.T.PRODUCTS, "CancellationException while waiting for existing fetch")
-                }
-            }
-        }
     }
 
     fun onSelectionChanged(count: Int) {
@@ -421,9 +308,7 @@ class ProductListViewModel @Inject constructor(
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
-        productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
-            triggerEvent(SelectProducts(allLoadedProductsIds))
-        }
+        throw NotImplementedError()
     }
 
     fun enterSelectionMode(count: Int) {
@@ -442,9 +327,9 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun refreshProducts(scrollToTop: Boolean = false) {
+    fun refreshProducts() {
         if (checkConnection()) {
-            loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
+            launch { fetchProductList(null, skuSearchOptions = SkuSearchOptions.Disabled) }
         } else {
             resetViewState()
         }
@@ -457,6 +342,7 @@ class ProductListViewModel @Inject constructor(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
+        WooLog.d(WooLog.T.PRODUCTS,"fetchProductList: searchQuery=$searchQuery, skuSearchOptions=$skuSearchOptions, loadMore=$loadMore, scrollToTop=$scrollToTop")
         loadMoreJob?.cancel()
         fetchProductsJob?.cancel()
         fetchProductsJob = viewModelScope.launch {
@@ -483,6 +369,15 @@ class ProductListViewModel @Inject constructor(
         resetViewState()
     }
 
+    fun onLoadMoreRequested() {
+        loadMoreJob?.cancel()
+        loadMoreJob = viewModelScope.launch {
+//            loadingState.value = ProductSelectorViewModel.LoadingState.APPENDING
+            listHandler.loadMore()
+//            loadingState.value = ProductSelectorViewModel.LoadingState.IDLE
+        }
+    }
+
     private fun getSortingTitle(): Int {
         return when (productRepository.productSortingChoice) {
             DATE_ASC -> R.string.product_list_sorting_oldest_to_newest_short
@@ -504,8 +399,6 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun getProduct(remoteProductId: Long) = productRepository.getProduct(remoteProductId)
-
     fun trashProduct(remoteProductId: Long) {
         if (checkConnection()) {
             launch {
@@ -520,7 +413,7 @@ class ProductListViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onRefreshProducts(event: OnProductSortingChanged) {
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
-        refreshProducts(scrollToTop = true)
+        refreshProducts()
     }
 
     fun onUpdateStatusConfirmed(

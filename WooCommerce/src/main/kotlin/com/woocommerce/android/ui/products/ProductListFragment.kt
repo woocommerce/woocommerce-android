@@ -66,6 +66,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Suppress("LargeClass")
@@ -167,7 +171,7 @@ class ProductListFragment :
             }
 
             else -> {
-                productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+//                productListViewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
             }
         }
     }
@@ -396,6 +400,7 @@ class ProductListFragment :
         binding.productsRefreshLayout.isRefreshing = isRefreshing
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @Suppress("LongMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
@@ -452,11 +457,6 @@ class ProductListFragment :
             }
         }
 
-        viewModel.productList.observe(viewLifecycleOwner) {
-            showProductList(it)
-            blazeViewModel.updateBlazeBannerStatus()
-        }
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -476,7 +476,13 @@ class ProductListFragment :
                 else -> event.isHandled = false
             }
         }
+        GlobalScope.launch {
+            viewModel.products.collect { products ->
+                productAdapter.submitList(products)
+            }
+        }
     }
+
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
         when (event) {
@@ -578,9 +584,6 @@ class ProductListFragment :
         var trashProductCancelled = false
         pendingTrashProductId = remoteProductId
 
-        // reload the product list without this product
-        productListViewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
-
         val actionListener = View.OnClickListener {
             trashProductCancelled = true
         }
@@ -590,7 +593,7 @@ class ProductListFragment :
                 super.onDismissed(transientBottomBar, event)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
-                    productListViewModel.reloadProductsFromDb()
+
                 } else {
                     productListViewModel.trashProduct(remoteProductId)
                 }
