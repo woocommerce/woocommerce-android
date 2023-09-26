@@ -84,7 +84,7 @@ object AIPrompts {
                   "width":"Guess and provide only the number in $dimensionUnit",
                   "height":"Guess and provide only the number in $dimensionUnit"
                },
-               "price":"Guess the price in $currency, return the price unformatted",
+               "price":"Guess the price in $currency, do not include the currency symbol, only provide the price as a number",
                ${getTagsLine()}
                ${getCategoriesLine()}
             }"
