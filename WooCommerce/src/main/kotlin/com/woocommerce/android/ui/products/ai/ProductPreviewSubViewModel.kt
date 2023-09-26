@@ -4,6 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -19,7 +22,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class ProductPreviewSubViewModel(
     private val aiRepository: AIRepository,
@@ -34,6 +36,7 @@ class ProductPreviewSubViewModel(
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asLiveData()
 
+    private lateinit var isoLanguageCode: String
     private lateinit var productName: String
     private lateinit var productKeywords: String
     private lateinit var tone: AiTone
@@ -44,13 +47,18 @@ class ProductPreviewSubViewModel(
         generationJob = viewModelScope.launch {
             _state.value = State.Loading
 
+            if (!::isoLanguageCode.isInitialized) {
+                isoLanguageCode = identifyLanguage() ?: run {
+                    // TODO show error alert
+                    return@launch
+                }
+            }
+
             val categories = getCategories()
-
             val tags = getTags()
-
             val siteParameters = getSiteParameters() ?: run {
                 // We can't create a product without site parameters, so show an error and abort
-                // TOOD show error alert
+                // TODO show error alert
                 return@launch
             }
 
@@ -63,7 +71,7 @@ class ProductPreviewSubViewModel(
                 currency = siteParameters.currencyCode!!,
                 existingCategories = categories,
                 existingTags = tags,
-                languageISOCode = Locale.getDefault().language
+                languageISOCode = isoLanguageCode
             ).fold(
                 onSuccess = { product ->
                     _state.value = State.Success(
@@ -98,6 +106,28 @@ class ProductPreviewSubViewModel(
 
     override fun close() {
         viewModelScope.cancel()
+    }
+
+    private suspend fun identifyLanguage(): String? {
+        return aiRepository.identifyISOLanguageCode(
+            "$productName\n$productKeywords",
+            AIRepository.PRODUCT_CREATION_FEATURE
+        )
+            .fold(
+                onSuccess = { it },
+                onFailure = { error ->
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to (error as? JetpackAICompletionsException)?.errorType,
+                            AnalyticsTracker.KEY_ERROR_DESC to (error as? JetpackAICompletionsException)?.errorMessage,
+                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SHARING
+                        )
+                    )
+                    null
+                }
+            )
     }
 
     private suspend fun getSiteParameters(): SiteParameters? = withContext(Dispatchers.IO) {

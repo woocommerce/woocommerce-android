@@ -66,7 +66,7 @@ class AIRepository @Inject constructor(
         currency: String,
         existingCategories: List<ProductCategory>,
         existingTags: List<ProductTag>,
-        languageISOCode: String = "en"
+        languageISOCode: String
     ): Result<Product> {
         data class Shipping(
             val weight: Float,
