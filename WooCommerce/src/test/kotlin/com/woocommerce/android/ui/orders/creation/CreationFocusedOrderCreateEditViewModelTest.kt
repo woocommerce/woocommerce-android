@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -353,7 +354,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when adding products, then update product liveData when quantity is one or more`() = testBlocking {
-        var products: List<ProductUIModel> = emptyList()
+        var products: List<OrderCreationProduct> = emptyList()
         sut.products.observeForever {
             products = it
         }
@@ -1085,7 +1086,10 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        val orderItem = Order.Item.EMPTY
+        val orderItem = OrderCreationProduct.ProductItem(
+            item = Order.Item.EMPTY,
+            productInfo = ProductInfo("", false, 0.0, ProductStockStatus.NotAvailable)
+        )
         sut.onProductClicked(orderItem)
 
         assertThat(lastReceivedEvent).isNull()
@@ -1098,15 +1102,15 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        val orderItem = createOrderItem()
-        sut.onProductClicked(orderItem)
+        val productItem = createProductItem()
+        sut.onProductClicked(productItem)
 
         assertThat(lastReceivedEvent).isNotNull
         lastReceivedEvent
             .run { this as? ShowProductDetails }
             ?.let { showProductDetailsEvent ->
                 val currentOrderItem = showProductDetailsEvent.item
-                assertThat(currentOrderItem).isEqualTo(orderItem)
+                assertThat(currentOrderItem).isEqualTo(productItem)
             } ?: fail("Last event should be of ShowProductDetails type")
     }
 
@@ -1227,7 +1231,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         createSut()
         sut.onCouponAdded("abc")
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
-        sut.onProductClicked(sut.currentDraft.items.first())
+        sut.products.observeForever { sut.onProductClicked(it.first()) }
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -1242,7 +1246,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given products and no coupons applied, when going to product details, then should enable discount editing`() {
         createSut()
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
-        sut.onProductClicked(sut.currentDraft.items.first())
+        sut.products.observeForever { sut.onProductClicked(it.first()) }
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
