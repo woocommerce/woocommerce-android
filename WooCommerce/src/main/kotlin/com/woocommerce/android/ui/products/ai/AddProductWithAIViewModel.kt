@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -11,6 +12,7 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,12 +102,11 @@ class AddProductWithAIViewModel @Inject constructor(
             saveButtonState.value = SaveButtonState.Loading
             val (success, productId) = productDetailRepository.addProduct(product)
             if (!success) {
-                // TODO Show error message
+                triggerEvent(ShowSnackbar(R.string.error_generic))
                 saveButtonState.value = SaveButtonState.Shown
-                return@launch
+            } else {
+                triggerEvent(NavigateToProductDetailScreen(productId))
             }
-
-            triggerEvent(NavigateToProductDetailScreen(productId))
         }
     }
 
@@ -155,7 +156,7 @@ class AddProductWithAIViewModel @Inject constructor(
         Hidden, Shown, Loading
     }
 
-    data class NavigateToProductDetailScreen(val productId: Long): MultiLiveEvent.Event()
+    data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {

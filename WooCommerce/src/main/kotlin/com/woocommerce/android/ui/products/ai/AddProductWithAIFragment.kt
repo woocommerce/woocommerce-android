@@ -13,11 +13,14 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddProductWithAIFragment : BaseFragment() {
@@ -25,6 +28,8 @@ class AddProductWithAIFragment : BaseFragment() {
         get() = AppBarStatus.Hidden
 
     private val viewModel: AddProductWithAIViewModel by viewModels()
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -53,6 +58,8 @@ class AddProductWithAIFragment : BaseFragment() {
                         popUpTo(R.id.addProductWithAIFragment) {  inclusive = true }
                     }
                 )
+
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 Exit -> findNavController().navigateUp()
             }
