@@ -5,6 +5,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.orders.creation.ProductInfo
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -15,10 +18,20 @@ import org.mockito.kotlin.verify
 class OrderCreateEditProductDetailsViewModelTest : BaseUnitTest() {
     private val tracker: AnalyticsTrackerWrapper = mock()
 
+    private val defaultProduct = OrderCreationProduct.ProductItem(
+        item = Order.Item.EMPTY,
+        productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = false,
+            stockQuantity = 0.0,
+            stockStatus = ProductStockStatus.InStock
+        )
+    )
+
     @Test
     fun `when add discount tapped, then should track event`() = testBlocking {
         val savedState = OrderCreateEditProductDetailsFragmentArgs(
-            Order.Item.EMPTY,
+            defaultProduct,
             "usd",
             true
         ).initSavedStateHandle()
@@ -30,7 +43,7 @@ class OrderCreateEditProductDetailsViewModelTest : BaseUnitTest() {
     @Test
     fun `when edit discount tapped, then should track event`() = testBlocking {
         val savedState = OrderCreateEditProductDetailsFragmentArgs(
-            Order.Item.EMPTY,
+            defaultProduct,
             "usd",
             true
         ).initSavedStateHandle()
@@ -41,7 +54,6 @@ class OrderCreateEditProductDetailsViewModelTest : BaseUnitTest() {
 
     private fun createSut(savedState: SavedStateHandle) = OrderCreateEditProductDetailsViewModel(
         savedState,
-        mock(),
         mock(),
         mock(),
         mock(),
