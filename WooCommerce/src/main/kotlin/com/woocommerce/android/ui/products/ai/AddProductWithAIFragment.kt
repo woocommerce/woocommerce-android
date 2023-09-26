@@ -8,7 +8,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -42,11 +45,15 @@ class AddProductWithAIFragment : BaseFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToProductDetailScreen -> findNavController().navigate(
-                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                is NavigateToProductDetailScreen -> findNavController().navigateSafely(
+                    directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
                         remoteProductId = event.productId,
-                    )
+                    ),
+                    navOptions = navOptions {
+                        popUpTo(R.id.addProductWithAIFragment) {  inclusive = true }
+                    }
                 )
+
                 Exit -> findNavController().navigateUp()
             }
         }
