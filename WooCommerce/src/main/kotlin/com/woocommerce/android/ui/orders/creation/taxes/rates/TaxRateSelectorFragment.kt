@@ -41,7 +41,7 @@ class TaxRateSelectorFragment : BaseFragment() {
                     viewModel::onDismissed,
                     viewModel::onLoadMore,
                     viewModel::onEditTaxRatesInAdminClicked,
-                    viewModel::onAutoRateSwitchStateChanged,
+                    viewModel::onAutoRateSwitchStateToggled,
                 )
             }
         }

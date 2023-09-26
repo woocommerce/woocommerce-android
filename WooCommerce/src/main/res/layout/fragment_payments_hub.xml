@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/cardReaderHubLoading"
+        android:id="@+id/paymentsHubLoading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
@@ -15,19 +15,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cardReaderHubRv"
+        android:id="@+id/paymentsHubRv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardReaderHubLoading"
+        app:layout_constraintTop_toBottomOf="@id/paymentsHubLoading"
         app:layout_constraintVertical_chainStyle="spread_inside"
         tools:itemCount="10"
-        tools:listitem="@layout/card_reader_hub_list_item" />
+        tools:listitem="@layout/payments_hub_list_item" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/cardReaderHubOnboardingFailedTv"
+        android:id="@+id/paymentsHubOnboardingFailedTv"
         style="@style/Woo.TextView.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

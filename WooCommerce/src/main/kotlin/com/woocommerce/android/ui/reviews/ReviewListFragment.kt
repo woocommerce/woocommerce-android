@@ -13,7 +13,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -67,15 +66,6 @@ class ReviewListFragment :
 
     private var _binding: FragmentReviewsListBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
-        enterTransition = fadeThroughTransition
-        exitTransition = fadeThroughTransition
-        reenterTransition = fadeThroughTransition
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -33,6 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 
 @Composable
 fun ProductPreviewSubScreen(viewModel: ProductPreviewSubViewModel, modifier: Modifier) {
@@ -153,7 +155,7 @@ private fun ProductProperties(
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        text = property.title,
+                        text = stringResource(id = property.title),
                         style = MaterialTheme.typography.subtitle1,
                         color = colorResource(id = R.color.color_on_surface_high)
                     )
@@ -277,27 +279,29 @@ private fun ProductPreviewContentPreview() {
     WooThemeWithBackground {
         ProductPreviewSubScreen(
             ProductPreviewSubViewModel.State.Success(
-                title = "Soft Black Tee: Elevate Your Everyday Style",
-                "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
-                    " everyday comfort and sustainability. Crafted with care from organic cotton, this tee is not" +
-                    " just soft on your skin but gentle on the environment.",
+                product = ProductHelper.getDefaultNewProduct(SIMPLE, false).copy(
+                    name = "Soft Black Tee: Elevate Your Everyday Style",
+                    description = "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
+                        " everyday comfort and sustainability. Crafted with care from organic cotton, this tee is not" +
+                        " just soft on your skin but gentle on the environment."
+                ),
                 propertyGroups = listOf(
                     listOf(
                         ProductPreviewSubViewModel.ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_product,
-                            title = "Product Type",
+                            title = R.string.product_type,
                             content = "Simple Product"
                         )
                     ),
                     listOf(
                         ProductPreviewSubViewModel.ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_money,
-                            title = "Price",
+                            title = R.string.product_price,
                             content = "Regular price: $45.00"
                         ),
                         ProductPreviewSubViewModel.ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_list_checkmark,
-                            title = "Inventory",
+                            title = R.string.product_inventory,
                             content = "In stock"
                         )
                     )

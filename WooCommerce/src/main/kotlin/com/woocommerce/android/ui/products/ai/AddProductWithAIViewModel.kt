@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -15,8 +16,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddProductWithAIViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    aiRepository: AIRepository,
+    buildProductPreviewProperties: BuildProductPreviewProperties
 ) : ScopedViewModel(savedState = savedStateHandle) {
+    private val previewSubViewModel = ProductPreviewSubViewModel(aiRepository, buildProductPreviewProperties) {
+        saveButtonState.value = SaveButtonState.Shown
+    }
+
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
@@ -31,10 +38,14 @@ class AddProductWithAIViewModel @Inject constructor(
         AboutProductSubViewModel(
             savedStateHandle = savedStateHandle,
             onDone = {
-                // Pass the about product to next ViewModel if needed
+                previewSubViewModel.startGeneratingProduct(
+                    name = "T-Shirt", // TODO pass data from the name SubViewModel
+                    keywords = it
+                )
                 goToNextStep()
             }
         ),
+        previewSubViewModel
     )
 
     val state = combine(step, saveButtonState) { step, saveButtonState ->
