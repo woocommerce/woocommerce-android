@@ -161,6 +161,10 @@ class CustomerListViewModel @Inject constructor(
                         customers = cachedCustomers,
                         searchParam = searchBy
                     )
+                } else {
+                    _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+                    // Add a delay to avoid multiple requests when the user types fast or switches search types
+                    delay(SEARCH_DELAY_MS)
                 }
             }
         }
