@@ -55,7 +55,7 @@ class AddProductWithAIFragment : BaseFragment() {
                         remoteProductId = event.productId,
                     ),
                     navOptions = navOptions {
-                        popUpTo(R.id.addProductWithAIFragment) {  inclusive = true }
+                        popUpTo(R.id.addProductWithAIFragment) { inclusive = true }
                     }
                 )
 

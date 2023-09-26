@@ -64,7 +64,6 @@ class AddProductWithAIViewModel @Inject constructor(
         saveButtonState.value = SaveButtonState.Shown
     }
 
-
     private lateinit var product: Product
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
