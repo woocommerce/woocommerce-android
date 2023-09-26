@@ -335,6 +335,21 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given page number 1 and cached customer, when viewmodel init, then viewstate is updated to Loaded state`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.getCustomerList(any())).thenReturn(listOf(mock()))
+
+            // WHEN
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
+
+            // THEN
+            assertThat((states.first().body as CustomerListViewState.CustomerList.Loaded).customers)
+                .isEqualTo(listOf(mockCustomer))
+        }
+
+    @Test
     fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
         // GIVEN
         whenever(
