@@ -5,19 +5,29 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class ProductPreviewSubViewModel(
     private val aiRepository: AIRepository,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
+    private val categoriesRepository: ProductCategoriesRepository,
+    private val tagsRepository: ProductTagsRepository,
+    private val parametersRepository: ParameterRepository,
     override val onDone: (Product) -> Unit,
 ) : AddProductWithAISubViewModel<Product> {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    private val siteParameters by lazy { parametersRepository.getParameters() }
 
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asLiveData()
@@ -25,7 +35,32 @@ class ProductPreviewSubViewModel(
     fun startGeneratingProduct(name: String, keywords: String) {
         viewModelScope.launch {
             _state.value = State.Loading
-            aiRepository.generateProduct(name, keywords).fold(
+
+            val categories = withContext(Dispatchers.IO) {
+                categoriesRepository.getProductCategoriesList().ifEmpty {
+                    categoriesRepository.fetchProductCategories()
+                    categoriesRepository.getProductCategoriesList()
+                }
+            }
+
+            val tags = withContext(Dispatchers.IO) {
+                tagsRepository.getProductTags().ifEmpty {
+                    tagsRepository.fetchProductTags()
+                    tagsRepository.getProductTags()
+                }
+            }
+
+            aiRepository.generateProduct(
+                productName = name,
+                productKeyWords = keywords,
+                tone = "neutral", // TODO,
+                weightUnit = siteParameters.weightUnit ?: "kg",
+                dimensionUnit = siteParameters.dimensionUnit ?: "cm",
+                currency = siteParameters.currencyCode ?: "USD",
+                existingCategories = categories,
+                existingTags = tags,
+                languageISOCode = Locale.getDefault().language
+            ).fold(
                 onSuccess = { product ->
                     _state.value = State.Success(
                         product = product,
@@ -34,7 +69,8 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
-                    TODO()
+                    // TODO
+                    it.printStackTrace()
                 }
             )
         }

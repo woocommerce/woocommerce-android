@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -18,9 +21,18 @@ import javax.inject.Inject
 class AddProductWithAIViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     aiRepository: AIRepository,
-    buildProductPreviewProperties: BuildProductPreviewProperties
+    buildProductPreviewProperties: BuildProductPreviewProperties,
+    categoriesRepository: ProductCategoriesRepository,
+    tagsRepository: ProductTagsRepository,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState = savedStateHandle) {
-    private val previewSubViewModel = ProductPreviewSubViewModel(aiRepository, buildProductPreviewProperties) {
+    private val previewSubViewModel = ProductPreviewSubViewModel(
+        aiRepository = aiRepository,
+        buildProductPreviewProperties = buildProductPreviewProperties,
+        categoriesRepository = categoriesRepository,
+        tagsRepository = tagsRepository,
+        parametersRepository = parameterRepository
+    ) {
         saveButtonState.value = SaveButtonState.Shown
     }
 

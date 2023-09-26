@@ -10,7 +10,6 @@ import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,7 +26,6 @@ class ProductSharingViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     private val tracker: AnalyticsTrackerWrapper,
     resourceProvider: ResourceProvider,
-    private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ProductSharingDialogArgs by savedStateHandle.navArgs()
@@ -77,7 +75,6 @@ class ProductSharingViewModel @Inject constructor(
 
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
-            site = selectedSite.get(),
             text = "${navArgs.productName} ${navArgs.productDescription.orEmpty()}",
             feature = PRODUCT_SHARING_FEATURE
         ).fold(
