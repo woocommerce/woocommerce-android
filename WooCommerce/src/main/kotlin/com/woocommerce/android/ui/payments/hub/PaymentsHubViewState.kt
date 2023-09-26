@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import androidx.annotation.DrawableRes
 import com.woocommerce.android.model.UiString
 
-data class CardReaderHubViewState(
+data class PaymentsHubViewState(
     val rows: List<ListItem>,
     val isLoading: Boolean,
     val onboardingErrorAction: OnboardingErrorAction?,

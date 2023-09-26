@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -9,10 +9,10 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class CardReaderHubTapToPayUnavailableHandlerTest {
+class PaymentsHubTapToPayUnavailableHandlerTest {
     private val triggerEvent: (MultiLiveEvent.Event) -> Unit = mock()
-    private val positiveButtonClick: (CardReaderHubTapToPayUnavailableHandler.ActionType) -> Unit = mock()
-    private val handler = CardReaderHubTapToPayUnavailableHandler()
+    private val positiveButtonClick: (PaymentsHubTapToPayUnavailableHandler.ActionType) -> Unit = mock()
+    private val handler = PaymentsHubTapToPayUnavailableHandler()
 
     @Test
     fun `given NfcNotAvailable, when handleTTPUnavailable, then triggers showdialog event`() {

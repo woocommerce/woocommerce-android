@@ -1,41 +1,48 @@
 package com.woocommerce.android.ui.orders.creation.taxes.rates
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
 class TaxRateSelectorViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val ratesListHandler: TaxRateListHandler,
+    private val getTaxRateLabel: GetTaxRateLabel,
+    private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
+    private val prefs: AppPrefs,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
     private val isLoading = MutableStateFlow(false)
-    val viewState: StateFlow<ViewState> =
-        ratesListHandler.taxRatesFlow.combine(isLoading) { rates, isLoading ->
-            rates.map { taxRate ->
-                TaxRateUiModel(
-                    label = calculateTaxRateLabel(taxRate),
-                    rate = calculateTaxRatePercentageText(taxRate),
-                    taxRate = taxRate,
-                )
-            }.let {
-                ViewState(taxRates = it, isLoading = isLoading)
-            }
-        }.toStateFlow(ViewState())
+    private val autoRateSwitchState = savedState.getStateFlow(this, false, "autoRateSwitchState")
+    val viewState: StateFlow<ViewState> = combine(
+        ratesListHandler.taxRatesFlow,
+        isLoading,
+        autoRateSwitchState
+    ) { rates, isLoading, autoRateSwitchState ->
+        rates.map { taxRate ->
+            TaxRateUiModel(
+                label = getTaxRateLabel(taxRate),
+                rate = getTaxRatePercentageValueText(taxRate),
+                taxRate = taxRate,
+            )
+        }.let {
+            ViewState(taxRates = it, isLoading = isLoading, isAutoRateEnabled = autoRateSwitchState)
+        }
+    }.toStateFlow(ViewState())
 
     init {
         launch {
@@ -44,44 +51,6 @@ class TaxRateSelectorViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-
-    private fun calculateTaxRatePercentageText(taxRate: TaxRate) =
-        if (taxRate.rate.isNotNullOrEmpty()) {
-            val standardisedRate = taxRate.rate.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-            "$standardisedRate%"
-        } else {
-            ""
-        }
-
-    @Suppress("ComplexCondition")
-    private fun calculateTaxRateLabel(taxRate: TaxRate) =
-        StringBuilder().apply {
-            if (taxRate.name.isNotNullOrEmpty()) {
-                append(taxRate.name)
-            }
-            if (taxRate.countryCode.isNotNullOrEmpty() ||
-                taxRate.stateCode.isNotNullOrEmpty() ||
-                taxRate.postcode.isNotNullOrEmpty() ||
-                taxRate.city.isNotNullOrEmpty()
-            ) {
-                append(" · ")
-            }
-            if (taxRate.countryCode.isNotNullOrEmpty()) {
-                append(taxRate.countryCode)
-                append(SPACE_CHAR)
-            }
-            if (taxRate.stateCode.isNotNullOrEmpty()) {
-                append(taxRate.stateCode)
-                append(SPACE_CHAR)
-            }
-            if (taxRate.postcode.isNotNullOrEmpty()) {
-                append(taxRate.postcode)
-                append(SPACE_CHAR)
-            }
-            if (taxRate.city.isNotNullOrEmpty()) {
-                append(taxRate.city)
-            }
-        }.toString()
 
     fun onEditTaxRatesInAdminClicked() {
         triggerEvent(EditTaxRatesInAdmin)
@@ -93,8 +62,18 @@ class TaxRateSelectorViewModel @Inject constructor(
     }
 
     fun onTaxRateSelected(taxRate: TaxRateUiModel) {
+        if (viewState.value.isAutoRateEnabled) {
+            prefs.setAutoTaxRateId(taxRate.taxRate.id)
+        } else {
+            prefs.disableAutoTaxRate()
+        }
         triggerEvent(TaxRateSelected(taxRate.taxRate))
-        tracker.track(AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED)
+        tracker.track(
+            AnalyticsEvent.TAX_RATE_SELECTOR_TAX_RATE_TAPPED,
+            mapOf(
+                AnalyticsTracker.AUTO_TAX_RATE_ENABLED to autoRateSwitchState.value
+            )
+        )
     }
 
     fun onDismissed() {
@@ -109,8 +88,8 @@ class TaxRateSelectorViewModel @Inject constructor(
         }
     }
 
-    fun onAutoRateSwitchStateChanged(selected: Boolean) {
-        Log.d("TaxRateSelectorViewModel", "onAutoRateToggleStateChanged: $selected")
+    fun onAutoRateSwitchStateToggled() {
+        autoRateSwitchState.value = !autoRateSwitchState.value
     }
 
     @Parcelize
@@ -131,8 +110,4 @@ class TaxRateSelectorViewModel @Inject constructor(
     data class TaxRateSelected(val taxRate: TaxRate) : MultiLiveEvent.Event()
     object EditTaxRatesInAdmin : MultiLiveEvent.Event()
     object ShowTaxesInfoDialog : MultiLiveEvent.Event()
-
-    private companion object {
-        private const val SPACE_CHAR = " "
-    }
 }

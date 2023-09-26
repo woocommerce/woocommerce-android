@@ -15,6 +15,12 @@
             app:exitAnim="@null"
             app:destination="@+id/taxRatesInfoDialogFragment" />
         <action
+            android:id="@+id/action_orderCreationFragment_to_autoTaxRateDetailsFragment"
+            app:enterAnim="@anim/slide_up"
+            app:exitAnim="@anim/slide_down"
+            app:destination="@+id/autoTaxRateDetailsFragment"
+            />
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
@@ -331,4 +337,12 @@
             android:id="@+id/action_taxRateSelectorFragment_to_taxRatesInfoDialogFragment"
             app:destination="@id/taxRatesInfoDialogFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/autoTaxRateDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.taxes.rates.setting.AutoTaxRateSettingBottomSheetFragment"
+        android:label="AutoTaxRateSettingBottomSheetFragment">
+        <argument
+            android:name="autoTaxRateSettingState"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$AutoTaxRateSettingState"/>
+    </dialog>
 </navigation>

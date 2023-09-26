@@ -527,6 +527,7 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
+    <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_select_coupon">Select a coupon</string>
@@ -3666,4 +3667,8 @@
     <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
     <string name="tax_rate_selector_auto_rate_label">Add this rate to all created orders</string>
     <string name="tax_rate_selector_auto_rate_subtitle">This will not affect online orders</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
+
 </resources>
