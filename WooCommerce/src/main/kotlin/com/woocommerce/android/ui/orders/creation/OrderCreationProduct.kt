@@ -19,12 +19,22 @@ sealed class OrderCreationProduct(
 ) : Parcelable {
     abstract fun isConfigurable(): Boolean
     abstract fun needsConfiguration(): Boolean
+
+    abstract fun copyProduct(
+        item: Order.Item = this.item,
+        productInfo: ProductInfo = this.productInfo
+    ): OrderCreationProduct
+
     data class ProductItem(
         override val item: Order.Item,
         override val productInfo: ProductInfo
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = false
         override fun needsConfiguration() = false
+        override fun copyProduct(
+            item: Order.Item,
+            productInfo: ProductInfo
+        ) = copy(item = item, productInfo = productInfo)
     }
 
     data class GroupedProductItem(
@@ -34,6 +44,10 @@ sealed class OrderCreationProduct(
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = false
         override fun needsConfiguration() = false
+        override fun copyProduct(
+            item: Order.Item,
+            productInfo: ProductInfo
+        ) = copy(item = item, productInfo = productInfo)
     }
 
     data class ProductItemWithRules(
@@ -44,6 +58,10 @@ sealed class OrderCreationProduct(
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = rules.isConfigurable()
         override fun needsConfiguration() = configuration.needsConfiguration()
+        override fun copyProduct(
+            item: Order.Item,
+            productInfo: ProductInfo
+        ) = copy(item = item, productInfo = productInfo)
     }
 
     data class GroupedProductItemWithRules(
@@ -55,6 +73,10 @@ sealed class OrderCreationProduct(
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = rules.isConfigurable()
         override fun needsConfiguration() = configuration.needsConfiguration()
+        override fun copyProduct(
+            item: Order.Item,
+            productInfo: ProductInfo
+        ) = copy(item = item, productInfo = productInfo)
     }
 }
 
