@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -18,6 +19,16 @@ class ParameterRepository @Inject constructor(
     }
 
     fun getParameters(): SiteParameters = loadParameters()
+
+    suspend fun fetchParameters(): Result<SiteParameters> {
+        return wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
+            .let {
+                when {
+                    it.isError -> Result.failure(WooException(it.error))
+                    else -> Result.success(loadParameters())
+                }
+            }
+    }
 
     private fun loadParameters(): SiteParameters {
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())

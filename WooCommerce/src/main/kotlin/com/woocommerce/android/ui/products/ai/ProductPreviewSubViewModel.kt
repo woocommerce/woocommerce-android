@@ -4,10 +4,12 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +30,6 @@ class ProductPreviewSubViewModel(
     override val onDone: (Product) -> Unit,
 ) : AddProductWithAISubViewModel<Product> {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
-    private val siteParameters by lazy { parametersRepository.getParameters() }
 
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asLiveData()
@@ -58,13 +58,18 @@ class ProductPreviewSubViewModel(
                 }
             }
 
+            val siteParameters = getSiteParameters() ?: run {
+                // TOOD show error alert
+                return@launch
+            }
+
             aiRepository.generateProduct(
                 productName = productName,
                 productKeyWords = productKeywords,
                 tone = tone.slug,
-                weightUnit = siteParameters.weightUnit ?: "kg",
-                dimensionUnit = siteParameters.dimensionUnit ?: "cm",
-                currency = siteParameters.currencyCode ?: "USD",
+                weightUnit = siteParameters.weightUnit!!,
+                dimensionUnit = siteParameters.dimensionUnit!!,
+                currency = siteParameters.currencyCode!!,
                 existingCategories = categories,
                 existingTags = tags,
                 languageISOCode = Locale.getDefault().language
@@ -102,6 +107,21 @@ class ProductPreviewSubViewModel(
 
     override fun close() {
         viewModelScope.cancel()
+    }
+
+    private suspend fun getSiteParameters(): SiteParameters? = withContext(Dispatchers.IO) {
+        fun predicate(parameters: SiteParameters): Boolean {
+            return parameters.weightUnit.isNotNullOrEmpty() &&
+                parameters.dimensionUnit.isNotNullOrEmpty() &&
+                parameters.currencyCode.isNotNullOrEmpty()
+        }
+
+        return@withContext parametersRepository.getParameters().takeIf(::predicate)
+            ?: parametersRepository.fetchParameters()
+                .fold(
+                    onSuccess = { it.takeIf(::predicate) },
+                    onFailure = { null }
+                )
     }
 
     sealed interface State {
