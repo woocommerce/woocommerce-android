@@ -24,7 +24,7 @@ class AboutProductSubViewModel(
         viewModelScope,
         UiState(
             productFeatures = "",
-            selectedAiTone = AiTone.fromString(appsPrefsWrapper.aiContentGenerationTone)
+            selectedAiTone = appsPrefsWrapper.aiContentGenerationTone
         )
     )
 
@@ -40,7 +40,7 @@ class AboutProductSubViewModel(
 
     fun onNewToneSelected(tone: AiTone) {
         productFeatures.value = productFeatures.value.copy(selectedAiTone = tone)
-        appsPrefsWrapper.aiContentGenerationTone = productFeatures.value.selectedAiTone.slug
+        appsPrefsWrapper.aiContentGenerationTone = productFeatures.value.selectedAiTone
     }
 
     override fun close() {

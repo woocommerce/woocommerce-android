@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -1037,11 +1038,11 @@ object AppPrefs {
             value = value
         )
 
-    var aiContentGenerationTone: String
-        get() = getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE)
+    var aiContentGenerationTone: AiTone
+        get() = AiTone.fromString(getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE))
         set(value) = setString(
             key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
-            value = value
+            value = value.slug
         )
 
     fun incrementAIDescriptionTooltipShownNumber() {
