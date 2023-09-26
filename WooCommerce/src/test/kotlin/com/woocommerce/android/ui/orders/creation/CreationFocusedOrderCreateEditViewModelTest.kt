@@ -1143,11 +1143,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCreateOrderClicked(defaultOrderValue)
 
+        val productCount = sut.products.value?.count() ?: 0
+
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_PRODUCT_COUNT to productCount,
                 AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
                 AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
                 AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()

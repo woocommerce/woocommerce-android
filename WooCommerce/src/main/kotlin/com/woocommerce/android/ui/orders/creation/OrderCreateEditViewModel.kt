@@ -934,12 +934,13 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
             val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
+            val productCount = products.value?.count() ?: 0
             tracker.track(
                 ORDER_CREATE_BUTTON_TAPPED,
                 buildMap {
                     put(KEY_STATUS, _orderDraft.value.status)
                     putIfNotNull(PRODUCT_TYPES to productTypes)
-                    putIfNotNull(KEY_PRODUCT_COUNT to products.value?.count())
+                    put(KEY_PRODUCT_COUNT, productCount)
                     put(KEY_HAS_CUSTOMER_DETAILS, _orderDraft.value.billingAddress.hasInfo())
                     put(KEY_HAS_FEES, _orderDraft.value.feesLines.isNotEmpty())
                     put(KEY_HAS_SHIPPING_METHOD, _orderDraft.value.shippingLines.isNotEmpty())
