@@ -1,5 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+15.7
+-----
+- [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
+
+15.6
+-----
+
 15.5
 -----
 - [*] Add new filter for unread product reviews [https://github.com/woocommerce/woocommerce-android/pull/9753]
