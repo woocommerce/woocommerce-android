@@ -98,12 +98,12 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
         }
 
     fun onAddDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountEdit(this.product.value.item, currency))
+        triggerEvent(NavigationTarget.DiscountEdit(this.product.value, currency))
         tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED)
     }
 
     fun onEditDiscountClicked() {
-        triggerEvent(NavigationTarget.DiscountEdit(this.product.value.item, currency))
+        triggerEvent(NavigationTarget.DiscountEdit(this.product.value, currency))
         tracker.track(AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED)
     }
 
@@ -142,7 +142,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     }
 
     sealed class NavigationTarget : MultiLiveEvent.Event() {
-        data class DiscountEdit(val item: Order.Item, val currency: String) : MultiLiveEvent.Event()
+        data class DiscountEdit(val item: OrderCreationProduct, val currency: String) : MultiLiveEvent.Event()
     }
 
     private companion object {

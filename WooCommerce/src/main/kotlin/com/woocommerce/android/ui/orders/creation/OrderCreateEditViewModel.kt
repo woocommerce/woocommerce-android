@@ -1125,8 +1125,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onProductDiscountEditResult(modifiedItem: Order.Item) {
-        _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
+    fun onProductDiscountEditResult(modifiedProduct: OrderCreationProduct) {
+        _orderDraft.value = _orderDraft.value.updateItem(modifiedProduct.item)
     }
 
     fun onTaxHelpButtonClicked() = launch {
