@@ -97,7 +97,6 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
                 modifier = Modifier.padding(padding),
                 state = it,
                 onCustomerSelected = viewModel::onCustomerSelected,
-                onAddCustomerClicked = viewModel::onAddCustomerClicked,
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onSearchTypeChanged = viewModel::onSearchTypeChanged,
                 onEndOfListReached = viewModel::onEndOfListReached,
@@ -111,7 +110,6 @@ fun CustomerListScreen(
     modifier: Modifier = Modifier,
     state: CustomerListViewState,
     onCustomerSelected: (WCCustomerModel) -> Unit,
-    onAddCustomerClicked: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
@@ -506,7 +504,6 @@ fun CustomerListScreenPreview() {
         {},
         {},
         {},
-        {},
     )
 }
 
@@ -550,7 +547,6 @@ fun CustomerListScreenEmptyOldPreview() {
         {},
         {},
         {},
-        {},
     )
 }
 
@@ -571,7 +567,6 @@ fun CustomerListScreenEmptyNewPreview() {
                 button = null
             ),
         ),
-        {},
         {},
         {},
         {},
@@ -613,7 +608,6 @@ fun CustomerListScreenErrorPreview() {
         {},
         {},
         {},
-        {},
     )
 }
 
@@ -646,7 +640,6 @@ fun CustomerListScreenLoadingPreview() {
             ),
             body = CustomerListViewState.CustomerList.Loading,
         ),
-        {},
         {},
         {},
         {},
