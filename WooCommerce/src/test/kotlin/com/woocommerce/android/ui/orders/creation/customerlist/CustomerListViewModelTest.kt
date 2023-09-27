@@ -288,7 +288,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 R.string.order_creation_customer_search_empty_on_old_version_wcpay
             )
             assertThat(emptyState.image).isEqualTo(R.drawable.img_search_suggestion)
-            assertThat(emptyState.buttonText).isEqualTo(
+            assertThat(emptyState.button?.text).isEqualTo(
                 R.string.order_creation_customer_search_empty_add_details_manually
             )
         }
@@ -354,7 +354,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
             .isEqualTo(R.string.order_creation_customer_search_empty)
         assertThat(emptyState.message).isEqualTo(R.string.order_creation_customer_search_empty)
         assertThat(emptyState.image).isEqualTo(R.drawable.img_empty_search)
-        assertThat(emptyState.buttonText).isNull()
+        assertThat(emptyState.button).isNull()
     }
 
     @Test
@@ -955,7 +955,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
-        assertThat(viewModel.event.value).isEqualTo(AddCustomer)
+        assertThat(viewModel.event.value).isEqualTo(
+            AddCustomer(null)
+        )
     }
 
     @Test
