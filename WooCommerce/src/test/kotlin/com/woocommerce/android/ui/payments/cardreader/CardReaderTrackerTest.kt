@@ -1193,4 +1193,15 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 any()
             )
         }
+
+    @Test
+    fun `when track optional card reader update install clicked invoked, then CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackSoftwareUpdateAlertInstallClicked()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED),
+                any()
+            )
+        }
 }
