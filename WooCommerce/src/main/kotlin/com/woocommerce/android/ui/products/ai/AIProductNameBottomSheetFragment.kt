@@ -11,9 +11,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 
 @AndroidEntryPoint
 class AIProductNameBottomSheetFragment : WCBottomSheetDialogFragment() {
@@ -56,7 +58,13 @@ class AIProductNameBottomSheetFragment : WCBottomSheetDialogFragment() {
         }
     }
 
-    private fun copyProductNameToClipboard(description: String) {
-        context?.copyToClipboard(getString(R.string.ai_product_name_copy_label), description)
+    private fun copyProductNameToClipboard(name: String) {
+        try {
+            context?.copyToClipboard(getString(R.string.ai_product_name_copy_label), name)
+            ToastUtils.showToast(context, R.string.ai_product_name_copy_success)
+        } catch (e: IllegalStateException) {
+            WooLog.e(WooLog.T.UTILS, e)
+            ToastUtils.showToast(context, R.string.ai_product_name_copy_error)
+        }
     }
 }

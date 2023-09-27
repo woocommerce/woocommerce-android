@@ -56,10 +56,10 @@ class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
     private fun copyDescriptionToClipboard(description: String) {
         try {
             context?.copyToClipboard(getString(R.string.ai_product_description_label), description)
-            ToastUtils.showToast(context, R.string.ai_product_name_copy_success)
+            ToastUtils.showToast(context, R.string.ai_product_description_copy_success)
         } catch (e: IllegalStateException) {
             WooLog.e(WooLog.T.UTILS, e)
-            ToastUtils.showToast(context, R.string.ai_product_name_copy_error)
+            ToastUtils.showToast(context, R.string.ai_product_description_copy_error)
         }
     }
 }

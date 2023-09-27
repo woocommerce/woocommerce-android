@@ -3587,6 +3587,8 @@
     <string name="ai_product_description_tooltip_title">✨ Write with AI</string>
     <string name="ai_product_description_tooltip_message">Use our AI-powered tool to quickly generate product descriptions. Just input keywords and we\'ll do the rest!</string>
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
+    <string name="ai_product_description_copy_success">Product description copied to clipboard.</string>
+    <string name="ai_product_description_copy_error">Error copying product description to clipboard.</string>
 
     <!--
     AI Product name description
