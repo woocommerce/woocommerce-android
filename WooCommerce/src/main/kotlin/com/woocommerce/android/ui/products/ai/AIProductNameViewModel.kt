@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_NAME_FEATURE
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -18,7 +17,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AIProductNameViewModel @Inject constructor(
     private val aiRepository: AIRepository,
-    private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -32,7 +30,6 @@ class AIProductNameViewModel @Inject constructor(
 
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
-            site = selectedSite.get(),
             text = _viewState.value.keywords,
             feature = PRODUCT_NAME_FEATURE
         ).fold(
@@ -52,7 +49,6 @@ class AIProductNameViewModel @Inject constructor(
 
     private suspend fun generateProductName(languageISOCode: String) {
         val result = aiRepository.generateProductName(
-            site = selectedSite.get(),
             keywords = _viewState.value.keywords,
             languageISOCode = languageISOCode
         )
