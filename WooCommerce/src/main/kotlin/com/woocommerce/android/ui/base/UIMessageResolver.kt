@@ -48,6 +48,27 @@ interface UIMessageResolver {
     }
 
     /**
+     * Create and return a snackbar displaying the provided message and a Install button.
+     *
+     * @param [stringResId] The string resource id of the base message
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the undo button click event
+     */
+    fun getInstallSnack(
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getDefiniteSnackbarWithAction(
+            snackbarRoot,
+            snackbarRoot.context.getString(stringResId, *stringArgs),
+            snackbarRoot.context.getString(R.string.install),
+            actionListener,
+            anchorViewId
+        )
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a generic action button.
      *
      * @param [message] The message string
