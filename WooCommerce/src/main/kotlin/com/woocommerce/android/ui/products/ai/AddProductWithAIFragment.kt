@@ -39,7 +39,7 @@ class AddProductWithAIFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
-        handleResults(viewModel)
+        handleResults()
     }
 
     private fun handleEvents() {
@@ -51,7 +51,7 @@ class AddProductWithAIFragment : BaseFragment() {
         }
     }
 
-    private fun handleResults(viewModel: AddProductWithAIViewModel) {
+    private fun handleResults() {
         handleDialogResult<String>(
             key = AIProductNameBottomSheetFragment.KEY_AI_GENERATED_PRODUCT_NAME_RESULT,
             entryId = R.id.addProductWithAIFragment
