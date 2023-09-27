@@ -25,8 +25,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
-import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Check
@@ -77,8 +75,8 @@ fun AboutProductSubScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
-        initialValue = Hidden,
-        confirmStateChange = { it != HalfExpanded },
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
     )
     val configuration = LocalConfiguration.current
 
@@ -107,11 +105,7 @@ fun AboutProductSubScreen(
         Column(
             modifier = modifier
                 .background(MaterialTheme.colors.surface)
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.major_200)
-                )
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Column(
                 modifier = Modifier
@@ -121,7 +115,8 @@ fun AboutProductSubScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.product_creation_ai_about_product_title),
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                 )
                 Text(
                     text = stringResource(id = R.string.product_creation_ai_about_product_subtitle),
@@ -133,8 +128,8 @@ fun AboutProductSubScreen(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
                 ) {
                     Text(
-                        text = stringResource(id = R.string.product_creation_ai_about_product_edit_text_header),
-                        style = MaterialTheme.typography.subtitle2,
+                        text = state.productName,
+                        style = MaterialTheme.typography.body2,
                     )
                     Box {
                         if (state.productFeatures.isEmpty()) {
@@ -188,15 +183,39 @@ fun AboutProductSubScreen(
                         color = colorResource(id = R.color.color_primary)
                     )
                 }
+
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    // Make button part of the scrollable content on landscape
+                    ContinueButton(
+                        onClick = onCreateProductDetails,
+                        enabled = state.productFeatures.isNotBlank()
+                    )
+                }
             }
-            WCColoredButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onCreateProductDetails,
-                enabled = state.productFeatures.isNotBlank()
-            ) {
-                Text(text = stringResource(id = R.string.product_creation_ai_about_product_continue_button))
+
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                // Stick button to the bottom on portrait mode
+                ContinueButton(
+                    onClick = onCreateProductDetails,
+                    enabled = state.productFeatures.isNotBlank()
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun ContinueButton(
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    WCColoredButton(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        enabled = enabled
+    ) {
+        Text(text = stringResource(id = R.string.product_creation_ai_about_product_continue_button))
     }
 }
 
@@ -263,6 +282,7 @@ private fun AiToneBottomSheetContent(
 fun AboutProductSubScreenPreview() {
     AboutProductSubScreen(
         state = UiState(
+            productName = "productName",
             productFeatures = "productFeatures",
             selectedAiTone = Casual
         ),
