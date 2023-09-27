@@ -1882,6 +1882,16 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         verify(cardReaderTracker, never()).trackSoftwareUpdateAlertShown()
     }
 
+    @Test
+    fun `given card reader connected, when there is no optional card reader update, then do not track card reader install clicked event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertInstallClicked()
+    }
+
     //endregion
 
     private fun getSuccessWooResult() = WooResult(
