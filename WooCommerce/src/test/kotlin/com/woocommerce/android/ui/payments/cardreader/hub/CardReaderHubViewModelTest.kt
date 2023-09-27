@@ -1822,6 +1822,19 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given card reader connected, when there is an optional card reader update, then show the snackbar with correct message`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+
+        assertThat((viewModel.event.value as CardReaderUpdateAvailable).message).isEqualTo(
+            R.string.card_reader_payment_update_available
+        )
+    }
+
     //endregion
 
     private fun getSuccessWooResult() = WooResult(
