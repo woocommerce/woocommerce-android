@@ -114,10 +114,12 @@ class CardReaderHubViewModel @Inject constructor(
         if (readerStatus !is CardReaderStatus.Connected) return
         when (updateStatus) {
             SoftwareUpdateAvailability.Available -> {
+                cardReaderTracker.trackSoftwareUpdateAlertShown()
                 triggerEvent(
                     CardReaderHubEvents.CardReaderUpdateAvailable(
                         message = R.string.card_reader_payment_update_available,
                         onClick = {
+                            cardReaderTracker.trackSoftwareUpdateAlertInstallClicked()
                             triggerEvent(CardReaderHubEvents.CardReaderUpdateScreen)
                         }
                     )
