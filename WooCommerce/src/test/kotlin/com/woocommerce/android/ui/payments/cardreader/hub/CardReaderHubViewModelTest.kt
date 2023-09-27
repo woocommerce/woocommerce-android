@@ -1860,6 +1860,18 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         verify(cardReaderTracker).trackSoftwareUpdateAlertShown()
     }
 
+    @Test
+    fun `given optional card reader update snackbar shown, when action cta clicked, then track proper event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+        (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
+
+        verify(cardReaderTracker).trackSoftwareUpdateAlertInstallClicked()
+    }
+
     //endregion
 
     private fun getSuccessWooResult() = WooResult(
