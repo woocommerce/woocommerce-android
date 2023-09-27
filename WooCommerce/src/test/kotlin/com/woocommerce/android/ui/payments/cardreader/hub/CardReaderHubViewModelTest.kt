@@ -1835,6 +1835,20 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given optional card reader update snackbar shown, when action cta clicked, then trigger proper event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+        (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateScreen::class.java
+        )
+    }
+
     //endregion
 
     private fun getSuccessWooResult() = WooResult(
