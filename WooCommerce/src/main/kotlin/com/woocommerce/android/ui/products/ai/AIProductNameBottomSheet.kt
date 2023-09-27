@@ -53,6 +53,7 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
                 if (generationState.hasError) {
                     ErrorLayout(
                         keywords = state.keywords,
+                        onKeywordsChanged = viewModel::onProductKeywordsChanged,
                         onGenerateButtonClicked = viewModel::onGenerateButtonClicked
                     )
                 } else {
@@ -309,9 +310,13 @@ private fun GeneratedTextLayout(
 @Composable
 private fun ErrorLayout(
     keywords: String,
+    onKeywordsChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit
 ) {
-    MainLayout(keywords = keywords) {
+    MainLayout(
+        keywords = keywords,
+        onKeywordsChanged = onKeywordsChanged
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         Box(
@@ -377,5 +382,5 @@ private fun ResultLayoutPreview() {
 @Preview
 @Composable
 private fun ErrorLayoutPreview() {
-    ErrorLayout(keywords = "", onGenerateButtonClicked = {})
+    ErrorLayout(keywords = "", onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }
