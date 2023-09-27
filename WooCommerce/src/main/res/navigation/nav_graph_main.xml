@@ -256,6 +256,7 @@
             app:destination="@id/nav_graph_coupons" />
         <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
+            app:enterAnim="@null"
             app:destination="@id/paymentFlow">
             <argument
                 android:name="cardReaderFlowParam"
@@ -602,8 +603,7 @@
         <action
             android:id="@+id/action_paymentsPreSetupFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment"
-            app:popUpTo="@id/dashboard">
-        </action>
+            app:popUpTo="@id/dashboard" />
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
@@ -662,16 +662,16 @@
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
-        android:label="NameYourStoreDialogFragment" >
+        android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <dialog
         android:id="@+id/addProductWithAIBottomSheet"
         android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIBottomSheet"
-        android:label="AddProductWithAIBottomSheet" >
+        android:label="AddProductWithAIBottomSheet">
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment"

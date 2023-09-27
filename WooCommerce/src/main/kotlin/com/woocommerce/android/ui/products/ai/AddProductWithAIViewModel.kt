@@ -3,38 +3,67 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.scan
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProductWithAIViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    aiRepository: AIRepository,
+    buildProductPreviewProperties: BuildProductPreviewProperties,
+    categoriesRepository: ProductCategoriesRepository,
+    tagsRepository: ProductTagsRepository,
+    parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState = savedStateHandle) {
+    private val nameSubViewModel = ProductNameSubViewModel(
+        savedStateHandle = savedStateHandle,
+        onDone = { name ->
+            aboutSubViewModel.updateProductName(name)
+            previewSubViewModel.updateName(name)
+            goToNextStep()
+        }
+    )
+    private val aboutSubViewModel = AboutProductSubViewModel(
+        savedStateHandle = savedStateHandle,
+        onDone = { result ->
+            result.let { (productFeatures, selectedAiTone) ->
+                previewSubViewModel.updateKeywords(productFeatures)
+                previewSubViewModel.updateTone(selectedAiTone)
+            }
+            goToNextStep()
+        }
+    )
+    private val previewSubViewModel = ProductPreviewSubViewModel(
+        aiRepository = aiRepository,
+        buildProductPreviewProperties = buildProductPreviewProperties,
+        categoriesRepository = categoriesRepository,
+        tagsRepository = tagsRepository,
+        parametersRepository = parameterRepository
+    ) {
+        // TODO keep reference to the product for the saving step
+        saveButtonState.value = SaveButtonState.Shown
+    }
+
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
-        ProductNameSubViewModel(
-            savedStateHandle = savedStateHandle,
-            onDone = {
-                // Pass the name to next ViewModel if needed
-                goToNextStep()
-            }
-        ),
-        AboutProductSubViewModel(
-            savedStateHandle = savedStateHandle,
-            onDone = {
-                // Pass the about product to next ViewModel if needed
-                goToNextStep()
-            }
-        ),
+        nameSubViewModel,
+        aboutSubViewModel,
+        previewSubViewModel
     )
 
     val state = combine(step, saveButtonState) { step, saveButtonState ->
@@ -69,6 +98,20 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun wireSubViewModels() {
+        // Notify the sub view models when the user navigates to their screen
+        step.scan<Step, Step?>(null) { previousStep, newStep ->
+            previousStep?.let { subViewModels[it.ordinal].onStop() }
+            subViewModels[newStep.ordinal].onStart()
+
+            newStep
+        }.launchIn(viewModelScope)
+
+        // Hide the save button when the user leaves the preview screen
+        step.filter { it != Step.Preview }
+            .onEach { saveButtonState.value = SaveButtonState.Hidden }
+            .launchIn(viewModelScope)
+
+        // Handle SubViewModel events
         subViewModels.forEach { subViewModel ->
             addCloseable(subViewModel)
 
