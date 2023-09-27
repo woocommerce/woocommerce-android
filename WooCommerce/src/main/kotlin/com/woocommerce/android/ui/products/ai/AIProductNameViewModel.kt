@@ -28,6 +28,8 @@ class AIProductNameViewModel @Inject constructor(
 
     val viewState = _viewState.asLiveData()
 
+    private var identifiedLanguageISOCode: String? = null
+
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
             site = selectedSite.get(),
@@ -45,11 +47,7 @@ class AIProductNameViewModel @Inject constructor(
     }
 
     private fun handleIdentificationSuccess(languageISOCode: String) {
-        _viewState.update {
-            _viewState.value.copy(
-                identifiedLanguageISOCode = languageISOCode
-            )
-        }
+        identifiedLanguageISOCode = languageISOCode
     }
 
     private suspend fun generateProductName(languageISOCode: String) {
@@ -96,7 +94,7 @@ class AIProductNameViewModel @Inject constructor(
             )
         }
         launch {
-            val languageISOCode = _viewState.value.identifiedLanguageISOCode ?: identifyLanguage().getOrNull()
+            val languageISOCode = identifiedLanguageISOCode ?: identifyLanguage().getOrNull()
             languageISOCode?.let { generateProductName(languageISOCode) } ?: run {
                 _viewState.update {
                     _viewState.value.copy(
@@ -126,7 +124,6 @@ class AIProductNameViewModel @Inject constructor(
     data class ViewState(
         val keywords: String = "",
         val generatedProductName: String = "",
-        val identifiedLanguageISOCode: String? = null,
         val generationState: GenerationState = GenerationState.Start
     ) {
         sealed class GenerationState {
