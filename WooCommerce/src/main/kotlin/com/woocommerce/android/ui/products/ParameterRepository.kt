@@ -5,6 +5,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -39,9 +40,15 @@ class ParameterRepository @Inject constructor(
         awaitAll(siteSettingsTask, productSettingsTask)
 
         if (siteSettingsTask.getCompleted().isError) {
+            siteSettingsTask.getCompleted().error.let {
+                WooLog.e(WooLog.T.UTILS, "Error fetching site settings,  ${it.type} ${it.message}")
+            }
             return@coroutineScope Result.failure(WooException(siteSettingsTask.getCompleted().error))
         }
         if (productSettingsTask.getCompleted().isError) {
+            productSettingsTask.getCompleted().error.let {
+                WooLog.e(WooLog.T.UTILS, "Error fetching product settings,  ${it.type} ${it.message}")
+            }
             return@coroutineScope Result.failure(WooException(productSettingsTask.getCompleted().error))
         }
 
