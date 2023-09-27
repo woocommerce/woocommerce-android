@@ -22,7 +22,7 @@ data class CustomerListViewState(
         data class Empty(
             @StringRes val message: Int,
             @DrawableRes val image: Int,
-            @StringRes val buttonText: Int?,
+            val button: Button?,
         ) : CustomerList()
         data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
@@ -60,6 +60,11 @@ data class SearchMode(
 data class PaginationState(
     val currentPage: Int,
     val hasNextPage: Boolean,
+)
+
+data class Button(
+    @StringRes val text: Int,
+    val onClick: () -> Unit,
 )
 
 data class CustomerSelected(
