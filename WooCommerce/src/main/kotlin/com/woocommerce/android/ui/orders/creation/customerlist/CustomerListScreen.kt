@@ -145,8 +145,7 @@ fun CustomerListScreen(
             is CustomerListViewState.CustomerList.Empty -> CustomerListEmpty(
                 body.message,
                 body.image,
-                body.buttonText,
-                onAddCustomerClicked,
+                body.button,
             )
 
             is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
@@ -329,14 +328,12 @@ private fun Customer.Text.Highlighted.buildHighlightedText() =
 private fun CustomerListEmpty(
     @StringRes message: Int,
     @DrawableRes image: Int,
-    @StringRes buttonText: Int?,
-    onAddCustomerClicked: () -> Unit,
+    button: Button?,
 ) {
     CustomerListNoDataState(
         text = message,
         image = image,
-        addCustomerButtonText = buttonText,
-        onAddCustomerClicked = onAddCustomerClicked,
+        button = button,
     )
 }
 
@@ -345,8 +342,7 @@ private fun CustomerListError(@StringRes message: Int) {
     CustomerListNoDataState(
         text = message,
         image = R.drawable.img_woo_generic_error,
-        addCustomerButtonText = null,
-        {},
+        button = null,
     )
 }
 
@@ -374,8 +370,7 @@ private fun CustomerListSkeleton() {
 private fun CustomerListNoDataState(
     @StringRes text: Int,
     @DrawableRes image: Int,
-    @StringRes addCustomerButtonText: Int?,
-    onAddCustomerClicked: () -> Unit,
+    button: Button?,
 ) {
     Column(
         modifier = Modifier
@@ -400,10 +395,10 @@ private fun CustomerListNoDataState(
             )
         )
 
-        addCustomerButtonText?.let {
+        button?.let {
             Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-            WCColoredButton(onClick = { onAddCustomerClicked() }) {
-                Text(text = stringResource(id = it))
+            WCColoredButton(onClick = button.onClick) {
+                Text(text = stringResource(id = button.text))
             }
         }
 
@@ -545,7 +540,10 @@ fun CustomerListScreenEmptyOldPreview() {
             body = CustomerListViewState.CustomerList.Empty(
                 message = R.string.order_creation_customer_search_empty_on_old_version_wcpay,
                 image = R.drawable.img_search_suggestion,
-                buttonText = R.string.order_creation_customer_search_empty_add_details_manually
+                button = Button(
+                    R.string.order_creation_customer_search_empty_add_details_manually,
+                    {},
+                )
             ),
         ),
         {},
@@ -570,7 +568,7 @@ fun CustomerListScreenEmptyNewPreview() {
             body = CustomerListViewState.CustomerList.Empty(
                 message = R.string.order_creation_customer_search_empty,
                 image = R.drawable.img_empty_search,
-                buttonText = null
+                button = null
             ),
         ),
         {},

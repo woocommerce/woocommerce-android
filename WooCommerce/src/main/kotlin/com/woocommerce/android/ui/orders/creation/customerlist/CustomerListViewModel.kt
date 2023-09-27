@@ -209,7 +209,7 @@ class CustomerListViewModel @Inject constructor(
                 body = CustomerListViewState.CustomerList.Empty(
                     R.string.order_creation_customer_search_empty,
                     R.drawable.img_empty_search,
-                    buttonText = null,
+                    button = null,
                 )
             )
         } else {
@@ -287,7 +287,10 @@ class CustomerListViewModel @Inject constructor(
         body = CustomerListViewState.CustomerList.Empty(
             R.string.order_creation_customer_search_empty_on_old_version_wcpay,
             R.drawable.img_search_suggestion,
-            R.string.order_creation_customer_search_empty_add_details_manually,
+            button = Button(
+                R.string.order_creation_customer_search_empty_add_details_manually,
+                onClick = ::onAddCustomerClicked
+            )
         )
     )
 
