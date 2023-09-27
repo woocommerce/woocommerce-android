@@ -1823,6 +1823,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             feedbackRepository,
             cardReaderHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
+            cardReaderManager,
         )
         viewModel.onViewVisible()
     }
