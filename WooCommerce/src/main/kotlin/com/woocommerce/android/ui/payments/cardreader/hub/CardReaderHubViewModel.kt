@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.hub
 
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +13,10 @@ import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -75,6 +79,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val tapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -96,6 +101,34 @@ class CardReaderHubViewModel @Inject constructor(
         )
     )
 
+    private fun listenForSoftwareUpdateAvailability() {
+        launch {
+            cardReaderManager.softwareUpdateAvailability.collect(
+                ::handleSoftwareUpdateAvailability
+            )
+        }
+    }
+
+    private fun handleSoftwareUpdateAvailability(updateStatus: SoftwareUpdateAvailability) {
+        val readerStatus = cardReaderManager.readerStatus.value
+        if (readerStatus !is CardReaderStatus.Connected) return
+        when (updateStatus) {
+            SoftwareUpdateAvailability.Available -> {
+                triggerEvent(
+                    CardReaderHubEvents.CardReaderUpdateAvailable(
+                        message = R.string.card_reader_payment_update_available,
+                        onClick = {
+                            triggerEvent(CardReaderHubEvents.CardReaderUpdateScreen)
+                        }
+                    )
+                )
+            }
+            SoftwareUpdateAvailability.NotAvailable -> {
+                // no op
+            }
+        }.exhaustive
+    }
+
     private val initialState
         get() = CardReaderHubViewState(
             rows = createHubListWhenSinglePluginInstalled(
@@ -114,6 +147,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     init {
         handleOpenInHubParameter()
+        listenForSoftwareUpdateAvailability()
     }
 
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
@@ -521,6 +555,13 @@ class CardReaderHubViewModel @Inject constructor(
         data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
         data class ShowToastString(val message: String) : CardReaderHubEvents()
         data class ShowToast(@StringRes val message: Int) : CardReaderHubEvents()
+
+        data class CardReaderUpdateAvailable(
+            val message: Int,
+            val onClick: View.OnClickListener,
+        ) : CardReaderHubEvents()
+
+        object CardReaderUpdateScreen : CardReaderHubEvents()
     }
 
     enum class CashOnDeliverySource {
