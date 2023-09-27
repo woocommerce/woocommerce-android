@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
@@ -1806,6 +1807,19 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel()
 
         assertThat(viewModel.event.value).isNull()
+    }
+
+    @Test
+    fun `given card reader connected, when there is an optional card reader update, then show the snackbar`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            CardReaderUpdateAvailable::class.java
+        )
     }
 
     //endregion
