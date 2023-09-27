@@ -1259,7 +1259,13 @@ data class ProductUIModel(
     val imageUrl: String,
     val isStockManaged: Boolean,
     val stockQuantity: Double,
-    val stockStatus: ProductStockStatus
+    val stockStatus: ProductStockStatus,
+    val pricePreDiscount: String,
+    val priceTotal: String,
+    val priceSubtotal: String,
+    val discountAmount: String,
+    val priceAfterDiscount: String,
+    val hasDiscount: Boolean = item.discount > BigDecimal.ZERO,
 )
 
 enum class ScanningSource(val source: String) {
