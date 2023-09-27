@@ -611,6 +611,10 @@ class AnalyticsTracker private constructor(
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
 
+        // -- AI product name
+        const val KEY_HAS_INPUT_NAME = "has_input_name"
+        const val VALUE_PRODUCT_CREATION_AI = "product_creation_ai"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

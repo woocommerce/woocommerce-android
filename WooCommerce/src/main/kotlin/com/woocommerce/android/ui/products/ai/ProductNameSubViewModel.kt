@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products.ai
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class ProductNameSubViewModel(
     savedStateHandle: SavedStateHandle,
+    val analyticsTracker: AnalyticsTrackerWrapper,
     override val onDone: (String) -> Unit
 ) : AddProductWithAISubViewModel<String> {
     companion object {
@@ -41,6 +45,13 @@ class ProductNameSubViewModel(
     }
 
     fun onSuggestNameClicked() {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_NAME_AI_ENTRY_POINT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HAS_INPUT_NAME to (name.value.isNotEmpty()).toString(),
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_AI
+            )
+        )
         viewModelScope.launch {
             _events.emit(NavigateToAIProductNameBottomSheet)
         }
