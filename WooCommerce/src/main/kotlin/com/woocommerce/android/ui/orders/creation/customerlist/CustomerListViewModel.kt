@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSu
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_EMAIL
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_NAME
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_USERNAME
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -103,9 +104,9 @@ class CustomerListViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onAddCustomerClicked() {
+    fun onAddCustomerClicked(email: String?) {
         analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
-        triggerEvent(AddCustomer)
+        triggerEvent(AddCustomer(email))
     }
 
     fun onEndOfListReached() {
@@ -205,11 +206,20 @@ class CustomerListViewModel @Inject constructor(
         searchParam: String,
     ) {
         if (customers.isEmpty()) {
+            val searchQuery = searchQuery
+            val button = if (StringUtils.isValidEmail(searchQuery)) {
+                Button(
+                    R.string.order_creation_customer_search_empty_add_details_manually,
+                    onClick = { onAddCustomerClicked(searchQuery) }
+                )
+            } else {
+                null
+            }
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Empty(
                     R.string.order_creation_customer_search_empty,
                     R.drawable.img_empty_search,
-                    button = null,
+                    button = button,
                 )
             )
         } else {
@@ -289,7 +299,7 @@ class CustomerListViewModel @Inject constructor(
             R.drawable.img_search_suggestion,
             button = Button(
                 R.string.order_creation_customer_search_empty_add_details_manually,
-                onClick = ::onAddCustomerClicked
+                onClick = { onAddCustomerClicked(null) }
             )
         )
     )
