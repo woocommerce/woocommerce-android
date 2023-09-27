@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
@@ -30,11 +31,15 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
+import javax.inject.Inject
 
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
 @AndroidEntryPoint
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
     override fun getFragmentTitle() = resources.getString(R.string.payments_hub_title)
     val viewModel: CardReaderHubViewModel by viewModels()
 
@@ -121,6 +126,17 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateAvailable -> {
+                    uiMessageResolver.getInstallSnack(
+                        stringResId = event.message,
+                        actionListener = event.onClick
+                    ).show()
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateScreen -> {
+                    findNavController().navigate(
+                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderUpdateDialogFragment()
+                    )
                 }
                 else -> event.isHandled = false
             }
