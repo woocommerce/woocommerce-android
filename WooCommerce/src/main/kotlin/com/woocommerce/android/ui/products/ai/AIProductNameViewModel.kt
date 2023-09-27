@@ -121,6 +121,7 @@ class AIProductNameViewModel @Inject constructor(
     }
 
     fun onCopyButtonClicked() {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_NAME_AI_COPY_BUTTON_TAPPED)
         triggerEvent(CopyProductNameToClipboard(_viewState.value.generatedProductName))
     }
 
