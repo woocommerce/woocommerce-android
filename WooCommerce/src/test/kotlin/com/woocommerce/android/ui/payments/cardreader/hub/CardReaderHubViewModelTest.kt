@@ -1798,6 +1798,16 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isNull()
     }
 
+    @Test
+    fun `given card reader connected, when there is no optional card reader update, then do not show the snackbar`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        assertThat(viewModel.event.value).isNull()
+    }
+
     //endregion
 
     private fun getSuccessWooResult() = WooResult(
