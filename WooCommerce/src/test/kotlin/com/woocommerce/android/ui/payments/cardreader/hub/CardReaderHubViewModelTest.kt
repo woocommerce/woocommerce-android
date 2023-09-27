@@ -11,6 +11,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfig
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -46,6 +48,7 @@ import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -97,8 +100,12 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
     }
     private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
-    private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
+
+    private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
+    private val cardReaderManager: CardReaderManager = mock {
+        on { softwareUpdateAvailability }.thenReturn(softwareUpdateAvailability)
+    }
 
     private val clearCardReaderDataAction: ClearCardReaderDataAction = ClearCardReaderDataAction(
         cardReaderManager,
@@ -1779,6 +1786,19 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             FeatureFeedbackSettings.FeedbackState.GIVEN
         )
     }
+
+    // region optional card reader update
+    @Test
+    fun `given card reader not connected, when view model initiated, then do not show the snackbar`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        assertThat(viewModel.event.value).isNull()
+    }
+
+    //endregion
 
     private fun getSuccessWooResult() = WooResult(
         model = WCGatewayModel(
