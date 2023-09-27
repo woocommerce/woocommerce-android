@@ -126,6 +126,7 @@ class AIProductNameViewModel @Inject constructor(
     }
 
     fun onApplyButtonClicked() {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_NAME_AI_APPLY_BUTTON_TAPPED)
         triggerEvent(ExitWithResult(_viewState.value.generatedProductName))
     }
 
