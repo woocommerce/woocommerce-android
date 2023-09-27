@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.ai
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -16,8 +18,10 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
@@ -64,7 +68,16 @@ fun AddProductWithAIScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            LinearProgressIndicator(progress = state.progress, modifier = Modifier.fillMaxWidth())
+            val animatedProgress = animateFloatAsState(
+                targetValue = state.progress,
+                animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                label = "progressBarAnimation"
+            ).value
+            LinearProgressIndicator(
+                progress = animatedProgress,
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = colorResource(id = color.linear_progress_background),
+            )
 
             SubScreen(
                 subViewModel = state.subViewModel,

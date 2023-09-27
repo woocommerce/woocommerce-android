@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -26,7 +27,8 @@ class AddProductWithAIViewModel @Inject constructor(
     buildProductPreviewProperties: BuildProductPreviewProperties,
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
-    parameterRepository: ParameterRepository
+    parameterRepository: ParameterRepository,
+    appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
@@ -44,7 +46,8 @@ class AddProductWithAIViewModel @Inject constructor(
                 previewSubViewModel.updateTone(selectedAiTone)
             }
             goToNextStep()
-        }
+        },
+        appsPrefsWrapper = appsPrefsWrapper
     )
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
