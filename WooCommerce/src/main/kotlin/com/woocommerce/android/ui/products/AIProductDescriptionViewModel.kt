@@ -22,7 +22,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_DESCRIPTION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generating
@@ -42,7 +41,6 @@ import javax.inject.Inject
 class AIProductDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     private val tracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
