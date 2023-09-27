@@ -113,10 +113,10 @@ fun AboutProductSubScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             ) {
-                Spacer(modifier = Modifier)
                 Text(
                     text = stringResource(id = R.string.product_creation_ai_about_product_title),
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                 )
                 Text(
                     text = stringResource(id = R.string.product_creation_ai_about_product_subtitle),

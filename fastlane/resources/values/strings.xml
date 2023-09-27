@@ -527,6 +527,7 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
+    <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_add_coupon">Add coupon</string>
     <string name="order_creation_select_coupon">Select a coupon</string>
@@ -1637,6 +1638,8 @@
     <string name="wc_mark_all_read_error">Error marking all reviews as read</string>
     <string name="product_review_list_fetching_failed">Error fetching product reviews</string>
     <string name="pending_review_label">Pending Review</string>
+    <string name="product_review_list_unread_reviews_filter">Unread reviews only</string>
+
     <!--
         Products
     -->
@@ -1890,6 +1893,37 @@
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
     <string name="product_list_multiselect">Select multiple</string>
     <string name="product_detail_menu_item_promote_with_blaze">Promote with Blaze</string>
+    <string name="product_creation_ai_entry_sheet_header">Add a product</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Create a product with AI</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Quickly generate details for you</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="ai_product_creation_add_name_title">Add your product name</string>
+    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Product name</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="product_creation_ai_about_product_title">About your product</string>
+    <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
+    <string name="product_creation_ai_about_product_edit_text_header">My product</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
+    <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
+    <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
+    <string name="product_creation_ai_preview_title">Preview</string>
+    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_description_section">Product description</string>
+    <string name="product_creation_ai_preview_details_section">Details</string>
+    <string name="product_creation_ai_tone_title">Tone and voice</string>
+    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_flowery">Flowery</string>
+    <string name="product_creation_ai_tone_convincing">Convincing</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
+
     <!--
         Product Add more details Bottom sheet
     -->
@@ -2004,6 +2038,8 @@
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
     <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+    <string name="empty_review_filtered_list_title">No unread product reviews</string>
+    <string name="empty_review_filtered_list_message">Try disabling the unread filter to see all your product reviews</string>
     <string name="empty_wpmedia_list_message">No images yet</string>
 
     <string name="orders_empty_message_with_processing">No orders to process yet</string>
@@ -3561,6 +3597,16 @@
     <string name="ai_product_description_tooltip_dismiss">Got it</string>
 
     <!--
+    AI Product name description
+    -->
+    <string name="ai_product_name_sheet_title">✨ Product name</string>
+    <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
+    <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
+    <string name="ai_product_name_sheet_generate_button">Write it for me</string>
+    <string name="ai_product_name_sheet_regenerate_button">Regenerate</string>
+    <string name="ai_product_name_sheet_error_message">There was a problem generating the product name. Please try again.</string>
+
+    <!--
     Blaze banner
     -->
     <string name="blaze_banner_title">Promote products with Blaze</string>
@@ -3621,5 +3667,8 @@
     <string name="tax_rate_selector_empty_list_button_alt">Edit Tax Rates</string>
     <string name="tax_rate_selector_auto_rate_label">Add this rate to all created orders</string>
     <string name="tax_rate_selector_auto_rate_subtitle">This will not affect online orders</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
 
 </resources>

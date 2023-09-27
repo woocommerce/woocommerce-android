@@ -11,12 +11,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
+import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,11 +47,13 @@ class AddProductWithAIFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
+        handleResults()
     }
 
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                NavigateToAIProductNameBottomSheet -> navigateToAIProductName()
                 is NavigateToProductDetailScreen -> findNavController().navigateSafely(
                     directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
                         remoteProductId = event.productId,
@@ -64,5 +68,20 @@ class AddProductWithAIFragment : BaseFragment() {
                 Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun handleResults() {
+        handleDialogResult<String>(
+            key = AIProductNameBottomSheetFragment.KEY_AI_GENERATED_PRODUCT_NAME_RESULT,
+            entryId = R.id.addProductWithAIFragment
+        ) { productName ->
+            viewModel.onProductNameGenerated(productName)
+        }
+    }
+
+    private fun navigateToAIProductName() {
+        val action =
+            AddProductWithAIFragmentDirections.actionAddProductWithAIFragmentToAIProductNameBottomSheetFragment()
+        findNavController().navigateSafely(action)
     }
 }
