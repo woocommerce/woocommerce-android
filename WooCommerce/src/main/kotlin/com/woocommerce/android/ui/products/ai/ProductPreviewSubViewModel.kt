@@ -50,7 +50,8 @@ class ProductPreviewSubViewModel(
 
             if (!::isoLanguageCode.isInitialized) {
                 isoLanguageCode = identifyLanguage() ?: run {
-                    // TODO show error alert
+                    WooLog.e(WooLog.T.AI, "Identifying language for the AI prompt failed")
+                    _state.value = State.Error
                     return@launch
                 }
             }
@@ -59,7 +60,8 @@ class ProductPreviewSubViewModel(
             val tags = getTags()
             val siteParameters = getSiteParameters() ?: run {
                 // We can't create a product without site parameters, so show an error and abort
-                // TODO show error alert
+                WooLog.e(WooLog.T.AI, "Getting site parameters failed")
+                _state.value = State.Error
                 return@launch
             }
 
@@ -82,8 +84,8 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
-                    // TODO
-                    it.printStackTrace()
+                    WooLog.e(WooLog.T.AI, "Failed to generate product with AI", it)
+                    _state.value = State.Error
                 }
             )
         }
@@ -180,6 +182,7 @@ class ProductPreviewSubViewModel(
             val description: String
                 get() = product.description
         }
+        object Error : State
     }
 
     data class ProductPropertyCard(
