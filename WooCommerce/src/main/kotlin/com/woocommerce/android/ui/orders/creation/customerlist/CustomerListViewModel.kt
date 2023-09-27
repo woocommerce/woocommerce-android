@@ -104,7 +104,7 @@ class CustomerListViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onAddCustomerClicked(email: String?) {
+    fun onAddCustomerClicked(email: String? = null) {
         analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
         triggerEvent(AddCustomer(email))
     }
@@ -164,7 +164,8 @@ class CustomerListViewModel @Inject constructor(
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
             _viewState.value = _viewState.value!!.copy(
-                body = CustomerListViewState.CustomerList.Error(R.string.error_generic)
+                body = CustomerListViewState.CustomerList.Error(R.string.error_generic),
+                showFab = true,
             )
         } else {
             val customers = result.getOrNull() ?: emptyList()
@@ -207,20 +208,25 @@ class CustomerListViewModel @Inject constructor(
     ) {
         if (customers.isEmpty()) {
             val searchQuery = searchQuery
-            val button = if (StringUtils.isValidEmail(searchQuery)) {
+            val isSearchQueryEmail = StringUtils.isValidEmail(searchQuery)
+            val button = if (isSearchQueryEmail) {
                 Button(
-                    R.string.order_creation_customer_search_empty_add_details_manually,
+                    R.string.order_creation_customer_search_empty_add_details_manually_with_email,
                     onClick = { onAddCustomerClicked(searchQuery) }
                 )
             } else {
-                null
+                Button(
+                    R.string.order_creation_customer_search_empty_add_details_manually,
+                    onClick = { onAddCustomerClicked(null) }
+                )
             }
             _viewState.value = _viewState.value!!.copy(
                 body = CustomerListViewState.CustomerList.Empty(
                     R.string.order_creation_customer_search_empty,
                     R.drawable.img_empty_search,
                     button = button,
-                )
+                ),
+                showFab = false,
             )
         } else {
             _viewState.value = _viewState.value!!.copy(
@@ -229,7 +235,8 @@ class CustomerListViewModel @Inject constructor(
                         mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
                     shouldResetScrollPosition = true,
-                )
+                ),
+                showFab = true,
             )
         }
     }
@@ -291,7 +298,7 @@ class CustomerListViewModel @Inject constructor(
     private fun advancedSearchNotSupportedInitState() = CustomerListViewState(
         searchHint = R.string.order_creation_customer_search_old_wc_hint,
         searchQuery = searchQuery,
-        showFabInEmptyState = false,
+        showFab = true,
         searchFocused = true,
         searchModes = getSupportedSearchModes(false).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Empty(
@@ -307,7 +314,7 @@ class CustomerListViewModel @Inject constructor(
     private fun advancedSearchSupportedInitState() = CustomerListViewState(
         searchHint = R.string.order_creation_customer_search_hint,
         searchQuery = searchQuery,
-        showFabInEmptyState = true,
+        showFab = true,
         searchFocused = false,
         searchModes = getSupportedSearchModes(true).selectSearchMode(selectedSearchModeId),
         body = CustomerListViewState.CustomerList.Loading

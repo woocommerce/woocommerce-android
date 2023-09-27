@@ -86,11 +86,7 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
                 )
             },
             floatingActionButton = {
-                if (it.body is CustomerListViewState.CustomerList.Empty) {
-                    if (it.showFabInEmptyState) CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
-                } else {
-                    CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
-                }
+                if (it.showFab) CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
             }
         ) { padding ->
             CustomerListScreen(
@@ -450,7 +446,7 @@ fun CustomerListScreenPreview() {
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             searchFocused = false,
-            showFabInEmptyState = true,
+            showFab = true,
             searchModes = listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_username,
@@ -515,7 +511,7 @@ fun CustomerListScreenEmptyOldPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
-            showFabInEmptyState = false,
+            showFab = false,
             searchFocused = false,
             searchModes = listOf(
                 SearchMode(
@@ -558,7 +554,7 @@ fun CustomerListScreenEmptyNewPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
-            showFabInEmptyState = true,
+            showFab = true,
             searchFocused = false,
             searchModes = emptyList(),
             body = CustomerListViewState.CustomerList.Empty(
@@ -583,7 +579,7 @@ fun CustomerListScreenErrorPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_old_wc_hint,
             searchQuery = "search",
-            showFabInEmptyState = true,
+            showFab = true,
             searchFocused = false,
             searchModes = listOf(
                 SearchMode(
@@ -619,7 +615,7 @@ fun CustomerListScreenLoadingPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
-            showFabInEmptyState = true,
+            showFab = true,
             searchFocused = false,
             searchModes = listOf(
                 SearchMode(

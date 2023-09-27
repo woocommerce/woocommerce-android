@@ -144,7 +144,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(states.last().searchModes).isEqualTo(searchModes)
-        assertThat(states.last().showFabInEmptyState).isTrue()
+        assertThat(states.last().showFab).isTrue()
         assertThat(states.last().searchFocused).isFalse()
         assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
         assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)

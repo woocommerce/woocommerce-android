@@ -12,7 +12,7 @@ data class CustomerListViewState(
     @StringRes val searchHint: Int,
     val searchQuery: String = "",
     val searchModes: List<SearchMode>,
-    val showFabInEmptyState: Boolean,
+    val showFab: Boolean,
     val searchFocused: Boolean,
     val partialLoading: Boolean = false,
     val body: CustomerList = CustomerList.Loading,
