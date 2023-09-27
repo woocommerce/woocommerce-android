@@ -26,6 +26,7 @@ class AIRepository @Inject constructor(
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
+        const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
     }
 
     suspend fun generateProductSharingText(
@@ -54,6 +55,18 @@ class AIRepository @Inject constructor(
             languageISOCode
         )
         return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DESCRIPTION_FEATURE)
+    }
+
+    suspend fun generateProductName(
+        keywords: String,
+        languageISOCode: String = "en"
+    ): Result<String> {
+        val prompt = AIPrompts.generateProductNamePrompt(
+            keywords,
+            languageISOCode
+        )
+
+        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_NAME_FEATURE)
     }
 
     @Suppress("LongParameterList")
