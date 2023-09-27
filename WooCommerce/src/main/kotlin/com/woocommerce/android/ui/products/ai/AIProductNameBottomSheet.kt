@@ -71,7 +71,7 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
 }
 
 @Composable
-fun MainLayout(
+private fun MainLayout(
     keywords: String,
     enableProductKeywords: Boolean = true,
     onKeywordsChanged: (String) -> Unit = {},
@@ -139,7 +139,7 @@ fun MainLayout(
 }
 
 @Composable
-fun StartLayout(
+private fun StartLayout(
     keywords: String,
     onKeywordsChanged: (String) -> Unit,
     onGenerateButtonClicked: () -> Unit
@@ -167,7 +167,7 @@ fun StartLayout(
 }
 
 @Composable
-fun GeneratingLayout(
+private fun GeneratingLayout(
     keywords: String
 ) {
     MainLayout(
@@ -203,7 +203,7 @@ fun GeneratingLayout(
 }
 
 @Composable
-fun ResultLayout(
+private fun ResultLayout(
     keywords: String,
     generatedProductName: String,
     onKeywordsChanged: (String) -> Unit,
@@ -266,7 +266,7 @@ fun ResultLayout(
 }
 
 @Composable
-fun GeneratedTextLayout(
+private fun GeneratedTextLayout(
     generatedProductName: String,
     onCopyButtonClicked: () -> Unit
 ) {
@@ -307,7 +307,7 @@ fun GeneratedTextLayout(
 }
 
 @Composable
-fun ErrorLayout(
+private fun ErrorLayout(
     keywords: String,
     onGenerateButtonClicked: () -> Unit
 ) {
@@ -351,19 +351,19 @@ fun ErrorLayout(
 
 @Preview
 @Composable
-fun StartLayoutPreview() {
+private fun StartLayoutPreview() {
     StartLayout("", onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }
 
 @Preview
 @Composable
-fun GeneratingLayoutPreview() {
+private fun GeneratingLayoutPreview() {
     GeneratingLayout("")
 }
 
 @Preview
 @Composable
-fun ResultLayoutPreview() {
+private fun ResultLayoutPreview() {
     ResultLayout(
         keywords = "some keywords here",
         generatedProductName = "AI-generated product name here",
@@ -376,6 +376,6 @@ fun ResultLayoutPreview() {
 
 @Preview
 @Composable
-fun ErrorLayoutPreview() {
+private fun ErrorLayoutPreview() {
     ErrorLayout(keywords = "", onGenerateButtonClicked = {})
 }
