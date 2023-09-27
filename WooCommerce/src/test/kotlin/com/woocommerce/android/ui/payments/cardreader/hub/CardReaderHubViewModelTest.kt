@@ -103,7 +103,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val cardReaderHubTapToPayUnavailableHandler: CardReaderHubTapToPayUnavailableHandler = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
-    private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(SoftwareUpdateAvailability.NotAvailable)
+    private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(
+        SoftwareUpdateAvailability.NotAvailable
+    )
     private val cardReaderManager: CardReaderManager = mock {
         on { softwareUpdateAvailability }.thenReturn(softwareUpdateAvailability)
     }

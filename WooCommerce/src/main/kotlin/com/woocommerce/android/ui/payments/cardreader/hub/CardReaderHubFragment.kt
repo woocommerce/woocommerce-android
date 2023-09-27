@@ -58,7 +58,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner
