@@ -6,10 +6,12 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,8 +34,14 @@ class ProductPreviewSubViewModel(
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asLiveData()
 
-    fun startGeneratingProduct(name: String, keywords: String) {
-        viewModelScope.launch {
+    private lateinit var productName: String
+    private lateinit var productKeywords: String
+    private lateinit var tone: AiTone
+
+    private var generationJob: Job? = null
+
+    override fun onStart() {
+        generationJob = viewModelScope.launch {
             _state.value = State.Loading
 
             val categories = withContext(Dispatchers.IO) {
@@ -51,9 +59,9 @@ class ProductPreviewSubViewModel(
             }
 
             aiRepository.generateProduct(
-                productName = name,
-                productKeyWords = keywords,
-                tone = "neutral", // TODO,
+                productName = productName,
+                productKeyWords = productKeywords,
+                tone = tone.slug,
                 weightUnit = siteParameters.weightUnit ?: "kg",
                 dimensionUnit = siteParameters.dimensionUnit ?: "cm",
                 currency = siteParameters.currencyCode ?: "USD",
@@ -74,6 +82,22 @@ class ProductPreviewSubViewModel(
                 }
             )
         }
+    }
+
+    override fun onStop() {
+        generationJob?.cancel()
+    }
+
+    fun updateName(name: String) {
+        this.productName = name
+    }
+
+    fun updateKeywords(keywords: String) {
+        this.productKeywords = keywords
+    }
+
+    fun updateTone(tone: AiTone) {
+        this.tone = tone
     }
 
     override fun close() {

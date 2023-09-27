@@ -14,8 +14,10 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.scan
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +30,25 @@ class AddProductWithAIViewModel @Inject constructor(
     parameterRepository: ParameterRepository,
     appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
+    private val nameSubViewModel = ProductNameSubViewModel(
+        savedStateHandle = savedStateHandle,
+        onDone = { name ->
+            aboutSubViewModel.updateProductName(name)
+            previewSubViewModel.updateName(name)
+            goToNextStep()
+        }
+    )
+    private val aboutSubViewModel = AboutProductSubViewModel(
+        savedStateHandle = savedStateHandle,
+        onDone = { result ->
+            result.let { (productFeatures, selectedAiTone) ->
+                previewSubViewModel.updateKeywords(productFeatures)
+                previewSubViewModel.updateTone(selectedAiTone)
+            }
+            goToNextStep()
+        },
+        appsPrefsWrapper = appsPrefsWrapper
+    )
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
         buildProductPreviewProperties = buildProductPreviewProperties,
@@ -35,6 +56,7 @@ class AddProductWithAIViewModel @Inject constructor(
         tagsRepository = tagsRepository,
         parametersRepository = parameterRepository
     ) {
+        // TODO keep reference to the product for the saving step
         saveButtonState.value = SaveButtonState.Shown
     }
 
@@ -42,24 +64,8 @@ class AddProductWithAIViewModel @Inject constructor(
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
     private val subViewModels = listOf<AddProductWithAISubViewModel<*>>(
-        ProductNameSubViewModel(
-            savedStateHandle = savedStateHandle,
-            onDone = {
-                // Pass the name to next ViewModel if needed
-                goToNextStep()
-            }
-        ),
-        AboutProductSubViewModel(
-            savedStateHandle = savedStateHandle,
-            onDone = {
-                previewSubViewModel.startGeneratingProduct(
-                    name = "T-Shirt", // TODO pass data from the name SubViewModel
-                    keywords = it
-                )
-                goToNextStep()
-            },
-            appsPrefsWrapper = appsPrefsWrapper
-        ),
+        nameSubViewModel,
+        aboutSubViewModel,
         previewSubViewModel
     )
 
@@ -95,6 +101,20 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private fun wireSubViewModels() {
+        // Notify the sub view models when the user navigates to their screen
+        step.scan<Step, Step?>(null) { previousStep, newStep ->
+            previousStep?.let { subViewModels[it.ordinal].onStop() }
+            subViewModels[newStep.ordinal].onStart()
+
+            newStep
+        }.launchIn(viewModelScope)
+
+        // Hide the save button when the user leaves the preview screen
+        step.filter { it != Step.Preview }
+            .onEach { saveButtonState.value = SaveButtonState.Hidden }
+            .launchIn(viewModelScope)
+
+        // Handle SubViewModel events
         subViewModels.forEach { subViewModel ->
             addCloseable(subViewModel)
 
