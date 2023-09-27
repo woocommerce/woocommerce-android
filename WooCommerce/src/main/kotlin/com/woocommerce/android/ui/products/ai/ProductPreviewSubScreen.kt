@@ -68,7 +68,7 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         when (state) {
             ProductPreviewSubViewModel.State.Loading,
-            ProductPreviewSubViewModel.State.Error -> ProductPreviewLoading(
+            is ProductPreviewSubViewModel.State.Error -> ProductPreviewLoading(
                 modifier = Modifier.fillMaxHeight()
             )
 
@@ -80,8 +80,8 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
 
         if (state is ProductPreviewSubViewModel.State.Error) {
             ErrorDialog(
-                onRetryClick = {},
-                onDismissClick = {}
+                onRetryClick = state.onRetryClick,
+                onDismissClick = state.onDismissClick
             )
         }
     }
