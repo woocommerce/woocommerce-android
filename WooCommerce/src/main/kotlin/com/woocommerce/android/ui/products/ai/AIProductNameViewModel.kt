@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_NAME_FEATURE
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -17,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AIProductNameViewModel @Inject constructor(
     private val aiRepository: AIRepository,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -83,7 +87,12 @@ class AIProductNameViewModel @Inject constructor(
         }
     }
 
-    fun onGenerateButtonClicked() {
+    fun onGenerateButtonClicked(isRegenerate: Boolean = false) {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_NAME_AI_GENERATE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_IS_RETRY to isRegenerate)
+        )
+
         _viewState.update {
             _viewState.value.copy(
                 generationState = ViewState.GenerationState.Generating
@@ -100,6 +109,8 @@ class AIProductNameViewModel @Inject constructor(
             }
         }
     }
+
+    fun onRegenerateButtonClicked() = onGenerateButtonClicked(isRegenerate = true)
 
     fun onProductKeywordsChanged(keywords: String) {
         _viewState.update {
