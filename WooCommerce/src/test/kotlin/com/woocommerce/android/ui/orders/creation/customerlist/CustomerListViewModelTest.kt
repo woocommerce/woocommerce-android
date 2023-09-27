@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -64,6 +65,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
         onBlocking { invoke() }.thenReturn(true)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val stringUtils: StringUtils = mock {
+        on { isValidEmail(any(), any()) }.thenReturn(false)
+    }
 
     @Test
     fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
@@ -349,13 +353,46 @@ class CustomerListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        val emptyState = states.last().body as CustomerListViewState.CustomerList.Empty
+        val last = states.last()
+        assertThat(last.showFab).isEqualTo(false)
+        val emptyState = last.body as CustomerListViewState.CustomerList.Empty
         assertThat(emptyState.message)
             .isEqualTo(R.string.order_creation_customer_search_empty)
         assertThat(emptyState.message).isEqualTo(R.string.order_creation_customer_search_empty)
         assertThat(emptyState.image).isEqualTo(R.drawable.img_empty_search)
-        assertThat(emptyState.button).isNull()
+        assertThat(emptyState.button?.text).isEqualTo(
+            R.string.order_creation_customer_search_empty_add_details_manually
+        )
     }
+
+    @Test
+    fun `given empty list from repo and email search, when viewmodel init, then viewstate is updated with empty state with button`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success(emptyList()))
+
+            val email = "email@a8c.com"
+            whenever(stringUtils.isValidEmail(email)).thenReturn(true)
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(email)
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+
+            // THEN
+            val last = states.last()
+            assertThat(last.showFab).isEqualTo(false)
+            val emptyState = last.body as CustomerListViewState.CustomerList.Empty
+            assertThat(emptyState.message)
+                .isEqualTo(R.string.order_creation_customer_search_empty)
+            assertThat(emptyState.message).isEqualTo(R.string.order_creation_customer_search_empty)
+            assertThat(emptyState.image).isEqualTo(R.drawable.img_empty_search)
+            assertThat(emptyState.button?.text).isEqualTo(
+                R.string.order_creation_customer_search_empty_add_details_manually_with_email
+            )
+        }
 
     @Test
     fun `given search query, when onSearchQueryChanged is called, then update search query is updated and tracked`() =
@@ -979,5 +1016,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
         isAdvancedSearchSupported,
         getSupportedSearchModes,
         analyticsTrackerWrapper,
+        stringUtils,
     )
 }

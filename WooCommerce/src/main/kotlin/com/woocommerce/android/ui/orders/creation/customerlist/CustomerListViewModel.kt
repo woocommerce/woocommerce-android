@@ -32,6 +32,7 @@ class CustomerListViewModel @Inject constructor(
     private val isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported,
     private val getSupportedSearchModes: CustomerListGetSupportedSearchModes,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val stringUtils: StringUtils,
 ) : ScopedViewModel(savedState) {
     @Volatile
     private var paginationState = PaginationState(1, true)
@@ -208,7 +209,7 @@ class CustomerListViewModel @Inject constructor(
     ) {
         if (customers.isEmpty()) {
             val searchQuery = searchQuery
-            val isSearchQueryEmail = StringUtils.isValidEmail(searchQuery)
+            val isSearchQueryEmail = stringUtils.isValidEmail(searchQuery)
             val button = if (isSearchQueryEmail) {
                 Button(
                     R.string.order_creation_customer_search_empty_add_details_manually_with_email,
