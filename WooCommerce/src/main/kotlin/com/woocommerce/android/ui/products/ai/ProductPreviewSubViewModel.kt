@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -140,7 +141,16 @@ class ProductPreviewSubViewModel(
         return@withContext parametersRepository.getParameters().takeIf(::predicate)
             ?: parametersRepository.fetchParameters()
                 .fold(
-                    onSuccess = { it.takeIf(::predicate) },
+                    onSuccess = { siteParameters ->
+                        siteParameters.takeIf(::predicate).also {
+                            if (it == null) {
+                                WooLog.w(
+                                    tag = WooLog.T.AI,
+                                    message = "Site parameters missing information after a successful fetch"
+                                )
+                            }
+                        }
+                    },
                     onFailure = { null }
                 )
     }
