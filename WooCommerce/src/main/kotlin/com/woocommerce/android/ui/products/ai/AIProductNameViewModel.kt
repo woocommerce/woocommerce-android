@@ -63,6 +63,7 @@ class AIProductNameViewModel @Inject constructor(
     }
 
     private fun handleCompletionsSuccess(completions: String) {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_NAME_AI_GENERATION_SUCCESS)
         _viewState.update {
             _viewState.value.copy(
                 generatedProductName = completions,
@@ -74,13 +75,21 @@ class AIProductNameViewModel @Inject constructor(
     private fun handleCompletionsFailure(throwable: Throwable) {
         when (throwable) {
             is AIRepository.JetpackAICompletionsException -> {
-                WooLog.e(WooLog.T.AI, "Fetching Jetpack AI completions failed: ${throwable.errorMessage}")
                 _viewState.update {
                     _viewState.value.copy(
                         generationState = ViewState.GenerationState.Generated(hasError = true)
                     )
                 }
+                analyticsTracker.track(
+                    AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to throwable.errorType,
+                        AnalyticsTracker.KEY_ERROR_DESC to throwable.errorMessage
+                    )
+                )
             }
+
             else -> {
                 WooLog.e(WooLog.T.AI, "Unknown error occurred: ${throwable.message}")
             }
