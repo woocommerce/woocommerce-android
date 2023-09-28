@@ -1,0 +1,46 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "queryParameters": {
+      "json": {
+        "equalTo": "true"
+      },
+      "path": {
+        "equalTo": "/wc/v3/settings/tax/woocommerce_tax_based_on/&_method=get"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "data": {
+        "id": "woocommerce_tax_based_on",
+        "label": "Calculate tax based on",
+        "description": "",
+        "type": "select",
+        "default": "shipping",
+        "options": {
+          "shipping": "Customer shipping address",
+          "billing": "Customer billing address",
+          "base": "Shop base address"
+        },
+        "tip": "This option determines which address is used to calculate tax.",
+        "value": "shipping",
+        "group_id": "tax",
+        "_links": {
+          "self": [{
+            "href": "https:\/\/test.blog\/wp-json\/wc\/v3\/settings\/tax\/woocommerce_tax_based_on"
+          }],
+          "collection": [{
+            "href": "https:\/\/test.blog\/wp-json\/wc\/v3\/settings\/tax"
+          }]
+        }
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}

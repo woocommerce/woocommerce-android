@@ -91,6 +91,7 @@ object ProductHelper {
             downloads = listOf(),
             isPurchasable = false,
             subscription = null,
+            isSampleProduct = false,
             parentId = 0,
         )
     }

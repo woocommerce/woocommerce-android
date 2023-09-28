@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.offsetInHours
@@ -38,7 +39,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
-import com.woocommerce.android.ui.products.IsAIProductDescriptionEnabled
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.TimezoneProvider
@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
@@ -86,7 +87,6 @@ class MyStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled,
     private val observeLastUpdate: ObserveLastUpdate,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
@@ -125,6 +125,14 @@ class MyStoreViewModel @Inject constructor(
 
     private var jetpackMonitoringJob: Job? = null
 
+    val storeName = selectedSite.observe().map { site ->
+        if (!site?.displayName.isNullOrBlank()) {
+            site?.displayName
+        } else {
+            site?.name
+        } ?: resourceProvider.getString(R.string.store_creation_store_name_default)
+    }.asLiveData()
+
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
 
@@ -156,7 +164,9 @@ class MyStoreViewModel @Inject constructor(
             }
         }
 
-        if (isAIProductDescriptionEnabled() && !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown) {
+        if (selectedSite.getOrNull()?.isEligibleForAI == true &&
+            !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown
+        ) {
             triggerEvent(ShowAIProductDescriptionDialog)
             appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }

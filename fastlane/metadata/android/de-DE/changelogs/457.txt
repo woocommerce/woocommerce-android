@@ -1,0 +1,2 @@
+15.4:
+Verkäufer können ab sofort einen Steuersatz auswählen, wenn sie eine Bestellung erstellen, und während der Produktbearbeitung herunterladbare Dateien aus allen unterstützten Dateitypen hinzufügen. Persönliche Zahlungen wurden verbessert: Wenn die Einrichtung von WCPay nicht abgeschlossen ist, können Benutzer dies nun über die App tun. Kleinere Updates umfassen das Tracking des Landes, wenn die IPP-Einrichtung nicht abgeschlossen ist, sowie ein Erläuterungsbildschirm, der vor dem Öffnen der Zahlungsaufgabe angezeigt wird.

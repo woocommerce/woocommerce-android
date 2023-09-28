@@ -12,14 +12,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationIncompleteNotification
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
-import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
@@ -27,24 +21,19 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.getStateFlow
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("UnusedPrivateMember")
 class StoreNamePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    resourceProvider: ResourceProvider,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val prefsWrapper: AppPrefsWrapper,
-    private val localNotificationScheduler: LocalNotificationScheduler,
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
-    private val resourceProvider: ResourceProvider,
-    private val accountStore: AccountStore
+    private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -55,11 +44,6 @@ class StoreNamePickerViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    private val canCreateFreeTrialStore
-        get() = FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
-
-    private val navArgs: StoreNamePickerFragmentArgs by savedStateHandle.navArgs()
-
     init {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -69,12 +53,7 @@ class StoreNamePickerViewModel @Inject constructor(
         )
 
         triggerEvent(CheckNotificationsPermission(::onCheckNotificationsPermissionResult))
-
-        if (navArgs.storeName != null) {
-            onStoreNameChanged(navArgs.storeName!!)
-        } else {
-            onStoreNameChanged(resourceProvider.getString(R.string.store_creation_store_name_default))
-        }
+        onStoreNameChanged(resourceProvider.getString(R.string.store_creation_store_name_default))
     }
 
     fun onCancelPressed() {
@@ -109,34 +88,7 @@ class StoreNamePickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         newStore.update(name = _viewState.value.storeName)
-
-        scheduleDeferredNotification()
-
-        if (canCreateFreeTrialStore) {
-            triggerEvent(NavigateToSummary)
-        } else if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
-            triggerEvent(NavigateToStoreProfiler)
-        } else {
-            triggerEvent(NavigateToDomainPicker(_viewState.value.storeName))
-        }
-    }
-
-    private fun scheduleDeferredNotification() {
-        launch {
-            if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D)) {
-                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
-                    accountStore.account.firstName
-                else
-                    accountStore.account.userName
-
-                localNotificationScheduler.scheduleNotification(
-                    StoreCreationIncompleteNotification(
-                        name,
-                        _viewState.value.storeName
-                    )
-                )
-            }
-        }
+        triggerEvent(NavigateToStoreProfiler)
     }
 
     fun onPermissionRationaleDismissed() {
@@ -207,11 +159,7 @@ class StoreNamePickerViewModel @Inject constructor(
         }
     }
 
-    data class NavigateToDomainPicker(val domainInitialQuery: String) : Event()
-
     object NavigateToStoreProfiler : Event()
-
-    object NavigateToSummary : Event()
 
     data class RequestNotificationsPermission(
         val onPermissionsRequestResult: (Boolean) -> Unit

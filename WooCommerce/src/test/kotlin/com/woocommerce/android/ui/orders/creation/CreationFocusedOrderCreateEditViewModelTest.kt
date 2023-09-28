@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -40,12 +41,15 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -74,6 +78,78 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when initializing the view model, then register the orderDraft flowState`() {
         verify(createUpdateOrderUseCase).invoke(any(), any())
+    }
+
+    @Test
+    fun `when initializing the view model, then fetch current tax setting`() = testBlocking {
+        verify(orderCreateEditRepository).fetchTaxBasedOnSetting()
+    }
+
+    fun `given tax based on store when initializing the view model, then update view state with current tax setting`() =
+        testBlocking {
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(
+                TaxBasedOnSetting.StoreAddress
+            )
+            whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_store_address))
+                .thenReturn("Calculated on store address")
+            createSut()
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on store address")
+        }
+
+    @Test
+    fun `given tax based on shipping when initializing the view model, then update view state with current tax setting`() =
+        testBlocking {
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(
+                TaxBasedOnSetting.ShippingAddress
+            )
+            whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_shipping_address))
+                .thenReturn("Calculated on shipping address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
+            createSut()
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on shipping address")
+        }
+
+    @Test
+    fun `given tax based on billing when initializing the view model, then update view state with current tax setting`() =
+        testBlocking {
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+            whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address))
+                .thenReturn("Calculated on billing address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
+            createSut()
+            val viewState = sut.viewStateData.liveData.value!!
+            assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on billing address")
+        }
+
+    @Test
+    fun `when tax help clicked, then should track event`() = testBlocking {
+        whenever(orderCreateEditRepository.getTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        whenever(resourceProvider.getString(anyInt(), anyString()))
+            .thenReturn("Your tax rate is currently calculated based on your billing address:")
+        sut.onTaxHelpButtonClicked()
+        verify(tracker).track(AnalyticsEvent.ORDER_TAXES_HELP_BUTTON_TAPPED)
+    }
+
+    @Test
+    fun `when set new tax rate clicked, then should track event`() = testBlocking {
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        sut.onSetTaxRateClicked()
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
+    }
+
+    @Test
+    fun `when onSetNewTaxRateClicked, then should track event`() = testBlocking {
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        sut.onSetNewTaxRateClicked()
+        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
     }
 
     @Test
@@ -1079,11 +1155,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCreateOrderClicked(defaultOrderValue)
 
+        val productCount = sut.products.value?.count() ?: 0
+
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_PRODUCT_COUNT to productCount,
                 AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
                 AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
                 AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
@@ -1158,7 +1236,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         with(lastReceivedEvent) {
             assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse()
+            assertThat((this as ShowProductDetails).discountEditEnabled).isFalse
         }
     }
 
@@ -1173,7 +1251,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         with(lastReceivedEvent) {
             assertThat(this).isInstanceOf(ShowProductDetails::class.java)
-            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue()
+            assertThat((this as ShowProductDetails).discountEditEnabled).isTrue
         }
     }
 
@@ -1181,7 +1259,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1207,7 +1285,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation, "123", BarcodeFormat.FormatUPCA,
             ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(

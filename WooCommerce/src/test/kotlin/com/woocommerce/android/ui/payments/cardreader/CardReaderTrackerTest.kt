@@ -5,6 +5,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
@@ -33,12 +35,13 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
+import com.woocommerce.android.ui.payments.cardreader.onboarding.OnboardingCtaReasonTapped
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -52,7 +55,6 @@ import org.mockito.kotlin.check
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -179,19 +181,58 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cod disabled state, when enable cod is tapped, then CARD_PRESENT_ONBOARDING_CTA_TAPPED tracked`() =
+    fun `given CASH_ON_DELIVERY_TAPPED, when trackOnbardingCtaTapped, then cash_on_delivery_disabled tracked`() =
         testBlocking {
-            cardReaderTracker.trackOnboardingCtaTappedState(
-                CardReaderOnboardingState.CashOnDeliveryDisabled(
-                    countryCode = "US",
-                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
-                    version = "4.0.0"
-                )
-            )
+            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED)
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
                 check { assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled") }
+            )
+        }
+
+    @Test
+    fun `given PLUGIN_INSTALL_TAPPED state, when trackOnbardingCtaTapped, then plugin_install_tapped tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED)
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
+                check { assertThat(it["reason"]).isEqualTo("plugin_install_tapped") }
+            )
+        }
+
+    @Test
+    fun `given CASH_ON_DELIVERY_TAPPED, when trackOnboardingCtaFailed, then cash_on_delivery_disabled tracked with description`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingCtaFailed(
+                OnboardingCtaReasonTapped.CASH_ON_DELIVERY_TAPPED,
+                "errorDescription"
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_CTA_FAILED),
+                check {
+                    assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled")
+                    assertThat(it["error_description"]).isEqualTo("errorDescription")
+                }
+            )
+        }
+
+    @Test
+    fun `given PLUGIN_INSTALL_TAPPED, when trackOnboardingCtaFailed, then plugin_install_tapped tracked with description`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingCtaFailed(
+                OnboardingCtaReasonTapped.PLUGIN_INSTALL_TAPPED,
+                "errorDescription"
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_CTA_FAILED),
+                check {
+                    assertThat(it["reason"]).isEqualTo("plugin_install_tapped")
+                    assertThat(it["error_description"]).isEqualTo("errorDescription")
+                }
             )
         }
 
@@ -639,7 +680,7 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onboarding state OnboardingCompleted WCPay, then event NOT tracked`() =
+    fun `given OnboardingCompleted with wcpay, when onboarding trackOnboardingState, then event tracked`() =
         testBlocking {
             cardReaderTracker.trackOnboardingState(
                 CardReaderOnboardingState.OnboardingCompleted(
@@ -649,17 +690,27 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 )
             )
 
-            verify(trackerWrapper, never()).track(any(), any())
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_COMPLETED),
+                any()
+            )
         }
 
     @Test
-    fun `when onboarding state OnboardingCompleted Stripe, then event NOT tracked`() =
+    fun `given OnboardingCompleted with stripe, when onboarding trackOnboardingState, then event tracked`() =
         testBlocking {
             cardReaderTracker.trackOnboardingState(
-                CardReaderOnboardingState.OnboardingCompleted(STRIPE_EXTENSION_GATEWAY, PLUGIN_VERSION, COUNTRY_CODE)
+                CardReaderOnboardingState.OnboardingCompleted(
+                    STRIPE_EXTENSION_GATEWAY,
+                    PLUGIN_VERSION,
+                    COUNTRY_CODE
+                )
             )
 
-            verify(trackerWrapper, never()).track(any(), any())
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_COMPLETED),
+                any()
+            )
         }
 
     @Test

@@ -127,7 +127,7 @@ class GetBundledProductsTest : BaseUnitTest() {
             stockStatus = "in_stock",
             quantityMin = null,
             quantityMax = null,
-            quantityDefault = 0,
+            quantityDefault = null,
             isOptional = false
         ),
         WCBundledProduct(
@@ -138,7 +138,7 @@ class GetBundledProductsTest : BaseUnitTest() {
             stockStatus = "out_of_stock",
             quantityMin = null,
             quantityMax = null,
-            quantityDefault = 0,
+            quantityDefault = null,
             isOptional = false
         ),
         WCBundledProduct(
@@ -149,7 +149,7 @@ class GetBundledProductsTest : BaseUnitTest() {
             stockStatus = "in_stock____",
             quantityMin = null,
             quantityMax = null,
-            quantityDefault = 0,
+            quantityDefault = null,
             isOptional = false
         )
     )

@@ -82,8 +82,7 @@ class AccountRepository @Inject constructor(
                     WooLog.i(LOGIN, "Application password deleted")
                 }
             }
-
-            selectedSite.reset()
+            AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
             cleanup()
             true
         }
@@ -117,6 +116,7 @@ class AccountRepository @Inject constructor(
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
+        selectedSite.reset()
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())

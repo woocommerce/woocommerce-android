@@ -95,7 +95,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-fdc1171263b85e09661c7be871d78cc434ff6fe2'
+    fluxCVersion = '2.47.0'
     wooCommerceSharedVersion = '0.6.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
@@ -113,7 +113,7 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
-    mediapickerVersion = '0.2.0'
+    mediapickerVersion = '0.2'
     wordPressLoginVersion = '1.4.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '3.2.0'
@@ -133,7 +133,6 @@ ext {
     composeBOMVersion = "2022.12.00"
     composeCompilerVersion = "1.4.7"
     composeAccompanistVersion = "0.23.1"
-    composeThemeAdapterVersion = "1.1.17"
 
     // Testing
     jUnitVersion = '4.13.2'

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -10,7 +9,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,21 +17,24 @@ import javax.inject.Inject
 class CountryListPickerViewModel @Inject constructor(
     private val localCountriesRepository: LocalCountriesRepository,
     private val emojiUtils: EmojiUtils,
-    private val newStore: NewStore,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
-    private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
+    private val availableCountries = mutableListOf<StoreCreationCountry>()
     private val navArgs: CountryListPickerFragmentArgs by savedStateHandle.navArgs()
 
-    val countryListPickerState = availableCountries
-        .map { CountryListPickerState(it) }
-        .asLiveData()
+    private val _viewState = MutableStateFlow(
+        CountryListPickerState(
+            countries = availableCountries,
+            searchQuery = ""
+        )
+    )
+    val viewState = _viewState.asLiveData()
 
     init {
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
 
-            availableCountries.update {
+            availableCountries.addAll(
                 loadedCountriesMap.map { (code, name) ->
                     StoreCreationCountry(
                         name = name,
@@ -42,7 +43,7 @@ class CountryListPickerViewModel @Inject constructor(
                         isSelected = navArgs.currentLocationCode == code
                     )
                 }.sortedBy { it.name }
-            }
+            )
         }
     }
 
@@ -51,27 +52,22 @@ class CountryListPickerViewModel @Inject constructor(
     }
 
     fun onCountrySelected(selectedCountry: StoreCreationCountry) {
-        availableCountries.update {
-            it.map { country ->
-                country.copy(isSelected = country.code == selectedCountry.code)
-            }
-        }
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(selectedCountry))
     }
 
-    fun onContinueClicked() {
-        val selectedCountry = availableCountries.value.first { it.isSelected }
-        newStore.update(
-            country = selectedCountry.toNewStoreCountry()
-        )
-
-        launch {
-            triggerEvent(NavigateToSummaryStep)
+    fun onSearchQueryChanged(query: String) {
+        _viewState.update {
+            it.copy(
+                countries = availableCountries.filter { country ->
+                    country.name.contains(query, ignoreCase = true)
+                },
+                searchQuery = query
+            )
         }
     }
-
-    object NavigateToSummaryStep : MultiLiveEvent.Event()
 
     data class CountryListPickerState(
-        val countries: List<StoreCreationCountry>
+        val countries: List<StoreCreationCountry>,
+        val searchQuery: String
     )
 }
