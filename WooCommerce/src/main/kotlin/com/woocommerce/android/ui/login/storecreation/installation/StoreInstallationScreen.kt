@@ -249,7 +249,7 @@ private fun AnimatedProgress(
             .fillMaxWidth()
             .height(dimensionResource(id = R.dimen.minor_100))
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-        backgroundColor = colorResource(id = R.color.creating_store_linear_progress_background),
+        backgroundColor = colorResource(id = R.color.linear_progress_background),
     )
 }
 

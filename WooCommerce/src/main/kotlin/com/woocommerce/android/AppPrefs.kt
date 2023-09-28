@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -116,6 +117,7 @@ object AppPrefs {
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
+        AI_CONTENT_GENERATION_TONE,
     }
 
     /**
@@ -1036,6 +1038,13 @@ object AppPrefs {
         set(value) = setBoolean(
             key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
             value = value
+        )
+
+    var aiContentGenerationTone: AiTone
+        get() = AiTone.fromString(getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE))
+        set(value) = setString(
+            key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
+            value = value.slug
         )
 
     fun incrementAIDescriptionTooltipShownNumber() {
