@@ -1,11 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 15.7
 ----
-- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
 
 15.6
 -----
-
+- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
 
 15.5
 -----
