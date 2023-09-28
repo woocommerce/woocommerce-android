@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
@@ -1846,7 +1847,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
 
         assertThat(viewModel.event.value).isInstanceOf(
-            CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateScreen::class.java
+            PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateScreen::class.java
         )
     }
 
