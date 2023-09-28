@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
-
 @Composable
 fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()

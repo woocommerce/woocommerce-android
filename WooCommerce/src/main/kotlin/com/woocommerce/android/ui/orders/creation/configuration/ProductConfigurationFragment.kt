@@ -16,7 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductConfigurationFragment: BaseFragment()  {
+class ProductConfigurationFragment : BaseFragment() {
     companion object {
         const val PRODUCT_CONFIGURATION_RESULT = "product-configuration-result"
     }
