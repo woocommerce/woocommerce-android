@@ -62,11 +62,11 @@ fun ProductConfigurationScreen(
 ) {
     Column(modifier.fillMaxSize()) {
         Text(
-            text = "Configuration Keys: ${productConfiguration.configuration.keys} Values: ${productConfiguration.configuration.values}",
+            text = productConfiguration.configuration.toString(),
             modifier = modifier
         )
         Text(
-            text = "Configuration Keys: ${productConfiguration.childrenConfiguration?.keys} Values: ${productConfiguration.childrenConfiguration?.values}",
+            text = productConfiguration.childrenConfiguration?.toString() ?: "",
             modifier = modifier
         )
         Button(onClick = onSaveConfigurationClick) {
