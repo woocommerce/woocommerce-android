@@ -7,6 +7,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -42,6 +43,22 @@ suspend inline fun <reified EVENT : Any> Dispatcher.awaitEvent(): EVENT = suspen
 }
 
 inline fun <reified EVENT : Any> Dispatcher.observeEvents(): Flow<EVENT> = callbackFlow {
+    val listener = object : GenericEventBusListener<EVENT>(EVENT::class) {
+        override fun handleEvent(event: EVENT) {
+            trySend(event)
+                .onFailure {
+                    WooLog.w(WooLog.T.UTILS, "Failure to emit EventBus's event $event as Flow, ${it?.toString()}")
+                }
+        }
+    }
+    register(listener)
+
+    awaitClose {
+        unregister(listener)
+    }
+}
+
+inline fun <reified EVENT : Any> EventBus.observeEvents(): Flow<EVENT> = callbackFlow {
     val listener = object : GenericEventBusListener<EVENT>(EVENT::class) {
         override fun handleEvent(event: EVENT) {
             trySend(event)

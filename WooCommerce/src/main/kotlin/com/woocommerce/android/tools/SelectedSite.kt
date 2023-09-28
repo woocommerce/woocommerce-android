@@ -2,7 +2,6 @@ package com.woocommerce.android.tools
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.PreferenceUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +32,15 @@ class SelectedSite(
 
     fun observe(): Flow<SiteModel?> = state
 
+    @Suppress("SwallowedException")
+    fun getOrNull(): SiteModel? =
+        try {
+            get()
+        } catch (e: IllegalStateException) {
+            null
+        }
+
+    @Throws(IllegalStateException::class)
     fun get(): SiteModel {
         state.value?.let { return it }
 
@@ -58,8 +66,6 @@ class SelectedSite(
     fun set(siteModel: SiteModel) {
         state.value = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
-
-        AnalyticsTracker.refreshSiteMetadata(siteModel)
 
         // Notify listeners
         getEventBus().post(SelectedSiteChangedEvent(siteModel))

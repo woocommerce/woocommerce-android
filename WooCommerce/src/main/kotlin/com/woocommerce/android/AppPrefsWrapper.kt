@@ -344,6 +344,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
 
+    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 

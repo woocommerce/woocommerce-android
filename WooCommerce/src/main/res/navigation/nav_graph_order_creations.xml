@@ -10,6 +10,17 @@
         android:label="orderCreationFragment"
         tools:layout="@layout/fragment_order_create_edit_form">
         <action
+            android:id="@+id/action_orderCreationFragment_to_taxRatesInfoDialogFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:destination="@+id/taxRatesInfoDialogFragment" />
+        <action
+            android:id="@+id/action_orderCreationFragment_to_autoTaxRateDetailsFragment"
+            app:enterAnim="@anim/slide_up"
+            app:exitAnim="@anim/slide_down"
+            app:destination="@+id/autoTaxRateDetailsFragment"
+            />
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
@@ -29,7 +40,6 @@
                 android:name="productSelectorFlow"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
         </action>
-
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
             app:destination="@id/orderCreationCustomerFragment" >
@@ -131,6 +141,9 @@
             android:id="@+id/action_orderCreationFragment_to_couponSelectorFragment"
             app:destination="@id/couponSelectorFragment" >
         </action>
+        <action
+            android:id="@+id/action_order_creationFragment_to_taxRateSelectorFragment"
+            app:destination="@id/taxRateSelectorFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -161,7 +174,6 @@
         <argument
             android:name="editingOfAddedCustomer"
             app:argType="boolean" />
-
         <action
             android:id="@+id/action_search_filter_fragment"
             app:destination="@id/searchFilterFragment" />
@@ -276,13 +288,12 @@
         <action
             android:id="@+id/action_orderCreationCouponEditFragment_to_orderCreationFragment"
             app:destination="@id/orderCreationFragment"
-            app:popUpTo="@id/orderCreationFragment"
-            app:popUpToInclusive="true"
             app:enterAnim="@null"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@null"
-            >
+            app:popUpTo="@id/orderCreationFragment"
+            app:popUpToInclusive="true">
             <argument
                 android:name="couponEditResult"
                 app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
@@ -290,18 +301,21 @@
                 android:defaultValue="@null"/>
         </action>
     </fragment>
-
     <fragment
         android:id="@+id/customerListFragment"
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
         android:label="customerListFragment" >
-
         <action
             android:id="@+id/action_customerListFragment_to_orderCreationCustomerFragment"
             app:destination="@id/orderCreationCustomerFragment" />
-
     </fragment>
-
+    <dialog
+        android:id="@+id/taxRatesInfoDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogFragment" >
+        <argument
+            android:name="dialogState"
+            app:argType="com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState"/>
+    </dialog>
     <include app:graph="@navigation/nav_graph_product_selector" />
     <fragment
         android:id="@+id/couponSelectorFragment"
@@ -312,4 +326,23 @@
             app:destination="@id/nav_graph_coupons" />
     </fragment>
     <include app:graph="@navigation/nav_graph_coupons" />
+    <fragment
+        android:id="@+id/taxRateSelectorFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment"
+        android:label="TaxRateSelectorFragment">
+        <argument
+            android:name="dialogState"
+            app:argType="com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState"/>
+        <action
+            android:id="@+id/action_taxRateSelectorFragment_to_taxRatesInfoDialogFragment"
+            app:destination="@id/taxRatesInfoDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/autoTaxRateDetailsFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.taxes.rates.setting.AutoTaxRateSettingBottomSheetFragment"
+        android:label="AutoTaxRateSettingBottomSheetFragment">
+        <argument
+            android:name="autoTaxRateSettingState"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$AutoTaxRateSettingState"/>
+    </dialog>
 </navigation>

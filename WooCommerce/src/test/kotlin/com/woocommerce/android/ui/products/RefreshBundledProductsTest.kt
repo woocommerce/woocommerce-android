@@ -56,7 +56,7 @@ class RefreshBundledProductsTest : BaseUnitTest() {
                 stockStatus = "in_stock",
                 quantityMin = null,
                 quantityMax = null,
-                quantityDefault = 0,
+                quantityDefault = null,
                 isOptional = false
             )
         }

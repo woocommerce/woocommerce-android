@@ -20,12 +20,18 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToDomains
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class StoreOnboardingFragment : BaseFragment() {
     private val viewModel: StoreOnboardingViewModel by activityViewModels()
+
+    @Inject
+    lateinit var addProductNavigator: AddProductNavigator
+
     private lateinit var rootView: ComposeView
 
     override val activityAppBarStatus: AppBarStatus
@@ -70,24 +76,39 @@ class StoreOnboardingFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections.actionOnboardingFragmentToLaunchStoreFragment()
                     )
+
                 is NavigateToDomains ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
                     )
+
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment()
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToPaymentsPreSetupFragment(taskId = event.taskId)
                     )
+
+                is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+                    findNavController().navigateSafely(
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToWooPaymentsSetupInstructionsFragment()
+                    )
+
                 is NavigateToAboutYourStore ->
                     findNavController().navigateSafely(
                         StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToAboutYourStoreFragment()
                     )
+
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
-                    findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections
-                            .actionStoreOnboardingFragmentToProductTypesBottomSheet()
-                    )
+                    with(addProductNavigator) {
+                        findNavController().navigateToAddProducts(
+                            aiBottomSheetAction = StoreOnboardingFragmentDirections
+                                .actionStoreOnboardingFragmentToAddProductWithAIBottomSheet(),
+                            typesBottomSheetAction = StoreOnboardingFragmentDirections
+                                .actionStoreOnboardingFragmentToProductTypesBottomSheet()
+                        )
+                    }
             }
         }
     }

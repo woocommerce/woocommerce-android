@@ -97,6 +97,7 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(featuresKey = selectedOption?.key)
         )
+        triggerEvent(NavigateToNextStep)
     }
 
     override fun moveForward() {
@@ -111,6 +112,6 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_FEATURES
             )
         )
-        // TODO("Navigate to store creation loading")
+        triggerEvent(NavigateToNextStep)
     }
 }

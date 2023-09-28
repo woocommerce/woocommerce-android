@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.AutoTaxRateSettingState
+import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -42,4 +44,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val orderCreationMode: OrderCreateEditViewModel.Mode,
         val couponLines: Collection<Order.CouponLine>
     ) : OrderCreateEditNavigationTarget()
+
+    data class TaxRatesInfoDialog(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
+    data class TaxRateSelector(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
+    data class AutoTaxRateSettingDetails(val state: AutoTaxRateSettingState) : OrderCreateEditNavigationTarget()
 }

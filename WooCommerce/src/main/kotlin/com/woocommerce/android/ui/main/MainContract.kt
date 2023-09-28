@@ -11,7 +11,6 @@ interface MainContract {
         fun storeMagicLinkToken(token: String)
         fun hasMultipleStores(): Boolean
         fun selectedSiteChanged(site: SiteModel)
-        fun fetchUnfilledOrderCount()
         fun fetchSitesAfterDowngrade()
         fun isUserEligible(): Boolean
         fun updateStatsWidgets()
@@ -28,7 +27,6 @@ interface MainContract {
         fun showBottomNav()
         fun hideOrderBadge()
         fun showOrderBadge(count: Int)
-        fun updateOrderBadge(hideCountUntilComplete: Boolean)
         fun hideProgressDialog()
         fun showProgressDialog(@StringRes stringId: Int)
         fun showUserEligibilityErrorScreen()

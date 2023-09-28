@@ -200,7 +200,8 @@ data class Order(
         val label: String,
         val compound: Boolean,
         val taxTotal: String,
-        val ratePercent: Float
+        val ratePercent: Float,
+        val rateCode: String
     ) : Parcelable
 
     @Parcelize

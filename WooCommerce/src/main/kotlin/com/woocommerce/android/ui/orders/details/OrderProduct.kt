@@ -1,21 +1,16 @@
 package com.woocommerce.android.ui.orders.details
 
-import android.os.Parcelable
 import com.woocommerce.android.model.Order
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-@Parcelize
-sealed class OrderProduct : Parcelable {
-    @Parcelize
-    data class ProductItem(val product: Order.Item) : OrderProduct()
+sealed class OrderProduct(open val product: Order.Item) {
+    data class ProductItem(override val product: Order.Item) : OrderProduct(product)
 
-    @Parcelize
     data class GroupedProductItem(
-        val product: Order.Item,
+        override val product: Order.Item,
         val children: List<ProductItem>,
         var isExpanded: Boolean = false
-    ) : OrderProduct()
+    ) : OrderProduct(product)
 }
 
 class OrderProductMapper @Inject constructor() {

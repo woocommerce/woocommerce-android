@@ -99,4 +99,18 @@ object AppUrls {
     const val EU_SHIPPING_CUSTOMS_REQUIREMENTS = "https://www.usps.com/international/new-eu-customs-rules.htm"
 
     const val WOOCOMMERCE_PLUGIN_CONFLICTS = "https://woocommerce.com/document/how-to-test-for-conflicts/"
+
+    const val USPS_HAZMAT_INSTRUCTIONS = "https://www.uspsdelivers.com/hazmat-shipping-safety"
+    const val USPS_HAZMAT_SEARCH_TOOL = "https://pe.usps.com/HAZMAT/Index"
+    const val DHL_EXPRESS_HAZMAT_INSTRUCTIONS =
+        "https://www.dhl.com/global-en/home/our-divisions/freight/customer-service/" +
+            "dangerous-goods-and-prohibited-items.html"
+
+    const val STORE_ONBOARDING_WCPAY_INSTRUCTIONS_WPCOM_ACCOUNT =
+        "https://woocommerce.com/document/woopayments/startup-guide/#signing-up"
+    const val STORE_ONBOARDING_WCPAY_INSTRUCTIONS_LEARN_MORE =
+        "https://woocommerce.com/document/woopayments/our-policies/know-your-customer/"
+    const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woocommerce.com/document/woopayments/startup-guide/"
+    const val STORE_ONBOARDING_PAYMENTS_SETUP_GUIDE =
+        "https://woocommerce.com/documentation/woocommerce/getting-started/sell-products/core-payment-options"
 }

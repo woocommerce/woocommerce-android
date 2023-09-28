@@ -179,6 +179,11 @@
     <color name="free_trial_banner_content">@color/color_on_surface</color>
 
     <!--
+    Store creation
+    -->
+    <color name="store_creation_summary_top_illustration_background">@color/woo_purple_80</color>
+
+    <!--
     Highlight tooltip
     -->
     <color name="highlights_tooltip_background">@color/color_surface_elevated</color>
@@ -188,5 +193,10 @@
     Test order step number
     -->
     <color name="try_test_order_step">@color/woo_black_60</color>
+
+    <!--
+    Store creation
+    -->
+    <color name="woo_payments_setup_bullet_background">@color/woo_purple_80</color>
 
 </resources>

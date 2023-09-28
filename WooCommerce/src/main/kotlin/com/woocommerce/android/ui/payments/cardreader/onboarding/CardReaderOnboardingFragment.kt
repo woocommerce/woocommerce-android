@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
@@ -24,6 +27,7 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,9 +35,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     val viewModel: CardReaderOnboardingViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,18 +55,18 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             viewLifecycleOwner
         ) { event ->
             when (event) {
-                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToSupport -> {
+                is CardReaderOnboardingEvent.NavigateToSupport -> {
                     requireActivity().startHelpActivity(HelpOrigin.CARD_READER_ONBOARDING)
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInWPComWebView -> {
+                is CardReaderOnboardingEvent.NavigateToUrlInWPComWebView -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
                     )
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView -> {
+                is CardReaderOnboardingEvent.NavigateToUrlInGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToHub -> {
+                is CardReaderOnboardingEvent.ContinueToHub -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderHubFragment(
@@ -66,7 +74,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
-                is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
+                is CardReaderOnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
@@ -75,6 +83,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+                is MultiLiveEvent.Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
             }
@@ -89,7 +98,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showOnboardingLayout(
         binding: FragmentCardReaderOnboardingBinding,
-        state: CardReaderOnboardingViewModel.OnboardingViewState
+        state: CardReaderOnboardingViewState
     ) {
 
         val layout = if (binding.container.tag != state.layoutRes) {
@@ -106,33 +115,33 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun displayOnboardingState(
         layout: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState,
+        state: CardReaderOnboardingViewState,
     ) {
         when (state) {
-            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
+            is CardReaderOnboardingViewState.GenericErrorState ->
                 showGenericErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
+            is CardReaderOnboardingViewState.NoConnectionErrorState ->
                 showNetworkErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
+            is CardReaderOnboardingViewState.LoadingState ->
                 showLoadingState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState ->
+            is CardReaderOnboardingViewState.UnsupportedErrorState ->
                 showCountryNotSupportedState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
+            is CardReaderOnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError ->
+            is CardReaderOnboardingViewState.StripeAccountError ->
                 showStripeAccountError(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError ->
+            is CardReaderOnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
+            is CardReaderOnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState ->
+            is CardReaderOnboardingViewState.CashOnDeliveryDisabledState ->
                 showCashOnDeliveryDisabledState(layout, state)
         }.exhaustive
     }
 
     private fun showCashOnDeliveryDisabledState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
+        state: CardReaderOnboardingViewState.CashOnDeliveryDisabledState
     ) {
         val binding = FragmentCardReaderOnboardingCodDisabledBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
@@ -174,7 +183,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showPaymentPluginSelectionState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState
+        state: CardReaderOnboardingViewState.SelectPaymentPluginState
     ) {
         var selectedPluginType: PluginType = PluginType.WOOCOMMERCE_PAYMENTS
         val binding = FragmentCardReaderOnboardingSelectPaymentGatewayBinding.bind(view)
@@ -212,7 +221,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showLoadingState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.LoadingState,
+        state: CardReaderOnboardingViewState.LoadingState,
     ) {
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeaderTv, state.headerLabel)
@@ -222,7 +231,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showGenericErrorState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
+        state: CardReaderOnboardingViewState.GenericErrorState
     ) {
         val binding = FragmentCardReaderOnboardingGenericErrorBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
@@ -238,7 +247,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showNetworkErrorState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
+        state: CardReaderOnboardingViewState.NoConnectionErrorState
     ) {
         val binding = FragmentCardReaderOnboardingNetworkErrorBinding.bind(view)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
@@ -249,24 +258,35 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showStripeAccountError(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError
+        state: CardReaderOnboardingViewState.StripeAccountError
     ) {
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
+
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportButton.label)
         binding.textSupport.setOnClickListener {
             state.onContactSupportActionClicked.invoke()
         }
 
-        UiHelpers.setTextOrHide(binding.button, state.buttonLabel)
-        state.onButtonActionClicked?.let { onButtonActionClicked ->
-            binding.button.setOnClickListener {
+        UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary?.label)
+        binding.primaryButton.setWhiteIcon(state.actionButtonPrimary?.icon)
+        state.actionButtonPrimary?.action?.let { onButtonActionClicked ->
+            binding.primaryButton.setOnClickListener {
+                onButtonActionClicked.invoke()
+            }
+        }
+
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setWhiteIcon(state.actionButtonSecondary?.icon)
+        state.actionButtonSecondary?.action?.let { onButtonActionClicked ->
+            binding.secondaryButton.setOnClickListener {
                 onButtonActionClicked.invoke()
             }
         }
@@ -274,17 +294,26 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showWCPayErrorState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.WCPayError
+        state: CardReaderOnboardingViewState.WCPayError
     ) {
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
-        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
-            state.refreshButtonAction.invoke()
+
+        UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary.label)
+        binding.primaryButton.setWhiteIcon(state.actionButtonPrimary.icon)
+        binding.primaryButton.setOnClickListener {
+            state.actionButtonPrimary.action.invoke()
         }
+
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.actionButtonSecondary?.label)
+        binding.secondaryButton.setWhiteIcon(state.actionButtonSecondary?.icon)
+        binding.secondaryButton.setOnClickListener {
+            state.actionButtonSecondary?.action?.invoke()
+        }
+
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
         }
@@ -292,15 +321,16 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showStripeExtensionErrorState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError
+        state: CardReaderOnboardingViewState.StripeExtensionError
     ) {
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setTextOrHide(binding.refreshButton, state.refreshButtonLabel)
+        binding.primaryButton.visibility = View.GONE
+        UiHelpers.setTextOrHide(binding.secondaryButton, state.refreshButtonLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         UiHelpers.setImageOrHideInLandscape(binding.illustration, state.illustration)
-        binding.refreshButton.setOnClickListener {
+        binding.secondaryButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
         binding.learnMoreContainer.learnMore.setOnClickListener {
@@ -310,7 +340,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
 
     private fun showCountryNotSupportedState(
         view: View,
-        state: CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState
+        state: CardReaderOnboardingViewState.UnsupportedErrorState
     ) {
         val binding = FragmentCardReaderOnboardingUnsupportedBinding.bind(view)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHeader, state.headerLabel)
@@ -327,6 +357,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.card_reader_onboarding_title)
+
+    private fun MaterialButton.setWhiteIcon(@DrawableRes icon: Int?) {
+        icon?.let {
+            setIconResource(it)
+            iconTint = ColorStateList.valueOf(getColor(context, R.color.woo_white))
+            iconGravity = MaterialButton.ICON_GRAVITY_TEXT_END
+            iconSize = resources.getDimensionPixelSize(R.dimen.major_125)
+        }
+    }
 }
 
 sealed class CardReaderOnboardingParams : Parcelable {

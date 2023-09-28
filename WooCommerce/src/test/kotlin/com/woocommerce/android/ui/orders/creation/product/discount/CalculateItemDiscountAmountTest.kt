@@ -11,7 +11,7 @@ class CalculateItemDiscountAmountTest : BaseUnitTest() {
     private val sut = CalculateItemDiscountAmount()
 
     @Test
-    fun `given quantity greater than 1, when calculating amount, then should return discount per single item`() {
+    fun `given quantity greater than 1, when calculating amount, then should return total discount`() {
         val quantity = 23.23F
         val subtotal = 10000F.toBigDecimal()
         val total = 8000F.toBigDecimal()
@@ -19,6 +19,6 @@ class CalculateItemDiscountAmountTest : BaseUnitTest() {
 
         val result = sut(item)
 
-        assertEquals((subtotal - total) / quantity.toBigDecimal(), result)
+        assertEquals((subtotal - total), result)
     }
 }

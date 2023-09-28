@@ -52,6 +52,7 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -61,9 +62,14 @@ class ProductImagesFragment :
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
-    @Inject lateinit var navigator: ProductNavigator
-    @Inject lateinit var mediaPickerUtils: MediaPickerUtils
-    @Inject lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
+    @Inject
+    lateinit var navigator: ProductNavigator
+
+    @Inject
+    lateinit var mediaPickerUtils: MediaPickerUtils
+
+    @Inject
+    lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
 
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
@@ -102,9 +108,11 @@ class ProductImagesFragment :
                 inflater.inflate(R.menu.menu_dragging, menu)
                 setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
             }
+
             ProductImagesState.Browsing -> {
                 setHomeIcon(R.drawable.ic_back_24dp)
             }
+
             null -> Unit // Do nothing
         }
     }
@@ -117,9 +125,11 @@ class ProductImagesFragment :
                         viewModel.onValidateButtonClicked()
                         true
                     }
+
                     else -> false
                 }
             }
+
             else -> false
         }
     }
@@ -165,6 +175,7 @@ class ProductImagesFragment :
                         binding.addImageButton.isEnabled = true
                         binding.imageGallery.setDraggingState(isDragging = false)
                     }
+
                     is ProductImagesState.Dragging -> {
                         binding.addImageButton.isEnabled = false
                         binding.imageGallery.setDraggingState(isDragging = true)
@@ -277,7 +288,11 @@ class ProductImagesFragment :
     private fun showMediaLibraryPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            mediaPickerSetupFactory.build(WP_MEDIA_LIBRARY, viewModel.isMultiSelectionAllowed)
+            mediaPickerSetupFactory.build(
+                source = WP_MEDIA_LIBRARY,
+                mediaTypes = MediaTypes.IMAGES,
+                isMultiSelectAllowed = viewModel.isMultiSelectionAllowed
+            )
         )
 
         mediaLibraryLauncher.launch(intent)
@@ -286,7 +301,11 @@ class ProductImagesFragment :
     private fun showLocalDeviceMediaPicker() {
         val intent = MediaPickerActivity.buildIntent(
             requireContext(),
-            mediaPickerSetupFactory.build(DEVICE, viewModel.isMultiSelectionAllowed)
+            mediaPickerSetupFactory.build(
+                source = DEVICE,
+                mediaTypes = MediaTypes.IMAGES,
+                isMultiSelectAllowed = viewModel.isMultiSelectionAllowed
+            )
         )
 
         mediaDeviceMediaPickerLauncher.launch(intent)

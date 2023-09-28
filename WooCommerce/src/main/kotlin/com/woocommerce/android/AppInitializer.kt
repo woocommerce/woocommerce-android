@@ -319,13 +319,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun initAnalytics() {
-        AnalyticsTracker.init(application)
+        AnalyticsTracker.init(application, selectedSite)
 
-        if (selectedSite.exists()) {
-            AnalyticsTracker.refreshMetadata(accountStore.account?.userName, selectedSite.get())
-        } else {
-            AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
-        }
+        AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }
 
     private fun trackStartupAnalytics() {

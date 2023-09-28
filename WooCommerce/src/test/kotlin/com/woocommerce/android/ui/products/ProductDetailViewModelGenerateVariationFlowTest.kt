@@ -56,7 +56,6 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     private val resources: ResourceProvider = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
-    private val isAIProductDescriptionEnabled: IsAIProductDescriptionEnabled = mock()
 
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock {
         on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
@@ -91,30 +90,29 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
 
         viewModel = spy(
             ProductDetailViewModel(
-                savedState,
-                coroutinesTestRule.testDispatchers,
-                parameterRepository,
-                productRepository,
-                networkStatus,
-                currencyFormatter,
-                resources,
-                productCategoriesRepository,
-                productTagsRepository,
-                mediaFilesRepository,
-                variationRepository,
-                mediaFileUploadHandler,
-                prefs,
-                addonRepository,
-                generateVariationCandidates,
-                mock(),
-                tracker,
-                mock(),
-                mock(),
-                mock(),
-                mock(),
-                mock(),
-                mock(),
-                isAIProductDescriptionEnabled
+                savedState = savedState,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                parameterRepository = parameterRepository,
+                productRepository = productRepository,
+                networkStatus = networkStatus,
+                currencyFormatter = currencyFormatter,
+                resources = resources,
+                productCategoriesRepository = productCategoriesRepository,
+                productTagsRepository = productTagsRepository,
+                mediaFilesRepository = mediaFilesRepository,
+                variationRepository = variationRepository,
+                mediaFileUploadHandler = mediaFileUploadHandler,
+                appPrefsWrapper = prefs,
+                addonRepository = addonRepository,
+                generateVariationCandidates = generateVariationCandidates,
+                duplicateProduct = mock(),
+                tracker = tracker,
+                selectedSite = mock(),
+                getProductQuantityRules = mock(),
+                getBundledProductsCount = mock(),
+                getComponentProducts = mock(),
+                productListRepository = mock(),
+                isBlazeEnabled = mock(),
             )
         )
 

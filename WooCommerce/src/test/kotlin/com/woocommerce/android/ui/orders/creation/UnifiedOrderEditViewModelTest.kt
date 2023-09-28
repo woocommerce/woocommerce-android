@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -15,12 +16,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
+import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
+import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
+import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercentageValueText
+import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -71,11 +78,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var parameterRepository: ParameterRepository
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
+    protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
     private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
-    lateinit var productListRepository: ProductListRepository
-    private lateinit var resourceProvider: ResourceProvider
     private lateinit var productRestrictions: OrderCreationProductRestrictions
+    private lateinit var taxRateToAddress: GetAddressFromTaxRate
+    private lateinit var getAutoTaxRateSetting: GetAutoTaxRateSetting
+    private lateinit var getTaxRatePercentageValueText: GetTaxRatePercentageValueText
+    private lateinit var getTaxRateLabel: GetTaxRateLabel
+    private lateinit var prefs: AppPrefs
+    lateinit var selectedSite: SelectedSite
+    lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -89,6 +102,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
 
+    @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
@@ -145,6 +159,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             } doReturn "Scanning failed. Please try again later"
         }
         productRestrictions = mock()
+        selectedSite = mock()
+        taxRateToAddress = mock()
+        getAutoTaxRateSetting = mock {
+            onBlocking { invoke() } doReturn null
+        }
+        getTaxRatePercentageValueText = mock()
+        getTaxRateLabel = mock()
+        prefs = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2153,6 +2175,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             checkDigitRemoverFactory = checkDigitRemoverFactory,
             resourceProvider = resourceProvider,
             productRestrictions = productRestrictions,
+            getTaxRatesInfoDialogState = GetTaxRatesInfoDialogViewState(
+                orderCreateEditRepository,
+                selectedSite,
+                resourceProvider
+            ),
+            getAddressFromTaxRate = taxRateToAddress,
+            getAutoTaxRateSetting = getAutoTaxRateSetting,
+            getTaxRatePercentageValueText = getTaxRatePercentageValueText,
+            getTaxRateLabel = getTaxRateLabel,
+            prefs = prefs,
         )
     }
 

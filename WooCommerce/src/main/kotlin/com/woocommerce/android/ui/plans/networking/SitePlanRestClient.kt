@@ -6,10 +6,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.ui.plans.domain.SitePlan
-import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.model.SiteModel
@@ -112,62 +110,20 @@ class SitePlanRestClient @Inject constructor(
         ZonedDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 
-    suspend fun addEcommercePlanTrial(
-        siteRemoteId: Long,
-        siteData: SiteCreationData
-    ): Response<Unit> {
+    suspend fun addEcommercePlanTrial(siteRemoteId: Long): Response<Unit> {
         val url = WPCOMREST.sites.site(siteRemoteId)
             .ecommerce_trial
             .add
             .plan_slug("ecommerce-trial-bundle-monthly")
             .urlV1_1
 
-        val body = if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled() &&
-            !FeatureFlag.OPTIMIZE_PROFILER_QUESTIONS.isEnabled()
-        ) {
-            siteData.toAPIBody()
-        } else {
-            emptyMap()
-        }
-
-        return wpComGsonRequestBuilder.syncPostRequest<Unit>(
+        return wpComGsonRequestBuilder.syncPostRequest(
             this,
             url,
-            emptyMap(),
-            body = body,
+            params = emptyMap(),
+            body = emptyMap(),
             Unit::class.java
         )
-    }
-
-    private fun SiteCreationData.toAPIBody(): MutableMap<String, Any> {
-        data class Industry(val slug: String)
-
-        val body = mutableMapOf<String, Any>()
-        val onboardingData = mutableMapOf<String, Any>()
-
-        onboardingData["blogname"] = this.title.orEmpty()
-        onboardingData["woocommerce_default_country"] = this.countryCode.orEmpty()
-        this.profilerData?.let { profilerData ->
-            val woocommerceOnboardingProfile = mutableMapOf<String, Any>()
-
-            woocommerceOnboardingProfile["industry"] = listOf(
-                Industry(
-                    slug = profilerData.industryKey.orEmpty()
-                )
-            )
-
-            woocommerceOnboardingProfile["selling_venues"] = profilerData.userCommerceJourneyKey.orEmpty()
-            woocommerceOnboardingProfile["other_platform"] =
-                profilerData.eCommercePlatformKeys.joinToString(separator = ",")
-
-            woocommerceOnboardingProfile["is_store_country_set"] = true
-            woocommerceOnboardingProfile["skipped"] = true
-
-            onboardingData["woocommerce_onboarding_profile"] = woocommerceOnboardingProfile
-        }
-
-        body["wpcom_woocommerce_onboarding"] = onboardingData
-        return body
     }
 
     data class SitePlanDto(

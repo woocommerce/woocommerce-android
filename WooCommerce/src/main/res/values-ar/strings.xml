@@ -1,11 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-08-16 19:54:04+0000
+Translation-Revision-Date: 2023-09-20 20:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_subtitle">لن يؤثر ذلك في الطلبات على الإنترنت</string>
+    <string name="tax_rate_selector_auto_rate_label">إضافة هذا المعدل إلى كل الطلبات التي تم إنشاؤها</string>
+    <string name="tax_rate_selector_empty_list_button_alt">تحرير معدلات الضرائب</string>
+    <string name="tax_rate_selector_empty_list_button">تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rate_selector_empty_list_message">أضف معدلات الضرائب ضمن المسؤول. لن تظهر سوى معدلات الضرائب التي تتضمن معلومات عن الموقع هنا.</string>
+    <string name="tax_rate_selector_empty_list_title">يتعذر علينا إيجاد أي معدلات ضرائب</string>
+    <string name="store_onboarding_payments_setup_description">اكتشاف مزوِّدي الدفع الآخرين و\nاختر مزوِّد الدفع.</string>
+    <string name="store_onboarding_payments_pre_setup_title_generic">طرق الدفع</string>
+    <string name="product_downloadable_files_add_documents_from_device">المستندات على الجهاز</string>
+    <string name="product_downloadable_files_add_media_from_device">ملفات الوسائط على الجهاز</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">الحل الآن</string>
+    <string name="card_reader_onboarding_wcpay_not_setup_go_to_wpadmin_button">إنهاء الإعداد</string>
+    <string name="tax_rate_selector_title">تعيين معدل الضريبة</string>
+    <string name="card_reader_onboarding_wcpay_not_activated_activate_button">تفعيل </string>
+    <string name="order_creation_set_tax_rate">تعيين معدل الضريبة الجديد</string>
+    <string name="store_onboarding_payments_pre_setup_title_wcpay">WooPayments</string>
+    <string name="store_onboarding_payments_pre_setup_title_one">الإعداد</string>
+    <string name="tax_rate_selector_edit_rates_button_label">تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rate_selector_header_label">سيؤدي ذلك إلى تغيير عنوان العميل إلى موقع معدل الضريبة الذي تحدِّده.</string>
+    <string name="tax_rate_selector_info_icon_content_description">زر يفتح مربع حوار معلومات معدلات الضرائب</string>
+    <string name="tax_rate_selector_list_header">تحديد معدل الضريبة</string>
+    <string name="tax_rate_selector_footer_label">ألا تستطيع إيجاد المعدل الذي تبحث عنه؟</string>
+    <string name="tax_rates_info_dialog_tax_based_on_shipping_address">يُحسب معدل الضريبة الخاص بك حاليًا استنادًا إلى عنوان الشحن الخاص بك⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_billing_address">يُحسب معدل الضريبة الخاص بك حاليًا استنادًا إلى عنوان الفوترة الخاص بك⁦%1$s⁩</string>
+    <string name="tax_rates_info_dialog_tax_based_on_store_address">يُحسب معدل الضريبة الخاص بك حاليًا استنادًا إلى عنوان متجرك⁦%1$s⁩</string>
+    <string name="tax_rates_redirect_to_admin_button_label">تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rates_redirect_to_admin_content_description">زر تحرير معدلات الضريبة ضمن المسؤول</string>
+    <string name="tax_rates_info_dialog_title">الضرائب ومعدلات الضرائب</string>
+    <string name="tax_rates_info_dialog_secondary_text">يمكن إدارة معدلات الضرائب لمختلف المواقع ضمن مسؤول متجرك.</string>
+    <string name="tax_rates_info_dialog_primary_text">تُحسب الضرائب عن طريق مطابقة الفوترة أو عنوان الشحن الخاصَين بعميلك، أو عنوان متجرك مع موقع معدل الضريبة.</string>
+    <string name="tax_rates_information_content_description">معلومات معدلات الضرائب</string>
+    <string name="store_onboarding_wcpay_setup_description">يعني استخدام WooCommerce Payments أنك توافق على الالتزام &lt;a href=\'termsOfService\'&gt;&lt;u&gt;بشروط الخدمة التي نقرِّها&lt;/u&gt;&lt;/a&gt;، والاعتراف بأنك قرأت &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;سياسة الخصوصية الخاصة بنا&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="store_onboarding_wcpay_instructions_content_learn_more">&lt;a href=\'learnMore\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt; حول التحقق من معلوماتك باستخدام WooPayments.</string>
+    <string name="store_onboarding_wcpay_instructions_content_button">بدء الإعداد</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_2_content">لقد عقدنا شراكة مع Stripe لـ WooPayments. سيُعاد توجيهك إلى موقع Stripe للتسجيل. سنطلب منك التحقق من تفاصيل أعمالك وعمليات الدفع.</string>
+    <string name="store_onboarding_wcpay_instructions_content_step_1_content">ستُرسَل تنبيهات WooPayments الخاصة بك إلى البريد الإلكتروني الخاص بحسابك على ووردبريس.كوم. هل تفضِّل حسابًا جديدًا؟ &lt;a href=\'learnMore\'&gt;&lt;u&gt;مزيد من التفاصيل هنا.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="store_onboarding_wcpay_instructions_content_title">قبل أن تبدأ الإعداد</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_time">من 4 إلى 6 دقائق</string>
+    <string name="store_onboarding_wcpay_instructions_estimate_title">وقت الإعداد المُقدَّر</string>
+    <string name="store_onboarding_wcpay_instructions_title">أدر المدفوعات بكل يسر باستخدام WooPayments، وكل ذلك في مكان واحد. اقبل البطاقات وApple Pay والمدفوعات الشخصية وأكثر من 135 عملة، كل ذلك من دون تكاليف للإعداد أو رسوم شهرية.</string>
+    <string name="store_onboarding_name_your_store_dialog_failure">يتعذر حفظ اسم المتجر. ترجى المحاولة مجددًا.</string>
+    <string name="settings_name_your_store_dialog_loading">جارٍ حفظ اسم المتجر الجديد…</string>
+    <string name="settings_name_your_store_dialog_success">تم تعيين اسم المتجر!</string>
+    <string name="store_onboarding_name_your_store_dialog_success">تم تعيين اسم المتجر! \n للتغيير مجددًا، تفضّل بزيارة إعدادات المتجر.</string>
+    <string name="store_onboarding_name_your_store_dialog_title">تحديث اسم المتجر</string>
+    <string name="store_onboarding_task_woopayments_celebration_message">تهانينا! لقد أكملت عملية الإعداد بنجاح وأصبح نظام الدفع الخاص بك جاهزًا للعمل.</string>
+    <string name="store_onboarding_task_woopayments_celebration_header">لقد فعلتها!</string>
+    <string name="store_onboarding_task_woopayments_setup_description">أدر المدفوعات بسلاسة باستخدام WooPayments، مجانًا بدءًا من الإعداد أو الرسوم الشهرية.</string>
+    <string name="store_creation_store_name_settings_option">اسم المتجر</string>
+    <string name="settings_account">إعدادات الحساب</string>
+    <string name="shipping_label_package_details_hazmat_select_category_action">تحديد تصنيف</string>
+    <string name="shipping_label_package_details_hazmat_selection_title">تصنيف المواد الخطيرة</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions_link_text">DHL Express.</string>
+    <string name="shipping_label_hazmat_content_dhl_instructions">لا يدعم WooCommerce Shipping حاليًا عمليات شحن الموارد الخطيرة من خلال ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_search_tool_link_text">أداة بحث شحن الموارد الخطيرة عبر الخدمة البريدية للولايات المتحدة.</string>
+    <string name="shipping_label_usps_search_tool">تحديد قابلية إرسال منتجاتك بالبريد باستخدام ⁦%1$s⁩</string>
+    <string name="shipping_label_usps_instructions_link_text">www.usps.com/hazmat.</string>
+    <string name="shipping_label_usps_hazmat_instructions">تعرّف على كيفية تعبئة الموارد الخطيرة وتغليفها ووضع الملصقات عليها وشحنها من خلال USPS® في ⁦%1$s⁩</string>
+    <string name="order_creation_tax_based_on_shipping_address">تم الحساب وفق عنوان الشحن</string>
+    <string name="order_creation_tax_based_on_billing_address">تم الحساب وفق عنوان الفوترة</string>
+    <string name="order_creation_tax_based_on_store_address">تم الحساب وفق عنوان المتجر</string>
+    <string name="order_creation_price_after_discount_label">السعر بعد الخصم</string>
+    <string name="order_creation_total_label">إجمالي الطلبات</string>
+    <string name="order_creation_discount_percentage_label">النسبة المئوية المحسوبة</string>
+    <string name="order_creation_discount_amount_label">المبلغ المحسوب</string>
+    <string name="store_onboarding_name_your_store_dialog_label">اسم المتجر</string>
+    <string name="store_onboarding_task_name_store_description">يمكن أن يؤدي تخصيص اسم متجرك أيضًا إلى المساعدة على تحسين محركات البحث الخاصة بمتجرك.</string>
+    <string name="store_onboarding_task_name_store_title">تسمية متجرك</string>
+    <string name="store_profiler_features_other">أخرى</string>
+    <string name="store_profiler_features_plugins_and_extensions">الوصول إلى مجموعة كبيرة من الإضافات والامتدادات</string>
+    <string name="store_profiler_features_store_customization">خيارات التخصيص الخاصة بتصميم متجري</string>
+    <string name="store_profiler_features_scale_business">إمكانية التطوير كلما شهدت أعمالي نموًا</string>
+    <string name="store_profiler_features_ipp">المدفوعات الشخصية</string>
+    <string name="store_profiler_features_payment_options">خيارات الدفع المرنة والآمنة</string>
+    <string name="store_profiler_features_sales_analytics">المبيعات الشاملة وتقارير التحليلات</string>
+    <string name="store_profiler_features_product_management">سهولة إدارة المنتجات وتعقّب المخزون</string>
+    <string name="store_profiler_features_main_button">إنشاء متجري</string>
+    <string name="store_profiler_features_description">دعنا نتعرف على ما تتطلع\nإلى استخدامه في تطبيقنا.</string>
+    <string name="store_profiler_features_title">ما الميزات التي\nتهتم بها أكثر؟</string>
+    <string name="store_creation_store_name_default">اسم المتجر</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#الحصول على المبيعات شخصيًا:&lt;/b&gt; حسِّن المبيعات من خلال المبيعات الشخصية. قم بتأمين معاملات البطاقات من خلال تطبيقنا أو القراء المتوافقين لدينا.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;إدارة الطلبات وإنشاؤها:&lt;/b&gt; ابحث عن طلبات جديدة أو حدِّثها أو أنشئها على الفور. بسِّط عملية طلبك.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#تتبُّع المبيعات والمنتجات الرائجة:&lt;/b&gt; اطلع دومًا على المبيعات في الوقت الفعلي والمنتجات الرائجة لتعزيز إمكانية الربح في متجرك.</string>
+    <string name="store_creation_in_progress_title_2">توسيع إمكانات \n فيمتجرك</string>
+    <string name="store_creation_in_progress_title_1">تقريبًا هناك! أصبح\nلمتجرك شكل  </string>
+    <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">تمكين ميزة NFC</string>
+    <string name="shipping_label_hazmat_option_small_quantity_provision">طرود توفير الكميات الصغيرة (لا بد من وضع علامات عليها)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">طرود محدودة الكمية منقولة برًا - الأيروسولات، ومطهرات الرذاذ، والطلاء بالرش، ورذاذ الشعر، والبروبان، والبيوتان، ومنتجات التنظيف، وغير ذلك - العطور، وطلاء الأظافر، ومزيل طلاء الأظافر، والمذيبات، ومعقم اليدين، والكحول المحمر، ومنتجات الإيثانول القاعدية، وغير ذلك - مواد سطحية أخرى محدودة الكمية (مستحضرات التجميل، ومنتجات التنظيف، والطلاءات، وغير ذلك)</string>
+    <string name="shipping_label_hazmat_option_lighters">طرود الولاعات - ولاعات معتمدة</string>
+    <string name="shipping_label_hazmat_option_id8000">طرود السلع الاستهلاكية ID8000 - السلع الاستهلاكية المؤهلة للنقل جوًا ID8000 (الأيروسولات غير القابلة للاشتعال، والسوائل القابلة للاشتعال، والمواد السامة، والمواد الخطرة المتنوعة)</string>
+    <string name="shipping_label_hazmat_option_ground_only">المواد الخطرة المنقولة برًا فقط (بالنسبة إلى العناصر غير المدرجة، لكنها مقتصرة على العناصر السطحية فقط)</string>
+    <string name="shipping_label_hazmat_option_excepted_quantity_provision">طرود توفير الكميات المستثناة (مثل: الكميات الصغيرة من السوائل القابلة للاشتعال، والمواد المسببة للتآكل أو السامة أو الخطرة بيئيًا - لا بد من وضع علامة عليها)</string>
+    <string name="shipping_label_hazmat_option_division_6_2">قسم 6.2 - المواد الخطرة - المواد البيولوجية (مثل: مجموعات أدوات الاختبارات المعملية، ومرتجعات مجموعة أدوات اختبار فيروس كورونا المعتمدة)</string>
+    <string name="shipping_label_hazmat_option_division_6_1">قسم 6.1 - طرود المواد السامة (بجرعة مميتة وسطية قدرها 50 مجم/كجم أو أقل) - (المبيدات الحشرية، ومبيدات الأعشاب، وغير ذلك)</string>
+    <string name="shipping_label_hazmat_option_division_5_2">قسم 5.2 - طرد البيروكسيدات العضوية</string>
+    <string name="shipping_label_hazmat_option_division_5_1">قسم 5.1 - طرد المواد المؤكسدة - بيروكسيد الهيدروجين (بتركيز يتراوح بين 8 %%و10)</string>
+    <string name="shipping_label_hazmat_option_division_4_1">قسم 4.1: طرود المواد الصلبة القابلة للاشتعال وأعواد الثقاب الآمنة المسموح بإرسالها بالبريد - السلامة/طرح علب أعواد الثقاب وأمشاط أعواد الثقاب والمواد الصلبة القابلة للاشتعال المسموح بإرسالها بالبريد</string>
+    <string name="shipping_label_hazmat_option_class_9_magnetized">الفئة 9 - طرود المواد الممغنطة</string>
+    <string name="shipping_label_hazmat_option_class_9_unmarked_lithium">الفئة 9: بطاريات الليثيوم، طرود لا تتضمن علامات - الأجهزة الإلكترونية الجديدة التي تتضمن أو تشتمل على بطاريات الليثيوم (من دون علامة)</string>
+    <string name="shipping_label_hazmat_option_class_9_dry_ice">الفئة 9 - طرود الثلج الجاف (قاصرة على 5 أرطال في حال شحنها جوًا)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_device">الفئة 9: بطاريات الليثيوم، طرود تتضمن علامات - الأجهزة الإلكترونية الجديدة التي تشتمل على بطاريات الليثيوم (متضمنة علامة UN3481 أو UN3091)</string>
+    <string name="shipping_label_hazmat_option_class_9_used_lithium">الفئة 9 - بطارية الليثيوم - طرود المرتجعات - الأجهزة الإلكترونية المستعملة التي تحتوي على أو تشتمل على بطاريات الليثيوم (لا بد من وضع علامات)</string>
+    <string name="shipping_label_hazmat_option_class_9_new_lithium_individual">الفئة 9 - بطارية ليثيوم مزوّدة بعلامات - طرود منقولة برًا فقط - بطاريات ليثيوم فردية أو احتياطية جديدة (متضمنة علامة UN3480 أو UN3090)</string>
+    <string name="shipping_label_hazmat_option_class_8_wet_battery">الفئة 8 - طرود البطاريات الرطبة غير القابلة للانسكاب - بطاريات حمض الرصاص محكمة الإغلاق</string>
+    <string name="shipping_label_hazmat_option_class_8_corrosive">الفئة 8 - طرود المواد المسببة للتآكل - المواد المسببة للتآكل المؤهلة للنقل جوًا (بعض مركَّبات التنظيف أو مركَّبات القضاء على الأشجار/الأعشاب وغير ذلك)</string>
+    <string name="shipping_label_hazmat_option_class_7">الفئة 7 - طرود المواد المشعة (مثل: كاشفات الدخان والمعادن وأداة التسديد في الأسلحة وغير ذلك)</string>
+    <string name="shipping_label_hazmat_option_class_6">الفئة 6 - الطرد (المواد السامة)</string>
+    <string name="shipping_label_hazmat_option_class_5">الفئة 5 - الطرد (المؤكسدات)</string>
+    <string name="shipping_label_hazmat_option_class_4">الفئة 4 - الطرد (المواد الصلبة القابلة للاشتعال)</string>
+    <string name="shipping_label_hazmat_option_class_3">الفئة 3 - الطرد (معقم اليدين، والكحول المحمر، ومنتجات الإيثانول القاعدية، والسوائل القابلة للاشتعال، وغير ذلك)</string>
+    <string name="shipping_label_hazmat_option_class_1">الفئة 1 - طرود الألعاب المسيَّرة/صمامات الأمان</string>
+    <string name="shipping_label_hazmat_option_air_eligible_ethanol">طرود الإيثانول المؤهلة للنقل جوًا - (شحنات العطور ومعقِّمات اليدين المعتمدة)</string>
+    <string name="dialog_ok">موافق</string>
+    <string name="store_creation_country_list_picker_toolbar_title">تحديد بلد</string>
+    <string name="store_creation_country_picker_current_location_description">لقد اكتشفنا موقعك تلقائيًا. يرجى تغييره هنا إذا كان غير صحيح.</string>
+    <string name="store_creation_country_picker_title">أين تقع شركتك؟</string>
+    <string name="store_profiler_challenge_other">أخرى</string>
+    <string name="store_profiler_challenge_shipping_and_logistics">الشحن والإمداد والتموين</string>
+    <string name="store_profiler_challenge_managing_inventory">إدارة المخزون</string>
+    <string name="store_profiler_challenge_finding_customers">العثور على العملاء</string>
+    <string name="store_profiler_challenge_setting_up_online_store">إعداد المتجر على الإنترنت</string>
+    <string name="store_profiler_challenge_description">اختر المخاوف التي تشعر بها أو الصعوبات التي تواجهها أدناه. يمكنك تحديث أكثر من خيار واحد.</string>
+    <string name="store_profiler_challenge_title">ما التحديات التي تواجهها\nعند بدء متجر على الإنترنت\nأو تشغيله؟</string>
+    <string name="shipping_label_package_details_hazmat_content_description">تشمل المواد محتملة الخطورة عناصر، مثل: البطاريات والثلج الجاف والسوائل القابلة للاشتعال والأهباء الجوية والذخائر والألعاب النارية وطلاء الأظافر والعطور والدهانات والمذيبات والمزيد. يجب شحن العناصر الخطرة في حاويات منفصلة.</string>
+    <string name="shipping_label_package_details_hazmat_content_checkbox_title">يحتوي على مواد خطرة</string>
     <string name="ai_product_description_title_hint">أدخل عنوان المنتج.</string>
     <string name="free_trial_feature_support">دعم ذو أولوية على مدار الساعة وطوال أيام الأسبوع</string>
     <string name="free_trial_feature_backups">عمليات النسخ الاحتياطي التلقائية في الموقع</string>
@@ -14,7 +139,6 @@ Language: ar
     <string name="free_trial_feature_built_in_seo">تحسين محركات البحث مدمج</string>
     <string name="free_trial_feature_design_editing">تصميم خالٍ من الرموز والتحرير</string>
     <string name="free_trial_feature_store_management">أدوات إدارة المتجر</string>
-    <string name="free_trial_summary_try_button">إنشاء متجرك</string>
     <string name="free_trial_summary_hassle_free_store_ownership">ملكية متجر خال من العقبات</string>
     <string name="free_trial_summary_grow_your_business">نمو أعمالك</string>
     <string name="free_trial_summary_start_selling_quickly">بدء البيع بسرعة</string>
@@ -147,13 +271,7 @@ Language: ar
     <string name="more_settings">مزيد من الإعدادات</string>
     <string name="maybe_later">ربما لاحقًا</string>
     <string name="product_sharing_regenerate">الكتابة مجددًا</string>
-    <string name="store_creation_in_progress_description_6">&lt;b&gt;#الحصول على تنبيه بكل عملية بيع:&lt;/b&gt; لا تفوّت شيئًا بفضل التنبيهات الفورية بعمليات البيع. استلم تنبيهات لكل عملية بيع جديدة، ما يسمح لك بالاحتفال بنجاحك والبقاء على اطلاع بكل نشاط في متجرك.</string>
-    <string name="store_creation_in_progress_description_5">&lt;b&gt;#أضف المنتجات وحررها بلمسة:&lt;/b&gt; أضف منتجات جديدة وحدِّث التفاصيل وارفع الصور وأدر التباينات، كل ذلك من التطبيق. حافظ على مخزونك محدَّثًا من دون عناء.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#إجراء الدفع شخصيًا:&lt;/b&gt; وسِّع فرص المبيعات الخاصة بك عن طريق قبول المدفوعات شخصيًا. استخدم التطبيق لمعالجة المعاملات عبر بطاقة الائتمان بأمان أو اتصل باستخدام قراء البطاقات المتوافقة لإجراء مدفوعات شخصية مريحة.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#إدارة الطلبات وإنشاؤها:&lt;/b&gt; عالج الطلبات بكل سهولة. يمكن التمرير والبحث وتغيير حالة الطلب. أنشئ طلبات جديدة في لمح البصر لإجراء عمليات الشراء داخل المتجر وعبر الهاتف. بسِّط عملية إدارة طلبك.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#تتبّع المبيعات والمنتجات الرائجة:&lt;/b&gt; كن مطلعًا على أداء متجرك في الوقت الفعلي. حدد أكثر منتجات مبيعًا واتخذ قرارات مستنيرة لتحقيق أقصى قدر من الربحية. </string>
     <string name="store_creation_in_progress_description_1">ستُخطر بمجرد أن يصبح المتجر جاهزًا! اجلس واسترخِ ودعنا ننثر سحرنا في أثناء مشاركة النصائح المفيدة. 🔮</string>
-    <string name="store_creation_in_progress_title_1">إنشاء متجرك! سيستغرق الأمر بضع دقائق فقط</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">رمز PIN مطلوب، لكن لا تدعمه ميزة \"Tap To Pay\" حتى الآن. التفكير في استخدام قارئ البطاقات الخارجي</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">شراء قارئ البطاقات</string>
     <string name="order_sync_coupon_removed">يتعذر تطبيق القسيمة وتمت إزالتها من الطلب</string>
@@ -176,8 +294,6 @@ Language: ar
     <string name="local_notification_one_day_after_free_trial_expires_title">🌟 واصل أعمالك مع خطتنا!</string>
     <string name="local_notification_one_day_before_free_trial_expires_description">ينتهي الإصدار التجريبي المجاني الذي تستخدمه من Woo Express غدًا (⁦%1$s⁩). حان الوقت الآن لإيجاد مكانتك في المستقبل - اختر خطة واستعد للتطور.</string>
     <string name="local_notification_one_day_before_free_trial_expires_title">⏰ أوشك وقت الإصدار التجريبي المجاني على النفاد!</string>
-    <string name="local_notification_without_free_trial_description">مرحبًا يا ⁦%1$s⁩، أصبح ⁦%2$s⁩ جاهزًا من أجلك! ابدأ الإصدار التجريبي المجاني الذي تستخدمه من Woo Express الذي تصل مدته إلى 14 يومًا مباشرة بنقرة واحدة فقط لبدء عملك على الإنترنت.  </string>
-    <string name="local_notification_without_free_trial_title">🛍️ متجرك في الانتظار!</string>
     <string name="local_notification_store_creation_complete_description">مرحبًا يا ⁦%1$s⁩! مرحبًا في الإصدار التجريبي المجاني من Woo Express الذي تصل مدته إلى 14 يومًا - حيث يوجد كل ما تحتاج إليه لبدء عمل ناجح على الإنترنت وتطويره، كل ذلك في مكان واحد. هل أنت مستعد للاستكشاف؟</string>
     <string name="local_notification_store_creation_complete_title">🎉 أصبح متجرك جاهزًا!</string>
     <string name="product_type_variation">منتج التباين</string>
@@ -265,11 +381,8 @@ Language: ar
     <string name="store_creation_profiler_industry_home_furniture_garden">المنزل والأثاث والحديقة</string>
     <string name="store_creation_profiler_industry_food_drink">الطعام والشراب</string>
     <string name="store_creation_profiler_industry_health_beauty">الصحة والجمال</string>
-    <string name="store_creation_in_progress_title_6">فتح الأبواب</string>
-    <string name="store_creation_in_progress_title_5">تشغيل المصابيح</string>
-    <string name="store_creation_in_progress_title_4">تطبيق اللمسات النهائية</string>
-    <string name="store_creation_in_progress_title_3">تنظيم غرفة التخزين</string>
-    <string name="store_creation_in_progress_title_2">إنشاء الأساسات</string>
+    <string name="store_creation_in_progress_title_4">فتح الأبواب</string>
+    <string name="store_creation_in_progress_title_3">تشغيل المصابيح</string>
     <string name="notifications_permission_description">نحتاج إلى صلاحية إرسال تنبيهات الدفع للطلبات والمراجعات الجديدة وغير ذلك، ويتم توصيلها إلى جهازك.</string>
     <string name="notifications_permission_title">التنبيهات</string>
     <string name="product_type_composite">المنتجات المركّبة</string>
@@ -309,6 +422,7 @@ Language: ar
     <string name="free_trial_feature_social_advertising">الإعلانات الاجتماعية</string>
     <string name="free_trial_feature_premium_themes">قوالب مميزة</string>
     <string name="free_trial_summary_credit_card_message">لن يلزم بطاقة ائتمان.</string>
+    <string name="free_trial_summary_try_button">التجربة مجانًا</string>
     <string name="free_trial_summary_try_it">جرِّبه مجانًا لمدة 14 يومًا.</string>
     <string name="free_trial_summary_advertise">نقدّم كل ما تحتاج إليه لإنشاء متجر على الإنترنت وتطويره، ويكون مدعومًا من WooCommerce ومستضافًا على ووردبريس.كوم.</string>
     <string name="free_trial_summary_title">البدء في غضون أيام، والتطوير لمدة أعوام</string>
@@ -557,7 +671,6 @@ Language: ar
     <string name="store_creation_country_picker_countries_header">البلدان</string>
     <string name="store_creation_country_picker_current_location">الموقع الحالي</string>
     <string name="store_creation_country_picker_description">سنستخدم هذه المعلومات لإعداد المدفوعات والشحن والضرائب.</string>
-    <string name="store_creation_country_picker_title">تأكيد موقعك</string>
     <string name="store_creation_store_profiler_platforms_description">يمكنك اختيار العديد منها.</string>
     <string name="store_creation_store_profiler_platforms_title">ما المنصة (المنصات) التي\nتستخدمها حاليًا؟</string>
     <string name="store_creation_store_profiler_industries_description">اختر تصنيفًا يُعرِّف\nعملك على أفضل وجه.</string>
@@ -1115,7 +1228,7 @@ Language: ar
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى الاتصال بمسؤول الموقع لتعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى تعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">تم اكتشاف إضافات دفع متعارضة</string>
-    <string name="order_creation_payment_tax">الضرائب</string>
+    <string name="order_creation_payment_tax">إجمالي الضرائب</string>
     <string name="exclusive_or">أو</string>
     <string name="settings_install_jetpack">تثبيت Jetpack</string>
     <string name="card_reader_onboarding_account_rejected_header">المدفوعات الشخصية غير متاحة في الوقت الحالي</string>
@@ -1212,7 +1325,6 @@ Language: ar
     <string name="order_creation_customer_note">ملحوظة العميل</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_refresh_button">التنشيط بعد التحديث</string>
     <string name="card_reader_onboarding_stripe_extension_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة بوابة WooCommerce Stripe على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
-    <string name="card_reader_onboarding_stripe_extension_not_setup_refresh_button">تجديد</string>
     <string name="card_reader_payment_failed_unknown">تم رفض عملية الدفع لسبب غير معروف</string>
     <string name="card_reader_payment_failed_test_mode_live_card">تم استخدام بطاقة مباشرة على موقع في وضع الاختبار</string>
     <string name="card_reader_payment_failed_test_card">غير مسموح ببطاقات اختبار النظام للدفع</string>
@@ -1432,7 +1544,6 @@ Language: ar
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">التنشيط بعد التحديث</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">تم تثبيت إصدار قديم من إضافة مدفوعات WooCommerce على مخزنك. يرجى تحديثه لقبول المدفوعات الشخصية.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_header">تحديث مدفوعات WooCommerce</string>
-    <string name="card_reader_onboarding_wcpay_not_setup_refresh_button">تجديد</string>
     <string name="card_reader_onboarding_wcpay_not_setup_hint">لقد أوشكت على الانتهاء! يرجى الانتهاء من إعداد مدفوعات WooCommerce لبدء قبول المدفوعات الشخصية.</string>
     <string name="card_reader_onboarding_wcpay_not_setup_header">يرجى الانتهاء من إعداد مدفوعات WooCommerce في مسؤول مخزنك</string>
     <string name="card_reader_onboarding_wcpay_not_activated_refresh_button">التنشيط بعد التفعيل</string>
@@ -1796,14 +1907,13 @@ Language: ar
     <string name="product_downloadable_files_download_settings">تنزيل الإعدادات</string>
     <string name="product_downloadable_files_name_invalid">يرجى إدخال اسم صالح</string>
     <string name="product_downloadable_files_add_manually">إدخال عنوان URL للملف</string>
-    <string name="product_downloadable_files_add_from_wpmedia_library">من مكتبة وسائط ووردبريس</string>
-    <string name="product_downloadable_files_add_from_device">من الجهاز</string>
+    <string name="product_downloadable_files_add_from_wpmedia_library">مكتبة وسائط ووردبريس</string>
     <string name="product_downloadable_files_url_invalid">تحقق من أن عنوان URL الذي تم إدخاله صحيح</string>
     <string name="product_downloadable_files_upload_dialog_message">يُرجى الانتظار…</string>
     <string name="product_downloadable_files_upload_dialog_title">رفع الملفات</string>
     <string name="product_downloadable_files_upload_failed">خطأ في رفع الملف</string>
     <string name="product_downloadable_files_add_title">إضافة ملف قابل للتنزيل</string>
-    <string name="product_downloadable_add_bottomsheet_header">إضافة ملف قابل للتنزيل</string>
+    <string name="product_downloadable_add_bottomsheet_header">إضافة ملف قابل للتنزيل من</string>
     <string name="bottom_sheet_downloadable_files_desc">تضمين الملفات القابلة للتنزيل مع المشتريات</string>
     <string name="product_uncheck_is_downloadable_warning_no_button">إلغاء</string>
     <string name="product_uncheck_is_downloadable_warning_yes_button">نعم، يمكنك التغيير</string>

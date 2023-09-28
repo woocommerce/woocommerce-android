@@ -59,7 +59,6 @@ class AIProductDescriptionViewModel @Inject constructor(
 
     private suspend fun identifyLanguage(): Result<String> {
         return aiRepository.identifyISOLanguageCode(
-            site = selectedSite.get(),
             text = "${navArgs.productTitle} ${_viewState.value.features}",
             feature = PRODUCT_DESCRIPTION_FEATURE
         ).fold(
@@ -105,7 +104,6 @@ class AIProductDescriptionViewModel @Inject constructor(
 
     private suspend fun generateProductDescriptionText(languageISOCode: String) {
         val result = aiRepository.generateProductDescription(
-            site = selectedSite.get(),
             productName = navArgs.productTitle,
             features = _viewState.value.features,
             languageISOCode = languageISOCode
