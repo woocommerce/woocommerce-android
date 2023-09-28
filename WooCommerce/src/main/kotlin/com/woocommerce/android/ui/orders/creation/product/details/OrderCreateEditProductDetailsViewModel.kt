@@ -56,7 +56,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
                 isVisible = product.item.isDiscounted(),
                 discountAmountText = getItemDiscountAmountText(calculateItemDiscountAmount(product.item), currency),
             ),
-            configurationButtonVisible = product.needsConfiguration()
+            configurationButtonVisible = product.isConfigurable()
         )
     }.asLiveData()
 

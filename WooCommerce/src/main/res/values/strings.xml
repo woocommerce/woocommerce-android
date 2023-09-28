@@ -3646,6 +3646,11 @@
     <string name="extension_configure_button">Configure</string>
 
     <!--
+    Product Configuration
+    -->
+    <string name="product_configuration_title">Configuration</string>
+
+    <!--
     Tax rates info dialog
     -->
     <string name="tax_rates_information_content_description">Tax rates information</string>
