@@ -128,15 +128,15 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateAvailable -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable -> {
                     uiMessageResolver.getInstallSnack(
                         stringResId = event.message,
                         actionListener = event.onClick
                     ).show()
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.CardReaderUpdateScreen -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateScreen -> {
                     findNavController().navigate(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderUpdateDialogFragment()
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToCardReaderUpdateDialogFragment()
                     )
                 }
                 else -> event.isHandled = false
