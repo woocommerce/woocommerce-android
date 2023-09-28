@@ -116,11 +116,11 @@ class PaymentsHubViewModel @Inject constructor(
             SoftwareUpdateAvailability.Available -> {
                 cardReaderTracker.trackSoftwareUpdateAlertShown()
                 triggerEvent(
-                    CardReaderHubEvents.CardReaderUpdateAvailable(
+                    PaymentsHubEvents.CardReaderUpdateAvailable(
                         message = R.string.card_reader_payment_update_available,
                         onClick = {
                             cardReaderTracker.trackSoftwareUpdateAlertInstallClicked()
-                            triggerEvent(CardReaderHubEvents.CardReaderUpdateScreen)
+                            triggerEvent(PaymentsHubEvents.CardReaderUpdateScreen)
                         }
                     )
                 )
