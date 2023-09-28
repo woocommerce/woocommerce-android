@@ -9,10 +9,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -39,6 +42,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -51,7 +56,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.ui.products.ProductStockStatus
 
-private const val ANIM_DURATION_MILLIS = 300
+private const val ANIM_DURATION_MILLIS = 128
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
@@ -74,7 +79,10 @@ fun ExpandableProductCard(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.minor_50)
+                )
                 .border(
                     1.dp,
                     colorResource(id = R.color.divider_color),
@@ -82,8 +90,8 @@ fun ExpandableProductCard(
                 )
         ) {
             val (img, name, chevron, expandedPart) = createRefs()
-            AsyncImage(model = ImageRequest.Builder(LocalContext.current).data(item.imageUrl)
-                .crossfade(true).build(),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).data(item.imageUrl).crossfade(true).build(),
                 contentDescription = stringResource(R.string.product_image_content_description),
                 contentScale = ContentScale.Fit,
                 placeholder = painterResource(R.drawable.ic_product),
@@ -97,17 +105,21 @@ fun ExpandableProductCard(
                     .size(dimensionResource(R.dimen.major_375))
                     .padding(dimensionResource(id = R.dimen.major_100))
                     .clip(RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_image))))
-            Text(text = item.item.name, modifier = Modifier
-                .constrainAs(name) {
-                    top.linkTo(parent.top)
-                    start.linkTo(img.end)
-                }
-                .padding(dimensionResource(id = R.dimen.major_100)))
-            IconButton(onClick = { isExpanded = !isExpanded },
+            Text(
+                text = item.item.name,
+                modifier = Modifier
+                    .constrainAs(name) {
+                        top.linkTo(parent.top)
+                        start.linkTo(img.end)
+                    }
+                    .padding(dimensionResource(id = R.dimen.major_100)))
+            IconButton(
+                onClick = { isExpanded = !isExpanded },
                 modifier = Modifier.constrainAs(chevron) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
-                }) {
+                }
+            ) {
                 Icon(
                     modifier = Modifier.rotate(chevronRotation),
                     imageVector = Icons.Filled.KeyboardArrowDown,
@@ -115,12 +127,15 @@ fun ExpandableProductCard(
                     tint = MaterialTheme.colors.primary
                 )
             }
-            AnimatedVisibility(visible = isExpanded, modifier = Modifier
-                .constrainAs(expandedPart) {
-                    bottom.linkTo(parent.bottom)
-                    top.linkTo(img.bottom)
-                }
-                .fillMaxWidth()) {
+            AnimatedVisibility(
+                visible = isExpanded,
+                modifier = Modifier
+                    .constrainAs(expandedPart) {
+                        bottom.linkTo(parent.bottom)
+                        top.linkTo(img.bottom)
+                    }
+                    .fillMaxWidth()
+            ) {
                 ExtendedProductCardContent(
                     item,
                     onRemoveProductClicked,
@@ -138,7 +153,7 @@ fun ExtendedProductCardContent(
     onDiscountButtonClicked: () -> Unit,
 ) {
     ConstraintLayout(
-        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.minor_100))
     ) {
         val (
             topDivider,
@@ -156,19 +171,29 @@ fun ExtendedProductCardContent(
             end.linkTo(parent.end)
         })
         Row(
-            modifier = Modifier.constrainAs(price) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(topDivider.bottom)
-                bottom.linkTo(bottomDivider.top)
-            },
+            modifier = Modifier
+                .constrainAs(price) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(topDivider.bottom)
+                }
+                .padding(dimensionResource(id = R.dimen.minor_100)),
         ) {
             Text(text = stringResource(id = R.string.product_price), modifier = Modifier.weight(1f))
             Text(
-                text = "${item.item.quantity.toInt()} x ${item.item.pricePreDiscount}",
-                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
+                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100)),
+                color = colorResource(id = R.color.color_on_surface_disabled),
+                text = "${item.item.quantity.toInt()} x ${item.item.pricePreDiscount}"
             )
-            Text(text = "${item.item.total}")
+            val totalAmountStyle = if (item.hasDiscount) {
+                MaterialTheme.typography.body1.copy(
+                    textDecoration = TextDecoration.LineThrough,
+                    color = colorResource(id = R.color.color_on_surface_disabled)
+                )
+            } else {
+                MaterialTheme.typography.body1
+            }
+            Text(text = "${item.item.subtotal}", style = totalAmountStyle)
         }
         if (item.hasDiscount) {
             WCTextButton(
@@ -176,43 +201,58 @@ fun ExtendedProductCardContent(
                     top.linkTo(price.bottom)
                 }, onClick = onDiscountButtonClicked
             ) {
+                Text(
+                    text = stringResource(id = R.string.discount),
+                    style = MaterialTheme.typography.body1,
+                )
+                Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_50)))
                 Icon(
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40)),
                     imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
                     contentDescription = null
                 )
-                Text(text = stringResource(id = R.string.discount))
             }
             Text(
                 modifier = Modifier.constrainAs(discountAmount) {
                     end.linkTo(parent.end)
                     top.linkTo(discountButton.top)
                     bottom.linkTo(discountButton.bottom)
-                }, text = item.discountAmount, color = colorResource(id = R.color.woo_green_50)
+                },
+                text = "-${item.discountAmount}",
+                color = colorResource(id = R.color.woo_green_50)
             )
-            Text(modifier = Modifier.constrainAs(priceAfterDiscountLabel) {
-                top.linkTo(discountButton.bottom)
-                start.linkTo(parent.start)
-            }, text = stringResource(R.string.order_creation_price_after_discount))
+            Text(
+                modifier = Modifier
+                    .constrainAs(priceAfterDiscountLabel) {
+                        top.linkTo(discountButton.bottom)
+                        start.linkTo(parent.start)
+                        bottom.linkTo(bottomDivider.top)
+                    }
+                    .padding(dimensionResource(id = R.dimen.minor_100)),
+                text = stringResource(R.string.order_creation_price_after_discount)
+            )
             Text(modifier = Modifier.constrainAs(priceAfterDiscountValue) {
                 top.linkTo(discountButton.bottom)
                 end.linkTo(parent.end)
-                start.linkTo(priceAfterDiscountLabel.end)
             }, text = item.priceAfterDiscount)
         } else {
             WCTextButton(
                 modifier = Modifier.constrainAs(discountButton) {
                     top.linkTo(price.bottom)
+                    bottom.linkTo(bottomDivider.top)
                 }, onClick = onDiscountButtonClicked
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = null
                 )
-                Text(text = stringResource(id = R.string.order_creation_add_discount))
+                Text(
+                    text = stringResource(id = R.string.order_creation_add_discount),
+                    style = MaterialTheme.typography.body1
+                )
             }
         }
         Divider(modifier = Modifier.constrainAs(bottomDivider) {
-            top.linkTo(discountButton.bottom)
             bottom.linkTo(removeButton.top)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
@@ -247,6 +287,7 @@ fun ExpandableProductCardPreview() {
         stockStatus = ProductStockStatus.InStock,
         pricePreDiscount = "$10",
         priceTotal = "$30",
+        priceSubtotal = "$30",
         discountAmount = "-$5",
         priceAfterDiscount = "$25"
     )
@@ -259,7 +300,7 @@ fun ExpandableProductCardPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ExtendedProductCardContentPreview() {
-    val item = Order.Item.EMPTY.copy(name = "Test Product", quantity = 3.0f)
+    val item = Order.Item.EMPTY.copy(name = "Test Product", quantity = 3.0f, total = 23.toBigDecimal(), subtotal = 30.toBigDecimal())
     val product = ProductUIModel(
         item = item,
         imageUrl = "",
@@ -268,7 +309,8 @@ fun ExtendedProductCardContentPreview() {
         stockStatus = ProductStockStatus.InStock,
         pricePreDiscount = "$10",
         priceTotal = "$30",
-        discountAmount = "-$5",
+        priceSubtotal = "$25",
+        discountAmount = "$5",
         priceAfterDiscount = "$25"
     )
     WooThemeWithBackground {
