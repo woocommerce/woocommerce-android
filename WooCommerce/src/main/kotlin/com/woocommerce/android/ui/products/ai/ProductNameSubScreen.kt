@@ -51,9 +51,9 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
         ) {
             ProductNameForm(
                 enteredName = state.name,
-                onProductNameChanged = {},
-                onSuggestNameClicked = {},
-                onContinueClicked = {}
+                onProductNameChanged = viewModel::onProductNameChanged,
+                onSuggestNameClicked = viewModel::onSuggestNameClicked,
+                onContinueClicked = viewModel::onDoneClick
             )
         }
     }
@@ -68,13 +68,29 @@ fun ProductNameForm(
 ) {
     val orientation = LocalConfiguration.current.orientation
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    @Composable
+    fun ContinueButton(modifier: Modifier = Modifier) {
+        WCColoredButton(
+            enabled = enteredName.isNotEmpty(),
+            onClick = onContinueClicked,
+            modifier = modifier
+                .fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.continue_button))
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             Text(
                 text = stringResource(id = R.string.ai_product_creation_add_name_title),
                 style = MaterialTheme.typography.h5
@@ -84,7 +100,8 @@ fun ProductNameForm(
 
             Text(
                 text = stringResource(id = R.string.ai_product_creation_add_name_subtitle),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
 
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
@@ -99,33 +116,19 @@ fun ProductNameForm(
 
             // Button will scroll with the rest of UI on landscape mode, or... (see below)
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                WCColoredButton(
-                    onClick = onContinueClicked,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Text(text = stringResource(id = R.string.continue_button))
-                }
+                ContinueButton(Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
             }
         }
 
         // Button will stick to the bottom on portrait mode
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            WCColoredButton(
-                onClick = onContinueClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            ) {
-                Text(text = stringResource(id = R.string.continue_button))
-            }
+            ContinueButton()
         }
     }
 }
 
 @Composable
-fun ProductKeywordsTextFieldWithEmbeddedButton(
+private fun ProductKeywordsTextFieldWithEmbeddedButton(
     textFieldContent: String,
     onTextFieldContentChanged: (String) -> Unit,
     onButtonClicked: () -> Unit
@@ -137,6 +140,7 @@ fun ProductKeywordsTextFieldWithEmbeddedButton(
             style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
         )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         Column(
             modifier = Modifier
                 .fillMaxWidth()

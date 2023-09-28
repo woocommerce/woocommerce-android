@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.cardreader.hub
+package com.woocommerce.android.ui.payments.hub
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -16,15 +16,15 @@ import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
+import com.woocommerce.android.databinding.FragmentPaymentsHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -36,26 +36,27 @@ import javax.inject.Inject
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
 @AndroidEntryPoint
-class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
+class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     override fun getFragmentTitle() = resources.getString(R.string.payments_hub_title)
-    val viewModel: CardReaderHubViewModel by viewModels()
+    val viewModel: PaymentsHubViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentCardReaderHubBinding.bind(view)
+        val binding = FragmentPaymentsHubBinding.bind(view)
 
         initViews(binding)
         observeEvents()
         observeViewState(binding)
     }
 
-    private fun initViews(binding: FragmentCardReaderHubBinding) {
-        binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
-        binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
+    private fun initViews(binding: FragmentPaymentsHubBinding) {
+        binding.paymentsHubRv.layoutManager = LinearLayoutManager(requireContext())
+        binding.paymentsHubRv.adapter = PaymentsHubAdapter()
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -64,14 +65,14 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
             viewLifecycleOwner
         ) { event ->
             when (event) {
-                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderDetail -> {
                     findNavController().navigateSafely(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderDetailFragment(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToCardReaderDetailFragment(
                             event.cardReaderFlowParam
                         )
                     )
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = event.url,
@@ -79,16 +80,16 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                         )
                     )
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderManualsScreen -> {
                     findNavController().navigate(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderManualsFragment(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToCardReaderManualsFragment(
                             event.countryConfig
                         )
                     )
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderOnboardingScreen -> {
                     findNavController().navigate(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
                             CardReaderOnboardingParams.Failed(
                                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                                 onboardingState = event.onboardingState
@@ -97,23 +98,23 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                         )
                     )
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPaymentCollectionScreen -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen -> {
                     findNavController().navigate(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
                     )
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
-                is CardReaderHubViewModel.CardReaderHubEvents.ShowToast -> {
+                is PaymentsHubViewModel.PaymentsHubEvents.ShowToast -> {
                     ToastUtils.showToast(context, getString(event.message))
                 }
                 is NavigateToTapTooPaySummaryScreen -> {
                     findNavController().navigate(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment(
                             TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
                         )
                     )
@@ -143,10 +144,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
         }
     }
 
-    private fun observeViewState(binding: FragmentCardReaderHubBinding) {
+    private fun observeViewState(binding: FragmentPaymentsHubBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
-            with(binding.cardReaderHubRv) {
-                (adapter as CardReaderHubAdapter).setItems(state.rows)
+            with(binding.paymentsHubRv) {
+                (adapter as PaymentsHubAdapter).setItems(state.rows)
                 updatePadding(
                     bottom = resources.getDimensionPixelSize(
                         if (state.onboardingErrorAction?.text != null) R.dimen.major_400
@@ -154,8 +155,8 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     )
                 )
             }
-            binding.cardReaderHubLoading.isInvisible = !state.isLoading
-            with(binding.cardReaderHubOnboardingFailedTv) {
+            binding.paymentsHubLoading.isInvisible = !state.isLoading
+            with(binding.paymentsHubOnboardingFailedTv) {
                 movementMethod = LinkMovementMethod.getInstance()
                 val onboardingErrorAction = state.onboardingErrorAction
                 if (onboardingErrorAction != null) {

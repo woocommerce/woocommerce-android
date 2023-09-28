@@ -105,6 +105,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
             whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_shipping_address))
                 .thenReturn("Calculated on shipping address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
             createSut()
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on shipping address")
@@ -116,6 +118,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
             whenever(resourceProvider.getString(R.string.order_creation_tax_based_on_billing_address))
                 .thenReturn("Calculated on billing address")
+            whenever(resourceProvider.getString(R.string.order_creation_set_tax_rate))
+                .thenReturn("Set New Tax Rate")
             createSut()
             val viewState = sut.viewStateData.liveData.value!!
             assertThat(viewState.taxBasedOnSettingLabel).isEqualTo("Calculated on billing address")
@@ -138,6 +142,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetTaxRateClicked()
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
+    }
+
+    @Test
+    fun `when onSetNewTaxRateClicked, then should track event`() = testBlocking {
+        val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
+        whenever(selectedSite.get()).thenReturn(mockedSite)
+        sut.onSetNewTaxRateClicked()
+        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
     }
 
     @Test
@@ -1143,11 +1155,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCreateOrderClicked(defaultOrderValue)
 
+        val productCount = sut.products.value?.count() ?: 0
+
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_PRODUCT_COUNT to productCount,
                 AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
                 AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
                 AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()

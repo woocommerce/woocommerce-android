@@ -21,14 +21,15 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFlow"
-            app:destination="@id/cardReaderHubFragment"
+            app:destination="@id/paymentsHubFragment"
+            app:exitAnim="@null"
             app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFragment"
-            app:destination="@id/cardReaderHubFragment"
+            app:destination="@id/paymentsHubFragment"
             app:launchSingleTop="true"
-            app:popUpTo="@+id/cardReaderHubFragment"
+            app:popUpTo="@+id/paymentsHubFragment"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_orderList"
@@ -102,9 +103,9 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
-            app:destination="@id/cardReaderHubFragment"
+            app:destination="@id/paymentsHubFragment"
             app:launchSingleTop="true"
-            app:popUpTo="@+id/cardReaderHubFragment"
+            app:popUpTo="@+id/paymentsHubFragment"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
@@ -113,8 +114,8 @@
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/cardReaderHubFragment"
-        android:name="com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubFragment"
+        android:id="@+id/paymentsHubFragment"
+        android:name="com.woocommerce.android.ui.payments.hub.PaymentsHubFragment"
         android:label="CardReaderHubFragment">
         <argument
             android:name="cardReaderFlowParam"
