@@ -2,7 +2,7 @@
 
 15.6
 -----
-
+- [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
 
 15.5
 -----
