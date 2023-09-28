@@ -57,7 +57,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-const val OutlinedBorderOpacity = 0.14f
+internal const val OUTLINED_BORDER_OPACITY = 0.14f
 
 @Composable
 fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
@@ -107,8 +107,14 @@ fun ProductConfigurationScreen(
             productRules.isConfigurable()
             onSaveConfigurationClick()
             productConfiguration.childrenConfiguration?.entries?.forEach { childMapEntry ->
+
                 val item = childMapEntry.key
-                if (childMapEntry.value.containsKey(QuantityRule.KEY) && childMapEntry.value.containsKey(OptionalRule.KEY)) {
+
+                val hasQuantityRule = childMapEntry.value.containsKey(QuantityRule.KEY)
+                val hasOptionalRule = childMapEntry.value.containsKey(OptionalRule.KEY)
+                val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
+
+                if (hasQuantityAndOptionalRules) {
                     OptionalQuantityProductItem(
                         "item: $item",
                         imageUrl = null,
@@ -123,7 +129,7 @@ fun ProductConfigurationScreen(
                         }
                     )
                 } else {
-                    if (childMapEntry.value.containsKey(QuantityRule.KEY)) {
+                    if (hasQuantityRule) {
                         QuantityProductItem(
                             "item: $item",
                             imageUrl = null,
@@ -134,7 +140,7 @@ fun ProductConfigurationScreen(
                             }
                         )
                     }
-                    if (childMapEntry.value.containsKey(OptionalRule.KEY)) {
+                    if (hasOptionalRule) {
                         OptionalProductItem(
                             title = "item: $item",
                             imageUrl = null,
@@ -328,7 +334,7 @@ fun ConfigurableListItem(
                 configurableControlEnd()
             }
         }
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = OutlinedBorderOpacity), thickness = 1.dp)
+        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = OUTLINED_BORDER_OPACITY), thickness = 1.dp)
     }
 }
 
@@ -435,7 +441,7 @@ fun Stepper(
             )
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = OutlinedBorderOpacity),
+                color = MaterialTheme.colors.onSurface.copy(alpha = OUTLINED_BORDER_OPACITY),
                 shape = RoundedCornerShape(8.dp)
             )
 
