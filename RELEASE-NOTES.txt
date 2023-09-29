@@ -2,7 +2,7 @@
 
 15.6
 -----
-
+- [**] Added possibility to set up automatic tax rate setting for merchants selling temporarily in different locations [https://github.com/woocommerce/woocommerce-android/pull/9791]
 
 15.5
 -----
