@@ -4,11 +4,17 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,20 +24,24 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProductWithAIViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     aiRepository: AIRepository,
+    private val productDetailRepository: ProductDetailRepository,
     buildProductPreviewProperties: BuildProductPreviewProperties,
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
     parameterRepository: ParameterRepository,
-    appsPrefsWrapper: AppPrefsWrapper
+    appsPrefsWrapper: AppPrefsWrapper,
+    analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
+        analyticsTracker = analyticsTracker,
         onDone = { name ->
             aboutSubViewModel.updateProductName(name)
             previewSubViewModel.updateName(name)
@@ -56,10 +66,11 @@ class AddProductWithAIViewModel @Inject constructor(
         tagsRepository = tagsRepository,
         parametersRepository = parameterRepository
     ) {
-        // TODO keep reference to the product for the saving step
+        product = it
         saveButtonState.value = SaveButtonState.Shown
     }
 
+    private lateinit var product: Product
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
@@ -87,6 +98,20 @@ class AddProductWithAIViewModel @Inject constructor(
             triggerEvent(Exit)
         } else {
             goToPreviousStep()
+        }
+    }
+
+    fun onSaveButtonClick() {
+        require(::product.isInitialized)
+        viewModelScope.launch {
+            saveButtonState.value = SaveButtonState.Loading
+            val (success, productId) = productDetailRepository.addProduct(product)
+            if (!success) {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+                saveButtonState.value = SaveButtonState.Shown
+            } else {
+                triggerEvent(NavigateToProductDetailScreen(productId))
+            }
         }
     }
 
@@ -139,6 +164,8 @@ class AddProductWithAIViewModel @Inject constructor(
     enum class SaveButtonState {
         Hidden, Shown, Loading
     }
+
+    data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {
