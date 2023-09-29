@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -35,7 +37,7 @@ class AddProductWithAIViewModel @Inject constructor(
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
     parameterRepository: ParameterRepository,
-    appsPrefsWrapper: AppPrefsWrapper
+    private val appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
@@ -87,6 +89,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        appsPrefsWrapper.aiProductCreationIsFirstAttempt = true
         wireSubViewModels()
     }
 
@@ -94,11 +97,13 @@ class AddProductWithAIViewModel @Inject constructor(
         if (step.value.order == 1) {
             triggerEvent(Exit)
         } else {
+            appsPrefsWrapper.aiProductCreationIsFirstAttempt = false
             goToPreviousStep()
         }
     }
 
     fun onSaveButtonClick() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         require(::product.isInitialized)
         viewModelScope.launch {
             saveButtonState.value = SaveButtonState.Loading
@@ -106,8 +111,10 @@ class AddProductWithAIViewModel @Inject constructor(
             if (!success) {
                 triggerEvent(ShowSnackbar(R.string.error_generic))
                 saveButtonState.value = SaveButtonState.Shown
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
             } else {
                 triggerEvent(NavigateToProductDetailScreen(productId))
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
             }
         }
     }

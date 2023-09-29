@@ -39,6 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -65,7 +67,13 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_ENTRY_POINT_DISPLAYED)
+    }
+
     private fun showAICreationFlow() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_ENTRY_POINT_TAPPED)
         findNavController().navigateSafely(
             AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
         )
