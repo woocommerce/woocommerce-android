@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 11:54:04+0000
+Translation-Revision-Date: 2023-09-27 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresse löschen und diesen Satz nicht mehr verwenden</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Neuen Steuersatz für diese Bestellung festlegen</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Steuersatz wird automatisch hinzugefügt</string>
+    <string name="ai_product_name_sheet_error_message">Beim Generieren des Produktnamens ist ein Problem aufgetreten. Bitte versuche es erneut.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Neu generieren</string>
+    <string name="ai_product_name_sheet_generate_button">Für mich schreiben</string>
+    <string name="ai_product_name_sheet_input_description">Erzähle uns mehr von deinem Produkt und was es einzigartig macht!</string>
+    <string name="ai_product_name_sheet_subtitle">Lasse die KI ansprechende Titel für dich generieren</string>
+    <string name="ai_product_name_sheet_title">✨ Produktname</string>
+    <string name="empty_review_filtered_list_message">Deaktiviere den Filter für ungelesene Produktbewertungen, damit dir alle angezeigt werden</string>
+    <string name="empty_review_filtered_list_title">Keine ungelesenen Produktbewertungen</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tonalität ausgewählt</string>
+    <string name="product_creation_ai_tone_convincing">Überzeugend</string>
+    <string name="product_creation_ai_tone_flowery">Blumig</string>
+    <string name="product_creation_ai_tone_formal">Formell</string>
+    <string name="product_creation_ai_tone_casual">Locker</string>
+    <string name="product_creation_ai_tone_description">Lege Sprache und Tonalität fest, um die Präsentation deines Produkts an deine Marke anzupassen.</string>
+    <string name="product_creation_ai_tone_title">Sprache und Tonalität</string>
+    <string name="product_creation_ai_preview_details_section">Details</string>
+    <string name="product_creation_ai_preview_description_section">Produktbeschreibung</string>
+    <string name="product_creation_ai_preview_name_section">Produktname</string>
+    <string name="product_creation_ai_preview_subtitle">Keine Sorge. Du kannst die unten angegebenen Informationen später jederzeit ändern.</string>
+    <string name="product_creation_ai_preview_title">Vorschau</string>
+    <string name="product_creation_ai_about_product_continue_button">Produktdetails erstellen</string>
+    <string name="product_creation_ai_about_product_set_tone">Sprache und Tonalität festlegen</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Füge wichtige Funktionen, Vorteile oder Details hinzu, damit dein Produkt online besser gefunden wird.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Zum Beispiel: weicher Stoff, langlebige Absteppung, einzigartiges Design</string>
+    <string name="product_creation_ai_about_product_edit_text_header">Mein Produkt</string>
+    <string name="product_creation_ai_about_product_subtitle">Hebe hervor, was dein Produkt einzigartig macht – die KI übernimmt den Rest.</string>
+    <string name="product_creation_ai_about_product_title">Über dein Produkt</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Namen vorschlagen</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Zum Beispiel: weicher Stoff, langlebige Absteppung, einzigartiges Design.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Produktname</string>
+    <string name="ai_product_creation_add_name_subtitle">Oder erweitere deine Auswahl, indem du tippst, um weitere Namensvorschläge zu erhalten.</string>
+    <string name="ai_product_creation_add_name_title">Deinen Produktnamen hinzufügen</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Mit Unterstützung von KI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Weitere Informationen&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Füge ein Produkt und die entsprechenden Details manuell hinzu</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Manuell hinzufügen</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Generiere im Handumdrehen Details für dich</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Ein Produkt mit KI erstellen</string>
+    <string name="product_creation_ai_entry_sheet_header">Ein Produkt hinzufügen</string>
+    <string name="product_review_list_unread_reviews_filter">Nur ungelesene Bewertungen</string>
+    <string name="order_creation_edit_tax_rate">Steuersatzeinstellung bearbeiten</string>
     <string name="tax_rate_selector_auto_rate_subtitle">Dies hat keine Auswirkung auf Online-Bestellungen</string>
     <string name="tax_rate_selector_auto_rate_label">Diesen Satz zu allen erstellten Bestellungen hinzufügen</string>
     <string name="tax_rate_selector_empty_list_button_alt">Steuersätze bearbeiten</string>
