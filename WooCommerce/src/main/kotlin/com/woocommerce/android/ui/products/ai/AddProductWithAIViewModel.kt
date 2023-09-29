@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -35,10 +36,12 @@ class AddProductWithAIViewModel @Inject constructor(
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
     parameterRepository: ParameterRepository,
-    appsPrefsWrapper: AppPrefsWrapper
+    appsPrefsWrapper: AppPrefsWrapper,
+    analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
+        analyticsTracker = analyticsTracker,
         onDone = { name ->
             aboutSubViewModel.updateProductName(name)
             previewSubViewModel.updateName(name)
