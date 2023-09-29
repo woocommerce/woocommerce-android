@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetChildrenProductInfoTest: BaseUnitTest() {
+class GetChildrenProductInfoTest : BaseUnitTest() {
 
     // Mock dependencies
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -69,13 +69,13 @@ class GetChildrenProductInfoTest: BaseUnitTest() {
         // Assert
         resultFlow.collect { productInfoMap ->
             assert(productInfoMap.size == 2)
-            with(productInfoMap[childProduct1.id]){
+            with(productInfoMap[childProduct1.id]) {
                 assertNotNull(this)
                 assertEquals(this.id, childProduct1.id)
                 assertEquals(this.title, childProduct1.title)
                 assertEquals(this.imageUrl, childProduct1.imageUrl)
             }
-            with(productInfoMap[childProduct2.id]){
+            with(productInfoMap[childProduct2.id]) {
                 assertNotNull(this)
                 assertEquals(this.id, childProduct2.id)
                 assertEquals(this.title, childProduct2.title)
@@ -84,8 +84,8 @@ class GetChildrenProductInfoTest: BaseUnitTest() {
         }
 
         // Verify
-        verify (productDetailRepository).getProduct(productBundle.remoteId)
-        verify (getBundledProducts).invoke(productBundle.remoteId)
+        verify(productDetailRepository).getProduct(productBundle.remoteId)
+        verify(getBundledProducts).invoke(productBundle.remoteId)
     }
 
     @Test
@@ -105,7 +105,7 @@ class GetChildrenProductInfoTest: BaseUnitTest() {
         resultFlow.collect { productInfoMap -> assert(productInfoMap.isEmpty()) }
 
         // Verify
-        verify (productDetailRepository).getProduct(product.remoteId)
+        verify(productDetailRepository).getProduct(product.remoteId)
         verify(getBundledProducts, never()).invoke(product.remoteId)
     }
 }
