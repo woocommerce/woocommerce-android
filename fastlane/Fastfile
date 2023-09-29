@@ -112,6 +112,8 @@ platform :android do
     # Ensure we use the latest version of the toolkit
     check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
 
+    ensure_git_status_clean
+
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
 
     confirmation_message = <<-MESSAGE
@@ -128,7 +130,6 @@ platform :android do
 
     # Create the release branch
     UI.message 'Creating release branch...'
-    ensure_git_status_clean
     ensure_git_branch(branch: DEFAULT_BRANCH)
     Fastlane::Helper::GitHelper.create_branch("release/#{next_release_version}", from: DEFAULT_BRANCH)
     UI.message "Done! New release branch is: #{git_branch}"
@@ -260,6 +261,9 @@ platform :android do
     # Checkout default branch and update
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
 
+    # Check local repo status
+    ensure_git_status_clean
+
     # Check versions
     message = <<-MESSAGE
 
@@ -285,9 +289,6 @@ platform :android do
     else
       UI.user_error!('Aborted by user request') unless UI.confirm("#{message}Do you want to continue?")
     end
-
-    # Check local repo status
-    ensure_git_status_clean
 
     # Bump the release version and build code
     UI.message 'Bumping beta version and build code...'
@@ -320,6 +321,8 @@ platform :android do
   lane :new_hotfix_release do |options|
     UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
 
+    ensure_git_status_clean
+
     new_version = options[:version_name]
     # Parse the provided version into an AppVersion object
     parsed_version = VERSION_FORMATTER.parse(new_version)
@@ -350,7 +353,6 @@ platform :android do
 
     # Create the hotfix branch
     UI.message 'Creating hotfix branch...'
-    ensure_git_status_clean
     Fastlane::Helper::GitHelper.create_branch("release/#{new_version}", from: previous_version)
     UI.message "Done! New hotfix branch is: #{git_branch}"
 
@@ -416,14 +418,14 @@ platform :android do
 
     UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
 
+    ensure_git_status_clean
+
     message = "Finalizing release: #{current_release_version}\n"
     if options[:skip_confirm]
       UI.message(message)
     else
       UI.user_error!('Aborted by user request') unless UI.confirm("#{message}Do you want to continue?")
     end
-
-    ensure_git_status_clean
 
     configure_apply(force: is_ci)
 
@@ -541,6 +543,8 @@ platform :android do
 
     UI.user_error!("Can't build a final release out of this branch because it's configured as a beta release!") if beta_version?(current_version_name)
 
+    ensure_git_status_clean unless is_ci
+
     message = "Building version #{current_release_version} (#{current_build_code}) for upload to Release Channel\n"
 
     if options[:skip_confirm]
@@ -548,9 +552,6 @@ platform :android do
     else
       UI.user_error!('Aborted by user request') unless UI.confirm("#{message}Do you want to continue?")
     end
-
-    # Check local repo status
-    ensure_git_status_clean unless is_ci
 
     android_build_preflight unless options[:skip_prechecks]
 
@@ -595,6 +596,8 @@ platform :android do
   lane :build_and_upload_beta do |options|
     Fastlane::Helper::GitHelper.ensure_on_branch!('release') unless is_ci
 
+    ensure_git_status_clean unless is_ci
+
     message = "Building version #{current_version_name} (#{current_build_code}) for upload to Beta Channel\n"
 
     if options[:skip_confirm]
@@ -602,9 +605,6 @@ platform :android do
     else
       UI.user_error!('Aborted by user request') unless UI.confirm("#{message}Do you want to continue?")
     end
-
-    # Check local repo status
-    ensure_git_status_clean unless is_ci
 
     android_build_preflight unless options[:skip_prechecks]
 
