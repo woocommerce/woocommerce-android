@@ -74,8 +74,6 @@ android {
 
     compileSdkVersion gradle.ext.compileSdkVersion
 
-    def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
-
     defaultConfig {
         applicationId "com.woocommerce.android"
 
@@ -514,6 +512,8 @@ def checkGradlePropertiesFile() {
     }
     return inputFile
 }
+
+def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 static def loadPropertiesFromFile(inputFile) {
     def properties = new Properties()
