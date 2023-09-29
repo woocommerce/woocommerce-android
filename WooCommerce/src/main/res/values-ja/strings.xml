@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-22 09:54:05+0000
+Translation-Revision-Date: 2023-09-28 09:54:22+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">住所をクリアしてこのレートの使用を停止する</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">この注文に新しい税率を設定する</string>
+    <string name="tax_rate_selector_auto_rate_details_title">税率の自動加算</string>
+    <string name="ai_product_name_sheet_error_message">商品名の生成中に問題が発生しました。 もう一度お試しください。</string>
+    <string name="ai_product_name_sheet_regenerate_button">再生成</string>
+    <string name="ai_product_name_sheet_generate_button">ご記入ください</string>
+    <string name="ai_product_name_sheet_input_description">商品の概要とその特徴的な点を教えてください。</string>
+    <string name="ai_product_name_sheet_subtitle">AI が魅力的なタイトルを生成します</string>
+    <string name="ai_product_name_sheet_title">✨商品名</string>
+    <string name="empty_review_filtered_list_message">すべての商品レビューを表示するには、未読フィルターを無効にしてみてください</string>
+    <string name="empty_review_filtered_list_title">未読の商品レビューはありません</string>
+    <string name="product_creation_ai_tone_selected_content_desc">トーンが選択されました</string>
+    <string name="product_creation_ai_tone_convincing">説得力がある</string>
+    <string name="product_creation_ai_tone_flowery">花</string>
+    <string name="product_creation_ai_tone_formal">フォーマル</string>
+    <string name="product_creation_ai_tone_casual">カジュアル</string>
+    <string name="product_creation_ai_tone_description">トーンと声を設定してブランドに合わせた商品のプレゼンテーションを形成します。</string>
+    <string name="product_creation_ai_tone_title">トーンと声</string>
+    <string name="product_creation_ai_preview_details_section">詳細</string>
+    <string name="product_creation_ai_preview_description_section">商品説明</string>
+    <string name="product_creation_ai_preview_name_section">商品名</string>
+    <string name="product_creation_ai_preview_subtitle">心配ご無用です。 以下の詳細は後でいつでも変更できます。</string>
+    <string name="product_creation_ai_preview_title">プレビュー</string>
+    <string name="product_creation_ai_about_product_continue_button">商品情報を作成</string>
+    <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">主要な機能や利点、詳細を追加して商品をオンラインで見つけられるようにします。</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど</string>
+    <string name="product_creation_ai_about_product_edit_text_header">自分の商品</string>
+    <string name="product_creation_ai_about_product_subtitle">商品のユニークな点を強調し、AI に魔法をかけてもらいましょう。</string>
+    <string name="product_creation_ai_about_product_title">商品について</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">名前を提案</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど。</string>
+    <string name="ai_product_creation_add_name_keywords_label">商品名</string>
+    <string name="ai_product_creation_add_name_subtitle">または、タップして選択肢を拡張し、さらに名前の候補を表示します。</string>
+    <string name="ai_product_creation_add_name_title">商品名を追加する</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">AI を活用しています。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手動で商品と詳細を追加します</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">手動で追加する</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">詳細をすぐに生成できます</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">AI で商品を登録する</string>
+    <string name="product_creation_ai_entry_sheet_header">商品を追加する</string>
+    <string name="product_review_list_unread_reviews_filter">未読レビューのみ</string>
+    <string name="order_creation_edit_tax_rate">税率設定を編集</string>
     <string name="tax_rate_selector_auto_rate_subtitle">オンラインの注文には影響しません</string>
     <string name="tax_rate_selector_auto_rate_label">作成されたすべての注文にこのレートを追加します</string>
     <string name="tax_rate_selector_empty_list_button_alt">税率を編集</string>

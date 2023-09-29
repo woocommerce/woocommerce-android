@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 15.6
+We're thrilled to announce our latest update! Now, merchants selling in different locations can enjoy the convenience of automatic tax rate settings. We've also fixed an issue that was preventing login when sites used a custom directory for WordPress installation. Plus, we've supercharged product creation with AI capabilities for WPCOM and self-hosted stores using the Jetpack AI plugin. Enjoy smoother operations and enhanced productivity with these new improvements. Happy selling!
+
 ## 15.5
 We're excited to introduce a new feature in this new update! To help you stay on top of customer feedback, we've added a new filter for unread product reviews. This will allow you to easily sort and prioritize your responses, ensuring that all your customers feel heard and valued. Enjoy this new level or efficiency in managing your online store.
 
