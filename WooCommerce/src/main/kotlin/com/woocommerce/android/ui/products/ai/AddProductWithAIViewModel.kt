@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -101,6 +103,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     fun onSaveButtonClick() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         require(::product.isInitialized)
         viewModelScope.launch {
             saveButtonState.value = SaveButtonState.Loading
