@@ -7,9 +7,12 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCProductStore
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class ProductFilterListViewModelTest : BaseUnitTest() {
@@ -40,5 +43,21 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         )
 
         whenever(resourceProvider.getString(any())).thenReturn("")
+    }
+
+    @Test
+    fun `given there is no NonPublish product restriction, then display product status filter`() {
+        val productFilters = mutableListOf<ProductFilterListViewModel.FilterListItemUiModel>()
+        productFilterListViewModel.filterListItems.observeForever {
+            productFilters.addAll(it)
+        }
+
+        productFilterListViewModel.loadFilters()
+
+        assertTrue(
+            productFilters.firstOrNull {
+                it.filterItemKey == WCProductStore.ProductFilterOption.STATUS
+            } != null
+        )
     }
 }
