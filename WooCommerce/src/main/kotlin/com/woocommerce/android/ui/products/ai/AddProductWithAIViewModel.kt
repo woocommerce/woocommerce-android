@@ -97,7 +97,7 @@ class AddProductWithAIViewModel @Inject constructor(
         if (step.value.order == 1) {
             triggerEvent(Exit)
         } else {
-            appsPrefsWrapper.aiProductCreationIsFirstAttempt = true
+            appsPrefsWrapper.aiProductCreationIsFirstAttempt = false
             goToPreviousStep()
         }
     }
