@@ -1922,6 +1922,7 @@
     <string name="product_creation_ai_tone_flowery">Flowery</string>
     <string name="product_creation_ai_tone_convincing">Convincing</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
+    <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
 
     <!--
         Product Add more details Bottom sheet
