@@ -758,7 +758,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
             order.copy(
-                customer =  Order.Customer(
+                customer = Order.Customer(
                     customerId = null,
                     billingAddress = EMPTY,
                     shippingAddress = EMPTY
@@ -1166,12 +1166,16 @@ class OrderCreateEditViewModel @Inject constructor(
             _orderDraft.update { order ->
                 when (taxBasedOnSetting) {
                     BillingAddress -> order.copy(
-                        customer = order.customer?.copy(billingAddress = updatedAddress) ?:
-                            Order.Customer(billingAddress = updatedAddress, shippingAddress = EMPTY)
+                        customer = order.customer?.copy(billingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = updatedAddress,
+                            shippingAddress = EMPTY
+                        )
                     )
                     ShippingAddress -> order.copy(
-                        customer = order.customer?.copy(shippingAddress = updatedAddress) ?:
-                            Order.Customer(billingAddress = EMPTY, shippingAddress = updatedAddress)
+                        customer = order.customer?.copy(shippingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = EMPTY,
+                            shippingAddress = updatedAddress
+                        )
                     )
                     else -> order
                 }
