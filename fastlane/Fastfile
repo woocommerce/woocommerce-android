@@ -14,6 +14,7 @@ PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 ORIGINALS_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
 RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
 MAIN_STRINGS_PATH = File.join('WooCommerce', 'src', 'main', 'res', 'values', 'strings.xml')
+VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
 # The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
 PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
 # Currently, the strings to use for the screenshots live in yet another metadata folder.
@@ -54,7 +55,7 @@ VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::DateVersionCalcula
 VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter.new
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
 BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
-VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new
+VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(version_properties_path: VERSION_PROPERTIES_PATH)
 
 ########################################################################
 # Environment
