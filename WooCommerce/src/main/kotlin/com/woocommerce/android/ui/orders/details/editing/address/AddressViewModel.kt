@@ -247,7 +247,10 @@ class AddressViewModel @Inject constructor(
     fun onAddressesChanged(customer: Order.Customer) {
         hasStarted = true
         viewState = viewState.copy(
-
+            customerId = customer.customerId,
+            firstName = customer.firstName,
+            lastName = customer.lastName,
+            email = customer.email,
             addressSelectionStates = mapOf(
                 AddressType.BILLING to AddressSelectionState(
                     customer.billingAddress,

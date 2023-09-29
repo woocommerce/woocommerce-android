@@ -509,35 +509,40 @@ class OrderCreateEditFormFragment :
     @SuppressLint("SetTextI18n")
     private fun bindCustomerAddressSection(customerAddressSection: OrderCreateEditSectionView, order: Order) {
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
-        order.takeIf { it.billingAddress != Address.EMPTY }
-            ?.let {
-                val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
-                view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
-                view.email.text = order.billingAddress.email
 
-                val shippingAddressDetails =
-                    if (order.shippingAddress != Address.EMPTY) {
-                        order.formatShippingInformationForDisplay()
-                    } else {
-                        order.formatBillingInformationForDisplay()
-                    }
-                view.shippingAddressDetails.text = shippingAddressDetails
-                view.shippingAddressDetails.contentDescription =
-                    shippingAddressDetails.replace("\n", ". ")
+        val customer = order.customer
+        if (customer == null) {
+            customerAddressSection.content = null
+            return
+        }
 
-                val billingAddressDetails = order.formatBillingInformationForDisplay()
-                view.billingAddressDetails.text = billingAddressDetails
-                view.billingAddressDetails.contentDescription =
-                    billingAddressDetails.replace("\n", ". ")
+        val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
+        view.name.text = "${customer.firstName} ${customer.lastName}"
+        view.email.text = customer.email
 
-                view.customerInfoViewMoreButtonTitle.setOnClickListener {
-                    view.changeState()
+        if (customer.shippingAddress != Address.EMPTY) {
+            val shippingAddressDetails =
+                if (order.shippingAddress != Address.EMPTY) {
+                    order.formatShippingInformationForDisplay()
+                } else {
+                    order.formatBillingInformationForDisplay()
                 }
-                view.root
+            view.shippingAddressDetails.text = shippingAddressDetails
+            view.shippingAddressDetails.contentDescription =
+                shippingAddressDetails.replace("\n", ". ")
+        }
+
+        if (customer.billingAddress != Address.EMPTY) {
+            val billingAddressDetails = order.formatBillingInformationForDisplay()
+            view.billingAddressDetails.text = billingAddressDetails
+            view.billingAddressDetails.contentDescription =
+                billingAddressDetails.replace("\n", ". ")
+            view.customerInfoViewMoreButtonTitle.setOnClickListener {
+                view.changeState()
             }
-            .let {
-                customerAddressSection.content = it
-            }
+        }
+
+        customerAddressSection.content = view.root
     }
 
     private fun setupHandleResults() {
