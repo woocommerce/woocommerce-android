@@ -1,1 +1,5 @@
-We're excited to introduce a new feature in this new update! To help you stay on top of customer feedback, we've added a new filter for unread product reviews. This will allow you to easily sort and prioritize your responses, ensuring that all your customers feel heard and valued. Enjoy this new level or efficiency in managing your online store.
+- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
+- [**] Added possibility to set up automatic tax rate setting for merchants selling temporarily in different locations [https://github.com/woocommerce/woocommerce-android/pull/9791]
+- [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
+- [***]  WPCOM stores and self-hosted stores with Jetpack AI plugin can now create products using AI.[https://github.com/woocommerce/woocommerce-android/issues/9785]
+
