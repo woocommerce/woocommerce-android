@@ -37,7 +37,7 @@ class AddProductWithAIViewModel @Inject constructor(
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
     parameterRepository: ParameterRepository,
-    private val appsPrefsWrapper: AppPrefsWrapper,
+    private val appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
