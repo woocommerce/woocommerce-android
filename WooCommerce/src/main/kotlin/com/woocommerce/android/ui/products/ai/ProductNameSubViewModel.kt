@@ -41,6 +41,7 @@ class ProductNameSubViewModel(
     }
 
     fun onDoneClick() {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_PRODUCT_NAME_CONTINUE_BUTTON_TAPPED)
         onDone(name.value)
     }
 
