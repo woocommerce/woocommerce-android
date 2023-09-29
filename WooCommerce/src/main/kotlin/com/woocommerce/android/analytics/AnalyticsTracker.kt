@@ -619,6 +619,8 @@ class AnalyticsTracker private constructor(
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
 
+        const val KEY_IS_AI_CONTENT = "is_ai_content"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
