@@ -81,7 +81,7 @@ class AIProductNameViewModel @Inject constructor(
                     )
                 }
                 analyticsTracker.track(
-                    AnalyticsEvent.PRODUCT_DESCRIPTION_AI_GENERATION_FAILED,
+                    AnalyticsEvent.PRODUCT_NAME_AI_GENERATION_FAILED,
                     mapOf(
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to throwable.errorType,
