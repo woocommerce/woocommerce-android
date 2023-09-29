@@ -143,7 +143,15 @@ class ProductPreviewSubViewModel(
             AIRepository.PRODUCT_CREATION_FEATURE
         )
             .fold(
-                onSuccess = { it },
+                onSuccess = {
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS,
+                        mapOf(
+                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION
+                        )
+                    )
+                    it
+                },
                 onFailure = { error ->
                     AnalyticsTracker.track(
                         AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
@@ -208,6 +216,7 @@ class ProductPreviewSubViewModel(
             val description: String
                 get() = product.description
         }
+
         data class Error(
             val onRetryClick: () -> Unit,
             val onDismissClick: () -> Unit
