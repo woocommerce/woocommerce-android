@@ -737,9 +737,11 @@ class OrderCreateEditViewModel @Inject constructor(
 
         _orderDraft.update { order ->
             order.copy(
-                customerId = customerId,
-                billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
+                customer = Order.Customer(
+                    customerId = customerId,
+                    billingAddress = billingAddress,
+                    shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
+                )
             )
         }
     }
@@ -756,9 +758,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
             order.copy(
-                customerId = null,
-                billingAddress = EMPTY,
-                shippingAddress = EMPTY
+                customer =  Order.Customer(
+                    customerId = null,
+                    billingAddress = EMPTY,
+                    shippingAddress = EMPTY
+                )
             )
         }
     }
@@ -1161,8 +1165,14 @@ class OrderCreateEditViewModel @Inject constructor(
         withContext(Main) {
             _orderDraft.update { order ->
                 when (taxBasedOnSetting) {
-                    BillingAddress -> order.copy(billingAddress = updatedAddress)
-                    ShippingAddress -> order.copy(shippingAddress = updatedAddress)
+                    BillingAddress -> order.copy(
+                        customer = order.customer?.copy(billingAddress = updatedAddress) ?:
+                            Order.Customer(billingAddress = updatedAddress, shippingAddress = EMPTY)
+                    )
+                    ShippingAddress -> order.copy(
+                        customer = order.customer?.copy(shippingAddress = updatedAddress) ?:
+                            Order.Customer(billingAddress = EMPTY, shippingAddress = updatedAddress)
+                    )
                     else -> order
                 }
             }
