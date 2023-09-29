@@ -111,8 +111,13 @@ class AddProductWithAIViewModel @Inject constructor(
             if (!success) {
                 triggerEvent(ShowSnackbar(R.string.error_generic))
                 saveButtonState.value = SaveButtonState.Shown
+                AnalyticsTracker.track(
+                    AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED,
+                    mapOf(AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName)
+                )
             } else {
                 triggerEvent(NavigateToProductDetailScreen(productId))
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
             }
         }
     }
