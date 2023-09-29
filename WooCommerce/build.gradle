@@ -69,6 +69,8 @@ repositories {
     }
 }
 
+def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
+
 android {
     namespace "com.woocommerce.android"
 
@@ -512,8 +514,6 @@ def checkGradlePropertiesFile() {
     }
     return inputFile
 }
-
-def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 static def loadPropertiesFromFile(inputFile) {
     def properties = new Properties()
