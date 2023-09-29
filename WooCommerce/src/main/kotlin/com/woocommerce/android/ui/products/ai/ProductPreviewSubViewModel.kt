@@ -123,7 +123,7 @@ class ProductPreviewSubViewModel(
                 },
                 onFailure = {
                     AnalyticsTracker.track(
-                        AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS,
+                        AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_TYPE to (it as? JetpackAICompletionsException)?.errorType,
