@@ -114,6 +114,7 @@ class ProductPreviewSubViewModel(
                 languageISOCode = isoLanguageCode
             ).fold(
                 onSuccess = { product ->
+                    AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
                     _state.value = State.Success(
                         product = product,
                         propertyGroups = buildProductPreviewProperties(product)
@@ -121,6 +122,14 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to (it as? JetpackAICompletionsException)?.errorType,
+                            AnalyticsTracker.KEY_ERROR_DESC to (it as? JetpackAICompletionsException)?.errorMessage
+                        )
+                    )
                     WooLog.e(WooLog.T.AI, "Failed to generate product with AI", it)
                     _state.value = createErrorState()
                 }
