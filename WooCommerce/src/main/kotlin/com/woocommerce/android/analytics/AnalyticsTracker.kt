@@ -613,6 +613,7 @@ class AnalyticsTracker private constructor(
 
         // -- AI product name
         const val KEY_HAS_INPUT_NAME = "has_input_name"
+        const val VALUE_PRODUCT_CREATION = "product_creation"
         const val VALUE_PRODUCT_CREATION_AI = "product_creation_ai"
 
         // -- AI product creation

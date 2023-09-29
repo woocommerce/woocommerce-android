@@ -151,7 +151,7 @@ class ProductPreviewSubViewModel(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_TYPE to (error as? JetpackAICompletionsException)?.errorType,
                             AnalyticsTracker.KEY_ERROR_DESC to (error as? JetpackAICompletionsException)?.errorMessage,
-                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SHARING
+                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION
                         )
                     )
                     null
