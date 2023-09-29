@@ -39,6 +39,10 @@ class AddProductWithAIViewModel @Inject constructor(
     appsPrefsWrapper: AppPrefsWrapper,
     analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState = savedStateHandle) {
+    companion object {
+        private const val IS_FIRST_ATTEMPT_KEY = "is_first_attempt"
+    }
+
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
         analyticsTracker = analyticsTracker,
@@ -50,6 +54,8 @@ class AddProductWithAIViewModel @Inject constructor(
     )
     private val aboutSubViewModel = AboutProductSubViewModel(
         savedStateHandle = savedStateHandle,
+        analyticsTracker = analyticsTracker,
+        getIsFirstAttempt = { isFirstAttempt ?: true },
         onDone = { result ->
             result.let { (productFeatures, selectedAiTone) ->
                 previewSubViewModel.updateKeywords(productFeatures)
@@ -89,7 +95,12 @@ class AddProductWithAIViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    private var isFirstAttempt
+        get() = savedState.get<Boolean>(IS_FIRST_ATTEMPT_KEY)
+        set(value) = savedState.set(IS_FIRST_ATTEMPT_KEY, value)
+
     init {
+        isFirstAttempt = true
         wireSubViewModels()
     }
 
@@ -97,6 +108,7 @@ class AddProductWithAIViewModel @Inject constructor(
         if (step.value.order == 1) {
             triggerEvent(Exit)
         } else {
+            isFirstAttempt = false
             goToPreviousStep()
         }
     }

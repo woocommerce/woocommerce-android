@@ -617,6 +617,7 @@ class AnalyticsTracker private constructor(
 
         // -- AI product creation
         const val KEY_TONE = "tone"
+        const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
 
         var sendUsageStats: Boolean = true
             set(value) {

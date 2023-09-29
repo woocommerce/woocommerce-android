@@ -20,8 +20,9 @@ import kotlinx.parcelize.Parcelize
 class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
     val analyticsTracker: AnalyticsTrackerWrapper,
+    val getIsFirstAttempt: () -> Boolean,
     override val onDone: (Pair<String, AiTone>) -> Unit,
-    private val appsPrefsWrapper: AppPrefsWrapper
+    private val appsPrefsWrapper: AppPrefsWrapper,
 ) : AddProductWithAISubViewModel<Pair<String, AiTone>> {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -39,6 +40,13 @@ class AboutProductSubViewModel(
     fun onDoneClick() {
         productFeatures.value.let { (_, productFeatures, selectedAiTone) ->
             onDone(Pair(productFeatures, selectedAiTone))
+
+            analyticsTracker.track(
+                AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to getIsFirstAttempt.toString()
+                )
+            )
         }
     }
 
