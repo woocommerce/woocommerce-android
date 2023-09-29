@@ -14,7 +14,6 @@ repositories {
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
-            includeGroup "com.woocommerce.shared"
         }
     }
     maven {
