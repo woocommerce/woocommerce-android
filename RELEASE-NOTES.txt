@@ -5,6 +5,7 @@
 
 15.6
 -----
+- [**] Added possibility to set up automatic tax rate setting for merchants selling temporarily in different locations [https://github.com/woocommerce/woocommerce-android/pull/9791]
 - [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
 
 15.5
