@@ -12,6 +12,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCProductStore
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -55,6 +56,25 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         productFilterListViewModel.loadFilters()
 
         assertTrue(
+            productFilters.firstOrNull {
+                it.filterItemKey == WCProductStore.ProductFilterOption.STATUS
+            } != null
+        )
+    }
+
+    @Test
+    fun `given there is a NonPublish product restriction, then do not display product status filter`() {
+        val productFilters = mutableListOf<ProductFilterListViewModel.FilterListItemUiModel>()
+        productFilterListViewModel.filterListItems.observeForever {
+            productFilters.addAll(it)
+        }
+        whenever(productRestrictions.restrictions).thenReturn(
+            listOf(ProductRestriction.NonPublishedProducts)
+        )
+
+        productFilterListViewModel.loadFilters()
+
+        assertFalse(
             productFilters.firstOrNull {
                 it.filterItemKey == WCProductStore.ProductFilterOption.STATUS
             } != null
