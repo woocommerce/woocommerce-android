@@ -18,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductConfigurationViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val getProductRules: GetProductRules
+    private val getProductRules: GetProductRules,
+    getChildrenProductInfo: GetChildrenProductInfo
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductConfigurationFragmentArgs by savedState.navArgs()
@@ -27,14 +28,17 @@ class ProductConfigurationViewModel @Inject constructor(
 
     private val configuration = MutableStateFlow<ProductConfiguration?>(null)
 
+    private val productsInformation = getChildrenProductInfo(navArgs.productId)
+
     val viewState = combine(
         flow = rules.drop(1),
-        flow2 = configuration.drop(1)
-    ) { rules, configuration ->
+        flow2 = configuration.drop(1),
+        flow3 = productsInformation
+    ) { rules, configuration, productsInfo ->
         if (rules == null || configuration == null) {
             ViewState.Error("rules not found")
         } else {
-            ViewState.DisplayConfiguration(rules, configuration)
+            ViewState.DisplayConfiguration(rules, configuration, productsInfo)
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ViewState.Loading)
 
@@ -66,6 +70,13 @@ class ProductConfigurationViewModel @Inject constructor(
         data class DisplayConfiguration(
             val productRules: ProductRules,
             val productConfiguration: ProductConfiguration,
+            val productsInfo: Map<Long, ProductInfo>
         ) : ViewState()
     }
 }
+
+data class ProductInfo(
+    val id: Long,
+    val title: String,
+    val imageUrl: String?
+)
