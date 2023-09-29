@@ -925,7 +925,10 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
-        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
+        )
         viewState.productDraft?.let {
             val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -1018,10 +1021,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun trackPublishing(it: Product) {
-        var properties = mapOf(
-            "product_type" to it.productType.value.lowercase(Locale.ROOT),
-            AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent
-        )
+        val properties = mapOf("product_type" to it.productType.value.lowercase(Locale.ROOT))
         val statId = if (it.status == ProductStatus.DRAFT) {
             AnalyticsEvent.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
         } else {
