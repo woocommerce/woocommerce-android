@@ -15,12 +15,17 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -37,6 +42,9 @@ class ProductPreviewSubViewModel(
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asLiveData()
 
+    private val _events = MutableSharedFlow<MultiLiveEvent.Event>(extraBufferCapacity = 1)
+    override val events: Flow<MultiLiveEvent.Event> = _events.asSharedFlow()
+
     private lateinit var isoLanguageCode: String
     private lateinit var productName: String
     private lateinit var productKeywords: String
@@ -45,12 +53,42 @@ class ProductPreviewSubViewModel(
     private var generationJob: Job? = null
 
     override fun onStart() {
+        startProductGeneration()
+    }
+
+    override fun onStop() {
+        generationJob?.cancel()
+    }
+
+    fun updateName(name: String) {
+        this.productName = name
+    }
+
+    fun updateKeywords(keywords: String) {
+        this.productKeywords = keywords
+    }
+
+    fun updateTone(tone: AiTone) {
+        this.tone = tone
+    }
+
+    override fun close() {
+        viewModelScope.cancel()
+    }
+
+    private fun startProductGeneration() {
+        fun createErrorState() = State.Error(
+            onRetryClick = ::startProductGeneration,
+            onDismissClick = { _events.tryEmit(Exit) }
+        )
+
         generationJob = viewModelScope.launch {
             _state.value = State.Loading
 
             if (!::isoLanguageCode.isInitialized) {
                 isoLanguageCode = identifyLanguage() ?: run {
-                    // TODO show error alert
+                    WooLog.e(WooLog.T.AI, "Identifying language for the AI prompt failed")
+                    _state.value = createErrorState()
                     return@launch
                 }
             }
@@ -59,7 +97,8 @@ class ProductPreviewSubViewModel(
             val tags = getTags()
             val siteParameters = getSiteParameters() ?: run {
                 // We can't create a product without site parameters, so show an error and abort
-                // TODO show error alert
+                WooLog.e(WooLog.T.AI, "Getting site parameters failed")
+                _state.value = createErrorState()
                 return@launch
             }
 
@@ -82,31 +121,11 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
-                    // TODO
-                    it.printStackTrace()
+                    WooLog.e(WooLog.T.AI, "Failed to generate product with AI", it)
+                    _state.value = createErrorState()
                 }
             )
         }
-    }
-
-    override fun onStop() {
-        generationJob?.cancel()
-    }
-
-    fun updateName(name: String) {
-        this.productName = name
-    }
-
-    fun updateKeywords(keywords: String) {
-        this.productKeywords = keywords
-    }
-
-    fun updateTone(tone: AiTone) {
-        this.tone = tone
-    }
-
-    override fun close() {
-        viewModelScope.cancel()
     }
 
     private suspend fun identifyLanguage(): String? {
@@ -180,6 +199,10 @@ class ProductPreviewSubViewModel(
             val description: String
                 get() = product.description
         }
+        data class Error(
+            val onRetryClick: () -> Unit,
+            val onDismissClick: () -> Unit
+        ) : State
     }
 
     data class ProductPropertyCard(

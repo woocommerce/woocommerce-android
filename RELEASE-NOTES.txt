@@ -5,6 +5,7 @@
 15.6
 -----
 - [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
+- [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
 
 15.5
 -----
