@@ -1,2 +1,0 @@
-15,4:
-Ahora los vendedores pueden seleccionar un tipo impositivo al crear un pedido y añadir archivos descargables de todos los tipos de archivo compatibles durante la edición del producto. Hemos mejorado los pagos en persona; si la configuración de WcPay no ha finalizado, ahora los usuarios pueden completarla desde la aplicación. Entre las actualizaciones menores se incluye una corrección para el seguimiento del país cuando no se ha finalizado la incorporación de IPP y una pantalla de explicación antes de abrir la tarea de pagos.
