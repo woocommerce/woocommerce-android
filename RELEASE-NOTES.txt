@@ -6,6 +6,7 @@
 15.6
 -----
 - [*] Fix an issue that prevents login when the site uses a custom directory for the WordPress installation [https://github.com/woocommerce/woocommerce-android/pull/9846]
+- [***] Adds new feature to create products with ai generated content [https://github.com/woocommerce/woocommerce-android/issues/9785]
 
 15.5
 -----
