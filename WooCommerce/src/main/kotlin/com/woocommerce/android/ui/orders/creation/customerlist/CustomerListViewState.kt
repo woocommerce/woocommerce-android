@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.creation.customerlist
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -62,10 +62,6 @@ data class PaginationState(
     val hasNextPage: Boolean,
 )
 
-data class CustomerSelected(
-    val customerId: Long,
-    val billingAddress: Address,
-    val shippingAddress: Address
-) : MultiLiveEvent.Event()
+data class CustomerSelected(val customer: Order.Customer) : MultiLiveEvent.Event()
 
 object AddCustomer : MultiLiveEvent.Event()

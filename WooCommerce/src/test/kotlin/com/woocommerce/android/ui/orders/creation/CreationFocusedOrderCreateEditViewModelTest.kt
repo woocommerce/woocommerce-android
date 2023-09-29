@@ -193,7 +193,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
         val defaultShippingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Shipping")
 
-        sut.onCustomerAddressEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
+        sut.onCustomerEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
 
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultShippingAddress)
@@ -208,7 +208,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
         val defaultShippingAddress = Address.EMPTY
 
-        sut.onCustomerAddressEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
+        sut.onCustomerEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
 
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultBillingAddress)

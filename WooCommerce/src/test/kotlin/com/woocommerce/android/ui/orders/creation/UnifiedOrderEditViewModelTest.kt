@@ -210,7 +210,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when customer address edited, send tracks event`() {
-        sut.onCustomerAddressEdited(0, Address.EMPTY, Address.EMPTY)
+        sut.onCustomerEdited(0, Address.EMPTY, Address.EMPTY)
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_ADD,

@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.orders.creation.views.bindEditFields
@@ -124,10 +125,15 @@ class OrderCreateEditCustomerAddFragment :
                 is ShowCountrySelector -> showCountrySearchScreen(event.type, event.countries)
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
-                    sharedViewModel.onCustomerAddressEdited(
-                        customerId = event.customerId,
-                        billingAddress = event.addresses.getValue(BILLING),
-                        shippingAddress = event.addresses.getValue(SHIPPING)
+                    sharedViewModel.onCustomerEdited(
+                        Order.Customer(
+                            customerId = event.customerId,
+                            firstName = event.firstName,
+                            lastName = event.lastName,
+                            email = event.email,
+                            billingAddress = event.addresses.getValue(BILLING),
+                            shippingAddress = event.addresses.getValue(SHIPPING),
+                        )
                     )
 
                     findNavController().popBackStack(R.id.orderCreationFragment, false)

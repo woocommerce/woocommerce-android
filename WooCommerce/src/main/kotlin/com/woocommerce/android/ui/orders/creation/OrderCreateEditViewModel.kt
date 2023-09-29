@@ -725,7 +725,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
-    fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
+    fun onCustomerEdited(customer: Order.Customer) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
             ORDER_CUSTOMER_ADD,
@@ -736,13 +736,10 @@ class OrderCreateEditViewModel @Inject constructor(
         )
 
         _orderDraft.update { order ->
-            order.copy(
-                customer = Order.Customer(
-                    customerId = customerId,
-                    billingAddress = billingAddress,
-                    shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
-                )
+            val adjustedCustomer = customer.copy(
+                shippingAddress = customer.shippingAddress.takeIf { it != EMPTY } ?: customer.billingAddress
             )
+            order.copy(customer = adjustedCustomer)
         }
     }
 
