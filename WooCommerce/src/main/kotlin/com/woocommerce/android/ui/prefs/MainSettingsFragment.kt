@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.OpenReactNative
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThemeOption
@@ -235,17 +234,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupApplicationPasswordsSettings()
         presenter.setupOnboardingListVisibilitySetting()
 
-        binding.shippingClasses.apply {
-            isVisible = FeatureFlag.SHIPPING_ZONES.isEnabled()
-            setOnClickListener {
-                openReactNative()
-            }
-        }
-
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
             binding.optionDomain.isVisible ||
             binding.optionStoreOnboardingListVisibility.isVisible ||
-            binding.shippingClasses.isVisible ||
             binding.optionStoreName.isVisible
 
         binding.optionStoreName.setOnClickListener {

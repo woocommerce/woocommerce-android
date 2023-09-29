@@ -74,14 +74,6 @@
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/domain" />
 
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/shipping_classes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:optionTitle="@string/shipping_classes_zones"
-                tools:visibility="visible" />
-
             <!--
                 Store onboarding list visibility
             -->
