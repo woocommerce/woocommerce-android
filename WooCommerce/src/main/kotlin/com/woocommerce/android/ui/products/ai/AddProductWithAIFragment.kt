@@ -57,6 +57,7 @@ class AddProductWithAIFragment : BaseFragment() {
                 is NavigateToProductDetailScreen -> findNavController().navigateSafely(
                     directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
                         remoteProductId = event.productId,
+                        isAIContent = true
                     ),
                     navOptions = navOptions {
                         popUpTo(R.id.addProductWithAIFragment) { inclusive = true }

@@ -7,6 +7,7 @@ import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_DESCRIPTION_FEATURE
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_AI_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_COPY_BUTTON_TAPPED
@@ -79,7 +80,7 @@ class AIProductDescriptionViewModel @Inject constructor(
         }
 
         tracker.track(
-            stat = PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS,
+            stat = AI_IDENTIFY_LANGUAGE_SUCCESS,
             properties = mapOf(
                 KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION
             )
