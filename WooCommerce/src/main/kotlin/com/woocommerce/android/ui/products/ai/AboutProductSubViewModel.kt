@@ -8,7 +8,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -19,8 +18,6 @@ import kotlinx.parcelize.Parcelize
 
 class AboutProductSubViewModel(
     savedStateHandle: SavedStateHandle,
-    val analyticsTracker: AnalyticsTrackerWrapper,
-    val getIsFirstAttempt: () -> Boolean,
     override val onDone: (Pair<String, AiTone>) -> Unit,
     private val appsPrefsWrapper: AppPrefsWrapper,
 ) : AddProductWithAISubViewModel<Pair<String, AiTone>> {
@@ -41,10 +38,10 @@ class AboutProductSubViewModel(
         productFeatures.value.let { (_, productFeatures, selectedAiTone) ->
             onDone(Pair(productFeatures, selectedAiTone))
 
-            analyticsTracker.track(
+            AnalyticsTracker.track(
                 AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to getIsFirstAttempt.toString()
+                    AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to appsPrefsWrapper.aiProductCreationIsFirstAttempt
                 )
             )
         }
@@ -55,7 +52,7 @@ class AboutProductSubViewModel(
     }
 
     fun onNewToneSelected(tone: AiTone) {
-        analyticsTracker.track(
+        AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_CREATION_AI_TONE_SELECTED,
             mapOf(
                 AnalyticsTracker.KEY_TONE to tone.slug

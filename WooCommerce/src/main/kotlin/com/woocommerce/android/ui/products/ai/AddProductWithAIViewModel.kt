@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -36,16 +35,10 @@ class AddProductWithAIViewModel @Inject constructor(
     categoriesRepository: ProductCategoriesRepository,
     tagsRepository: ProductTagsRepository,
     parameterRepository: ParameterRepository,
-    appsPrefsWrapper: AppPrefsWrapper,
-    analyticsTracker: AnalyticsTrackerWrapper,
+    private val appsPrefsWrapper: AppPrefsWrapper,
 ) : ScopedViewModel(savedState = savedStateHandle) {
-    companion object {
-        private const val IS_FIRST_ATTEMPT_KEY = "is_first_attempt"
-    }
-
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
-        analyticsTracker = analyticsTracker,
         onDone = { name ->
             aboutSubViewModel.updateProductName(name)
             previewSubViewModel.updateName(name)
@@ -54,8 +47,6 @@ class AddProductWithAIViewModel @Inject constructor(
     )
     private val aboutSubViewModel = AboutProductSubViewModel(
         savedStateHandle = savedStateHandle,
-        analyticsTracker = analyticsTracker,
-        getIsFirstAttempt = { isFirstAttempt ?: true },
         onDone = { result ->
             result.let { (productFeatures, selectedAiTone) ->
                 previewSubViewModel.updateKeywords(productFeatures)
@@ -95,12 +86,8 @@ class AddProductWithAIViewModel @Inject constructor(
         )
     }.asLiveData()
 
-    private var isFirstAttempt
-        get() = savedState.get<Boolean>(IS_FIRST_ATTEMPT_KEY)
-        set(value) = savedState.set(IS_FIRST_ATTEMPT_KEY, value)
-
     init {
-        isFirstAttempt = true
+        appsPrefsWrapper.aiProductCreationIsFirstAttempt = true
         wireSubViewModels()
     }
 
@@ -108,7 +95,7 @@ class AddProductWithAIViewModel @Inject constructor(
         if (step.value.order == 1) {
             triggerEvent(Exit)
         } else {
-            isFirstAttempt = false
+            appsPrefsWrapper.aiProductCreationIsFirstAttempt = true
             goToPreviousStep()
         }
     }
