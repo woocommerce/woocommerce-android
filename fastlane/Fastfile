@@ -144,7 +144,7 @@ platform :android do
     UI.message "Done! New Beta Version: #{current_beta_version}. New Build Code: #{current_build_code}"
 
     # Commit the version bump
-    Fastlane::Helper::Android::GitHelper.commit_version_bump
+    commit_version_bump
 
     new_version = current_release_version
 
@@ -299,7 +299,7 @@ platform :android do
     )
     UI.message "Done! New Beta Version: #{current_beta_version}. New Build Code: #{current_build_code}"
 
-    Fastlane::Helper::Android::GitHelper.commit_version_bump
+    commit_version_bump
 
     push_to_git_remote_with_confirmation
 
@@ -364,7 +364,7 @@ platform :android do
     )
     UI.message "Done! New Release Version: #{current_release_version}. New Build Code: #{current_build_code}"
 
-    Fastlane::Helper::Android::GitHelper.commit_version_bump
+    commit_version_bump
   end
 
   #####################################################################################
@@ -441,7 +441,7 @@ platform :android do
     )
     UI.message "Done! New Release Version: #{current_release_version}. New Build Code: #{current_build_code}"
 
-    Fastlane::Helper::Android::GitHelper.commit_version_bump
+    commit_version_bump
 
     version = current_release_version
 
@@ -1198,6 +1198,13 @@ platform :android do
   #####################################################################################
   # Version Methods
   #####################################################################################
+
+  def commit_version_bump
+    Fastlane::Helper::GitHelper.commit(
+      message: 'Bump version number',
+      files: VERSION_PROPERTIES_PATH
+    )
+  end
 
   # Returns the current version name from `version.properties` without needing formatting or calculations
   def current_version_name
