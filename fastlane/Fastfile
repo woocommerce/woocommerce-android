@@ -280,8 +280,8 @@ platform :android do
       UI.user_error!("Release branch for version #{current_release_version} doesn't exist.")
     end
 
-    # Check user overwrite
-    switch_to_user_branch(options[:base_version], message) unless options[:base_version].nil?
+    # Check user override
+    override_default_release_branch(options[:base_version]) unless options[:base_version].nil?
 
     # Verify
     if options[:skip_confirm]
@@ -1193,6 +1193,13 @@ platform :android do
     else
       UI.message('Continuing without pushing')
     end
+  end
+
+  def override_default_release_branch(version)
+    success = Fastlane::Helper::GitHelper.checkout_and_pull(release: version)
+    UI.user_error!("Release branch for version #{version} doesn't exist. Abort.") unless success
+
+    UI.message "Checked out branch `#{git_branch}` as requested by user.\n"
   end
 
   #####################################################################################
