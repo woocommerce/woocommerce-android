@@ -118,11 +118,13 @@ platform :android do
 
     confirmation_message = <<-MESSAGE
 
-     Building a new release branch starting from #{DEFAULT_BRANCH}.
-     Current version: #{current_release_version} (#{current_build_code}).
-     New beta version to start the code freeze: #{first_beta_version} (#{next_build_code}).
+      Code Freeze:
+      • New release branch from #{DEFAULT_BRANCH}: release/#{next_release_version}
+      • Current release version and build code: #{current_release_version} (#{current_build_code}).
+      • New release version and build code: #{first_beta_version} (#{next_build_code}).
 
-     Do you want to continue?
+      Do you want to continue?
+
     MESSAGE
 
     # Ask user confirmation
@@ -319,11 +321,11 @@ platform :android do
   #####################################################################################
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
   lane :new_hotfix_release do |options|
-    UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
+    new_version = options[:version_name] || UI.input('Version number for the new hotfix?')
+    new_version_code = options[:version_code] || UI.input('Version code for the new hotfix?')
 
     ensure_git_status_clean
 
-    new_version = options[:version_name]
     # Parse the provided version into an AppVersion object
     parsed_version = VERSION_FORMATTER.parse(new_version)
     previous_version = VERSION_FORMATTER.release_version(VERSION_CALCULATOR.previous_patch_version(version: parsed_version))
@@ -335,7 +337,7 @@ platform :android do
       New hotfix version: #{new_version}
 
       Current build code: #{current_build_code}
-      New build code: #{next_build_code}
+      New build code: #{new_version_code}
 
       Branching from tag: #{previous_version}
 
@@ -360,7 +362,7 @@ platform :android do
     UI.message 'Bumping hotfix version and build code...'
     VERSION_FILE.write_version(
       version_name: new_version,
-      version_code: next_build_code
+      version_code: new_version_code
     )
     UI.message "Done! New Release Version: #{current_release_version}. New Build Code: #{current_build_code}"
 
@@ -374,11 +376,13 @@ platform :android do
   # -----------------------------------------------------------------------------------
   # Usage:
   # bundle exec fastlane finalize_hotfix_release
-  #
-  # Example:
-  # bundle exec fastlane finalize_hotfix_release
+  #####################################################################################
   desc 'Finalizes a hotfix release by triggering a release build'
-  lane :finalize_hotfix_release do |_options|
+  lane :finalize_hotfix_release do
+    UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
+    ensure_git_status_clean
+
+    UI.message = "Triggering hotfix build for version: #{current_release_version}"
     trigger_release_build(branch_to_build: "release/#{current_release_version}")
   end
 
@@ -416,9 +420,7 @@ platform :android do
   lane :finalize_release do |options|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix
 
-    unless git_branch.start_with?('release/')
-      UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.")
-    end
+    UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
 
     ensure_git_status_clean
 
