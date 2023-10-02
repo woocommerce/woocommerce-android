@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCProductStore.ProductError
 
@@ -78,6 +79,8 @@ class ProductPreviewSubViewModel(
                 AnalyticsTracker.KEY_IS_USEFUL to positive
             )
         )
+
+        _state.update { (it as State.Success).copy(shouldShowFeedbackView = false) }
     }
 
     override fun close() {
@@ -171,7 +174,8 @@ class ProductPreviewSubViewModel(
         object Loading : State
         data class Success(
             private val product: Product,
-            val propertyGroups: List<List<ProductPropertyCard>>
+            val propertyGroups: List<List<ProductPropertyCard>>,
+            val shouldShowFeedbackView: Boolean = true
         ) : State {
             val title: String
                 get() = product.name

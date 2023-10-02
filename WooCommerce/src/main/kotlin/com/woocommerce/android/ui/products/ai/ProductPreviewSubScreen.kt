@@ -166,12 +166,14 @@ private fun ProductPreviewContent(
             Spacer(Modifier)
         }
 
-        Spacer(Modifier)
+        if (state.shouldShowFeedbackView) {
+            Spacer(Modifier)
 
-        FeedbackForm(
-            onFeedbackReceived = onFeedbackReceived,
-            modifier = Modifier.fillMaxWidth()
-        )
+            FeedbackForm(
+                onFeedbackReceived = onFeedbackReceived,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
