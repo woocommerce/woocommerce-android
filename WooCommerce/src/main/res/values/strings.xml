@@ -3641,11 +3641,6 @@
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
 
     <!--
-    Shipping zones
-    -->
-    <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
-
-    <!--
     Tax rates info dialog
     -->
     <string name="tax_rates_information_content_description">Tax rates information</string>
