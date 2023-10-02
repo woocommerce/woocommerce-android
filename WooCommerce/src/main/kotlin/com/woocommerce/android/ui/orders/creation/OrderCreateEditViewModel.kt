@@ -743,7 +743,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomerAddressDeleted() {
+    fun onCustomerDeleted() {
         tracker.track(
             ORDER_CUSTOMER_DELETE,
             mapOf(KEY_FLOW to flow)

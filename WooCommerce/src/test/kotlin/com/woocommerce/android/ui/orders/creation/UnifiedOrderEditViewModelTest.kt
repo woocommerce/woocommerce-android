@@ -242,19 +242,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when customer address deleted, then order is update with empty address`() {
-        sut.onCustomerAddressDeleted()
+    fun `when customer deleted, then order is update with null customer info`() {
+        sut.onCustomerDeleted()
 
         val values = sut.orderDraft.captureValues()
 
-        assertThat(values.last().customer!!.customerId).isNull()
-        assertThat(values.last().customer!!.billingAddress).isEqualTo(Address.EMPTY)
-        assertThat(values.last().customer!!.shippingAddress).isEqualTo(Address.EMPTY)
+        assertThat(values.last().customer).isNull()
     }
 
     @Test
     fun `when customer address deleted, then delete event tracked`() {
-        sut.onCustomerAddressDeleted()
+        sut.onCustomerDeleted()
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_DELETE,

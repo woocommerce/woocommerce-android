@@ -139,7 +139,7 @@ class OrderCreateEditCustomerAddFragment :
                     findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
                 is AddressViewModel.DeleteCustomer -> {
-                    sharedViewModel.onCustomerAddressDeleted()
+                    sharedViewModel.onCustomerDeleted()
                     findNavController().navigateUp()
                 }
             }
