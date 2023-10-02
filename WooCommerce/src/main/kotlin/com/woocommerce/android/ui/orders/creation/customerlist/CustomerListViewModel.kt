@@ -277,10 +277,14 @@ class CustomerListViewModel @Inject constructor(
                     lastName = wcCustomer.lastName,
                     email = wcCustomer.email,
                     billingAddress = mapper.mapFromOrderAddressToAddress(
-                        billingAddress, billingCountry, billingState
+                        billingAddress,
+                        billingCountry,
+                        billingState
                     ),
                     shippingAddress = mapper.mapFromOrderAddressToAddress(
-                        shippingAddress, shippingCountry, shippingState
+                        shippingAddress,
+                        shippingCountry,
+                        shippingState
                     ),
                 )
             )

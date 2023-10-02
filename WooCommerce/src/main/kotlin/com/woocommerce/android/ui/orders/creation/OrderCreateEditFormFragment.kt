@@ -521,12 +521,7 @@ class OrderCreateEditFormFragment :
         view.email.text = customer.email
 
         if (customer.shippingAddress != Address.EMPTY) {
-            val shippingAddressDetails =
-                if (order.shippingAddress != Address.EMPTY) {
-                    order.formatShippingInformationForDisplay()
-                } else {
-                    order.formatBillingInformationForDisplay()
-                }
+            val shippingAddressDetails = order.formatShippingInformationForDisplay()
             view.shippingAddressDetails.text = shippingAddressDetails
             view.shippingAddressDetails.contentDescription =
                 shippingAddressDetails.replace("\n", ". ")
