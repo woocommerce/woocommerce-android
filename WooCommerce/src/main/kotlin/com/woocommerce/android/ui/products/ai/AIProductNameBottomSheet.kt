@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -35,10 +36,46 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ai.AIProductNameViewModel.ViewState.GenerationState
+
+@Composable
+fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
+
+    viewModel.viewState.observeAsState().value?.let { state ->
+        when (val generationState = state.generationState) {
+            is GenerationState.Start -> StartLayout(
+                keywords = state.keywords,
+                onKeywordsChanged = viewModel::onProductKeywordsChanged,
+                onGenerateButtonClicked = viewModel::onGenerateButtonClicked
+            )
+            is GenerationState.Generating -> GeneratingLayout(keywords = state.keywords)
+            is GenerationState.Generated -> {
+                if (generationState.hasError) {
+                    ErrorLayout(
+                        keywords = state.keywords,
+                        onKeywordsChanged = viewModel::onProductKeywordsChanged,
+                        onGenerateButtonClicked = viewModel::onGenerateButtonClicked
+                    )
+                } else {
+                    ResultLayout(
+                        keywords = state.keywords,
+                        generatedProductName = state.generatedProductName,
+                        onKeywordsChanged = viewModel::onProductKeywordsChanged,
+                        onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
+                        onCopyButtonClicked = viewModel::onCopyButtonClicked,
+                        onApplyButtonClicked = viewModel::onApplyButtonClicked,
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun MainLayout(
-    enableProductHighlight: Boolean = true,
+    keywords: String,
+    enableProductKeywords: Boolean = true,
+    onKeywordsChanged: (String) -> Unit = {},
     footer: @Composable () -> Unit
 ) {
     Column(
@@ -81,10 +118,10 @@ private fun MainLayout(
                     .padding(dimensionResource(id = R.dimen.major_100))
             ) {
                 WCOutlinedTextField(
-                    value = "Some entered text about the product",
-                    onValueChange = { },
+                    value = keywords,
+                    onValueChange = onKeywordsChanged,
                     label = "",
-                    enabled = enableProductHighlight,
+                    enabled = enableProductKeywords,
                     textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.major_400))
                 )
 
@@ -103,12 +140,20 @@ private fun MainLayout(
 }
 
 @Composable
-fun StartLayout() {
-    MainLayout {
+private fun StartLayout(
+    keywords: String,
+    onKeywordsChanged: (String) -> Unit,
+    onGenerateButtonClicked: () -> Unit
+) {
+    MainLayout(
+        keywords = keywords,
+        onKeywordsChanged = onKeywordsChanged
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_375)))
 
         WCColoredButton(
-            onClick = { },
+            enabled = keywords.isNotEmpty(),
+            onClick = onGenerateButtonClicked,
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.ai_product_name_sheet_generate_button),
             leadingIcon = {
@@ -123,8 +168,13 @@ fun StartLayout() {
 }
 
 @Composable
-fun GeneratingLayout() {
-    MainLayout(enableProductHighlight = false) {
+private fun GeneratingLayout(
+    keywords: String
+) {
+    MainLayout(
+        keywords = keywords,
+        enableProductKeywords = false
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
 
         Column(
@@ -154,11 +204,24 @@ fun GeneratingLayout() {
 }
 
 @Composable
-fun ResultLayout() {
-    MainLayout {
+private fun ResultLayout(
+    keywords: String,
+    generatedProductName: String,
+    onKeywordsChanged: (String) -> Unit,
+    onRegenerateButtonClicked: () -> Unit,
+    onCopyButtonClicked: () -> Unit,
+    onApplyButtonClicked: () -> Unit
+) {
+    MainLayout(
+        keywords = keywords,
+        onKeywordsChanged = onKeywordsChanged
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-        GeneratedTextLayout()
+        GeneratedTextLayout(
+            generatedProductName = generatedProductName,
+            onCopyButtonClicked = onCopyButtonClicked
+        )
 
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -172,7 +235,8 @@ fun ResultLayout() {
                 .fillMaxWidth()
         ) {
             WCTextButton(
-                onClick = { },
+                enabled = keywords.isNotEmpty(),
+                onClick = onRegenerateButtonClicked,
                 modifier = Modifier.align(Alignment.CenterStart),
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = colorResource(id = R.color.color_on_surface)
@@ -189,7 +253,7 @@ fun ResultLayout() {
                 )
             }
             WCColoredButton(
-                onClick = { },
+                onClick = onApplyButtonClicked,
                 modifier = Modifier
                     .align(Alignment.CenterEnd),
             ) {
@@ -203,7 +267,10 @@ fun ResultLayout() {
 }
 
 @Composable
-fun GeneratedTextLayout() {
+private fun GeneratedTextLayout(
+    generatedProductName: String,
+    onCopyButtonClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .background(
@@ -216,13 +283,13 @@ fun GeneratedTextLayout() {
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "The generated product name made by AI",
+            text = generatedProductName,
             style = MaterialTheme.typography.body1
         )
 
         WCTextButton(
             modifier = Modifier.align(Alignment.End),
-            onClick = { },
+            onClick = onCopyButtonClicked,
             colors = ButtonDefaults.textButtonColors(
                 contentColor = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -241,8 +308,15 @@ fun GeneratedTextLayout() {
 }
 
 @Composable
-fun ErrorLayout() {
-    MainLayout {
+private fun ErrorLayout(
+    keywords: String,
+    onKeywordsChanged: (String) -> Unit,
+    onGenerateButtonClicked: () -> Unit
+) {
+    MainLayout(
+        keywords = keywords,
+        onKeywordsChanged = onKeywordsChanged
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         Box(
@@ -266,7 +340,7 @@ fun ErrorLayout() {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         WCColoredButton(
-            onClick = { },
+            onClick = onGenerateButtonClicked,
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.ai_product_name_sheet_generate_button),
             leadingIcon = {
@@ -282,24 +356,31 @@ fun ErrorLayout() {
 
 @Preview
 @Composable
-fun StartLayoutPreview() {
-    StartLayout()
+private fun StartLayoutPreview() {
+    StartLayout("", onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }
 
 @Preview
 @Composable
-fun GeneratingLayoutPreview() {
-    GeneratingLayout()
+private fun GeneratingLayoutPreview() {
+    GeneratingLayout("")
 }
 
 @Preview
 @Composable
-fun ResultLayoutPreview() {
-    ResultLayout()
+private fun ResultLayoutPreview() {
+    ResultLayout(
+        keywords = "some keywords here",
+        generatedProductName = "AI-generated product name here",
+        onKeywordsChanged = {},
+        onRegenerateButtonClicked = {},
+        onCopyButtonClicked = {},
+        onApplyButtonClicked = {}
+    )
 }
 
 @Preview
 @Composable
-fun ErrorLayoutPreview() {
-    ErrorLayout()
+private fun ErrorLayoutPreview() {
+    ErrorLayout(keywords = "", onKeywordsChanged = {}, onGenerateButtonClicked = {})
 }

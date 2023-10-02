@@ -36,9 +36,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
         }.thenReturn(Result.success(listOf(mock())))
+
+        onBlocking { getCustomerList(any()) }.thenReturn(emptyList())
     }
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val mockCustomer: CustomerListViewState.CustomerList.Item.Customer = mock()
@@ -130,29 +132,30 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given advanced search mode, when viewmodel init, then advanced loading state emitted`() = testBlocking {
-        // GIVEN
-        whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
-        val searchModes = listOf(
-            SearchMode(
-                labelResId = R.string.order_creation_customer_search_name,
-                searchParam = "name",
-                isSelected = true,
+    fun `given advanced search mode , when viewmodel init, then advanced loading state emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(isAdvancedSearchSupported.invoke()).thenReturn(true)
+            val searchModes = listOf(
+                SearchMode(
+                    labelResId = R.string.order_creation_customer_search_name,
+                    searchParam = "name",
+                    isSelected = true,
+                )
             )
-        )
-        whenever(getSupportedSearchModes.invoke(true)).thenReturn(searchModes)
+            whenever(getSupportedSearchModes.invoke(true)).thenReturn(searchModes)
 
-        // WHEN
-        val viewModel = initViewModel()
-        val states = viewModel.viewState.captureValues()
+            // WHEN
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
 
-        // THEN
-        assertThat(states.last().searchModes).isEqualTo(searchModes)
-        assertThat(states.last().showFab).isTrue()
-        assertThat(states.last().searchFocused).isFalse()
-        assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
-        assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
-    }
+            // THEN
+            assertThat(states.last().searchModes).isEqualTo(searchModes)
+            assertThat(states.last().showFab).isTrue()
+            assertThat(states.last().searchFocused).isFalse()
+            assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
+            assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
+        }
 
     @Test
     fun `given advanced search mode, when viewmodel init, then all passed to model mapper`() = testBlocking {
@@ -280,7 +283,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
 
             assertThat(states.last().searchModes).isEqualTo(searchModes)
@@ -301,8 +304,14 @@ class CustomerListViewModelTest : BaseUnitTest() {
     fun `given success returned from repo, when viewmodel init, then viewstate is updated with customers and first page true`() =
         testBlocking {
             // GIVEN
-            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
-                .thenReturn(Result.success((1..30).map { mock() }))
+            whenever(
+                customerListRepository.searchCustomerListWithEmail(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            ).thenReturn(Result.success((1..30).map { mock() }))
 
             // WHEN
             val viewModel = initViewModel()
@@ -327,10 +336,31 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given page number 1 and cached customer, when viewmodel init, then viewstate is updated to Loaded state`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.getCustomerList(any())).thenReturn(listOf(mock()))
+
+            // WHEN
+            val viewModel = initViewModel()
+            val states = viewModel.viewState.captureValues()
+
+            // THEN
+            assertThat((states.first().body as CustomerListViewState.CustomerList.Loaded).customers)
+                .isEqualTo(listOf(mockCustomer))
+        }
+
+    @Test
     fun `given error from repo, when viewmodel init, then viewstate is updated with error state`() = testBlocking {
         // GIVEN
-        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
-            .thenReturn(Result.failure(Throwable()))
+        whenever(
+            customerListRepository.searchCustomerListWithEmail(
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        ).thenReturn(Result.failure(Throwable()))
 
         // WHEN
         val viewModel = initViewModel()
@@ -344,8 +374,14 @@ class CustomerListViewModelTest : BaseUnitTest() {
     @Test
     fun `given empty list from repo, when viewmodel init, then viewstate is updated with empty state`() = testBlocking {
         // GIVEN
-        whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
-            .thenReturn(Result.success(emptyList()))
+        whenever(
+            customerListRepository.searchCustomerListWithEmail(
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        ).thenReturn(Result.success(emptyList()))
 
         // WHEN
         val viewModel = initViewModel()
@@ -503,7 +539,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
                 .isEqualTo(listOf(mockCustomer))
@@ -536,7 +572,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
             assertThat((states.last().body as CustomerListViewState.CustomerList.Empty).message)
                 .isEqualTo(R.string.order_creation_customer_search_empty_on_old_version_wcpay)
@@ -569,7 +605,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 eq(searchQuery),
                 eq("all"),
                 any(),
-                any()
+                any(),
             )
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
                 .isEqualTo(listOf(mockCustomer))
@@ -630,7 +666,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
         }
@@ -654,7 +690,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
         }
@@ -674,7 +710,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
         }
 
@@ -682,8 +718,14 @@ class CustomerListViewModelTest : BaseUnitTest() {
     fun `given that one page size returned from repo, when onEndOfListReached, then next call load more customers`() =
         testBlocking {
             // GIVEN
-            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
-                .thenReturn(Result.success((1..30).map { mock() }))
+            whenever(
+                customerListRepository.searchCustomerListWithEmail(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            ).thenReturn(Result.success((1..30).map { mock() }))
             val viewModel = initViewModel()
 
             // WHEN
@@ -695,7 +737,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
         }
 
@@ -703,8 +745,14 @@ class CustomerListViewModelTest : BaseUnitTest() {
     fun `given that one page size returned from repo, when onEndOfListReached, then loading item appended`() =
         testBlocking {
             // GIVEN
-            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
-                .thenReturn(Result.success((1..30).map { mock() }))
+            whenever(
+                customerListRepository.searchCustomerListWithEmail(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                )
+            ).thenReturn(Result.success((1..30).map { mock() }))
             val viewModel = initViewModel()
 
             val states = viewModel.viewState.captureValues()

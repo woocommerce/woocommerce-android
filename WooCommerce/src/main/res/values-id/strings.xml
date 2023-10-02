@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 11:54:03+0000
+Translation-Revision-Date: 2023-09-27 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Hapus alamat dan hentikan penggunaan tarif pajak ini</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Tentukan tarif pajak baru untuk pesanan ini</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Tarif pajak ditambahkan otomatis</string>
+    <string name="ai_product_name_sheet_error_message">Terjadi masalah saat membuat nama produk. Coba lagi.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Buat ulang</string>
+    <string name="ai_product_name_sheet_generate_button">Minta tuliskan</string>
+    <string name="ai_product_name_sheet_input_description">Ceritakan tentang produk dan keunikannya.</string>
+    <string name="ai_product_name_sheet_subtitle">AI akan membuatkan Anda judul yang menarik</string>
+    <string name="ai_product_name_sheet_title">✨ Nama produk</string>
+    <string name="empty_review_filtered_list_message">Coba nonaktifkan penyaring belum dibaca untuk melihat semua ulasan produk</string>
+    <string name="empty_review_filtered_list_title">Tidak ada ulasan produk belum dibaca</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Nada dipilih</string>
+    <string name="product_creation_ai_tone_convincing">Persuasif</string>
+    <string name="product_creation_ai_tone_flowery">Berbunga-bunga</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_casual">Kasual</string>
+    <string name="product_creation_ai_tone_description">Tentukan nada dan suara agar presentasi produk sesuai dengan citra yang ingin diangkat.</string>
+    <string name="product_creation_ai_tone_title">Nada dan suara</string>
+    <string name="product_creation_ai_preview_details_section">Rincian</string>
+    <string name="product_creation_ai_preview_description_section">Deskripsi produk</string>
+    <string name="product_creation_ai_preview_name_section">Nama produk</string>
+    <string name="product_creation_ai_preview_subtitle">Jangan khawatir. Informasi berikut bisa diubah kapan saja.</string>
+    <string name="product_creation_ai_preview_title">Pratinjau</string>
+    <string name="product_creation_ai_about_product_continue_button">Buat Info Produk</string>
+    <string name="product_creation_ai_about_product_set_tone">Tentukan nada dan suara</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Tambahkan fitur utama, keunggulan, atau informasi produk agar mudah ditemukan di internet.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Misalnya, kain lembut, jahitan awet, desain unik</string>
+    <string name="product_creation_ai_about_product_edit_text_header">Produk saya</string>
+    <string name="product_creation_ai_about_product_subtitle">Tonjolkan keunikan produk dan biar AI yang urus selanjutnya.</string>
+    <string name="product_creation_ai_about_product_title">Tentang produk</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Sarankan nama</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Misalnya: Kain lembut, jahitan awet, desain unik.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Nama produk</string>
+    <string name="ai_product_creation_add_name_subtitle">Atau, ketuk untuk mendapatkan saran nama lainnya.</string>
+    <string name="ai_product_creation_add_name_title">Masukkan nama produk</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Berbasis AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Baca selengkapnya&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Tambahkan produk dan informasi secara manual</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Tambahkan secara manual</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Minta buatkan informasi produk secara instan</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Buat produk dengan AI</string>
+    <string name="product_creation_ai_entry_sheet_header">Tambahkan produk</string>
+    <string name="product_review_list_unread_reviews_filter">Hanya ulasan belum dibaca</string>
+    <string name="order_creation_edit_tax_rate">Edit Pengaturan Tarif Pajak</string>
     <string name="tax_rate_selector_auto_rate_subtitle">Hal ini tidak akan memengaruhi pesanan online</string>
     <string name="tax_rate_selector_auto_rate_label">Tambahkan tarif ini ke semua pesanan yang dibuat</string>
     <string name="tax_rate_selector_empty_list_button_alt">Sunting Tarif Pajak</string>

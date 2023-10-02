@@ -142,25 +142,40 @@ class CustomerListViewModel @Inject constructor(
 
     private suspend fun loadCustomers(page: Int) = mutex.withLock {
         if (page != 1 && !paginationState.hasNextPage) return
+
+        val searchBy = getSearchParam()
+
         if (page == 1) {
-            _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
-            // Add a delay to avoid multiple requests when the user types fast or switches search types
-            delay(SEARCH_DELAY_MS)
             if (searchQuery.isNotEmpty()) {
+                _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+                // Add a delay to avoid multiple requests when the user types fast or switches search types
+                delay(SEARCH_DELAY_MS)
                 analyticsTracker.track(
                     AnalyticsEvent.ORDER_CREATION_CUSTOMER_SEARCH,
                     mapOf(
                         "search_type" to viewState.value?.searchModes?.firstOrNull { it.isSelected }?.searchParam
                     )
                 )
+            } else {
+                val cachedCustomers = repository.getCustomerList(PAGE_SIZE)
+                if (cachedCustomers.isNotEmpty()) {
+                    handleFirstPageLoaded(
+                        customers = cachedCustomers,
+                        searchParam = searchBy
+                    )
+                } else {
+                    _viewState.value = _viewState.value!!.copy(body = CustomerListViewState.CustomerList.Loading)
+                    // Add a delay to avoid multiple requests when the user types fast or switches search types
+                    delay(SEARCH_DELAY_MS)
+                }
             }
         }
-        val searchBy = getSearchParam()
+
         val result = repository.searchCustomerListWithEmail(
             searchQuery = searchQuery,
             searchBy = searchBy,
             pageSize = PAGE_SIZE,
-            page = page
+            page = page,
         )
         if (result.isFailure) {
             paginationState = PaginationState(1, false)

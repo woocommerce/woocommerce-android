@@ -7,6 +7,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ class AIRepository @Inject constructor(
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
+        const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
     }
 
     suspend fun generateProductSharingText(
@@ -56,6 +58,18 @@ class AIRepository @Inject constructor(
         return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
+    suspend fun generateProductName(
+        keywords: String,
+        languageISOCode: String = "en"
+    ): Result<String> {
+        val prompt = AIPrompts.generateProductNamePrompt(
+            keywords,
+            languageISOCode
+        )
+
+        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_NAME_FEATURE)
+    }
+
     @Suppress("LongParameterList")
     suspend fun generateProduct(
         productName: String,
@@ -66,7 +80,7 @@ class AIRepository @Inject constructor(
         currency: String,
         existingCategories: List<ProductCategory>,
         existingTags: List<ProductTag>,
-        languageISOCode: String = "en"
+        languageISOCode: String
     ): Result<Product> {
         data class Shipping(
             val weight: Float,
@@ -114,7 +128,8 @@ class AIRepository @Inject constructor(
                 weight = parsedResponse.shipping.weight,
                 height = parsedResponse.shipping.height,
                 length = parsedResponse.shipping.length,
-                width = parsedResponse.shipping.width
+                width = parsedResponse.shipping.width,
+                status = DRAFT
             )
         }
     }
