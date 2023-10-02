@@ -9,6 +9,7 @@ import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.util.WooLog
@@ -26,10 +27,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCProductStore.ProductError
 
+@Suppress("LongParameterList")
 class ProductPreviewSubViewModel(
     private val aiRepository: AIRepository,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
+    private val tracker: AnalyticsTrackerWrapper,
     override val onDone: (Product) -> Unit,
 ) : AddProductWithAISubViewModel<Product> {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -65,6 +68,16 @@ class ProductPreviewSubViewModel(
 
     fun updateTone(tone: AiTone) {
         this.tone = tone
+    }
+
+    fun onFeedbackReceived(positive: Boolean) {
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to "product_creation",
+                AnalyticsTracker.KEY_IS_USEFUL to positive
+            )
+        )
     }
 
     override fun close() {

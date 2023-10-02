@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -37,7 +38,8 @@ class AddProductWithAIViewModel @Inject constructor(
     generateProductWithAI: GenerateProductWithAI,
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
-    private val appsPrefsWrapper: AppPrefsWrapper
+    private val appsPrefsWrapper: AppPrefsWrapper,
+    tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
@@ -62,6 +64,7 @@ class AddProductWithAIViewModel @Inject constructor(
         aiRepository = aiRepository,
         buildProductPreviewProperties = buildProductPreviewProperties,
         generateProductWithAI = generateProductWithAI,
+        tracker = tracker
     ) {
         product = it
         saveButtonState.value = SaveButtonState.Shown
