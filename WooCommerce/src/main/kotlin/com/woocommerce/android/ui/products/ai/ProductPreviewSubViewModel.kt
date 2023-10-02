@@ -114,6 +114,7 @@ class ProductPreviewSubViewModel(
                 languageISOCode = isoLanguageCode
             ).fold(
                 onSuccess = { product ->
+                    AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
                     _state.value = State.Success(
                         product = product,
                         propertyGroups = buildProductPreviewProperties(product)
@@ -121,6 +122,14 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_TYPE to (it as? JetpackAICompletionsException)?.errorType,
+                            AnalyticsTracker.KEY_ERROR_DESC to (it as? JetpackAICompletionsException)?.errorMessage
+                        )
+                    )
                     WooLog.e(WooLog.T.AI, "Failed to generate product with AI", it)
                     _state.value = createErrorState()
                 }
@@ -134,7 +143,15 @@ class ProductPreviewSubViewModel(
             AIRepository.PRODUCT_CREATION_FEATURE
         )
             .fold(
-                onSuccess = { it },
+                onSuccess = {
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS,
+                        mapOf(
+                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION
+                        )
+                    )
+                    it
+                },
                 onFailure = { error ->
                     AnalyticsTracker.track(
                         AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED,
@@ -142,7 +159,7 @@ class ProductPreviewSubViewModel(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_TYPE to (error as? JetpackAICompletionsException)?.errorType,
                             AnalyticsTracker.KEY_ERROR_DESC to (error as? JetpackAICompletionsException)?.errorMessage,
-                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SHARING
+                            AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION
                         )
                     )
                     null
@@ -199,6 +216,7 @@ class ProductPreviewSubViewModel(
             val description: String
                 get() = product.description
         }
+
         data class Error(
             val onRetryClick: () -> Unit,
             val onDismissClick: () -> Unit

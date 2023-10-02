@@ -61,7 +61,7 @@ fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
                         keywords = state.keywords,
                         generatedProductName = state.generatedProductName,
                         onKeywordsChanged = viewModel::onProductKeywordsChanged,
-                        onGenerateButtonClicked = viewModel::onGenerateButtonClicked,
+                        onRegenerateButtonClicked = viewModel::onRegenerateButtonClicked,
                         onCopyButtonClicked = viewModel::onCopyButtonClicked,
                         onApplyButtonClicked = viewModel::onApplyButtonClicked,
                     )
@@ -208,7 +208,7 @@ private fun ResultLayout(
     keywords: String,
     generatedProductName: String,
     onKeywordsChanged: (String) -> Unit,
-    onGenerateButtonClicked: () -> Unit,
+    onRegenerateButtonClicked: () -> Unit,
     onCopyButtonClicked: () -> Unit,
     onApplyButtonClicked: () -> Unit
 ) {
@@ -236,7 +236,7 @@ private fun ResultLayout(
         ) {
             WCTextButton(
                 enabled = keywords.isNotEmpty(),
-                onClick = onGenerateButtonClicked,
+                onClick = onRegenerateButtonClicked,
                 modifier = Modifier.align(Alignment.CenterStart),
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = colorResource(id = R.color.color_on_surface)
@@ -373,7 +373,7 @@ private fun ResultLayoutPreview() {
         keywords = "some keywords here",
         generatedProductName = "AI-generated product name here",
         onKeywordsChanged = {},
-        onGenerateButtonClicked = {},
+        onRegenerateButtonClicked = {},
         onCopyButtonClicked = {},
         onApplyButtonClicked = {}
     )

@@ -7,6 +7,7 @@ import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_DESCRIPTION_FEATURE
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_AI_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_APPLY_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_COPY_BUTTON_TAPPED
@@ -22,7 +23,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_DESCRIPTION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
 import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generating
@@ -42,7 +42,6 @@ import javax.inject.Inject
 class AIProductDescriptionViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     private val tracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
@@ -81,7 +80,7 @@ class AIProductDescriptionViewModel @Inject constructor(
         }
 
         tracker.track(
-            stat = PRODUCT_DESCRIPTION_AI_GENERATION_SUCCESS,
+            stat = AI_IDENTIFY_LANGUAGE_SUCCESS,
             properties = mapOf(
                 KEY_SOURCE to VALUE_PRODUCT_DESCRIPTION
             )

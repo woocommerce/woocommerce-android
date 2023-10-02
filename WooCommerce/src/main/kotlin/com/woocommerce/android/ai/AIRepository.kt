@@ -7,6 +7,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -127,7 +128,8 @@ class AIRepository @Inject constructor(
                 weight = parsedResponse.shipping.weight,
                 height = parsedResponse.shipping.height,
                 length = parsedResponse.shipping.length,
-                width = parsedResponse.shipping.width
+                width = parsedResponse.shipping.width,
+                status = DRAFT
             )
         }
     }
