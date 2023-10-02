@@ -210,7 +210,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when customer address edited, send tracks event`() {
-        sut.onCustomerEdited(0, Address.EMPTY, Address.EMPTY)
+        sut.onCustomerEdited(
+            Order.Customer(
+                customerId = 0,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY
+            )
+        )
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_ADD,
@@ -241,9 +247,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         val values = sut.orderDraft.captureValues()
 
-        assertThat(values.last().customerId).isNull()
-        assertThat(values.last().billingAddress).isEqualTo(Address.EMPTY)
-        assertThat(values.last().shippingAddress).isEqualTo(Address.EMPTY)
+        assertThat(values.last().customer!!.customerId).isNull()
+        assertThat(values.last().customer!!.billingAddress).isEqualTo(Address.EMPTY)
+        assertThat(values.last().customer!!.shippingAddress).isEqualTo(Address.EMPTY)
     }
 
     @Test

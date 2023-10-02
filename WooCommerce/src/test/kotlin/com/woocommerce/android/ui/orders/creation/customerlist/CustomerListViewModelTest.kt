@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -778,9 +779,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 2L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 2L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -879,9 +882,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 1L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 1L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -937,9 +942,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 1L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 1L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -985,9 +992,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, never()).fetchCustomerByRemoteId(any())
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 0L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 0L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
