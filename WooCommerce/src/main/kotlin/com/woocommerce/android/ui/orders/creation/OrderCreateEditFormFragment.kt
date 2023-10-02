@@ -517,15 +517,17 @@ class OrderCreateEditFormFragment :
         }
 
         val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
-        if (customer.email.isNotNullOrEmpty() || customer.firstName.isNotNullOrEmpty() || customer.lastName.isNotNullOrEmpty()) {
+        val customerEmailOrNamePresent =
+            customer.email.isNotNullOrEmpty() ||
+                customer.firstName.isNotNullOrEmpty() ||
+                customer.lastName.isNotNullOrEmpty()
+        if (customerEmailOrNamePresent) {
             view.nameEmail.isVisible = true
             view.name.text = "${customer.firstName} ${customer.lastName}"
             view.email.text = customer.email
-
             if (customer.shippingAddress == Address.EMPTY && customer.billingAddress == Address.EMPTY) {
                 view.nameDivider.isVisible = false
             }
-
         } else {
             view.nameEmail.isVisible = false
         }
