@@ -223,7 +223,7 @@
         android:label="OrderCreateEditProductDiscountFragment">
         <argument
             android:name="item"
-            app:argType="com.woocommerce.android.model.Order$Item" />
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationProduct" />
         <argument
             android:name="currency"
             app:argType="string" />
