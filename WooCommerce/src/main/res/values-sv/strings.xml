@@ -300,7 +300,6 @@ Language: sv_SE
     <string name="ai_product_description_note_dialog_heading">Bra start!</string>
     <string name="ai_product_description_feedback">Är den genererade\nbeskrivningen beskrivning användbar?</string>
     <string name="ai_product_description_regenerate_button">Generera igen</string>
-    <string name="ai_product_description_survey">Är den genererade beskrivningen användbar?</string>
     <string name="ai_product_description_hint">Framhäv din produkts unika funktioner och målgrupp med nyckelord för en skräddarsydd beskrivning.</string>
     <string name="ai_product_description_example">Exempel: krukväxt, kaktus, växt, dekorativ, lättskött</string>
     <string name="ai_product_description_product_name">Ange ditt produktnamn</string>

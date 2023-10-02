@@ -300,7 +300,6 @@ Language: zh_CN
     <string name="ai_product_description_note_dialog_heading">不错的开局！</string>
     <string name="ai_product_description_feedback">生成的描述\n对您是否有用？</string>
     <string name="ai_product_description_regenerate_button">重新生成</string>
-    <string name="ai_product_description_survey">生成的描述对您是否有用？</string>
     <string name="ai_product_description_hint">通过关键字突出显示产品的独特特点和受众，以便生成量身定制的描述。</string>
     <string name="ai_product_description_example">示例：盆栽、仙人掌、植物、装饰、易打理</string>
     <string name="ai_product_description_product_name">输入产品名称</string>
