@@ -46,7 +46,6 @@ class CustomerListRepository @Inject constructor(
         searchBy: String,
         pageSize: Int,
         page: Int,
-        cacheResult: Boolean,
     ): Result<List<WCCustomerModel>> = withContext(dispatchers.io) {
         val result = customerStore.fetchCustomersFromAnalytics(
             site = selectedSite.get(),
@@ -62,6 +61,7 @@ class CustomerListRepository @Inject constructor(
         } else if (result.model == null) {
             Result.failure(IllegalStateException("empty model returned"))
         } else {
+            val cacheResult = page == 1 && searchQuery.isEmpty()
             if (cacheResult) {
                 customerStore.deleteCustomersForSite(selectedSite.get())
                 customerStore.saveCustomers(result.model!!)

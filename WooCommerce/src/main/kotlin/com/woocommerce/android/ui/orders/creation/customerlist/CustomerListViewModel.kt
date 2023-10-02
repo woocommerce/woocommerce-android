@@ -174,7 +174,6 @@ class CustomerListViewModel @Inject constructor(
             searchBy = searchBy,
             pageSize = PAGE_SIZE,
             page = page,
-            cacheResult = page == 1 && searchQuery.isEmpty(),
         )
         if (result.isFailure) {
             paginationState = PaginationState(1, false)
