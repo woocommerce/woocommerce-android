@@ -233,19 +233,14 @@ private fun WebAuthorizationScreen(
         viewState.errorDialogMessage != null -> {
             AlertDialog(
                 text = {
-                    Column {
-                        Text(text = viewState.errorDialogMessage.getText())
-                    }
+                    Text(text = viewState.errorDialogMessage.getText())
                 },
                 onDismissRequest = onErrorDialogDismissed,
-                buttons = {
-                    Column(modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
-                        WCTextButton(
-                            onClick = onErrorDialogDismissed
-                        ) {
-                            Text(text = stringResource(id = android.R.string.ok))
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
+                confirmButton = {
+                    WCTextButton(
+                        onClick = onErrorDialogDismissed
+                    ) {
+                        Text(text = stringResource(id = android.R.string.ok))
                     }
                 }
             )

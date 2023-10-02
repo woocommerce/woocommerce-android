@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 15:54:22+0000
+Translation-Revision-Date: 2023-09-27 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresi temizleyin ve bu oranı kullanmayı bırakın</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Bu sipariş için yeni bir vergi oranı belirleyin</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Vergi oranını otomatik olarak ekleme</string>
+    <string name="ai_product_name_sheet_error_message">Ürün adı oluşturulurken bir sorun oluştu. Lütfen tekrar deneyin.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Yeniden oluştur</string>
+    <string name="ai_product_name_sheet_generate_button">Benim için yaz</string>
+    <string name="ai_product_name_sheet_input_description">Bize ürününüzden ve onu benzersiz kılanın ne olduğundan bahsedin!</string>
+    <string name="ai_product_name_sheet_subtitle">Yapay zekanın sizin için etkileyici başlıklar oluşturmasına izin verin</string>
+    <string name="ai_product_name_sheet_title">✨ Ürün adı</string>
+    <string name="empty_review_filtered_list_message">Tüm ürün incelemelerinizi görmek için okunmamış filtresini devre dışı bırakmayı deneyin</string>
+    <string name="empty_review_filtered_list_title">Okunmamış ürün incelemesi yok</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Ton seçildi</string>
+    <string name="product_creation_ai_tone_convincing">İkna edici</string>
+    <string name="product_creation_ai_tone_flowery">Çiçekli</string>
+    <string name="product_creation_ai_tone_formal">Resmi</string>
+    <string name="product_creation_ai_tone_casual">Gelişigüzel</string>
+    <string name="product_creation_ai_tone_description">Ürününüzün sunumunu markanızla uyumlu biçimde şekillendirmek için tonu ve sesi belirleyin.</string>
+    <string name="product_creation_ai_tone_title">Ton ve ses</string>
+    <string name="product_creation_ai_preview_details_section">Ayrıntılar</string>
+    <string name="product_creation_ai_preview_description_section">Ürün açıklaması</string>
+    <string name="product_creation_ai_preview_name_section">Ürün adı</string>
+    <string name="product_creation_ai_preview_subtitle">Endişelenmeyin. Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
+    <string name="product_creation_ai_preview_title">Önizleme</string>
+    <string name="product_creation_ai_about_product_continue_button">Ürünler Ayrıntıları Oluştur</string>
+    <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Ürününüzün internette bulunmasına yardımcı olmak için temel özellikler, avantajlar veya ayrıntılar ekleyin.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Örneğin, yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım</string>
+    <string name="product_creation_ai_about_product_edit_text_header">Ürünüm</string>
+    <string name="product_creation_ai_about_product_subtitle">Ürününüzü benzersiz kılan özellikleri vurgulayın ve yapay zekanın işini yapmasına izin verin.</string>
+    <string name="product_creation_ai_about_product_title">Ürününüz hakkında</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Bir ad öner</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Örnek: Yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Ürün adı</string>
+    <string name="ai_product_creation_add_name_subtitle">Ya da daha fazla isim önerisi için dokunarak seçeneklerinizi genişletin.</string>
+    <string name="ai_product_creation_add_name_title">Ürün adınızı ekleyin</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Yapay zeka destekli. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Bir ürünü ve ayrıntılarını manuel olarak ekleyin</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">El ile ekle</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Ayrıntıları sizin için hızlıca oluşturur</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Yapay zeka ile ürün oluşturun</string>
+    <string name="product_creation_ai_entry_sheet_header">Ürün ekleyin</string>
+    <string name="product_review_list_unread_reviews_filter">Sadece okunmamış incelemeler</string>
+    <string name="order_creation_edit_tax_rate">Vergi Oranı Ayarını Düzenle</string>
     <string name="tax_rate_selector_auto_rate_subtitle">Bu durum çevrimiçi siparişleri etkilemeyecek</string>
     <string name="tax_rate_selector_auto_rate_label">Oluşturulan tüm siparişlere bu oranı ekle</string>
     <string name="tax_rate_selector_empty_list_button_alt">Vergi Oranlarını Düzenle</string>

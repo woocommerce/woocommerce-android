@@ -1,2 +1,0 @@
-15.4:
-Agora comerciantes podem selecionar o valor do imposto ao criar um pedido, além de adicionar durante a edição do produto arquivos de todos os tipos compatíveis para download. Aprimoramos o pagamento presencial. Se os usuários não terminaram de configurar o WcPay, agora podem fazer isso pelo aplicativo. Atualizações mais simples incluem uma correção no rastreamento do país quando a integração do pagamento presencial não foi concluída e uma tela explicativa antes de abrir a tarefa Pagamentos.

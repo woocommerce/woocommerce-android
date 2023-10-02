@@ -1,2 +1,0 @@
-15.4:
-I venditori ora possono selezionare un'aliquota d'imposta durante la creazione di un ordine e aggiungere file scaricabili di qualunque tipo supportato durante la modifica del prodotto. Abbiamo migliorato Pagamenti di persona; se la configurazione di WcPay non è terminata, gli utenti possono ora completarla dall'app. Gli aggiornamenti minori includono una correzione per il monitoraggio del Paese quando l'avviamento di IPP non è terminato e una schermata esplicativa prima di aprire l'attività Pagamenti.
