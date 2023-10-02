@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.Regenerate
 import com.woocommerce.android.ui.products.ProductSharingViewModel.AIButtonState.WriteWithAI
 import com.woocommerce.android.ui.products.ProductSharingViewModel.ProductSharingViewState
+import com.woocommerce.android.ui.products.ai.AiFeedbackForm
 
 @Composable
 fun ProductSharingBottomSheet(viewModel: ProductSharingViewModel) {
@@ -107,12 +108,14 @@ fun ProductShareWithAI(
                     textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.multiline_textfield_height))
                 )
 
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                 AnimatedVisibility(
                     visible = viewState.shouldShowFeedbackForm,
                     enter = fadeIn(animationSpec = tween(FADE_ANIMATION_DELAY_MS)),
                     exit = fadeOut(animationSpec = tween(FADE_ANIMATION_DELAY_MS))
                 ) {
-                    FeedbackForm(onDescriptionFeedbackReceived)
+                    AiFeedbackForm(onDescriptionFeedbackReceived)
                 }
             }
 
