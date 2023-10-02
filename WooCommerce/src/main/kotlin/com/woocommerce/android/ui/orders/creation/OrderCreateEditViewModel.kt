@@ -754,13 +754,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
-            order.copy(
-                customer = Order.Customer(
-                    customerId = null,
-                    billingAddress = EMPTY,
-                    shippingAddress = EMPTY
-                )
-            )
+            order.copy(customer = null)
         }
     }
 
