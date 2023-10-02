@@ -183,8 +183,8 @@ platform :android do
   #####################################################################################
   desc 'Creates a new release branch from the current trunk'
   lane :complete_code_freeze do |options|
-    # Verify that the current branch is a release branch
-    UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
+    ensure_git_branch(branch: '^release/') # Match branch names that begin with `release/`
+    ensure_git_status_clean
 
     new_version = current_release_version
 
@@ -379,7 +379,7 @@ platform :android do
   #####################################################################################
   desc 'Finalizes a hotfix release by triggering a release build'
   lane :finalize_hotfix_release do
-    UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
+    ensure_git_branch(branch: '^release/') # Match branch names that begin with `release/`
     ensure_git_status_clean
 
     UI.message = "Triggering hotfix build for version: #{current_release_version}"
@@ -419,9 +419,7 @@ platform :android do
   desc 'Updates store metadata and runs the release checks'
   lane :finalize_release do |options|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix
-
-    UI.user_error!("Current branch - '#{git_branch}' - is not a release branch. Abort.") unless git_branch.start_with?('release/')
-
+    ensure_git_branch(branch: '^release/') # Match branch names that begin with `release/`
     ensure_git_status_clean
 
     message = "Finalizing release: #{current_release_version}\n"
@@ -443,9 +441,8 @@ platform :android do
       version_name: current_release_version,
       version_code: next_build_code
     )
-    UI.message "Done! New Release Version: #{current_release_version}. New Build Code: #{current_build_code}"
-
     commit_version_bump
+    UI.message "Done! New Release Version: #{current_release_version}. New Build Code: #{current_build_code}"
 
     version = current_release_version
 
