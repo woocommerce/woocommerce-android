@@ -517,17 +517,26 @@ class OrderCreateEditFormFragment :
         }
 
         val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
-        view.name.text = "${customer.firstName} ${customer.lastName}"
-        view.email.text = customer.email
+        if (customer.email.isNotNullOrEmpty() || customer.firstName.isNotNullOrEmpty() || customer.lastName.isNotNullOrEmpty()) {
+            view.nameEmail.isVisible = true
+            view.name.text = "${customer.firstName} ${customer.lastName}"
+            view.email.text = customer.email
+        } else {
+            view.nameEmail.isVisible = false
+        }
 
         if (customer.shippingAddress != Address.EMPTY) {
+            view.shippingGroup.isVisible = true
             val shippingAddressDetails = order.formatShippingInformationForDisplay()
             view.shippingAddressDetails.text = shippingAddressDetails
             view.shippingAddressDetails.contentDescription =
                 shippingAddressDetails.replace("\n", ". ")
+        } else {
+            view.shippingGroup.isVisible = false
         }
 
         if (customer.billingAddress != Address.EMPTY) {
+            view.billingGroup.isVisible = true
             val billingAddressDetails = order.formatBillingInformationForDisplay()
             view.billingAddressDetails.text = billingAddressDetails
             view.billingAddressDetails.contentDescription =
@@ -535,6 +544,8 @@ class OrderCreateEditFormFragment :
             view.customerInfoViewMoreButtonTitle.setOnClickListener {
                 view.changeState()
             }
+        } else {
+            view.billingGroup.isVisible = false
         }
 
         customerAddressSection.content = view.root
