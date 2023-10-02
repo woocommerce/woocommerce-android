@@ -36,7 +36,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any()
             )
         }.thenReturn(Result.success(listOf(mock())))
 
@@ -281,7 +280,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
 
             assertThat(states.last().searchModes).isEqualTo(searchModes)
@@ -304,7 +302,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(
                 customerListRepository.searchCustomerListWithEmail(
-                    any(),
                     any(),
                     any(),
                     any(),
@@ -358,7 +355,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
         ).thenReturn(Result.failure(Throwable()))
 
@@ -376,7 +372,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(
             customerListRepository.searchCustomerListWithEmail(
-                any(),
                 any(),
                 any(),
                 any(),
@@ -508,7 +503,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
             assertThat((states.last().body as CustomerListViewState.CustomerList.Loaded).customers)
                 .isEqualTo(listOf(mockCustomer))
@@ -538,7 +532,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(customerListRepository, never()).searchCustomerListWithEmail(
-                any(),
                 any(),
                 any(),
                 any(),
@@ -574,7 +567,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(2)).searchCustomerListWithEmail(
                 eq(searchQuery),
                 eq("all"),
-                any(),
                 any(),
                 any(),
             )
@@ -638,7 +630,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
         }
@@ -663,7 +654,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loaded::class.java)
         }
@@ -684,7 +674,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
         }
 
@@ -694,7 +683,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(
                 customerListRepository.searchCustomerListWithEmail(
-                    any(),
                     any(),
                     any(),
                     any(),
@@ -713,7 +701,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
             )
         }
 
@@ -723,7 +710,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(
                 customerListRepository.searchCustomerListWithEmail(
-                    any(),
                     any(),
                     any(),
                     any(),
