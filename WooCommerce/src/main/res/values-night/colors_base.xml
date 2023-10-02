@@ -199,4 +199,9 @@
     -->
     <color name="woo_payments_setup_bullet_background">@color/woo_purple_80</color>
 
+    <!--
+    AI
+    -->
+    <color name="ai_feedback_form_background">@color/woo_white_alpha_012</color>
+
 </resources>
