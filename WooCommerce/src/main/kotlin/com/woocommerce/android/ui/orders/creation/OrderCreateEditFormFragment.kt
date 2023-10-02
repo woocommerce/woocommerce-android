@@ -521,6 +521,11 @@ class OrderCreateEditFormFragment :
             view.nameEmail.isVisible = true
             view.name.text = "${customer.firstName} ${customer.lastName}"
             view.email.text = customer.email
+
+            if (customer.shippingAddress == Address.EMPTY && customer.billingAddress == Address.EMPTY) {
+                view.nameDivider.isVisible = false
+            }
+
         } else {
             view.nameEmail.isVisible = false
         }
