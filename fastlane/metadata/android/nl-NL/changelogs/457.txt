@@ -1,2 +1,0 @@
-15.4:
-Winkeliers kunnen nu bij het creëren van een bestelling een belastingtarief selecteren en downloadbare bestanden toevoegen van alle ondersteunde bestandtypen tijdens het bewerken van het product. We hebben fysieke betalingen verbeterd; als het instellen van WcPay niet voltooid is, kunnen gebruikers het nu voltooien vanuit de app. Kleinere updates bevatten een fix voor het volgen van het land wanneer het IPP onboarden niet voltooid is en een uitlegscherm voordat een Payments-taak geopend wordt.

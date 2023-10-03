@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -30,8 +31,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -64,13 +67,21 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         when (state) {
-            ProductPreviewSubViewModel.State.Loading -> ProductPreviewLoading(
+            ProductPreviewSubViewModel.State.Loading,
+            is ProductPreviewSubViewModel.State.Error -> ProductPreviewLoading(
                 modifier = Modifier.fillMaxHeight()
             )
 
             is ProductPreviewSubViewModel.State.Success -> ProductPreviewContent(
                 state = state,
                 modifier = Modifier.fillMaxHeight()
+            )
+        }
+
+        if (state is ProductPreviewSubViewModel.State.Error) {
+            ErrorDialog(
+                onRetryClick = state.onRetryClick,
+                onDismissClick = state.onDismissClick
             )
         }
     }
@@ -255,6 +266,30 @@ private fun ProductPreviewLoading(modifier: Modifier) {
                 .then(sectionsBorder)
         )
     }
+}
+
+@Composable
+private fun ErrorDialog(
+    onRetryClick: () -> Unit,
+    onDismissClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
+        text = {
+            Text(text = stringResource(id = R.string.product_creation_ai_generation_failure_message))
+        },
+        confirmButton = {
+            WCTextButton(onClick = onRetryClick) {
+                Text(stringResource(id = R.string.retry))
+            }
+        },
+        dismissButton = {
+            WCTextButton(onClick = onDismissClick) {
+                Text(stringResource(id = R.string.dismiss))
+            }
+        }
+    )
 }
 
 @Composable

@@ -44,13 +44,13 @@ enum class FeatureFlag {
             PRIVACY_CHOICES,
             BLAZE,
             ORDER_CREATION_PRODUCT_DISCOUNTS,
-            ORDER_CREATION_TAX_RATE_SELECTOR -> true
+            ORDER_CREATION_TAX_RATE_SELECTOR,
+            PRODUCT_CREATION_AI -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            PRODUCT_CREATION_AI -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
             SHIPPING_ZONES,
             IAP_FOR_STORE_CREATION -> false

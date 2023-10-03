@@ -1923,6 +1923,7 @@
     <string name="product_creation_ai_tone_flowery">Flowery</string>
     <string name="product_creation_ai_tone_convincing">Convincing</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
+    <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3639,11 +3640,6 @@
     <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
     <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
-
-    <!--
-    Shipping zones
-    -->
-    <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
 
     <!--
     Tax rates info dialog
