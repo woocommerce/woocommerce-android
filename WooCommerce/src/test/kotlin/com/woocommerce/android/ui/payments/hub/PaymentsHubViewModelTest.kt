@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubE
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -1359,14 +1358,16 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
-                it is GapBetweenSections && it.index == 4
+                it is PaymentsHubViewState.ListItem.HeaderItem &&
+                    it.index == 5 &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_header)
             }
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
                 it is NonToggleableListItem &&
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 5 &&
+                    it.index == 6 &&
                     it.iconBadge == R.drawable.ic_badge_new
             }
         }
@@ -1393,7 +1394,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6 &&
+                    it.index == 8 &&
                     it.iconBadge == null
             }
         }
@@ -1455,7 +1456,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6
+                    it.index == 8
             }
         }
 
@@ -1546,7 +1547,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
         }
 
     @Test
@@ -1672,7 +1673,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
         )
         assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
-        assertThat(learnMoreListItems[0].index).isEqualTo(11)
+        assertThat(learnMoreListItems[0].index).isEqualTo(13)
     }
 
     @Test
