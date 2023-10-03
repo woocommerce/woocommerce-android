@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDelive
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.HeaderItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.LearnMoreListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
@@ -186,7 +185,12 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun MutableList<ListItem>.addTapToPay() {
         if (tapToPayAvailabilityStatus().isAvailable) {
-            add(GapBetweenSections(index = 4))
+            add(
+                HeaderItem(
+                    label = UiStringRes(R.string.card_reader_tap_to_pay_header),
+                    index = 4
+                )
+            )
             add(
                 NonToggleableListItem(
                     icon = R.drawable.ic_baseline_contactless,
