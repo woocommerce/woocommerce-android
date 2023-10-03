@@ -290,6 +290,23 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
+    fun `given editable order and status completed, then set tax rate button should be disabled`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        val order = defaultOrderValue.copy(
+            status = Order.Status.Completed
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+
+        assertFalse(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
+    }
+
+    @Test
     fun `given not editable order and containing at least one item, then add coupon button should be disabled`() {
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         val order = defaultOrderValue.copy(
