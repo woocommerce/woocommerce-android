@@ -808,6 +808,16 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when screen shown, then settings header shown`() {
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .anyMatch {
+                it is PaymentsHubViewState.ListItem.HeaderItem &&
+                    it.index == 2 &&
+                    it.label == UiStringRes(R.string.card_reader_settings_header)
+            }
+    }
+
+    @Test
     fun `when screen shown, then cash on delivery row present with correct description`() {
         assertThat(
             (
@@ -1369,6 +1379,31 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
                     it.index == 6 &&
                     it.iconBadge == R.drawable.ic_badge_new
+            }
+        }
+
+    @Test
+    fun `given ttp available, when view model started, then show about ttp row`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.icon == R.drawable.ic_tintable_info_outline_24dp &&
+                    it.label == UiStringRes(R.string.card_reader_about_tap_to_pay) &&
+                    it.description == null &&
+                    it.index == 7 &&
+                    it.iconBadge == null
             }
         }
 
