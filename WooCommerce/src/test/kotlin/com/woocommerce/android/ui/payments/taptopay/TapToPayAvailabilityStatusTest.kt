@@ -31,6 +31,10 @@ class TapToPayAvailabilityStatusTest {
         on { getStoreCountryCode(siteModel) }.thenReturn("US")
     }
 
+    private val caUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled = mock {
+        on { invoke() }.thenReturn(true)
+    }
+
     @Test
     fun `given device has no NFC, when invoking, then nfc disabled returned`() {
         val deviceFeatures = mock<DeviceFeatures> {
@@ -44,7 +48,8 @@ class TapToPayAvailabilityStatusTest {
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider,
-            wooStore
+            wooStore,
+            caUkFeatureFlagEnabled
         ).invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
@@ -63,7 +68,8 @@ class TapToPayAvailabilityStatusTest {
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider,
-            wooStore
+            wooStore,
+            caUkFeatureFlagEnabled,
         ).invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable)
@@ -82,7 +88,8 @@ class TapToPayAvailabilityStatusTest {
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider,
-            wooStore
+            wooStore,
+            caUkFeatureFlagEnabled,
         ).invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported)
@@ -102,7 +109,8 @@ class TapToPayAvailabilityStatusTest {
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider,
-            wooStore
+            wooStore,
+            caUkFeatureFlagEnabled,
         ).invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
@@ -121,7 +129,8 @@ class TapToPayAvailabilityStatusTest {
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider,
-            wooStore
+            wooStore,
+            caUkFeatureFlagEnabled,
         ).invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
