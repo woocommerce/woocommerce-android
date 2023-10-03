@@ -96,6 +96,9 @@
                 android:name="orderId"
                 app:argType="long" />
             <argument
+                android:name="orderIds"
+                app:argType="long[]" />
+            <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
                 app:argType="long" />

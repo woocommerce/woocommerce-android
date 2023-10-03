@@ -1089,7 +1089,7 @@ class MainActivity :
             navController.popBackStack(R.id.orders, false)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(0, 0)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, arrayOf(orderId).toLongArray(), remoteNoteId)
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
@@ -1104,7 +1104,7 @@ class MainActivity :
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
         val orderId = orderIds.get(positionInList)
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(0, 0)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, orderIds.toLongArray(), remoteNoteId)
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
     }
