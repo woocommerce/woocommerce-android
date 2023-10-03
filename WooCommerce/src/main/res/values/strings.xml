@@ -1259,6 +1259,7 @@
     <string name="card_reader_hub_collect_payment">Collect Payment</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
