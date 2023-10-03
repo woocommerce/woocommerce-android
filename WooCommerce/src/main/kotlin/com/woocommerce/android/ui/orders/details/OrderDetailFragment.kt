@@ -195,6 +195,11 @@ class OrderDetailFragment :
                 viewModel.onEditClicked()
                 true
             }
+
+             R.id.menu_arrow_down -> {
+                viewModel.onNextOrderClicked()
+                true
+            }
             else -> {
                 false
             }

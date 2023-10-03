@@ -303,6 +303,12 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
+    fun onNextOrderClicked() {
+        val nextIndex = navArgs.orderIds.indexOf(order.id) + 1
+        val nextOrderId = navArgs.orderIds.get(nextIndex)
+        triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId))
+    }
+
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
         triggerEvent(StartPaymentFlow(orderId = order.id))
