@@ -253,6 +253,9 @@ class OrderCreateEditViewModel @Inject constructor(
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
                         handleCouponEditResult()
+                        if(!order.isOrderPaid) {
+                            updateTaxRateSelectorButtonState()
+                        }
                     }
                 }
             }
