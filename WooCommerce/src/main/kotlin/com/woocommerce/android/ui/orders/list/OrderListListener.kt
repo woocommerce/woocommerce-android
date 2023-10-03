@@ -5,6 +5,8 @@ import android.view.View
 interface OrderListListener {
     fun openOrderDetail(
         orderId: Long,
+        orderIds: List<Long>,
+        positionInList: Int,
         orderStatus: String,
         sharedView: View? = null
     )

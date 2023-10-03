@@ -83,6 +83,14 @@ class OrderListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
+        val orderIds = getCurrentList()?.toList()?.mapNotNull {
+            if (it is OrderListItemUI)  {
+                it.orderId
+            } else {
+                 null
+            }
+        } ?: listOf<Long>()
+
         when (holder) {
             is OrderItemUIViewHolder -> {
                 if (BuildConfig.DEBUG && item !is OrderListItemUI) {
@@ -91,7 +99,7 @@ class OrderListAdapter(
                             "for position: $position"
                     )
                 }
-                holder.onBind((item as OrderListItemUI))
+                holder.onBind((item as OrderListItemUI), orderIds, orderIds.indexOf(item.orderId))
             }
             is SectionHeaderViewHolder -> {
                 if (BuildConfig.DEBUG && item !is SectionHeader) {
@@ -133,7 +141,7 @@ class OrderListAdapter(
         private var isNotCompleted = true
         private var orderId = SwipeToComplete.SwipeAbleViewHolder.EMPTY_SWIPED_ID
         private val extras = HashMap<String, String>()
-        fun onBind(orderItemUI: OrderListItemUI) {
+        fun onBind(orderItemUI: OrderListItemUI, orderIds: List<Long>, positionInList: Int) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
 
@@ -167,6 +175,8 @@ class OrderListAdapter(
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
                     orderId = orderItemUI.orderId,
+                    orderIds = orderIds,
+                    positionInList = positionInList,
                     orderStatus = orderItemUI.status,
                     sharedView = viewBinding.root
                 )

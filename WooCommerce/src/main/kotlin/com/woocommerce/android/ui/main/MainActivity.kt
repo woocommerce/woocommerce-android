@@ -1089,20 +1089,22 @@ class MainActivity :
             navController.popBackStack(R.id.orders, false)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(0, 0)
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
-        orderId: Long,
+        orderIds: List<Long>,
+        positionInList: Int,
         remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val orderId = orderIds.get(positionInList)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(0, 0)
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
     }
