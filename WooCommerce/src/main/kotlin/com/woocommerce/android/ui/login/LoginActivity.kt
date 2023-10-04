@@ -117,6 +117,10 @@ class LoginActivity :
 
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
         const val EMAIL_PARAMETER = "email"
+
+        const val SITE_URL_PARAMETER = "siteUrl"
+        const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
+        const val APP_LOGIN_AUTHORITY = "app-login"
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -156,6 +160,17 @@ class LoginActivity :
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
                 gotWpcomEmail(email, verifyEmail = true, null)
+            }
+
+            intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
+                intent.data?.let { uri ->
+                    val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER)
+                    val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER)
+                    if (wpComEmail != null) {
+                        gotWpcomSiteInfo(siteUrl)
+                        showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+                    }
+                }
             }
 
             hasJetpackConnectedIntent() -> {
