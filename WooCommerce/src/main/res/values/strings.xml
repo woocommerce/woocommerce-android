@@ -1306,6 +1306,7 @@
     <string name="card_reader_tap_to_pay_about_header">What is Tap to Pay?</string>
     <string name="card_reader_tap_to_pay_about_description">Tap to Pay lets you accept all types of contactless payments – from physical debit and credit cards, to digital wallets – without the need to purchase a physical card reader.</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">Important information</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">In %1$s, some cards require a PIN for contactless transactions above %2$s.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_2">We do not support PIN entry with Tap to Pay on Android.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">To accept payments above this limit, consider purchasing a card reader that accepts PIN entry.</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Learn more about card readers</string>
