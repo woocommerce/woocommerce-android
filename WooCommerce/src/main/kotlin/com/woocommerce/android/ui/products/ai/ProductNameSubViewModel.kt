@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +53,7 @@ class ProductNameSubViewModel(
             )
         )
         viewModelScope.launch {
-            _events.emit(NavigateToAIProductNameBottomSheet)
+            _events.emit(NavigateToAIProductNameBottomSheet(name.value.orNullIfEmpty()))
         }
     }
 
@@ -64,5 +65,5 @@ class ProductNameSubViewModel(
         val name: String
     )
 
-    object NavigateToAIProductNameBottomSheet : Event()
+    data class NavigateToAIProductNameBottomSheet(val initialName: String?) : Event()
 }

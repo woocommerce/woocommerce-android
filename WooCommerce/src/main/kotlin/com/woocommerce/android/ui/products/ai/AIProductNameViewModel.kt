@@ -11,6 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,9 +24,10 @@ class AIProductNameViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
+    private val navArgs: AIProductNameBottomSheetFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = MutableStateFlow(
-        ViewState()
+        ViewState(keywords = navArgs.initialName.orEmpty())
     )
 
     val viewState = _viewState.asLiveData()
