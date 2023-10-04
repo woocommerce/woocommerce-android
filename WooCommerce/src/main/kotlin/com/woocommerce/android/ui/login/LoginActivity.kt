@@ -121,6 +121,7 @@ class LoginActivity :
         const val SITE_URL_PARAMETER = "siteUrl"
         const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
         const val APP_LOGIN_AUTHORITY = "app-login"
+        const val USERNAME_PARAMETER = "username"
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -170,6 +171,14 @@ class LoginActivity :
                     if (wpComEmail != null) {
                         gotWpcomSiteInfo(siteUrl)
                         showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+                    } else {
+                        val username = uri.getQueryParameter(USERNAME_PARAMETER)
+                        showUsernamePasswordScreen(
+                            siteAddress = siteUrl,
+                            inputUsername = username,
+                            endpointAddress = null,
+                            inputPassword = null
+                        )
                     }
                 }
             }
