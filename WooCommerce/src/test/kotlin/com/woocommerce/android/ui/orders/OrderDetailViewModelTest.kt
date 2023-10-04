@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -107,7 +108,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
 
-    private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
+    private val savedState = OrderDetailFragmentArgs(
+        orderId = ORDER_ID,
+        allOrderIds = arrayOf(ORDER_ID).toLongArray()
+    ).initSavedStateHandle()
 
     private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
@@ -176,6 +180,30 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderProductMapper
             )
         )
+    }
+
+    private fun createViewModel(newSavedState: SavedStateHandle) {
+        viewModel = spy(
+            OrderDetailViewModel(
+                newSavedState,
+                appPrefsWrapper,
+                networkStatus,
+                resources,
+                orderDetailRepository,
+                addonsRepository,
+                selectedSite,
+                productImageMap,
+                paymentCollectibilityChecker,
+                cardReaderTracker,
+                analyticsTraWrapper,
+                shippingLabelOnboardingRepository,
+                orderDetailsTransactionLauncher,
+                getOrderSubscriptions,
+                giftCardRepository,
+                orderProductMapper
+            )
+        )
+
     }
 
     @Before
@@ -1906,5 +1934,65 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.HAS_ADDONS to hasAddons
             )
         )
+    }
+
+    @Test
+    fun `when the order is the first one then it disables navigation to previous order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(ORDER_ID, 2).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        // Then
+        assertThat(viewModel.previousOrderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when the order is the last one then it disables navigation to next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2, ORDER_ID).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        // Then
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when the order is in the middle then it enables navigation to previous and next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2, ORDER_ID, 3).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.previousOrderNavigationIsEnabled()).isTrue
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isTrue
+    }
+
+    @Test
+    fun `when the order is not in the list then it disables navigation to previous and next order`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(2L, 3L).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.previousOrderNavigationIsEnabled()).isFalse
+        assertThat(viewModel.nextOrderNavigationIsEnabled()).isFalse
     }
 }

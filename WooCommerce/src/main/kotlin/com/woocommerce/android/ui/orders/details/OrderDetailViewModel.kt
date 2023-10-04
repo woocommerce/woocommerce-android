@@ -304,22 +304,30 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onPreviousOrderClicked() {
+        if (!previousOrderNavigationIsEnabled()) return
+
         val allOrderIds = navArgs.allOrderIds
         val previousIndex = allOrderIds.indexOf(order.id) - 1
         val previousOrderId = allOrderIds.get(previousIndex)
         triggerEvent(OrderNavigationTarget.ShowOrder(previousOrderId, allOrderIds))
     }
 
-    fun previousOrderNavigationIsEnabled() = navArgs.allOrderIds.indexOf(navArgs.orderId) != 0
+    fun previousOrderNavigationIsEnabled() =
+        navArgs.allOrderIds.contains(navArgs.orderId) &&
+        navArgs.allOrderIds.first() != navArgs.orderId
 
     fun onNextOrderClicked() {
+        if (!nextOrderNavigationIsEnabled()) return
+
         val allOrderIds = navArgs.allOrderIds
         val nextIndex = allOrderIds.indexOf(order.id) + 1
         val nextOrderId = allOrderIds.get(nextIndex)
         triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId, allOrderIds))
     }
 
-    fun nextOrderNavigationIsEnabled() =  navArgs.allOrderIds.indexOf(navArgs.orderId) != navArgs.allOrderIds.count() - 1
+    fun nextOrderNavigationIsEnabled() =
+        navArgs.allOrderIds.contains(navArgs.orderId) &&
+            navArgs.allOrderIds.last() != navArgs.orderId
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
