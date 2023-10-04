@@ -1915,6 +1915,7 @@
     <string name="product_creation_ai_preview_title">Preview</string>
     <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
