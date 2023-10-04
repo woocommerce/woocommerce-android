@@ -122,6 +122,13 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()
                 }
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToAboutTapToPay -> {
+                    findNavController().navigate(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToTapToPayAboutFragment(
+                            event.countryConfig
+                        )
+                    )
+                }
                 else -> event.isHandled = false
             }
         }

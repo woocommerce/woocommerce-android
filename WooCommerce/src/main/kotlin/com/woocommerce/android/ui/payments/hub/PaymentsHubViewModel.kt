@@ -212,7 +212,7 @@ class PaymentsHubViewModel @Inject constructor(
                         icon = R.drawable.ic_tintable_info_outline_24dp,
                         label = UiStringRes(R.string.card_reader_about_tap_to_pay),
                         index = 7,
-                        onClick = { },
+                        onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
                     )
                 )
             }
@@ -362,6 +362,11 @@ class PaymentsHubViewModel @Inject constructor(
             FeatureFeedbackSettings.FeedbackState.GIVEN
         )
         triggerEvent(PaymentsHubEvents.NavigateToTapTooPaySurveyScreen)
+    }
+
+    private fun onAboutTTPClicked(countryConfig: CardReaderConfigForSupportedCountry) {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_ABOUT_TAPPED)
+        triggerEvent(PaymentsHubEvents.NavigateToAboutTapToPay(countryConfig))
     }
 
     private fun onCardReaderManualsClicked(countryConfig: CardReaderConfigForSupportedCountry) {
@@ -535,6 +540,10 @@ class PaymentsHubViewModel @Inject constructor(
 
         data class NavigateToCardReaderOnboardingScreen(val onboardingState: CardReaderOnboardingState) :
             PaymentsHubEvents()
+
+        data class NavigateToAboutTapToPay(
+            val countryConfig: CardReaderConfigForSupportedCountry
+        ) : PaymentsHubEvents()
 
         data class OpenGenericWebView(val url: String) : PaymentsHubEvents()
         data class ShowToastString(val message: String) : PaymentsHubEvents()
