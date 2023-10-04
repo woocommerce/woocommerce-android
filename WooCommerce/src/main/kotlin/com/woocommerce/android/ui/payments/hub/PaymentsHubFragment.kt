@@ -53,7 +53,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
         binding.paymentsHubRv.adapter = PaymentsHubAdapter()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner

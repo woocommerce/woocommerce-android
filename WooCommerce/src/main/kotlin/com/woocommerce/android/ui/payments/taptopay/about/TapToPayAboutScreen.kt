@@ -179,16 +179,18 @@ fun TapToPaySummaryAboutPreview() {
             onBackClick = {},
             state = TapToPayAboutViewModel.UiState(
                 importantInfo = TapToPayAboutViewModel.UiState.ImportantInfo(
-                    pinDescription = "In Australia, some cards require a PIN for contactless transactions above \$200. ",
+                    pinDescription =
+                    "In Australia, some cards require a PIN for contactless transactions above \$200. ",
                     onLearnMoreAboutCardReaders = {}
                 )
             )
         )
     }
 }
+
 @Preview
 @Composable
-fun TapToPaySummaryAboutWithoutImportantInfopPreview() {
+fun TapToPaySummaryAboutWithoutImportantInfoPreview() {
     WooThemeWithBackground {
         TapToPayAboutScreen(
             onBackClick = {},

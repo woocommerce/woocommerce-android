@@ -18,7 +18,9 @@ class TapToPayAboutViewModel @Inject constructor(
     init {
         _viewState.value = UiState(
             importantInfo = UiState.ImportantInfo(
-                pinDescription = "Your PIN is used to verify your identity when you make a purchase. You can change your PIN in the settings.",
+                pinDescription =
+                "Your PIN is used to verify your identity when you make a purchase." +
+                    " You can change your PIN in the settings.",
                 onLearnMoreAboutCardReaders = { },
             )
         )
