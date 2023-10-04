@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +41,13 @@ class TapToPayAboutFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is NavigateToUrlInGenericWebView ->
+                    ChromeCustomTabUtils.launchUrl(
+                        requireContext(),
+                        event.url,
+                        ChromeCustomTabUtils.Height.Partial.ThreeQuarters
+                    )
+
                 else -> event.isHandled = false
             }
         }

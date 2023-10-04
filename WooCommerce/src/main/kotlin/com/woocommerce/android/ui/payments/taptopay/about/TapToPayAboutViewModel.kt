@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.taptopay.about
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.ui.login.storecreation.countrypicker.LocalCountriesRepository
@@ -52,7 +53,13 @@ class TapToPayAboutViewModel @Inject constructor(
                     countryName,
                     amount
                 ),
-                onLearnMoreAboutCardReaders = { }
+                onLearnMoreAboutCardReaders = {
+                    triggerEvent(
+                        NavigateToUrlInGenericWebView(
+                            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
+                        )
+                    )
+                }
             )
         }
     }
@@ -64,3 +71,5 @@ class TapToPayAboutViewModel @Inject constructor(
         )
     }
 }
+
+data class NavigateToUrlInGenericWebView(val url: String) : MultiLiveEvent.Event()
