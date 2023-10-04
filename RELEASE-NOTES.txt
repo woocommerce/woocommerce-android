@@ -5,6 +5,10 @@
 - [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]
 - [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
 
+15.7
+-----
+- [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]
+
 15.6
 -----
 
