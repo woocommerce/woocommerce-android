@@ -51,7 +51,7 @@ class AnalyticsRepository @Inject constructor(
 ) {
     private val getCurrentRevenueMutex = Mutex()
     private val getPreviousRevenueMutex = Mutex()
-    private var revenueStatsCache: MutableMap<Int, AnalyticsStatsResultWrapper> = mutableMapOf()
+    private var revenueStatsCache: MutableMap<String, AnalyticsStatsResultWrapper> = mutableMapOf()
 
     suspend fun fetchRevenueData(
         rangeSelection: StatsTimeRangeSelection,
@@ -301,7 +301,7 @@ class AnalyticsRepository @Inject constructor(
         startDate: String,
         endDate: String,
         granularity: StatsGranularity,
-        revenueRangeId: Int,
+        revenueRangeId: String,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> {
         if (fetchStrategy == Saved) {
@@ -370,6 +370,6 @@ class AnalyticsRepository @Inject constructor(
         private val timeRange: AnalyticsHubTimeRange,
         private val selectionType: SelectionType
     ) {
-        val id: Int = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
+        val id: String = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
     }
 }
