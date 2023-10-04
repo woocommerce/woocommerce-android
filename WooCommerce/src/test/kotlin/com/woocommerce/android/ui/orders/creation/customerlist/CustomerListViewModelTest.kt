@@ -431,6 +431,48 @@ class CustomerListViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given empty list from repo and email search, when add customer manually clicked, then event has email`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success(emptyList()))
+
+            val email = "email@a8c.com"
+            whenever(stringUtils.isValidEmail(email)).thenReturn(true)
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(email)
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+            (states.last().body as CustomerListViewState.CustomerList.Empty).button!!.onClick()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(AddCustomer(email))
+        }
+
+    @Test
+    fun `given empty list from repo and non email search, when add customer manually clicked, then event doesnt have email`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success(emptyList()))
+
+            val search = ""
+            whenever(stringUtils.isValidEmail(search)).thenReturn(false)
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(search)
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+            (states.last().body as CustomerListViewState.CustomerList.Empty).button!!.onClick()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(AddCustomer(null))
+        }
+
+    @Test
     fun `given search query, when onSearchQueryChanged is called, then update search query is updated and tracked`() =
         testBlocking {
             // GIVEN
