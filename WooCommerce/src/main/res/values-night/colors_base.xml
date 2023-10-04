@@ -199,4 +199,10 @@
     -->
     <color name="woo_payments_setup_bullet_background">@color/woo_purple_80</color>
 
+    <!--
+    Tap To Pay About
+    -->
+    <color name="tap_to_pay_about_important_info_background">@color/woo_purple_90</color>
+
+
 </resources>
