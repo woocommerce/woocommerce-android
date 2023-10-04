@@ -189,11 +189,19 @@ class OrderDetailFragment :
         }
 
         menu.findItem(R.id.menu_arrow_up)?.let {
-            it.isEnabled = viewModel.previousOrderNavigationIsEnabled()
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.previousOrderNavigationIsEnabled()
+            }
         }
 
         menu.findItem(R.id.menu_arrow_down)?.let {
-            it.isEnabled = viewModel.nextOrderNavigationIsEnabled()
+            it.isVisible = viewModel.orderNavigationIsEnabled()
+
+            if (it.isVisible) {
+                it.isEnabled = viewModel.nextOrderNavigationIsEnabled()
+            }
         }
     }
 

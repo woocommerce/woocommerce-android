@@ -303,6 +303,8 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
+    fun orderNavigationIsEnabled() = navArgs.allOrderIds.contains(navArgs.orderId) && navArgs.allOrderIds.count() > 1
+
     fun onPreviousOrderClicked() {
         if (!previousOrderNavigationIsEnabled()) return
 
