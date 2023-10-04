@@ -166,7 +166,7 @@
             android:name="orderId"
             app:argType="long" />
         <argument
-            android:name="orderIds"
+            android:name="allOrderIds"
             app:argType="long[]" />
         <argument
             android:name="remoteNoteId"
@@ -180,7 +180,7 @@
                 android:name="orderId"
                 app:argType="long" />
             <argument
-                android:name="orderIds"
+                android:name="allOrderIds"
                 app:argType="long[]" />
             <argument
                 android:name="remoteNoteId"

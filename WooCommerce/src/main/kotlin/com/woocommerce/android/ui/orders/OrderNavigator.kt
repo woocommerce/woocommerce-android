@@ -193,7 +193,7 @@ class OrderNavigator @Inject constructor() {
                 OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderDetailFragment(
                         target.orderId,
-                        target.orderIds)
+                        target.allOrderIds)
                     .let {
                         val animationOptions = NavOptions.Builder().setEnterAnim(R.anim.nav_enter_anim)
                             .build()
