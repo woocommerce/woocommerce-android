@@ -164,6 +164,7 @@ class LoginActivity :
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
                 intent.data?.let { uri ->
+                    unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
                     val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER)
                     val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER)
                     if (wpComEmail != null) {
