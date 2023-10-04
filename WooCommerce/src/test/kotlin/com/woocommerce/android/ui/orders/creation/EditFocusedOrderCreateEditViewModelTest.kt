@@ -29,7 +29,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import java.math.BigDecimal
 import java.util.Date
 
@@ -294,7 +293,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
-    fun `given editable order and order paid, then set tax rate button should be disabled`()  {
+    fun `given editable order and order paid, then set tax rate button should be disabled`() {
         testBlocking {
             initMocksForAnalyticsWithOrder(defaultOrderValue)
             val order = defaultOrderValue.copy(
@@ -342,7 +341,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             assertTrue(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
         }
     }
-
 
     @Test
     fun `given order not paid, when feature flag disabled, tax rate button not shown`() {
