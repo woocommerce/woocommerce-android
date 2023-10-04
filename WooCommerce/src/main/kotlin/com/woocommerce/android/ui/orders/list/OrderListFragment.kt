@@ -535,7 +535,7 @@ class OrderListFragment :
         binding.orderListView.submitPagedList(pagedListData)
     }
 
-    override fun openOrderDetail(orderId: Long, orderIds: List<Long>, positionInList: Int, orderStatus: String, sharedView: View?) {
+    override fun openOrderDetail(orderId: Long, orderIds: List<Long>, orderStatus: String, sharedView: View?) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
         _binding?.createOrderButton?.hide()
@@ -553,8 +553,8 @@ class OrderListFragment :
 
             if (sharedView != null) {
                 showOrderDetailWithSharedTransition(
+                    orderId = orderId,
                     orderIds = orderIds,
-                    positionInList = positionInList,
                     sharedView = sharedView
                 )
             } else {
