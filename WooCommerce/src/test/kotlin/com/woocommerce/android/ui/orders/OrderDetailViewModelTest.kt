@@ -1982,7 +1982,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when the order is not in the list then it disables navigation to previous and next order`() = testBlocking {
+    fun `when the order is not in the list then it disables order navigation`() = testBlocking {
         val newSavedState = OrderDetailFragmentArgs(
             orderId = ORDER_ID,
             allOrderIds = arrayOf(2L, 3L).toLongArray()
@@ -1992,7 +1992,20 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        assertThat(viewModel.previousOrderNavigationIsEnabled()).isFalse
-        assertThat(viewModel.nextOrderNavigationIsEnabled()).isFalse
+        assertThat(viewModel.orderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when there is only one order then it disables order navigation`() = testBlocking {
+        val newSavedState = OrderDetailFragmentArgs(
+            orderId = ORDER_ID,
+            allOrderIds = arrayOf(ORDER_ID).toLongArray()
+        ).initSavedStateHandle()
+
+        createViewModel(newSavedState)
+
+        viewModel.start()
+
+        assertThat(viewModel.orderNavigationIsEnabled()).isFalse
     }
 }
