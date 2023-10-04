@@ -203,7 +203,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderProductMapper
             )
         )
-
     }
 
     @Before
