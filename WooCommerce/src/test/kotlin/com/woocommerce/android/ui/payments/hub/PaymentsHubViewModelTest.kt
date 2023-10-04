@@ -11,6 +11,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfig
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -28,6 +30,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
@@ -46,6 +49,7 @@ import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -97,8 +101,14 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         )
     }
     private val paymentsHubTapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler = mock()
-    private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
+
+    private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(
+        SoftwareUpdateAvailability.NotAvailable
+    )
+    private val cardReaderManager: CardReaderManager = mock {
+        on { softwareUpdateAvailability }.thenReturn(softwareUpdateAvailability)
+    }
 
     private val clearCardReaderDataAction: ClearCardReaderDataAction = ClearCardReaderDataAction(
         cardReaderManager,
@@ -1780,6 +1790,112 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         )
     }
 
+    // region optional card reader update
+    @Test
+    fun `given card reader not connected, when view model initiated, then do not show the snackbar`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        assertThat(viewModel.event.value).isNull()
+    }
+
+    @Test
+    fun `given card reader connected, when there is no optional card reader update, then do not show the snackbar`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        assertThat(viewModel.event.value).isNull()
+    }
+
+    @Test
+    fun `given card reader connected, when there is an optional card reader update, then show the snackbar`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            CardReaderUpdateAvailable::class.java
+        )
+    }
+
+    @Test
+    fun `given card reader connected, when there is an optional card reader update, then show the snackbar with correct message`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+
+        assertThat((viewModel.event.value as CardReaderUpdateAvailable).message).isEqualTo(
+            R.string.card_reader_payment_update_available
+        )
+    }
+
+    @Test
+    fun `given optional card reader update snackbar shown, when action cta clicked, then trigger proper event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+        (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
+
+        assertThat(viewModel.event.value).isInstanceOf(
+            PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateScreen::class.java
+        )
+    }
+
+    @Test
+    fun `given card reader connected, when there is an optional card reader update, then track optional update shown event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+
+        verify(cardReaderTracker).trackSoftwareUpdateAlertShown()
+    }
+
+    @Test
+    fun `given optional card reader update snackbar shown, when action cta clicked, then track proper event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+        softwareUpdateAvailability.value = SoftwareUpdateAvailability.Available
+        (viewModel.event.value as CardReaderUpdateAvailable).onClick.onClick(mock())
+
+        verify(cardReaderTracker).trackSoftwareUpdateAlertInstallClicked()
+    }
+
+    @Test
+    fun `given card reader connected, when there is no optional card reader update, then do not track card reader update shown event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertShown()
+    }
+
+    @Test
+    fun `given card reader connected, when there is no optional card reader update, then do not track card reader install clicked event`() {
+        val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatus)
+
+        initViewModel()
+
+        verify(cardReaderTracker, never()).trackSoftwareUpdateAlertInstallClicked()
+    }
+
+    //endregion
+
     private fun getSuccessWooResult() = WooResult(
         model = WCGatewayModel(
             id = "",
@@ -1823,6 +1939,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             feedbackRepository,
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
+            cardReaderManager,
         )
         viewModel.onViewVisible()
     }
