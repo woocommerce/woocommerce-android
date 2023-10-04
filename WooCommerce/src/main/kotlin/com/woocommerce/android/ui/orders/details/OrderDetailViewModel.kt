@@ -310,12 +310,16 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(OrderNavigationTarget.ShowOrder(previousOrderId, orderIds))
     }
 
+    fun previousOrderNavigationIsEnabled() = navArgs.orderIds.indexOf(navArgs.orderId) != 0
+
     fun onNextOrderClicked() {
         val orderIds = navArgs.orderIds
         val nextIndex = orderIds.indexOf(order.id) + 1
         val nextOrderId = orderIds.get(nextIndex)
         triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId, orderIds))
     }
+
+    fun nextOrderNavigationIsEnabled() =  navArgs.orderIds.indexOf(navArgs.orderId) != navArgs.orderIds.count() - 1
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()

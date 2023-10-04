@@ -187,6 +187,14 @@ class OrderDetailFragment :
         menu.findItem(R.id.menu_edit_order)?.let {
             it.isEnabled = viewModel.hasOrder()
         }
+
+        menu.findItem(R.id.menu_arrow_up)?.let {
+            it.isEnabled = viewModel.previousOrderNavigationIsEnabled()
+        }
+
+        menu.findItem(R.id.menu_arrow_down)?.let {
+            it.isEnabled = viewModel.nextOrderNavigationIsEnabled()
+        }
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
