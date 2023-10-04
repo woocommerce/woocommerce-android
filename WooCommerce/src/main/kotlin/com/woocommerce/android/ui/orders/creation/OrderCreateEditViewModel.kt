@@ -157,6 +157,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
+    private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -253,9 +254,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
                         handleCouponEditResult()
-                        if (!order.isOrderPaid) {
-                            updateTaxRateSelectorButtonState()
-                        }
+                        updateTaxRateSelectorButtonState()
                     }
                 }
             }
@@ -286,7 +285,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val isSetNewTaxRateButtonVisible: Boolean = when (it) {
                 BillingAddress, ShippingAddress -> true
                 else -> false
-            } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+            } && isTaxRateSelectorEnabled() && !_orderDraft.value.isOrderPaid
             viewState = viewState.copy(
                 taxBasedOnSettingLabel = it?.label ?: "",
                 taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
