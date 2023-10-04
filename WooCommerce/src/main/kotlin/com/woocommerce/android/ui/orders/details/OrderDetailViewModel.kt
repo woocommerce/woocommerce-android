@@ -303,10 +303,18 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
+    fun onPreviousOrderClicked() {
+        val orderIds = navArgs.orderIds
+        val previousIndex = orderIds.indexOf(order.id) - 1
+        val previousOrderId = orderIds.get(previousIndex)
+        triggerEvent(OrderNavigationTarget.ShowOrder(previousOrderId, orderIds))
+    }
+
     fun onNextOrderClicked() {
-        val nextIndex = navArgs.orderIds.indexOf(order.id) + 1
-        val nextOrderId = navArgs.orderIds.get(nextIndex)
-        triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId))
+        val orderIds = navArgs.orderIds
+        val nextIndex = orderIds.indexOf(order.id) + 1
+        val nextOrderId = orderIds.get(nextIndex)
+        triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId, orderIds))
     }
 
     fun onAcceptCardPresentPaymentClicked() {

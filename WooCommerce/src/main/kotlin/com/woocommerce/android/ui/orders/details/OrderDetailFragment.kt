@@ -196,6 +196,11 @@ class OrderDetailFragment :
                 true
             }
 
+            R.id.menu_arrow_up -> {
+                viewModel.onPreviousOrderClicked()
+                true
+            }
+
              R.id.menu_arrow_down -> {
                 viewModel.onNextOrderClicked()
                 true
