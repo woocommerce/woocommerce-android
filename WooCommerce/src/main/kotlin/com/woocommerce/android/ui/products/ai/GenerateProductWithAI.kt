@@ -26,21 +26,25 @@ class GenerateProductWithAI @Inject constructor(
     private val tagsRepository: ProductTagsRepository,
     private val parametersRepository: ParameterRepository
 ) {
+    @Suppress("ReturnCount")
     suspend operator fun invoke(
         productName: String,
         productKeyWords: String,
         tone: AiTone,
         languageISOCode: String
     ): Result<Product> {
-        val existingCategories = getCategories()
-        val existingTags = getTags()
-        val siteParameters = getSiteParameters().fold(
-            onSuccess = { it },
-            onFailure = {
-                WooLog.e(AI, "Failed to get site parameters", it)
-                return Result.failure(it)
-            }
-        )
+        val existingCategories = categoriesRepository.fetchProductCategories().getOrElse {
+            WooLog.e(AI, "Failed to fetch product categories", it)
+            return Result.failure(it)
+        }
+        val existingTags = tagsRepository.fetchProductTags().getOrElse {
+            WooLog.e(AI, "Failed to fetch product tags", it)
+            return Result.failure(it)
+        }
+        val siteParameters = getSiteParameters().getOrElse {
+            WooLog.e(AI, "Failed to fetch site parameters", it)
+            return Result.failure(it)
+        }
 
         return aiRepository.generateProduct(
             productName = productName,
@@ -85,20 +89,6 @@ class GenerateProductWithAI @Inject constructor(
                 require(predicate(it)) { "Site parameters missing information after a successful fetch" }
                 it
             }
-    }
-
-    private suspend fun getTags() = withContext(Dispatchers.IO) {
-        tagsRepository.getProductTags().ifEmpty {
-            tagsRepository.fetchProductTags()
-            tagsRepository.getProductTags()
-        }
-    }
-
-    private suspend fun getCategories() = withContext(Dispatchers.IO) {
-        categoriesRepository.getProductCategoriesList().ifEmpty {
-            categoriesRepository.fetchProductCategories()
-            categoriesRepository.getProductCategoriesList()
-        }
     }
 
     private data class Shipping(

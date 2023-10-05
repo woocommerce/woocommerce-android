@@ -2051,6 +2051,10 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun fetchProductCategories(loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             _productCategories.value = productCategoriesRepository.fetchProductCategories(loadMore = loadMore)
+                .getOrElse {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    productCategoriesRepository.getProductCategoriesList()
+                }
 
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
@@ -2304,7 +2308,10 @@ class ProductDetailViewModel @Inject constructor(
             val products = productTagsRepository.fetchProductTags(
                 loadMore = loadMore,
                 searchQuery = searchQuery
-            )
+            ).getOrElse {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+                productTagsRepository.getProductTags()
+            }
             filterProductTagList(products)
 
             productTagsViewState = productTagsViewState.copy(

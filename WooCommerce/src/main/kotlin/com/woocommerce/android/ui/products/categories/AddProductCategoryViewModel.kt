@@ -6,6 +6,7 @@ import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.sortCategories
@@ -200,6 +201,10 @@ class AddProductCategoryViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             _parentCategories.value = productCategoriesRepository
                 .fetchProductCategories(loadMore = loadMore)
+                .getOrElse {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    productCategoriesRepository.getProductCategoriesList()
+                }
                 .sortCategories(resourceProvider)
 
             parentCategoryListViewState = parentCategoryListViewState.copy(
