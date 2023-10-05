@@ -10,6 +10,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -32,6 +35,8 @@ class AddProductWithAIViewModel @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     buildProductPreviewProperties: BuildProductPreviewProperties,
     generateProductWithAI: GenerateProductWithAI,
+    private val productCategoriesRepository: ProductCategoriesRepository,
+    private val productTagsRepository: ProductTagsRepository,
     private val appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
@@ -100,7 +105,7 @@ class AddProductWithAIViewModel @Inject constructor(
         require(::product.isInitialized)
         viewModelScope.launch {
             saveButtonState.value = SaveButtonState.Loading
-            val (success, productId) = productDetailRepository.addProduct(product)
+            val (success, productId) = saveProduct()
             if (!success) {
                 triggerEvent(ShowSnackbar(R.string.error_generic))
                 saveButtonState.value = SaveButtonState.Shown
@@ -110,6 +115,43 @@ class AddProductWithAIViewModel @Inject constructor(
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
             }
         }
+    }
+
+    private suspend fun saveProduct(): Pair<Boolean, Long> {
+        // Create missing categories
+        val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
+        val createdCategories = missingCategories
+            .takeIf { it.isNotEmpty() }?.let { productCategories ->
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Create the missing product categories ${productCategories.map { it.name }}"
+                )
+                productCategoriesRepository.addProductCategories(productCategories)
+            }?.getOrElse {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
+                return Pair(false, 0L)
+            }
+
+        // Create missing tags
+        val missingTags = product.tags.filter { it.remoteTagId == 0L }
+        val createdTags = missingTags
+            .takeIf { it.isNotEmpty() }?.let { productTags ->
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Create the missing product tags ${productTags.map { it.name }}"
+                )
+                productTagsRepository.addProductTags(productTags.map { it.name })
+            }?.getOrElse {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
+                return Pair(false, 0L)
+            }
+
+        product = product.copy(
+            categories = product.categories - missingCategories + createdCategories.orEmpty(),
+            tags = product.tags - missingTags + createdTags.orEmpty()
+        )
+
+        return productDetailRepository.addProduct(product)
     }
 
     private fun goToNextStep() {
