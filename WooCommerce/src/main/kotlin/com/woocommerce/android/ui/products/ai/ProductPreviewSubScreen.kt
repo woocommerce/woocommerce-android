@@ -249,6 +249,8 @@ private fun ProductPreviewLoading(modifier: Modifier) {
                 .then(sectionsBorder)
         )
 
+        Spacer(Modifier)
+
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
             style = MaterialTheme.typography.body2
