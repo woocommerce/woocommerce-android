@@ -69,6 +69,12 @@
         app:layout_constraintStart_toStartOf="@id/shipping_address_details"
         app:layout_constraintTop_toBottomOf="@id/shipping_address_details" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/shipping_group"
+        app:constraint_referenced_ids="shipping_header,shipping_address_details,shipping_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <TextView
         android:id="@+id/billing_header"
         android:layout_width="0dp"
@@ -112,5 +118,11 @@
         app:layout_constraintBottom_toBottomOf="@id/customerInfo_viewMoreButtonTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/customerInfo_viewMoreButtonTitle" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/billing_group"
+        app:constraint_referenced_ids="billing_header,billing_address_details,customerInfo_viewMoreButtonTitle,customerInfo_viewMoreButtonImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
