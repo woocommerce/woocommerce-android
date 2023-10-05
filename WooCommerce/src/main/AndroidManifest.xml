@@ -92,9 +92,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="jetpack-connected"
-                    android:scheme="woocommerce" />
+                <data android:scheme="woocommerce"/>
+                <data android:host="jetpack-connected"/>
+                <data android:host="app-login" />
             </intent-filter>
         </activity>
         <activity
