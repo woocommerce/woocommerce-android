@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.ExperimentTracker
@@ -168,17 +169,29 @@ class LoginActivity :
                     unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
                     val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER)
                     val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER)
-                    if (wpComEmail != null) {
-                        gotWpcomSiteInfo(siteUrl)
-                        showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
-                    } else {
-                        val username = uri.getQueryParameter(USERNAME_PARAMETER)
-                        showUsernamePasswordScreen(
-                            siteAddress = siteUrl,
-                            inputUsername = username,
-                            endpointAddress = null,
-                            inputPassword = null
-                        )
+                    val username = uri.getQueryParameter(USERNAME_PARAMETER)
+                    when {
+                        siteUrl != null && wpComEmail != null -> {
+                            gotWpcomSiteInfo(siteUrl)
+                            showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+                        }
+
+                        siteUrl != null && username != null -> {
+                            showUsernamePasswordScreen(
+                                siteAddress = siteUrl,
+                                inputUsername = username,
+                                endpointAddress = null,
+                                inputPassword = null
+                            )
+                        }
+
+                        else -> {
+                            AnalyticsTracker.track(
+                                stat = AnalyticsEvent.LOGIN_MALFORMED_APP_LOGIN_LINK,
+                                properties = mapOf(KEY_URL to uri.toString())
+                            )
+                            showPrologue()
+                        }
                     }
                 }
             }
