@@ -35,147 +35,95 @@ class TapToPayAvailabilityStatusTest {
         on { invoke() }.thenReturn(true)
     }
 
+    private val deviceFeatures = mock<DeviceFeatures>()
+
+    private val availabilityStatus = TapToPayAvailabilityStatus(
+        selectedSite,
+        deviceFeatures,
+        systemVersionUtilsWrapper,
+        cardReaderCountryConfigProvider,
+        wooStore,
+        caUkFeatureFlagEnabled,
+    )
+
     @Test
     fun `given device has no NFC, when invoking, then nfc disabled returned`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(false)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(false)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
     }
 
     @Test
     fun `given device has no Google Play Services, when invoking, then GPS not available`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(true)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(false)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(false)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled,
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable)
     }
 
     @Test
     fun `given device has os less than Android 9, when invoking, then system is not supported returned`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(true)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(false)
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled,
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported)
     }
 
     @Test
     fun `given country other than US, when invoking, then country is not supported returned`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(true)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("RU")
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled,
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
     }
 
     @Test
     fun `given country UK and feature flag disabled, when invoking, then country is not supported returned`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(true)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("GB")
         whenever(caUkFeatureFlagEnabled()).thenReturn(false)
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled,
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
     }
 
     @Test
     fun `given country CA and feature flag disabled, when invoking, then country is not supported returned`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(true)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("CA")
         whenever(caUkFeatureFlagEnabled()).thenReturn(false)
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled,
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
     }
 
     @Test
     fun `given device satisfies all the requirements, when invoking, then tpp available returned`() {
-        val deviceFeatures = mock<DeviceFeatures> {
-            whenever(it.isNFCAvailable()).thenReturn(true)
-            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
-        }
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
 
-        val result = TapToPayAvailabilityStatus(
-            selectedSite,
-            deviceFeatures,
-            systemVersionUtilsWrapper,
-            cardReaderCountryConfigProvider,
-            wooStore,
-            caUkFeatureFlagEnabled,
-        ).invoke()
+        val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
     }
