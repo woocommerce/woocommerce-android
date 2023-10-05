@@ -9,7 +9,10 @@ import java.math.BigDecimal
 object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
     currency = "GBP",
     countryCode = "GB",
-    supportedReaders = listOf(ReaderType.ExternalReader.WisePade3),
+    supportedReaders = listOf(
+        ReaderType.ExternalReader.WisePade3,
+        ReaderType.BuildInReader.CotsDevice,
+    ),
     paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(
         SupportedExtension(
@@ -17,5 +20,6 @@ object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
             supportedSince = "4.4.0"
         ),
     ),
-    minimumAllowedChargeAmount = BigDecimal("0.30")
+    minimumAllowedChargeAmount = BigDecimal("0.30"),
+    maximumTTPAllowedChargeAmountWithoutPin = BigDecimal("100.00"),
 )
