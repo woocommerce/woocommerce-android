@@ -13,7 +13,6 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     IAP_FOR_STORE_CREATION,
-    IPP_UK,
     STORE_CREATION_ONBOARDING,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
@@ -24,6 +23,7 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_TAX_RATE_SELECTOR,
     ORDER_CREATION_AUTO_TAX_RATE,
+    TTP_CA_UK,
     PRODUCT_CREATION_AI;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -37,7 +37,6 @@ enum class FeatureFlag {
             UNIFIED_ORDER_EDITING,
             STORE_CREATION_ONBOARDING,
             REST_API_I2,
-            IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             EU_SHIPPING_NOTIFICATION,
             PRIVACY_CHOICES,
@@ -46,6 +45,7 @@ enum class FeatureFlag {
             ORDER_CREATION_TAX_RATE_SELECTOR,
             PRODUCT_CREATION_AI -> true
 
+            TTP_CA_UK,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,

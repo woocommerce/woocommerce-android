@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -16,6 +17,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val wooStore: WooCommerceStore,
+    private val caUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled
 ) {
     operator fun invoke() =
         when {
@@ -30,9 +32,13 @@ class TapToPayAvailabilityStatus @Inject constructor(
     private fun isTppSupportedInCountry(): Boolean {
         val selectedSite = selectedSite.getIfExists() ?: return false
         val countryCode = wooStore.getStoreCountryCode(selectedSite)
-        return when (val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)) {
-            is CardReaderConfigForSupportedCountry -> config.supportedReaders.any { it is ReaderType.BuildInReader }
-            CardReaderConfigForUnsupportedCountry -> false
+        return if ((countryCode == "CA" || countryCode == "GB") && !caUkFeatureFlagEnabled()) {
+            false
+        } else {
+            when (val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)) {
+                is CardReaderConfigForSupportedCountry -> config.supportedReaders.any { it is ReaderType.BuildInReader }
+                CardReaderConfigForUnsupportedCountry -> false
+            }
         }
     }
 
@@ -48,3 +54,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
 }
 
 val TapToPayAvailabilityStatus.Result.isAvailable get() = this is TapToPayAvailabilityStatus.Result.Available
+
+class TTPCaUkFeatureFlagEnabled @Inject constructor() {
+    operator fun invoke() = FeatureFlag.TTP_CA_UK.isEnabled()
+}
