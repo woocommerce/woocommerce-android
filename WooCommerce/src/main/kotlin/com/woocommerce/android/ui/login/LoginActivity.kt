@@ -939,6 +939,7 @@ class LoginActivity :
                     stat = AnalyticsEvent.LOGIN_MALFORMED_APP_LOGIN_LINK,
                     properties = mapOf(KEY_URL to uri.toString())
                 )
+                ToastUtils.showToast(this, R.string.login_app_login_malformed_link)
                 showPrologue()
             }
         }
