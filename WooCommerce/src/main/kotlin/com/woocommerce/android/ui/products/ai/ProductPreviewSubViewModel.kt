@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.ai
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCProductStore.ProductError
 
 class ProductPreviewSubViewModel(
     private val aiRepository: AIRepository,
@@ -100,12 +103,18 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
+                    val errorType = when(it) {
+                        is JetpackAICompletionsException -> it.errorType
+                        is OnChangedException -> (it.error as? ProductError)?.type?.name
+                        is WooException -> it.error.type.name
+                        else -> null
+                    }
                     AnalyticsTracker.track(
                         AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                            AnalyticsTracker.KEY_ERROR_TYPE to (it as? JetpackAICompletionsException)?.errorType,
-                            AnalyticsTracker.KEY_ERROR_DESC to (it as? JetpackAICompletionsException)?.errorMessage
+                            AnalyticsTracker.KEY_ERROR_TYPE to errorType,
+                            AnalyticsTracker.KEY_ERROR_DESC to it.message
                         )
                     )
                     WooLog.e(WooLog.T.AI, "Failed to generate product with AI", it)
