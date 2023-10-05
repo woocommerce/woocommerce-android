@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_ALL
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_EMAIL
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_NAME
@@ -288,9 +289,22 @@ class CustomerListViewModel @Inject constructor(
 
         triggerEvent(
             CustomerSelected(
-                customerId = wcCustomer.remoteCustomerId,
-                billingAddress = mapper.mapFromOrderAddressToAddress(billingAddress, billingCountry, billingState),
-                shippingAddress = mapper.mapFromOrderAddressToAddress(shippingAddress, shippingCountry, shippingState),
+                Order.Customer(
+                    customerId = wcCustomer.remoteCustomerId,
+                    firstName = wcCustomer.firstName,
+                    lastName = wcCustomer.lastName,
+                    email = wcCustomer.email,
+                    billingAddress = mapper.mapFromOrderAddressToAddress(
+                        billingAddress,
+                        billingCountry,
+                        billingState
+                    ),
+                    shippingAddress = mapper.mapFromOrderAddressToAddress(
+                        shippingAddress,
+                        shippingCountry,
+                        shippingState
+                    ),
+                )
             )
         )
     }

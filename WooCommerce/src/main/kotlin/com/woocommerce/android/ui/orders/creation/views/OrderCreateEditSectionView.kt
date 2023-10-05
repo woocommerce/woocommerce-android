@@ -55,8 +55,8 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             updateContent(value)
         }
 
-    var keepAddButtons: Boolean = false
-    var hasEditButton: Boolean = true
+    private var keepAddButtons: Boolean = false
+    private var hasEditButton: Boolean = true
 
     var isLocked: Boolean = false
         set(value) {

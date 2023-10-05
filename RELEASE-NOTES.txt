@@ -4,6 +4,7 @@
 - [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
 - [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]
 - [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
+- [*] Order creation: Customers selected from the list that don't have address information now properly displayed on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/9863]
 
 15.7
 -----
