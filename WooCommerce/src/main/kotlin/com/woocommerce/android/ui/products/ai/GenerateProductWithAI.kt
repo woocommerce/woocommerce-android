@@ -57,7 +57,7 @@ class GenerateProductWithAI @Inject constructor(
             existingTags = existingTags,
             languageISOCode = languageISOCode
         ).mapCatching { json ->
-            val parsedResponse = Gson().fromJson(json, JsonResponse::class.java)
+            val parsedResponse = Gson().fromJson(json, AIProductJsonResponse::class.java)
             ProductHelper.getDefaultNewProduct(
                 SIMPLE,
                 parsedResponse.isVirtual
@@ -91,14 +91,7 @@ class GenerateProductWithAI @Inject constructor(
             }
     }
 
-    private data class Shipping(
-        val weight: Float,
-        val height: Float,
-        val length: Float,
-        val width: Float
-    )
-
-    private data class JsonResponse(
+    private data class AIProductJsonResponse(
         val name: String,
         val description: String,
         @SerializedName("short_description") val shortDescription: String,
@@ -107,5 +100,12 @@ class GenerateProductWithAI @Inject constructor(
         val shipping: Shipping,
         val categories: List<String>? = null,
         val tags: List<String>? = null
+    )
+
+    private data class Shipping(
+        val weight: Float,
+        val height: Float,
+        val length: Float,
+        val width: Float
     )
 }
