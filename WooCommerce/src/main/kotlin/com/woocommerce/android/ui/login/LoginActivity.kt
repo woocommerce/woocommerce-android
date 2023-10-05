@@ -25,6 +25,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.extensions.parcelable
@@ -173,10 +175,18 @@ class LoginActivity :
                     when {
                         siteUrl != null && wpComEmail != null -> {
                             gotWpcomSiteInfo(siteUrl)
+                            AnalyticsTracker.track(
+                                stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                                properties = mapOf(KEY_FLOW to VALUE_WP_COM)
+                            )
                             showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
                         }
 
                         siteUrl != null && username != null -> {
+                            AnalyticsTracker.track(
+                                stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                                properties = mapOf(KEY_FLOW to VALUE_NO_WP_COM)
+                            )
                             showUsernamePasswordScreen(
                                 siteAddress = siteUrl,
                                 inputUsername = username,

@@ -104,6 +104,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
     LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
     LOGIN_MALFORMED_APP_LOGIN_LINK(siteless = true),
+    LOGIN_APP_LOGIN_LINK_SUCCESS(siteless = true),
     SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
     SIGNUP_SUBMITTED(siteless = true),
     SIGNUP_SUCCESS(siteless = true),
