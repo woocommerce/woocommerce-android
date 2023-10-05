@@ -1233,7 +1233,6 @@ class ProductDetailViewModel @Inject constructor(
         super.onCleared()
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
-        productTagsRepository.onCleanup()
         if (isProductUnderCreation) {
             // cancel uploads for the default ID, since we can't assign the uploads to it
             mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
@@ -2112,7 +2111,9 @@ class ProductDetailViewModel @Inject constructor(
         if (tags.isNotEmpty()) {
             productTagsViewState = productTagsViewState.copy(isProgressDialogShown = true)
             launch {
-                val addedTags = productTagsRepository.addProductTags(tags.map { it.name })
+                val addedTags = productTagsRepository.addProductTags(tags.map { it.name }).getOrElse {
+                    emptyList()
+                }
                 // if there are some tags that could not be added, display an error message
                 if (addedTags.size < tags.size) {
                     triggerEvent(ShowSnackbar(R.string.product_add_tag_error))

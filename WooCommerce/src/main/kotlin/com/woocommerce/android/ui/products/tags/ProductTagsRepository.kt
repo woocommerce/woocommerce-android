@@ -1,19 +1,13 @@
 package com.woocommerce.android.ui.products.tags
 
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.toProductTag
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_TAGS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductTagsPayload
@@ -29,18 +23,9 @@ class ProductTagsRepository @Inject constructor(
         private const val PRODUCT_TAGS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_TAGS_PAGE_SIZE
     }
 
-    private var addProductTagsContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
     var canLoadMoreProductTags = true
-
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
 
     /**
      * Submits a fetch request to get a list of products tags for the current site
@@ -84,12 +69,15 @@ class ProductTagsRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun addProductTags(tagNames: List<String>): List<ProductTag> {
-        addProductTagsContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
-            dispatcher.dispatch(WCProductActionBuilder.newAddProductTagsAction(payload))
+    suspend fun addProductTags(tagNames: List<String>): Result<List<ProductTag>> {
+        val payload = WCProductStore.AddProductTagsPayload(selectedSite.get(), tagNames)
+        val action = WCProductActionBuilder.newAddProductTagsAction(payload)
+        val result: OnProductTagChanged = dispatcher.dispatchAndAwait(action)
+
+        return when {
+            result.isError -> Result.failure(OnChangedException(result.error, result.error.message))
+            else -> Result.success(getProductTagsByNames(tagNames))
         }
-        return getProductTagsByNames(tagNames)
     }
 
     fun getProductTagsByNames(names: List<String>) =
@@ -97,18 +85,4 @@ class ProductTagsRepository @Inject constructor(
 
     fun getProductTagByName(name: String) =
         productStore.getProductTagByName(selectedSite.get(), name)?.toProductTag()
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductTagsChanged(event: OnProductTagChanged) {
-        when (event.causeOfChange) {
-            ADDED_PRODUCT_TAGS -> {
-                // No need to handle errors because errors are currently handled by `OrderListViewModel`.
-                addProductTagsContinuation.continueWith(false)
-            }
-
-            else -> {
-            }
-        }
-    }
 }
