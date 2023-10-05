@@ -68,16 +68,26 @@ object AIPrompts {
     ): String {
         fun getTagsLine(): String {
             return if (existingTags.isNotEmpty()) {
-                """tags":"Given the list of available tags "${existingTags.joinToString()}", suggest an array of the best matching tags for this product, if no matches are found return an empty array, don’t suggest any value other than the available ones",
-                    """"
-            } else ""
+                """
+                    "tags":"Given the list of available tags "${existingTags.joinToString()}", suggest an array of the best matching tags for this product. You can suggest new tags as well."
+                    """.trimIndent()
+            } else {
+                """
+                    "tags":"suggest an array of the best matching tags for this product."
+                    """.trimIndent()
+            }
         }
 
         fun getCategoriesLine(): String {
             return if (existingCategories.isNotEmpty()) {
-                """"categories":"Given the list of available categories "${existingCategories.joinToString()}", suggest an array of the best matching categories for this product, if no matches are found return an empty array, don’t suggest any value other than the available ones"
-                    """"
-            } else ""
+                """
+                    "categories":"Given the list of available categories "${existingCategories.joinToString()}", suggest an array of the best matching categories for this product. You can suggest new categories as well."
+                """.trimIndent()
+            } else {
+                """
+                    "categories":"suggest an array of the best matching categories for this product."
+                    """.trimIndent()
+            }
         }
 
         return """
@@ -100,7 +110,7 @@ object AIPrompts {
                   "height":"Guess and provide only the number in $dimensionUnit"
                },
                "price":"Guess the price in $currency, do not include the currency symbol, only provide the price as a number",
-               ${getTagsLine()}
+               ${getTagsLine()},
                ${getCategoriesLine()}
             }"
         """.trimIndent()

@@ -9,10 +9,7 @@ import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -34,9 +31,7 @@ class AddProductWithAIViewModel @Inject constructor(
     aiRepository: AIRepository,
     private val productDetailRepository: ProductDetailRepository,
     buildProductPreviewProperties: BuildProductPreviewProperties,
-    categoriesRepository: ProductCategoriesRepository,
-    tagsRepository: ProductTagsRepository,
-    parameterRepository: ParameterRepository,
+    generateProductWithAI: GenerateProductWithAI,
     private val appsPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
@@ -61,9 +56,7 @@ class AddProductWithAIViewModel @Inject constructor(
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
         buildProductPreviewProperties = buildProductPreviewProperties,
-        categoriesRepository = categoriesRepository,
-        tagsRepository = tagsRepository,
-        parametersRepository = parameterRepository
+        generateProductWithAI = generateProductWithAI,
     ) {
         product = it
         saveButtonState.value = SaveButtonState.Shown

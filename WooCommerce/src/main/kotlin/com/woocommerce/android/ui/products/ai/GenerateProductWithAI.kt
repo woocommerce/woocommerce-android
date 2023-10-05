@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
@@ -66,8 +68,8 @@ class GenerateProductWithAI @Inject constructor(
                 description = parsedResponse.description,
                 shortDescription = parsedResponse.shortDescription,
                 regularPrice = parsedResponse.price,
-                categories = existingCategories.filter { parsedResponse.categories.orEmpty().contains(it.name) },
-                tags = existingTags.filter { parsedResponse.tags.orEmpty().contains(it.name) },
+                categories = parsedResponse.getCategories(existingCategories),
+                tags = parsedResponse.getTags(existingTags),
                 weight = parsedResponse.shipping.weight,
                 height = parsedResponse.shipping.height,
                 length = parsedResponse.shipping.length,
@@ -89,6 +91,22 @@ class GenerateProductWithAI @Inject constructor(
                 require(predicate(it)) { "Site parameters missing information after a successful fetch" }
                 it
             }
+    }
+
+    private fun AIProductJsonResponse.getCategories(
+        existingCategories: List<ProductCategory>
+    ): List<ProductCategory> = categories.orEmpty().map { name ->
+        existingCategories.find { category ->
+            category.name == name
+        } ?: ProductCategory(name = name)
+    }
+
+    private fun AIProductJsonResponse.getTags(
+        existingTags: List<ProductTag>
+    ): List<ProductTag> = tags.orEmpty().map { name ->
+        existingTags.find { tag ->
+            tag.name == name
+        } ?: ProductTag(name = name)
     }
 
     private data class AIProductJsonResponse(
