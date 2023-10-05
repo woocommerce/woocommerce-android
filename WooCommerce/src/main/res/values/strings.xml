@@ -1911,7 +1911,7 @@
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
-    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_subtitle">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
@@ -3601,7 +3601,7 @@
     <!--
     AI Product name description
     -->
-    <string name="ai_product_name_sheet_title">✨ Product name</string>
+    <string name="ai_product_name_sheet_title">Product name</string>
     <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
     <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
     <string name="ai_product_name_sheet_generate_button">Write it for me</string>
