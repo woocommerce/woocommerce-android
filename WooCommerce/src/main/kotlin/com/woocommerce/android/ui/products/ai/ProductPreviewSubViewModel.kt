@@ -103,7 +103,7 @@ class ProductPreviewSubViewModel(
                     onDone(product)
                 },
                 onFailure = {
-                    val errorType = when(it) {
+                    val errorType = when (it) {
                         is JetpackAICompletionsException -> it.errorType
                         is OnChangedException -> (it.error as? ProductError)?.type?.name
                         is WooException -> it.error.type.name

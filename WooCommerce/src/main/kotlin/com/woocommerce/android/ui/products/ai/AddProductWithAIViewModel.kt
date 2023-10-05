@@ -117,6 +117,7 @@ class AddProductWithAIViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private suspend fun saveProduct(): Pair<Boolean, Long> {
         // Create missing categories
         val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }

@@ -70,11 +70,11 @@ object AIPrompts {
             return if (existingTags.isNotEmpty()) {
                 """
                     "tags":"Given the list of available tags "${existingTags.joinToString()}", suggest an array of the best matching tags for this product. You can suggest new tags as well."
-                    """.trimIndent()
+                """.trimIndent()
             } else {
                 """
                     "tags":"suggest an array of the best matching tags for this product."
-                    """.trimIndent()
+                """.trimIndent()
             }
         }
 
@@ -86,7 +86,7 @@ object AIPrompts {
             } else {
                 """
                     "categories":"suggest an array of the best matching categories for this product."
-                    """.trimIndent()
+                """.trimIndent()
             }
         }
 
