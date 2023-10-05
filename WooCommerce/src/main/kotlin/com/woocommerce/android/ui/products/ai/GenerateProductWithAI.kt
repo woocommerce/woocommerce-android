@@ -1,9 +1,14 @@
 package com.woocommerce.android.ui.products.ai
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -12,6 +17,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.AI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class GenerateProductWithAI @Inject constructor(
@@ -26,8 +32,8 @@ class GenerateProductWithAI @Inject constructor(
         tone: AiTone,
         languageISOCode: String
     ): Result<Product> {
-        val categories = getCategories()
-        val tags = getTags()
+        val existingCategories = getCategories()
+        val existingTags = getTags()
         val siteParameters = getSiteParameters().fold(
             onSuccess = { it },
             onFailure = {
@@ -43,10 +49,28 @@ class GenerateProductWithAI @Inject constructor(
             weightUnit = siteParameters.weightUnit!!,
             dimensionUnit = siteParameters.dimensionUnit!!,
             currency = siteParameters.currencyCode!!,
-            existingCategories = categories,
-            existingTags = tags,
+            existingCategories = existingCategories,
+            existingTags = existingTags,
             languageISOCode = languageISOCode
-        )
+        ).mapCatching { json ->
+            val parsedResponse = Gson().fromJson(json, JsonResponse::class.java)
+            ProductHelper.getDefaultNewProduct(
+                SIMPLE,
+                parsedResponse.isVirtual
+            ).copy(
+                name = parsedResponse.name,
+                description = parsedResponse.description,
+                shortDescription = parsedResponse.shortDescription,
+                regularPrice = parsedResponse.price,
+                categories = existingCategories.filter { parsedResponse.categories.orEmpty().contains(it.name) },
+                tags = existingTags.filter { parsedResponse.tags.orEmpty().contains(it.name) },
+                weight = parsedResponse.shipping.weight,
+                height = parsedResponse.shipping.height,
+                length = parsedResponse.shipping.length,
+                width = parsedResponse.shipping.width,
+                status = DRAFT
+            )
+        }
     }
 
     private suspend fun getSiteParameters(): Result<SiteParameters> = withContext(Dispatchers.IO) {
@@ -76,4 +100,22 @@ class GenerateProductWithAI @Inject constructor(
             categoriesRepository.getProductCategoriesList()
         }
     }
+
+    private data class Shipping(
+        val weight: Float,
+        val height: Float,
+        val length: Float,
+        val width: Float
+    )
+
+    private data class JsonResponse(
+        val name: String,
+        val description: String,
+        @SerializedName("short_description") val shortDescription: String,
+        @SerializedName("virtual") val isVirtual: Boolean,
+        val price: BigDecimal,
+        val shipping: Shipping,
+        val categories: List<String>? = null,
+        val tags: List<String>? = null
+    )
 }
