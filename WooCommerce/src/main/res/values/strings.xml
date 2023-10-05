@@ -589,6 +589,7 @@
     <string name="order_creation_customer_search_empty_name">No name</string>
     <string name="order_creation_customer_search_empty_email">No email address</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Add details manually</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Add details manually using email</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
@@ -1408,6 +1409,7 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
+    <string name="card_reader_payment_update_available">An update for the card reader is available</string>
 
     <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -3639,11 +3641,6 @@
     <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
     <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
-
-    <!--
-    Shipping zones
-    -->
-    <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
 
     <!--
     Tax rates info dialog

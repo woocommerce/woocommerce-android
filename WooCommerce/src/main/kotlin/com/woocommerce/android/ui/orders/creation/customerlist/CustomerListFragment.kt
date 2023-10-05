@@ -54,6 +54,12 @@ class CustomerListFragment : BaseFragment() {
                 }
                 is AddCustomer -> {
                     addressViewModel.clearSelectedAddress()
+                    addressViewModel.onFieldEdited(
+                        AddressViewModel.AddressType.BILLING,
+                        AddressViewModel.Field.Email,
+                        event.email.orEmpty(),
+                    )
+
                     findNavController().navigateSafely(
                         CustomerListFragmentDirections
                             .actionCustomerListFragmentToOrderCreationCustomerFragment(
