@@ -350,7 +350,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
-
+    <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <!--
         My Store View
     -->
@@ -589,6 +589,7 @@
     <string name="order_creation_customer_search_empty_name">No name</string>
     <string name="order_creation_customer_search_empty_email">No email address</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Add details manually</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Add details manually using email</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
@@ -1914,6 +1915,7 @@
     <string name="product_creation_ai_preview_title">Preview</string>
     <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>

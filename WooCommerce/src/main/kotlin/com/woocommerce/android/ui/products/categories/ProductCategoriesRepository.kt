@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.categories
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductCategory
@@ -100,6 +101,30 @@ class ProductCategoriesRepository @Inject constructor(
         }
     }
 
+    suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {
+        val result = productStore.addProductCategories(
+            site = selectedSite.get(),
+            categories = categories.map {
+                WCProductCategoryModel().apply {
+                    name = it.name
+                    parent = it.parentId
+                }
+            }
+        )
+
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error adding product categories: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(result.model!!.map { it.toProductCategory() })
+        }
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductCategoriesChanged(event: OnProductCategoryChanged) {
@@ -119,6 +144,7 @@ class ProductCategoriesRepository @Inject constructor(
                     loadContinuation.continueWith(true)
                 }
             }
+
             ADDED_PRODUCT_CATEGORY -> {
                 if (event.isError) {
                     val requestResultType = if (event.error.type == TERM_EXISTS) {
@@ -136,6 +162,7 @@ class ProductCategoriesRepository @Inject constructor(
                     addProductCategoryContinuation.continueWith(RequestResult.SUCCESS)
                 }
             }
+
             else -> {
             }
         }
