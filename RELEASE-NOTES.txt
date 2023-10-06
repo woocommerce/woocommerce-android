@@ -1,4 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+15.9
+----
+- [***] In-Person Payments: Tap To Pay On Android in the UK and Canada [https://github.com/woocommerce/woocommerce-android/pull/9922]
+
+
+15.8
+----
+
 15.7
 ----
 - [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
