@@ -1936,7 +1936,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when the order is the first one then it disables navigation to previous order`() = testBlocking {
+    fun `given order ids passed, when ViewModel starts, then previous order navigations is not enabled`() = testBlocking {
         val newSavedState = OrderDetailFragmentArgs(
             orderId = ORDER_ID,
             allOrderIds = arrayOf(ORDER_ID, 2).toLongArray()
