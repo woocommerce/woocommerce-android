@@ -908,11 +908,11 @@ class LoginActivity :
 
     private fun handleAppLoginUri(uri: Uri) {
         unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
-        val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER)
-        val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER)
-        val username = uri.getQueryParameter(USERNAME_PARAMETER)
+        val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER) ?: ""
+        val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER) ?: ""
+        val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
         when {
-            siteUrl != null && wpComEmail != null -> {
+            siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
                 gotWpcomSiteInfo(siteUrl)
                 AnalyticsTracker.track(
                     stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
@@ -921,7 +921,7 @@ class LoginActivity :
                 showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
             }
 
-            siteUrl != null && username != null -> {
+            siteUrl.isNotEmpty() && username.isNotEmpty() -> {
                 AnalyticsTracker.track(
                     stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
                     properties = mapOf(KEY_FLOW to VALUE_NO_WP_COM)
