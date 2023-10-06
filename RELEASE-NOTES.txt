@@ -6,13 +6,8 @@
 - [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
 - [*] Product Listing: Fixed a product filter bug where users were not able to filter product by "Product Status" [https://github.com/woocommerce/woocommerce-android/pull/9891]
 - [*] Order creation: Customers selected from the list that don't have address information now properly displayed on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/9863]
-
-15.7
------
 - [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]
-
-15.6
------
+- [*] Product Creation using AI: Added support for suggesting new categories and tags [https://github.com/woocommerce/woocommerce-android/pull/9919]
 
 15.6
 -----
