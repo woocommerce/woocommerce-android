@@ -86,18 +86,13 @@ fun CustomerListScreen(viewModel: CustomerListViewModel) {
                 )
             },
             floatingActionButton = {
-                if (it.body is CustomerListViewState.CustomerList.Empty) {
-                    if (it.showFabInEmptyState) CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
-                } else {
-                    CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
-                }
+                if (it.showFab) CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
             }
         ) { padding ->
             CustomerListScreen(
                 modifier = Modifier.padding(padding),
                 state = it,
                 onCustomerSelected = viewModel::onCustomerSelected,
-                onAddCustomerClicked = viewModel::onAddCustomerClicked,
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onSearchTypeChanged = viewModel::onSearchTypeChanged,
                 onEndOfListReached = viewModel::onEndOfListReached,
@@ -111,7 +106,6 @@ fun CustomerListScreen(
     modifier: Modifier = Modifier,
     state: CustomerListViewState,
     onCustomerSelected: (WCCustomerModel) -> Unit,
-    onAddCustomerClicked: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
@@ -145,8 +139,7 @@ fun CustomerListScreen(
             is CustomerListViewState.CustomerList.Empty -> CustomerListEmpty(
                 body.message,
                 body.image,
-                body.buttonText,
-                onAddCustomerClicked,
+                body.button,
             )
 
             is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
@@ -329,14 +322,12 @@ private fun Customer.Text.Highlighted.buildHighlightedText() =
 private fun CustomerListEmpty(
     @StringRes message: Int,
     @DrawableRes image: Int,
-    @StringRes buttonText: Int?,
-    onAddCustomerClicked: () -> Unit,
+    button: Button?,
 ) {
     CustomerListNoDataState(
         text = message,
         image = image,
-        addCustomerButtonText = buttonText,
-        onAddCustomerClicked = onAddCustomerClicked,
+        button = button,
     )
 }
 
@@ -345,8 +336,7 @@ private fun CustomerListError(@StringRes message: Int) {
     CustomerListNoDataState(
         text = message,
         image = R.drawable.img_woo_generic_error,
-        addCustomerButtonText = null,
-        {},
+        button = null,
     )
 }
 
@@ -374,8 +364,7 @@ private fun CustomerListSkeleton() {
 private fun CustomerListNoDataState(
     @StringRes text: Int,
     @DrawableRes image: Int,
-    @StringRes addCustomerButtonText: Int?,
-    onAddCustomerClicked: () -> Unit,
+    button: Button?,
 ) {
     Column(
         modifier = Modifier
@@ -400,10 +389,10 @@ private fun CustomerListNoDataState(
             )
         )
 
-        addCustomerButtonText?.let {
+        button?.let {
             Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-            WCColoredButton(onClick = { onAddCustomerClicked() }) {
-                Text(text = stringResource(id = it))
+            WCColoredButton(onClick = button.onClick) {
+                Text(text = stringResource(id = button.text))
             }
         }
 
@@ -457,7 +446,7 @@ fun CustomerListScreenPreview() {
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
             searchFocused = false,
-            showFabInEmptyState = true,
+            showFab = true,
             searchModes = listOf(
                 SearchMode(
                     labelResId = R.string.order_creation_customer_search_username,
@@ -511,7 +500,6 @@ fun CustomerListScreenPreview() {
         {},
         {},
         {},
-        {},
     )
 }
 
@@ -523,7 +511,7 @@ fun CustomerListScreenEmptyOldPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
-            showFabInEmptyState = false,
+            showFab = false,
             searchFocused = false,
             searchModes = listOf(
                 SearchMode(
@@ -545,10 +533,12 @@ fun CustomerListScreenEmptyOldPreview() {
             body = CustomerListViewState.CustomerList.Empty(
                 message = R.string.order_creation_customer_search_empty_on_old_version_wcpay,
                 image = R.drawable.img_search_suggestion,
-                buttonText = R.string.order_creation_customer_search_empty_add_details_manually
+                button = Button(
+                    R.string.order_creation_customer_search_empty_add_details_manually,
+                    {},
+                )
             ),
         ),
-        {},
         {},
         {},
         {},
@@ -564,16 +554,15 @@ fun CustomerListScreenEmptyNewPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "search",
-            showFabInEmptyState = true,
+            showFab = true,
             searchFocused = false,
             searchModes = emptyList(),
             body = CustomerListViewState.CustomerList.Empty(
                 message = R.string.order_creation_customer_search_empty,
                 image = R.drawable.img_empty_search,
-                buttonText = null
+                button = null
             ),
         ),
-        {},
         {},
         {},
         {},
@@ -590,7 +579,7 @@ fun CustomerListScreenErrorPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_old_wc_hint,
             searchQuery = "search",
-            showFabInEmptyState = true,
+            showFab = true,
             searchFocused = false,
             searchModes = listOf(
                 SearchMode(
@@ -615,7 +604,6 @@ fun CustomerListScreenErrorPreview() {
         {},
         {},
         {},
-        {},
     )
 }
 
@@ -627,7 +615,7 @@ fun CustomerListScreenLoadingPreview() {
         state = CustomerListViewState(
             searchHint = R.string.order_creation_customer_search_hint,
             searchQuery = "",
-            showFabInEmptyState = true,
+            showFab = true,
             searchFocused = false,
             searchModes = listOf(
                 SearchMode(
@@ -648,7 +636,6 @@ fun CustomerListScreenLoadingPreview() {
             ),
             body = CustomerListViewState.CustomerList.Loading,
         ),
-        {},
         {},
         {},
         {},

@@ -114,6 +114,20 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
         Spacer(Modifier)
 
         Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
+            style = MaterialTheme.typography.body2
+        )
+        Text(
+            text = state.shortDescription,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBorder)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        )
+
+        Spacer(Modifier)
+
+        Text(
             text = stringResource(id = R.string.product_creation_ai_preview_description_section),
             style = MaterialTheme.typography.body2
         )
@@ -227,6 +241,18 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_name_section),
+            style = MaterialTheme.typography.body2
+        )
+        LoadingSkeleton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBorder)
+        )
+
+        Spacer(Modifier)
+
+        Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
             style = MaterialTheme.typography.body2
         )
         LoadingSkeleton(

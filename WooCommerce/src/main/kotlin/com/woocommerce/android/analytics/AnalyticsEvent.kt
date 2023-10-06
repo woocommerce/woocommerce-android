@@ -103,6 +103,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
     LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
+    LOGIN_MALFORMED_APP_LOGIN_LINK(siteless = true),
+    LOGIN_APP_LOGIN_LINK_SUCCESS(siteless = true),
     SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
     SIGNUP_SUBMITTED(siteless = true),
     SIGNUP_SUCCESS(siteless = true),
@@ -403,6 +405,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_READER_SOFTWARE_UPDATE_STARTED,
     CARD_READER_SOFTWARE_UPDATE_SUCCESS,
     CARD_READER_SOFTWARE_UPDATE_FAILED,
+    CARD_READER_SOFTWARE_UPDATE_ALERT_SHOWN,
+    CARD_READER_SOFTWARE_UPDATE_ALERT_INSTALL_CLICKED,
 
     // -- Card Reader - Location
     CARD_READER_LOCATION_SUCCESS,

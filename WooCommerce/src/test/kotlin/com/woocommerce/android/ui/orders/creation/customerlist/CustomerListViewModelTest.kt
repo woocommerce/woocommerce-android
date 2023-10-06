@@ -6,6 +6,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -66,6 +68,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
         onBlocking { invoke() }.thenReturn(true)
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val stringUtils: StringUtils = mock {
+        on { isValidEmail(any(), any()) }.thenReturn(false)
+    }
 
     @Test
     fun `when viewmodel init, then viewstate is updated with customers`() = testBlocking {
@@ -147,7 +152,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(states.last().searchModes).isEqualTo(searchModes)
-            assertThat(states.last().showFabInEmptyState).isTrue()
+            assertThat(states.last().showFab).isTrue()
             assertThat(states.last().searchFocused).isFalse()
             assertThat(states.last().searchHint).isEqualTo(R.string.order_creation_customer_search_hint)
             assertThat(states.last().body).isInstanceOf(CustomerListViewState.CustomerList.Loading::class.java)
@@ -291,7 +296,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
                 R.string.order_creation_customer_search_empty_on_old_version_wcpay
             )
             assertThat(emptyState.image).isEqualTo(R.drawable.img_search_suggestion)
-            assertThat(emptyState.buttonText).isEqualTo(
+            assertThat(emptyState.button?.text).isEqualTo(
                 R.string.order_creation_customer_search_empty_add_details_manually
             )
         }
@@ -385,13 +390,88 @@ class CustomerListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        val emptyState = states.last().body as CustomerListViewState.CustomerList.Empty
+        val last = states.last()
+        assertThat(last.showFab).isEqualTo(false)
+        val emptyState = last.body as CustomerListViewState.CustomerList.Empty
         assertThat(emptyState.message)
             .isEqualTo(R.string.order_creation_customer_search_empty)
         assertThat(emptyState.message).isEqualTo(R.string.order_creation_customer_search_empty)
         assertThat(emptyState.image).isEqualTo(R.drawable.img_empty_search)
-        assertThat(emptyState.buttonText).isNull()
+        assertThat(emptyState.button?.text).isEqualTo(
+            R.string.order_creation_customer_search_empty_add_details_manually
+        )
     }
+
+    @Test
+    fun `given empty list from repo and email search, when viewmodel init, then viewstate is updated with empty state with button`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success(emptyList()))
+
+            val email = "email@a8c.com"
+            whenever(stringUtils.isValidEmail(email)).thenReturn(true)
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(email)
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+
+            // THEN
+            val last = states.last()
+            assertThat(last.showFab).isEqualTo(false)
+            val emptyState = last.body as CustomerListViewState.CustomerList.Empty
+            assertThat(emptyState.message)
+                .isEqualTo(R.string.order_creation_customer_search_empty)
+            assertThat(emptyState.message).isEqualTo(R.string.order_creation_customer_search_empty)
+            assertThat(emptyState.image).isEqualTo(R.drawable.img_empty_search)
+            assertThat(emptyState.button?.text).isEqualTo(
+                R.string.order_creation_customer_search_empty_add_details_manually_with_email
+            )
+        }
+
+    @Test
+    fun `given empty list from repo and email search, when add customer manually clicked, then event has email`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success(emptyList()))
+
+            val email = "email@a8c.com"
+            whenever(stringUtils.isValidEmail(email)).thenReturn(true)
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(email)
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+            (states.last().body as CustomerListViewState.CustomerList.Empty).button!!.onClick()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(AddCustomer(email))
+        }
+
+    @Test
+    fun `given empty list from repo and non email search, when add customer manually clicked, then event doesnt have email`() =
+        testBlocking {
+            // GIVEN
+            whenever(customerListRepository.searchCustomerListWithEmail(any(), any(), any(), any()))
+                .thenReturn(Result.success(emptyList()))
+
+            val search = ""
+            whenever(stringUtils.isValidEmail(search)).thenReturn(false)
+
+            // WHEN
+            val viewModel = initViewModel()
+            viewModel.onSearchQueryChanged(search)
+            val states = viewModel.viewState.captureValues()
+            advanceUntilIdle()
+            (states.last().body as CustomerListViewState.CustomerList.Empty).button!!.onClick()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(AddCustomer(null))
+        }
 
     @Test
     fun `given search query, when onSearchQueryChanged is called, then update search query is updated and tracked`() =
@@ -778,9 +858,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 2L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 2L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -879,9 +961,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 1L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 1L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -937,9 +1021,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, times(1)).fetchCustomerByRemoteId(1L)
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 1L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 1L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -985,9 +1071,11 @@ class CustomerListViewModelTest : BaseUnitTest() {
             verify(customerListRepository, never()).fetchCustomerByRemoteId(any())
             assertThat(viewModel.event.value).isEqualTo(
                 CustomerSelected(
-                    customerId = 0L,
-                    billingAddress = address,
-                    shippingAddress = address,
+                    Order.Customer(
+                        customerId = 0L,
+                        billingAddress = address,
+                        shippingAddress = address,
+                    )
                 )
             )
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
@@ -1003,7 +1091,9 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         // THEN
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADD_MANUALLY_TAPPED)
-        assertThat(viewModel.event.value).isEqualTo(AddCustomer)
+        assertThat(viewModel.event.value).isEqualTo(
+            AddCustomer(null)
+        )
     }
 
     @Test
@@ -1025,5 +1115,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
         isAdvancedSearchSupported,
         getSupportedSearchModes,
         analyticsTrackerWrapper,
+        stringUtils,
     )
 }

@@ -34,7 +34,7 @@ import org.wordpress.android.fluxc.store.SiteStore.OnDomainSupportedStatesFetche
 import org.wordpress.android.fluxc.store.SiteStore.OnPrimaryDomainDesignated
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.TransactionsStore
-import org.wordpress.android.fluxc.store.TransactionsStore.CreateShoppingCartPayload
+import org.wordpress.android.fluxc.store.TransactionsStore.CreateShoppingCartWithDomainAndPlanPayload
 import org.wordpress.android.fluxc.store.TransactionsStore.OnShoppingCartCreated
 import org.wordpress.android.fluxc.store.TransactionsStore.OnShoppingCartRedeemed
 import org.wordpress.android.fluxc.store.TransactionsStore.OnSupportedCountriesFetched
@@ -127,8 +127,8 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         )
 
         dispatcher.dispatch(
-            TransactionActionBuilder.newCreateShoppingCartAction(
-                CreateShoppingCartPayload(
+            TransactionActionBuilder.newCreateShoppingCartWithDomainAndPlanAction(
+                CreateShoppingCartWithDomainAndPlanPayload(
                     selectedSite.get(),
                     navArgs.domainProductDetails.productId,
                     navArgs.domainProductDetails.domainName,

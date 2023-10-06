@@ -215,6 +215,8 @@ class ProductPreviewSubViewModel(
                 get() = product.name
             val description: String
                 get() = product.description
+            val shortDescription: String
+                get() = product.shortDescription
         }
 
         data class Error(
