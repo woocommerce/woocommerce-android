@@ -309,7 +309,7 @@ class OrderDetailViewModel @Inject constructor(
         if (!previousOrderNavigationIsEnabled()) return
 
         val allOrderIds = navArgs.allOrderIds
-        val previousIndex = allOrderIds.indexOf(order.id) - 1
+        val previousIndex = allOrderIds.indexOf(navArgs.orderId) - 1
         val previousOrderId = allOrderIds.get(previousIndex)
         triggerEvent(OrderNavigationTarget.ShowOrder(previousOrderId, allOrderIds))
     }
@@ -322,7 +322,7 @@ class OrderDetailViewModel @Inject constructor(
         if (!nextOrderNavigationIsEnabled()) return
 
         val allOrderIds = navArgs.allOrderIds
-        val nextIndex = allOrderIds.indexOf(order.id) + 1
+        val nextIndex = allOrderIds.indexOf(navArgs.orderId) + 1
         val nextOrderId = allOrderIds.get(nextIndex)
         triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId, allOrderIds))
     }
