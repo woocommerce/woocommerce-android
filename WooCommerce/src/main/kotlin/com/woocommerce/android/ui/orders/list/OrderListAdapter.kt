@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +39,7 @@ class OrderListAdapter(
     }
 
     var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
+    var allOrderIds: List<Long> = listOf()
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -83,13 +85,6 @@ class OrderListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        val allOrderIds = getCurrentList()?.toList()?.mapNotNull {
-            if (it is OrderListItemUI)  {
-                it.orderId
-            } else {
-                 null
-            }
-        } ?: listOf()
 
         when (holder) {
             is OrderItemUIViewHolder -> {
@@ -112,6 +107,18 @@ class OrderListAdapter(
             }
             else -> {}
         }
+    }
+
+    override fun submitList(pagedList: PagedList<OrderListItemUIType>?) {
+        super.submitList(pagedList)
+
+        allOrderIds = getCurrentList()?.toList()?.mapNotNull {
+            if (it is OrderListItemUI)  {
+                it.orderId
+            } else {
+                null
+            }
+        } ?: listOf()
     }
 
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
