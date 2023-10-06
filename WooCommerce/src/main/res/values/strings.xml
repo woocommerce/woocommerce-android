@@ -350,7 +350,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
-
+    <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <!--
         My Store View
     -->

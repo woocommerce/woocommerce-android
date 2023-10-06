@@ -22,8 +22,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.extensions.parcelable
@@ -164,23 +167,7 @@ class LoginActivity :
             }
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
-                intent.data?.let { uri ->
-                    unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
-                    val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER)
-                    val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER)
-                    if (wpComEmail != null) {
-                        gotWpcomSiteInfo(siteUrl)
-                        showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
-                    } else {
-                        val username = uri.getQueryParameter(USERNAME_PARAMETER)
-                        showUsernamePasswordScreen(
-                            siteAddress = siteUrl,
-                            inputUsername = username,
-                            endpointAddress = null,
-                            inputPassword = null
-                        )
-                    }
-                }
+                intent.data?.let { uri -> handleAppLoginUri(uri) }
             }
 
             hasJetpackConnectedIntent() -> {
@@ -917,6 +904,45 @@ class LoginActivity :
             )
         )
         openQrCodeScannerFragment()
+    }
+
+    private fun handleAppLoginUri(uri: Uri) {
+        unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
+        val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER) ?: ""
+        val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER) ?: ""
+        val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
+        when {
+            siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
+                gotWpcomSiteInfo(siteUrl)
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                    properties = mapOf(KEY_FLOW to VALUE_WP_COM)
+                )
+                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+            }
+
+            siteUrl.isNotEmpty() && username.isNotEmpty() -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
+                    properties = mapOf(KEY_FLOW to VALUE_NO_WP_COM)
+                )
+                showUsernamePasswordScreen(
+                    siteAddress = siteUrl,
+                    inputUsername = username,
+                    endpointAddress = null,
+                    inputPassword = null
+                )
+            }
+
+            else -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_MALFORMED_APP_LOGIN_LINK,
+                    properties = mapOf(KEY_URL to uri.toString())
+                )
+                ToastUtils.showToast(this, R.string.login_app_login_malformed_link)
+                showPrologue()
+            }
+        }
     }
 
     private fun openQrCodeScannerFragment() {
