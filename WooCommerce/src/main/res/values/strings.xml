@@ -3586,7 +3586,6 @@
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
     <string name="ai_product_description_title_hint">Enter product title.</string>
-    <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
     <string name="ai_product_description_note_dialog_heading">Great start!</string>
@@ -3678,4 +3677,10 @@
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
 
+    <!--
+    AI feedback form
+    -->
+    <string name="ai_feedback_form_message">Is the result helpful?</string>
+    <string name="ai_feedback_form_positive_button">Positive feedback</string>
+    <string name="ai_feedback_form_negative_button">Negative feedback</string>
 </resources>

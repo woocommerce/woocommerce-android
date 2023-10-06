@@ -300,7 +300,6 @@ Language: it
     <string name="ai_product_description_note_dialog_heading">Ottimo inizio.</string>
     <string name="ai_product_description_feedback">La descrizione\ngenerata è utile?</string>
     <string name="ai_product_description_regenerate_button">Rigenera</string>
-    <string name="ai_product_description_survey">La descrizione generata è utile?</string>
     <string name="ai_product_description_hint">Metti in evidenza le caratteristiche uniche del tuo prodotto e il pubblico a cui si rivolge con delle parole chiave per una descrizione personalizzata.</string>
     <string name="ai_product_description_example">Esempio: In vaso, Cactus, Pianta, Decorativa, Di facile manutenzione</string>
     <string name="ai_product_description_product_name">Inserisci il nome del prodotto</string>
