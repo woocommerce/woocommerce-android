@@ -89,7 +89,7 @@ class OrderListAdapter(
             } else {
                  null
             }
-        } ?: listOf<Long>()
+        } ?: listOf()
 
         when (holder) {
             is OrderItemUIViewHolder -> {
