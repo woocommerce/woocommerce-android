@@ -38,7 +38,9 @@ class TaxRateSelectorViewModel @Inject constructor(
                 taxRate.city.isNotEmpty() ||
                     taxRate.stateCode.isNotEmpty() ||
                     taxRate.countryCode.isNotEmpty() ||
-                    taxRate.postcode.isNotEmpty()
+                    taxRate.postcode.isNotEmpty() ||
+                    taxRate.postCodes != null ||
+                    taxRate.cities != null
             } // Filter out tax rates with wildcard address
             .map { taxRate ->
                 TaxRateUiModel(
