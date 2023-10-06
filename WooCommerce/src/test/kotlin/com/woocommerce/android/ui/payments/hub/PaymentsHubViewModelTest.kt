@@ -1586,7 +1586,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp system not supported, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
@@ -1596,12 +1596,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
 
     @Test
-    fun `given ttp gps not available, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp gps not available, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(GooglePlayServicesNotAvailable)
@@ -1611,12 +1614,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
 
     @Test
-    fun `given ttp nfc not available, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp nfc not available, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(NfcNotAvailable)
@@ -1626,12 +1632,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
 
     @Test
-    fun `given ttp country not supported, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp country not supported, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
         whenever(tapToPayAvailabilityStatus()).thenReturn(CountryNotSupported)
@@ -1641,7 +1650,10 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
     // endregion
