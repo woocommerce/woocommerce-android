@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Tog
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -242,16 +241,14 @@ class PaymentsHubViewModel @Inject constructor(
                     iconBadge = R.drawable.ic_badge_new,
                 )
             )
-            if (FeatureFlag.TTP_CA_UK.isEnabled()) {
-                add(
-                    NonToggleableListItem(
-                        icon = R.drawable.ic_tintable_info_outline_24dp,
-                        label = UiStringRes(R.string.card_reader_about_tap_to_pay),
-                        index = 7,
-                        onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
-                    )
+            add(
+                NonToggleableListItem(
+                    icon = R.drawable.ic_tintable_info_outline_24dp,
+                    label = UiStringRes(R.string.card_reader_about_tap_to_pay),
+                    index = 7,
+                    onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
                 )
-            }
+            )
             if (shouldShowTTPFeedbackRequest) {
                 add(
                     NonToggleableListItem(
