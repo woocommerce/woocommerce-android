@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products.categories
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductCategory
@@ -11,11 +13,11 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.dispatchAndAwait
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_CATEGORY
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCT_CATEGORIES
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -32,7 +34,6 @@ class ProductCategoriesRepository @Inject constructor(
         private const val PRODUCT_CATEGORIES_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_CATEGORY_PAGE_SIZE
     }
 
-    private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var addProductCategoryContinuation = ContinuationWrapper<RequestResult>(WooLog.T.PRODUCTS)
     private var offset = 0
 
@@ -50,18 +51,29 @@ class ProductCategoriesRepository @Inject constructor(
      * Submits a fetch request to get a list of products categories for the current site
      * and returns the full list of product categories from the database
      */
-    suspend fun fetchProductCategories(loadMore: Boolean = false): List<ProductCategory> {
-        loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else 0
-            val payload = WCProductStore.FetchProductCategoriesPayload(
-                selectedSite.get(),
-                pageSize = PRODUCT_CATEGORIES_PAGE_SIZE,
-                offset = offset
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newFetchProductCategoriesAction(payload))
-        }
+    suspend fun fetchProductCategories(loadMore: Boolean = false): Result<List<ProductCategory>> {
+        offset = if (loadMore) offset + PRODUCT_CATEGORIES_PAGE_SIZE else 0
+        val payload = WCProductStore.FetchProductCategoriesPayload(
+            selectedSite.get(),
+            pageSize = PRODUCT_CATEGORIES_PAGE_SIZE,
+            offset = offset
+        )
+        val action = WCProductActionBuilder.newFetchProductCategoriesAction(payload)
+        val result: OnProductCategoryChanged = dispatcher.dispatchAndAwait(action)
 
-        return getProductCategoriesList()
+        return if (result.isError) {
+            AnalyticsTracker.track(
+                AnalyticsEvent.PRODUCT_CATEGORIES_LOAD_FAILED,
+                this.javaClass.simpleName,
+                result.error.type.toString(),
+                result.error.message
+            )
+            Result.failure(OnChangedException(result.error, result.error.message))
+        } else {
+            canLoadMoreProductCategories = result.canLoadMore
+            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORIES_LOADED)
+            Result.success(getProductCategoriesList())
+        }
     }
 
     /**
@@ -100,25 +112,34 @@ class ProductCategoriesRepository @Inject constructor(
         }
     }
 
+    suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {
+        val result = productStore.addProductCategories(
+            site = selectedSite.get(),
+            categories = categories.map {
+                WCProductCategoryModel().apply {
+                    name = it.name
+                    parent = it.parentId
+                }
+            }
+        )
+
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error adding product categories: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(result.model!!.map { it.toProductCategory() })
+        }
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductCategoriesChanged(event: OnProductCategoryChanged) {
         when (event.causeOfChange) {
-            FETCH_PRODUCT_CATEGORIES -> {
-                if (event.isError) {
-                    loadContinuation.continueWith(false)
-                    AnalyticsTracker.track(
-                        AnalyticsEvent.PRODUCT_CATEGORIES_LOAD_FAILED,
-                        this.javaClass.simpleName,
-                        event.error.type.toString(),
-                        event.error.message
-                    )
-                } else {
-                    canLoadMoreProductCategories = event.canLoadMore
-                    AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORIES_LOADED)
-                    loadContinuation.continueWith(true)
-                }
-            }
             ADDED_PRODUCT_CATEGORY -> {
                 if (event.isError) {
                     val requestResultType = if (event.error.type == TERM_EXISTS) {
@@ -136,6 +157,7 @@ class ProductCategoriesRepository @Inject constructor(
                     addProductCategoryContinuation.continueWith(RequestResult.SUCCESS)
                 }
             }
+
             else -> {
             }
         }

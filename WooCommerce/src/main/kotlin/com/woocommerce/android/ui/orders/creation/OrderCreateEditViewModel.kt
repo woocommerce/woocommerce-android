@@ -726,7 +726,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
-    fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
+    fun onCustomerEdited(customer: Order.Customer) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
             ORDER_CUSTOMER_ADD,
@@ -737,15 +737,14 @@ class OrderCreateEditViewModel @Inject constructor(
         )
 
         _orderDraft.update { order ->
-            order.copy(
-                customerId = customerId,
-                billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
+            val adjustedCustomer = customer.copy(
+                shippingAddress = customer.shippingAddress.takeIf { it != EMPTY } ?: customer.billingAddress
             )
+            order.copy(customer = adjustedCustomer)
         }
     }
 
-    fun onCustomerAddressDeleted() {
+    fun onCustomerDeleted() {
         tracker.track(
             ORDER_CUSTOMER_DELETE,
             mapOf(KEY_FLOW to flow)
@@ -756,11 +755,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
-            order.copy(
-                customerId = null,
-                billingAddress = EMPTY,
-                shippingAddress = EMPTY
-            )
+            order.copy(customer = null)
         }
     }
 
@@ -1162,8 +1157,18 @@ class OrderCreateEditViewModel @Inject constructor(
         withContext(Main) {
             _orderDraft.update { order ->
                 when (taxBasedOnSetting) {
-                    BillingAddress -> order.copy(billingAddress = updatedAddress)
-                    ShippingAddress -> order.copy(shippingAddress = updatedAddress)
+                    BillingAddress -> order.copy(
+                        customer = order.customer?.copy(billingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = updatedAddress,
+                            shippingAddress = EMPTY
+                        )
+                    )
+                    ShippingAddress -> order.copy(
+                        customer = order.customer?.copy(shippingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = EMPTY,
+                            shippingAddress = updatedAddress
+                        )
+                    )
                     else -> order
                 }
             }

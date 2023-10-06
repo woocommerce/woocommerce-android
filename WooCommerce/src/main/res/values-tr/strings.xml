@@ -300,7 +300,6 @@ Language: tr
     <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>
     <string name="ai_product_description_feedback">Oluşturulan\naçıklama faydalı oldu mu?</string>
     <string name="ai_product_description_regenerate_button">Yeniden oluştur</string>
-    <string name="ai_product_description_survey">Oluşturulan açıklama faydalı oldu mu?</string>
     <string name="ai_product_description_hint">Özelleştirilmiş bir açıklama için ürününüzün benzersiz özelliklerini ve hedef kitlenizi anahtar sözcüklerle vurgulayın.</string>
     <string name="ai_product_description_example">Örneğin: Saksıda Yetişir, Kaktüs, Bitki, Dekoratif, Bakımı kolay</string>
     <string name="ai_product_description_product_name">Ürün adınızı girin</string>

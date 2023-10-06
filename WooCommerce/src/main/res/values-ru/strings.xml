@@ -300,7 +300,6 @@ Language: ru
     <string name="ai_product_description_note_dialog_heading">Превосходное начало!</string>
     <string name="ai_product_description_feedback">Оказалось ли созданное\nописание полезным?</string>
     <string name="ai_product_description_regenerate_button">Повторно создать</string>
-    <string name="ai_product_description_survey">Оказалось ли созданное описание полезным?</string>
     <string name="ai_product_description_hint">С помощью ключевых слов опишите уникальные характеристики и покупателей товара, чтобы создать его описание.</string>
     <string name="ai_product_description_example">Пример: комнатный, кактус, растение, декоративный, простой уход</string>
     <string name="ai_product_description_product_name">Введите название товара</string>
