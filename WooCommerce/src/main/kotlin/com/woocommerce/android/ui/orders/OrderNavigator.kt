@@ -198,8 +198,6 @@ class OrderNavigator @Inject constructor() {
                         // Replace the current order detail without animating the transition
                         val navOptions = NavOptions.Builder()
                             .setPopUpTo(R.id.orders, false)
-                            .setEnterAnim(R.anim.nav_enter_anim)
-
                             .build()
 
                         fragment.findNavController().navigateSafely(directions = it, navOptions = navOptions)
