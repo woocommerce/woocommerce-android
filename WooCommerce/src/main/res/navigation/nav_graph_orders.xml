@@ -176,7 +176,8 @@
             android:id="@+id/action_orderDetailFragment_to_orderDetailFragment"
             app:destination="@+id/orderDetailFragment"
             app:enterAnim="@null"
-            app:popUpTo="@+id/orders">
+            app:popUpTo="@+id/orders"
+            app:popUpToInclusive="false">
             <argument
                 android:name="orderId"
                 app:argType="long" />

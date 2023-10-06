@@ -194,14 +194,7 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToOrderDetailFragment(
                         target.orderId,
                         target.allOrderIds)
-                    .let {
-                        // Replace the current order detail without animating the transition
-                        val navOptions = NavOptions.Builder()
-                            .setPopUpTo(R.id.orders, false)
-                            .build()
-
-                        fragment.findNavController().navigateSafely(directions = it, navOptions = navOptions)
-                    }
+                    .let {fragment.findNavController().navigateSafely(it) }
             }
 
             is ViewCustomFields -> {
