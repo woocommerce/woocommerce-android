@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubE
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -819,6 +818,16 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when screen shown, then settings header shown`() {
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
+            .anyMatch {
+                it is PaymentsHubViewState.ListItem.HeaderItem &&
+                    it.index == 2 &&
+                    it.label == UiStringRes(R.string.card_reader_settings_header)
+            }
+    }
+
+    @Test
     fun `when screen shown, then cash on delivery row present with correct description`() {
         assertThat(
             (
@@ -1369,15 +1378,42 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
-                it is GapBetweenSections && it.index == 4
+                it is PaymentsHubViewState.ListItem.HeaderItem &&
+                    it.index == 5 &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_header)
             }
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
                 it is NonToggleableListItem &&
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 5 &&
+                    it.index == 6 &&
                     it.iconBadge == R.drawable.ic_badge_new
+            }
+        }
+
+    @Test
+    fun `given ttp available, when view model started, then show about ttp row`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.icon == R.drawable.ic_tintable_info_outline_24dp &&
+                    it.label == UiStringRes(R.string.card_reader_about_tap_to_pay) &&
+                    it.description == null &&
+                    it.index == 7 &&
+                    it.iconBadge == null
             }
         }
 
@@ -1403,7 +1439,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6 &&
+                    it.index == 8 &&
                     it.iconBadge == null
             }
         }
@@ -1465,7 +1501,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6
+                    it.index == 8
             }
         }
 
@@ -1556,11 +1592,11 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
         }
 
     @Test
-    fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp system not supported, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
@@ -1570,12 +1606,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
 
     @Test
-    fun `given ttp gps not available, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp gps not available, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(GooglePlayServicesNotAvailable)
@@ -1585,12 +1624,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
 
     @Test
-    fun `given ttp nfc not available, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp nfc not available, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(tapToPayAvailabilityStatus()).thenReturn(NfcNotAvailable)
@@ -1600,12 +1642,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
 
     @Test
-    fun `given ttp country not supported, when view model started, then do not show ttp row`() = testBlocking {
+    fun `given ttp country not supported, when view model started, then do not show ttp rows`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
         whenever(tapToPayAvailabilityStatus()).thenReturn(CountryNotSupported)
@@ -1615,7 +1660,10 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
-            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_tap_to_pay_header) ||
+                it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) ||
+                it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
         }
     }
     // endregion
@@ -1682,7 +1730,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
         )
         assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
-        assertThat(learnMoreListItems[0].index).isEqualTo(11)
+        assertThat(learnMoreListItems[0].index).isEqualTo(13)
     }
 
     @Test
