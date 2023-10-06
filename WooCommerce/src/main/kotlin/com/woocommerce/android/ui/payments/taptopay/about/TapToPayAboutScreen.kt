@@ -24,6 +24,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -83,10 +85,7 @@ fun TapToPayAboutScreen(
                     style = MaterialTheme.typography.h6,
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
-                Text(
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_1),
-                    style = MaterialTheme.typography.body1,
-                )
+                TapToPayAboutScreenHowItWorksFirstLine()
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_2),
@@ -115,6 +114,41 @@ fun TapToPayAboutScreen(
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun TapToPayAboutScreenHowItWorksFirstLine() {
+    val createOrderPlaceholder = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_create_order)
+    val collectPaymentPlaceholder = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_collect_payment)
+
+    val fullText = stringResource(
+        id = R.string.card_reader_tap_to_pay_about_how_works_1,
+        createOrderPlaceholder,
+        collectPaymentPlaceholder
+    )
+
+    val startCollectPayment = fullText.indexOf(collectPaymentPlaceholder)
+    val startCreateOrder = fullText.indexOf(createOrderPlaceholder)
+    val spanStyle = SpanStyle(
+        color = colorResource(id = R.color.color_primary),
+        fontWeight = FontWeight.W600
+    )
+    val spanStyles = listOf(
+        AnnotatedString.Range(
+            spanStyle,
+            start = startCollectPayment,
+            end = startCollectPayment + collectPaymentPlaceholder.length
+        ),
+        AnnotatedString.Range(
+            spanStyle,
+            start = startCreateOrder,
+            end = startCreateOrder + createOrderPlaceholder.length
+        )
+    )
+    Text(
+        text = AnnotatedString(text = fullText, spanStyles = spanStyles),
+        style = MaterialTheme.typography.body1,
     )
 }
 
@@ -162,7 +196,7 @@ fun TapToPayAboutScreenImportantInfo(importantInfo: TapToPayAboutViewModel.UiSta
         Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
         Text(
             text = stringResource(R.string.card_reader_tap_to_pay_about_important_info_button),
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.W600,
             color = colorResource(id = R.color.color_primary),
             modifier = Modifier.clickable { importantInfo.onLearnMoreAboutCardReaders() }
         )
