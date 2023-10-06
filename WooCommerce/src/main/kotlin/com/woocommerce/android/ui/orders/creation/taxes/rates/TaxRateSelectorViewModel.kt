@@ -35,12 +35,7 @@ class TaxRateSelectorViewModel @Inject constructor(
     ) { rates, isLoading, autoRateSwitchState ->
         rates
             .filter { taxRate ->
-                taxRate.city.isNotEmpty() ||
-                    taxRate.stateCode.isNotEmpty() ||
-                    taxRate.countryCode.isNotEmpty() ||
-                    taxRate.postcode.isNotEmpty() ||
-                    taxRate.postCodes != null ||
-                    taxRate.cities != null
+                hasAddress(taxRate)
             } // Filter out tax rates with wildcard address
             .map { taxRate ->
                 TaxRateUiModel(
@@ -121,8 +116,12 @@ class TaxRateSelectorViewModel @Inject constructor(
     object EditTaxRatesInAdmin : MultiLiveEvent.Event()
     object ShowTaxesInfoDialog : MultiLiveEvent.Event()
 
-    fun TaxRate.hasAddress(taxRate: TaxRate): Boolean {
-        return taxRate.city.isNotEmpty() || taxRate.stateCode.isNotEmpty() ||
-            taxRate.postcode.isNotEmpty() || taxRate.countryCode.isNotEmpty()
+    private fun hasAddress(taxRate: TaxRate): Boolean {
+        return taxRate.city.isNotEmpty() ||
+            taxRate.stateCode.isNotEmpty() ||
+            taxRate.countryCode.isNotEmpty() ||
+            taxRate.postcode.isNotEmpty() ||
+            taxRate.postCodes != null ||
+            taxRate.cities != null
     }
 }
