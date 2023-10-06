@@ -135,7 +135,9 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     fun `should replace email info with original one when empty`() =
         testBlocking {
             val originalOrder = testOrder.copy(
-                billingAddress = addressToUpdate.copy(email = "original@email.com")
+                customer = testOrder.customer!!.copy(
+                    billingAddress = testOrder.customer!!.billingAddress.copy(email = "original@email.com")
+                )
             )
 
             orderDetailRepository.stub {
