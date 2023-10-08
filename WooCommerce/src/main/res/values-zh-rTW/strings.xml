@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 13:54:04+0000
+Translation-Revision-Date: 2023-10-03 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="ai_product_name_copy_error">複製商品名稱到剪貼簿時發生錯誤。</string>
+    <string name="ai_product_name_copy_success">商品名稱已複製到剪貼簿。</string>
+    <string name="ai_product_name_copy_label">AI 產生的商品名稱</string>
+    <string name="ai_product_description_copy_error">複製商品說明到剪貼簿時發生錯誤。</string>
+    <string name="ai_product_description_copy_success">商品說明已複製到剪貼簿。</string>
+    <string name="product_creation_ai_generation_failure_message">商品產生失敗。 請再試一次</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">清除地址並停止使用此稅率</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">為此訂單設定新稅率</string>
     <string name="tax_rate_selector_auto_rate_details_title">自動新增稅率</string>
@@ -33,7 +39,6 @@ Language: zh_TW
     <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>
     <string name="product_creation_ai_about_product_edit_text_caption">新增主要功能、優點或詳細資料，可以讓人更容易在網路上找到你的產品。</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">例如布料柔軟、強固縫線、獨特設計</string>
-    <string name="product_creation_ai_about_product_edit_text_header">我的產品</string>
     <string name="product_creation_ai_about_product_subtitle">列出產品獨特之處，AI 便能產生絕佳內容。</string>
     <string name="product_creation_ai_about_product_title">產品相關資訊</string>
     <string name="ai_product_creation_add_name_suggest_name_button">建議名稱</string>

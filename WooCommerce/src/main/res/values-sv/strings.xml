@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 11:54:04+0000
+Translation-Revision-Date: 2023-10-03 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Det gick inte att kopiera produktnamnet till urklipp.</string>
+    <string name="ai_product_name_copy_success">Produktnamn kopierat till urklipp.</string>
+    <string name="ai_product_name_copy_label">Produktnamn genererat av AI</string>
+    <string name="ai_product_description_copy_error">Det gick inte att kopiera produktbeskrivningen till urklipp.</string>
+    <string name="ai_product_description_copy_success">Produktbeskrivning kopierad till urklipp.</string>
+    <string name="product_creation_ai_generation_failure_message">Produktgenereringen misslyckades Försök igen</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Rensa adressen och sluta använda den här momssatsen</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Ange en ny momssats för den här beställningen</string>
     <string name="tax_rate_selector_auto_rate_details_title">Lägg till momssats automatiskt</string>
@@ -33,7 +39,6 @@ Language: sv_SE
     <string name="product_creation_ai_about_product_set_tone">Ställ in ton och röst</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Lägg till viktiga funktioner, fördelar eller information som hjälper kunder att hitta din produkt online.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Exempelvis mjukt tyg, slitstarka sömmar, unik design</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Min produkt</string>
     <string name="product_creation_ai_about_product_subtitle">Framhäv vad som gör din produkt unik och låt AI utöva sin magi.</string>
     <string name="product_creation_ai_about_product_title">Om din produkt</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Föreslå ett namn</string>

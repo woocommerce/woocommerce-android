@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 13:54:04+0000
+Translation-Revision-Date: 2023-10-02 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Fehler beim Kopieren des Produktnamens in die Zwischenablage.</string>
+    <string name="ai_product_name_copy_success">Produktname in die Zwischenablage kopiert.</string>
+    <string name="ai_product_name_copy_label">Produktname von KI generiert</string>
+    <string name="ai_product_description_copy_error">Fehler beim Kopieren der Produktbeschreibung in die Zwischenablage.</string>
+    <string name="ai_product_description_copy_success">Produktbeschreibung in die Zwischenablage kopiert.</string>
+    <string name="product_creation_ai_generation_failure_message">Produkterstellung ist fehlgeschlagen. Bitte versuche es erneut</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresse löschen und diesen Satz nicht mehr verwenden</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Neuen Steuersatz für diese Bestellung festlegen</string>
     <string name="tax_rate_selector_auto_rate_details_title">Steuersatz wird automatisch hinzugefügt</string>
@@ -33,7 +39,6 @@ Language: de
     <string name="product_creation_ai_about_product_set_tone">Sprache und Tonalität festlegen</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Füge wichtige Funktionen, Vorteile oder Details hinzu, damit dein Produkt online besser gefunden wird.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Zum Beispiel: weicher Stoff, langlebige Absteppung, einzigartiges Design</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Mein Produkt</string>
     <string name="product_creation_ai_about_product_subtitle">Hebe hervor, was dein Produkt einzigartig macht – die KI übernimmt den Rest.</string>
     <string name="product_creation_ai_about_product_title">Über dein Produkt</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Namen vorschlagen</string>

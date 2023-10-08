@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 13:54:04+0000
+Translation-Revision-Date: 2023-10-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="ai_product_name_copy_error">שגיאה בעת ההעתקה של שם המוצר ללוח.</string>
+    <string name="ai_product_name_copy_success">שם המוצר הועתק ללוח.</string>
+    <string name="ai_product_name_copy_label">שם המוצר נוצר על ידי בינה מלאכותית</string>
+    <string name="ai_product_description_copy_error">שגיאה בעת ההעתקה של תיאור המוצר ללוח.</string>
+    <string name="ai_product_description_copy_success">תיאור המוצר הועתק ללוח.</string>
+    <string name="product_creation_ai_generation_failure_message">יצירת המוצר נכשלה. יש לנסות שוב</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">למחוק את הכתובת ולהפסיק להשתמש בשיעור המס הזה</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">לקבוע שיעור מס חדש להזמנה זו</string>
     <string name="tax_rate_selector_auto_rate_details_title">הוספה אוטומטית של שיעור מס</string>
@@ -33,7 +39,6 @@ Language: he_IL
     <string name="product_creation_ai_about_product_set_tone">להגדיר את הנימה וטון הדיבור</string>
     <string name="product_creation_ai_about_product_edit_text_caption">יש להוסיף מאפיינים מרכזיים, יתרונות או פרטים שיעזרו למחפשים למצוא את המוצר שלך באינטרנט.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">למשל: בד רך, תפירה חזקה, עיצוב ייחודי</string>
-    <string name="product_creation_ai_about_product_edit_text_header">המוצרים שלי</string>
     <string name="product_creation_ai_about_product_subtitle">ניתן להדגיש את המאפיינים שמייחדים את המוצר שלך ולהשתמש בקסמיה של הבינה המלאכותית כדי ליצור שמות.</string>
     <string name="product_creation_ai_about_product_title">פרטים לגבי המוצר</string>
     <string name="ai_product_creation_add_name_suggest_name_button">להציע שם</string>

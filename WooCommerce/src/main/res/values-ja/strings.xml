@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 09:54:22+0000
+Translation-Revision-Date: 2023-10-04 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="ai_product_name_copy_error">商品名をクリップボードにコピーする際にエラーが発生しました。</string>
+    <string name="ai_product_name_copy_success">商品名がクリップボードにコピーされました。</string>
+    <string name="ai_product_name_copy_label">AI によって生成された商品名</string>
+    <string name="ai_product_description_copy_error">商品説明をクリップボードにコピーする際にエラーが発生しました。</string>
+    <string name="ai_product_description_copy_success">商品説明がクリップボードにコピーされました。</string>
+    <string name="product_creation_ai_generation_failure_message">商品の生成に失敗しました。 もう一度お試しください</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">住所をクリアしてこのレートの使用を停止する</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">この注文に新しい税率を設定する</string>
     <string name="tax_rate_selector_auto_rate_details_title">税率の自動加算</string>
@@ -33,7 +39,6 @@ Language: ja_JP
     <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>
     <string name="product_creation_ai_about_product_edit_text_caption">主要な機能や利点、詳細を追加して商品をオンラインで見つけられるようにします。</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど</string>
-    <string name="product_creation_ai_about_product_edit_text_header">自分の商品</string>
     <string name="product_creation_ai_about_product_subtitle">商品のユニークな点を強調し、AI に魔法をかけてもらいましょう。</string>
     <string name="product_creation_ai_about_product_title">商品について</string>
     <string name="ai_product_creation_add_name_suggest_name_button">名前を提案</string>

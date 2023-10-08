@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 13:54:05+0000
+Translation-Revision-Date: 2023-10-03 19:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Ошибка при копировании названия товара в буфер обмена</string>
+    <string name="ai_product_name_copy_success">Название товара скопировано в буфер обмена.</string>
+    <string name="ai_product_name_copy_label">Название товара создано при помощи ИИ</string>
+    <string name="ai_product_description_copy_error">Ошибка при копировании описания товара в буфер обмена.</string>
+    <string name="ai_product_description_copy_success">Описание товара скопировано в буфер обмена.</string>
+    <string name="product_creation_ai_generation_failure_message">При создании товара возникла ошибка. Повторите попытку</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Очистить адрес и больше не использовать эту ставку</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Установить другую налоговую ставку для этого заказа</string>
     <string name="tax_rate_selector_auto_rate_details_title">Автоматическое добавление налоговой ставки</string>
@@ -33,7 +39,6 @@ Language: ru
     <string name="product_creation_ai_about_product_set_tone">Задайте тон и стиль</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Добавьте ключевые характеристики, преимущества и подробные сведения, чтобы покупателям проще было найти ваш товар в Интернете.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Например: мягкая ткань, прочные швы, уникальный дизайн</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Мой товар</string>
     <string name="product_creation_ai_about_product_subtitle">Укажите отличительные качества вашего товара, и ИИ сделает за вас всё остальное.</string>
     <string name="product_creation_ai_about_product_title">Информация о товаре</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Предложите название товара</string>
