@@ -1,0 +1,2 @@
+15.6:
+Hier is onze nieuwste update! Verkopers in verschillende locaties kunnen genieten van het gemak van het instellen van geautomatiseerde belastingtariefen. We hebben ook een probleem verholpen waarbij inloggen niet mogelijk was wanneer sites een aangepaste directory gebruikten voor WordPress-installatie. Daarbij hebben we het aanmaken van producten een boost gegeven met AI-mogelijkheden voor WPCOM en zelfgehoste winkels met de Jetpack AI-plugin. Geniet van soepelere handelingen en verbeterde productiviteit met deze nieuwe verbeteringen. Veel verkoopplezier!

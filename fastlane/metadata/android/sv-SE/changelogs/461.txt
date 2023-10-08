@@ -1,0 +1,2 @@
+15.6:
+Vi är glada att kunna presentera vår senaste uppdatering. Nu kan handlare som säljer på olika platser använda sig av bekväma inställningar för automatiska momssatser. Vi har också åtgärdat ett problem som förhindrade inloggning när webbplatser använde en anpassad katalog för WordPress-installation. Dessutom har vi förbättrat produktskapandet med AI-funktioner för WPCOM och butiker som drivs på egen server med hjälp av Jetpacks AI-tillägg. Dessa nya förbättringar ger smidigare hantering och förbättrad produktivitet. Lycka till med försäljningen.

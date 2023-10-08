@@ -1,2 +1,0 @@
-15.5:
-Bu yeni güncellemede yeni bir özelliği tanıtmaktan heyecan duyuyoruz! Müşteri geri bildirimlerini takip etmenize yardımcı olmak için, okunmamış ürün incelemeleri için yeni bir filtre ekledik. Bu filtre, yanıtlarınızı kolayca sıralamanıza ve önceliklendirmenize imkan tanıyacak, dolayısıyla tüm müşterilerinizin dikkate alındığını ve değer verildiğini hissetmesini sağlayacaktır. Çevrimiçi mağazanızı yönetirken bu yeni seviyenin veya verimliliğin keyfini çıkarın.
