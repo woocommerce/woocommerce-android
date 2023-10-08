@@ -112,6 +112,7 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
+    <color name="skeleton_compose_background">@color/woo_black_80</color>
 
     <!--
     Empty state view
@@ -202,6 +203,7 @@
     <!--
     AI
     -->
+    <color name="ai_generated_text_background">@color/woo_black_80</color>
     <color name="ai_feedback_form_background">@color/woo_white_alpha_012</color>
 
 </resources>

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 11:54:05+0000
+Translation-Revision-Date: 2023-10-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Errore durante la copia del nome del prodotto negli appunti.</string>
+    <string name="ai_product_name_copy_success">Nome del prodotto copiato negli appunti.</string>
+    <string name="ai_product_name_copy_label">Nome del prodotto generato dall\'IA</string>
+    <string name="ai_product_description_copy_error">Errore durante la copia della descrizione del prodotto negli appunti.</string>
+    <string name="ai_product_description_copy_success">Descrizione del prodotto copiata negli appunti.</string>
+    <string name="product_creation_ai_generation_failure_message">Generazione del prodotto non riuscita. Riprova</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Cancella l\'indirizzo e non utilizzare più questa aliquota</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Configura una nuova aliquota d\'imposta per questo ordine</string>
     <string name="tax_rate_selector_auto_rate_details_title">Aggiunta automatica dell\'aliquota d\'imposta</string>
@@ -33,7 +39,6 @@ Language: it
     <string name="product_creation_ai_about_product_set_tone">Imposta il tone of voice</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Aggiungi funzionalità, vantaggi o dettagli chiave per consentire al tuo prodotto di essere trovato online.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Ad esempio tessuto morbido, cuciture resistenti e design unico</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Il mio Prodotto</string>
     <string name="product_creation_ai_about_product_subtitle">Metti in evidenza ciò che rende unico il tuo prodotto e lascia che l\'IA faccia la magia.</string>
     <string name="product_creation_ai_about_product_title">Informazioni sul tuo prodotto</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggerisci un nome</string>

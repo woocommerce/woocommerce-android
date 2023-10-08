@@ -1,0 +1,2 @@
+15.6:
+En yeni güncellemelerimizi duyurmaktan büyük heyecan duyuyoruz! Artık farklı lokasyonlarda satış yapan satıcılar, otomatik vergi oranı ayarlarının rahatlığından yararlanabilirler. Siteler WordPress kurulumu için özel bir dizin kullandığında oturum açmayı engelleyen bir sorunu da giderdik. Ayrıca, Jetpack Yapay Zeka eklentisini kullanan WPCOM ve kullanıcı tarafından barındırılan mağazalar için yapay zeka özellikleriyle ürün oluşturmayı güçlendirdik. Bu yeni iyileştirmelerle daha sorunsuz işlemlerin ve gelişmiş üretkenliğin keyfini çıkarın. İyi satışlar!

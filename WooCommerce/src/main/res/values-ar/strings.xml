@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 09:54:21+0000
+Translation-Revision-Date: 2023-10-03 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="ai_product_name_copy_error">خطأ في أثناء نسخ اسم المنتج إلى الحافظة.</string>
+    <string name="ai_product_name_copy_success">تم نسخ اسم المنتج إلى الحافظة.</string>
+    <string name="ai_product_name_copy_label">تم إنشاء اسم المنتج بواسطة الذكاء الاصطناعي</string>
+    <string name="ai_product_description_copy_error">خطأ في أثناء نسخ وصف المنتج إلى الحافظة.</string>
+    <string name="ai_product_description_copy_success">تم نسخ وصف المنتج إلى الحافظة.</string>
+    <string name="product_creation_ai_generation_failure_message">فشل إنشاء المنتج. يرجى المحاولة مجددًا</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">مسح العنوان وإيقاف استخدام هذا المعدل</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">تعيين معدل ضريبة جديد لهذا الطلب</string>
     <string name="tax_rate_selector_auto_rate_details_title">إضافة معدل الضريبة تلقائيًا</string>
@@ -33,7 +39,6 @@ Language: ar
     <string name="product_creation_ai_about_product_set_tone">تعيين النغمة والصوت</string>
     <string name="product_creation_ai_about_product_edit_text_caption">أضف الميزات الأساسية أو المزايا أو التفاصيل لمساعدة منتجك على الظهور على الإنترنت.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">على سبيل المثال، قماش ناعم وخياطة متينة وتصميم فريد</string>
-    <string name="product_creation_ai_about_product_edit_text_header">منتجي</string>
     <string name="product_creation_ai_about_product_subtitle">أبرز ما يجعل منتجك فريدًا، واسمح للذكاء الاصطناعي بنثر سحره.</string>
     <string name="product_creation_ai_about_product_title">نبذة عن منتجك</string>
     <string name="ai_product_creation_add_name_suggest_name_button">اقتراح اسم</string>

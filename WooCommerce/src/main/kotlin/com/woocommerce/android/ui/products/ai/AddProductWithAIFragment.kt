@@ -53,7 +53,7 @@ class AddProductWithAIFragment : BaseFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                NavigateToAIProductNameBottomSheet -> navigateToAIProductName()
+                is NavigateToAIProductNameBottomSheet -> navigateToAIProductName(event.initialName)
                 is NavigateToProductDetailScreen -> findNavController().navigateSafely(
                     directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
                         remoteProductId = event.productId,
@@ -80,9 +80,10 @@ class AddProductWithAIFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToAIProductName() {
+    private fun navigateToAIProductName(initialName: String? = null) {
         val action =
-            AddProductWithAIFragmentDirections.actionAddProductWithAIFragmentToAIProductNameBottomSheetFragment()
+            AddProductWithAIFragmentDirections
+                .actionAddProductWithAIFragmentToAIProductNameBottomSheetFragment(initialName)
         findNavController().navigateSafely(action)
     }
 }
