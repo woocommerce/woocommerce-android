@@ -305,7 +305,6 @@ Language: nl
     <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>
     <string name="ai_product_description_feedback">Is de gegenereerde\nbeschrijving nuttig?</string>
     <string name="ai_product_description_regenerate_button">Opnieuw genereren</string>
-    <string name="ai_product_description_survey">Is de gegenereerde beschrijving nuttig?</string>
     <string name="ai_product_description_hint">Licht de unieke eigenschappen en doelgroep van de product uit met trefwoorden voor een op maat gemaakte beschrijving.</string>
     <string name="ai_product_description_example">Voorbeeld: in pot, cactus, plant, decoratief, makkelijke verzorging</string>
     <string name="ai_product_description_product_name">Voer je productnaam in</string>

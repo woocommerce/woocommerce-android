@@ -350,7 +350,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
-
+    <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <!--
         My Store View
     -->
@@ -589,6 +589,7 @@
     <string name="order_creation_customer_search_empty_name">No name</string>
     <string name="order_creation_customer_search_empty_email">No email address</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Add details manually</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Add details manually using email</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
@@ -1259,6 +1260,7 @@
     <string name="card_reader_hub_collect_payment">Collect Payment</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
@@ -1269,9 +1271,11 @@
     <string name="card_reader_icon_content_description">Card Reader Image</string>
     <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;a href=\'\'&gt;Continue setup&lt;/a&gt;</string>
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
-    <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Share Tap To Pay Feedback</string>
+    <string name="card_reader_test_tap_to_pay">Try out Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_about_tap_to_pay">About Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_description">Use your phone to accept card\npayments. Try it now.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Share Feedback</string>
     <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
     <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
@@ -1408,6 +1412,7 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
+    <string name="card_reader_payment_update_available">An update for the card reader is available</string>
 
     <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -1913,6 +1918,7 @@
     <string name="product_creation_ai_preview_title">Preview</string>
     <string name="product_creation_ai_preview_subtitle">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
@@ -3580,7 +3586,6 @@
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
     <string name="ai_product_description_title_hint">Enter product title.</string>
-    <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
     <string name="ai_product_description_note_dialog_heading">Great start!</string>
@@ -3641,11 +3646,6 @@
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
 
     <!--
-    Shipping zones
-    -->
-    <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
-
-    <!--
     Tax rates info dialog
     -->
     <string name="tax_rates_information_content_description">Tax rates information</string>
@@ -3677,4 +3677,10 @@
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
 
+    <!--
+    AI feedback form
+    -->
+    <string name="ai_feedback_form_message">Is the result helpful?</string>
+    <string name="ai_feedback_form_positive_button">Positive feedback</string>
+    <string name="ai_feedback_form_negative_button">Negative feedback</string>
 </resources>

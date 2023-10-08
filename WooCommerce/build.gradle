@@ -37,7 +37,6 @@ repositories {
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
-            includeGroup "com.woocommerce.shared"
         }
     }
     maven {
@@ -69,6 +68,8 @@ repositories {
     }
 }
 
+def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
+
 android {
     namespace "com.woocommerce.android"
 
@@ -76,13 +77,9 @@ android {
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        // Allow versionName to be overridden with property. e.g. -PversionName=1234
-        if (project.hasProperty("versionName")) {
-            versionName project.property("versionName")
-        } else {
-            versionName "15.6"
-        }
-        versionCode 461
+
+        versionName versionProperties.getProperty("versionName")
+        versionCode versionProperties.getProperty("versionCode").toInteger()
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -101,10 +98,6 @@ android {
             exclude("META-INF/*.kotlin_module")
             pickFirst 'META-INF/AL2.0'
             pickFirst 'META-INF/LGPL2.1'
-
-            // Avoid React Native's JNI duplicated classes
-            pickFirst '**/libc++_shared.so'
-            pickFirst '**/libfbjni.so'
         }
 
         resConfigs(
@@ -402,8 +395,6 @@ dependencies {
     implementation "androidx.camera:camera-view:$androidxCameraVersion"
 
     implementation "com.google.guava:guava:$guavaVersion"
-
-    implementation "${gradle.ext.wooCommerceSharedBinaryPath}:$wooCommerceSharedVersion"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

@@ -59,20 +59,12 @@ class AnalyticsTracker private constructor(
         return uuid
     }
 
-    private fun track(stat: String) {
-        track(stat, false, emptyMap<String, String>())
-    }
-
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
-        track(stat.name, stat.siteless, properties)
-    }
-
-    private fun track(statName: String, isSiteless: Boolean, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
 
-        val eventName = statName.lowercase(Locale.getDefault())
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -85,7 +77,7 @@ class AnalyticsTracker private constructor(
         val finalProperties = properties.toMutableMap()
 
         val selectedSiteModel = selectedSite.getOrNull()
-        if (!isSiteless) {
+        if (!stat.siteless) {
             selectedSiteModel?.let {
                 if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
@@ -251,6 +243,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_SUBMIT = "submit"
         const val VALUE_DISMISS = "dismiss"
         const val VALUE_SUPPORT = "support"
+        const val VALUE_WP_COM = "wp_com"
+        const val VALUE_NO_WP_COM = "no_wp_com"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
@@ -637,12 +631,6 @@ class AnalyticsTracker private constructor(
             instance = AnalyticsTracker(context.applicationContext, selectedSite)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
-        }
-
-        fun track(stat: String) {
-            if (sendUsageStats) {
-                instance?.track(stat)
-            }
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {

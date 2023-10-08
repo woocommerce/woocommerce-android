@@ -305,7 +305,6 @@ Language: de
     <string name="ai_product_description_note_dialog_heading">Guter Start!</string>
     <string name="ai_product_description_feedback">Ist die generierte\nBeschreibung hilfreich?</string>
     <string name="ai_product_description_regenerate_button">Neu generieren</string>
-    <string name="ai_product_description_survey">Ist die generierte Beschreibung hilfreich?</string>
     <string name="ai_product_description_hint">Hebe die besonderen Funktionen deines Produkts und die Zielgruppe mit Stichwörtern für eine spezielle Beschreibung hervor.</string>
     <string name="ai_product_description_example">Beispiel: eingetopft, Kaktus, Pflanze, dekorativ, pflegeleicht</string>
     <string name="ai_product_description_product_name">Gib deinen Produktnamen ein</string>

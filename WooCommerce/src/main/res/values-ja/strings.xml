@@ -305,7 +305,6 @@ Language: ja_JP
     <string name="ai_product_description_note_dialog_heading">良い出だしです !</string>
     <string name="ai_product_description_feedback">が生成されました\n説明は役立つものですか ?</string>
     <string name="ai_product_description_regenerate_button">再生成</string>
-    <string name="ai_product_description_survey">生成された説明は役立つものですか ?</string>
     <string name="ai_product_description_hint">カスタマイズされた説明のキーワードを使用して商品の独自の機能と対象ユーザーを強調します。</string>
     <string name="ai_product_description_example">例: 鉢植え、サボテン、植物、観賞用、お手入れ簡単</string>
     <string name="ai_product_description_product_name">商品名を入力</string>

@@ -305,7 +305,6 @@ Language: id
     <string name="ai_product_description_note_dialog_heading">Mantap!</string>
     <string name="ai_product_description_feedback">Apakah deskripsi\nyang dibuat bermanfaat?</string>
     <string name="ai_product_description_regenerate_button">Buat Ulang</string>
-    <string name="ai_product_description_survey">Apakah deskripsi yang dibuat bermanfaat?</string>
     <string name="ai_product_description_hint">Soroti fitur unik dan audiens produk Anda dengan kata kunci untuk menghasilkan deskripsi yang pas dan khas.</string>
     <string name="ai_product_description_example">Contoh: Dalam Pot, Kaktus, Tanaman, Dekoratif, Mudah Dirawat</string>
     <string name="ai_product_description_product_name">Masukkan nama produk Anda</string>

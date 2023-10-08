@@ -305,7 +305,6 @@ Language: ar
     <string name="ai_product_description_note_dialog_heading">بداية رائعة!</string>
     <string name="ai_product_description_feedback">هل الوصف المنشأ\nمفيد؟</string>
     <string name="ai_product_description_regenerate_button">إعادة الإنشاء</string>
-    <string name="ai_product_description_survey">هل الوصف المنشأ مفيد؟</string>
     <string name="ai_product_description_hint">سلّط الضوء على ميزات منتجك الفريدة وجمهورك باستخدام الكلمات المفتاحية للحصول على وصف مخصص.</string>
     <string name="ai_product_description_example">مثال: أصيص، صبار، نبات، تزييني، سهل العناية</string>
     <string name="ai_product_description_product_name">إدخال اسم منتجك</string>

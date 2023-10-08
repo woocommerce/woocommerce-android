@@ -41,20 +41,6 @@ class CustomerListRepository @Inject constructor(
             .find { it.code == stateCode }?.toAppModel()
             ?: Location.EMPTY
 
-    /**
-     * Submits a fetch request to get the first page of customers matching the passed query
-     */
-    suspend fun searchCustomerList(
-        searchQuery: String,
-    ): List<WCCustomerModel>? = withContext(dispatchers.io) {
-        customerStore.fetchCustomersFromAnalytics(
-            site = selectedSite.get(),
-            searchQuery = searchQuery,
-            pageSize = 50,
-            page = 1,
-        ).takeUnless { it.isError }?.model
-    }
-
     suspend fun searchCustomerListWithEmail(
         searchQuery: String,
         searchBy: String,
@@ -75,16 +61,24 @@ class CustomerListRepository @Inject constructor(
         } else if (result.model == null) {
             Result.failure(IllegalStateException("empty model returned"))
         } else {
+            val cacheResult = page == 1 && searchQuery.isEmpty()
+            if (cacheResult) {
+                customerStore.deleteCustomersForSite(selectedSite.get())
+                customerStore.saveCustomers(result.model!!)
+            }
             Result.success(result.model!!)
         }
     }
 
+    suspend fun getCustomerList(count: Int): List<WCCustomerModel> =
+        withContext(dispatchers.io) {
+            val cachedCustomers = customerStore.getCustomersForSite(selectedSite.get())
+            cachedCustomers
+                .subList(0, count.coerceAtMost(cachedCustomers.size))
+        }
+
     suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> = withContext(dispatchers.io) {
         customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
-    }
-
-    suspend fun getCustomerByRemoteId(remoteId: Long): WCCustomerModel? = withContext(dispatchers.io) {
-        customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
     }
 
     private companion object {

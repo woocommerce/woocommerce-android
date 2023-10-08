@@ -305,7 +305,6 @@ Language: he_IL
     <string name="ai_product_description_note_dialog_heading">התחלה נהדרת!</string>
     <string name="ai_product_description_feedback">האם התיאור שנוצר\nמועיל לך?</string>
     <string name="ai_product_description_regenerate_button">ליצור מחדש</string>
-    <string name="ai_product_description_survey">האם התיאור שנוצר מועיל לך?</string>
     <string name="ai_product_description_hint">כדאי להדגיש את המאפיינים הייחודיים ואת הקהל של המוצר עם מילות מפתח כדי ליצור תיאור מותאם.</string>
     <string name="ai_product_description_example">לדוגמה: שתיל, קקטוס, צמח, קישוט, קל לטפל</string>
     <string name="ai_product_description_product_name">יש להזין את שם המוצר שלך</string>
