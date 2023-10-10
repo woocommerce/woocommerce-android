@@ -1406,6 +1406,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+            whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
             // WHEN
             initViewModel()
@@ -1590,6 +1591,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(true)
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+            whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
             // WHEN
             initViewModel()
