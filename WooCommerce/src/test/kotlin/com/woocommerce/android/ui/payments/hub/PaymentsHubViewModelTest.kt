@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfig
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -1958,6 +1959,23 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_ABOUT_TAPPED)
+    }
+
+    @Test
+    fun `given TTP supported country, when user clicks on about ttp, then trigger proper event`() {
+        val supportedCountry: CardReaderConfigForSupportedCountry = CardReaderConfigForCanada
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
+        whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
+
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_about_tap_to_pay)
+        }!!.onClick!!.invoke()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            PaymentsHubViewModel.PaymentsHubEvents.NavigateToAboutTapToPay(supportedCountry)
+        )
     }
 
     //endregion
