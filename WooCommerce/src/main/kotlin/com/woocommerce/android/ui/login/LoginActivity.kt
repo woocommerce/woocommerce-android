@@ -66,6 +66,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -125,6 +126,8 @@ class LoginActivity :
         const val WP_COM_EMAIL_PARAMETER = "wpcomEmail"
         const val APP_LOGIN_AUTHORITY = "app-login"
         const val USERNAME_PARAMETER = "username"
+        const val APPLICATION_PASSWORD = "application_password"
+        const val UUID = "uuid"
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -135,6 +138,7 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var loginWithApplicationPasswordLink: LoginWithApplicationPasswordLink
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -906,12 +910,19 @@ class LoginActivity :
         openQrCodeScannerFragment()
     }
 
+    @Suppress("ComplexMethod")
     private fun handleAppLoginUri(uri: Uri) {
         unifiedLoginTracker.setFlow(Flow.LOGIN_QR.value)
         val siteUrl = uri.getQueryParameter(SITE_URL_PARAMETER) ?: ""
         val wpComEmail = uri.getQueryParameter(WP_COM_EMAIL_PARAMETER) ?: ""
         val username = uri.getQueryParameter(USERNAME_PARAMETER) ?: ""
+        val applicationPassword = uri.getQueryParameter(APPLICATION_PASSWORD) ?: ""
+        val uuid = uri.getQueryParameter(UUID) ?: ""
         when {
+            siteUrl.isNotEmpty() && username.isNotEmpty() && applicationPassword.isNotEmpty() && uuid.isNotEmpty() -> {
+                loginWithApplicationPassword(siteUrl, username, applicationPassword, uuid)
+            }
+
             siteUrl.isNotEmpty() && wpComEmail.isNotEmpty() -> {
                 gotWpcomSiteInfo(siteUrl)
                 AnalyticsTracker.track(
@@ -960,6 +971,24 @@ class LoginActivity :
                     ).show()
                 }
             }
+    }
+
+    private fun loginWithApplicationPassword(
+        siteUrl: String,
+        username: String,
+        applicationPassword: String,
+        uuid: String
+    ) {
+        // TODO handle UI for indicating a loading state while the application password is being processed
+        lifecycleScope.launch {
+            loginWithApplicationPasswordLink(siteUrl, username, applicationPassword, uuid).fold(
+                onSuccess = { showMainActivityAndFinish() },
+                onFailure = {
+                    ToastUtils.showToast(baseContext, R.string.login_app_login_malformed_link)
+                    showPrologue()
+                }
+            )
+        }
     }
 
     /**
