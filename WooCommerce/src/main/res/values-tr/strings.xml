@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 15:54:04+0000
+Translation-Revision-Date: 2023-10-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Ürün adını panoya kopyalamada hata.</string>
+    <string name="ai_product_name_copy_success">Ürün adı panoya kopyalandı.</string>
+    <string name="ai_product_name_copy_label">Ürün adı Yapay Zeka tarafından oluşturuldu</string>
+    <string name="ai_product_description_copy_error">Ürün açıklamasını panoya kopyalamada hata.</string>
+    <string name="ai_product_description_copy_success">Ürün açıklaması panoya kopyalandı.</string>
+    <string name="product_creation_ai_generation_failure_message">Ürün oluşturma başarısız. Lütfen tekrar deneyin</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresi temizleyin ve bu oranı kullanmayı bırakın</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Bu sipariş için yeni bir vergi oranı belirleyin</string>
     <string name="tax_rate_selector_auto_rate_details_title">Vergi oranını otomatik olarak ekleme</string>
@@ -33,7 +39,6 @@ Language: tr
     <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Ürününüzün internette bulunmasına yardımcı olmak için temel özellikler, avantajlar veya ayrıntılar ekleyin.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Örneğin, yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Ürünüm</string>
     <string name="product_creation_ai_about_product_subtitle">Ürününüzü benzersiz kılan özellikleri vurgulayın ve yapay zekanın işini yapmasına izin verin.</string>
     <string name="product_creation_ai_about_product_title">Ürününüz hakkında</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Bir ad öner</string>
@@ -300,7 +305,6 @@ Language: tr
     <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>
     <string name="ai_product_description_feedback">Oluşturulan\naçıklama faydalı oldu mu?</string>
     <string name="ai_product_description_regenerate_button">Yeniden oluştur</string>
-    <string name="ai_product_description_survey">Oluşturulan açıklama faydalı oldu mu?</string>
     <string name="ai_product_description_hint">Özelleştirilmiş bir açıklama için ürününüzün benzersiz özelliklerini ve hedef kitlenizi anahtar sözcüklerle vurgulayın.</string>
     <string name="ai_product_description_example">Örneğin: Saksıda Yetişir, Kaktüs, Bitki, Dekoratif, Bakımı kolay</string>
     <string name="ai_product_description_product_name">Ürün adınızı girin</string>

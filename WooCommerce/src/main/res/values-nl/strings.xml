@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 16:54:04+0000
+Translation-Revision-Date: 2023-10-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Fout bij kopiëren naar klembord.</string>
+    <string name="ai_product_name_copy_success">Productnaam gekopieerd naar klembord.</string>
+    <string name="ai_product_name_copy_label">Productnaam gegenereerd door AI</string>
+    <string name="ai_product_description_copy_error">Fout bij kopiëren productbeschrijving naar klembord.</string>
+    <string name="ai_product_description_copy_success">Productbeschrijving gekopieerd naar klembord.</string>
+    <string name="product_creation_ai_generation_failure_message">Productgeneratie mislukt. Probeer het nog eens</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Verwijder het adres en stop met het gebruiken van dit tarief</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Stel een nieuw belastingtarief voor deze bestelling</string>
     <string name="tax_rate_selector_auto_rate_details_title">Automatisch het belastingtarief toevoegen</string>
@@ -33,7 +39,6 @@ Language: nl
     <string name="product_creation_ai_about_product_set_tone">Toon instellen</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Voeg belangrijke functies, voordelen of details toe om je product beter online vindbaar te laten worden.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Bijvoorbeeld Zachte stof, duurzaam stikwerk, uniek ontwerp</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Mijn product</string>
     <string name="product_creation_ai_about_product_subtitle">Markeer wat je product uniek maakt en laat AI het werk voor je doen.</string>
     <string name="product_creation_ai_about_product_title">Over je product</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Stel een naam voor</string>
@@ -300,7 +305,6 @@ Language: nl
     <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>
     <string name="ai_product_description_feedback">Is de gegenereerde\nbeschrijving nuttig?</string>
     <string name="ai_product_description_regenerate_button">Opnieuw genereren</string>
-    <string name="ai_product_description_survey">Is de gegenereerde beschrijving nuttig?</string>
     <string name="ai_product_description_hint">Licht de unieke eigenschappen en doelgroep van de product uit met trefwoorden voor een op maat gemaakte beschrijving.</string>
     <string name="ai_product_description_example">Voorbeeld: in pot, cactus, plant, decoratief, makkelijke verzorging</string>
     <string name="ai_product_description_product_name">Voer je productnaam in</string>

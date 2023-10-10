@@ -1,0 +1,2 @@
+15.6:
+Gestatten? Unser neues Update! Händler, die an verschiedenen Orte verkaufen, profitieren von automatischen Einstellungen für Steuersätze. Das Problem, das das Anmelden verhindert hat, wenn Websites ein individuelles Verzeichnis für die WordPress-Installation verwendet haben, ist behoben. Die Produkterstellung wurde mit AI-Rechten für WPCOM und selbst gehostete Stores, die das Plugin Jetpack AI nutzen, versehen. So genießt du einen reibungsloseren Betrieb und bessere Produktivität. Viel Erfolg!

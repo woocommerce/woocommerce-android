@@ -248,7 +248,18 @@ data class Order(
         val email: String? = null,
         val billingAddress: Address,
         val shippingAddress: Address,
-    ) : Parcelable
+    ) : Parcelable {
+        companion object {
+            val EMPTY = Customer(
+                customerId = null,
+                firstName = null,
+                lastName = null,
+                email = null,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
+            )
+        }
+    }
 
     fun getBillingName(defaultValue: String): String {
         return when {

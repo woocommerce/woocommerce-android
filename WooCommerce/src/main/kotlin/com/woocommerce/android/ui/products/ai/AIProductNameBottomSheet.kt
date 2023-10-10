@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -92,12 +93,22 @@ private fun MainLayout(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
-                Text(
-                    text = stringResource(id = R.string.ai_product_name_sheet_title),
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_ai),
+                        contentDescription = null, // decorative
+                        modifier = Modifier
+                            .padding(end = dimensionResource(id = R.dimen.minor_100))
+                            .size(dimensionResource(id = R.dimen.major_150)),
+                        tint = colorResource(id = R.color.woo_purple_60)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.ai_product_name_sheet_title),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
                 Text(
                     text = stringResource(id = R.string.ai_product_name_sheet_subtitle),
                     style = MaterialTheme.typography.subtitle1,

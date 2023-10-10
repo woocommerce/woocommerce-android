@@ -112,6 +112,7 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
+    <color name="skeleton_compose_background">@color/woo_black_80</color>
 
     <!--
     Empty state view
@@ -200,9 +201,14 @@
     <color name="woo_payments_setup_bullet_background">@color/woo_purple_80</color>
 
     <!--
+    AI
+    -->
+    <color name="ai_generated_text_background">@color/woo_black_80</color>
+    <color name="ai_feedback_form_background">@color/woo_white_alpha_012</color>
+
+    <!--
     Tap To Pay About
     -->
     <color name="tap_to_pay_about_important_info_background">@color/woo_purple_90</color>
-
 
 </resources>

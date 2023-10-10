@@ -105,7 +105,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -157,6 +156,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
+    private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -253,6 +253,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
                         handleCouponEditResult()
+                        updateTaxRateSelectorButtonState()
                     }
                 }
             }
@@ -283,7 +284,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val isSetNewTaxRateButtonVisible: Boolean = when (it) {
                 BillingAddress, ShippingAddress -> true
                 else -> false
-            } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+            } && isTaxRateSelectorEnabled() && !_orderDraft.value.isOrderPaid
             viewState = viewState.copy(
                 taxBasedOnSettingLabel = it?.label ?: "",
                 taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(

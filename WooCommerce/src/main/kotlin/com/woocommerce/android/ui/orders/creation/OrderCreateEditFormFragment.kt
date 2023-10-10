@@ -511,7 +511,7 @@ class OrderCreateEditFormFragment :
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
 
         val customer = order.customer
-        if (customer == null) {
+        if (customer == null || customer == Order.Customer.EMPTY) {
             customerAddressSection.content = null
             return
         }

@@ -89,6 +89,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
+    val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -2189,6 +2190,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRatePercentageValueText = getTaxRatePercentageValueText,
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
+            isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
         )
     }
 

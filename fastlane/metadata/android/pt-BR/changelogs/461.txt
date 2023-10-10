@@ -1,0 +1,2 @@
+15.6:
+Temos o prazer de anunciar a atualização mais recente! Agora, comerciantes que vendem em locais diferentes aproveitam configurações automáticas de impostos. Também corrigimos um problema que impedia o login quando sites usavam um diretório personalizado para instalação do WordPress. Além disso, turbinamos a criação de produtos com recursos de IA para WPCOM e lojas auto-hospedadas que usam o plugin de IA do Jetpack. Aproveite operações simplificadas e maior produtividade com essas novas melhorias. Boas vendas!

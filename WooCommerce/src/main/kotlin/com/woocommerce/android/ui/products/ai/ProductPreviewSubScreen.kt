@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -42,12 +45,20 @@ import com.woocommerce.android.ui.products.ProductType.SIMPLE
 @Composable
 fun ProductPreviewSubScreen(viewModel: ProductPreviewSubViewModel, modifier: Modifier) {
     viewModel.state.observeAsState().value?.let { state ->
-        ProductPreviewSubScreen(state, modifier)
+        ProductPreviewSubScreen(
+            state = state,
+            onFeedbackReceived = viewModel::onFeedbackReceived,
+            modifier = modifier
+        )
     }
 }
 
 @Composable
-private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, modifier: Modifier) {
+private fun ProductPreviewSubScreen(
+    state: ProductPreviewSubViewModel.State,
+    onFeedbackReceived: (Boolean) -> Unit,
+    modifier: Modifier
+) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -74,6 +85,7 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
 
             is ProductPreviewSubViewModel.State.Success -> ProductPreviewContent(
                 state = state,
+                onFeedbackReceived = onFeedbackReceived,
                 modifier = Modifier.fillMaxHeight()
             )
         }
@@ -88,7 +100,11 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
 }
 
 @Composable
-private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Success, modifier: Modifier) {
+private fun ProductPreviewContent(
+    state: ProductPreviewSubViewModel.State.Success,
+    onFeedbackReceived: (Boolean) -> Unit,
+    modifier: Modifier
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
         modifier = modifier
@@ -149,6 +165,19 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
         state.propertyGroups.forEach { properties ->
             ProductProperties(properties = properties, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier)
+        }
+
+        AnimatedVisibility(
+            visible = state.shouldShowFeedbackView,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = dimensionResource(id = R.dimen.major_100))
+        ) {
+            AiFeedbackForm(
+                onFeedbackReceived = onFeedbackReceived,
+            )
         }
     }
 }
@@ -326,7 +355,11 @@ private fun ErrorDialog(
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 private fun ProductPreviewLoadingPreview() {
     WooThemeWithBackground {
-        ProductPreviewSubScreen(ProductPreviewSubViewModel.State.Loading, Modifier.fillMaxSize())
+        ProductPreviewSubScreen(
+            state = ProductPreviewSubViewModel.State.Loading,
+            onFeedbackReceived = {},
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -339,7 +372,7 @@ private fun ProductPreviewLoadingPreview() {
 private fun ProductPreviewContentPreview() {
     WooThemeWithBackground {
         ProductPreviewSubScreen(
-            ProductPreviewSubViewModel.State.Success(
+            state = ProductPreviewSubViewModel.State.Success(
                 product = ProductHelper.getDefaultNewProduct(SIMPLE, false).copy(
                     name = "Soft Black Tee: Elevate Your Everyday Style",
                     description = "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
@@ -368,7 +401,8 @@ private fun ProductPreviewContentPreview() {
                     )
                 )
             ),
-            Modifier.fillMaxSize()
+            onFeedbackReceived = {},
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

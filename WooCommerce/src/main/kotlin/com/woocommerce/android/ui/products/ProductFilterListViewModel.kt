@@ -5,6 +5,7 @@ import androidx.annotation.DimenRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.sortCategories
@@ -16,6 +17,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -97,6 +99,7 @@ class ProductFilterListViewModel @Inject constructor(
         if (productCategories.isEmpty() || isProductCategoriesPartiallyFilled()) {
             productCategories = if (networkStatus.isConnected()) {
                 productCategoriesRepository.fetchProductCategories()
+                    .getOrDefault(productCategoriesRepository.getProductCategoriesList())
             } else {
                 productCategoriesRepository.getProductCategoriesList()
             }
@@ -354,6 +357,10 @@ class ProductFilterListViewModel @Inject constructor(
                 launch {
                     productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
                     productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
+                        .getOrElse {
+                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            return@launch
+                        }
                     val categoryOptions = productCategoriesToOptionListItems()
                     _filterOptionListItems.value = categoryOptions
                     updateCategoryFilterListItem(categoryOptions)
