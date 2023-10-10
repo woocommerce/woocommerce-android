@@ -1946,7 +1946,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given country is Canada, when user clicks on about ttp, then track proper event`() {
+    fun `given TTP supported country, when user clicks on about ttp, then track proper event`() {
         val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
