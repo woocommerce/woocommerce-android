@@ -116,7 +116,7 @@ class TaxRateSelectorViewModel @Inject constructor(
     object EditTaxRatesInAdmin : MultiLiveEvent.Event()
     object ShowTaxesInfoDialog : MultiLiveEvent.Event()
 
-    private fun hasAddress(taxRate: TaxRate): Boolean {
+    fun hasAddress(taxRate: TaxRate): Boolean {
         return taxRate.city.isNotEmpty() ||
             taxRate.stateCode.isNotEmpty() ||
             taxRate.countryCode.isNotEmpty() ||

@@ -89,4 +89,19 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         // THEN
         verify(tracker).track(AnalyticsEvent.TAX_RATE_SELECTOR_EDIT_IN_ADMIN_TAPPED)
     }
+
+    @Test
+    fun `given tax rate added without address, then should filter it out`() {
+        // Create a TaxRateUiModel for testing with an empty address
+        val taxRate = TaxRate(1, "", "", "", "")
+        val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
+            "Test Rate · US", "10%", taxRate
+        )
+
+        // GIVEN
+        val filteredTaxRate = viewModel.hasAddress(taxRateUiModel.taxRate)
+
+        // THEN
+        assert(!filteredTaxRate)
+    }
 }
