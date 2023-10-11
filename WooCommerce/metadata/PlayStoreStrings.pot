@@ -11,16 +11,23 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_157"
+msgid ""
+"15.7:\n"
+"- [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]\n"
+"- [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]\n"
+"- [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]\n"
+"- [*] Product Listing: Fixed a product filter bug where users were not able to filter product by "Product Status" [https://github.com/woocommerce/woocommerce-android/pull/9891]\n"
+"- [*] Order creation: Customers selected from the list that don't have address information now properly displayed on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/9863]\n"
+"- [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]\n"
+"- [*] Product Creation using AI: Added support for suggesting new categories and tags [https://github.com/woocommerce/woocommerce-android/pull/9919]\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_156"
 msgid ""
 "15.6:\n"
 "We're thrilled to announce our latest update! Now, merchants selling in different locations can enjoy the convenience of automatic tax rate settings. We've also fixed an issue that was preventing login when sites used a custom directory for WordPress installation. Plus, we've supercharged product creation with AI capabilities for WPCOM and self-hosted stores using the Jetpack AI plugin. Enjoy smoother operations and enhanced productivity with these new improvements. Happy selling!\n"
-msgstr ""
-
-msgctxt "release_note_155"
-msgid ""
-"15.5:\n"
-"We're excited to introduce a new feature in this new update! To help you stay on top of customer feedback, we've added a new filter for unread product reviews. This will allow you to easily sort and prioritize your responses, ensuring that all your customers feel heard and valued. Enjoy this new level or efficiency in managing your online store.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
