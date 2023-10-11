@@ -3629,6 +3629,12 @@
     <string name="blaze_banner_dismiss_dialog_button">Got it</string>
 
     <!--
+    My Store Blaze view
+    -->
+    <string name="blaze_campaign_title">🔥 Blaze campaign</string>
+    <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
+
+    <!--
     Highlights tooltip
     -->
     <string name="highlights_tooltip_title_hint">Tooltip title</string>
