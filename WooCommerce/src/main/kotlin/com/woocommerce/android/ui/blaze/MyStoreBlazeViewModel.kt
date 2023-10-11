@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,7 @@ class MyStoreBlazeViewModel @Inject constructor(
         savedStateHandle.getStateFlow(
             scope = viewModelScope,
             initialValue = BlazeCampaignUi(
-                isVisible = true,
+                isVisible = FeatureFlag.BLAZE_ITERATION_2.isEnabled(),
                 hasActiveCampaigns = false,
                 product = null
             )
