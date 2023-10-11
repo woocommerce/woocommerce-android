@@ -303,33 +303,37 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
-    fun orderNavigationIsEnabled() = navArgs.allOrderIds.contains(navArgs.orderId) && navArgs.allOrderIds.count() > 1
+    fun orderNavigationIsEnabled() = navArgs.allOrderIds?.let {
+        it.contains(navArgs.orderId) && it.count() > 1
+    } ?: false
 
     fun onPreviousOrderClicked() {
         if (!previousOrderNavigationIsEnabled()) return
 
-        val allOrderIds = navArgs.allOrderIds
-        val previousIndex = allOrderIds.indexOf(navArgs.orderId) - 1
-        val previousOrderId = allOrderIds.get(previousIndex)
-        triggerEvent(OrderNavigationTarget.ShowOrder(previousOrderId, allOrderIds))
+        navArgs.allOrderIds?.let {
+            val previousIndex = it.indexOf(navArgs.orderId) - 1
+            val previousOrderId = it.get(previousIndex)
+            triggerEvent(OrderNavigationTarget.ShowOrder(previousOrderId, it))
+        }
     }
 
-    fun previousOrderNavigationIsEnabled() =
-        navArgs.allOrderIds.contains(navArgs.orderId) &&
-        navArgs.allOrderIds.first() != navArgs.orderId
+    fun previousOrderNavigationIsEnabled() = navArgs.allOrderIds?.let {
+        it.contains(navArgs.orderId) && it.first() != navArgs.orderId
+    } ?: false
 
     fun onNextOrderClicked() {
         if (!nextOrderNavigationIsEnabled()) return
 
-        val allOrderIds = navArgs.allOrderIds
-        val nextIndex = allOrderIds.indexOf(navArgs.orderId) + 1
-        val nextOrderId = allOrderIds.get(nextIndex)
-        triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId, allOrderIds))
+        navArgs.allOrderIds?.let {
+            val nextIndex = it.indexOf(navArgs.orderId) + 1
+            val nextOrderId = it.get(nextIndex)
+            triggerEvent(OrderNavigationTarget.ShowOrder(nextOrderId, it))
+        }
     }
 
-    fun nextOrderNavigationIsEnabled() =
-        navArgs.allOrderIds.contains(navArgs.orderId) &&
-            navArgs.allOrderIds.last() != navArgs.orderId
+    fun nextOrderNavigationIsEnabled() = navArgs.allOrderIds?.let {
+        it.contains(navArgs.orderId) && it.last() != navArgs.orderId
+    } ?: false
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()

@@ -167,6 +167,8 @@
             app:argType="long" />
         <argument
             android:name="allOrderIds"
+            android:defaultValue="@null"
+            app:nullable="true"
             app:argType="long[]" />
         <argument
             android:name="remoteNoteId"
