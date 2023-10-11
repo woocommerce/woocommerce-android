@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze
 
-import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,14 +12,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
@@ -41,7 +39,6 @@ fun MyStoreBlazeView(
         Column {
             Column(
                 modifier = Modifier.padding(dimensionResource(id = dimen.major_100)),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100)),
@@ -78,11 +75,8 @@ fun BlazeProductItem(product: Product) {
 }
 
 @ExperimentalFoundationApi
-@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "small screen", device = Devices.PIXEL)
-@Preview(name = "mid screen", device = Devices.PIXEL_4)
-@Preview(name = "large screen", device = Devices.NEXUS_10)
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun MyStoreBlazeView() {
     MyStoreBlazeView(
