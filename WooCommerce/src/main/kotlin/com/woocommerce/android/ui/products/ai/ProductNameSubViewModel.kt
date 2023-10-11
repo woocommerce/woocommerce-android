@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -57,6 +58,12 @@ class ProductNameSubViewModel(
         }
     }
 
+    fun onPackageImageClicked() {
+        viewModelScope.launch {
+            _events.emit(ShowStorageChooser)
+        }
+    }
+
     override fun close() {
         viewModelScope.cancel()
     }
@@ -66,4 +73,6 @@ class ProductNameSubViewModel(
     )
 
     data class NavigateToAIProductNameBottomSheet(val initialName: String?) : Event()
+
+    object ShowStorageChooser : Event()
 }
