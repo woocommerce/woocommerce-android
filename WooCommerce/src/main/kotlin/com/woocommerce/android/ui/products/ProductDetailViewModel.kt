@@ -925,7 +925,10 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
-        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
+        )
         viewState.productDraft?.let {
             val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -1024,6 +1027,7 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             AnalyticsEvent.ADD_PRODUCT_PUBLISH_TAPPED
         }
+
         tracker.track(statId, properties)
     }
 
@@ -1229,7 +1233,6 @@ class ProductDetailViewModel @Inject constructor(
         super.onCleared()
         productRepository.onCleanup()
         productCategoriesRepository.onCleanup()
-        productTagsRepository.onCleanup()
         if (isProductUnderCreation) {
             // cancel uploads for the default ID, since we can't assign the uploads to it
             mediaFileUploadHandler.cancelUpload(DEFAULT_ADD_NEW_PRODUCT_ID)
@@ -2047,6 +2050,10 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun fetchProductCategories(loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             _productCategories.value = productCategoriesRepository.fetchProductCategories(loadMore = loadMore)
+                .getOrElse {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    productCategoriesRepository.getProductCategoriesList()
+                }
 
             productCategoriesViewState = productCategoriesViewState.copy(
                 isLoading = true,
@@ -2104,7 +2111,9 @@ class ProductDetailViewModel @Inject constructor(
         if (tags.isNotEmpty()) {
             productTagsViewState = productTagsViewState.copy(isProgressDialogShown = true)
             launch {
-                val addedTags = productTagsRepository.addProductTags(tags.map { it.name })
+                val addedTags = productTagsRepository.addProductTags(tags.map { it.name }).getOrElse {
+                    emptyList()
+                }
                 // if there are some tags that could not be added, display an error message
                 if (addedTags.size < tags.size) {
                     triggerEvent(ShowSnackbar(R.string.product_add_tag_error))
@@ -2300,7 +2309,10 @@ class ProductDetailViewModel @Inject constructor(
             val products = productTagsRepository.fetchProductTags(
                 loadMore = loadMore,
                 searchQuery = searchQuery
-            )
+            ).getOrElse {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+                productTagsRepository.getProductTags()
+            }
             filterProductTagList(products)
 
             productTagsViewState = productTagsViewState.copy(

@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 09:54:04+0000
+Translation-Revision-Date: 2023-10-05 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="ai_product_name_copy_error">复制产品名称到剪贴板时出错。</string>
+    <string name="ai_product_name_copy_success">产品名称已复制到剪贴板。</string>
+    <string name="ai_product_name_copy_label">AI 生成的产品名称</string>
+    <string name="ai_product_description_copy_error">复制产品描述到剪贴板时出错。</string>
+    <string name="ai_product_description_copy_success">产品描述已复制到剪贴板。</string>
+    <string name="product_creation_ai_generation_failure_message">产品生成失败。 请重试</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">清除地址并停止使用该费率</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">为该订单设置新税率</string>
+    <string name="tax_rate_selector_auto_rate_details_title">自动添加税率</string>
+    <string name="ai_product_name_sheet_error_message">生成产品名称时出现问题。 请重试。</string>
+    <string name="ai_product_name_sheet_regenerate_button">重新生成</string>
+    <string name="ai_product_name_sheet_generate_button">为我写作</string>
+    <string name="ai_product_name_sheet_input_description">介绍您的产品及其独特之处！</string>
+    <string name="ai_product_name_sheet_title">✨ 产品名称</string>
+    <string name="ai_product_name_sheet_subtitle">让 AI 为您生成有吸引力的标题</string>
+    <string name="empty_review_filtered_list_message">尝试禁用未读过滤器，以查看所有产品评论</string>
+    <string name="empty_review_filtered_list_title">无未读产品评论</string>
+    <string name="product_creation_ai_tone_selected_content_desc">所选语调</string>
+    <string name="product_creation_ai_tone_convincing">自信</string>
+    <string name="product_creation_ai_tone_flowery">华丽</string>
+    <string name="product_creation_ai_tone_formal">正式</string>
+    <string name="product_creation_ai_tone_casual">随意</string>
+    <string name="product_creation_ai_tone_description">设置语调和声音，确保产品展现形式符合品牌调性。</string>
+    <string name="product_creation_ai_tone_title">语调和声音</string>
+    <string name="product_creation_ai_preview_details_section">详情</string>
+    <string name="product_creation_ai_preview_description_section">产品描述</string>
+    <string name="product_creation_ai_preview_name_section">产品名称</string>
+    <string name="product_creation_ai_preview_subtitle">别担心。 您可以随时更改下方的详情。</string>
+    <string name="product_creation_ai_preview_title">预览</string>
+    <string name="product_creation_ai_about_product_continue_button">创建产品详情</string>
+    <string name="product_creation_ai_about_product_set_tone">设置语调和声音</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">添加关键功能、优势或详情，提高产品在网上的曝光率。</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">例如，柔软的面料、结实的缝线、独特的设计</string>
+    <string name="product_creation_ai_about_product_subtitle">突出显示您产品的独特之处，让 AI 创造奇迹。</string>
+    <string name="product_creation_ai_about_product_title">关于您的产品</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">提供名称建议</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">例如：柔软的面料、结实的缝线、独特的设计。</string>
+    <string name="ai_product_creation_add_name_keywords_label">产品名称</string>
+    <string name="ai_product_creation_add_name_subtitle">或者可以轻点以获得更多名称建议，扩大您的选择范围。</string>
+    <string name="ai_product_creation_add_name_title">添加产品名称</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">由 AI 提供支持。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;了解更多&lt;/u&gt;&lt;/a&gt;。</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手动添加产品和详情</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">手动添加</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">为您快速生成详情</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">通过 AI 创建产品</string>
+    <string name="product_creation_ai_entry_sheet_header">添加产品</string>
+    <string name="product_review_list_unread_reviews_filter">仅限未读评论</string>
+    <string name="order_creation_edit_tax_rate">编辑税率设置</string>
     <string name="tax_rate_selector_auto_rate_subtitle">这不会影响在线订单</string>
     <string name="tax_rate_selector_auto_rate_label">将此税率添加到所有已创建的订单</string>
     <string name="tax_rate_selector_empty_list_button_alt">编辑税率</string>
@@ -257,7 +305,6 @@ Language: zh_CN
     <string name="ai_product_description_note_dialog_heading">不错的开局！</string>
     <string name="ai_product_description_feedback">生成的描述\n对您是否有用？</string>
     <string name="ai_product_description_regenerate_button">重新生成</string>
-    <string name="ai_product_description_survey">生成的描述对您是否有用？</string>
     <string name="ai_product_description_hint">通过关键字突出显示产品的独特特点和受众，以便生成量身定制的描述。</string>
     <string name="ai_product_description_example">示例：盆栽、仙人掌、植物、装饰、易打理</string>
     <string name="ai_product_description_product_name">输入产品名称</string>

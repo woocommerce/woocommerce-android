@@ -1,68 +1,68 @@
 <ar>
-15.4:
-يمكن للتجار الآن تحديد معدل الضرائب عند إنشاء طلب وإضافة ملفات قابلة للتنزيل من كل أنواع الملفات المدعومة في أثناء تحرير المنتج. قمنا بتحسين المدفوعات الشخصية؛ في حال عدم الانتهاء من إعداد WcPay، يمكن للمستخدمين الآن إكماله من التطبيق. تشتمل التحديثات الطفيفة على إصلاح تتبع البلدان عند عدم الانتهاء من إعداد IPP وشاشة التوضيح قبل فتح مهمة المدفوعات.
+15.6:
+يسعدنا الإعلان عن آخر تحديث لدينا! والآن، يمكن للتجار، الذين يجرون عمليات البيع في مواقع مختلفة، الاستمتاع بسهولة إعدادات معدلات الضرائب التلقائية. أصلحنا أيضًا مشكلة كانت تمنع تسجيل الدخول عندما استخدمت المواقع دليلاً مخصصًا لتثبيت ووردبريس. بالإضافة إلى أننا عززنا إنشاء المنتجات باستخدام إمكانات الذكاء الاصطناعي والمتاجر المستضافة ذاتيًا باستخدام إضافة Jetpack AI. استمتع بسلاسة العمليات وتعزيز الإنتاجية بفضل هذه التحسينات الجديدة. عمليات بيع سعيدة!
 </ar>
 <de-DE>
-15.4:
-Verkäufer können ab sofort einen Steuersatz auswählen, wenn sie eine Bestellung erstellen, und während der Produktbearbeitung herunterladbare Dateien aus allen unterstützten Dateitypen hinzufügen. Persönliche Zahlungen wurden verbessert: Wenn die Einrichtung von WCPay nicht abgeschlossen ist, können Benutzer dies nun über die App tun. Kleinere Updates umfassen das Tracking des Landes, wenn die IPP-Einrichtung nicht abgeschlossen ist, sowie ein Erläuterungsbildschirm, der vor dem Öffnen der Zahlungsaufgabe angezeigt wird.
+15.6:
+Gestatten? Unser neues Update! Händler, die an verschiedenen Orte verkaufen, profitieren von automatischen Einstellungen für Steuersätze. Das Problem, das das Anmelden verhindert hat, wenn Websites ein individuelles Verzeichnis für die WordPress-Installation verwendet haben, ist behoben. Die Produkterstellung wurde mit AI-Rechten für WPCOM und selbst gehostete Stores, die das Plugin Jetpack AI nutzen, versehen. So genießt du einen reibungsloseren Betrieb und bessere Produktivität. Viel Erfolg!
 </de-DE>
 <es-ES>
-15,4:
-Ahora los vendedores pueden seleccionar un tipo impositivo al crear un pedido y añadir archivos descargables de todos los tipos de archivo compatibles durante la edición del producto. Hemos mejorado los pagos en persona; si la configuración de WcPay no ha finalizado, ahora los usuarios pueden completarla desde la aplicación. Entre las actualizaciones menores se incluye una corrección para el seguimiento del país cuando no se ha finalizado la incorporación de IPP y una pantalla de explicación antes de abrir la tarea de pagos.
+15,6:
+Estamos encantados de anunciar nuestra última actualización. Ahora, los vendedores que venden en diferentes lugares pueden disfrutar de la comodidad de la configuración automática de las tasas de impuestos. También hemos solucionado un problema que impedía el inicio de sesión cuando los sitios utilizaban un directorio personalizado para la instalación de WordPress. Además, hemos potenciado la creación de productos con funciones de IA para WPCOM y tiendas autoalojadas mediante el plugin Jetpack AI. Disfruta de un funcionamiento más fluido y de una mayor productividad con estas nuevas mejoras. ¡Felices ventas!
 </es-ES>
 <fr-FR>
-15.4:
-Les commerçants peuvent désormais sélectionner un taux de taxation lors de la création d’une commande et ajouter des fichiers téléchargeables à partir de tous les types de fichiers pris en charge lors de la modification des produits. Nous avons amélioré les paiements en personne ; si la configuration de WcPay n’est pas terminée, les utilisateurs peuvent maintenant la finaliser depuis l’application. Les mises à jour mineures comprennent un correctif permettant de suivre le pays lorsque l’intégration IPP n’est pas terminée et un écran d’explication avant l’ouverture de la tâche Paiements.
+15.6:
+Nous sommes ravis d’annoncer notre dernière mise à jour ! Désormais, les commerçants qui vendent dans plusieurs régions peuvent bénéficier d’un réglage automatique des taux de taxe. Nous avons également corrigé un problème qui empêchait la connexion lorsque les sites utilisaient un répertoire personnalisé pour l’installation de WordPress. De plus, nous avons optimisé la création de produits avec des fonctionnalités d’IA pour WPCOM et les boutiques auto-hébergées utilisant l’extension Jetpack AI. Grâce à ces nouvelles améliorations, bénéficiez de plus de fluidité et d’une productivité accrue. Bonnes ventes !
 </fr-FR>
 <iw-IL>
-15.4:
-סוחרים יכולים כעת לבחור שיעור מס במהלך יצירת הזמנה ולהוסיף קבצים שניתנים להורדה מכל סוגי הקבצים הנתמכים במהלך עריכת מוצר. שיפרנו את האפשרות 'תשלומים באופן אישי', אם ההגדרה של WcPay לא הושלמה, המשתמשים יכולים כעת להשלים אותה דרך האפליקציה. העדכונים הקטנים שהוספנו כוללים תיקון למעקב של הארץ כאשר ההצטרפות של IPP לא הושלמה ומסך עם הסבר שמוצג לפני פתיחת המשימה 'תשלומים'.
+15.6:
+אנחנו שמחים להכריז על העדכון אחרון! כעת, סוחרים שמוכרים סחורה במיקומים שונים יכולים ליהנות מהגדרות נוחות של חישוב אוטומטי לשיעור המס. בנוסף, תיקנו בעיה שמנעה כניסה לחשבון כאשר אתרים השתמשו בספרייה מותאמת אישית להתקנה של WordPress. גם העצמנו את תהליך יצירת המוצר עם יכולות של בינה מלאכותית בחנויות של WPCOM ובחנויות באחסון עצמי שמשתמשות בתוסף Jetpack AI. השיפורים האלה מאפשרים לכולם ליהנות מביצועים חלקים יותר ומעבודה פרודוקטיבית יותר. שתהיה מכירה מהנה!
 </iw-IL>
 <id>
-15.4:
-Penjual kini dapat memilih tarif pajak ketika membuat pesanan dan menambahkan berkas yang dapat diunduh dari semua jenis berkas yang didukung selama penyuntingan produk. Kami memperbaiki Pembayaran Langsung (IPP). Jika penyiapan WcPay belum selesai, pengguna kini dapat menyelesaikannya dari aplikasi. Pembaruan minor meliputi perbaikan pelacakan negara jika penyiapan IPP belum selesai dan layar penjelasan sebelum membuka tugas Pembayaran.
+15.6:
+Dengan gembira kami umumkan pembaruan terkini kami! Kini, penjual yang berjualan di berbagai lokasi dapat menikmati kemudahan dalam mengatur tarif pajak otomatis. Kami juga sudah memperbaiki masalah yang menghambat login ketika situs menggunakan direktori khusus untuk menginstal WordPress. Selain itu, kami memaksimalkan pembuatan produk berkat kemampuan AI untuk WPCOM dan toko yang dihosting sendiri menggunakan plugin Jetpack AI. Nikmati pengoperasian yang makin lancar dan produktivitas yang makin tinggi berkat semua penyempurnaan terbaru ini. Selamat berjualan!
 </id>
 <it-IT>
-15.4:
-I venditori ora possono selezionare un'aliquota d'imposta durante la creazione di un ordine e aggiungere file scaricabili di qualunque tipo supportato durante la modifica del prodotto. Abbiamo migliorato Pagamenti di persona; se la configurazione di WcPay non è terminata, gli utenti possono ora completarla dall'app. Gli aggiornamenti minori includono una correzione per il monitoraggio del Paese quando l'avviamento di IPP non è terminato e una schermata esplicativa prima di aprire l'attività Pagamenti.
+15.6:
+Siamo felici di annunciare il nostro ultimo aggiornamento. Ora chi vende in diversi Paesi può godere della comodità delle impostazioni automatiche dell'aliquota d'imposta. Abbiamo inoltre risolto un problema che impediva l'accesso quando i siti utilizzavano una directory personalizzata per l'installazione di WordPress. In più, abbiamo potenziato la creazione di prodotti con le funzionalità di IA per WPCOM e di negozi ospitati personalmente utilizzando il plugin Jetpack AI. Goditi operazioni più fluide e una maggiore produttività con questi nuovi miglioramenti. Ti auguriamo di vendere con successo.
 </it-IT>
 <ja-JP>
-15.4:
-マーチャントは、注文の作成時に税率を選択し、商品の編集中にサポートされているすべてのファイルタイプからダウンロード可能なファイルを追加できるようになりました。 オフラインでの支払いを改善しました。WcPay のセットアップが完了していない場合、ユーザーはアプリからセットアップを完了できるようになりました。マイナーアップデートには、IPP オンボーディングが完了していない場合に国を追跡する際の修正と、支払いタスクを開く前の説明画面が含まれます。
+15.6:
+最新のアップデートについてお知らせします。 さまざまな場所で販売するマーチャントが税率を自動で設定できるようになり、利便性が向上しました。 また、サイトが WordPress インストールのカスタムディレクトリを使用しているときにログインできなくなる問題を修正しました。 さらに、Jetpack AI プラグインを利用しているインストール型のストアや WPCOM での商品の作成を、AI 機能によりパワーアップしました。 これらの新たな機能強化によるスムーズな操作と生産性の向上を実感してください。 販売をお楽しみください。
 </ja-JP>
 <ko-KR>
-15.4:
-이제는 판매자가 주문을 생성할 때 세율을 선택하고, 상품을 편집하면서 지원되는 모든 파일 형식 중에서 다운로드 가능한 파일을 추가할 수 있습니다. 직접 결제를 개선했습니다. WCPay 설정이 마무리되지 않는 경우 이제는 사용자가 앱에서 완료할 수 있습니다. IPP 온보딩이 마무리되지 않을 때의 국가 추적을 조금 수정하고 결제 작업을 열기 전의 설명 화면도 조금 업데이트했습니다.
+15.6:
+최신 업데이트를 발표합니다. 이제는 다양한 위치에서 판매하는 판매자가 자동 세율 설정을 편리하게 이용할 수 있습니다. 워드프레스를 설치할 사용자 정의 디렉터리를 사이트에서 사용하면 로그인되지 않던 문제도 해결했습니다. 젯팩 AI 플러그인을 사용하는 AI 기능으로 WPCOM과 독립 호스트 스토어의 상품 생성을 강화했습니다. 이러한 새로운 개선 사항을 통해 더 원활한 운영과 향상된 생산성을 만끽하세요. 즐겁게 판매하세요!
 </ko-KR>
 <nl-NL>
-15.4:
-Winkeliers kunnen nu bij het creëren van een bestelling een belastingtarief selecteren en downloadbare bestanden toevoegen van alle ondersteunde bestandtypen tijdens het bewerken van het product. We hebben fysieke betalingen verbeterd; als het instellen van WcPay niet voltooid is, kunnen gebruikers het nu voltooien vanuit de app. Kleinere updates bevatten een fix voor het volgen van het land wanneer het IPP onboarden niet voltooid is en een uitlegscherm voordat een Payments-taak geopend wordt.
+15.6:
+Hier is onze nieuwste update! Verkopers in verschillende locaties kunnen genieten van het gemak van het instellen van geautomatiseerde belastingtariefen. We hebben ook een probleem verholpen waarbij inloggen niet mogelijk was wanneer sites een aangepaste directory gebruikten voor WordPress-installatie. Daarbij hebben we het aanmaken van producten een boost gegeven met AI-mogelijkheden voor WPCOM en zelfgehoste winkels met de Jetpack AI-plugin. Geniet van soepelere handelingen en verbeterde productiviteit met deze nieuwe verbeteringen. Veel verkoopplezier!
 </nl-NL>
 <pt-BR>
-15.4:
-Agora comerciantes podem selecionar o valor do imposto ao criar um pedido, além de adicionar durante a edição do produto arquivos de todos os tipos compatíveis para download. Aprimoramos o pagamento presencial. Se os usuários não terminaram de configurar o WcPay, agora podem fazer isso pelo aplicativo. Atualizações mais simples incluem uma correção no rastreamento do país quando a integração do pagamento presencial não foi concluída e uma tela explicativa antes de abrir a tarefa Pagamentos.
+15.6:
+Temos o prazer de anunciar a atualização mais recente! Agora, comerciantes que vendem em locais diferentes aproveitam configurações automáticas de impostos. Também corrigimos um problema que impedia o login quando sites usavam um diretório personalizado para instalação do WordPress. Além disso, turbinamos a criação de produtos com recursos de IA para WPCOM e lojas auto-hospedadas que usam o plugin de IA do Jetpack. Aproveite operações simplificadas e maior produtividade com essas novas melhorias. Boas vendas!
 </pt-BR>
 <ru-RU>
-15.4:
-Продавцы могут теперь выбирать налоговую ставку при создании заказа и добавлять загружаемые файлы любых поддерживаемых типов при редактировании товаров. Очные платежи усовершенствованы: если настройка WcPay не завершена, пользователь может завершить её в приложении. Второстепенные обновления включают исправление отслеживания страны при незавершённой регистрации IPP, а также экран с пояснениями перед открытием платёжного задания.
+15.6:
+Мы рады представить вам очередное обновление. Отныне продавцы, торгующие в нескольких регионах, могут воспользоваться удобной функцией автоматической настройки налоговых ставок. Кроме того, была исправлена ошибка, из-за которой невозможно было выполнить вход, если сайт использовал собственную директорию для установки WordPress. А ещё мы значительно расширили возможности создания товаров для WPCOM и автономных магазинов с помощью искусственного интеллекта, подключив Jetpack AI plugin. Благодаря новым улучшениям вам будет проще и приятнее работать, а производительность значительно возрастёт. Надеемся, что вам понравится! Удачных продаж!
 </ru-RU>
 <sv-SE>
-15.4:
-Handlare kan nu välja en momssats vid beställningsskapande och lägga till alla typer av nedladdningsbara filer som stöds under produktredigering. Vi har förbättrat personliga betalningar: Om WcPay-konfigurationen inte är klar kan användare nu slutföra den från appen. Mindre uppdateringar inkluderar en korrigering för att spåra land när IPP-onboarding inte har slutförts och en förklaringsskärm som visas innan uppgiften Betalningar öppnas.
+15.6:
+Vi är glada att kunna presentera vår senaste uppdatering. Nu kan handlare som säljer på olika platser använda sig av bekväma inställningar för automatiska momssatser. Vi har också åtgärdat ett problem som förhindrade inloggning när webbplatser använde en anpassad katalog för WordPress-installation. Dessutom har vi förbättrat produktskapandet med AI-funktioner för WPCOM och butiker som drivs på egen server med hjälp av Jetpacks AI-tillägg. Dessa nya förbättringar ger smidigare hantering och förbättrad produktivitet. Lycka till med försäljningen.
 </sv-SE>
 <tr-TR>
-15.4:
-Satıcılar artık sipariş oluştururken bir vergi oranı seçebilir ve ürün düzenleme sırasında desteklenen tüm dosya türlerinden indirilebilir dosyalar ekleyebilirler. Şahsen Ödemeleri iyileştirdik. WcPay kurulumu tamamlanmadıysa, kullanıcılar artık bunu uygulamadan tamamlayabilirler. Ufak güncellemeler arasında IPP kurulumu tamamlanmadığında ülkeyi takip etmek için bir düzeltme ve Ödemeler görevini açmadan önce bir açıklama ekranı var.
+15.6:
+En yeni güncellemelerimizi duyurmaktan büyük heyecan duyuyoruz! Artık farklı lokasyonlarda satış yapan satıcılar, otomatik vergi oranı ayarlarının rahatlığından yararlanabilirler. Siteler WordPress kurulumu için özel bir dizin kullandığında oturum açmayı engelleyen bir sorunu da giderdik. Ayrıca, Jetpack Yapay Zeka eklentisini kullanan WPCOM ve kullanıcı tarafından barındırılan mağazalar için yapay zeka özellikleriyle ürün oluşturmayı güçlendirdik. Bu yeni iyileştirmelerle daha sorunsuz işlemlerin ve gelişmiş üretkenliğin keyfini çıkarın. İyi satışlar!
 </tr-TR>
 <zh-CN>
-15.4：
-商家现在可以在创建订单时选择税率，并在产品编辑过程中添加所有受支持文件类型的可下载文件。 我们改进了现场付款功能；用户现在可以在应用程序中完成未完成的 WcPay 设置。此外，我们还进行了一些细微更新，包括修复了在 IPP 登录未完成时跟踪国家/地区的问题，以及新增了在打开付款任务之前出现的说明界面。
+15.6：
+很高兴发布我们的最新更新！ 现在，在不同地点进行销售的商家可以享受自动税率设置功能所带来的便利。 我们还修复了站点使用自定义 WordPress 安装目录时无法登录的问题。 此外，我们还借助 AI 功能，增强了 WPCOM 和使用 Jetpack AI 插件的自托管商店的产品创建能力。 这些改进能提高您的操作顺畅性和效率。 祝您销售顺利！
 </zh-CN>
 <zh-TW>
-15.4:
-商家現在可以於建立訂單時選取稅率，並於編輯商品時，新增所有支援檔案類型的可下載檔案。 我們已改善親自收款功能，若 WcPay 設定尚未完成，使用者現在可以從應用程式中完成設定。部分更新包括：修正 IPP 申請尚未完成時的國家/地區追蹤功能，以及開啟付款工作時的說明視窗。
+15.6：
+很高興能宣布最新更新版本資訊！ 現在起，不同國家/地區的商家都能享受自動稅率設定帶來的便利。 我們也修復了於 WordPress 安裝中使用自訂目錄時，發生的網站登入失敗問題。 此外，我們也運用 Jetpack AI 外掛程式新增了 AI 功能，可用於建立 WPCOM 和自助託管商店中的商品。 享受更順暢的營運流程，並利用這些新功能提升生產力。 祝銷售愉快！
 </zh-TW>
 <en-US>
-15.4:
-Merchants can now select a tax rate when creating an order and add downloadable files from all supported file types during product editing. We've improved In-Person Payments; if WcPay setup isn't finished, users can now complete it from the app. Minor updates include a fix for tracking the country when IPP onboarding isn't finished and an explanation screen before opening the Payments task.
+15.6:
+We're thrilled to announce our latest update! Now, merchants selling in different locations can enjoy the convenience of automatic tax rate settings. We've also fixed an issue that was preventing login when sites used a custom directory for WordPress installation. Plus, we've supercharged product creation with AI capabilities for WPCOM and self-hosted stores using the Jetpack AI plugin. Enjoy smoother operations and enhanced productivity with these new improvements. Happy selling!
 </en-US>

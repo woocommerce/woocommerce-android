@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-20 20:54:04+0000
+Translation-Revision-Date: 2023-10-03 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="ai_product_name_copy_error">خطأ في أثناء نسخ اسم المنتج إلى الحافظة.</string>
+    <string name="ai_product_name_copy_success">تم نسخ اسم المنتج إلى الحافظة.</string>
+    <string name="ai_product_name_copy_label">تم إنشاء اسم المنتج بواسطة الذكاء الاصطناعي</string>
+    <string name="ai_product_description_copy_error">خطأ في أثناء نسخ وصف المنتج إلى الحافظة.</string>
+    <string name="ai_product_description_copy_success">تم نسخ وصف المنتج إلى الحافظة.</string>
+    <string name="product_creation_ai_generation_failure_message">فشل إنشاء المنتج. يرجى المحاولة مجددًا</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">مسح العنوان وإيقاف استخدام هذا المعدل</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">تعيين معدل ضريبة جديد لهذا الطلب</string>
+    <string name="tax_rate_selector_auto_rate_details_title">إضافة معدل الضريبة تلقائيًا</string>
+    <string name="ai_product_name_sheet_error_message">كانت هناك مشكلة في أثناء إنشاء اسم المنتج. ترجى المحاولة مجددًا.</string>
+    <string name="ai_product_name_sheet_regenerate_button">إعادة الإنشاء</string>
+    <string name="ai_product_name_sheet_generate_button">كتابة ذلك من أجلي</string>
+    <string name="ai_product_name_sheet_input_description">أخبرنا بمضمون منتجك وما الذي يجعله فريدًا!</string>
+    <string name="ai_product_name_sheet_subtitle">السماح للذكاء الاصطناعي بإنشاء عناوين جذابة من أجلك</string>
+    <string name="ai_product_name_sheet_title">✨ اسم المنتج</string>
+    <string name="empty_review_filtered_list_message">حاول تعطيل عامل التصفية غير المقروء لرؤية كل مراجعات منتجك</string>
+    <string name="empty_review_filtered_list_title">لا توجد مراجعات غير مقروءة للمنتج</string>
+    <string name="product_creation_ai_tone_selected_content_desc">تم تحديد النغمة</string>
+    <string name="product_creation_ai_tone_convincing">الإقناع</string>
+    <string name="product_creation_ai_tone_flowery">زهري</string>
+    <string name="product_creation_ai_tone_formal">رسمي</string>
+    <string name="product_creation_ai_tone_casual">عادي</string>
+    <string name="product_creation_ai_tone_description">قم بتعيين النغمة والصوت لتشكيل العرض التقديمي لمنتجك الذي يتوافق مع علامتك التجارية.</string>
+    <string name="product_creation_ai_tone_title">النغمة والصوت</string>
+    <string name="product_creation_ai_preview_details_section">تفاصيل</string>
+    <string name="product_creation_ai_preview_description_section">وصف المنتج</string>
+    <string name="product_creation_ai_preview_name_section">اسم المنتج</string>
+    <string name="product_creation_ai_preview_subtitle">لا تقلق. يمكنك دومًا تغيير التفاصيل أدناه لاحقًا.</string>
+    <string name="product_creation_ai_preview_title">معاينة</string>
+    <string name="product_creation_ai_about_product_continue_button">إنشاء تفاصيل المنتجات</string>
+    <string name="product_creation_ai_about_product_set_tone">تعيين النغمة والصوت</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">أضف الميزات الأساسية أو المزايا أو التفاصيل لمساعدة منتجك على الظهور على الإنترنت.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">على سبيل المثال، قماش ناعم وخياطة متينة وتصميم فريد</string>
+    <string name="product_creation_ai_about_product_subtitle">أبرز ما يجعل منتجك فريدًا، واسمح للذكاء الاصطناعي بنثر سحره.</string>
+    <string name="product_creation_ai_about_product_title">نبذة عن منتجك</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">اقتراح اسم</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">على سبيل المثال: قماش ناعم وخياطة متينة وتصميم فريد.</string>
+    <string name="ai_product_creation_add_name_keywords_label">اسم المنتج</string>
+    <string name="ai_product_creation_add_name_subtitle">أو وسِّع نطاق اختياراتك عن طريق النقر للحصول على مزيد من اقتراحات الأسماء.</string>
+    <string name="ai_product_creation_add_name_title">إضافة اسم منتجك</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">مدعوم من الذكاء الاصطناعي. &lt;a href=\'guidelines\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">إضافة منتج والتفاصيل يدويًا</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">إضافة يدويًا</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">إنشاء التفاصيل بسرعة من أجلك</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">إنشاء منتج باستخدام الذكاء الاصطناعي</string>
+    <string name="product_creation_ai_entry_sheet_header">إضافة منتج</string>
+    <string name="product_review_list_unread_reviews_filter">المراجعات غير المقروءة فقط</string>
+    <string name="order_creation_edit_tax_rate">تحرير إعداد معدل الضرائب</string>
     <string name="tax_rate_selector_auto_rate_subtitle">لن يؤثر ذلك في الطلبات على الإنترنت</string>
     <string name="tax_rate_selector_auto_rate_label">إضافة هذا المعدل إلى كل الطلبات التي تم إنشاؤها</string>
     <string name="tax_rate_selector_empty_list_button_alt">تحرير معدلات الضرائب</string>
@@ -257,7 +305,6 @@ Language: ar
     <string name="ai_product_description_note_dialog_heading">بداية رائعة!</string>
     <string name="ai_product_description_feedback">هل الوصف المنشأ\nمفيد؟</string>
     <string name="ai_product_description_regenerate_button">إعادة الإنشاء</string>
-    <string name="ai_product_description_survey">هل الوصف المنشأ مفيد؟</string>
     <string name="ai_product_description_hint">سلّط الضوء على ميزات منتجك الفريدة وجمهورك باستخدام الكلمات المفتاحية للحصول على وصف مخصص.</string>
     <string name="ai_product_description_example">مثال: أصيص، صبار، نبات، تزييني، سهل العناية</string>
     <string name="ai_product_description_product_name">إدخال اسم منتجك</string>

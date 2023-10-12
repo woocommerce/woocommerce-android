@@ -106,7 +106,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -158,6 +157,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText,
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
+    private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -255,6 +255,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
                         handleCouponEditResult()
+                        updateTaxRateSelectorButtonState()
                     }
                 }
             }
@@ -285,7 +286,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val isSetNewTaxRateButtonVisible: Boolean = when (it) {
                 BillingAddress, ShippingAddress -> true
                 else -> false
-            } && FeatureFlag.ORDER_CREATION_TAX_RATE_SELECTOR.isEnabled()
+            } && isTaxRateSelectorEnabled() && !_orderDraft.value.isOrderPaid
             viewState = viewState.copy(
                 taxBasedOnSettingLabel = it?.label ?: "",
                 taxRateSelectorButtonState = viewState.taxRateSelectorButtonState.copy(
@@ -730,7 +731,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
-    fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
+    fun onCustomerEdited(customer: Order.Customer) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
             ORDER_CUSTOMER_ADD,
@@ -741,15 +742,14 @@ class OrderCreateEditViewModel @Inject constructor(
         )
 
         _orderDraft.update { order ->
-            order.copy(
-                customerId = customerId,
-                billingAddress = billingAddress,
-                shippingAddress = shippingAddress.takeIf { it != EMPTY } ?: billingAddress
+            val adjustedCustomer = customer.copy(
+                shippingAddress = customer.shippingAddress.takeIf { it != EMPTY } ?: customer.billingAddress
             )
+            order.copy(customer = adjustedCustomer)
         }
     }
 
-    fun onCustomerAddressDeleted() {
+    fun onCustomerDeleted() {
         tracker.track(
             ORDER_CUSTOMER_DELETE,
             mapOf(KEY_FLOW to flow)
@@ -760,11 +760,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun clearCustomerAddresses() {
         _orderDraft.update { order ->
-            order.copy(
-                customerId = null,
-                billingAddress = EMPTY,
-                shippingAddress = EMPTY
-            )
+            order.copy(customer = null)
         }
     }
 
@@ -1171,8 +1167,18 @@ class OrderCreateEditViewModel @Inject constructor(
         withContext(Main) {
             _orderDraft.update { order ->
                 when (taxBasedOnSetting) {
-                    BillingAddress -> order.copy(billingAddress = updatedAddress)
-                    ShippingAddress -> order.copy(shippingAddress = updatedAddress)
+                    BillingAddress -> order.copy(
+                        customer = order.customer?.copy(billingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = updatedAddress,
+                            shippingAddress = EMPTY
+                        )
+                    )
+                    ShippingAddress -> order.copy(
+                        customer = order.customer?.copy(shippingAddress = updatedAddress) ?: Order.Customer(
+                            billingAddress = EMPTY,
+                            shippingAddress = updatedAddress
+                        )
+                    )
                     else -> order
                 }
             }

@@ -315,6 +315,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
+            android:name="isAIContent"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
             android:name="source"
             android:defaultValue="PRODUCT_TAB"
             app:argType="com.woocommerce.android.ui.products.AddProductSource" />
@@ -693,7 +697,12 @@
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
-        android:label="AIProductNameBottomSheetFragment" />
-
+        android:label="AIProductNameBottomSheetFragment" >
+        <argument
+            android:name="initialName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 
 </navigation>

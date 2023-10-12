@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 09:54:04+0000
+Translation-Revision-Date: 2023-10-05 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="ai_product_name_copy_error">클립보드에 상품 이름을 복사하는 중 오류가 발생했습니다.</string>
+    <string name="ai_product_name_copy_success">상품 이름이 클립보드에 복사되었습니다.</string>
+    <string name="ai_product_name_copy_label">AI로 생성된 상품 이름</string>
+    <string name="ai_product_description_copy_error">클립보드에 상품 설명을 복사하는 중 오류가 발생했습니다.</string>
+    <string name="ai_product_description_copy_success">상품 설명이 클립보드에 복사되었습니다.</string>
+    <string name="product_creation_ai_generation_failure_message">상품이 생성되지 않았습니다. 다시 시도하세요.</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">주소 정리 및 이 요율 사용 중지</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">이 주문에 대한 새 세율 설정</string>
+    <string name="tax_rate_selector_auto_rate_details_title">자동으로 세율 추가하기</string>
+    <string name="ai_product_name_sheet_error_message">상품 이름 생성 중 문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="ai_product_name_sheet_regenerate_button">재생성</string>
+    <string name="ai_product_name_sheet_generate_button">작성 의뢰</string>
+    <string name="ai_product_name_sheet_input_description">상품이 무엇이고 어떤 점이 독특한지 말씀해 주세요!</string>
+    <string name="ai_product_name_sheet_subtitle">AI에게 매력적인 제목 생성 맡기기</string>
+    <string name="ai_product_name_sheet_title">✨ 상품 이름</string>
+    <string name="empty_review_filtered_list_message">모든 상품 리뷰를 표시하려면 읽지 않음 필터를 비활성화해 보세요.</string>
+    <string name="empty_review_filtered_list_title">읽지 않은 상품 리뷰 없음</string>
+    <string name="product_creation_ai_tone_selected_content_desc">선택된 어조</string>
+    <string name="product_creation_ai_tone_convincing">설득력</string>
+    <string name="product_creation_ai_tone_flowery">화려</string>
+    <string name="product_creation_ai_tone_formal">정중</string>
+    <string name="product_creation_ai_tone_casual">평상시</string>
+    <string name="product_creation_ai_tone_description">브랜드에 어울리는 상품 프레젠테이션을 위해 어조와 목소리를 설정하세요.</string>
+    <string name="product_creation_ai_tone_title">어조 및 목소리</string>
+    <string name="product_creation_ai_preview_details_section">상세 정보</string>
+    <string name="product_creation_ai_preview_description_section">상품 설명</string>
+    <string name="product_creation_ai_preview_name_section">상품 이름</string>
+    <string name="product_creation_ai_preview_subtitle">걱정하지 마세요. 아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
+    <string name="product_creation_ai_preview_title">미리보기</string>
+    <string name="product_creation_ai_about_product_continue_button">상품 상세 정보 생성</string>
+    <string name="product_creation_ai_about_product_set_tone">어조 및 목소리 설정</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">온라인에서 상품을 찾는 데 도움이 되도록 주요 기능, 이점 또는 상세 정보를 추가하세요.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">예: 부드러운 원단, 튼튼한 바느질, 독특한 디자인</string>
+    <string name="product_creation_ai_about_product_subtitle">어떤 부분이 상품을 독특하게 만드는지 강조하고 AI가 만들어 내는 놀라운 결과물을 확인하세요.</string>
+    <string name="product_creation_ai_about_product_title">상품 소개</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">이름 제안</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">예: 부드러운 원단, 튼튼한 바느질, 독특한 디자인</string>
+    <string name="ai_product_creation_add_name_keywords_label">상품 이름</string>
+    <string name="ai_product_creation_add_name_subtitle">선택의 폭을 넓히려면 눌러서 더 많은 이름 제안을 볼 수 있습니다.</string>
+    <string name="ai_product_creation_add_name_title">상품 이름 추가</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">AI를 활용했습니다. &lt;a href=\'guidelines\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">수동으로 상품 및 상세 정보 추가</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">수동으로 추가</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">자동으로 빠르게 상세 정보 생성</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">AI로 상품 생성</string>
+    <string name="product_creation_ai_entry_sheet_header">상품 추가</string>
+    <string name="product_review_list_unread_reviews_filter">읽지 않은 리뷰만</string>
+    <string name="order_creation_edit_tax_rate">세율 설정 편집</string>
     <string name="tax_rate_selector_auto_rate_subtitle">온라인 주문은 영향을 받지 않음</string>
     <string name="tax_rate_selector_auto_rate_label">생성한 모든 주문에 이 요율 추가</string>
     <string name="tax_rate_selector_empty_list_button_alt">세율 편집</string>
@@ -257,7 +305,6 @@ Language: ko_KR
     <string name="ai_product_description_note_dialog_heading">시작이 좋습니다!</string>
     <string name="ai_product_description_feedback">생성한\n설명이 유용한가요?</string>
     <string name="ai_product_description_regenerate_button">재생성</string>
-    <string name="ai_product_description_survey">생성한 설명이 유용한가요?</string>
     <string name="ai_product_description_hint">맞춤형 설명에 대한 키워드로 상품의 고유한 기능과 잠재 고객을 강조 표시하세요.</string>
     <string name="ai_product_description_example">예: 화분, 선인장, 식물, 장식용, 손쉬운 관리</string>
     <string name="ai_product_description_product_name">상품 이름 입력</string>

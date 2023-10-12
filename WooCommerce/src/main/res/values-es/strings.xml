@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 11:54:03+0000
+Translation-Revision-Date: 2023-10-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Se ha producido un error al copiar el nombre del producto en el portapapeles.</string>
+    <string name="ai_product_name_copy_success">Nombre del producto copiado en el portapapeles.</string>
+    <string name="ai_product_name_copy_label">Nombre del producto generado por la IA</string>
+    <string name="ai_product_description_copy_error">Se ha producido un error al copiar la descripción del producto en el portapapeles.</string>
+    <string name="ai_product_description_copy_success">Descripción del producto copiada en el portapapeles.</string>
+    <string name="product_creation_ai_generation_failure_message">La generación del producto ha fallado. Inténtalo de nuevo</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Borrar dirección y dejar de utilizar esta tasa</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Establecer una nueva tasa de impuesto para este pedido</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Añadir automáticamente la tasa de impuesto</string>
+    <string name="ai_product_name_sheet_error_message">Se ha producido un problema al generar el nombre del producto. Inténtalo de nuevo.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Regenerar</string>
+    <string name="ai_product_name_sheet_generate_button">Escríbelo por mí</string>
+    <string name="ai_product_name_sheet_input_description">Cuéntanos en qué consiste tu producto y qué lo hace único.</string>
+    <string name="ai_product_name_sheet_subtitle">Deja que la IA genere títulos cautivadores por ti</string>
+    <string name="ai_product_name_sheet_title">✨ Nombre del producto</string>
+    <string name="empty_review_filtered_list_message">Prueba a desactivar el filtro de no leídos para ver todas las reseñas de tus productos</string>
+    <string name="empty_review_filtered_list_title">No hay reseñas de productos no leídas</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Tono seleccionado</string>
+    <string name="product_creation_ai_tone_convincing">Convincente</string>
+    <string name="product_creation_ai_tone_flowery">Floral</string>
+    <string name="product_creation_ai_tone_formal">Formal</string>
+    <string name="product_creation_ai_tone_casual">Casual</string>
+    <string name="product_creation_ai_tone_description">Establece el tono y la voz para dar forma a una presentación de tu producto que se ajuste a tu marca.</string>
+    <string name="product_creation_ai_tone_title">Tono y voz</string>
+    <string name="product_creation_ai_preview_details_section">Detalles</string>
+    <string name="product_creation_ai_preview_description_section">Descripción del producto</string>
+    <string name="product_creation_ai_preview_name_section">Nombre del producto</string>
+    <string name="product_creation_ai_preview_subtitle">No te preocupes. Siempre puedes cambiar los detalles de abajo más adelante.</string>
+    <string name="product_creation_ai_preview_title">Vista previa</string>
+    <string name="product_creation_ai_about_product_continue_button">Crear detalles del producto</string>
+    <string name="product_creation_ai_about_product_set_tone">Establecer tono y voz</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Añade características, ventajas o detalles clave para ayudar a que tu producto se encuentre en Internet.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Por ejemplo, tejido suave, costuras duraderas, diseño único</string>
+    <string name="product_creation_ai_about_product_subtitle">Destaca lo que hace que tu producto sea único y deja que la IA haga la magia.</string>
+    <string name="product_creation_ai_about_product_title">Acerca de tu producto</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Sugiere un nombre</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Por ejemplo: tejido suave, costuras duraderas, diseño único.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Nombre del producto</string>
+    <string name="ai_product_creation_add_name_subtitle">O amplía tus opciones pulsando para obtener más sugerencias de nombres.</string>
+    <string name="ai_product_creation_add_name_title">Añada el nombre de tu producto</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Con tecnología de IA. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Más información&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Añadir un producto y los detalles manualmente</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Añadir manualmente</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Generar rápidamente detalles para ti</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Crea un producto con IA</string>
+    <string name="product_creation_ai_entry_sheet_header">Añadir un producto</string>
+    <string name="product_review_list_unread_reviews_filter">Solo reseñas no leídas</string>
+    <string name="order_creation_edit_tax_rate">Editar la configuración de la tasa de impuesto</string>
     <string name="tax_rate_selector_auto_rate_subtitle">Esto no afectará a los pedidos en línea</string>
     <string name="tax_rate_selector_auto_rate_label">Añadir este tipo a todos los pedidos creados</string>
     <string name="tax_rate_selector_empty_list_button_alt">Editar tipos impositivos</string>
@@ -257,7 +305,6 @@ Language: es
     <string name="ai_product_description_note_dialog_heading">¡Gran comienzo!</string>
     <string name="ai_product_description_feedback">¿Es útil\nla descripción generada?</string>
     <string name="ai_product_description_regenerate_button">Regenerar</string>
-    <string name="ai_product_description_survey">¿Es útil la descripción generada?</string>
     <string name="ai_product_description_hint">Destaca las funciones únicas y el público de tu producto mediante palabras clave, así conseguirás una descripción personalizada.</string>
     <string name="ai_product_description_example">Ejemplo: en maceta, cactus, planta, decorativa, de fácil cuidado</string>
     <string name="ai_product_description_product_name">Introduce el nombre de tu producto</string>

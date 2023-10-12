@@ -42,7 +42,7 @@ class CustomerListViewModelMapper @Inject constructor(
         postcode = address.postcode,
         phone = address.phone,
         country = country,
-        state = AmbiguousLocation.Defined(state),
+        state = if (state == Location.EMPTY) AmbiguousLocation.EMPTY else AmbiguousLocation.Defined(state),
         city = address.city
     )
 

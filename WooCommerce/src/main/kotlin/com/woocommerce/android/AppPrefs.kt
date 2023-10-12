@@ -118,6 +118,7 @@ object AppPrefs {
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
+        AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
     }
 
     /**
@@ -1045,6 +1046,16 @@ object AppPrefs {
         set(value) = setString(
             key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
             value = value.slug
+        )
+
+    var aiProductCreationIsFirstAttempt: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+            default = true
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+            value = value
         )
 
     fun incrementAIDescriptionTooltipShownNumber() {
