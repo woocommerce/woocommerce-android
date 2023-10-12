@@ -174,7 +174,11 @@ fun BlazeCampaignItem(
                     .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
                 placeHolderDrawableId = R.drawable.ic_product,
             )
-            Column {
+            Column(
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .weight(1f),
+            ) {
                 WCTag(
                     text = stringResource(id = campaign.status.statusDisplayText),
                     textColor = colorResource(id = campaign.status.textColor),
@@ -182,14 +186,48 @@ fun BlazeCampaignItem(
                 )
                 Text(
                     modifier = Modifier
-                        .padding(start = dimensionResource(id = R.dimen.major_100))
-                        .weight(1f),
+                        .padding(top = dimensionResource(id = R.dimen.minor_50)),
                     text = campaign.product.name,
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
                 )
+                Row {
+                    CampaignStat(
+                        statName = stringResource(id = R.string.blaze_campaign_status_impressions),
+                        statValue = campaign.impressions
+                    )
+                    CampaignStat(
+                        statName = stringResource(id = R.string.blaze_campaign_status_clicks),
+                        statValue = campaign.clicks
+                    )
+                    CampaignStat(
+                        statName = stringResource(id = R.string.blaze_campaign_status_budget),
+                        statValue = campaign.budget
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun CampaignStat(statName: String, statValue: Int) {
+    Column(
+        modifier = Modifier
+            .padding(end = dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = statValue.toString(),
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            modifier = Modifier
+                .padding(top = dimensionResource(id = R.dimen.minor_50)),
+            text = statName,
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface_medium_selector)
+        )
     }
 }
 
