@@ -85,6 +85,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
                 ProductConfigurationScreen(
                     productRules = state.productRules,
                     productConfiguration = state.productConfiguration,
+                    productsInfo = state.productsInfo,
                     onUpdateChildrenConfiguration = viewModel::onUpdateChildrenConfiguration,
                     onSaveConfigurationClick = {},
                     modifier = Modifier.padding(padding)
@@ -98,6 +99,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
 fun ProductConfigurationScreen(
     productRules: ProductRules,
     productConfiguration: ProductConfiguration,
+    productsInfo: Map<Long, ProductInfo>,
     onUpdateChildrenConfiguration: (Long, String, String) -> Unit,
     onSaveConfigurationClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -108,7 +110,14 @@ fun ProductConfigurationScreen(
             onSaveConfigurationClick()
             productConfiguration.childrenConfiguration?.entries?.forEach { childMapEntry ->
 
-                val item = childMapEntry.key
+                val item = productsInfo.getOrDefault(
+                    childMapEntry.key,
+                    ProductInfo(
+                        childMapEntry.key,
+                        stringResource(id = R.string.default_product_title, childMapEntry.key),
+                        null
+                    )
+                )
 
                 val hasQuantityRule = childMapEntry.value.containsKey(QuantityRule.KEY)
                 val hasOptionalRule = childMapEntry.value.containsKey(OptionalRule.KEY)
@@ -116,38 +125,38 @@ fun ProductConfigurationScreen(
 
                 if (hasQuantityAndOptionalRules) {
                     OptionalQuantityProductItem(
-                        "item: $item",
-                        imageUrl = null,
+                        title = item.title,
+                        imageUrl = item.imageUrl,
                         info = null,
                         quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
                         onQuantityChanged = { value ->
-                            onUpdateChildrenConfiguration(item, QuantityRule.KEY, value.toString())
+                            onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                         },
                         isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                         onSwitchChanged = { value ->
-                            onUpdateChildrenConfiguration(item, OptionalRule.KEY, value.toString())
+                            onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                         }
                     )
                 } else {
                     if (hasQuantityRule) {
                         QuantityProductItem(
-                            "item: $item",
-                            imageUrl = null,
+                            title = item.title,
+                            imageUrl = item.imageUrl,
                             info = null,
                             quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
                             onQuantityChanged = { value ->
-                                onUpdateChildrenConfiguration(item, QuantityRule.KEY, value.toString())
+                                onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                             }
                         )
                     }
                     if (hasOptionalRule) {
                         OptionalProductItem(
-                            title = "item: $item",
-                            imageUrl = null,
+                            title = item.title,
+                            imageUrl = item.imageUrl,
                             info = null,
                             isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                             onSwitchChanged = { value ->
-                                onUpdateChildrenConfiguration(item, OptionalRule.KEY, value.toString())
+                                onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                             }
                         )
                     }
@@ -205,7 +214,7 @@ fun QuantityProductItem(
         title = title,
         imageUrl = imageUrl,
         info = info,
-        modifier = modifier.padding(vertical = 16.dp, horizontal = 8.dp)
+        modifier = modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
     ) {
         Stepper(
             value = quantity,
@@ -377,11 +386,11 @@ fun OrderProductItem(
             modifier = Modifier
                 .size(dimensionResource(R.dimen.major_300))
                 .clip(RoundedCornerShape(3.dp))
-                .padding(end = 8.dp)
         )
 
         Column(
             modifier = Modifier
+                .padding(start = 8.dp)
                 .wrapContentHeight()
                 .weight(1f)
         ) {
