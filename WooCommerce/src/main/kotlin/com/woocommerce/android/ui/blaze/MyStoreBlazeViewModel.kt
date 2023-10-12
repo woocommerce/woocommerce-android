@@ -23,7 +23,7 @@ class MyStoreBlazeViewModel @Inject constructor(
                 hasActiveCampaigns = false,
                 product = BlazeProduct(
                     name = "Product name",
-                    imgUrl = "https://proxied.site/wp-content/uploads/2023/08/product-1693384773-2061315749.png",
+                    imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                 )
             )
         )
