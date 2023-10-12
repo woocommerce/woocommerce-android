@@ -13,22 +13,17 @@ class GetChildrenProductInfo @Inject constructor(
     private val getBundledProducts: GetBundledProducts
 ) {
     operator fun invoke(productId: Long): Flow<Map<Long, ProductInfo>> {
-        val product = productDetailRepository.getProduct(productId) ?: return flowOf(emptyMap())
-        return when (product.productType) {
-            ProductType.BUNDLE -> {
-                getBundledProducts(productId).map { list ->
-                    val result = mutableMapOf<Long, ProductInfo>()
-                    list.onEach { bundledProduct ->
-                        result[bundledProduct.id] = ProductInfo(
-                            id = bundledProduct.id,
-                            title = bundledProduct.title,
-                            imageUrl = bundledProduct.imageUrl
-                        )
-                    }
-                    result
-                }
-            }
-            else -> flowOf(emptyMap())
-        }
+        return productDetailRepository.getProduct(productId)
+            ?.takeIf { it.productType == ProductType.BUNDLE }
+            ?.let { getBundledProducts(productId) }
+            ?.map { products ->
+                products.map { bundledProduct ->
+                    ProductInfo(
+                        id = bundledProduct.id,
+                        title = bundledProduct.title,
+                        imageUrl = bundledProduct.imageUrl
+                    )
+                }.associateBy { it.id }
+            } ?: flowOf(emptyMap())
     }
 }
