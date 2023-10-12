@@ -75,10 +75,9 @@ class OptionalRule : ItemRules {
 
 @Parcelize
 class ProductConfiguration(
-    val configuration: Map<String, String?>,
-    val childrenConfiguration: Map<Long, Map<String, String?>>? = null
+    val configuration: MutableMap<String, String?>,
+    val childrenConfiguration: MutableMap<Long, MutableMap<String, String?>>? = null
 ) : Parcelable {
-
     companion object {
         fun getConfiguration(
             rules: ProductRules,
@@ -86,8 +85,8 @@ class ProductConfiguration(
         ): ProductConfiguration {
             val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }.toMutableMap()
             val childrenConfiguration = rules.childrenRules?.mapValues { childrenRules ->
-                childrenRules.value.mapValues { it.value.getInitialValue() }
-            }
+                childrenRules.value.mapValues { it.value.getInitialValue() }.toMutableMap()
+            }?.toMutableMap()
             if (children != null && rules.itemRules.containsKey(QuantityRule.KEY)) {
                 val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
                 itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
@@ -101,5 +100,9 @@ class ProductConfiguration(
             it.value.any { entry -> entry.value == null }
         } ?: false
         return itemNeedsConfiguration || childrenNeedsConfiguration
+    }
+
+    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String) {
+        childrenConfiguration?.get(itemId)?.set(ruleKey, value)
     }
 }
