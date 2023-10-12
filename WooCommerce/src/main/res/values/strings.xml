@@ -3709,5 +3709,5 @@
 
     <string name="extension_configure_button">Configure</string>
     <string name="default_product_title">Product %s</string>
-
+    <string name="product_configuration_title">Configuration</string>
 </resources>
