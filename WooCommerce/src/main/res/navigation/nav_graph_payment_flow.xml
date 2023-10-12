@@ -134,6 +134,9 @@
             android:id="@+id/action_cardReaderHubFragment_to_tapToPaySummaryFragment"
             app:destination="@id/tapToPaySummaryFragment" />
         <action
+            android:id="@+id/action_cardReaderHubFragment_to_tapToPayAboutFragment"
+            app:destination="@id/tapToPayAboutFragment" />
+        <action
             android:id="@+id/action_cardReaderHubFragment_to_simplePayments"
             app:destination="@id/simplePaymentsDialog"
             app:enterAnim="@anim/activity_fade_in"
@@ -341,6 +344,16 @@
         <argument
             android:name="testTapToPayFlow"
             app:argType="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment$TestTapToPayFlow"
+            app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tapToPayAboutFragment"
+        android:name="com.woocommerce.android.ui.payments.taptopay.about.TapToPayAboutFragment"
+        android:label="TapToPayAboutFragment">
+        <argument
+            android:name="cardReaderConfig"
+            app:argType="com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry"
             app:nullable="false" />
     </fragment>
 
