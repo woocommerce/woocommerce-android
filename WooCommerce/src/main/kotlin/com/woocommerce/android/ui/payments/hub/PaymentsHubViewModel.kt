@@ -46,9 +46,9 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Lea
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
+import com.woocommerce.android.ui.payments.taptopay.TTPCaUkFeatureFlagEnabled
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -80,6 +80,7 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
+    private val tapToPayTTPCaUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -242,13 +243,13 @@ class PaymentsHubViewModel @Inject constructor(
                     iconBadge = R.drawable.ic_badge_new,
                 )
             )
-            if (FeatureFlag.TTP_CA_UK.isEnabled()) {
+            if (tapToPayTTPCaUkFeatureFlagEnabled()) {
                 add(
                     NonToggleableListItem(
                         icon = R.drawable.ic_tintable_info_outline_24dp,
                         label = UiStringRes(R.string.card_reader_about_tap_to_pay),
                         index = 7,
-                        onClick = { },
+                        onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
                     )
                 )
             }
@@ -398,6 +399,11 @@ class PaymentsHubViewModel @Inject constructor(
             FeatureFeedbackSettings.FeedbackState.GIVEN
         )
         triggerEvent(PaymentsHubEvents.NavigateToTapTooPaySurveyScreen)
+    }
+
+    private fun onAboutTTPClicked(countryConfig: CardReaderConfigForSupportedCountry) {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_ABOUT_TAPPED)
+        triggerEvent(PaymentsHubEvents.NavigateToAboutTapToPay(countryConfig))
     }
 
     private fun onCardReaderManualsClicked(countryConfig: CardReaderConfigForSupportedCountry) {
@@ -571,6 +577,10 @@ class PaymentsHubViewModel @Inject constructor(
 
         data class NavigateToCardReaderOnboardingScreen(val onboardingState: CardReaderOnboardingState) :
             PaymentsHubEvents()
+
+        data class NavigateToAboutTapToPay(
+            val countryConfig: CardReaderConfigForSupportedCountry
+        ) : PaymentsHubEvents()
 
         data class OpenGenericWebView(val url: String) : PaymentsHubEvents()
         data class ShowToastString(val message: String) : PaymentsHubEvents()
