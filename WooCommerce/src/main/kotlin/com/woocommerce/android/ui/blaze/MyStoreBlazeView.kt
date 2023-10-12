@@ -33,8 +33,10 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeProductUi
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeUi
 import com.woocommerce.android.ui.compose.component.ListItemImage
+import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
@@ -172,14 +174,21 @@ fun BlazeCampaignItem(
                     .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
                 placeHolderDrawableId = R.drawable.ic_product,
             )
-            Text(
-                modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
-                    .weight(1f),
-                text = campaign.product.name,
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold
-            )
+            Column {
+                WCTag(
+                    text = stringResource(id = campaign.status.statusDisplayText),
+                    textColor = colorResource(id = campaign.status.textColor),
+                    backgroundColor = colorResource(id = campaign.status.backgroundColor),
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(start = dimensionResource(id = R.dimen.major_100))
+                        .weight(1f),
+                    text = campaign.product.name,
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }
@@ -192,14 +201,21 @@ fun BlazeCampaignItem(
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun MyStoreBlazeViewPreview() {
+    val product = BlazeProductUi(
+        name = "Product name",
+        imgUrl = "",
+    )
     MyStoreBlazeView(
         state = MyStoreBlazeUi(
             isVisible = true,
-            product = BlazeProductUi(
-                name = "Product name",
-                imgUrl = "",
+            product = product,
+            blazeActiveCampaign = BlazeCampaignUi(
+                product = product,
+                status = CampaignStatusUi.Active,
+                impressions = 100,
+                clicks = 10,
+                budget = 1000
             ),
-            blazeActiveCampaign = null,
         ),
         onCreateCampaignClicked = {}
     )
