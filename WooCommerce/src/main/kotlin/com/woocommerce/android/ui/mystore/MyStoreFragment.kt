@@ -47,6 +47,8 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeBanner
 import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
+import com.woocommerce.android.ui.blaze.MyStoreBlazeView
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -103,7 +105,8 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val blazeViewModel: BlazeBannerViewModel by viewModels()
+    private val blazeBannerViewModel: BlazeBannerViewModel by viewModels()
+    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -224,13 +227,14 @@ class MyStoreFragment :
         setupStateObservers()
         setupOnboardingView()
         setUpBlazeBanner()
+        setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
     }
 
     private fun setUpBlazeBanner() {
-        blazeViewModel.setBlazeBannerSource(MY_STORE_BANNER)
-        blazeViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
+        blazeBannerViewModel.setBlazeBannerSource(MY_STORE_BANNER)
+        blazeBannerViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
             if (!isVisible) binding.blazeBannerView.hide()
             else {
                 binding.blazeBannerView.apply {
@@ -238,8 +242,8 @@ class MyStoreFragment :
                     setContent {
                         WooThemeWithBackground {
                             BlazeBanner(
-                                onClose = blazeViewModel::onBlazeBannerDismissed,
-                                onTryBlazeClicked = blazeViewModel::onTryBlazeBannerClicked
+                                onClose = blazeBannerViewModel::onBlazeBannerDismissed,
+                                onTryBlazeClicked = blazeBannerViewModel::onTryBlazeBannerClicked
                             )
                         }
                     }
@@ -247,11 +251,30 @@ class MyStoreFragment :
             }
         }
 
-        blazeViewModel.event.observe(viewLifecycleOwner) { event ->
+        blazeBannerViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
                 is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
                 is ShowDialog -> event.showDialog()
+            }
+        }
+    }
+
+    private fun setUpBlazeCampaignView() {
+        myStoreBlazeViewModel.blazeCampaignState.observe(viewLifecycleOwner) { blazeCampaignState ->
+            if (!blazeCampaignState.isVisible) binding.blazeCampaignView.hide()
+            else {
+                binding.blazeCampaignView.apply {
+                    setContent {
+                        WooThemeWithBackground {
+                            MyStoreBlazeView(
+                                state = blazeCampaignState,
+                                onCreateCampaignClicked = { }
+                            )
+                        }
+                    }
+                    show()
+                }
             }
         }
     }
@@ -509,7 +532,7 @@ class MyStoreFragment :
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-        blazeViewModel.updateBlazeBannerStatus()
+        blazeBannerViewModel.updateBlazeBannerStatus()
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
             usageTracksEventEmitter.interacted()
