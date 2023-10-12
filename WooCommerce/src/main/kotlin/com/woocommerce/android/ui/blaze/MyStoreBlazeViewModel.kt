@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -22,7 +21,10 @@ class MyStoreBlazeViewModel @Inject constructor(
             initialValue = BlazeCampaignUi(
                 isVisible = FeatureFlag.BLAZE_ITERATION_2.isEnabled(),
                 hasActiveCampaigns = false,
-                product = null
+                product = BlazeProduct(
+                    name = "Product name",
+                    imgUrl = "https://proxied.site/wp-content/uploads/2023/08/product-1693384773-2061315749.png",
+                )
             )
         )
     val blazeCampaignState = _blazeCampaignState.asLiveData()
@@ -31,6 +33,12 @@ class MyStoreBlazeViewModel @Inject constructor(
     data class BlazeCampaignUi(
         val isVisible: Boolean,
         val hasActiveCampaigns: Boolean = false,
-        val product: Product? = null,
+        val product: BlazeProduct
+    ) : Parcelable
+
+    @Parcelize
+    data class BlazeProduct(
+        val name: String,
+        val imgUrl: String
     ) : Parcelable
 }
