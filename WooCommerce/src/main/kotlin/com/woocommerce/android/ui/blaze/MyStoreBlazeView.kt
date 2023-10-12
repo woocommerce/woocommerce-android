@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeProduct
 import com.woocommerce.android.ui.compose.component.ListItemImage
@@ -48,11 +50,20 @@ fun MyStoreBlazeView(
     ) {
         Column {
             Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
-                Text(
-                    text = stringResource(id = R.string.blaze_campaign_title),
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_more_menu_blaze),
+                        contentDescription = "", // Blaze icon, no relevant content desc
+                        modifier = Modifier
+                            .padding(end = dimensionResource(id = dimen.minor_100))
+                            .size(dimensionResource(id = dimen.major_125))
+                    )
+                    Text(
+                        text = stringResource(id = R.string.blaze_campaign_title),
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Text(
                     modifier = Modifier.padding(
                         top = dimensionResource(id = R.dimen.major_100),
