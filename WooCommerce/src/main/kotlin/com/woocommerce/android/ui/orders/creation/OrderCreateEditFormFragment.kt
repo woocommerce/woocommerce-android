@@ -261,7 +261,7 @@ class OrderCreateEditFormFragment :
                 addCustomAmountsButton = AddButton(
                     text = getString(R.string.order_creation_add_custom_amounts),
                     onClickListener = {
-                        // TODO: Implement custom amounts click listener
+                        // Implement custom amounts click listener
                     }
                 )
             )
