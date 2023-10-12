@@ -25,5 +25,6 @@ object CardReaderConfigForUSA : CardReaderConfigForSupportedCountry(
             supportedSince = "3.2.1"
         ),
     ),
-    minimumAllowedChargeAmount = BigDecimal("0.50")
+    minimumAllowedChargeAmount = BigDecimal("0.50"),
+    maximumTTPAllowedChargeAmountWithoutPin = null,
 )

@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-21 09:54:04+0000
+Translation-Revision-Date: 2023-10-03 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Det gick inte att kopiera produktnamnet till urklipp.</string>
+    <string name="ai_product_name_copy_success">Produktnamn kopierat till urklipp.</string>
+    <string name="ai_product_name_copy_label">Produktnamn genererat av AI</string>
+    <string name="ai_product_description_copy_error">Det gick inte att kopiera produktbeskrivningen till urklipp.</string>
+    <string name="ai_product_description_copy_success">Produktbeskrivning kopierad till urklipp.</string>
+    <string name="product_creation_ai_generation_failure_message">Produktgenereringen misslyckades Försök igen</string>
+    <string name="tax_rate_selector_auto_rate_details_clear_button_label">Rensa adressen och sluta använda den här momssatsen</string>
+    <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Ange en ny momssats för den här beställningen</string>
+    <string name="tax_rate_selector_auto_rate_details_title">Lägg till momssats automatiskt</string>
+    <string name="ai_product_name_sheet_error_message">Det uppstod ett problem när produktnamnet skulle genereras. Försök igen.</string>
+    <string name="ai_product_name_sheet_regenerate_button">Återskapa</string>
+    <string name="ai_product_name_sheet_generate_button">Skriv det åt mig</string>
+    <string name="ai_product_name_sheet_input_description">Berätta vad din produkt är och vad som gör den unik!</string>
+    <string name="ai_product_name_sheet_subtitle">Låt AI generera fängslande rubriker åt dig</string>
+    <string name="ai_product_name_sheet_title">✨ Produktnamn</string>
+    <string name="empty_review_filtered_list_message">Prova att inaktivera filtret för olästa produktrecensioner för att se alla dina produktrecensioner</string>
+    <string name="empty_review_filtered_list_title">Inga olästa produktrecensioner</string>
+    <string name="product_creation_ai_tone_selected_content_desc">Ton vald</string>
+    <string name="product_creation_ai_tone_convincing">Övertygande</string>
+    <string name="product_creation_ai_tone_flowery">Blommig</string>
+    <string name="product_creation_ai_tone_formal">Formell</string>
+    <string name="product_creation_ai_tone_casual">Avslappnad</string>
+    <string name="product_creation_ai_tone_description">Ställ in ton och röst för att forma presentationen av din produkt så att den passar ditt varumärke.</string>
+    <string name="product_creation_ai_tone_title">Ton och röst</string>
+    <string name="product_creation_ai_preview_details_section">Detaljer</string>
+    <string name="product_creation_ai_preview_description_section">Produktbeskrivning</string>
+    <string name="product_creation_ai_preview_name_section">Produktnamn</string>
+    <string name="product_creation_ai_preview_subtitle">Oroa dig inte. Du kan alltid ändra informationen nedan senare.</string>
+    <string name="product_creation_ai_preview_title">Förhandsgranska</string>
+    <string name="product_creation_ai_about_product_continue_button">Skapa produktdetaljer</string>
+    <string name="product_creation_ai_about_product_set_tone">Ställ in ton och röst</string>
+    <string name="product_creation_ai_about_product_edit_text_caption">Lägg till viktiga funktioner, fördelar eller information som hjälper kunder att hitta din produkt online.</string>
+    <string name="product_creation_ai_about_product_edit_text_placeholder">Exempelvis mjukt tyg, slitstarka sömmar, unik design</string>
+    <string name="product_creation_ai_about_product_subtitle">Framhäv vad som gör din produkt unik och låt AI utöva sin magi.</string>
+    <string name="product_creation_ai_about_product_title">Om din produkt</string>
+    <string name="ai_product_creation_add_name_suggest_name_button">Föreslå ett namn</string>
+    <string name="ai_product_creation_add_name_keywords_placeholder">Exempelvis mjukt tyg, slitstarka sömmar, unik design.</string>
+    <string name="ai_product_creation_add_name_keywords_label">Produktnamn</string>
+    <string name="ai_product_creation_add_name_subtitle">Alternativt kan du utöka dina alternativ genom att trycka för fler namnförslag.</string>
+    <string name="ai_product_creation_add_name_title">Lägg till ditt produktnamn</string>
+    <string name="product_creation_ai_entry_sheet_learn_more">Drivs med AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Lägg till en produkt och detaljerna manuellt</string>
+    <string name="product_creation_ai_entry_sheet_manual_option_title">Lägg till manuellt</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Snabbgenerera information åt dig</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_title">Skapa en produkt med AI</string>
+    <string name="product_creation_ai_entry_sheet_header">Lägg till en produkt</string>
+    <string name="product_review_list_unread_reviews_filter">Endast olästa recensioner</string>
+    <string name="order_creation_edit_tax_rate">Redigera momssatsinställning</string>
     <string name="tax_rate_selector_auto_rate_subtitle">Detta kommer inte att påverka onlinebeställningar</string>
     <string name="tax_rate_selector_auto_rate_label">Lägg till den här momssatsen till alla skapade beställningar</string>
     <string name="tax_rate_selector_empty_list_button_alt">Redigera momssatser</string>
@@ -257,7 +305,6 @@ Language: sv_SE
     <string name="ai_product_description_note_dialog_heading">Bra start!</string>
     <string name="ai_product_description_feedback">Är den genererade\nbeskrivningen beskrivning användbar?</string>
     <string name="ai_product_description_regenerate_button">Generera igen</string>
-    <string name="ai_product_description_survey">Är den genererade beskrivningen användbar?</string>
     <string name="ai_product_description_hint">Framhäv din produkts unika funktioner och målgrupp med nyckelord för en skräddarsydd beskrivning.</string>
     <string name="ai_product_description_example">Exempel: krukväxt, kaktus, växt, dekorativ, lättskött</string>
     <string name="ai_product_description_product_name">Ange ditt produktnamn</string>

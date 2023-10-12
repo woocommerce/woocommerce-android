@@ -47,21 +47,19 @@ class CustomerListFragment : BaseFragment() {
         ) { event ->
             when (event) {
                 is CustomerSelected -> {
-                    sharedViewModel.onCustomerAddressEdited(
-                        customerId = event.customerId,
-                        billingAddress = event.billingAddress,
-                        shippingAddress = event.shippingAddress
-                    )
-                    addressViewModel.onAddressesChanged(
-                        customerId = event.customerId,
-                        billingAddress = event.billingAddress,
-                        shippingAddress = event.shippingAddress
-                    )
+                    sharedViewModel.onCustomerEdited(event.customer)
+                    addressViewModel.onAddressesChanged(event.customer)
 
                     findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
                 is AddCustomer -> {
                     addressViewModel.clearSelectedAddress()
+                    addressViewModel.onFieldEdited(
+                        AddressViewModel.AddressType.BILLING,
+                        AddressViewModel.Field.Email,
+                        event.email.orEmpty(),
+                    )
+
                     findNavController().navigateSafely(
                         CustomerListFragmentDirections
                             .actionCustomerListFragmentToOrderCreationCustomerFragment(
