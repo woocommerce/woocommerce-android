@@ -18,27 +18,35 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val _blazeCampaignState =
         savedStateHandle.getStateFlow(
             scope = viewModelScope,
-            initialValue = BlazeCampaignUi(
+            initialValue = MyStoreBlazeUi(
                 isVisible = FeatureFlag.BLAZE_ITERATION_2.isEnabled(),
-                hasActiveCampaigns = false,
-                product = BlazeProduct(
+                product = BlazeProductUi(
                     name = "Product name",
                     imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
-                )
+                ),
+                blazeActiveCampaign = null
             )
         )
     val blazeCampaignState = _blazeCampaignState.asLiveData()
 
     @Parcelize
-    data class BlazeCampaignUi(
+    data class MyStoreBlazeUi(
         val isVisible: Boolean,
-        val hasActiveCampaigns: Boolean = false,
-        val product: BlazeProduct
+        val product: BlazeProductUi,
+        val blazeActiveCampaign: BlazeCampaignUi?
     ) : Parcelable
 
     @Parcelize
-    data class BlazeProduct(
+    data class BlazeProductUi(
         val name: String,
         val imgUrl: String
+    ) : Parcelable
+
+    @Parcelize
+    data class BlazeCampaignUi(
+        val product: BlazeProductUi,
+        val impressions: Int,
+        val clicks: Int,
+        val budget: Int
     ) : Parcelable
 }
