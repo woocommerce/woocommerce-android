@@ -104,4 +104,19 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         // THEN
         assert(!filteredTaxRate)
     }
+
+    @Test
+    fun `given tax rate added with address, then should not filter it out`() {
+        // Create a TaxRateUiModel for testing with an empty address
+        val taxRate = TaxRate(1, "US", "NY", "12345", "New York")
+        val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
+            "Test Rate · US NY 12345 New York", "10%", taxRate
+        )
+
+        // GIVEN
+        val filteredTaxRate = viewModel.hasAddress(taxRateUiModel.taxRate)
+
+        // THEN
+        assert(filteredTaxRate)
+    }
 }
