@@ -2194,7 +2194,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRatePercentageValueText = getTaxRatePercentageValueText,
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
-            orderCreationProductMapper = orderCreationProductMapper
+            orderCreationProductMapper = orderCreationProductMapper,
             isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
         )
     }
