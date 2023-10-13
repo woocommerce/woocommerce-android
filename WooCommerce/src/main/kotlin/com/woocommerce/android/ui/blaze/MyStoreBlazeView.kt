@@ -30,17 +30,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeCampaignUi
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeProduct
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeProductUi
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.CampaignStatusUi
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeUi
 import com.woocommerce.android.ui.compose.component.ListItemImage
+import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun MyStoreBlazeView(
-    state: BlazeCampaignUi,
+    state: MyStoreBlazeUi,
     onCreateCampaignClicked: () -> Unit,
+    onShowAllClicked: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -49,53 +53,103 @@ fun MyStoreBlazeView(
         shape = RoundedCornerShape(0.dp)
     ) {
         Column {
-            Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_more_menu_blaze),
-                        contentDescription = "", // Blaze icon, no relevant content desc
-                        modifier = Modifier
-                            .padding(end = dimensionResource(id = dimen.minor_100))
-                            .size(dimensionResource(id = dimen.major_125))
-                    )
-                    Text(
-                        text = stringResource(id = R.string.blaze_campaign_title),
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Text(
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_300)
-                    ),
-                    text = stringResource(id = R.string.blaze_campaign_subtitle),
-                    style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.color_on_surface_medium_selector)
+            Column(
+                modifier = Modifier.padding(
+                    top = dimensionResource(id = R.dimen.major_100),
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
                 )
-                if (!state.hasActiveCampaigns) {
-                    BlazeProductItem(
-                        product = state.product,
-                        onProductSelected = {},
+            ) {
+                BlazeCampaignHeader()
+                when {
+                    state.blazeActiveCampaign != null -> BlazeCampaignItem(
+                        campaign = state.blazeActiveCampaign,
+                        onCampaignClicked = {},
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
+
+                    else -> {
+                        Text(
+                            modifier = Modifier.padding(
+                                top = dimensionResource(id = R.dimen.major_100),
+                                end = dimensionResource(id = R.dimen.major_300)
+                            ),
+                            text = stringResource(id = R.string.blaze_campaign_subtitle),
+                            style = MaterialTheme.typography.body1,
+                        )
+                        BlazeProductItem(
+                            product = state.product,
+                            onProductSelected = {},
+                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                        )
+                    }
                 }
             }
+            when {
+                state.blazeActiveCampaign != null -> ShowAllOrCreateCampaignFooter(
+                    onShowAllClicked,
+                    onCreateCampaignClicked
+                )
 
-            Divider()
-            WCTextButton(
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
-                onClick = onCreateCampaignClicked
-            ) {
-                Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+                else -> CreateCampaignFooter(onCreateCampaignClicked)
             }
         }
     }
 }
 
 @Composable
+private fun CreateCampaignFooter(onCreateCampaignClicked: () -> Unit) {
+    Divider()
+    WCTextButton(
+        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
+        onClick = onCreateCampaignClicked
+    ) {
+        Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+    }
+}
+
+@Composable
+private fun ShowAllOrCreateCampaignFooter(
+    onShowAllClicked: () -> Unit,
+    onCreateCampaignClicked: () -> Unit,
+) {
+    Row {
+        WCTextButton(
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
+            onClick = onShowAllClicked
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_show_all_button))
+        }
+        WCTextButton(
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
+            onClick = onCreateCampaignClicked
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+        }
+    }
+}
+
+@Composable
+private fun BlazeCampaignHeader() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_more_menu_blaze),
+            contentDescription = "", // Blaze icon, no relevant content desc
+            modifier = Modifier
+                .padding(end = dimensionResource(id = R.dimen.minor_100))
+                .size(dimensionResource(id = R.dimen.major_125))
+        )
+        Text(
+            text = stringResource(id = R.string.blaze_campaign_title),
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 fun BlazeProductItem(
-    product: BlazeProduct,
+    product: BlazeProductUi,
     onProductSelected: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -114,7 +168,7 @@ fun BlazeProductItem(
             ListItemImage(
                 imageUrl = product.imgUrl,
                 modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_275))
+                    .size(dimensionResource(id = R.dimen.major_300))
                     .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
                 placeHolderDrawableId = R.drawable.ic_product,
             )
@@ -134,6 +188,89 @@ fun BlazeProductItem(
     }
 }
 
+@Composable
+fun BlazeCampaignItem(
+    campaign: BlazeCampaignUi,
+    onCampaignClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .border(
+                width = dimensionResource(id = R.dimen.minor_10),
+                color = colorResource(R.color.divider_color),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            )
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .clickable { onCampaignClicked() }
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Row(verticalAlignment = Alignment.Top) {
+            ListItemImage(
+                imageUrl = campaign.product.imgUrl,
+                modifier = Modifier
+                    .size(dimensionResource(id = R.dimen.major_275))
+                    .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
+                placeHolderDrawableId = R.drawable.ic_product,
+            )
+            Column(
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .weight(1f),
+            ) {
+                WCTag(
+                    text = stringResource(id = campaign.status.statusDisplayText).uppercase(),
+                    textColor = colorResource(id = campaign.status.textColor),
+                    backgroundColor = colorResource(id = campaign.status.backgroundColor),
+                    textStyle = MaterialTheme.typography.caption.copy(
+                        letterSpacing = 1.5.sp
+                    )
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.minor_50)),
+                    text = campaign.product.name,
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold,
+                )
+                Row(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))) {
+                    CampaignStat(
+                        statName = stringResource(id = R.string.blaze_campaign_status_impressions),
+                        statValue = campaign.impressions
+                    )
+                    CampaignStat(
+                        statName = stringResource(id = R.string.blaze_campaign_status_clicks),
+                        statValue = campaign.clicks
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CampaignStat(
+    statName: String,
+    statValue: Int,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.padding(end = dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = statName,
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium_selector),
+        )
+        Text(
+            modifier = Modifier
+                .padding(top = dimensionResource(id = R.dimen.minor_50)),
+            text = statValue.toString(),
+            style = MaterialTheme.typography.h6,
+        )
+    }
+}
+
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -142,15 +279,23 @@ fun BlazeProductItem(
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun MyStoreBlazeViewPreview() {
+    val product = BlazeProductUi(
+        name = "Product name",
+        imgUrl = "",
+    )
     MyStoreBlazeView(
-        state = BlazeCampaignUi(
+        state = MyStoreBlazeUi(
             isVisible = true,
-            hasActiveCampaigns = false,
-            product = BlazeProduct(
-                name = "Product name",
-                imgUrl = "",
-            )
+            product = product,
+            blazeActiveCampaign = BlazeCampaignUi(
+                product = product,
+                status = CampaignStatusUi.Active,
+                impressions = 100,
+                clicks = 10,
+                budget = 1000
+            ),
         ),
-        onCreateCampaignClicked = {}
+        onCreateCampaignClicked = {},
+        onShowAllClicked = {}
     )
 }
