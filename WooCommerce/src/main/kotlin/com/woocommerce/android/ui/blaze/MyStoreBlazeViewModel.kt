@@ -27,7 +27,16 @@ class MyStoreBlazeViewModel @Inject constructor(
                     name = "Product name",
                     imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                 ),
-                blazeActiveCampaign = null
+                blazeActiveCampaign = BlazeCampaignUi(
+                    product = BlazeProductUi(
+                        name = "Product name",
+                        imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                    ),
+                    status = CampaignStatusUi.Active,
+                    impressions = 100,
+                    clicks = 10,
+                    budget = 1000
+                )
             )
         )
     val blazeCampaignState = _blazeCampaignState.asLiveData()

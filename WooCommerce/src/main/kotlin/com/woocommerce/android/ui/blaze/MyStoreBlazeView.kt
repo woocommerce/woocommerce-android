@@ -55,7 +55,12 @@ fun MyStoreBlazeView(
             Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))) {
                 BlazeCampaignHeader()
                 when {
-                    state.blazeActiveCampaign != null -> BlazeCampaignItem(state.blazeActiveCampaign, {})
+                    state.blazeActiveCampaign != null -> BlazeCampaignItem(
+                        campaign = state.blazeActiveCampaign,
+                        onCampaignClicked = {},
+                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                    )
+
                     else -> {
                         Text(
                             modifier = Modifier.padding(
@@ -63,8 +68,7 @@ fun MyStoreBlazeView(
                                 end = dimensionResource(id = R.dimen.major_300)
                             ),
                             text = stringResource(id = R.string.blaze_campaign_subtitle),
-                            style = MaterialTheme.typography.subtitle1,
-                            color = colorResource(id = R.color.color_on_surface_medium_selector)
+                            style = MaterialTheme.typography.body1,
                         )
                         BlazeProductItem(
                             product = state.product,
@@ -190,7 +194,7 @@ fun BlazeCampaignItem(
             .clickable { onCampaignClicked() }
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.Top) {
             ListItemImage(
                 imageUrl = campaign.product.imgUrl,
                 modifier = Modifier
@@ -215,7 +219,7 @@ fun BlazeCampaignItem(
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
                 )
-                Row {
+                Row(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))) {
                     CampaignStat(
                         statName = stringResource(id = R.string.blaze_campaign_status_impressions),
                         statValue = campaign.impressions
@@ -235,22 +239,25 @@ fun BlazeCampaignItem(
 }
 
 @Composable
-private fun CampaignStat(statName: String, statValue: Int) {
+private fun CampaignStat(
+    statName: String,
+    statValue: Int,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
-            .padding(end = dimensionResource(id = R.dimen.major_100))
+        modifier = modifier.padding(end = dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
-            text = statValue.toString(),
-            style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.Bold,
+            text = statName,
+            style = MaterialTheme.typography.body2,
         )
         Text(
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.minor_50)),
-            text = statName,
-            style = MaterialTheme.typography.caption,
-            color = colorResource(id = R.color.color_on_surface_medium_selector)
+            text = statValue.toString(),
+            style = MaterialTheme.typography.h6,
+            color = colorResource(id = R.color.color_on_surface_medium_selector),
+            fontWeight = FontWeight.Bold
         )
     }
 }
