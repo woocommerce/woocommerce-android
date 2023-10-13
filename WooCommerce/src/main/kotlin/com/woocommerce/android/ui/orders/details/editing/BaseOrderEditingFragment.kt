@@ -10,7 +10,6 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.core.view.MenuProvider
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -19,6 +18,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener, MenuP
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
-    protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    protected val sharedViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     protected var doneMenuItem: MenuItem? = null

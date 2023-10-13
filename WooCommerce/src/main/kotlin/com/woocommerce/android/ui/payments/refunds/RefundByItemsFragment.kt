@@ -7,7 +7,6 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -29,6 +28,7 @@ import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLin
 import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
@@ -54,7 +54,7 @@ class RefundByItemsFragment :
     private var _feeLinesBinding: RefundByItemsFeesBinding? = null
     private val feeLinesBinding get() = _feeLinesBinding!!
 
-    private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
+    private val viewModel: IssueRefundViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_refunds)
 
     override fun onResume() {
         super.onResume()
