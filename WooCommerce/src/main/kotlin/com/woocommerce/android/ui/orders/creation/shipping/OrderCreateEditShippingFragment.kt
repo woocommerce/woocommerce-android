@@ -8,7 +8,6 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditShippingBinding
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingViewModel.RemoveShipping
 import com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingViewModel.UpdateShipping
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ class OrderCreateEditShippingFragment :
     BaseFragment(R.layout.fragment_order_create_edit_shipping),
     MenuProvider {
     private val viewModel: OrderCreateEditShippingViewModel by viewModels()
-    private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
+    private val sharedViewModel: OrderCreateEditViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 

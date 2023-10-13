@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -22,6 +21,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
@@ -45,7 +45,7 @@ class AddProductCategoryFragment :
     private var _binding: FragmentAddProductCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AddProductCategoryViewModel by hiltNavGraphViewModels(R.id.nav_graph_add_product_category)
+    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_add_product_category)
 
     override fun getFragmentTitle() = getString(R.string.product_add_category)
 

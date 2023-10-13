@@ -31,7 +31,7 @@ import androidx.navigation.fragment.findNavController
  * -annotated [ViewModel] scoped to a navigation graph present on the [NavController] back stack:
  * ```
  * class MyFragment : Fragment() {
- *     val viewmodel: MainViewModel by com.woocommerce.android.viewmodel.hiltNavGraphViewModels(R.navigation.main)
+ *     val viewmodel: MainViewModel by com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels(R.navigation.main)
  * }
  * ```
  *
