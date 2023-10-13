@@ -28,7 +28,9 @@ class ParentCategoryListFragment :
     OnProductCategoryClickListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_add_product_category)
+    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(
+        navGraphId = R.id.nav_graph_add_product_category
+    )
 
     private lateinit var parentCategoryListAdapter: ParentCategoryListAdapter
 

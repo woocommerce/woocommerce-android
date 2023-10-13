@@ -45,7 +45,9 @@ class AddProductCategoryFragment :
     private var _binding: FragmentAddProductCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_add_product_category)
+    private val viewModel: AddProductCategoryViewModel by fixedHiltNavGraphViewModels(
+        navGraphId = R.id.nav_graph_add_product_category
+    )
 
     override fun getFragmentTitle() = getString(R.string.product_add_category)
 
