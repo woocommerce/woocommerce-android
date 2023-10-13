@@ -269,7 +269,8 @@ class MyStoreFragment :
                         WooThemeWithBackground {
                             MyStoreBlazeView(
                                 state = blazeCampaignState,
-                                onCreateCampaignClicked = { }
+                                onCreateCampaignClicked = { },
+                                onShowAllClicked = { },
                             )
                         }
                     }

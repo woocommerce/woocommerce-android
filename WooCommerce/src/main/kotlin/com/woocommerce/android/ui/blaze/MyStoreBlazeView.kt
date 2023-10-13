@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 fun MyStoreBlazeView(
     state: MyStoreBlazeUi,
     onCreateCampaignClicked: () -> Unit,
+    onShowAllClicked: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -73,20 +74,43 @@ fun MyStoreBlazeView(
                     }
                 }
             }
-
-            CreateNewBlazeCampaignFooter(onCreateCampaignClicked)
+            when {
+                state.blazeActiveCampaign != null -> CreateCampaignFooter(onCreateCampaignClicked)
+                else -> ShowAllOrCreateCampaignFooter(onShowAllClicked, onCreateCampaignClicked)
+            }
         }
     }
 }
 
 @Composable
-private fun CreateNewBlazeCampaignFooter(onCreateCampaignClicked: () -> Unit) {
+private fun CreateCampaignFooter(onCreateCampaignClicked: () -> Unit) {
     Divider()
     WCTextButton(
         modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
         onClick = onCreateCampaignClicked
     ) {
         Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+    }
+}
+
+@Composable
+private fun ShowAllOrCreateCampaignFooter(
+    onShowAllClicked: () -> Unit,
+    onCreateCampaignClicked: () -> Unit,
+) {
+    Row {
+        WCTextButton(
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
+            onClick = onShowAllClicked
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_show_all_button))
+        }
+        WCTextButton(
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
+            onClick = onCreateCampaignClicked
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+        }
     }
 }
 
@@ -255,6 +279,7 @@ fun MyStoreBlazeViewPreview() {
                 budget = 1000
             ),
         ),
-        onCreateCampaignClicked = {}
+        onCreateCampaignClicked = {},
+        onShowAllClicked = {}
     )
 }
