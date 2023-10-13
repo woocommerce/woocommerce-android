@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -23,20 +24,24 @@ fun WCTag(
     modifier: Modifier = Modifier,
     textColor: Color = colorResource(id = R.color.tag_text_main),
     backgroundColor: Color = colorResource(R.color.tag_bg_main),
-    textAllCaps: Boolean = false,
+    textStyle: TextStyle = MaterialTheme.typography.caption
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(percent = 35))
             .background(backgroundColor)
+            .padding(
+                start = dimensionResource(id = R.dimen.minor_50),
+                end = dimensionResource(id = R.dimen.minor_50),
+            )
     ) {
         Text(
             modifier = Modifier.padding(
                 horizontal = dimensionResource(id = R.dimen.minor_75),
                 vertical = dimensionResource(id = R.dimen.minor_25)
             ),
-            text = if (textAllCaps) text.uppercase() else text,
-            style = MaterialTheme.typography.caption,
+            text = text,
+            style = textStyle,
             color = textColor,
             fontWeight = FontWeight.Bold
         )
