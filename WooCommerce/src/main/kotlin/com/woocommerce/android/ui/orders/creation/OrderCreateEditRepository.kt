@@ -200,6 +200,21 @@ class OrderCreateEditRepository @Inject constructor(
         return isSupported
     }
 
+    suspend fun deleteCustomer(orderId: Long): Result<Unit> {
+        val result = orderUpdateStore.updateOrder(
+            site = selectedSite.get(),
+            orderId = orderId,
+            updateRequest = UpdateOrderRequest(
+                customerId = null,
+                shippingAddress = Address.EMPTY.toShippingAddressModel(),
+                billingAddress = Address.EMPTY.toBillingAddressModel(),
+            ) )
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
+    }
+
     private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
         val key = this.value
         return when {

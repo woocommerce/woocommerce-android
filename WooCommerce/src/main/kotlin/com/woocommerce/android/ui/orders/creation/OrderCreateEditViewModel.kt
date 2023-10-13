@@ -754,6 +754,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun clearCustomerAddresses() {
+        launch { orderCreateEditRepository.deleteCustomer(_orderDraft.value.id) }
         _orderDraft.update { order ->
             order.copy(customer = null)
         }
