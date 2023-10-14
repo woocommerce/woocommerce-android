@@ -20,7 +20,6 @@ Language: ko_KR
     <string name="ai_product_name_sheet_generate_button">작성 의뢰</string>
     <string name="ai_product_name_sheet_input_description">상품이 무엇이고 어떤 점이 독특한지 말씀해 주세요!</string>
     <string name="ai_product_name_sheet_subtitle">AI에게 매력적인 제목 생성 맡기기</string>
-    <string name="ai_product_name_sheet_title">✨ 상품 이름</string>
     <string name="empty_review_filtered_list_message">모든 상품 리뷰를 표시하려면 읽지 않음 필터를 비활성화해 보세요.</string>
     <string name="empty_review_filtered_list_title">읽지 않은 상품 리뷰 없음</string>
     <string name="product_creation_ai_tone_selected_content_desc">선택된 어조</string>
@@ -33,7 +32,6 @@ Language: ko_KR
     <string name="product_creation_ai_preview_details_section">상세 정보</string>
     <string name="product_creation_ai_preview_description_section">상품 설명</string>
     <string name="product_creation_ai_preview_name_section">상품 이름</string>
-    <string name="product_creation_ai_preview_subtitle">걱정하지 마세요. 아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
     <string name="product_creation_ai_preview_title">미리보기</string>
     <string name="product_creation_ai_about_product_continue_button">상품 상세 정보 생성</string>
     <string name="product_creation_ai_about_product_set_tone">어조 및 목소리 설정</string>
@@ -230,7 +228,6 @@ Language: ko_KR
     <string name="empty_order_test_order_message">테스트 주문을 실행하여 우커머스 프로세스에서 원활한 고객 경험이 제공되는지 확인</string>
     <string name="order_creation_customer_search_empty_add_details_manually">수동으로 상세 정보 추가</string>
     <string name="order_creation_customer_search_old_wc_hint">고객 검색 기준</string>
-    <string name="shipping_classes_zones">배송 클래스 및 구역</string>
     <string name="free_trial_survey_free_text">기타 사유(직접 입력)</string>
     <string name="free_trial_survey_option4">나는 팀의 일원이며 팀에서 단체적으로 결정해야 합니다.</string>
     <string name="free_trial_survey_option3">내 결정에서는 서비스 가격이 중요한 요인입니다.</string>
@@ -478,8 +475,6 @@ Language: ko_KR
     <string name="product_selector_popular_products_heading">인기</string>
     <string name="jetpack_install_role_eligibility_learn_more">역할 및 권한 더 알아보기</string>
     <string name="jetpack_install_role_eligibility_error_message">젯팩 설치가 허용되는 역할이 아닌 것 같습니다. \n도움말은 관리자에게 문의하세요.</string>
-    <string name="card_reader_tap_to_pay_description">여기에서 소액으로\nTap To Pay를 테스트할 수 있습니다.</string>
-    <string name="card_reader_test_tap_to_pay">Tap To Pay 테스트</string>
     <string name="subscription_free_trial">무료 평가판</string>
     <string name="subscription_sign_up_fee">등록 수수료</string>
     <string name="subscription_expire">만료까지 남은 시간</string>
@@ -516,7 +511,6 @@ Language: ko_KR
     <string name="product_subscription_title">구독</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">체크카드와 신용카드를 카드 리더에 올려놓거나 밀어 넣거나 살짝 밀어서 결제할 수 있습니다.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">스마트폰에서 직접 비접촉 결제를 안전하게 수락하세요.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay 피드백 공유</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">애플리케이션 비밀번호 생성이 승인되지 않아서 로그인할 수 없습니다.</string>
     <string name="login_site_credentials_fetching_site">사이트를 가져오는 중…</string>
     <string name="login_site_credentials_fetching_site_failed">웹사이트를 가져오는 동안 오류 발생</string>

@@ -20,7 +20,6 @@ Language: es
     <string name="ai_product_name_sheet_generate_button">Escríbelo por mí</string>
     <string name="ai_product_name_sheet_input_description">Cuéntanos en qué consiste tu producto y qué lo hace único.</string>
     <string name="ai_product_name_sheet_subtitle">Deja que la IA genere títulos cautivadores por ti</string>
-    <string name="ai_product_name_sheet_title">✨ Nombre del producto</string>
     <string name="empty_review_filtered_list_message">Prueba a desactivar el filtro de no leídos para ver todas las reseñas de tus productos</string>
     <string name="empty_review_filtered_list_title">No hay reseñas de productos no leídas</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tono seleccionado</string>
@@ -33,7 +32,6 @@ Language: es
     <string name="product_creation_ai_preview_details_section">Detalles</string>
     <string name="product_creation_ai_preview_description_section">Descripción del producto</string>
     <string name="product_creation_ai_preview_name_section">Nombre del producto</string>
-    <string name="product_creation_ai_preview_subtitle">No te preocupes. Siempre puedes cambiar los detalles de abajo más adelante.</string>
     <string name="product_creation_ai_preview_title">Vista previa</string>
     <string name="product_creation_ai_about_product_continue_button">Crear detalles del producto</string>
     <string name="product_creation_ai_about_product_set_tone">Establecer tono y voz</string>
@@ -230,7 +228,6 @@ Language: es
     <string name="empty_order_test_order_message">Ejecuta un pedido de prueba para garantizar que el proceso de WooCommerce ofrece una experiencia perfecta a los clientes.</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Añadir detalles de forma manual</string>
     <string name="order_creation_customer_search_old_wc_hint">Buscar clientes por</string>
-    <string name="shipping_classes_zones">Clases y zonas de envío</string>
     <string name="free_trial_survey_free_text">Otro motivo (especificar)</string>
     <string name="free_trial_survey_option4">Formo parte de un equipo y tenemos que tomar la decisión de manera conjunta.</string>
     <string name="free_trial_survey_option3">El precio del servicio fue un factor importante a la hora de tomar la decisión.</string>
@@ -478,8 +475,6 @@ Language: es
     <string name="product_selector_popular_products_heading">Populares</string>
     <string name="jetpack_install_role_eligibility_learn_more">Más información sobre los perfiles y los permisos</string>
     <string name="jetpack_install_role_eligibility_error_message">Parece que tu perfil no permite instalar Jetpack. \nPonte en contacto con el administrador para obtener ayuda.</string>
-    <string name="card_reader_tap_to_pay_description">Puedes probar Tap To Pay con una pequeña\ncantidad de dinero aquí.</string>
-    <string name="card_reader_test_tap_to_pay">Probar Tap to Pay</string>
     <string name="subscription_free_trial">Prueba gratuita</string>
     <string name="subscription_sign_up_fee">Cuota de registro</string>
     <string name="subscription_expire">Caduca después de</string>
@@ -516,7 +511,6 @@ Language: es
     <string name="product_subscription_title">Suscripción</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">El lector de tarjetas acepta pagos con tarjetas de débito y crédito con toque, chip y banda magnética.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Acepta pagos sin contacto de forma segura directamente desde tu teléfono.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Compartir comentarios sobre Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">No se puede acceder porque la creación de la contraseña de la aplicación no está aprobada.</string>
     <string name="login_site_credentials_fetching_site">Cargando sitio…</string>
     <string name="login_site_credentials_fetching_site_failed">Se ha producido un error al cargar tu sitio web</string>
