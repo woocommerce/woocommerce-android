@@ -20,7 +20,6 @@ Language: zh_TW
     <string name="ai_product_name_sheet_generate_button">幫我撰寫</string>
     <string name="ai_product_name_sheet_input_description">介紹你的產品與其獨特之處！</string>
     <string name="ai_product_name_sheet_subtitle">讓 AI 為你產生吸引人的名稱</string>
-    <string name="ai_product_name_sheet_title">✨ 產品名稱</string>
     <string name="empty_review_filtered_list_message">嘗試停用「未讀」篩選條件，便可看到所有產品評論</string>
     <string name="empty_review_filtered_list_title">沒有未讀的產品評論</string>
     <string name="product_creation_ai_tone_selected_content_desc">已選取語氣</string>
@@ -33,7 +32,6 @@ Language: zh_TW
     <string name="product_creation_ai_preview_details_section">詳細資料</string>
     <string name="product_creation_ai_preview_description_section">產品說明</string>
     <string name="product_creation_ai_preview_name_section">產品名稱</string>
-    <string name="product_creation_ai_preview_subtitle">別擔心， 之後可隨時變更下方詳細資料。</string>
     <string name="product_creation_ai_preview_title">預覽</string>
     <string name="product_creation_ai_about_product_continue_button">建立產品詳細資料</string>
     <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>
@@ -230,7 +228,6 @@ Language: zh_TW
     <string name="empty_order_test_order_message">執行測試訂單，確認你的 WooCommerce 流程能提供流暢的顧客體驗</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動新增詳情</string>
     <string name="order_creation_customer_search_old_wc_hint">依條件搜尋顧客</string>
-    <string name="shipping_classes_zones">運送類別與區域</string>
     <string name="free_trial_survey_free_text">其他原因 (請說明)。</string>
     <string name="free_trial_survey_option4">我需要和團隊成員一起決定。</string>
     <string name="free_trial_survey_option3">服務價格是影響我決策的重要因素。</string>
@@ -478,8 +475,6 @@ Language: zh_TW
     <string name="product_selector_popular_products_heading">熱門</string>
     <string name="jetpack_install_role_eligibility_learn_more">深入瞭解角色和權限</string>
     <string name="jetpack_install_role_eligibility_error_message">你的角色似乎不允許安裝 Jetpack。 \n請聯絡管理員尋求協助。</string>
-    <string name="card_reader_tap_to_pay_description">你可以在此小額測試「Tap to Pay」(輕觸付款)\n功能。</string>
-    <string name="card_reader_test_tap_to_pay">測試「Tap to Pay」(輕觸付款) 功能</string>
     <string name="subscription_free_trial">免費試用</string>
     <string name="subscription_sign_up_fee">註冊費</string>
     <string name="subscription_expire">到期時間：</string>
@@ -516,7 +511,6 @@ Language: zh_TW
     <string name="product_subscription_title">訂閱</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">讀卡機接受信用卡和簽帳金融卡的輕觸、晶片和刷卡付款。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">直接從手機安全地接受零接觸付款。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">分享「Tap to Pay」(輕觸付款) 功能意見回饋</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">無法登入，因為未核准建立應用程式密碼。</string>
     <string name="login_site_credentials_fetching_site">正在擷取網站…</string>
     <string name="login_site_credentials_fetching_site_failed">擷取你的網站時發生錯誤</string>
