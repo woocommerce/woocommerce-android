@@ -11,6 +11,12 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_158"
+msgid ""
+"15.8:\n"
+"This update brings crucial bug fixes, ensuring a smoother experience. It also introduces the ability to update tax rates when editing orders, providing you with greater control. Stay tuned for more exciting features in upcoming releases. Thank you for choosing WooCommerce.\n"
+msgstr ""
+
 msgctxt "release_note_157"
 msgid ""
 "15.7:\n"
@@ -22,12 +28,6 @@ msgid ""
 "- [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]\n"
 "- [*] Product Creation using AI: Added support for suggesting new categories and tags [https://github.com/woocommerce/woocommerce-android/pull/9919]\n"
 "\n"
-msgstr ""
-
-msgctxt "release_note_156"
-msgid ""
-"15.6:\n"
-"We're thrilled to announce our latest update! Now, merchants selling in different locations can enjoy the convenience of automatic tax rate settings. We've also fixed an issue that was preventing login when sites used a custom directory for WordPress installation. Plus, we've supercharged product creation with AI capabilities for WPCOM and self-hosted stores using the Jetpack AI plugin. Enjoy smoother operations and enhanced productivity with these new improvements. Happy selling!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
