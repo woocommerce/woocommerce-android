@@ -4,10 +4,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -28,6 +30,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,6 +50,15 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     }
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(site)
+    }
+    private val wooStore: WooCommerceStore = mock {
+        on { getStoreCountryCode(site) }.thenReturn("US")
+    }
+    private val cardReaderConfig = mock<CardReaderConfigForSupportedCountry> {
+        on { minimumAllowedChargeAmount }.thenReturn(BigDecimal("0.5"))
+    }
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock {
+        on { provideCountryConfigFor(any()) }.thenReturn(cardReaderConfig)
     }
 
     @Test
@@ -454,6 +466,8 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             refundStore,
             resourceProvider,
             selectedSite,
+            wooStore,
+            cardReaderCountryConfigProvider,
             TapToPaySummaryFragmentArgs(flow).initSavedStateHandle()
         )
 }
