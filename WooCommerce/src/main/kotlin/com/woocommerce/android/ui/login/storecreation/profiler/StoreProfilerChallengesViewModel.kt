@@ -26,9 +26,9 @@ class StoreProfilerChallengesViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     storeProfilerRepository: StoreProfilerRepository
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
-
     override val hasSearchableContent: Boolean
         get() = false
+    override val isMultiChoice: Boolean = true
 
     init {
         analyticsTracker.track(
