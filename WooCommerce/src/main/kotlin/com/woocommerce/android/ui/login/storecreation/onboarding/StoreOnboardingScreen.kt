@@ -55,8 +55,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.component.WcTag
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.LaunchStoreTaskRes
@@ -263,7 +263,7 @@ private fun TaskItem(
                     fontWeight = FontWeight.Bold
                 )
                 if (!task.isCompleted && task.taskUiResources is LaunchStoreTaskRes) {
-                    WcTag(
+                    WCTag(
                         text = stringResource(id = string.store_onboarding_launch_store_task_private_tag).uppercase(),
                         modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_100))
                     )

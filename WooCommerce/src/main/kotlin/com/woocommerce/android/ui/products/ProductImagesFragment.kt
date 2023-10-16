@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -45,6 +44,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerUtils
@@ -60,7 +60,7 @@ import javax.inject.Inject
 class ProductImagesFragment :
     BaseProductEditorFragment(R.layout.fragment_product_images), OnGalleryImageInteractionListener, MenuProvider {
     private val navArgs: ProductImagesFragmentArgs by navArgs()
-    private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
+    private val viewModel: ProductImagesViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
     @Inject
     lateinit var navigator: ProductNavigator

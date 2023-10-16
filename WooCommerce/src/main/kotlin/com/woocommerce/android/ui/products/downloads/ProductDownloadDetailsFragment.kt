@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -27,6 +26,7 @@ import com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewM
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class ProductDownloadDetailsFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductDownloadDetailsViewModel by viewModels()
-    private val parentViewModel: ProductDetailViewModel by hiltNavGraphViewModels(R.id.nav_graph_products)
+    private val parentViewModel: ProductDetailViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_products)
     private val navArgs by navArgs<ProductDownloadDetailsFragmentArgs>()
     private lateinit var doneOrUpdateMenuItem: MenuItem
 

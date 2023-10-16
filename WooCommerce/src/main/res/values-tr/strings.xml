@@ -20,7 +20,6 @@ Language: tr
     <string name="ai_product_name_sheet_generate_button">Benim için yaz</string>
     <string name="ai_product_name_sheet_input_description">Bize ürününüzden ve onu benzersiz kılanın ne olduğundan bahsedin!</string>
     <string name="ai_product_name_sheet_subtitle">Yapay zekanın sizin için etkileyici başlıklar oluşturmasına izin verin</string>
-    <string name="ai_product_name_sheet_title">✨ Ürün adı</string>
     <string name="empty_review_filtered_list_message">Tüm ürün incelemelerinizi görmek için okunmamış filtresini devre dışı bırakmayı deneyin</string>
     <string name="empty_review_filtered_list_title">Okunmamış ürün incelemesi yok</string>
     <string name="product_creation_ai_tone_selected_content_desc">Ton seçildi</string>
@@ -33,7 +32,6 @@ Language: tr
     <string name="product_creation_ai_preview_details_section">Ayrıntılar</string>
     <string name="product_creation_ai_preview_description_section">Ürün açıklaması</string>
     <string name="product_creation_ai_preview_name_section">Ürün adı</string>
-    <string name="product_creation_ai_preview_subtitle">Endişelenmeyin. Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
     <string name="product_creation_ai_preview_title">Önizleme</string>
     <string name="product_creation_ai_about_product_continue_button">Ürünler Ayrıntıları Oluştur</string>
     <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>
@@ -230,7 +228,6 @@ Language: tr
     <string name="empty_order_test_order_message">WooCommerce işleminizin kusursuz bir müşteri deneyimi sağladığından emin olmak için bir test siparişi gerçekleştirin</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ayrıntıları el ile ekle</string>
     <string name="order_creation_customer_search_old_wc_hint">Müşterilerde şuna göre ara</string>
-    <string name="shipping_classes_zones">Gönderim sınıfları ve bölgeleri</string>
     <string name="free_trial_survey_free_text">Diğer sebep (lütfen belirtin)</string>
     <string name="free_trial_survey_option4">Bir ekibin parçasıyım ve kararı toplu olarak almamız gerekiyor.</string>
     <string name="free_trial_survey_option3">Hizmetin fiyatını kararımda önemli bir faktör olarak görüyorum.</string>
@@ -478,8 +475,6 @@ Language: tr
     <string name="product_selector_popular_products_heading">Popüler</string>
     <string name="jetpack_install_role_eligibility_learn_more">Roller ve izin hakkında daha fazla bilgi edinin</string>
     <string name="jetpack_install_role_eligibility_error_message">Görünüşe göre rolünüz Jetpack\'i yüklemenize izin vermiyor. \nLütfen yardım için site yöneticinizle iletişime geçin.</string>
-    <string name="card_reader_tap_to_pay_description">Tap to Pay\'i küçük bir\ntutarla burada test edebilirsiniz.</string>
-    <string name="card_reader_test_tap_to_pay">Tap to Pay\'inizi Test Edin</string>
     <string name="subscription_free_trial">Ücretsiz Deneme</string>
     <string name="subscription_sign_up_fee">Kayıt ücreti</string>
     <string name="subscription_expire">Şundan sonra sona erdir:</string>
@@ -516,7 +511,6 @@ Language: tr
     <string name="product_subscription_title">Abonelik</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kart okuyucu, banka ve kredi kartlarıyla dokunarak, çiple ve kaydırarak yapılan ödemeleri kabul eder.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay ile ilgili görüşlerinizi paylaşın</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
     <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
     <string name="login_site_credentials_fetching_site_failed">Web siteniz getirilirken bir hata oluştu.</string>
