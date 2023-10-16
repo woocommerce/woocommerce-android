@@ -113,7 +113,7 @@ class OrderListAdapter(
         super.submitList(pagedList)
 
         allOrderIds = getCurrentList()?.toList()?.mapNotNull {
-            if (it is OrderListItemUI)  {
+            if (it is OrderListItemUI) {
                 it.orderId
             } else {
                 null

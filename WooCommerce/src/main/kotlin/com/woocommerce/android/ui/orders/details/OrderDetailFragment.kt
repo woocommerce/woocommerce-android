@@ -217,7 +217,7 @@ class OrderDetailFragment :
                 true
             }
 
-             R.id.menu_arrow_down -> {
+            R.id.menu_arrow_down -> {
                 viewModel.onNextOrderClicked()
                 true
             }

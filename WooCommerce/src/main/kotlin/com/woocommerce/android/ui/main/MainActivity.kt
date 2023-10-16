@@ -1092,7 +1092,8 @@ class MainActivity :
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
             arrayOf(orderId).toLongArray(),
-            remoteNoteId)
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
@@ -1109,7 +1110,8 @@ class MainActivity :
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
             allOrderIds.toLongArray(),
-            remoteNoteId)
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
     }
