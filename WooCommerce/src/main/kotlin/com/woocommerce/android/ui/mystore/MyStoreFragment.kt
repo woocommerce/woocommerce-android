@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeBanner
 import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
@@ -254,7 +255,7 @@ class MyStoreFragment :
 
         blazeBannerViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event)
+                is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event.url, event.source)
                 is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
                 is ShowDialog -> event.showDialog()
             }
@@ -269,9 +270,7 @@ class MyStoreFragment :
                     setContent {
                         WooThemeWithBackground {
                             MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onCreateCampaignClicked = { },
-                                onShowAllClicked = { },
+                                state = blazeCampaignState
                             )
                         }
                     }
@@ -279,13 +278,18 @@ class MyStoreFragment :
                 }
             }
         }
+        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(event.url, event.source)
+            }
+        }
     }
 
-    private fun openBlazeWebView(event: BlazeBannerViewModel.OpenBlazeEvent) {
+    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
-                urlToLoad = event.url,
-                source = event.source
+                urlToLoad = url,
+                source = source
             )
         )
     }

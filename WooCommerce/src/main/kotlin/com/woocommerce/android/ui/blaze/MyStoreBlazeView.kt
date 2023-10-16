@@ -44,9 +44,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun MyStoreBlazeView(
-    state: MyStoreBlazeCampaignState,
-    onCreateCampaignClicked: () -> Unit,
-    onShowAllClicked: () -> Unit
+    state: MyStoreBlazeCampaignState
 ) {
     Card(
         modifier = Modifier
@@ -91,12 +89,12 @@ fun MyStoreBlazeView(
             }
             when (state) {
                 is MyStoreBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
-                    onShowAllClicked,
-                    onCreateCampaignClicked
+                    onShowAllClicked = state.onViewAllCampaignsClicked,
+                    onCreateCampaignClicked = state.onCreateCampaignClicked
                 )
 
                 is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
-                    onCreateCampaignClicked = onCreateCampaignClicked,
+                    onCreateCampaignClicked = state.onCreateCampaignClicked,
                     modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                 )
 
@@ -311,9 +309,10 @@ fun MyStoreBlazeViewCampaignPreview() {
                 clicks = 10,
                 budget = 1000
             ),
-        ),
-        onCreateCampaignClicked = {},
-        onShowAllClicked = {}
+            onCampaignClicked = {},
+            onViewAllCampaignsClicked = {},
+            onCreateCampaignClicked = {}
+        )
     )
 }
 
@@ -330,9 +329,8 @@ fun MyStoreBlazeViewNoCampaignPreview() {
             product = BlazeProductUi(
                 name = "Product name",
                 imgUrl = "",
-            )
-        ),
-        onCreateCampaignClicked = {},
-        onShowAllClicked = {}
+            ),
+            onCreateCampaignClicked = {}
+        )
     )
 }

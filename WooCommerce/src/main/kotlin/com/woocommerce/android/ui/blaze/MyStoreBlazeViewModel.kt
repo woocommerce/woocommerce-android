@@ -6,9 +6,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.emitAll
@@ -23,7 +25,8 @@ import javax.inject.Inject
 class MyStoreBlazeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
-    private val productListRepository: ProductListRepository
+    private val productListRepository: ProductListRepository,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedStateHandle) {
     val blazeCampaignState = flow {
         if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
@@ -40,12 +43,21 @@ class MyStoreBlazeViewModel @Inject constructor(
     }.asLiveData()
 
     private fun prepareUiForNoCampaign(): MyStoreBlazeCampaignState {
-        val product = getMostRecentProduct() ?: return MyStoreBlazeCampaignState.Hidden
+        val products = getProducts()
+        val product = products.firstOrNull() ?: return MyStoreBlazeCampaignState.Hidden
         return MyStoreBlazeCampaignState.NoCampaign(
             product = BlazeProductUi(
                 name = product.name,
                 imgUrl = product.firstImageUrl.orEmpty(),
-            )
+            ),
+            onCreateCampaignClicked = {
+                val url = if (products.size == 1) {
+                    isBlazeEnabled.buildUrlForProduct(product.remoteId, BlazeFlowSource.MY_STORE_BANNER)
+                } else {
+                    isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+                }
+                triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
+            }
         )
     }
 
@@ -61,21 +73,33 @@ class MyStoreBlazeViewModel @Inject constructor(
                 impressions = 100,
                 clicks = 10,
                 budget = 1000
-            )
+            ),
+            onCampaignClicked = { /* TODO */ },
+            onViewAllCampaignsClicked = { /* TODO */ },
+            onCreateCampaignClicked = { /* TODO */ }
         )
     }
 
-    private fun getMostRecentProduct(): Product? {
+    private fun getProducts(): List<Product> {
         return productListRepository.getProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
-        ).firstOrNull { !it.isSampleProduct }
+        ).filterNot { !it.isSampleProduct }
     }
 
     sealed interface MyStoreBlazeCampaignState {
         object Hidden : MyStoreBlazeCampaignState
-        data class NoCampaign(val product: BlazeProductUi) : MyStoreBlazeCampaignState
-        data class Campaign(val campaign: BlazeCampaignUi) : MyStoreBlazeCampaignState
+        data class NoCampaign(
+            val product: BlazeProductUi,
+            val onCreateCampaignClicked: () -> Unit,
+        ) : MyStoreBlazeCampaignState
+
+        data class Campaign(
+            val campaign: BlazeCampaignUi,
+            val onCampaignClicked: () -> Unit,
+            val onViewAllCampaignsClicked: () -> Unit,
+            val onCreateCampaignClicked: () -> Unit,
+        ) : MyStoreBlazeCampaignState
     }
 
     data class BlazeProductUi(
@@ -117,4 +141,6 @@ class MyStoreBlazeViewModel @Inject constructor(
             backgroundColor = R.color.blaze_campaign_status_completed_background
         ),
     }
+
+    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
 }
