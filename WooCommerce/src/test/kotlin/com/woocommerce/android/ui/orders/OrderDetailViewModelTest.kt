@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderDetailViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
@@ -136,7 +136,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val currentViewStateValue
         get() = viewModel.viewStateData.liveData.value
 
-    private val orderWithParameters = ViewState(
+    private val orderWithParameters = OrderDetailViewState(
         orderInfo = orderInfo,
         toolbarTitle = resources.getString(string.orderdetail_orderstatus_ordernum, order.number),
         isShipmentTrackingAvailable = true,
@@ -263,7 +263,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-        var orderData: ViewState? = null
+        var orderData: OrderDetailViewState? = null
         viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
         // order notes
@@ -627,7 +627,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            var orderData: ViewState? = null
+            var orderData: OrderDetailViewState? = null
             viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
             val shippingLabels = ArrayList<ShippingLabel>()
