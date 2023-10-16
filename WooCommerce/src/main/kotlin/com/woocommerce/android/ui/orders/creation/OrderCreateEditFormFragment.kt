@@ -504,7 +504,31 @@ class OrderCreateEditFormFragment :
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
             productsSection.content = null
+            productsSection.hideAddProductsHeaderActions()
+            productsSection.hideHeader()
+            productsSection.content
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = { viewModel.onScanClicked() }
+                ),
+                addCustomAmountsButton = AddButton(
+                    text = getString(R.string.order_creation_add_custom_amounts),
+                    onClickListener = {
+                        // Implement custom amounts click listener
+                    }
+                )
+            )
         } else {
+            productsSection.showAddProductsHeaderActions()
+            productsSection.showHeader()
+            productsSection.removeProductsButtons()
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             if (productsSection.content == null) {
                 val animator = DefaultItemAnimator().apply {
@@ -528,6 +552,13 @@ class OrderCreateEditFormFragment :
                 submitList(products)
                 areProductsEditable = viewModel.currentDraft.isEditable
             }
+        }
+
+        productsSection.barcodeIcon.setOnClickListener {
+            viewModel.onScanClicked()
+        }
+        productsSection.addProductIcon.setOnClickListener {
+            viewModel.onAddProductClicked()
         }
     }
 
