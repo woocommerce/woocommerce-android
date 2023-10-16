@@ -5,6 +5,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,12 +15,15 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import javax.inject.Inject
 
 @HiltViewModel
 class MyStoreBlazeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign
+    observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
+    private val productListRepository: ProductListRepository
 ) : ScopedViewModel(savedStateHandle) {
     val blazeCampaignState = flow {
         if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
@@ -34,14 +40,16 @@ class MyStoreBlazeViewModel @Inject constructor(
     }.asLiveData()
 
     private fun prepareUiForNoCampaign(): MyStoreBlazeCampaignState {
+        val product = getMostRecentProduct() ?: return MyStoreBlazeCampaignState.Hidden
         return MyStoreBlazeCampaignState.NoCampaign(
             product = BlazeProductUi(
-                name = "Product name",
-                imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                name = product.name,
+                imgUrl = product.firstImageUrl.orEmpty(),
             )
         )
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun prepareUiForCampaign(campaign: BlazeCampaignModel): MyStoreBlazeCampaignState {
         return MyStoreBlazeCampaignState.Campaign(
             campaign = BlazeCampaignUi(
@@ -55,6 +63,13 @@ class MyStoreBlazeViewModel @Inject constructor(
                 budget = 1000
             )
         )
+    }
+
+    private fun getMostRecentProduct(): Product? {
+        return productListRepository.getProductList(
+            productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+            sortType = ProductSorting.DATE_DESC,
+        ).firstOrNull { !it.isSampleProduct }
     }
 
     sealed interface MyStoreBlazeCampaignState {
