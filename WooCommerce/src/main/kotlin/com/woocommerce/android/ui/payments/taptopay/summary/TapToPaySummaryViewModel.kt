@@ -10,9 +10,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -21,6 +23,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -31,9 +34,15 @@ class TapToPaySummaryViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
+    wooStore: WooCommerceStore,
+    cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: TapToPaySummaryFragmentArgs by savedState.navArgs()
+
+    private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
+        wooStore.getStoreCountryCode(selectedSite.get())
+    ) as CardReaderConfigForSupportedCountry
 
     private val _viewState = MutableLiveData(UiState())
     val viewState: LiveData<UiState> = _viewState
