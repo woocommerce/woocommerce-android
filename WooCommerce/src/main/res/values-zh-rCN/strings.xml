@@ -19,7 +19,6 @@ Language: zh_CN
     <string name="ai_product_name_sheet_regenerate_button">重新生成</string>
     <string name="ai_product_name_sheet_generate_button">为我写作</string>
     <string name="ai_product_name_sheet_input_description">介绍您的产品及其独特之处！</string>
-    <string name="ai_product_name_sheet_title">✨ 产品名称</string>
     <string name="ai_product_name_sheet_subtitle">让 AI 为您生成有吸引力的标题</string>
     <string name="empty_review_filtered_list_message">尝试禁用未读过滤器，以查看所有产品评论</string>
     <string name="empty_review_filtered_list_title">无未读产品评论</string>
@@ -33,7 +32,6 @@ Language: zh_CN
     <string name="product_creation_ai_preview_details_section">详情</string>
     <string name="product_creation_ai_preview_description_section">产品描述</string>
     <string name="product_creation_ai_preview_name_section">产品名称</string>
-    <string name="product_creation_ai_preview_subtitle">别担心。 您可以随时更改下方的详情。</string>
     <string name="product_creation_ai_preview_title">预览</string>
     <string name="product_creation_ai_about_product_continue_button">创建产品详情</string>
     <string name="product_creation_ai_about_product_set_tone">设置语调和声音</string>
@@ -230,7 +228,6 @@ Language: zh_CN
     <string name="try_test_order_step_4">使用此应用程序处理测试订单的退款事宜</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手动添加详情</string>
     <string name="order_creation_customer_search_old_wc_hint">通过……搜索客户</string>
-    <string name="shipping_classes_zones">配送类型和配送区域</string>
     <string name="free_trial_survey_free_text">其他原因（请具体说明）</string>
     <string name="free_trial_survey_option4">我是团队的一员，我们需要共同做出决定。</string>
     <string name="free_trial_survey_option3">服务价格是影响我决定的一项重要因素。</string>
@@ -477,8 +474,6 @@ Language: zh_CN
     <string name="product_selector_popular_products_heading">热门</string>
     <string name="jetpack_install_role_eligibility_learn_more">了解更多关于角色和权限的信息</string>
     <string name="jetpack_install_role_eligibility_error_message">您的角色似乎无法安装 Jetpack。 \n请联系您的管理员以寻求帮助。</string>
-    <string name="card_reader_tap_to_pay_description">您可以在此处使用小额金额\n测试“点按付款”。</string>
-    <string name="card_reader_test_tap_to_pay">测试您的“点按付款”</string>
     <string name="free_trial_summary_try_it">免费试用 14 天。</string>
     <string name="subscription_free_trial">免费试用版</string>
     <string name="subscription_sign_up_fee">注册费用</string>
@@ -516,7 +511,6 @@ Language: zh_CN
     <string name="product_subscription_title">订阅</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">读卡器接受借记卡和信用卡的触碰、芯片读取和刷卡支付。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">安全地接受直接通过您的手机进行非接触式支付。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">分享“点按付款”反馈</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">无法登录，因为未批准应用程序创建密码。</string>
     <string name="login_site_credentials_fetching_site">正在获取站点…</string>
     <string name="loading">正在加载…</string>

@@ -1,7 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-15.8
+15.9
 -----
 
+
+15.8
+-----
+- [*] [Internal] Fixed a crash when navigation to Excluded Products from the Coupon Details screen [https://github.com/woocommerce/woocommerce-android/pull/9952]
+- [*] [Internal] Fixed some crashes that occurred when restoring the app after a process-death [https://github.com/woocommerce/woocommerce-android/pull/9956]
 
 15.7
 ----

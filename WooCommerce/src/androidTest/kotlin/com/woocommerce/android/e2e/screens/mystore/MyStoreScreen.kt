@@ -13,6 +13,7 @@ class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
     val stats = StatsComponent()
 
     fun tapChartMiddle(): MyStoreScreen {
+        scrollTo(R.id.chart)
         clickOn(R.id.chart)
         return this
     }
