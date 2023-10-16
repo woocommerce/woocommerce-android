@@ -11,23 +11,6 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_ADD
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_VIEW_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_ELIGIBLE
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -81,7 +64,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
-import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -99,7 +81,7 @@ class OrderDetailViewModel @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val cardReaderTracker: CardReaderTracker,
-    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
@@ -245,7 +227,7 @@ class OrderDetailViewModel @Inject constructor(
      * User clicked the button to view custom fields
      */
     fun onCustomFieldsButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.ORDER_VIEW_CUSTOM_FIELDS_TAPPED)
+        tracker.trackCustomFieldsTapped()
         triggerEvent(OrderNavigationTarget.ViewCustomFields(navArgs.orderId))
     }
 
@@ -261,7 +243,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onRefreshRequested() {
-        trackerWrapper.track(ORDER_DETAIL_PULLED_TO_REFRESH)
+        tracker.trackOrderDetailPulledToRefresh()
         viewState = viewState.copy(isRefreshing = true)
         launch { fetchOrder(false) }
     }
@@ -289,13 +271,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onEditClicked() {
-        trackerWrapper.track(
-            ORDER_EDIT_BUTTON_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
-                AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
-            )
-        )
+        tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
@@ -337,13 +313,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onSeeReceiptClicked() {
-        trackerWrapper.track(
-            RECEIPT_VIEW_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                AnalyticsTracker.KEY_STATUS to order.status
-            )
-        )
+        tracker.trackReceiptViewTapped(order.id, order.status)
         loadReceiptUrl()?.let {
             triggerEvent(PreviewReceipt(order.billingAddress.email, it, order.id))
         } ?: WooLog.e(T.ORDERS, "ReceiptUrl is null, but SeeReceipt button is visible")
@@ -411,14 +381,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        trackerWrapper.track(
-            ORDER_TRACKING_ADD,
-            mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.KEY_STATUS to order.status,
-                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
-            )
-        )
+        tracker.trackAddOrderTrackingTapped(order.id, order.status, shipmentTracking.trackingProvider)
         refreshShipmentTracking()
     }
 
@@ -449,15 +412,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(updateSource: OrderStatusUpdateSource) {
-        trackerWrapper.track(
-            ORDER_STATUS_CHANGE,
-            mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.KEY_FROM to order.status.value,
-                AnalyticsTracker.KEY_TO to updateSource.newStatus,
-                AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING
-            )
-        )
+        tracker.trackOrderStatusChanged(order.id, order.status.value, updateSource.newStatus)
 
         val snackbarMessage = when (updateSource) {
             is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
@@ -527,13 +482,10 @@ class OrderDetailViewModel @Inject constructor(
                 navArgs.orderId, shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
-                trackerWrapper.track(ORDER_TRACKING_DELETE_SUCCESS)
+                tracker.trackOrderTrackingDeleteSucceeded()
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_success))
             } else {
-                trackerWrapper.track(
-                    ORDER_TRACKING_DELETE_FAILED,
-                    prepareTracksEventsDetails(onOrderChanged)
-                )
+                tracker.trackOrderTrackingDeleteFailed(onOrderChanged.error)
                 onDeleteShipmentTrackingReverted(shipmentTracking)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_delete_error))
             }
@@ -553,12 +505,9 @@ class OrderDetailViewModel @Inject constructor(
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
-                                    trackerWrapper.track(
-                                        ORDER_STATUS_CHANGE_FAILED,
-                                        prepareTracksEventsDetails(result.event)
-                                    )
+                                    tracker.trackOrderStatusChangeFailed(result.event.error)
                                 } else {
-                                    trackerWrapper.track(ORDER_STATUS_CHANGE_SUCCESS)
+                                    tracker.trackOrderStatusChangeSucceeded()
                                 }
                             }
                         }
@@ -574,17 +523,17 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onCreateShippingLabelButtonTapped() {
-        trackerWrapper.track(ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
+        tracker.trackShippinhLabelTapped()
         triggerEvent(StartShippingLabelCreationFlow(order.id))
     }
 
     fun onMarkOrderCompleteButtonTapped() {
-        trackerWrapper.track(ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED)
+        tracker.trackMarkOrderAsCompleteTapped()
         triggerEvent(ViewOrderFulfillInfo(order.id))
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
-        trackerWrapper.track(PRODUCT_ADDONS_ORDER_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED)
+        tracker.trackViewAddonsTapped()
         triggerEvent(
             ViewOrderedAddons(
                 navArgs.orderId,
@@ -654,14 +603,7 @@ class OrderDetailViewModel @Inject constructor(
         val ids = orderProducts.map { orderProduct -> orderProduct.product.productId }
         val productTypes = orderDetailRepository.getUniqueProductTypes(ids)
         val hasAddons = orderProducts.any { orderProduct -> orderProduct.product.containsAddons }
-        trackerWrapper.track(
-            stat = AnalyticsEvent.ORDER_PRODUCTS_LOADED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_ID to order.id,
-                AnalyticsTracker.PRODUCT_TYPES to productTypes,
-                AnalyticsTracker.HAS_ADDONS to hasAddons
-            )
-        )
+        tracker.trackProductsLoaded(order.id, productTypes, hasAddons)
     }
 
     private suspend fun checkAddonAvailability(products: List<Order.Item>) {
@@ -724,7 +666,7 @@ class OrderDetailViewModel @Inject constructor(
             getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
                 _subscriptions.value = subscription
                 if (subscription.isNotEmpty()) {
-                    trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+                    tracker.trackOrderDetailsSubscriptionsShown()
                 }
             }
         }
@@ -740,7 +682,7 @@ class OrderDetailViewModel @Inject constructor(
                     val giftCardSummaries = result.model ?: return@let
                     _giftCards.value = giftCardSummaries
                     if (giftCardSummaries.isNotEmpty()) {
-                        trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+                        tracker.trackOrderDetailsGiftCardShown()
                     }
                 }
         }
@@ -790,12 +732,7 @@ class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            trackerWrapper.track(
-                stat = SHIPPING_LABEL_ORDER_IS_ELIGIBLE,
-                properties = mapOf(
-                    "order_status" to order.status.value
-                )
-            )
+            tracker.trackOrderEligibleForShippingLabelCreation(order.status.value)
         }
 
         viewState = viewState.copy(
@@ -814,12 +751,6 @@ class OrderDetailViewModel @Inject constructor(
     override fun onProductFetched(remoteProductId: Long) {
         viewState = viewState.copy(refreshedProductId = remoteProductId)
     }
-
-    private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(
-        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-        AnalyticsTracker.KEY_ERROR_TYPE to event.error.type.toString(),
-        AnalyticsTracker.KEY_ERROR_DESC to event.error.message
-    )
 
     fun onCardReaderPaymentCompleted() {
         reloadOrderDetails()
