@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.content.Context
-import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -32,7 +31,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
@@ -82,8 +80,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
@@ -118,7 +114,7 @@ class OrderDetailViewModel @Inject constructor(
         get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
             viewState = viewState.copy(
-                orderInfo = OrderInfo(
+                orderInfo = OrderDetailViewState.OrderInfo(
                     value,
                     viewState.orderInfo?.isPaymentCollectableWithCardReader ?: false
                 )
@@ -602,7 +598,7 @@ class OrderDetailViewModel @Inject constructor(
         val isPaymentCollectable = isPaymentCollectable(order)
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
-            orderInfo = OrderInfo(
+            orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
                 isPaymentCollectableWithCardReader = isPaymentCollectable,
                 isReceiptButtonsVisible = !loadReceiptUrl().isNullOrEmpty()
@@ -841,37 +837,6 @@ class OrderDetailViewModel @Inject constructor(
     fun onWcShippingBannerDismissed() {
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
     }
-
-    @Parcelize
-    data class OrderDetailViewState(
-        val orderInfo: OrderInfo? = null,
-        val toolbarTitle: String? = null,
-        val orderStatus: OrderStatus? = null,
-        val isOrderDetailSkeletonShown: Boolean? = null,
-        val isRefreshing: Boolean? = null,
-        val isShipmentTrackingAvailable: Boolean? = null,
-        val refreshedProductId: Long? = null,
-        val isCreateShippingLabelButtonVisible: Boolean? = null,
-        val isProductListVisible: Boolean? = null,
-        val areShippingLabelsVisible: Boolean? = null,
-        val isProductListMenuVisible: Boolean? = null,
-        val wcShippingBannerVisible: Boolean? = null,
-        val isCustomFieldsButtonShown: Boolean? = null
-    ) : Parcelable {
-        val isMarkOrderCompleteButtonVisible: Boolean?
-            get() = if (orderStatus != null && (orderStatus.statusKey != CoreOrderStatus.COMPLETED.value))
-                orderInfo?.order?.isOrderPaid else false
-
-        val isCreateShippingLabelBannerVisible: Boolean
-            get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
-    }
-
-    @Parcelize
-    data class OrderInfo(
-        val order: Order? = null,
-        val isPaymentCollectableWithCardReader: Boolean = false,
-        val isReceiptButtonsVisible: Boolean = false
-    ) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

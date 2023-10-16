@@ -31,8 +31,8 @@ import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderDetailViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState.OrderInfo
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
