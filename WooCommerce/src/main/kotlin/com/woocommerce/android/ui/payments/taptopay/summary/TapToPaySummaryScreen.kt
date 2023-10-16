@@ -106,7 +106,7 @@ fun TapToPaySummaryScreen(
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
                 Text(
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_try_and_refund),
+                    text = uiState.messageWithAmount,
                     style = MaterialTheme.typography.body1,
                     textAlign = Center,
                 )
@@ -170,7 +170,10 @@ fun LearnMoreAboutTTP(onLearnMoreClicked: () -> Unit) {
 fun TapToPaySummaryScreenPreview() {
     WooThemeWithBackground {
         TapToPaySummaryScreen(
-            uiState = UiState(isProgressVisible = false),
+            uiState = UiState(
+                isProgressVisible = false,
+                messageWithAmount = "Try a $0.50 payment with your debit or credit card."
+            ),
             onTryPaymentClicked = {},
             onBackClick = {},
             onLearnMoreClicked = {},
