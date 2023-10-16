@@ -178,6 +178,23 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given 30 cents min allowed charged config, when onTryPaymentClicked, then order created with 30 cents value`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderConfig.minimumAllowedChargeAmount).thenReturn(BigDecimal.valueOf(0.3))
+            val viewModel = initViewModel()
+
+            // WHEN
+            viewModel.onTryPaymentClicked()
+
+            // THEN
+            verify(orderCreateEditRepository).createSimplePaymentOrder(
+                BigDecimal.valueOf(0.3),
+                customerNote = "Test payment"
+            )
+        }
+
+    @Test
     fun `when onBackClicked, then exit emitted`() {
         // GIVEN
         val viewModel = initViewModel()
