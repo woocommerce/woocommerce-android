@@ -48,6 +48,15 @@ class MyStoreBlazeViewModel @Inject constructor(
     }.asLiveData()
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
+        fun launchCampaignCreation(productId: Long?) {
+            val url = if (productId != null) {
+                isBlazeEnabled.buildUrlForProduct(productId, BlazeFlowSource.MY_STORE_BANNER)
+            } else {
+                isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+            }
+            triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
+        }
+
         return getProducts().map { products ->
             val product = products.firstOrNull() ?: return@map MyStoreBlazeCampaignState.Hidden
             MyStoreBlazeCampaignState.NoCampaign(
@@ -55,13 +64,11 @@ class MyStoreBlazeViewModel @Inject constructor(
                     name = product.name,
                     imgUrl = product.firstImageUrl.orEmpty(),
                 ),
+                onProductClicked = {
+                    launchCampaignCreation(product.remoteId)
+                },
                 onCreateCampaignClicked = {
-                    val url = if (products.size == 1) {
-                        isBlazeEnabled.buildUrlForProduct(product.remoteId, BlazeFlowSource.MY_STORE_BANNER)
-                    } else {
-                        isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
-                    }
-                    triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
+                    launchCampaignCreation(if (products.size == 1) product.remoteId else null)
                 }
             )
         }
@@ -107,6 +114,7 @@ class MyStoreBlazeViewModel @Inject constructor(
         object Hidden : MyStoreBlazeCampaignState
         data class NoCampaign(
             val product: BlazeProductUi,
+            val onProductClicked: () -> Unit,
             val onCreateCampaignClicked: () -> Unit,
         ) : MyStoreBlazeCampaignState
 

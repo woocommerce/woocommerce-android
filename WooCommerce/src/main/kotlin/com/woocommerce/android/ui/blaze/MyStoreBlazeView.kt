@@ -79,7 +79,7 @@ fun MyStoreBlazeView(
                         )
                         BlazeProductItem(
                             product = state.product,
-                            onProductSelected = state.onCreateCampaignClicked,
+                            onProductSelected = state.onProductClicked,
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
                     }
@@ -330,6 +330,7 @@ fun MyStoreBlazeViewNoCampaignPreview() {
                 name = "Product name",
                 imgUrl = "",
             ),
+            onProductClicked = {},
             onCreateCampaignClicked = {}
         )
     )
