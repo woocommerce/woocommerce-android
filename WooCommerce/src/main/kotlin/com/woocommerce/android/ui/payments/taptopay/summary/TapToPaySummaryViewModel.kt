@@ -24,7 +24,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -76,7 +75,7 @@ class TapToPaySummaryViewModel @Inject constructor(
         launch {
             _viewState.value = UiState(isProgressVisible = true)
             val result = orderCreateEditRepository.createSimplePaymentOrder(
-                TEST_ORDER_AMOUNT,
+                countryConfig.minimumAllowedChargeAmount,
                 customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note)
             )
             result.fold(
@@ -162,8 +161,4 @@ class TapToPaySummaryViewModel @Inject constructor(
     ) : Event()
 
     data class NavigateToUrlInGenericWebView(val url: String) : Event()
-
-    companion object {
-        private val TEST_ORDER_AMOUNT = BigDecimal.valueOf(0.5)
-    }
 }
