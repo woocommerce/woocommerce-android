@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.annotation.DimenRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -18,6 +19,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationSectionBinding
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 
 class OrderCreateEditSectionView @JvmOverloads constructor(
     ctx: Context,
@@ -56,6 +58,12 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             updateContent(value)
         }
 
+    val barcodeIcon: ImageView
+        get() = binding.barcodeIcon
+
+    val addProductIcon: ImageView
+        get() = binding.addIcon
+
     private var keepAddButtons: Boolean = false
     private var hasEditButton: Boolean = true
 
@@ -76,8 +84,23 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         }
     }
 
+    fun showAddProductsHeaderActions() {
+        binding.productsAdd.show()
+    }
+
+    fun hideAddProductsHeaderActions() {
+        binding.productsAdd.hide()
+    }
     fun hideHeader() {
         binding.headerLabel.hide()
+    }
+
+    fun showHeader() {
+        binding.headerLabel.show()
+    }
+
+    fun removeProductsButtons() {
+        binding.addButtonsLayout.removeAllViews()
     }
 
     fun setAddButtons(buttons: List<AddButton>) {
