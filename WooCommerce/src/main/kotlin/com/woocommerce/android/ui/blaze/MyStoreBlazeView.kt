@@ -7,12 +7,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -83,6 +85,7 @@ fun MyStoreBlazeView(
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
                     }
+
                     else -> error("Invalid state")
                 }
             }
@@ -92,7 +95,11 @@ fun MyStoreBlazeView(
                     onCreateCampaignClicked
                 )
 
-                is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(onCreateCampaignClicked)
+                is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
+                    onCreateCampaignClicked = onCreateCampaignClicked,
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                )
+
                 else -> error("Invalid state")
             }
         }
@@ -100,13 +107,23 @@ fun MyStoreBlazeView(
 }
 
 @Composable
-private fun CreateCampaignFooter(onCreateCampaignClicked: () -> Unit) {
-    Divider()
-    WCTextButton(
-        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
-        onClick = onCreateCampaignClicked
-    ) {
-        Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+private fun CreateCampaignFooter(
+    onCreateCampaignClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        Divider(Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+        WCTextButton(
+            onClick = onCreateCampaignClicked,
+            contentPadding = PaddingValues(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = ButtonDefaults.TextButtonContentPadding.calculateTopPadding(),
+                bottom = ButtonDefaults.TextButtonContentPadding.calculateBottomPadding(),
+            )
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+        }
     }
 }
 
@@ -280,7 +297,7 @@ private fun CampaignStat(
 @Preview(name = "mid screen", device = Devices.PIXEL_4)
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
-fun MyStoreBlazeViewPreview() {
+fun MyStoreBlazeViewCampaignPreview() {
     val product = BlazeProductUi(
         name = "Product name",
         imgUrl = "",
@@ -294,6 +311,26 @@ fun MyStoreBlazeViewPreview() {
                 clicks = 10,
                 budget = 1000
             ),
+        ),
+        onCreateCampaignClicked = {},
+        onShowAllClicked = {}
+    )
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+fun MyStoreBlazeViewNoCampaignPreview() {
+    MyStoreBlazeView(
+        state = MyStoreBlazeCampaignState.NoCampaign(
+            product = BlazeProductUi(
+                name = "Product name",
+                imgUrl = "",
+            )
         ),
         onCreateCampaignClicked = {},
         onShowAllClicked = {}
