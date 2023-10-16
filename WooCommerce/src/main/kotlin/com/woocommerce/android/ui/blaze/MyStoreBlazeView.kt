@@ -79,7 +79,7 @@ fun MyStoreBlazeView(
                         )
                         BlazeProductItem(
                             product = state.product,
-                            onProductSelected = {},
+                            onProductSelected = state.onCreateCampaignClicked,
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
                     }
