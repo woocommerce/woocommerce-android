@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.blaze
 
-import android.os.Parcelable
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
@@ -9,8 +8,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import javax.inject.Inject
 
@@ -19,32 +19,32 @@ class MyStoreBlazeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign
 ) : ScopedViewModel(savedStateHandle) {
-    val blazeCampaignState = observeMostRecentBlazeCampaign().map {
-        when (it) {
-            null -> prepareUiForNoCampaign()
-            else -> prepareUiForCampaign(it)
+    val blazeCampaignState = flow {
+        if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
+        else {
+            emitAll(
+                observeMostRecentBlazeCampaign().map {
+                    when (it) {
+                        null -> prepareUiForNoCampaign()
+                        else -> prepareUiForCampaign(it)
+                    }
+                }
+            )
         }
     }.asLiveData()
 
-    private fun prepareUiForNoCampaign(): MyStoreBlazeUi {
-        return MyStoreBlazeUi(
-            isVisible = FeatureFlag.BLAZE_ITERATION_2.isEnabled(),
+    private fun prepareUiForNoCampaign(): MyStoreBlazeCampaignState {
+        return MyStoreBlazeCampaignState.NoCampaign(
             product = BlazeProductUi(
                 name = "Product name",
                 imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
-            ),
-            blazeActiveCampaign = null
+            )
         )
     }
 
-    private fun prepareUiForCampaign(campaign: BlazeCampaignModel): MyStoreBlazeUi {
-        return MyStoreBlazeUi(
-            isVisible = FeatureFlag.BLAZE_ITERATION_2.isEnabled(),
-            product = BlazeProductUi(
-                name = "Product name",
-                imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
-            ),
-            blazeActiveCampaign = BlazeCampaignUi(
+    private fun prepareUiForCampaign(campaign: BlazeCampaignModel): MyStoreBlazeCampaignState {
+        return MyStoreBlazeCampaignState.Campaign(
+            campaign = BlazeCampaignUi(
                 product = BlazeProductUi(
                     name = "Product name",
                     imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
@@ -57,27 +57,24 @@ class MyStoreBlazeViewModel @Inject constructor(
         )
     }
 
-    @Parcelize
-    data class MyStoreBlazeUi(
-        val isVisible: Boolean,
-        val product: BlazeProductUi,
-        val blazeActiveCampaign: BlazeCampaignUi?
-    ) : Parcelable
+    sealed interface MyStoreBlazeCampaignState {
+        object Hidden : MyStoreBlazeCampaignState
+        data class NoCampaign(val product: BlazeProductUi) : MyStoreBlazeCampaignState
+        data class Campaign(val campaign: BlazeCampaignUi) : MyStoreBlazeCampaignState
+    }
 
-    @Parcelize
     data class BlazeProductUi(
         val name: String,
         val imgUrl: String
-    ) : Parcelable
+    )
 
-    @Parcelize
     data class BlazeCampaignUi(
         val product: BlazeProductUi,
         val status: CampaignStatusUi,
         val impressions: Int,
         val clicks: Int,
         val budget: Int
-    ) : Parcelable
+    )
 
     enum class CampaignStatusUi(
         @StringRes val statusDisplayText: Int,

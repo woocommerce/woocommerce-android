@@ -35,14 +35,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.BlazeProductUi
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.CampaignStatusUi
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeUi
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.compose.component.ListItemImage
 import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun MyStoreBlazeView(
-    state: MyStoreBlazeUi,
+    state: MyStoreBlazeCampaignState,
     onCreateCampaignClicked: () -> Unit,
     onShowAllClicked: () -> Unit
 ) {
@@ -61,14 +61,14 @@ fun MyStoreBlazeView(
                 )
             ) {
                 BlazeCampaignHeader()
-                when {
-                    state.blazeActiveCampaign != null -> BlazeCampaignItem(
-                        campaign = state.blazeActiveCampaign,
+                when (state) {
+                    is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
+                        campaign = state.campaign,
                         onCampaignClicked = {},
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
-                    else -> {
+                    is MyStoreBlazeCampaignState.NoCampaign -> {
                         Text(
                             modifier = Modifier.padding(
                                 top = dimensionResource(id = R.dimen.major_100),
@@ -83,15 +83,17 @@ fun MyStoreBlazeView(
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
                     }
+                    else -> error("Invalid state")
                 }
             }
-            when {
-                state.blazeActiveCampaign != null -> ShowAllOrCreateCampaignFooter(
+            when (state) {
+                is MyStoreBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
                     onShowAllClicked,
                     onCreateCampaignClicked
                 )
 
-                else -> CreateCampaignFooter(onCreateCampaignClicked)
+                is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(onCreateCampaignClicked)
+                else -> error("Invalid state")
             }
         }
     }
@@ -284,10 +286,8 @@ fun MyStoreBlazeViewPreview() {
         imgUrl = "",
     )
     MyStoreBlazeView(
-        state = MyStoreBlazeUi(
-            isVisible = true,
-            product = product,
-            blazeActiveCampaign = BlazeCampaignUi(
+        state = MyStoreBlazeCampaignState.Campaign(
+            campaign = BlazeCampaignUi(
                 product = product,
                 status = CampaignStatusUi.Active,
                 impressions = 100,
