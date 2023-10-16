@@ -81,7 +81,8 @@ class ProductListRepository @Inject constructor(
     suspend fun fetchProductList(
         loadMore: Boolean = false,
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>? = null,
+        sortType: ProductSorting = productSortingChoice
     ): List<Product> {
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
@@ -91,7 +92,7 @@ class ProductListRepository @Inject constructor(
                 site = selectedSite.get(),
                 pageSize = PRODUCT_PAGE_SIZE,
                 offset = offset,
-                sorting = productSortingChoice,
+                sorting = sortType,
                 filterOptions = productFilterOptions,
                 excludedProductIds = excludedProductIds
             )

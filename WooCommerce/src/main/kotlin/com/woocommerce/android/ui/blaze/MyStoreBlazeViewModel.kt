@@ -13,8 +13,12 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
@@ -28,11 +32,12 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedStateHandle) {
+    @OptIn(ExperimentalCoroutinesApi::class)
     val blazeCampaignState = flow {
         if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
         else {
             emitAll(
-                observeMostRecentBlazeCampaign().map {
+                observeMostRecentBlazeCampaign().flatMapLatest {
                     when (it) {
                         null -> prepareUiForNoCampaign()
                         else -> prepareUiForCampaign(it)
@@ -42,49 +47,60 @@ class MyStoreBlazeViewModel @Inject constructor(
         }
     }.asLiveData()
 
-    private fun prepareUiForNoCampaign(): MyStoreBlazeCampaignState {
-        val products = getProducts()
-        val product = products.firstOrNull() ?: return MyStoreBlazeCampaignState.Hidden
-        return MyStoreBlazeCampaignState.NoCampaign(
-            product = BlazeProductUi(
-                name = product.name,
-                imgUrl = product.firstImageUrl.orEmpty(),
-            ),
-            onCreateCampaignClicked = {
-                val url = if (products.size == 1) {
-                    isBlazeEnabled.buildUrlForProduct(product.remoteId, BlazeFlowSource.MY_STORE_BANNER)
-                } else {
-                    isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+    private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
+        return getProducts().map { products ->
+            val product = products.firstOrNull() ?: return@map MyStoreBlazeCampaignState.Hidden
+            MyStoreBlazeCampaignState.NoCampaign(
+                product = BlazeProductUi(
+                    name = product.name,
+                    imgUrl = product.firstImageUrl.orEmpty(),
+                ),
+                onCreateCampaignClicked = {
+                    val url = if (products.size == 1) {
+                        isBlazeEnabled.buildUrlForProduct(product.remoteId, BlazeFlowSource.MY_STORE_BANNER)
+                    } else {
+                        isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+                    }
+                    triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
                 }
-                triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
-            }
-        )
+            )
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun prepareUiForCampaign(campaign: BlazeCampaignModel): MyStoreBlazeCampaignState {
-        return MyStoreBlazeCampaignState.Campaign(
-            campaign = BlazeCampaignUi(
-                product = BlazeProductUi(
-                    name = "Product name",
-                    imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+    private fun prepareUiForCampaign(campaign: BlazeCampaignModel): Flow<MyStoreBlazeCampaignState> {
+        return flowOf(
+            MyStoreBlazeCampaignState.Campaign(
+                campaign = BlazeCampaignUi(
+                    product = BlazeProductUi(
+                        name = "Product name",
+                        imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                    ),
+                    status = CampaignStatusUi.Active,
+                    impressions = 100,
+                    clicks = 10,
+                    budget = 1000
                 ),
-                status = CampaignStatusUi.Active,
-                impressions = 100,
-                clicks = 10,
-                budget = 1000
-            ),
-            onCampaignClicked = { /* TODO */ },
-            onViewAllCampaignsClicked = { /* TODO */ },
-            onCreateCampaignClicked = { /* TODO */ }
+                onCampaignClicked = { /* TODO */ },
+                onViewAllCampaignsClicked = { /* TODO */ },
+                onCreateCampaignClicked = { /* TODO */ }
+            )
         )
     }
 
-    private fun getProducts(): List<Product> {
-        return productListRepository.getProductList(
+    private fun getProducts(): Flow<List<Product>> {
+        fun getCachedProducts() = productListRepository.getProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
-        ).filterNot { !it.isSampleProduct }
+        ).filterNot { it.isSampleProduct }
+        return flow {
+            emit(getCachedProducts())
+            productListRepository.fetchProductList(
+                productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+                sortType = ProductSorting.DATE_DESC,
+            )
+            emit(getCachedProducts())
+        }
     }
 
     sealed interface MyStoreBlazeCampaignState {
