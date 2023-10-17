@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 13:54:04+0000
+Translation-Revision-Date: 2023-10-14 17:01:42+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -20,7 +20,6 @@ Language: ar
     <string name="ai_product_name_sheet_generate_button">كتابة ذلك من أجلي</string>
     <string name="ai_product_name_sheet_input_description">أخبرنا بمضمون منتجك وما الذي يجعله فريدًا!</string>
     <string name="ai_product_name_sheet_subtitle">السماح للذكاء الاصطناعي بإنشاء عناوين جذابة من أجلك</string>
-    <string name="ai_product_name_sheet_title">✨ اسم المنتج</string>
     <string name="empty_review_filtered_list_message">حاول تعطيل عامل التصفية غير المقروء لرؤية كل مراجعات منتجك</string>
     <string name="empty_review_filtered_list_title">لا توجد مراجعات غير مقروءة للمنتج</string>
     <string name="product_creation_ai_tone_selected_content_desc">تم تحديد النغمة</string>
@@ -33,7 +32,6 @@ Language: ar
     <string name="product_creation_ai_preview_details_section">تفاصيل</string>
     <string name="product_creation_ai_preview_description_section">وصف المنتج</string>
     <string name="product_creation_ai_preview_name_section">اسم المنتج</string>
-    <string name="product_creation_ai_preview_subtitle">لا تقلق. يمكنك دومًا تغيير التفاصيل أدناه لاحقًا.</string>
     <string name="product_creation_ai_preview_title">معاينة</string>
     <string name="product_creation_ai_about_product_continue_button">إنشاء تفاصيل المنتجات</string>
     <string name="product_creation_ai_about_product_set_tone">تعيين النغمة والصوت</string>
@@ -230,7 +228,6 @@ Language: ar
     <string name="empty_order_test_order_message">تشغيل طلب الاختبار لضمان تقديم معالجة WooCommerce التي تقوم بها تجربة عملاء سلسة</string>
     <string name="order_creation_customer_search_empty_add_details_manually">إضافة التفاصيل يدويًا</string>
     <string name="order_creation_customer_search_old_wc_hint">البحث عن العملاء حسب</string>
-    <string name="shipping_classes_zones">فئات ومناطق الشحن</string>
     <string name="free_trial_survey_free_text">سبب آخر (يرجى التحديد)</string>
     <string name="free_trial_survey_option4">أنا جزء من فريق، ويتعين علينا اتخاذ القرار بشكل جماعي.</string>
     <string name="free_trial_survey_option3">يتضح لي أن سعر الخدمة عامل شديد الأهمية في قراري. </string>
@@ -478,8 +475,6 @@ Language: ar
     <string name="product_selector_popular_products_heading">شائع</string>
     <string name="jetpack_install_role_eligibility_learn_more">معرفة المزيد حول القواعد والصلاحية</string>
     <string name="jetpack_install_role_eligibility_error_message">يبدو أن الدور الخاص بك لا يسمح لك بتثبيت Jetpack. \nيرجى الاتصال بالمسؤول لديك للحصول على مساعدة. </string>
-    <string name="card_reader_tap_to_pay_description">يمكنك اختبار ميزة Tap To Pay باستخدام\nالكمية هنا.</string>
-    <string name="card_reader_test_tap_to_pay">اختبار ميزة Tap To Pay لديك</string>
     <string name="subscription_free_trial">تجربة مجانية</string>
     <string name="subscription_sign_up_fee">رسوم التسجيل</string>
     <string name="subscription_expire">تنتهي الصلاحية بعد</string>
@@ -516,7 +511,8 @@ Language: ar
     <string name="product_subscription_title">الاشتراك</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">يقبل قارئ البطاقات المدفوعات من خلال الضغط والرقائق والسحب باستخدام بطاقات الخصم والائتمان.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">اقبل مدفوعات لا حصر لها بأمان وبشكل مباشر من هاتفك.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">مشاركة ملاحظات ميزة Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description">استخدم هاتفك لقبول الدفع\nبالبطاقة. جربها الآن.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">مشاركة ملاحظات</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">يتعذر تسجيل الدخول لأن إنشاء كلمة مرور التطبيق غير معتمد.</string>
     <string name="login_site_credentials_fetching_site">جارٍ إحضار الموقع…</string>
     <string name="login_site_credentials_fetching_site_failed">حدث خطأ في أثناء إحضار موقعك على الويب</string>

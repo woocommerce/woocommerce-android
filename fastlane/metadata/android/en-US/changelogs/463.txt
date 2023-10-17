@@ -1,5 +1,3 @@
-<en-US>
-15.7:
 - [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
 - [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]
 - [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]
@@ -8,4 +6,3 @@
 - [*] Order creation: If a customer not found with given email, then there is a shortcut to create that manually [https://github.com/woocommerce/woocommerce-android/pull/9841]
 - [*] Product Creation using AI: Added support for suggesting new categories and tags [https://github.com/woocommerce/woocommerce-android/pull/9919]
 
-</en-US>
