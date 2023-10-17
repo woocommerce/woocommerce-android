@@ -56,6 +56,10 @@ class BlazeCampaignListViewModel @Inject constructor(
         // TODO
     }
 
+    fun onAddNewCampaignClicked() {
+        // TODO
+    }
+
     @Parcelize
     data class BlazeCampaignListState(
         val campaigns: List<BlazeCampaignUi>,

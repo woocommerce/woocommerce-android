@@ -3,14 +3,22 @@ package com.woocommerce.android.ui.blaze.campaigs
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -27,6 +35,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
         BlazeCampaignListScreen(
             state = state,
             onCampaignClicked = viewModel::onCampaignSelected,
+            onAddNewCampaignClicked = viewModel::onAddNewCampaignClicked,
             modifier = Modifier.background(color = MaterialTheme.colors.surface)
         )
     }
@@ -36,20 +45,42 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
     onCampaignClicked: () -> Unit,
+    onAddNewCampaignClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
         state.isLoading -> {}
         else -> {
-            LazyColumn(
-                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
-            ) {
-                items(state.campaigns) { campaign ->
-                    BlazeCampaignItem(
-                        campaign = campaign,
-                        onCampaignClicked = onCampaignClicked,
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_100),
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
                     )
-                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            ) {
+                LazyColumn {
+                    items(state.campaigns) { campaign ->
+                        BlazeCampaignItem(
+                            campaign = campaign,
+                            onCampaignClicked = onCampaignClicked,
+                        )
+                        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+                    }
+                }
+                FloatingActionButton(
+                    onClick = onAddNewCampaignClicked,
+                    shape = CircleShape,
+                    backgroundColor = MaterialTheme.colors.primary,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Large floating action button",
+                    )
                 }
             }
         }
@@ -63,7 +94,7 @@ private fun BlazeCampaignListScreen(
 @Preview(name = "mid screen", device = Devices.PIXEL_4)
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
-fun BlazeCampaignListScreen() {
+fun BlazeCampaignListScreenPreview() {
     BlazeCampaignListScreen(
         state = BlazeCampaignListState(
             campaigns = listOf(
@@ -80,6 +111,7 @@ fun BlazeCampaignListScreen() {
             ),
             isLoading = false
         ),
-        onCampaignClicked = { }
+        onCampaignClicked = { },
+        onAddNewCampaignClicked = { }
     )
 }
