@@ -2,12 +2,20 @@ package com.woocommerce.android.ui.blaze.campaigs
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
@@ -19,6 +27,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
         BlazeCampaignListScreen(
             state = state,
             onCampaignClicked = viewModel::onCampaignSelected,
+            modifier = Modifier.background(color = MaterialTheme.colors.surface)
         )
     }
 }
@@ -27,16 +36,20 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
     onCampaignClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     when {
         state.isLoading -> {}
         else -> {
-            LazyColumn {
+            LazyColumn(
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
+            ) {
                 items(state.campaigns) { campaign ->
                     BlazeCampaignItem(
                         campaign = campaign,
                         onCampaignClicked = onCampaignClicked,
                     )
+                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
                 }
             }
         }
