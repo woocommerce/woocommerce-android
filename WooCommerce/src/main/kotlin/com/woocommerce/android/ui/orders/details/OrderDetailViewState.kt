@@ -34,5 +34,4 @@ data class OrderDetailViewState(
         val isPaymentCollectableWithCardReader: Boolean = false,
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
-
 }
