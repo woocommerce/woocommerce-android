@@ -10,4 +10,5 @@ import javax.inject.Inject
 class BlazeCampaignsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
+
 }
