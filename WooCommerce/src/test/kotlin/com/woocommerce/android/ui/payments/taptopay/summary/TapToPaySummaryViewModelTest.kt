@@ -48,7 +48,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.tap_to_pay_refund_reason) }.thenReturn("Test Tap To Pay payment auto refund")
         on { getString(R.string.card_reader_tap_to_pay_test_payment_note) }.thenReturn("Test payment")
-        on { getString(R.string.card_reader_tap_to_pay_explanation_try_and_refund, "$0.50") }.thenReturn(
+        on { getString(R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount, "$0.50") }.thenReturn(
             "Try a $0.50 payment with your debit or credit card."
         )
     }
@@ -77,7 +77,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         whenever(currencyFormatter.formatCurrency("0.5", "USD")).thenReturn("$0.50")
         whenever(
             resourceProvider.getString(
-                R.string.card_reader_tap_to_pay_explanation_try_and_refund, "$0.50"
+                R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount, "$0.50"
             )
         ).thenReturn("Try a $0.50 payment with your debit or credit card.")
         val viewModel = initViewModel()
@@ -213,7 +213,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             whenever(currencyFormatter.formatCurrency("0.3", "GDP")).thenReturn("£0.30")
             whenever(
                 resourceProvider.getString(
-                    R.string.card_reader_tap_to_pay_explanation_try_and_refund, "£0.30"
+                    R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount, "£0.30"
                 )
             ).thenReturn("Try a £0.30 payment with your debit or credit card.")
             val viewModel = initViewModel()

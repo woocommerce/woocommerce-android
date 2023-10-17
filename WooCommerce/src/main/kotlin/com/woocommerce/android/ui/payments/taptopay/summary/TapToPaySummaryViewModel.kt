@@ -156,7 +156,7 @@ class TapToPaySummaryViewModel @Inject constructor(
             currencyCode = currency,
         )
         return resourceProvider.getString(
-            R.string.card_reader_tap_to_pay_explanation_try_and_refund,
+            R.string.card_reader_tap_to_pay_explanation_try_and_refund_with_amount,
             amount,
         )
     }
