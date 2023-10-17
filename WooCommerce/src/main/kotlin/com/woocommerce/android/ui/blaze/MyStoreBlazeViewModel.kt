@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +41,10 @@ class MyStoreBlazeViewModel @Inject constructor(
             )
         )
     val blazeCampaignState = _blazeCampaignState.asLiveData()
+
+    fun onShowAllCampaignsClicked() {
+        triggerEvent(ShowAllCampaigns)
+    }
 
     @Parcelize
     data class MyStoreBlazeUi(
@@ -89,4 +94,6 @@ class MyStoreBlazeViewModel @Inject constructor(
             backgroundColor = R.color.blaze_campaign_status_completed_background
         ),
     }
+
+    object ShowAllCampaigns : MultiLiveEvent.Event()
 }
