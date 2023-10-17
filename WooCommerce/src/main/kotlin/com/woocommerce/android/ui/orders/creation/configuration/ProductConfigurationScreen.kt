@@ -123,45 +123,57 @@ fun ProductConfigurationScreen(
                 val hasOptionalRule = childMapEntry.value.containsKey(OptionalRule.KEY)
                 val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
 
-                if (hasQuantityAndOptionalRules) {
-                    OptionalQuantityProductItem(
-                        title = item.title,
-                        imageUrl = item.imageUrl,
-                        info = null,
-                        quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
-                        onQuantityChanged = { value ->
-                            onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                        },
-                        isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
-                        onSwitchChanged = { value ->
-                            onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                        }
-                    )
-                } else {
-                    if (hasQuantityRule) {
-                        QuantityProductItem(
+                    if (hasQuantityAndOptionalRules) {
+                        OptionalQuantityProductItem(
                             title = item.title,
                             imageUrl = item.imageUrl,
                             info = null,
                             quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
                             onQuantityChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                            }
-                        )
-                    }
-                    if (hasOptionalRule) {
-                        OptionalProductItem(
-                            title = item.title,
-                            imageUrl = item.imageUrl,
-                            info = null,
+                            },
                             isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                             onSwitchChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                             }
                         )
+                    } else {
+                        if (hasQuantityRule) {
+                            QuantityProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = null,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
+                                onQuantityChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
+                                }
+                            )
+                        }
+                        if (hasOptionalRule) {
+                            OptionalProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = null,
+                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                onSwitchChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
+                                }
+                            )
+                        }
                     }
                 }
             }
+            Divider(
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
+            )
+            WCColoredButton(
+                onClick = onSaveConfigurationClick,
+                text = stringResource(id = R.string.save_configuration),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.major_100))
+            )
         }
     }
 }
