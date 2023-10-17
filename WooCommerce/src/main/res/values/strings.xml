@@ -3667,6 +3667,11 @@
     <string name="blaze_campaign_status_budget">Budget</string>
 
     <!--
+    Blaze campaign list
+    -->
+    <string name="blaze_campaign_list_title">Blaze campaigns</string>
+
+    <!--
     Highlights tooltip
     -->
     <string name="highlights_tooltip_title_hint">Tooltip title</string>
