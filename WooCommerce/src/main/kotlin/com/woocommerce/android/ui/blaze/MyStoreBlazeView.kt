@@ -203,9 +203,20 @@ fun MyStoreBlazeViewPreview() {
             blazeActiveCampaign = BlazeCampaignUi(
                 product = product,
                 status = CampaignStatusUi.Active,
-                impressions = 100,
-                clicks = 10,
-                budget = 1000
+                stats = listOf(
+                    BlazeCampaignStat(
+                        name = R.string.blaze_campaign_status_impressions,
+                        value = 100
+                    ),
+                    BlazeCampaignStat(
+                        name = R.string.blaze_campaign_status_clicks,
+                        value = 10
+                    ),
+                    BlazeCampaignStat(
+                        name = R.string.blaze_campaign_status_budget,
+                        value = 1000
+                    ),
+                ),
             ),
         ),
         onCreateCampaignClicked = {},

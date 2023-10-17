@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,9 +32,16 @@ class MyStoreBlazeViewModel @Inject constructor(
                         imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                     ),
                     status = CampaignStatusUi.Active,
-                    impressions = 100,
-                    clicks = 10,
-                    budget = 1000
+                    stats = listOf(
+                        BlazeCampaignStat(
+                            name = R.string.blaze_campaign_status_impressions,
+                            value = 100
+                        ),
+                        BlazeCampaignStat(
+                            name = R.string.blaze_campaign_status_clicks,
+                            value = 10
+                        )
+                    ),
                 )
             )
         )

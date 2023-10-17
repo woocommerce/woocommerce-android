@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
@@ -31,9 +33,20 @@ class BlazeCampaignListViewModel @Inject constructor(
                             "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                         ),
                         status = Active,
-                        impressions = 100,
-                        clicks = 10,
-                        budget = 1000
+                        stats = listOf(
+                            BlazeCampaignStat(
+                                name = R.string.blaze_campaign_status_impressions,
+                                value = 100
+                            ),
+                            BlazeCampaignStat(
+                                name = R.string.blaze_campaign_status_clicks,
+                                value = 10
+                            ),
+                            BlazeCampaignStat(
+                                name = R.string.blaze_campaign_status_budget,
+                                value = 1000
+                            ),
+                        ),
                     ),
                     BlazeCampaignUi(
                         product = BlazeProductUi(
@@ -42,9 +55,20 @@ class BlazeCampaignListViewModel @Inject constructor(
                             "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                         ),
                         status = InModeration,
-                        impressions = 100,
-                        clicks = 10,
-                        budget = 1000
+                        stats = listOf(
+                            BlazeCampaignStat(
+                                name = R.string.blaze_campaign_status_impressions,
+                                value = 100
+                            ),
+                            BlazeCampaignStat(
+                                name = R.string.blaze_campaign_status_clicks,
+                                value = 10
+                            ),
+                            BlazeCampaignStat(
+                                name = R.string.blaze_campaign_status_budget,
+                                value = 1000
+                            ),
+                        ),
                     )
                 ),
                 isLoading = false

@@ -16,9 +16,13 @@ data class BlazeProductUi(
 data class BlazeCampaignUi(
     val product: BlazeProductUi,
     val status: CampaignStatusUi,
-    val impressions: Int,
-    val clicks: Int,
-    val budget: Int
+    val stats: List<BlazeCampaignStat>,
+) : Parcelable
+
+@Parcelize
+data class BlazeCampaignStat(
+    @StringRes val name: Int,
+    val value: Int
 ) : Parcelable
 
 enum class CampaignStatusUi(

@@ -24,6 +24,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
@@ -104,9 +106,20 @@ fun BlazeCampaignListScreenPreview() {
                         imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                     ),
                     status = Active,
-                    impressions = 100,
-                    clicks = 10,
-                    budget = 1000
+                    stats = listOf(
+                        BlazeCampaignStat(
+                            name = string.blaze_campaign_status_impressions,
+                            value = 100
+                        ),
+                        BlazeCampaignStat(
+                            name = string.blaze_campaign_status_clicks,
+                            value = 10
+                        ),
+                        BlazeCampaignStat(
+                            name = string.blaze_campaign_status_budget,
+                            value = 1000
+                        ),
+                    ),
                 )
             ),
             isLoading = false

@@ -70,14 +70,12 @@ fun BlazeCampaignItem(
                     fontWeight = FontWeight.Bold,
                 )
                 Row(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))) {
-                    CampaignStat(
-                        statName = stringResource(id = R.string.blaze_campaign_status_impressions),
-                        statValue = campaign.impressions
-                    )
-                    CampaignStat(
-                        statName = stringResource(id = R.string.blaze_campaign_status_clicks),
-                        statValue = campaign.clicks
-                    )
+                    campaign.stats.forEach {
+                        CampaignStat(
+                            statName = stringResource(id = it.name),
+                            statValue = it.value
+                        )
+                    }
                 }
             }
         }
