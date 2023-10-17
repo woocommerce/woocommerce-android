@@ -1930,6 +1930,8 @@
     <string name="product_creation_ai_tone_convincing">Convincing</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
     <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
+    <string name="product_creation_package_photo_keywords_section">Keywords</string>
+    <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
 
     <!--
         Product Add more details Bottom sheet
