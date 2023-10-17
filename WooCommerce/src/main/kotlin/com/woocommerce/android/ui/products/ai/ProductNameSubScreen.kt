@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier) {
@@ -198,15 +199,17 @@ private fun ProductKeywordsTextFieldWithEmbeddedButton(
             )
         }
 
-        WCTextButton(
-            modifier = Modifier
-                .fillMaxWidth(),
-            onClick = onPackageImageButtonClicked,
-            icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera),
-            allCaps = false,
-            text = stringResource(id = R.string.ai_product_creation_photo_button),
-            colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.color_on_surface))
-        )
+        if (FeatureFlag.PACKAGE_PHOTO_SCANNING.isEnabled()) {
+            WCTextButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onPackageImageButtonClicked,
+                icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera),
+                allCaps = false,
+                text = stringResource(id = R.string.ai_product_creation_photo_button),
+                colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.color_on_surface))
+            )
+        }
     }
 }
 

@@ -24,7 +24,8 @@ enum class FeatureFlag {
     ORDER_CREATION_TAX_RATE_SELECTOR,
     ORDER_CREATION_AUTO_TAX_RATE,
     TTP_CA_UK,
-    PRODUCT_CREATION_AI;
+    PRODUCT_CREATION_AI,
+    PACKAGE_PHOTO_SCANNING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -49,7 +50,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            PACKAGE_PHOTO_SCANNING-> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
