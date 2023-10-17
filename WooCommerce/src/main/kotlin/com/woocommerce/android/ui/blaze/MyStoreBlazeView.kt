@@ -167,6 +167,7 @@ fun BlazeProductItem(
                     .size(dimensionResource(id = R.dimen.major_300))
                     .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
                 placeHolderDrawableId = R.drawable.ic_product,
+                fallbackDrawableId = R.drawable.ic_product
             )
             Text(
                 modifier = Modifier

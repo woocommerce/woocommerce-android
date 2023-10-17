@@ -48,6 +48,7 @@ fun BlazeCampaignItem(
                     .size(dimensionResource(id = R.dimen.major_275))
                     .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
                 placeHolderDrawableId = R.drawable.ic_product,
+                fallbackDrawableId = R.drawable.ic_product,
             )
             Column(
                 modifier = Modifier

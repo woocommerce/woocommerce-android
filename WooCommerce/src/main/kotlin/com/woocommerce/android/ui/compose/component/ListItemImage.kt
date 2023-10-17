@@ -1,53 +1,37 @@
 package com.woocommerce.android.ui.compose.component
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import androidx.compose.ui.res.dimensionResource
+import coil.compose.AsyncImage
+import coil.request.ImageRequest.Builder
+import com.woocommerce.android.R.dimen
 
 @Composable
 fun ListItemImage(
     imageUrl: String,
     modifier: Modifier = Modifier,
     @DrawableRes placeHolderDrawableId: Int,
+    @DrawableRes fallbackDrawableId: Int,
     contentDescription: String = ""
 ) {
-    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
-    Glide.with(LocalContext.current)
-        .asBitmap()
-        .load(imageUrl)
-        .into(
-            object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    bitmapState.value = resource
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    // Nothing to do here.
-                }
-            }
-        )
-    bitmapState.value?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentScale = ContentScale.Crop,
-            contentDescription = contentDescription,
-            modifier = modifier
-        )
-    } ?: Image(
-        painter = painterResource(id = placeHolderDrawableId),
+    AsyncImage(
+        model = Builder(LocalContext.current)
+            .data(imageUrl)
+            .crossfade(true)
+            .placeholder(placeHolderDrawableId)
+            .fallback(fallbackDrawableId)
+            .build(),
         contentDescription = contentDescription,
+        contentScale = ContentScale.Crop,
         modifier = modifier
+            .size(dimensionResource(id = dimen.major_275))
+            .clip(shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
     )
 }
