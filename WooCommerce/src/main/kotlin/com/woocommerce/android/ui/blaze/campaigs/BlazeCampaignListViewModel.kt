@@ -27,7 +27,8 @@ class BlazeCampaignListViewModel @Inject constructor(
                     BlazeCampaignUi(
                         product = BlazeProductUi(
                             name = "Product name",
-                            imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                            imgUrl =
+                            "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                         ),
                         status = Active,
                         impressions = 100,
@@ -37,7 +38,8 @@ class BlazeCampaignListViewModel @Inject constructor(
                     BlazeCampaignUi(
                         product = BlazeProductUi(
                             name = "Product name",
-                            imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                            imgUrl =
+                            "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
                         ),
                         status = InModeration,
                         impressions = 100,
@@ -50,7 +52,9 @@ class BlazeCampaignListViewModel @Inject constructor(
         )
     val state = _state.asLiveData()
 
-    fun onCampaignSelected() {}
+    fun onCampaignSelected() {
+        // TODO
+    }
 
     @Parcelize
     data class BlazeCampaignListState(

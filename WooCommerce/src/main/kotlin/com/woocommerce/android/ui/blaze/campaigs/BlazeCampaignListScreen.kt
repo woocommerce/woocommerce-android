@@ -83,4 +83,3 @@ fun BlazeCampaignListScreen() {
         onCampaignClicked = { }
     )
 }
-
