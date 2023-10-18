@@ -1,29 +1,24 @@
 package com.woocommerce.android.ui.blaze
 
-import android.os.Parcelable
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class BlazeProductUi(
     val name: String,
     val imgUrl: String
-) : Parcelable
+)
 
-@Parcelize
 data class BlazeCampaignUi(
     val product: BlazeProductUi,
     val status: CampaignStatusUi,
     val stats: List<BlazeCampaignStat>,
-) : Parcelable
+)
 
-@Parcelize
 data class BlazeCampaignStat(
     @StringRes val name: Int,
     val value: Int
-) : Parcelable
+)
 
 enum class CampaignStatusUi(
     @StringRes val statusDisplayText: Int,
