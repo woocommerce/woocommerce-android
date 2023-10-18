@@ -59,7 +59,11 @@ class ProductConfigurationViewModel @Inject constructor(
         configuration.value?.let { currentConfiguration ->
             currentConfiguration.updateChildrenConfiguration(itemId, ruleKey, value)
             configuration.value =
-                ProductConfiguration(currentConfiguration.configuration, currentConfiguration.childrenConfiguration)
+                ProductConfiguration(
+                    currentConfiguration.configurationType,
+                    currentConfiguration.configuration,
+                    currentConfiguration.childrenConfiguration
+                )
         }
     }
 

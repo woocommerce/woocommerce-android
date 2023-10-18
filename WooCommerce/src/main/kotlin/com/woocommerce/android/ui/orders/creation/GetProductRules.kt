@@ -25,7 +25,9 @@ class GetProductRules @Inject constructor(
     private suspend fun getRules(product: Product): ProductRules? {
         val isBundle = product.productType == ProductType.BUNDLE
         return if (isBundle) {
-            val builder = ProductRules.Builder()
+            val builder = ProductRules.Builder().apply {
+                productType = ProductType.BUNDLE
+            }
             getBundledProducts(product.remoteId).first().forEach { bundledProduct ->
                 builder.setChildQuantityRules(
                     itemId = bundledProduct.id,

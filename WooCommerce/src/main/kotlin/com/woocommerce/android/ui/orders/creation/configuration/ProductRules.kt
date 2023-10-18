@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import android.os.Parcelable
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.products.ProductType
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class ProductRules private constructor(
+    val productType: ProductType,
     val itemRules: Map<String, ItemRules>,
     val childrenRules: Map<Long, Map<String, ItemRules>>? = null
 ) : Parcelable {
@@ -19,6 +21,7 @@ class ProductRules private constructor(
     }
 
     class Builder {
+        var productType: ProductType = ProductType.OTHER
         private val rules = mutableMapOf<String, ItemRules>()
         private val childrenRules = mutableMapOf<Long, MutableMap<String, ItemRules>>()
 
@@ -42,7 +45,7 @@ class ProductRules private constructor(
 
         fun build(): ProductRules {
             val itemChildrenRules = if (childrenRules.isEmpty()) null else childrenRules
-            return ProductRules(rules, itemChildrenRules)
+            return ProductRules(productType, rules, itemChildrenRules)
         }
     }
 }
@@ -75,6 +78,7 @@ class OptionalRule : ItemRules {
 
 @Parcelize
 class ProductConfiguration(
+    val configurationType: ConfigurationType,
     val configuration: MutableMap<String, String?>,
     val childrenConfiguration: MutableMap<Long, MutableMap<String, String?>>? = null
 ) : Parcelable {
@@ -91,7 +95,8 @@ class ProductConfiguration(
                 val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
                 itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
             }
-            return ProductConfiguration(itemConfiguration, childrenConfiguration)
+            val configurationType = rules.productType.getConfigurationType()
+            return ProductConfiguration(configurationType, itemConfiguration, childrenConfiguration)
         }
     }
     fun needsConfiguration(): Boolean {
@@ -104,5 +109,13 @@ class ProductConfiguration(
 
     fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String) {
         childrenConfiguration?.get(itemId)?.set(ruleKey, value)
+    }
+}
+enum class ConfigurationType { BUNDLE, UNKNOWN }
+
+fun ProductType.getConfigurationType(): ConfigurationType {
+    return when(this){
+        ProductType.BUNDLE -> ConfigurationType.BUNDLE
+        else -> ConfigurationType.UNKNOWN
     }
 }
