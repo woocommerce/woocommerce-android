@@ -20,6 +20,7 @@ fun ProductThumbnail(
     modifier: Modifier = Modifier,
     @DrawableRes placeHolderDrawableId: Int = R.drawable.ic_product,
     @DrawableRes fallbackDrawableId: Int = R.drawable.ic_product,
+    @DrawableRes errorDrawableId: Int = R.drawable.ic_product,
     contentDescription: String = ""
 ) {
     AsyncImage(
@@ -28,6 +29,7 @@ fun ProductThumbnail(
             .crossfade(true)
             .placeholder(placeHolderDrawableId)
             .fallback(fallbackDrawableId)
+            .error(errorDrawableId)
             .build(),
         contentDescription = contentDescription,
         contentScale = ContentScale.Crop,
