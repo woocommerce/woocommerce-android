@@ -80,7 +80,7 @@ class OrderCreateEditFormFragment :
     lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject
-    lateinit var customAmountsFeatureFlag: CustomAmountsFeatureFlag
+    lateinit var isCustomAmountsFeatureFlagEnabled: IsCustomAmountsFeatureFlagEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -245,7 +245,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        if (customAmountsFeatureFlag()) {
+        if (isCustomAmountsFeatureFlagEnabled()) {
             productsSection.hideHeader()
             productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
