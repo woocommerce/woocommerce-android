@@ -1932,6 +1932,7 @@
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
@@ -1952,6 +1953,8 @@
     <string name="product_creation_ai_tone_convincing">Convincing</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
     <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
+    <string name="product_creation_package_photo_keywords_section">Keywords</string>
+    <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
 
     <!--
         Product Add more details Bottom sheet
