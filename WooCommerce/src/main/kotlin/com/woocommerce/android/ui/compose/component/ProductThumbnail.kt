@@ -11,14 +11,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
+import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 
 @Composable
 fun ProductThumbnail(
     imageUrl: String,
-    @DrawableRes placeHolderDrawableId: Int,
-    @DrawableRes fallbackDrawableId: Int,
     modifier: Modifier = Modifier,
+    @DrawableRes placeHolderDrawableId: Int = R.drawable.ic_product,
+    @DrawableRes fallbackDrawableId: Int = R.drawable.ic_product,
     contentDescription: String = ""
 ) {
     AsyncImage(

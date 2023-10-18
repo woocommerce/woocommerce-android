@@ -41,11 +41,7 @@ fun BlazeCampaignItem(
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Row(verticalAlignment = Alignment.Top) {
-            ProductThumbnail(
-                imageUrl = campaign.product.imgUrl,
-                placeHolderDrawableId = R.drawable.ic_product,
-                fallbackDrawableId = R.drawable.ic_product,
-            )
+            ProductThumbnail(imageUrl = campaign.product.imgUrl)
             Column(
                 modifier = Modifier
                     .padding(start = dimensionResource(id = R.dimen.major_100))

@@ -161,11 +161,7 @@ fun BlazeProductItem(
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ProductThumbnail(
-                imageUrl = product.imgUrl,
-                placeHolderDrawableId = R.drawable.ic_product,
-                fallbackDrawableId = R.drawable.ic_product
-            )
+            ProductThumbnail(imageUrl = product.imgUrl)
             Text(
                 modifier = Modifier
                     .padding(start = dimensionResource(id = R.dimen.major_100))
