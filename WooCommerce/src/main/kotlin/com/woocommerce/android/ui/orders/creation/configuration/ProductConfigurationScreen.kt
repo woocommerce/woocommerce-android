@@ -108,7 +108,7 @@ fun ProductConfigurationScreen(
     modifier: Modifier = Modifier
 ) {
     Surface {
-        Column (modifier = modifier) {
+        Column(modifier = modifier) {
             LazyColumn(Modifier.weight(1f)) {
                 productRules.isConfigurable()
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
