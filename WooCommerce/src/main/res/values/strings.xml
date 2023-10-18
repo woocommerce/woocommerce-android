@@ -1288,9 +1288,10 @@
         -->
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu > Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
@@ -1318,7 +1319,7 @@
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_5">5. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. After you see the “Done” checkmark, your store will process the payment, and the transaction will be complete.</string>
     <string name="card_reader_tap_to_pay_about_copyright">The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC.</string>
 
 
@@ -1938,7 +1939,7 @@
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
-    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_subtitle">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
     <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
@@ -3608,7 +3609,6 @@
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
     <string name="ai_product_description_title_hint">Enter product title.</string>
-    <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
     <string name="ai_product_description_note_dialog_heading">Great start!</string>
@@ -3629,7 +3629,7 @@
     <!--
     AI Product name description
     -->
-    <string name="ai_product_name_sheet_title">✨ Product name</string>
+    <string name="ai_product_name_sheet_title">Product name</string>
     <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
     <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
     <string name="ai_product_name_sheet_generate_button">Write it for me</string>
@@ -3650,6 +3650,21 @@
     <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
     <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
     <string name="blaze_banner_dismiss_dialog_button">Got it</string>
+
+    <!--
+    My Store Blaze view
+    -->
+    <string name="blaze_campaign_title">Blaze campaign</string>
+    <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
+    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_status_in_moderation">In moderation</string>
+    <string name="blaze_campaign_status_active">Active</string>
+    <string name="blaze_campaign_status_completed">Completed</string>
+    <string name="blaze_campaign_status_rejected">Rejected</string>
+    <string name="blaze_campaign_status_impressions">Impressions</string>
+    <string name="blaze_campaign_status_clicks">Clicks</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
 
     <!--
     Highlights tooltip
@@ -3700,4 +3715,10 @@
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
 
+    <!--
+    AI feedback form
+    -->
+    <string name="ai_feedback_form_message">Is the result helpful?</string>
+    <string name="ai_feedback_form_positive_button">Positive feedback</string>
+    <string name="ai_feedback_form_negative_button">Negative feedback</string>
 </resources>

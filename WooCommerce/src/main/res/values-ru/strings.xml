@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 13:54:05+0000
+Translation-Revision-Date: 2023-10-03 19:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Ошибка при копировании названия товара в буфер обмена</string>
+    <string name="ai_product_name_copy_success">Название товара скопировано в буфер обмена.</string>
+    <string name="ai_product_name_copy_label">Название товара создано при помощи ИИ</string>
+    <string name="ai_product_description_copy_error">Ошибка при копировании описания товара в буфер обмена.</string>
+    <string name="ai_product_description_copy_success">Описание товара скопировано в буфер обмена.</string>
+    <string name="product_creation_ai_generation_failure_message">При создании товара возникла ошибка. Повторите попытку</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Очистить адрес и больше не использовать эту ставку</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Установить другую налоговую ставку для этого заказа</string>
     <string name="tax_rate_selector_auto_rate_details_title">Автоматическое добавление налоговой ставки</string>
@@ -14,7 +20,6 @@ Language: ru
     <string name="ai_product_name_sheet_generate_button">Напишите это за меня</string>
     <string name="ai_product_name_sheet_input_description">Расскажите о своём товаре и его отличительных качествах!</string>
     <string name="ai_product_name_sheet_subtitle">С помощью ИИ вы можете создавать привлекательные заголовки</string>
-    <string name="ai_product_name_sheet_title">✨ Название товара</string>
     <string name="empty_review_filtered_list_message">Попробуйте отключить фильтр «Непрочитанные», чтобы просмотреть все отзывы о товарах</string>
     <string name="empty_review_filtered_list_title">Нет непрочитанных отзывов о товарах</string>
     <string name="product_creation_ai_tone_selected_content_desc">Выбранный тон</string>
@@ -27,13 +32,11 @@ Language: ru
     <string name="product_creation_ai_preview_details_section">Сведения</string>
     <string name="product_creation_ai_preview_description_section">Описание товара</string>
     <string name="product_creation_ai_preview_name_section">Название товара</string>
-    <string name="product_creation_ai_preview_subtitle">Не беспокойтесь! Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
     <string name="product_creation_ai_preview_title">Предварительный просмотр</string>
     <string name="product_creation_ai_about_product_continue_button">Создание сведений о товаре</string>
     <string name="product_creation_ai_about_product_set_tone">Задайте тон и стиль</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Добавьте ключевые характеристики, преимущества и подробные сведения, чтобы покупателям проще было найти ваш товар в Интернете.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Например: мягкая ткань, прочные швы, уникальный дизайн</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Мой товар</string>
     <string name="product_creation_ai_about_product_subtitle">Укажите отличительные качества вашего товара, и ИИ сделает за вас всё остальное.</string>
     <string name="product_creation_ai_about_product_title">Информация о товаре</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Предложите название товара</string>
@@ -225,7 +228,6 @@ Language: ru
     <string name="empty_order_test_order_message">Создайте тестовый заказ, чтобы убедиться, что магазин WooCommerce работает как часы</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Добавить сведения вручную</string>
     <string name="order_creation_customer_search_old_wc_hint">Поиск клиентов по</string>
-    <string name="shipping_classes_zones">Классы и области доставки</string>
     <string name="free_trial_survey_free_text">Другая причина (укажите)</string>
     <string name="free_trial_survey_option4">Я работаю в команде, и нам необходимо принимать решение совместно.</string>
     <string name="free_trial_survey_option3">Стоимость услуги является важным фактором при принятии решения.</string>
@@ -300,7 +302,6 @@ Language: ru
     <string name="ai_product_description_note_dialog_heading">Превосходное начало!</string>
     <string name="ai_product_description_feedback">Оказалось ли созданное\nописание полезным?</string>
     <string name="ai_product_description_regenerate_button">Повторно создать</string>
-    <string name="ai_product_description_survey">Оказалось ли созданное описание полезным?</string>
     <string name="ai_product_description_hint">С помощью ключевых слов опишите уникальные характеристики и покупателей товара, чтобы создать его описание.</string>
     <string name="ai_product_description_example">Пример: комнатный, кактус, растение, декоративный, простой уход</string>
     <string name="ai_product_description_product_name">Введите название товара</string>
@@ -474,8 +475,6 @@ Language: ru
     <string name="product_selector_popular_products_heading">Хит продаж</string>
     <string name="jetpack_install_role_eligibility_learn_more">Подробно о ролях и разрешениях</string>
     <string name="jetpack_install_role_eligibility_error_message">Кажется, ваша роль не позволяет вам установить Jetpack. \nОбратитесь к администратору за помощью.</string>
-    <string name="card_reader_tap_to_pay_description">Проверьте «Оплату в касание», перечислив небольшую\nсумму.</string>
-    <string name="card_reader_test_tap_to_pay">Проверить «Оплату в касание»</string>
     <string name="subscription_free_trial">Бесплатная проба</string>
     <string name="subscription_sign_up_fee">Стоимость регистрации</string>
     <string name="subscription_expire">Прекратить после</string>
@@ -512,7 +511,6 @@ Language: ru
     <string name="product_subscription_title">Подписка</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Устройство чтения карт принимает платежи дебетовыми и кредитными картами. Их можно прикладывать, проводить или вставлять.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Принимайте бесконтактные платежи прямо в телефоне.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Поделитесь отзывом о функции «Оплата в касание»</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Не удалось войти, поскольку не разрешается создавать пароль приложения.</string>
     <string name="login_site_credentials_fetching_site">Получение сайта…</string>
     <string name="login_site_credentials_fetching_site_failed">Произошла ошибка при получении веб-сайта</string>

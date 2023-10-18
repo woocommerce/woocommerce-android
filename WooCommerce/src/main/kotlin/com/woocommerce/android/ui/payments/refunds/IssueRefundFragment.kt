@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -23,6 +22,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType.AMOUNT
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType.ITEMS
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -30,7 +30,7 @@ import javax.inject.Inject
 class IssueRefundFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: IssueRefundViewModel by hiltNavGraphViewModels(R.id.nav_graph_refunds)
+    private val viewModel: IssueRefundViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_refunds)
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(

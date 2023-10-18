@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 09:54:21+0000
+Translation-Revision-Date: 2023-10-03 23:54:24+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Erro ao copiar o nome do produto para a área de transferência.</string>
+    <string name="ai_product_name_copy_success">Nome do produto copiado para a área de transferência.</string>
+    <string name="ai_product_name_copy_label">Nome do produto gerado por IA</string>
+    <string name="ai_product_description_copy_error">Erro ao copiar a descrição do produto para a área de transferência.</string>
+    <string name="ai_product_description_copy_success">Descrição do produto copiada para a área de transferência.</string>
+    <string name="product_creation_ai_generation_failure_message">Falha ao gerar o produto. Tente novamente</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Apagar endereço e parar de usar esta tarifa</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Definir um novo imposto para este pedido</string>
     <string name="tax_rate_selector_auto_rate_details_title">Inclusão automática de imposto</string>
@@ -14,7 +20,6 @@ Language: pt_BR
     <string name="ai_product_name_sheet_generate_button">Escreva por mim</string>
     <string name="ai_product_name_sheet_input_description">Conte para nós qual o seu produto e o que o torna único.</string>
     <string name="ai_product_name_sheet_subtitle">Deixe a IA gerar títulos cativantes para você</string>
-    <string name="ai_product_name_sheet_title">✨ Nome do produto</string>
     <string name="empty_review_filtered_list_message">Tente desativar o filtro de não lidas para ver todas as avaliações de produto</string>
     <string name="empty_review_filtered_list_title">Nenhuma avaliação de produto não lida</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tom selecionado</string>
@@ -27,13 +32,11 @@ Language: pt_BR
     <string name="product_creation_ai_preview_details_section">Detalhes</string>
     <string name="product_creation_ai_preview_description_section">Descrição do produto</string>
     <string name="product_creation_ai_preview_name_section">Nome do produto</string>
-    <string name="product_creation_ai_preview_subtitle">Não se preocupe. Você pode alterar os detalhes abaixo a qualquer momento.</string>
     <string name="product_creation_ai_preview_title">Visualização</string>
     <string name="product_creation_ai_about_product_continue_button">Criar detalhes do produto</string>
     <string name="product_creation_ai_about_product_set_tone">Definir tom e voz</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Adicione as principais funcionalidades, benefícios ou detalhes para que seu produto seja encontrado facilmente online.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Por exemplo, tecido macio, costura resistente, design único</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Meu produto</string>
     <string name="product_creation_ai_about_product_subtitle">Destaque o diferencial do seu produto e espere a magia acontecer com a IA.</string>
     <string name="product_creation_ai_about_product_title">Sobre o seu produto</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Sugerir um nome</string>
@@ -225,7 +228,6 @@ Language: pt_BR
     <string name="empty_order_test_order_message">Faça um pedido de teste para garantir que seu processo do WooCommerce ofereça uma experiência impecável ao cliente</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Adicionar detalhes manualmente</string>
     <string name="order_creation_customer_search_old_wc_hint">Pesquisar clientes por</string>
-    <string name="shipping_classes_zones">Classes e zonas de envio</string>
     <string name="free_trial_survey_free_text">Outro motivo (especificar)</string>
     <string name="free_trial_survey_option4">Sou parte de uma equipe e precisamos nos decidir em grupo.</string>
     <string name="free_trial_survey_option3">O preço do serviço é um fator determinante na minha decisão.</string>
@@ -300,7 +302,6 @@ Language: pt_BR
     <string name="ai_product_description_note_dialog_heading">Ótimo começo!</string>
     <string name="ai_product_description_feedback">A descrição\ngerada é útil?</string>
     <string name="ai_product_description_regenerate_button">Gerar novamente</string>
-    <string name="ai_product_description_survey">A descrição gerada é útil?</string>
     <string name="ai_product_description_hint">Destaque o público e as funcionalidades exclusivas do seu produto com palavras-chave para criar uma descrição personalizada.</string>
     <string name="ai_product_description_example">Por exemplo: vaso, cacto, planta, decorativa, fácil de cuidar</string>
     <string name="ai_product_description_product_name">Insira o nome do produto</string>
@@ -474,8 +475,6 @@ Language: pt_BR
     <string name="product_selector_popular_products_heading">Populares</string>
     <string name="jetpack_install_role_eligibility_learn_more">Saiba mais sobre funções e permissão</string>
     <string name="jetpack_install_role_eligibility_error_message">Parece que sua função não permite instalar o Jetpack. \nFale com o administrador para obter ajuda.</string>
-    <string name="card_reader_tap_to_pay_description">Você pode tesar o Tap To Pay com um pequeno\nvalor aqui.</string>
-    <string name="card_reader_test_tap_to_pay">Testar o seu Tap To Pay</string>
     <string name="subscription_free_trial">Teste gratuito</string>
     <string name="subscription_sign_up_fee">Taxa de inscrição</string>
     <string name="subscription_expire">Expirar após</string>
@@ -512,7 +511,6 @@ Language: pt_BR
     <string name="product_subscription_title">Assinatura</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">O leitor de cartão aceita pagamentos feitos ao aproximar, inserir ou passar cartões de crédito e débito.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Aceite pagamentos feitos por aproximação com segurança e diretamente do seu celular.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Compartilhe seu feedback sobre o Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Não foi possível fazer login porque a criação da senha do aplicativo não foi aprovada.</string>
     <string name="login_site_credentials_fetching_site">Buscando site…</string>
     <string name="login_site_credentials_fetching_site_failed">Ocorreu um erro ao buscar seu site</string>

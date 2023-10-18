@@ -37,6 +37,10 @@
 }
 ###### Event Bus 2 - end
 
+##### WooCommerce (this is needed for Json deserializers, but generally, we should keep our own classes) - begin
+-keep class com.woocommerce.** { *; }
+##### WooCommerce - end
+
 ###### FluxC (was needed for Json deserializers) - begin
 -keep class org.wordpress.android.fluxc** { *; }
 ###### FluxC - end

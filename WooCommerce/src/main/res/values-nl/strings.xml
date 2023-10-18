@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-28 16:54:04+0000
+Translation-Revision-Date: 2023-10-03 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Fout bij kopiëren naar klembord.</string>
+    <string name="ai_product_name_copy_success">Productnaam gekopieerd naar klembord.</string>
+    <string name="ai_product_name_copy_label">Productnaam gegenereerd door AI</string>
+    <string name="ai_product_description_copy_error">Fout bij kopiëren productbeschrijving naar klembord.</string>
+    <string name="ai_product_description_copy_success">Productbeschrijving gekopieerd naar klembord.</string>
+    <string name="product_creation_ai_generation_failure_message">Productgeneratie mislukt. Probeer het nog eens</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Verwijder het adres en stop met het gebruiken van dit tarief</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Stel een nieuw belastingtarief voor deze bestelling</string>
     <string name="tax_rate_selector_auto_rate_details_title">Automatisch het belastingtarief toevoegen</string>
@@ -14,7 +20,6 @@ Language: nl
     <string name="ai_product_name_sheet_generate_button">Schrijf het voor mij</string>
     <string name="ai_product_name_sheet_input_description">Vertel ons wat jouw product is en wat dit uniek maakt!</string>
     <string name="ai_product_name_sheet_subtitle">Laat AI pakkende titels voor je genereren</string>
-    <string name="ai_product_name_sheet_title">✨ Productnaam</string>
     <string name="empty_review_filtered_list_message">Probeer om het ‘ongelezen’ filter uit te schakelen om al je productbeoordelingen te bekijken</string>
     <string name="empty_review_filtered_list_title">Geen ongelezen productbeoordelingen</string>
     <string name="product_creation_ai_tone_selected_content_desc">Toon geselecteerd</string>
@@ -27,13 +32,11 @@ Language: nl
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_description_section">Productbeschrijving</string>
     <string name="product_creation_ai_preview_name_section">Productnaam</string>
-    <string name="product_creation_ai_preview_subtitle">Maak je geen zorgen. Je kan de onderstaande gegevens later altijd wijzigen.</string>
     <string name="product_creation_ai_preview_title">Voorbeeld</string>
     <string name="product_creation_ai_about_product_continue_button">Productgegevens aanmaken</string>
     <string name="product_creation_ai_about_product_set_tone">Toon instellen</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Voeg belangrijke functies, voordelen of details toe om je product beter online vindbaar te laten worden.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Bijvoorbeeld Zachte stof, duurzaam stikwerk, uniek ontwerp</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Mijn product</string>
     <string name="product_creation_ai_about_product_subtitle">Markeer wat je product uniek maakt en laat AI het werk voor je doen.</string>
     <string name="product_creation_ai_about_product_title">Over je product</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Stel een naam voor</string>
@@ -225,7 +228,6 @@ Language: nl
     <string name="empty_order_test_order_message">Voer een proefbestelling uit om je ervan te verzekeren dat jouw WooCommerce-proces een naadloze klantervaring levert</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Details handmatig toevoegen</string>
     <string name="order_creation_customer_search_old_wc_hint">Klanten zoeken op</string>
-    <string name="shipping_classes_zones">Verzendklasses en -zones</string>
     <string name="free_trial_survey_free_text">Andere reden (hier opgeven)</string>
     <string name="free_trial_survey_option4">Ik ben onderdeel van een team en we nemen de beslissing samen.</string>
     <string name="free_trial_survey_option3">Ik vind de prijs van de service een doorslaggevende factor bij mijn beslissing.</string>
@@ -300,7 +302,6 @@ Language: nl
     <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>
     <string name="ai_product_description_feedback">Is de gegenereerde\nbeschrijving nuttig?</string>
     <string name="ai_product_description_regenerate_button">Opnieuw genereren</string>
-    <string name="ai_product_description_survey">Is de gegenereerde beschrijving nuttig?</string>
     <string name="ai_product_description_hint">Licht de unieke eigenschappen en doelgroep van de product uit met trefwoorden voor een op maat gemaakte beschrijving.</string>
     <string name="ai_product_description_example">Voorbeeld: in pot, cactus, plant, decoratief, makkelijke verzorging</string>
     <string name="ai_product_description_product_name">Voer je productnaam in</string>
@@ -474,8 +475,6 @@ Language: nl
     <string name="product_selector_popular_products_heading">Populair</string>
     <string name="jetpack_install_role_eligibility_learn_more">Meer informatie over rollen en machtigingen</string>
     <string name="jetpack_install_role_eligibility_error_message">Het lijkt erop dat je gebruikersrol niet gemachtigd is om Jetpack te installeren. \nNeem contact op met je beheerder voor ondersteuning.</string>
-    <string name="card_reader_tap_to_pay_description">Je kunt tik om te betalen hier testen\nmet een klein bedrag.</string>
-    <string name="card_reader_test_tap_to_pay">Test tik om te betalen</string>
     <string name="subscription_free_trial">Gratis proefabonnement</string>
     <string name="subscription_sign_up_fee">Aanmeldkosten</string>
     <string name="subscription_expire">Verlopen na</string>
@@ -512,7 +511,6 @@ Language: nl
     <string name="product_subscription_title">Abonnement</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">De kaartlezer accepteert tik-, chip- en veegbetalingen met debit-en creditcards.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accepteert contactloze betalingen veilig en rechtstreeks vanaf je telefoon.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Deel feedback over tik om te betalen</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Inloggen mislukt omdat het maken van een applicatiewachtwoord niet goedgekeurd is.</string>
     <string name="login_site_credentials_fetching_site">Website ophalen…</string>
     <string name="login_site_credentials_fetching_site_failed">Er heeft zich een fout voorgedaan tijdens het ophalen van je website</string>
