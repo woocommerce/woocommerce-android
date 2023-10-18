@@ -7,12 +7,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -31,16 +33,14 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeUi
+import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun MyStoreBlazeView(
-    state: MyStoreBlazeUi,
-    onCreateCampaignClicked: () -> Unit,
-    onShowAllClicked: () -> Unit
+    state: MyStoreBlazeCampaignState
 ) {
     Card(
         modifier = Modifier
@@ -57,14 +57,14 @@ fun MyStoreBlazeView(
                 )
             ) {
                 BlazeCampaignHeader()
-                when {
-                    state.blazeActiveCampaign != null -> BlazeCampaignItem(
-                        campaign = state.blazeActiveCampaign,
+                when (state) {
+                    is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
+                        campaign = state.campaign,
                         onCampaignClicked = {},
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
-                    else -> {
+                    is MyStoreBlazeCampaignState.NoCampaign -> {
                         Text(
                             modifier = Modifier.padding(
                                 top = dimensionResource(id = R.dimen.major_100),
@@ -75,32 +75,49 @@ fun MyStoreBlazeView(
                         )
                         BlazeProductItem(
                             product = state.product,
-                            onProductSelected = {},
+                            onProductSelected = state.onProductClicked,
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
                     }
+
+                    else -> error("Invalid state")
                 }
             }
-            when {
-                state.blazeActiveCampaign != null -> ShowAllOrCreateCampaignFooter(
-                    onShowAllClicked,
-                    onCreateCampaignClicked
+            when (state) {
+                is MyStoreBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
+                    onShowAllClicked = state.onViewAllCampaignsClicked,
+                    onCreateCampaignClicked = state.onCreateCampaignClicked
                 )
 
-                else -> CreateCampaignFooter(onCreateCampaignClicked)
+                is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
+                    onCreateCampaignClicked = state.onCreateCampaignClicked,
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                )
+
+                else -> error("Invalid state")
             }
         }
     }
 }
 
 @Composable
-private fun CreateCampaignFooter(onCreateCampaignClicked: () -> Unit) {
-    Divider()
-    WCTextButton(
-        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_75)),
-        onClick = onCreateCampaignClicked
-    ) {
-        Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+private fun CreateCampaignFooter(
+    onCreateCampaignClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        Divider(Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+        WCTextButton(
+            onClick = onCreateCampaignClicked,
+            contentPadding = PaddingValues(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = ButtonDefaults.TextButtonContentPadding.calculateTopPadding(),
+                bottom = ButtonDefaults.TextButtonContentPadding.calculateBottomPadding(),
+            )
+        ) {
+            Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+        }
     }
 }
 
@@ -185,16 +202,14 @@ fun BlazeProductItem(
 @Preview(name = "mid screen", device = Devices.PIXEL_4)
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
-fun MyStoreBlazeViewPreview() {
+fun MyStoreBlazeViewCampaignPreview() {
     val product = BlazeProductUi(
         name = "Product name",
         imgUrl = "",
     )
     MyStoreBlazeView(
-        state = MyStoreBlazeUi(
-            isVisible = true,
-            product = product,
-            blazeActiveCampaign = BlazeCampaignUi(
+        state = MyStoreBlazeCampaignState.Campaign(
+            campaign = BlazeCampaignUi(
                 product = product,
                 status = CampaignStatusUi.Active,
                 stats = listOf(
@@ -212,8 +227,29 @@ fun MyStoreBlazeViewPreview() {
                     ),
                 ),
             ),
-        ),
-        onCreateCampaignClicked = {},
-        onShowAllClicked = {}
+            onCampaignClicked = {},
+            onViewAllCampaignsClicked = {},
+            onCreateCampaignClicked = {}
+        )
+    )
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+fun MyStoreBlazeViewNoCampaignPreview() {
+    MyStoreBlazeView(
+        state = MyStoreBlazeCampaignState.NoCampaign(
+            product = BlazeProductUi(
+                name = "Product name",
+                imgUrl = "",
+            ),
+            onProductClicked = {},
+            onCreateCampaignClicked = {}
+        )
     )
 }
