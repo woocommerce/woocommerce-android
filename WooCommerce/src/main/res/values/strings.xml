@@ -1288,9 +1288,10 @@
         -->
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu > Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
@@ -3664,6 +3665,11 @@
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
+
+    <!--
+    Blaze campaign list
+    -->
+    <string name="blaze_campaign_list_title">Blaze campaigns</string>
 
     <!--
     Highlights tooltip

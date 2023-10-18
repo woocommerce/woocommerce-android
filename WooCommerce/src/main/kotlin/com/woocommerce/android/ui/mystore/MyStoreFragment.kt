@@ -281,6 +281,11 @@ class MyStoreFragment :
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(event.url, event.source)
+                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
+                    )
+                }
             }
         }
     }
