@@ -21,7 +21,7 @@ class ListItemMapper @Inject constructor(private val getBundledProducts: GetBund
             put("subtotal", item.subtotal.toString())
             put("total", item.subtotal.toString())
             item.configuration?.let {
-                getConfiguration(item.productId,it)?.let { keyConfigurationPair ->
+                getConfiguration(item.productId, it)?.let { keyConfigurationPair ->
                     put(keyConfigurationPair.first, keyConfigurationPair.second)
                 }
             }

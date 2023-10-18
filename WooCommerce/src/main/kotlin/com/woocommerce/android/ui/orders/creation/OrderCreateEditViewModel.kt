@@ -389,7 +389,7 @@ class OrderCreateEditViewModel @Inject constructor(
             it.removeItem(item)
         }
     }
-
+    @Suppress("LongMethod")
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
         source: ScanningSource? = null,

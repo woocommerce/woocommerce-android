@@ -114,7 +114,7 @@ class ProductConfiguration(
 enum class ConfigurationType { BUNDLE, UNKNOWN }
 
 fun ProductType.getConfigurationType(): ConfigurationType {
-    return when(this){
+    return when (this) {
         ProductType.BUNDLE -> ConfigurationType.BUNDLE
         else -> ConfigurationType.UNKNOWN
     }
