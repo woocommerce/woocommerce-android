@@ -5,11 +5,13 @@
         android:id="@+id/menu_arrow_up"
         android:icon="@drawable/ic_arrow_up"
         app:showAsAction="always"
+        android:visible="false"
         android:title="@string/previous_order" />
     <item
         android:id="@+id/menu_arrow_down"
         android:icon="@drawable/ic_arrow_down"
         app:showAsAction="always"
+        android:visible="false"
         android:title="@string/next_order" />
     <item
         android:id="@+id/menu_edit_order"
