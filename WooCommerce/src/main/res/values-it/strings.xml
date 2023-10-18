@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 11:54:05+0000
+Translation-Revision-Date: 2023-10-03 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Errore durante la copia del nome del prodotto negli appunti.</string>
+    <string name="ai_product_name_copy_success">Nome del prodotto copiato negli appunti.</string>
+    <string name="ai_product_name_copy_label">Nome del prodotto generato dall\'IA</string>
+    <string name="ai_product_description_copy_error">Errore durante la copia della descrizione del prodotto negli appunti.</string>
+    <string name="ai_product_description_copy_success">Descrizione del prodotto copiata negli appunti.</string>
+    <string name="product_creation_ai_generation_failure_message">Generazione del prodotto non riuscita. Riprova</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Cancella l\'indirizzo e non utilizzare più questa aliquota</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Configura una nuova aliquota d\'imposta per questo ordine</string>
     <string name="tax_rate_selector_auto_rate_details_title">Aggiunta automatica dell\'aliquota d\'imposta</string>
@@ -14,7 +20,6 @@ Language: it
     <string name="ai_product_name_sheet_generate_button">Scrivilo per me</string>
     <string name="ai_product_name_sheet_input_description">Parlaci del tuo prodotto e di cosa lo rende unico.</string>
     <string name="ai_product_name_sheet_subtitle">Lascia che l\'IA generi titoli accattivanti per te.</string>
-    <string name="ai_product_name_sheet_title">✨ Nome del prodotto</string>
     <string name="empty_review_filtered_list_message">Prova a disattivare il filtro delle recensioni non lette per visualizzarle tutte</string>
     <string name="empty_review_filtered_list_title">Nessuna recensione del prodotto non letta</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tono selezionato</string>
@@ -27,13 +32,11 @@ Language: it
     <string name="product_creation_ai_preview_details_section">Dettagli</string>
     <string name="product_creation_ai_preview_description_section">Descrizione del prodotto</string>
     <string name="product_creation_ai_preview_name_section">Nome del prodotto</string>
-    <string name="product_creation_ai_preview_subtitle">Non preoccuparti. Puoi sempre modificare i dettagli riportati di seguito in un secondo momento.</string>
     <string name="product_creation_ai_preview_title">Anteprima</string>
     <string name="product_creation_ai_about_product_continue_button">Crea dettagli del prodotto</string>
     <string name="product_creation_ai_about_product_set_tone">Imposta il tone of voice</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Aggiungi funzionalità, vantaggi o dettagli chiave per consentire al tuo prodotto di essere trovato online.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Ad esempio tessuto morbido, cuciture resistenti e design unico</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Il mio Prodotto</string>
     <string name="product_creation_ai_about_product_subtitle">Metti in evidenza ciò che rende unico il tuo prodotto e lascia che l\'IA faccia la magia.</string>
     <string name="product_creation_ai_about_product_title">Informazioni sul tuo prodotto</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggerisci un nome</string>
@@ -225,7 +228,6 @@ Language: it
     <string name="empty_order_test_order_message">Esegui un ordine di prova per assicurarti che il processo WooCommerce offra un\'esperienza cliente fluida</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Aggiungi dettagli manualmente</string>
     <string name="order_creation_customer_search_old_wc_hint">Cerca clienti per</string>
-    <string name="shipping_classes_zones">Classi e zone di spedizione</string>
     <string name="free_trial_survey_free_text">Altro motivo (specificare)</string>
     <string name="free_trial_survey_option4">Faccio parte di una team e la decisione va presa insieme a tutti i membri.</string>
     <string name="free_trial_survey_option3">Trovo che il prezzo del servizio sia un fattore significativo nella mia decisione.</string>
@@ -300,7 +302,6 @@ Language: it
     <string name="ai_product_description_note_dialog_heading">Ottimo inizio.</string>
     <string name="ai_product_description_feedback">La descrizione\ngenerata è utile?</string>
     <string name="ai_product_description_regenerate_button">Rigenera</string>
-    <string name="ai_product_description_survey">La descrizione generata è utile?</string>
     <string name="ai_product_description_hint">Metti in evidenza le caratteristiche uniche del tuo prodotto e il pubblico a cui si rivolge con delle parole chiave per una descrizione personalizzata.</string>
     <string name="ai_product_description_example">Esempio: In vaso, Cactus, Pianta, Decorativa, Di facile manutenzione</string>
     <string name="ai_product_description_product_name">Inserisci il nome del prodotto</string>
@@ -474,8 +475,6 @@ Language: it
     <string name="product_selector_popular_products_heading">Popolare</string>
     <string name="jetpack_install_role_eligibility_learn_more">Scopri di più sui ruoli e sull\'autorizzazione</string>
     <string name="jetpack_install_role_eligibility_error_message">Sembra che il tuo ruolo non ti permetta di installare Jetpack. \nContatta l\'amministratore del sito per assistenza.</string>
-    <string name="card_reader_tap_to_pay_description">Puoi provare Tocca per pagare con un piccolo\nimporto qui.</string>
-    <string name="card_reader_test_tap_to_pay">Prova il tuo Tocca per pagare</string>
     <string name="subscription_free_trial">Prova gratuita</string>
     <string name="subscription_sign_up_fee">Commissione di iscrizione</string>
     <string name="subscription_expire">Scade dopo</string>
@@ -512,7 +511,6 @@ Language: it
     <string name="product_subscription_title">Abbonamento</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Il lettore di carte accetta pagamenti contactless, chip e tramite strisciata con carte di debito e di credito.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accetta in modo sicuro pagamenti contactless direttamente dal tuo telefono.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Condividi il feedback su Tocca per pagare</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossibile accedere perché la creazione della password dell\'applicazione non è stata approvata.</string>
     <string name="login_site_credentials_fetching_site">Sito in caricamento…</string>
     <string name="login_site_credentials_fetching_site_failed">Si è verificato un errore durante il recupero del sito web</string>

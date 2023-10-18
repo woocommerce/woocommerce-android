@@ -150,9 +150,12 @@ object OrderTestUtils {
     fun generateTestOrder(orderId: Long = 1): Order {
         return Order.EMPTY.copy(
             id = orderId,
-            billingAddress = Address.EMPTY.copy(
-                firstName = "Carissa",
-                lastName = "King"
+            customer = Order.Customer(
+                billingAddress = Address.EMPTY.copy(
+                    firstName = "Carissa",
+                    lastName = "King"
+                ),
+                shippingAddress = Address.EMPTY
             ),
             currency = "USD",
             dateCreated = DateTimeUtils.dateUTCFromIso8601("2018-02-02T16:11:13Z"),

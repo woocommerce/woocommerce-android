@@ -90,7 +90,7 @@ fun TapToPaySummaryScreen(
 
             Column(
                 modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_250)),
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 horizontalAlignment = CenterHorizontally,
             ) {
                 Text(
@@ -98,10 +98,16 @@ fun TapToPaySummaryScreen(
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = Center,
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 Text(
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_try_and_refund),
+                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_easy),
                     style = MaterialTheme.typography.subtitle1,
+                    textAlign = Center,
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+                Text(
+                    text = uiState.messageWithAmount,
+                    style = MaterialTheme.typography.body1,
                     textAlign = Center,
                 )
             }
@@ -110,7 +116,7 @@ fun TapToPaySummaryScreen(
 
             Column(horizontalAlignment = CenterHorizontally) {
                 Text(
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_300)),
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                     text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_where_to_find),
                     style = MaterialTheme.typography.caption,
                     textAlign = Center,
@@ -164,7 +170,10 @@ fun LearnMoreAboutTTP(onLearnMoreClicked: () -> Unit) {
 fun TapToPaySummaryScreenPreview() {
     WooThemeWithBackground {
         TapToPaySummaryScreen(
-            uiState = UiState(isProgressVisible = false),
+            uiState = UiState(
+                isProgressVisible = false,
+                messageWithAmount = "Try a $0.50 payment with your debit or credit card."
+            ),
             onTryPaymentClicked = {},
             onBackClick = {},
             onLearnMoreClicked = {},

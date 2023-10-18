@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-09-27 13:54:03+0000
+Translation-Revision-Date: 2023-10-03 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="ai_product_name_copy_error">Error saat menyalin nama produk ke clipboard.</string>
+    <string name="ai_product_name_copy_success">Nama produk disalin ke clipboard.</string>
+    <string name="ai_product_name_copy_label">Nama produk dibuat oleh AI</string>
+    <string name="ai_product_description_copy_error">Error saat menyalin deskripsi produk ke clipboard.</string>
+    <string name="ai_product_description_copy_success">Deskripsi produk disalin ke clipboard.</string>
+    <string name="product_creation_ai_generation_failure_message">Pembuatan produk tidak berhasil. Coba lagi</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Hapus alamat dan hentikan penggunaan tarif pajak ini</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Tentukan tarif pajak baru untuk pesanan ini</string>
     <string name="tax_rate_selector_auto_rate_details_title">Tarif pajak ditambahkan otomatis</string>
@@ -14,7 +20,6 @@ Language: id
     <string name="ai_product_name_sheet_generate_button">Minta tuliskan</string>
     <string name="ai_product_name_sheet_input_description">Ceritakan tentang produk dan keunikannya.</string>
     <string name="ai_product_name_sheet_subtitle">AI akan membuatkan Anda judul yang menarik</string>
-    <string name="ai_product_name_sheet_title">✨ Nama produk</string>
     <string name="empty_review_filtered_list_message">Coba nonaktifkan penyaring belum dibaca untuk melihat semua ulasan produk</string>
     <string name="empty_review_filtered_list_title">Tidak ada ulasan produk belum dibaca</string>
     <string name="product_creation_ai_tone_selected_content_desc">Nada dipilih</string>
@@ -27,13 +32,11 @@ Language: id
     <string name="product_creation_ai_preview_details_section">Rincian</string>
     <string name="product_creation_ai_preview_description_section">Deskripsi produk</string>
     <string name="product_creation_ai_preview_name_section">Nama produk</string>
-    <string name="product_creation_ai_preview_subtitle">Jangan khawatir. Informasi berikut bisa diubah kapan saja.</string>
     <string name="product_creation_ai_preview_title">Pratinjau</string>
     <string name="product_creation_ai_about_product_continue_button">Buat Info Produk</string>
     <string name="product_creation_ai_about_product_set_tone">Tentukan nada dan suara</string>
     <string name="product_creation_ai_about_product_edit_text_caption">Tambahkan fitur utama, keunggulan, atau informasi produk agar mudah ditemukan di internet.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Misalnya, kain lembut, jahitan awet, desain unik</string>
-    <string name="product_creation_ai_about_product_edit_text_header">Produk saya</string>
     <string name="product_creation_ai_about_product_subtitle">Tonjolkan keunikan produk dan biar AI yang urus selanjutnya.</string>
     <string name="product_creation_ai_about_product_title">Tentang produk</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Sarankan nama</string>
@@ -225,7 +228,6 @@ Language: id
     <string name="empty_order_test_order_message">Buat pesanan uji coba untuk menjamin kelancaran pengalaman pelanggan di toko Anda di WooCommerce</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Tambahkan detail secara manual</string>
     <string name="order_creation_customer_search_old_wc_hint">Cari pelanggan berdasarkan</string>
-    <string name="shipping_classes_zones">Zona &amp; kelas pengiriman</string>
     <string name="free_trial_survey_free_text">Alasan lain (sebutkan)</string>
     <string name="free_trial_survey_option4">Saya adalah bagian dari sebuah tim, dan keputusan harus dibuat secara kolektif.</string>
     <string name="free_trial_survey_option3">Harga layanan merupakan faktor penting dalam keputusan ini.</string>
@@ -300,7 +302,6 @@ Language: id
     <string name="ai_product_description_note_dialog_heading">Mantap!</string>
     <string name="ai_product_description_feedback">Apakah deskripsi\nyang dibuat bermanfaat?</string>
     <string name="ai_product_description_regenerate_button">Buat Ulang</string>
-    <string name="ai_product_description_survey">Apakah deskripsi yang dibuat bermanfaat?</string>
     <string name="ai_product_description_hint">Soroti fitur unik dan audiens produk Anda dengan kata kunci untuk menghasilkan deskripsi yang pas dan khas.</string>
     <string name="ai_product_description_example">Contoh: Dalam Pot, Kaktus, Tanaman, Dekoratif, Mudah Dirawat</string>
     <string name="ai_product_description_product_name">Masukkan nama produk Anda</string>
@@ -474,8 +475,6 @@ Language: id
     <string name="product_selector_popular_products_heading">Populer</string>
     <string name="jetpack_install_role_eligibility_learn_more">Pelajari lebih lanjut tentang peran dan izin</string>
     <string name="jetpack_install_role_eligibility_error_message">Sepertinya peran pengguna Anda tidak mengizinkan Anda menginstal Jetpack. \nHubungi administrator Anda untuk mendapatkan bantuan.</string>
-    <string name="card_reader_tap_to_pay_description">Anda bisa mencoba fitur Ketuk untuk Bayar dengan membayar\nsedikit di sini.</string>
-    <string name="card_reader_test_tap_to_pay">Coba fitur Ketuk untuk Bayar Anda</string>
     <string name="subscription_free_trial">Percobaan gratis</string>
     <string name="subscription_sign_up_fee">Biaya pendaftaran</string>
     <string name="subscription_expire">Kedaluwarsa setelah</string>
@@ -512,7 +511,6 @@ Language: id
     <string name="product_subscription_title">Langganan</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Pembaca kartu menerima pembayaran dengan chip serta secara mengetuk dan menggesek menggunakan kartu debit atau kartu kredit.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Terima pembayaran nirsentuh dengan aman langsung dari ponsel Anda. </string>
-    <string name="card_reader_tap_to_pay_share_feedback">Berikan umpan balik tentang Ketuk untuk Bayar</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Tidak dapat login karena pembuatan kata sandi aplikasi tidak disetujui.</string>
     <string name="login_site_credentials_fetching_site">Mengambil situs…</string>
     <string name="login_site_credentials_fetching_site_failed">Terjadi error saat mengambil situs web Anda.</string>

@@ -15,6 +15,7 @@
     <include app:graph="@navigation/nav_graph_coupons" />
     <include app:graph="@navigation/nav_graph_site_picker" />
     <include app:graph="@navigation/nav_graph_domain_change" />
+    <include app:graph="@navigation/nav_graph_blaze" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -83,6 +84,9 @@
         <action
             android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
             app:destination="@id/addProductWithAIBottomSheet" />
+        <action
+            android:id="@+id/action_myStore_to_blazeCampaignListFragment"
+            app:destination="@id/nav_graph_blaze" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -259,8 +263,8 @@
             app:destination="@id/nav_graph_coupons" />
         <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
-            app:enterAnim="@null"
-            app:destination="@id/paymentFlow">
+            app:destination="@id/paymentFlow"
+            app:enterAnim="@null">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
@@ -700,7 +704,12 @@
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
-        android:label="AIProductNameBottomSheetFragment" />
-
+        android:label="AIProductNameBottomSheetFragment">
+        <argument
+            android:name="initialName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
 
 </navigation>

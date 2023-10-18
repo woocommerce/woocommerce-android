@@ -37,8 +37,7 @@ data class Order(
     val paymentMethodTitle: String,
     val isCashPayment: Boolean,
     val pricesIncludeTax: Boolean,
-    val billingAddress: Address,
-    val shippingAddress: Address,
+    val customer: Customer?,
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
@@ -49,7 +48,6 @@ data class Order(
     val shippingPhone: String,
     val paymentUrl: String,
     val isEditable: Boolean,
-    val customerId: Long?,
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -72,6 +70,12 @@ data class Order(
 
     @IgnoredOnParcel
     val feesTotal = feesLines.sumByBigDecimal(FeeLine::total)
+
+    @IgnoredOnParcel
+    val billingAddress = customer?.billingAddress ?: Address.EMPTY
+
+    @IgnoredOnParcel
+    val shippingAddress = customer?.shippingAddress ?: Address.EMPTY
 
     @Parcelize
     data class ShippingMethod(
@@ -236,6 +240,27 @@ data class Order(
         val discount: String? = null,
     ) : Parcelable
 
+    @Parcelize
+    data class Customer(
+        val customerId: Long? = null,
+        val firstName: String? = null,
+        val lastName: String? = null,
+        val email: String? = null,
+        val billingAddress: Address,
+        val shippingAddress: Address,
+    ) : Parcelable {
+        companion object {
+            val EMPTY = Customer(
+                customerId = null,
+                firstName = null,
+                lastName = null,
+                email = null,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY,
+            )
+        }
+    }
+
     fun getBillingName(defaultValue: String): String {
         return when {
             billingAddress.firstName.isEmpty() && billingAddress.lastName.isEmpty() -> defaultValue
@@ -344,8 +369,7 @@ data class Order(
                 paymentMethodTitle = "",
                 isCashPayment = false,
                 pricesIncludeTax = false,
-                billingAddress = Address.EMPTY,
-                shippingAddress = Address.EMPTY,
+                customer = null,
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
@@ -356,7 +380,6 @@ data class Order(
                 shippingPhone = "",
                 paymentUrl = "",
                 isEditable = true,
-                customerId = null,
             )
         }
 

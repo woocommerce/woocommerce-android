@@ -15,6 +15,7 @@
         android:paddingVertical="@dimen/major_100"
         android:paddingStart="@dimen/major_100"
         android:paddingEnd="@dimen/minor_100"
+        app:tint="@color/color_on_surface"
         app:layout_constraintBottom_toBottomOf="@id/paymentsHubListItemLabelTv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/paymentsHubListItemLabelTv"

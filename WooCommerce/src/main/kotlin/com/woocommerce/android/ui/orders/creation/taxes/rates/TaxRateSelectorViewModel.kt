@@ -33,15 +33,20 @@ class TaxRateSelectorViewModel @Inject constructor(
         isLoading,
         autoRateSwitchState
     ) { rates, isLoading, autoRateSwitchState ->
-        rates.map { taxRate ->
-            TaxRateUiModel(
-                label = getTaxRateLabel(taxRate),
-                rate = getTaxRatePercentageValueText(taxRate),
-                taxRate = taxRate,
-            )
-        }.let {
-            ViewState(taxRates = it, isLoading = isLoading, isAutoRateEnabled = autoRateSwitchState)
-        }
+        rates
+            .filter { taxRate ->
+                hasAddress(taxRate)
+            } // Filter out tax rates with wildcard address
+            .map { taxRate ->
+                TaxRateUiModel(
+                    label = getTaxRateLabel(taxRate),
+                    rate = getTaxRatePercentageValueText(taxRate),
+                    taxRate = taxRate
+                )
+            }
+            .let {
+                ViewState(taxRates = it, isLoading = isLoading, isAutoRateEnabled = autoRateSwitchState)
+            }
     }.toStateFlow(ViewState())
 
     init {
@@ -104,10 +109,19 @@ class TaxRateSelectorViewModel @Inject constructor(
     data class TaxRateUiModel(
         val label: String,
         val rate: String,
-        val taxRate: TaxRate,
+        val taxRate: TaxRate
     ) : Parcelable
 
     data class TaxRateSelected(val taxRate: TaxRate) : MultiLiveEvent.Event()
     object EditTaxRatesInAdmin : MultiLiveEvent.Event()
     object ShowTaxesInfoDialog : MultiLiveEvent.Event()
+
+    fun hasAddress(taxRate: TaxRate): Boolean {
+        return taxRate.city.isNotEmpty() ||
+            taxRate.stateCode.isNotEmpty() ||
+            taxRate.countryCode.isNotEmpty() ||
+            taxRate.postcode.isNotEmpty() ||
+            taxRate.postCodes != null ||
+            taxRate.cities != null
+    }
 }
