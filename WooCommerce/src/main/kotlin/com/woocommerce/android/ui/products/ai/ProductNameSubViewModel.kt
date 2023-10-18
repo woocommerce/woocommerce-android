@@ -59,7 +59,7 @@ class ProductNameSubViewModel(
 
     fun onPackageImageClicked() {
         viewModelScope.launch {
-            _events.emit(ShowPackagePhotoBottomSheet)
+            _events.emit(ShowMediaLibraryDialog)
         }
     }
 
@@ -73,5 +73,5 @@ class ProductNameSubViewModel(
 
     data class NavigateToAIProductNameBottomSheet(val initialName: String?) : Event()
 
-    object ShowPackagePhotoBottomSheet : Event()
+    object ShowMediaLibraryDialog : Event()
 }

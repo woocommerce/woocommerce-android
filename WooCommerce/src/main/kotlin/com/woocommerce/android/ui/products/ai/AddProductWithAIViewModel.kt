@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -80,12 +81,15 @@ class AddProductWithAIViewModel @Inject constructor(
         previewSubViewModel
     )
 
-    val state = combine(step, saveButtonState) { step, saveButtonState ->
+    private val isMediaPickerDialogVisible = MutableStateFlow(false)
+
+    val state = combine(step, saveButtonState, isMediaPickerDialogVisible) { step, saveButtonState, isDialogVisible ->
         State(
             progress = step.order.toFloat() / Step.values().size,
             subViewModel = subViewModels[step.ordinal],
             isFirstStep = step.ordinal == 0,
-            saveButtonState = saveButtonState
+            saveButtonState = saveButtonState,
+            isMediaPickerDialogVisible = isDialogVisible
         )
     }.asLiveData()
 
@@ -197,11 +201,20 @@ class AddProductWithAIViewModel @Inject constructor(
         nameSubViewModel.onProductNameChanged(productName)
     }
 
+    fun onMediaLibraryDialogRequested() {
+        isMediaPickerDialogVisible.update { true }
+    }
+
+    fun onMediaLibraryDialogDismissed() {
+        isMediaPickerDialogVisible.update { false }
+    }
+
     data class State(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
         val isFirstStep: Boolean,
-        val saveButtonState: SaveButtonState
+        val saveButtonState: SaveButtonState,
+        val isMediaPickerDialogVisible: Boolean
     )
 
     enum class SaveButtonState {
