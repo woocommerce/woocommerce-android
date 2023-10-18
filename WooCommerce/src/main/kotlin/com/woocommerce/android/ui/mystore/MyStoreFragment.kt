@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeBanner
 import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
@@ -235,7 +234,7 @@ class MyStoreFragment :
     }
 
     private fun setUpBlazeBanner() {
-        blazeBannerViewModel.setBlazeBannerSource(MY_STORE_BANNER)
+        blazeBannerViewModel.setBlazeBannerSource(BlazeFlowSource.MY_STORE_BANNER)
         blazeBannerViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
             if (!isVisible) binding.blazeBannerView.hide()
             else {
@@ -280,7 +279,10 @@ class MyStoreFragment :
         }
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(event.url, event.source)
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(
+                    url = event.url,
+                    source = BlazeFlowSource.MY_STORE_BANNER
+                )
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {
                     findNavController().navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()

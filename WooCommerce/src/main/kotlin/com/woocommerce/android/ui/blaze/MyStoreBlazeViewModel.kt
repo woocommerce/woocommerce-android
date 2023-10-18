@@ -52,7 +52,7 @@ class MyStoreBlazeViewModel @Inject constructor(
             } else {
                 isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
             }
-            triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
+            triggerEvent(LaunchBlazeCampaignCreation(url))
         }
 
         return getProducts().map { products ->
@@ -94,7 +94,11 @@ class MyStoreBlazeViewModel @Inject constructor(
                 ),
                 onCampaignClicked = { /* TODO */ },
                 onViewAllCampaignsClicked = { triggerEvent(ShowAllCampaigns) },
-                onCreateCampaignClicked = { /* TODO */ }
+                onCreateCampaignClicked = {
+                    triggerEvent(
+                        LaunchBlazeCampaignCreation(isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER))
+                    )
+                }
             )
         )
     }
@@ -130,6 +134,6 @@ class MyStoreBlazeViewModel @Inject constructor(
         ) : MyStoreBlazeCampaignState
     }
 
-    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    data class LaunchBlazeCampaignCreation(val url: String) : MultiLiveEvent.Event()
     object ShowAllCampaigns : MultiLiveEvent.Event()
 }
