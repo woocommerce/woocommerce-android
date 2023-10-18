@@ -14,7 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.product.discount.CalculateItemDiscountAmount
 import com.woocommerce.android.ui.orders.creation.product.discount.GetItemDiscountAmountText
 import com.woocommerce.android.util.CurrencyFormatter
@@ -53,15 +53,15 @@ class ProductItemView @JvmOverloads constructor(
     }
 
     fun bind(
-        productUIModel: ProductUIModel,
+        orderCreationProduct: OrderCreationProduct,
         currencyFormatter: CurrencyFormatter,
         currencyCode: String? = null,
         showDiscount: Boolean = false,
     ) {
-        showProductName(productUIModel.item.name)
-        showProductSku(productUIModel.item.sku)
-        showProductImage(productUIModel.imageUrl)
-        val discountAmount = CalculateItemDiscountAmount()(productUIModel.item)
+        showProductName(orderCreationProduct.item.name)
+        showProductSku(orderCreationProduct.item.sku)
+        showProductImage(orderCreationProduct.productInfo.imageUrl)
+        val discountAmount = CalculateItemDiscountAmount()(orderCreationProduct.item)
         if (showDiscount && currencyCode != null && discountAmount > BigDecimal.ZERO) {
             binding.productDiscount.isVisible = true
             binding.productDiscount.text =
@@ -74,14 +74,14 @@ class ProductItemView @JvmOverloads constructor(
         }
 
         binding.productStockAndStatus.text = buildString {
-            if (productUIModel.item.isVariation && productUIModel.item.attributesDescription.isNotEmpty()) {
-                append(productUIModel.item.attributesDescription)
+            if (orderCreationProduct.item.isVariation && orderCreationProduct.item.attributesDescription.isNotEmpty()) {
+                append(orderCreationProduct.item.attributesDescription)
             } else {
-                append(productUIModel.getStockText(context))
+                append(orderCreationProduct.getStockText(context))
             }
             append(" $bullet ")
             val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
-            append(decimalFormatter(productUIModel.item.total).replace(" ", "\u00A0"))
+            append(decimalFormatter(orderCreationProduct.item.total).replace(" ", "\u00A0"))
         }
     }
 

@@ -397,6 +397,14 @@ class ProductNavigator @Inject constructor() {
                 )
             }
 
+            is ProductNavigationTarget.NavigateToProductConfiguration -> {
+                fragment.findNavController().navigateSafely(
+                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToProductConfigurationFragment(
+                        target.productId
+                    )
+                )
+            }
+
             is NavigateToProductFilter -> {
                 fragment.findNavController().navigateSafely(
                     ProductSelectorFragmentDirections.actionProductSelectorFragmentToNavGraphProductFilters(

@@ -9,17 +9,16 @@ import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditProductsAdapter.ProductViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreateEditProductsAdapter(
-    private val onProductClicked: (Order.Item) -> Unit,
+    private val onProductClicked: (OrderCreationProduct) -> Unit,
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String?,
     private val onIncreaseQuantity: (Long) -> Unit,
     private val onDecreaseQuantity: (Long) -> Unit
-) : ListAdapter<ProductUIModel, ProductViewHolder>(ProductUIModelDiffCallback) {
+) : ListAdapter<OrderCreationProduct, ProductViewHolder>(OrderCreationProductDiffCallback) {
     var areProductsEditable = false
         set(value) {
             if (value != field) {
@@ -45,7 +44,7 @@ class OrderCreateEditProductsAdapter(
         init {
             binding.root.setOnClickListener {
                 safePosition?.let {
-                    onProductClicked(getItem(it).item)
+                    onProductClicked(getItem(it))
                 }
             }
             binding.stepperView.init(
@@ -60,7 +59,7 @@ class OrderCreateEditProductsAdapter(
             binding.productItemView.binding.divider.visibility = View.GONE
         }
 
-        fun bind(productModel: ProductUIModel) {
+        fun bind(productModel: OrderCreationProduct) {
             binding.root.isEnabled = productModel.item.isSynced() && areProductsEditable
             binding.productItemView.bind(productModel, currencyFormatter, currencyCode, showDiscount = true)
 
@@ -73,15 +72,15 @@ class OrderCreateEditProductsAdapter(
         }
     }
 
-    object ProductUIModelDiffCallback : DiffUtil.ItemCallback<ProductUIModel>() {
+    object OrderCreationProductDiffCallback : DiffUtil.ItemCallback<OrderCreationProduct>() {
         override fun areItemsTheSame(
-            oldItem: ProductUIModel,
-            newItem: ProductUIModel
+            oldItem: OrderCreationProduct,
+            newItem: OrderCreationProduct
         ): Boolean = oldItem.item.uniqueId == newItem.item.uniqueId
 
         override fun areContentsTheSame(
-            oldItem: ProductUIModel,
-            newItem: ProductUIModel
+            oldItem: OrderCreationProduct,
+            newItem: OrderCreationProduct
         ): Boolean = oldItem == newItem
     }
 }

@@ -68,7 +68,6 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
-import com.woocommerce.android.ui.orders.creation.bundle.OrderItemRules
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
@@ -100,7 +99,6 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -142,7 +140,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreateEditRepository: OrderCreateEditRepository,
-    private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
@@ -191,12 +189,11 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.asLiveData()
 
-    val products: LiveData<List<ProductUIModel>> = _orderDraft
-        .map { order -> order.items.filter { it.quantity > 0 && it.parent == null } }
+    val products: LiveData<List<OrderCreationProduct>> = _orderDraft
+        .map { order -> order.items.filter { it.quantity > 0 } }
         .distinctUntilChanged()
-        .map { items ->
-            items.map { item -> mapItemToProductUiModel(item) }
-        }.asLiveData()
+        .map { items -> orderCreationProductMapper.toOrderProducts(items) }
+        .asLiveData()
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -810,10 +807,10 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    fun onProductClicked(item: Order.Item) {
+    fun onProductClicked(product: OrderCreationProduct) {
         // Don't show details if the product is not synced yet
-        if (!item.isSynced()) return
-        triggerEvent(ShowProductDetails(item, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
+        if (!product.item.isSynced()) return
+        triggerEvent(ShowProductDetails(product, _orderDraft.value.currency, _orderDraft.value.couponLines.isEmpty()))
     }
 
     fun onRetryPaymentsClicked() {
@@ -1133,8 +1130,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onProductDiscountEditResult(modifiedItem: Order.Item) {
-        _orderDraft.value = _orderDraft.value.updateItem(modifiedItem)
+    fun onProductDiscountEditResult(modifiedProduct: OrderCreationProduct) {
+        _orderDraft.value = _orderDraft.value.updateItem(modifiedProduct.item)
     }
 
     fun onTaxHelpButtonClicked() = launch {
@@ -1269,15 +1266,6 @@ object OnCouponRejectedByBackend : Event() {
     @StringRes
     val message: Int = string.order_sync_coupon_removed
 }
-
-data class ProductUIModel(
-    val item: Order.Item,
-    val imageUrl: String,
-    val isStockManaged: Boolean,
-    val stockQuantity: Double,
-    val stockStatus: ProductStockStatus,
-    val rules: OrderItemRules? = null
-)
 
 enum class ScanningSource(val source: String) {
     ORDER_CREATION("order_creation"),

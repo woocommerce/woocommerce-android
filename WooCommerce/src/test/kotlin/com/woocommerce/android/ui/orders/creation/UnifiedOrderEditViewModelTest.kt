@@ -47,6 +47,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -68,7 +69,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var sut: OrderCreateEditViewModel
     protected lateinit var viewState: OrderCreateEditViewModel.ViewState
     protected lateinit var savedState: SavedStateHandle
-    protected lateinit var mapItemToProductUIModel: MapItemToProductUiModel
+    protected lateinit var orderCreationProductMapper: OrderCreationProductMapper
     protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
     protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
     protected lateinit var autoSyncOrder: AutoSyncOrder
@@ -138,14 +139,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         orderDetailRepository = mock {
             on { getOrderStatusOptions() } doReturn orderStatusList
         }
-        mapItemToProductUIModel = mock {
-            onBlocking { invoke(any()) } doReturn ProductUIModel(
-                item = defaultOrderItem,
-                imageUrl = "",
-                isStockManaged = false,
-                stockQuantity = 0.0,
-                stockStatus = ProductStockStatus.InStock
-            )
+        @Suppress("UNCHECKED_CAST")
+        orderCreationProductMapper = mock {
+            onBlocking { toOrderProducts(any()) } doAnswer { invocationOnMock ->
+                val args = invocationOnMock.arguments
+                (args.first() as? List<Order.Item>)?.let { list ->
+                    if (list.isEmpty()) {
+                        emptyList()
+                    } else {
+                        list.map { createProductItem(item = it) }
+                    }
+                } ?: emptyList()
+            }
         }
         determineMultipleLinesContext = mock {
             on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
@@ -2168,7 +2173,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,
-            mapItemToProductUiModel = mapItemToProductUIModel,
             createOrderItem = createOrderItemUseCase,
             determineMultipleLinesContext = determineMultipleLinesContext,
             parameterRepository = parameterRepository,
@@ -2190,6 +2194,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRatePercentageValueText = getTaxRatePercentageValueText,
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
+            orderCreationProductMapper = orderCreationProductMapper,
             isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
         )
     }
@@ -2209,6 +2214,20 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 quantity = 1F,
             )
         }
+
+    protected fun createProductItem(item: Order.Item? = null): OrderCreationProduct {
+        val orderItem = item ?: createOrderItem()
+        val productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = false,
+            stockQuantity = 0.0,
+            stockStatus = ProductStockStatus.InStock
+        )
+        return OrderCreationProduct.ProductItem(
+            item = orderItem,
+            productInfo = productInfo
+        )
+    }
 
     protected val orderStatusList = listOf(
         Order.OrderStatus("first key", "first status"),

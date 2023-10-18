@@ -128,7 +128,7 @@ class OrderCreateEditFormFragment :
         handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
             viewModel.onProductDetailsEditResult(it)
         }
-        handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
+        handleResult<OrderCreationProduct>(KEY_PRODUCT_DISCOUNT_RESULT) {
             viewModel.onProductDiscountEditResult(it)
         }
     }
@@ -475,7 +475,10 @@ class OrderCreateEditFormFragment :
             }
     }
 
-    private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
+    private fun bindProductsSection(
+        productsSection: OrderCreateEditSectionView,
+        products: List<OrderCreationProduct>?
+    ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
             productsSection.content = null

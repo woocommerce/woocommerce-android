@@ -11,8 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.MapItemToProductUiModel
-import com.woocommerce.android.ui.orders.creation.ProductUIModel
+import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
+import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Valid
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -45,7 +45,13 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     }
 
     private val savedState = OrderCreateEditProductDiscountFragmentArgs(
-        item,
+        createProductItem(
+            item = Order.Item.EMPTY.copy(
+                quantity = 2F,
+                subtotal = 100F.toBigDecimal(),
+                total = 80F.toBigDecimal()
+            )
+        ),
         "usd"
     ).initSavedStateHandle()
 
@@ -66,18 +72,6 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
 
-    private val defaultOrderItem = createOrderItem()
-
-    private val mapItemToProductUIModel: MapItemToProductUiModel = mock {
-        onBlocking { invoke(any()) } doReturn ProductUIModel(
-            item = defaultOrderItem,
-            imageUrl = "",
-            isStockManaged = false,
-            stockQuantity = 0.0,
-            stockStatus = ProductStockStatus.InStock
-        )
-    }
-
     @Test
     fun `given discount bigger than item's total price, when done clicked, then should return Invalid state`() =
         testBlocking {
@@ -86,8 +80,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 subtotal = 100F.toBigDecimal(),
                 total = 100F.toBigDecimal()
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
 
@@ -110,8 +105,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 subtotal = 100F.toBigDecimal(),
                 total = 100F.toBigDecimal()
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
 
@@ -132,8 +128,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 subtotal = 100F.toBigDecimal(),
                 total = 100F.toBigDecimal()
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
 
@@ -152,8 +149,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             quantity = 1F,
             subtotal = 100F.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
 
@@ -167,8 +165,8 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         with(lastEvent) {
             assertThat(this).isNotNull
             assertThat(this).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
-            val result = (this as MultiLiveEvent.Event.ExitWithResult<*>).data as Order.Item
-            assertEquals(99F, result.total.toFloat())
+            val result = (this as MultiLiveEvent.Event.ExitWithResult<*>).data as OrderCreationProduct
+            assertEquals(99F, result.item.total.toFloat())
         }
     }
 
@@ -179,8 +177,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 quantity = 1F,
                 subtotal = 999.toBigDecimal(),
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
             val sut = createSut(savedStateHandle)
@@ -201,8 +200,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 quantity = 1F,
                 subtotal = 33.toBigDecimal(),
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
             val sut = createSut(savedStateHandle)
@@ -224,8 +224,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 quantity = 1F,
                 subtotal = 33.toBigDecimal(),
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
             val sut = createSut(savedStateHandle)
@@ -243,8 +244,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
                 quantity = 1F,
                 subtotal = 33.toBigDecimal(),
             )
+            val productItem = createProductItem(item)
             val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-                item,
+                productItem,
                 "usd"
             ).initSavedStateHandle()
             val sut = createSut(savedStateHandle)
@@ -262,8 +264,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             quantity = 1F,
             subtotal = 33.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
@@ -281,8 +284,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             subtotal = 33.toBigDecimal(),
             total = 30.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
@@ -299,8 +303,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             subtotal = 33.toBigDecimal(),
             total = 33.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
@@ -316,8 +321,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             quantity = 1F,
             subtotal = 33.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
@@ -335,8 +341,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             quantity = 1F,
             subtotal = 33.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
@@ -354,8 +361,9 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             quantity = 1F,
             subtotal = 33.toBigDecimal(),
         )
+        val productItem = createProductItem(item)
         val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
-            item,
+            productItem,
             "usd"
         ).initSavedStateHandle()
         val sut = createSut(savedStateHandle)
@@ -371,7 +379,6 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             resourceProvider,
             CalculateItemDiscountAmount(),
             tracker,
-            mapItemToProductUIModel,
             parameterRepository,
             currencySymbolFinder,
         )
@@ -393,11 +400,17 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             )
         }
 
-    private companion object {
-        val item = Order.Item.EMPTY.copy(
-            quantity = 2F,
-            subtotal = 100F.toBigDecimal(),
-            total = 80F.toBigDecimal()
+    private fun createProductItem(item: Order.Item? = null): OrderCreationProduct {
+        val orderItem = item ?: createOrderItem()
+        val productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = false,
+            stockQuantity = 0.0,
+            stockStatus = ProductStockStatus.InStock
+        )
+        return OrderCreationProduct.ProductItem(
+            item = orderItem,
+            productInfo = productInfo
         )
     }
 }
