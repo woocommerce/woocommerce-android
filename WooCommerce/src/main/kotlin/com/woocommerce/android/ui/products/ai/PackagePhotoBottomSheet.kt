@@ -22,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -62,18 +63,25 @@ fun ProductFromPackagePhoto(
     modifier: Modifier,
     onKeywordChanged: (Int, Keyword) -> Unit
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .padding(dimensionResource(id = dimen.major_100))
+    Surface(
+        shape = RoundedCornerShape(
+            topStart = dimensionResource(id = dimen.minor_100),
+            topEnd = dimensionResource(id = dimen.minor_100)
+        )
     ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+            modifier = modifier
+                .background(MaterialTheme.colors.surface)
+                .padding(dimensionResource(id = dimen.major_100))
+        ) {
 
-        ProductImage(viewState)
+            ProductImage(viewState)
 
-        Spacer(Modifier)
+            Spacer(Modifier)
 
-        NameAndDescription(viewState, modifier, onKeywordChanged)
+            NameAndDescription(viewState, modifier, onKeywordChanged)
+        }
     }
 }
 
