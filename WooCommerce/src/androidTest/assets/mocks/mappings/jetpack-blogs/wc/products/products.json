@@ -10,8 +10,8 @@
                 "matches": "/wc/v3/products/(.*)"
             },
             "query": {
-                "matches": "(.*)orderby\":\"title(.*)"
-            },            
+                "matches": "(.*)orderby\":\"(.*)"
+            },
             "locale": {
                 "matches": "(.*)"
             }
