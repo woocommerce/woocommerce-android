@@ -95,7 +95,8 @@ class MyStoreBlazeViewModel @Inject constructor(
                 onCampaignClicked = {
                     triggerEvent(
                         ShowCampaignDetails(
-                            url = isBlazeEnabled.buildCampaignDetailsUrl(campaign.campaignId)
+                            url = isBlazeEnabled.buildCampaignDetailsUrl(campaign.campaignId),
+                            urlToTriggerExit = isBlazeEnabled.buildCampaignsListUrl()
                         )
                     )
                 },
@@ -144,5 +145,8 @@ class MyStoreBlazeViewModel @Inject constructor(
 
     data class LaunchBlazeCampaignCreation(val url: String) : MultiLiveEvent.Event()
     object ShowAllCampaigns : MultiLiveEvent.Event()
-    data class ShowCampaignDetails(val url: String) : MultiLiveEvent.Event()
+    data class ShowCampaignDetails(
+        val url: String,
+        val urlToTriggerExit: String
+    ) : MultiLiveEvent.Event()
 }

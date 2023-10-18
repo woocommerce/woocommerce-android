@@ -37,6 +37,11 @@ class IsBlazeEnabled @Inject constructor(
         return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrlWithoutProtocol, productId, source.trackingName)
     }
 
+    fun buildCampaignsListUrl(): String {
+        val siteUrlWithoutProtocol = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
+        return "${BASE_URL}campaigns/$siteUrlWithoutProtocol"
+    }
+
     fun buildCampaignDetailsUrl(campaignId: Int): String {
         val siteUrlWithoutProtocol = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
         return "${BASE_URL}campaigns/$campaignId/$siteUrlWithoutProtocol"
