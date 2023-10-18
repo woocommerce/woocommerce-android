@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -44,9 +43,6 @@ fun BlazeCampaignItem(
         Row(verticalAlignment = Alignment.Top) {
             ListItemImage(
                 imageUrl = campaign.product.imgUrl,
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_275))
-                    .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
                 placeHolderDrawableId = R.drawable.ic_product,
                 fallbackDrawableId = R.drawable.ic_product,
             )

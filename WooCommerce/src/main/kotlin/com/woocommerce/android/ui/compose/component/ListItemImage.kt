@@ -16,9 +16,9 @@ import com.woocommerce.android.R.dimen
 @Composable
 fun ListItemImage(
     imageUrl: String,
-    modifier: Modifier = Modifier,
     @DrawableRes placeHolderDrawableId: Int,
     @DrawableRes fallbackDrawableId: Int,
+    modifier: Modifier = Modifier,
     contentDescription: String = ""
 ) {
     AsyncImage(
