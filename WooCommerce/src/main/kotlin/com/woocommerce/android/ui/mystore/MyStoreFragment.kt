@@ -288,6 +288,14 @@ class MyStoreFragment :
                         MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
                     )
                 }
+                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = getString(R.string.blaze_campaign_details_title)
+                        )
+                    )
+                }
             }
         }
     }

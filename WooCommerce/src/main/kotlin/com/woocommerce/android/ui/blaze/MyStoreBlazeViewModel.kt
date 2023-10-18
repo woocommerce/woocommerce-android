@@ -92,8 +92,16 @@ class MyStoreBlazeViewModel @Inject constructor(
                         )
                     )
                 ),
-                onCampaignClicked = { /* TODO */ },
-                onViewAllCampaignsClicked = { triggerEvent(ShowAllCampaigns) },
+                onCampaignClicked = {
+                    triggerEvent(
+                        ShowCampaignDetails(
+                            url = isBlazeEnabled.buildCampaignDetailsUrl(campaign.campaignId)
+                        )
+                    )
+                },
+                onViewAllCampaignsClicked = {
+                    triggerEvent(ShowAllCampaigns)
+                },
                 onCreateCampaignClicked = {
                     triggerEvent(
                         LaunchBlazeCampaignCreation(isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER))
@@ -136,4 +144,5 @@ class MyStoreBlazeViewModel @Inject constructor(
 
     data class LaunchBlazeCampaignCreation(val url: String) : MultiLiveEvent.Event()
     object ShowAllCampaigns : MultiLiveEvent.Event()
+    data class ShowCampaignDetails(val url: String) : MultiLiveEvent.Event()
 }

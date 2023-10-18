@@ -37,6 +37,11 @@ class IsBlazeEnabled @Inject constructor(
         return BLAZE_CREATION_FLOW_PRODUCT.format(siteUrlWithoutProtocol, productId, source.trackingName)
     }
 
+    fun buildCampaignDetailsUrl(campaignId: Int): String {
+        val siteUrlWithoutProtocol = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
+        return "${BASE_URL}campaigns/$campaignId/$siteUrlWithoutProtocol"
+    }
+
     enum class BlazeFlowSource(val trackingName: String) {
         PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
         MORE_MENU_ITEM("menu"),
