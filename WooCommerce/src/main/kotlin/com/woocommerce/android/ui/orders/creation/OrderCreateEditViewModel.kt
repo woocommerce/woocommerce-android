@@ -439,13 +439,23 @@ class OrderCreateEditViewModel @Inject constructor(
                         none { it.productId == selectedItem.id }
                     }
                 }.map {
-                    if (it is SelectedItem.ProductVariation) {
-                        createOrderItem(it.productId, it.variationId)
-                    } else {
-                        createOrderItem(it.id)
+                    when (it) {
+                        is SelectedItem.ProductVariation -> {
+                            createOrderItem(it.productId, it.variationId)
+                        }
+
+                        is SelectedItem.ConfigurableProduct -> {
+                            createOrderItem(
+                                remoteProductId = it.productId,
+                                productConfiguration = it.configuration
+                            )
+                        }
+
+                        else -> {
+                            createOrderItem(it.id)
+                        }
                     }
                 }
-
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
             }
         }
