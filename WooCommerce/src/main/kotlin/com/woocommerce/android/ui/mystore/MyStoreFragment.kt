@@ -270,11 +270,20 @@ class MyStoreFragment :
                             MyStoreBlazeView(
                                 state = blazeCampaignState,
                                 onCreateCampaignClicked = { },
-                                onShowAllClicked = { },
+                                onShowAllClicked = myStoreBlazeViewModel::onShowAllCampaignsClicked,
                             )
                         }
                     }
                     show()
+                }
+            }
+        }
+        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
+                    )
                 }
             }
         }
