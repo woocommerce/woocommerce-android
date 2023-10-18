@@ -72,24 +72,23 @@ class MyStoreBlazeViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
     private fun prepareUiForCampaign(campaign: BlazeCampaignModel): Flow<MyStoreBlazeCampaignState> {
         return flowOf(
             MyStoreBlazeCampaignState.Campaign(
                 campaign = BlazeCampaignUi(
                     product = BlazeProductUi(
-                        name = "Product name",
-                        imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                        name = campaign.title,
+                        imgUrl = campaign.imageUrl.orEmpty(),
                     ),
-                    status = CampaignStatusUi.Active,
+                    status = CampaignStatusUi.fromString(campaign.uiStatus),
                     stats = listOf(
                         BlazeCampaignStat(
                             name = R.string.blaze_campaign_status_impressions,
-                            value = 100
+                            value = campaign.impressions
                         ),
                         BlazeCampaignStat(
                             name = R.string.blaze_campaign_status_clicks,
-                            value = 10
+                            value = campaign.clicks
                         )
                     )
                 ),

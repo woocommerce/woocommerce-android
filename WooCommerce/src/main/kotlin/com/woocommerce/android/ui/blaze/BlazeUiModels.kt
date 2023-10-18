@@ -11,13 +11,13 @@ data class BlazeProductUi(
 
 data class BlazeCampaignUi(
     val product: BlazeProductUi,
-    val status: CampaignStatusUi,
+    val status: CampaignStatusUi?,
     val stats: List<BlazeCampaignStat>,
 )
 
 data class BlazeCampaignStat(
     @StringRes val name: Int,
-    val value: Int
+    val value: Long
 )
 
 enum class CampaignStatusUi(
@@ -44,5 +44,17 @@ enum class CampaignStatusUi(
         statusDisplayText = R.string.blaze_campaign_status_rejected,
         textColor = R.color.blaze_campaign_status_completed_text,
         backgroundColor = R.color.blaze_campaign_status_completed_background
-    ),
+    );
+
+    companion object {
+        fun fromString(status: String): CampaignStatusUi? {
+            return when (status) {
+                "created" -> InModeration
+                "active" -> Active
+                "completed" -> Completed
+                "rejected" -> Rejected
+                else -> null
+            }
+        }
+    }
 }

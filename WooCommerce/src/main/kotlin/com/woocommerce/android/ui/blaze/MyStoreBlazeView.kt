@@ -60,7 +60,7 @@ fun MyStoreBlazeView(
                 when (state) {
                     is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
                         campaign = state.campaign,
-                        onCampaignClicked = {},
+                        onCampaignClicked = state.onCampaignClicked,
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
