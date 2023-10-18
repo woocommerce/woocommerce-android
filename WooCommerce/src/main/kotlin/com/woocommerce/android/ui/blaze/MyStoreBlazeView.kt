@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeUi
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
-import com.woocommerce.android.ui.compose.component.ListItemImage
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
@@ -161,7 +161,7 @@ fun BlazeProductItem(
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ListItemImage(
+            ProductThumbnail(
                 imageUrl = product.imgUrl,
                 placeHolderDrawableId = R.drawable.ic_product,
                 fallbackDrawableId = R.drawable.ic_product

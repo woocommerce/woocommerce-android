@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
-import com.woocommerce.android.ui.compose.component.ListItemImage
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTag
 
 @Composable
@@ -41,7 +41,7 @@ fun BlazeCampaignItem(
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Row(verticalAlignment = Alignment.Top) {
-            ListItemImage(
+            ProductThumbnail(
                 imageUrl = campaign.product.imgUrl,
                 placeHolderDrawableId = R.drawable.ic_product,
                 fallbackDrawableId = R.drawable.ic_product,

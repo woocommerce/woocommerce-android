@@ -14,7 +14,7 @@ import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R.dimen
 
 @Composable
-fun ListItemImage(
+fun ProductThumbnail(
     imageUrl: String,
     @DrawableRes placeHolderDrawableId: Int,
     @DrawableRes fallbackDrawableId: Int,
