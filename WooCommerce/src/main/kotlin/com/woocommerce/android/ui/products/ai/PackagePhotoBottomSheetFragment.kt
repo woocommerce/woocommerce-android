@@ -10,11 +10,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibraryDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.widgets.MediaPickerHelper
+import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -41,10 +40,8 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
         }
     }
 
-    private fun onMediaLibraryImageSelected(uri: Uri?) {
-        if (uri != null) {
-            viewModel.onImageChanged(uri.toString())
-        }
+    private fun onMediaLibraryImageSelected(url: String) {
+        viewModel.onImageChanged(url)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

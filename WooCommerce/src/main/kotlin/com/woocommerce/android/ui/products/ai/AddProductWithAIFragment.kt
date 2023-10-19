@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.ai
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +23,7 @@ import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateTo
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowMediaLibraryDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.MediaPickerHelper
+import com.woocommerce.android.mediapicker.MediaPickerHelper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -81,13 +80,11 @@ class AddProductWithAIFragment : BaseFragment() {
         }
     }
 
-    private fun showPackagePhotoBottomSheet(imageUri: Uri?) {
-        if (imageUri != null) {
-            findNavController().navigateSafely(
-                directions = AddProductWithAIFragmentDirections
-                    .actionAddProductWithAIFragmentToPackagePhotoBottomSheetFragment(imageUri.toString())
-            )
-        }
+    private fun showPackagePhotoBottomSheet(imageUrl: String) {
+        findNavController().navigateSafely(
+            directions = AddProductWithAIFragmentDirections
+                .actionAddProductWithAIFragmentToPackagePhotoBottomSheetFragment(imageUrl)
+        )
     }
 
     private fun handleResults() {
