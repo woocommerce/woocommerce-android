@@ -46,6 +46,10 @@ class BlazeCampaignListFragment : BaseFragment() {
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(event.url, event.source)
+                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
+                    event.url,
+                    event.urlToTriggerExit
+                )
             }
         }
     }
@@ -55,6 +59,16 @@ class BlazeCampaignListFragment : BaseFragment() {
             NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
                 urlToLoad = url,
                 source = source
+            )
+        )
+    }
+
+    private fun openCampaignDetails(url: String, urlToTriggerExit: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(urlToTriggerExit),
+                title = getString(R.string.blaze_campaign_details_title)
             )
         )
     }

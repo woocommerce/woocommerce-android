@@ -33,28 +33,32 @@ class BlazeCampaignListViewModel @Inject constructor(
             BlazeCampaignListState(
                 campaigns = campaigns
                     .map {
-                        BlazeCampaignUi(
-                            product = BlazeProductUi(
-                                name = it.title,
-                                imgUrl = it.imageUrl.orEmpty(),
-                            ),
-                            status = CampaignStatusUi.fromString(it.uiStatus),
-                            stats = listOf(
-                                BlazeCampaignStat(
-                                    name = string.blaze_campaign_status_impressions,
-                                    value = it.impressions
+                        CampaignState(
+                            campaignUi = BlazeCampaignUi(
+                                product = BlazeProductUi(
+                                    name = it.title,
+                                    imgUrl = it.imageUrl.orEmpty(),
                                 ),
-                                BlazeCampaignStat(
-                                    name = string.blaze_campaign_status_clicks,
-                                    value = it.clicks
-                                ),
-                                BlazeCampaignStat(
-                                    name = string.blaze_campaign_status_clicks,
-                                    value = it.budgetCents
+                                status = CampaignStatusUi.fromString(it.uiStatus),
+                                stats = listOf(
+                                    BlazeCampaignStat(
+                                        name = string.blaze_campaign_status_impressions,
+                                        value = it.impressions
+                                    ),
+                                    BlazeCampaignStat(
+                                        name = string.blaze_campaign_status_clicks,
+                                        value = it.clicks
+                                    ),
+                                    BlazeCampaignStat(
+                                        name = string.blaze_campaign_status_clicks,
+                                        value = it.budgetCents
+                                    )
                                 )
-                            )
+                            ),
+                            onCampaignClicked = { onCampaignClicked(it.campaignId) }
                         )
                     },
+                onAddNewCampaignClicked = { onAddNewCampaignClicked() },
                 isLoading = false
             )
         }
@@ -66,19 +70,35 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
     }
 
-    fun onCampaignClicked() {
-        // TODO
+    private fun onCampaignClicked(campaignId: Int) {
+        val url = isBlazeEnabled.buildCampaignDetailsUrl(campaignId)
+        triggerEvent(
+            ShowCampaignDetails(
+                url = url,
+                urlToTriggerExit = isBlazeEnabled.buildCampaignsListUrl()
+            )
+        )
     }
 
-    fun onAddNewCampaignClicked() {
+    private fun onAddNewCampaignClicked() {
         val url = isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
         triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
     }
 
     data class BlazeCampaignListState(
-        val campaigns: List<BlazeCampaignUi>,
+        val campaigns: List<CampaignState>,
+        val onAddNewCampaignClicked: () -> Unit,
         val isLoading: Boolean,
     )
 
+    data class CampaignState(
+        val campaignUi: BlazeCampaignUi,
+        val onCampaignClicked: () -> Unit,
+    )
+
     data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    data class ShowCampaignDetails(
+        val url: String,
+        val urlToTriggerExit: String
+    ) : MultiLiveEvent.Event()
 }

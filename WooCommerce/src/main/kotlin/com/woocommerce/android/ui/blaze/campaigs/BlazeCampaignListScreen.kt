@@ -30,14 +30,13 @@ import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
     viewModel.state.observeAsState().value?.let { state ->
         BlazeCampaignListScreen(
             state = state,
-            onCampaignClicked = viewModel::onCampaignClicked,
-            onAddNewCampaignClicked = viewModel::onAddNewCampaignClicked,
             modifier = Modifier.background(color = MaterialTheme.colors.surface)
         )
     }
@@ -46,8 +45,6 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
 @Composable
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
-    onCampaignClicked: () -> Unit,
-    onAddNewCampaignClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -65,14 +62,14 @@ private fun BlazeCampaignListScreen(
                 LazyColumn {
                     items(state.campaigns) { campaign ->
                         BlazeCampaignItem(
-                            campaign = campaign,
-                            onCampaignClicked = onCampaignClicked,
+                            campaign = campaign.campaignUi,
+                            onCampaignClicked = campaign.onCampaignClicked,
                         )
                         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
                     }
                 }
                 FloatingActionButton(
-                    onClick = onAddNewCampaignClicked,
+                    onClick = state.onAddNewCampaignClicked,
                     shape = CircleShape,
                     backgroundColor = MaterialTheme.colors.primary,
                     modifier = Modifier
@@ -100,31 +97,33 @@ fun BlazeCampaignListScreenPreview() {
     BlazeCampaignListScreen(
         state = BlazeCampaignListState(
             campaigns = listOf(
-                BlazeCampaignUi(
-                    product = BlazeProductUi(
-                        name = "Product name",
-                        imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                CampaignState(
+                    BlazeCampaignUi(
+                        product = BlazeProductUi(
+                            name = "Product name",
+                            imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                        ),
+                        status = Active,
+                        stats = listOf(
+                            BlazeCampaignStat(
+                                name = string.blaze_campaign_status_impressions,
+                                value = 100
+                            ),
+                            BlazeCampaignStat(
+                                name = string.blaze_campaign_status_clicks,
+                                value = 10
+                            ),
+                            BlazeCampaignStat(
+                                name = string.blaze_campaign_status_budget,
+                                value = 1000
+                            ),
+                        ),
                     ),
-                    status = Active,
-                    stats = listOf(
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_impressions,
-                            value = 100
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_clicks,
-                            value = 10
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_budget,
-                            value = 1000
-                        ),
-                    ),
+                    onCampaignClicked = {}
                 )
             ),
+            onAddNewCampaignClicked = {},
             isLoading = false
-        ),
-        onCampaignClicked = { },
-        onAddNewCampaignClicked = { }
+        )
     )
 }
