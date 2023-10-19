@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +24,6 @@ class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val selectedSite: SelectedSite,
-    private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
     val state = blazeCampaignsStore.observeBlazeCampaigns(
