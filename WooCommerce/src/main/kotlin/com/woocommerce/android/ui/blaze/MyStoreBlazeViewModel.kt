@@ -52,7 +52,7 @@ class MyStoreBlazeViewModel @Inject constructor(
             } else {
                 isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
             }
-            triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.MY_STORE_BANNER))
+            triggerEvent(LaunchBlazeCampaignCreation(url))
         }
 
         return getProducts().map { products ->
@@ -72,30 +72,42 @@ class MyStoreBlazeViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
     private fun prepareUiForCampaign(campaign: BlazeCampaignModel): Flow<MyStoreBlazeCampaignState> {
         return flowOf(
             MyStoreBlazeCampaignState.Campaign(
                 campaign = BlazeCampaignUi(
                     product = BlazeProductUi(
-                        name = "Product name",
-                        imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                        name = campaign.title,
+                        imgUrl = campaign.imageUrl.orEmpty(),
                     ),
-                    status = CampaignStatusUi.Active,
+                    status = CampaignStatusUi.fromString(campaign.uiStatus),
                     stats = listOf(
                         BlazeCampaignStat(
                             name = R.string.blaze_campaign_status_impressions,
-                            value = 100
+                            value = campaign.impressions
                         ),
                         BlazeCampaignStat(
                             name = R.string.blaze_campaign_status_clicks,
-                            value = 10
+                            value = campaign.clicks
                         )
                     )
                 ),
-                onCampaignClicked = { /* TODO */ },
-                onViewAllCampaignsClicked = { triggerEvent(ShowAllCampaigns) },
-                onCreateCampaignClicked = { /* TODO */ }
+                onCampaignClicked = {
+                    triggerEvent(
+                        ShowCampaignDetails(
+                            url = isBlazeEnabled.buildCampaignDetailsUrl(campaign.campaignId),
+                            urlToTriggerExit = isBlazeEnabled.buildCampaignsListUrl()
+                        )
+                    )
+                },
+                onViewAllCampaignsClicked = {
+                    triggerEvent(ShowAllCampaigns)
+                },
+                onCreateCampaignClicked = {
+                    triggerEvent(
+                        LaunchBlazeCampaignCreation(isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER))
+                    )
+                }
             )
         )
     }
@@ -131,6 +143,10 @@ class MyStoreBlazeViewModel @Inject constructor(
         ) : MyStoreBlazeCampaignState
     }
 
-    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    data class LaunchBlazeCampaignCreation(val url: String) : MultiLiveEvent.Event()
     object ShowAllCampaigns : MultiLiveEvent.Event()
+    data class ShowCampaignDetails(
+        val url: String,
+        val urlToTriggerExit: String
+    ) : MultiLiveEvent.Event()
 }
