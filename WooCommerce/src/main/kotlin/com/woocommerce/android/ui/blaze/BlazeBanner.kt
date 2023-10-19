@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -53,8 +54,9 @@ fun BlazeBanner(
                 )
             }
             Image(
-                painter = painterResource(drawable.ic_blaze_banner_flame),
-                contentDescription = ""
+                painter = painterResource(drawable.ic_blaze),
+                contentDescription = "",
+                modifier = Modifier.size(dimensionResource(id = dimen.image_major_50))
             )
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100)),

@@ -138,7 +138,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 ProductProperty.Link(
                     title = R.string.product_details_blaze_card,
-                    icon = R.drawable.ic_blaze_banner_flame,
+                    icon = R.drawable.ic_blaze,
                     isDividerVisible = false,
                     onClick = viewModel::onBlazeClicked
                 )
