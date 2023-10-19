@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.products.ai
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -44,6 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -143,8 +149,9 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
         ) {
             val (image, button) = createRefs()
 
-            AsyncImage(
+            SubcomposeAsyncImage(
                 modifier = Modifier
+                    .animateContentSize(animationSpec = tween(durationMillis = 500))
                     .fillMaxWidth()
                     .constrainAs(image) {
                         top.linkTo(parent.top)
@@ -159,8 +166,21 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
                     .error(drawable.img_woo_generic_error)
                     .build(),
                 contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-            )
+                contentScale = ContentScale.FillBounds,
+            ) {
+                val state = painter.state
+                if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(dimensionResource(id = dimen.progress_bar_mid))
+                        )
+                    }
+                } else {
+                    SubcomposeAsyncImageContent()
+                }
+            }
 
             WCColoredButton(
                 modifier = Modifier
