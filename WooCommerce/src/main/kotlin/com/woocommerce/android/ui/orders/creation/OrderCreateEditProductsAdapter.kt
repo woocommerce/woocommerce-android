@@ -16,8 +16,8 @@ class OrderCreateEditProductsAdapter(
     private val onProductClicked: (OrderCreationProduct) -> Unit,
     private val currencyFormatter: CurrencyFormatter,
     private val currencyCode: String?,
-    private val onIncreaseQuantity: (Long) -> Unit,
-    private val onDecreaseQuantity: (Long) -> Unit
+    private val onIncreaseQuantity: (OrderCreationProduct) -> Unit,
+    private val onDecreaseQuantity: (OrderCreationProduct) -> Unit
 ) : ListAdapter<OrderCreationProduct, ProductViewHolder>(OrderCreationProductDiffCallback) {
     var areProductsEditable = false
         set(value) {
@@ -49,10 +49,10 @@ class OrderCreateEditProductsAdapter(
             }
             binding.stepperView.init(
                 onPlusButtonClick = {
-                    safePosition?.let { onIncreaseQuantity(getItem(it).item.itemId) }
+                    safePosition?.let { onIncreaseQuantity(getItem(it)) }
                 },
                 onMinusButtonClick = {
-                    safePosition?.let { onDecreaseQuantity(getItem(it).item.itemId) }
+                    safePosition?.let { onDecreaseQuantity(getItem(it)) }
                 },
                 plusMinusContentDescription = R.string.order_creation_change_product_quantity
             )
