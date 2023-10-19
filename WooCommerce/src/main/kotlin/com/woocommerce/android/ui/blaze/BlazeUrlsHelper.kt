@@ -24,9 +24,9 @@ class BlazeUrlsHelper @Inject constructor(
         return BLAZE_CREATION_FLOW_PRODUCT.format(getSiteUrl(), productId, source.trackingName)
     }
 
-    fun buildCampaignsListUrl(): String = "${BASE_URL}/campaigns/${getSiteUrl()}"
+    fun buildCampaignsListUrl(): String = "$BASE_URL/campaigns/${getSiteUrl()}"
 
-    fun buildCampaignDetailsUrl(campaignId: Int): String = "${BASE_URL}/campaigns/$campaignId/${getSiteUrl()}"
+    fun buildCampaignDetailsUrl(campaignId: Int): String = "$BASE_URL/campaigns/$campaignId/${getSiteUrl()}"
 
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
 
