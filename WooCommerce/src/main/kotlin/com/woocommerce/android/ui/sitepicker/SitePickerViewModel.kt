@@ -641,6 +641,10 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun startStoreCreationFlow() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_FLOW_STARTED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource())
+        )
         appPrefsWrapper.markAsNewSignUp(newSignUp = false)
         triggerEvent(NavigateToStoreCreationEvent)
     }
