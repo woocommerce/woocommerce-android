@@ -106,7 +106,8 @@ data class Order(
         val variationId: Long,
         val attributesList: List<Attribute>,
         val parent: Long? = null,
-        val configuration: ProductConfiguration? = null
+        val configuration: ProductConfiguration? = null,
+        val configurationKey: Long? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
