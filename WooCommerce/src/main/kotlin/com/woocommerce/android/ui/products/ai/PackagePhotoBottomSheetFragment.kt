@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.ai
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +8,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibraryDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

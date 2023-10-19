@@ -46,7 +46,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -55,12 +54,12 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
-import com.woocommerce.android.mediapicker.MediaPickerDialog
 
 @Composable
 fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
@@ -130,13 +129,14 @@ fun ProductFromPackagePhoto(
 
 @Composable
 private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
-    Box(modifier = Modifier
-        .border(
-            width = dimensionResource(id = dimen.minor_10),
-            color = colorResource(id = color.divider_color),
-            shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
-        )
-        .fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .border(
+                width = dimensionResource(id = dimen.minor_10),
+                color = colorResource(id = color.divider_color),
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+            )
+            .fillMaxWidth()
     ) {
         ConstraintLayout(
             modifier = Modifier
