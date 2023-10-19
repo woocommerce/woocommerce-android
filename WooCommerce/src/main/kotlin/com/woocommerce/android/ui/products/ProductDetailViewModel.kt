@@ -230,7 +230,8 @@ class ProductDetailViewModel @Inject constructor(
             parameters = parameters,
             addonRepository = addonRepository,
             variationRepository = variationRepository,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            isBlazeEnabled = isBlazeEnabled
         )
     }
 

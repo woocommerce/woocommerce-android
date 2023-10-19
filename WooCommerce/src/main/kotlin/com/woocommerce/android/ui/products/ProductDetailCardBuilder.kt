@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -77,7 +78,8 @@ class ProductDetailCardBuilder(
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
     private val variationRepository: VariationRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) {
     private lateinit var originalSku: String
 
@@ -93,6 +95,8 @@ class ProductDetailCardBuilder(
 
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
+
+        cards.addIfNotEmpty(getBlazeCard())
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
@@ -123,6 +127,22 @@ class ProductDetailCardBuilder(
                         onLearnMoreClicked = viewModel::onLearnMoreClicked
                     )
                 ).filterNotEmpty()
+        )
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private suspend fun getBlazeCard(): ProductPropertyCard? {
+        if (!isBlazeEnabled()) return null
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                ProductProperty.Link(
+                    title = R.string.product_details_blaze_card,
+                    icon = R.drawable.ic_blaze_banner_flame,
+                    isDividerVisible = false,
+                    onClick = viewModel::onBlazeClicked
+                )
+            )
         )
     }
 
