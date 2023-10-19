@@ -25,7 +25,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.widgets.MediaPickerDialog
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 
 @Composable
 fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {

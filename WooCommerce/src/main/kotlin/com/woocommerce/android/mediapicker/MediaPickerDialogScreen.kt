@@ -1,4 +1,4 @@
-package com.woocommerce.android.widgets
+package com.woocommerce.android.mediapicker
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
