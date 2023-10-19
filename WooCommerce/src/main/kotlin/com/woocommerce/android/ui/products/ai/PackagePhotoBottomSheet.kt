@@ -4,28 +4,22 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -35,7 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -61,7 +54,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
-import com.woocommerce.android.widgets.MediaPickerDialog
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 
 @Composable
 fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
@@ -131,53 +124,62 @@ fun ProductFromPackagePhoto(
 
 @Composable
 private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
-    ConstraintLayout(
-        modifier = Modifier
-            .border(
-                width = dimensionResource(id = dimen.minor_10),
-                color = colorResource(id = color.divider_color),
-                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
-            )
-            .fillMaxWidth()
-    ) {
-        val (image, button) = createRefs()
-
-        AsyncImage(
-            modifier = Modifier
-                .constrainAs(image) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-            model = Builder(LocalContext.current)
-                .data(viewState.imageUrl)
-                .crossfade(true)
-                .placeholder(drawable.img_empty_products)
-                .error(drawable.img_empty_products)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Inside,
+    Box(modifier = Modifier
+        .border(
+            width = dimensionResource(id = dimen.minor_10),
+            color = colorResource(id = color.divider_color),
+            shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
         )
-
-        WCColoredButton(
+        .fillMaxWidth()
+    ) {
+        ConstraintLayout(
             modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.major_100))
-                .constrainAs(button) {
-                    centerAround(image.top)
-                    centerAround(image.end)
-                }
-                .size(dimensionResource(id = dimen.button_height_major_100)),
-            shape = CircleShape,
-            onClick = onEditPhotoTapped,
-            contentPadding = PaddingValues(0.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .padding(
+                    horizontal = dimensionResource(id = dimen.major_200),
+                    vertical = dimensionResource(id = dimen.major_100)
+                )
         ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
+            val (image, button) = createRefs()
+
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                model = Builder(LocalContext.current)
+                    .data(viewState.imageUrl)
+                    .crossfade(true)
+                    .placeholder(drawable.ic_product)
+                    .error(drawable.img_woo_generic_error)
+                    .build(),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = colorResource(id = color.woo_white),
+                contentScale = ContentScale.FillWidth,
             )
+
+            WCColoredButton(
+                modifier = Modifier
+                    .constrainAs(button) {
+                        centerAround(image.top)
+                        centerAround(image.end)
+                    }
+                    .size(dimensionResource(id = dimen.button_height_major_100)),
+                shape = CircleShape,
+                onClick = onEditPhotoTapped,
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = colorResource(id = color.woo_white),
+                )
+            }
         }
     }
 }
