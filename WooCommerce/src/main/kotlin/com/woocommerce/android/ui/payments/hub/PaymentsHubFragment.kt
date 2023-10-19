@@ -139,6 +139,13 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         PaymentsHubFragmentDirections.actionCardReaderHubFragmentToCardReaderUpdateDialogFragment()
                     )
                 }
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToAboutTapToPay -> {
+                    findNavController().navigate(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToTapToPayAboutFragment(
+                            event.countryConfig
+                        )
+                    )
+                }
                 else -> event.isHandled = false
             }
         }

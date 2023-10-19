@@ -11,7 +11,6 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
@@ -72,6 +71,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -86,7 +86,7 @@ class OrderDetailFragment :
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
-    private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
     @Inject
     lateinit var navigator: OrderNavigator

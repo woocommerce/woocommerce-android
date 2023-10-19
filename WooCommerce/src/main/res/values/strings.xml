@@ -1288,9 +1288,10 @@
         -->
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu > Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
@@ -1299,6 +1300,28 @@
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with Tap To Pay on Android</string>
+
+    <!--
+           Card Reader Tap To Pay About
+        -->
+    <string name="card_reader_tap_to_pay_about_title">About Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_about_header">What is Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay lets you accept all types of contactless payments – from physical debit and credit cards, to digital wallets – without the need to purchase a physical card reader.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Important information</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">In %1$s, some cards require a PIN for contactless transactions above %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">We do not support PIN entry with Tap to Pay on Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">To accept payments above this limit, consider purchasing a card reader that accepts PIN entry.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Learn more about card readers</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">How it works</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s or %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Create an order</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">collect a payment</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. After you see the “Done” checkmark, your store will process the payment, and the transaction will be complete.</string>
+    <string name="card_reader_tap_to_pay_about_copyright">The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC.</string>
+
 
     <!--
             Card Reader Type Selection
@@ -1909,6 +1932,7 @@
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
@@ -1929,6 +1953,8 @@
     <string name="product_creation_ai_tone_convincing">Convincing</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
     <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
+    <string name="product_creation_package_photo_keywords_section">Keywords</string>
+    <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3627,6 +3653,32 @@
     <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
     <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
     <string name="blaze_banner_dismiss_dialog_button">Got it</string>
+
+    <!--
+    My Store Blaze view
+    -->
+    <string name="blaze_campaign_title">Blaze campaign</string>
+    <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
+    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_status_in_moderation">In moderation</string>
+    <string name="blaze_campaign_status_active">Active</string>
+    <string name="blaze_campaign_status_completed">Completed</string>
+    <string name="blaze_campaign_status_rejected">Rejected</string>
+    <string name="blaze_campaign_status_impressions">Impressions</string>
+    <string name="blaze_campaign_status_clicks">Clicks</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+
+    <!--
+    Blaze campaign list
+    -->
+    <string name="blaze_campaign_list_title">Blaze campaigns</string>
+
+
+    <!--
+    Blaze campaign details
+    -->
+    <string name="blaze_campaign_details_title">Campaign details</string>
 
     <!--
     Highlights tooltip
