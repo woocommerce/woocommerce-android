@@ -36,7 +36,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
     viewModel.state.observeAsState().value?.let { state ->
         BlazeCampaignListScreen(
             state = state,
-            onCampaignClicked = viewModel::onCampaignSelected,
+            onCampaignClicked = viewModel::onCampaignClicked,
             onAddNewCampaignClicked = viewModel::onAddNewCampaignClicked,
             modifier = Modifier.background(color = MaterialTheme.colors.surface)
         )

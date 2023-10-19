@@ -8,6 +8,9 @@ import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
@@ -20,7 +23,8 @@ import javax.inject.Inject
 class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) : ScopedViewModel(savedStateHandle) {
     val state = blazeCampaignsStore.observeBlazeCampaigns(
         selectedSite.get()
@@ -62,16 +66,19 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
     }
 
-    fun onCampaignSelected() {
+    fun onCampaignClicked() {
         // TODO
     }
 
     fun onAddNewCampaignClicked() {
-        // TODO
+        val url = isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+        triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
     }
 
     data class BlazeCampaignListState(
         val campaigns: List<BlazeCampaignUi>,
         val isLoading: Boolean,
     )
+
+    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
 }
