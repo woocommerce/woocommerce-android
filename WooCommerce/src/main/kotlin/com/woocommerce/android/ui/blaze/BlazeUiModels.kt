@@ -37,13 +37,13 @@ enum class CampaignStatusUi(
     ),
     Completed(
         statusDisplayText = R.string.blaze_campaign_status_completed,
-        textColor = R.color.blaze_campaign_status_rejected_text,
-        backgroundColor = R.color.blaze_campaign_status_rejected_background
+        textColor = R.color.blaze_campaign_status_completed_text,
+        backgroundColor = R.color.blaze_campaign_status_completed_background
     ),
     Rejected(
         statusDisplayText = R.string.blaze_campaign_status_rejected,
-        textColor = R.color.blaze_campaign_status_completed_text,
-        backgroundColor = R.color.blaze_campaign_status_completed_background
+        textColor = R.color.blaze_campaign_status_rejected_text,
+        backgroundColor = R.color.blaze_campaign_status_rejected_background
     );
 
     companion object {
