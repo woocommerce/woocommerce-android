@@ -156,6 +156,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
     private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
+    private val adjustProductQuantity: AdjustProductQuantity,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -343,7 +344,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(KEY_FLOW to flow)
         )
-        _orderDraft.update { it.adjustProductQuantity(id, +1) }
+        _orderDraft.update { adjustProductQuantity(it, id, +1) }
     }
 
     fun onDecreaseProductsQuantity(id: Long) {
@@ -363,7 +364,30 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
 
-        _orderDraft.update { it.adjustProductQuantity(id, -1) }
+        _orderDraft.update { adjustProductQuantity(it, id, +1) }
+    }
+
+    fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
+        tracker.track(
+            ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(KEY_FLOW to flow)
+        )
+        _orderDraft.update { adjustProductQuantity(it, product, +1) }
+    }
+
+    fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
+        if (product.item.quantity == 1F) {
+            tracker.track(
+                ORDER_PRODUCT_REMOVE,
+                mapOf(KEY_FLOW to flow)
+            )
+        } else {
+            tracker.track(
+                ORDER_PRODUCT_QUANTITY_CHANGE,
+                mapOf(KEY_FLOW to flow)
+            )
+        }
+        _orderDraft.update { adjustProductQuantity(it, product, -1) }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
