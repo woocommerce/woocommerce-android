@@ -101,7 +101,7 @@ fun BlazeCampaignListScreenPreview() {
                     BlazeCampaignUi(
                         product = BlazeProductUi(
                             name = "Product name",
-                            imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
+                            imgUrl = "https://picsum.photos/200/300",
                         ),
                         status = Active,
                         stats = listOf(
