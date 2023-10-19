@@ -188,7 +188,6 @@ class MoreMenuViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
-        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
