@@ -635,7 +635,7 @@
             app:argType="string" />
         <argument
             android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
             app:nullable="false" />
     </fragment>
     <fragment

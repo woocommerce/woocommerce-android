@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeBanner
 import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_LIST_BANNER
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
@@ -176,7 +176,7 @@ class ProductListFragment :
     }
 
     private fun setUpBlazeBanner() {
-        blazeViewModel.setBlazeBannerSource(PRODUCT_LIST_BANNER)
+        blazeViewModel.setBlazeBannerSource(BlazeFlowSource.PRODUCT_LIST_BANNER)
         blazeViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
             if (!isVisible) binding.blazeBannerView.hide()
             else {
