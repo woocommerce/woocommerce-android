@@ -22,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -62,18 +63,29 @@ fun ProductFromPackagePhoto(
     modifier: Modifier,
     onKeywordChanged: (Int, Keyword) -> Unit
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .padding(dimensionResource(id = dimen.major_100))
+    Surface(
+        shape = RoundedCornerShape(
+            topStart = dimensionResource(id = dimen.minor_100),
+            topEnd = dimensionResource(id = dimen.minor_100)
+        )
     ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+            modifier = modifier
+                .background(MaterialTheme.colors.surface)
+                .padding(dimensionResource(id = dimen.major_100))
+        ) {
 
-        ProductImage(viewState)
+            ProductImage(viewState)
 
-        Spacer(Modifier)
+            Spacer(Modifier)
 
-        NameAndDescription(viewState, modifier, onKeywordChanged)
+            NameAndDescription(viewState, modifier)
+
+            Spacer(Modifier)
+
+            Keywords(viewState, onKeywordChanged)
+        }
     }
 }
 
@@ -132,8 +144,7 @@ private fun ProductImage(viewState: ViewState) {
 @Composable
 fun NameAndDescription(
     viewState: ViewState,
-    modifier: Modifier,
-    onKeywordChanged: (Int, Keyword) -> Unit
+    modifier: Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
@@ -170,50 +181,60 @@ fun NameAndDescription(
                 .then(sectionsBorder)
                 .padding(dimensionResource(id = dimen.major_100))
         )
+    }
+}
 
-        Spacer(Modifier)
+@Composable
+private fun Keywords(
+    viewState: ViewState,
+    onKeywordChanged: (Int, Keyword) -> Unit
+) {
+    val sectionsBorder = Modifier.border(
+        width = dimensionResource(id = dimen.minor_10),
+        color = colorResource(id = color.divider_color),
+        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+    )
 
+    Text(
+        text = stringResource(id = string.product_creation_package_photo_keywords_section),
+        style = MaterialTheme.typography.body2
+    )
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(sectionsBorder)
+    ) {
+        WCColoredButton(
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .fillMaxWidth(),
+            text = stringResource(string.ai_product_name_sheet_regenerate_button),
+            onClick = { /*TODO*/ }
+        )
         Text(
-            text = stringResource(id = string.product_creation_package_photo_keywords_section),
-            style = MaterialTheme.typography.body2
+            text = stringResource(id = string.product_creation_package_photo_keywords_info),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = color.color_on_surface_medium),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = dimen.major_100))
         )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state = listState,
             modifier = Modifier
-                .fillMaxWidth()
-                .then(sectionsBorder)
+                .padding(bottom = dimensionResource(id = dimen.minor_100))
+                .background(color = MaterialTheme.colors.surface)
         ) {
-            WCColoredButton(
-                modifier = Modifier
-                    .padding(dimensionResource(id = dimen.major_100))
-                    .fillMaxWidth(),
-                text = stringResource(string.ai_product_name_sheet_regenerate_button),
-                onClick = { /*TODO*/ }
-            )
-            Text(
-                text = stringResource(id = string.product_creation_package_photo_keywords_info),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = color.color_on_surface_medium),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = dimen.major_100))
-            )
+            itemsIndexed(items = viewState.keywords) { index, keyword ->
+                KeywordListItem(index, keyword.title, keyword.isChecked, onKeywordChanged)
 
-            val listState = rememberLazyListState()
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .padding(bottom = dimensionResource(id = dimen.minor_100))
-                    .background(color = MaterialTheme.colors.surface)
-            ) {
-                itemsIndexed(items = viewState.keywords) { index, keyword ->
-                    KeywordListItem(index, keyword.title, keyword.isChecked, onKeywordChanged)
-
-                    if (index < viewState.keywords.lastIndex) {
-                        Divider(
-                            color = colorResource(id = color.divider_color),
-                            thickness = dimensionResource(id = dimen.minor_10)
-                        )
-                    }
+                if (index < viewState.keywords.lastIndex) {
+                    Divider(
+                        color = colorResource(id = color.divider_color),
+                        thickness = dimensionResource(id = dimen.minor_10)
+                    )
                 }
             }
         }
