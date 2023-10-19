@@ -9,8 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.Companion.BLAZEPRESS_WIDGET
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -79,7 +78,7 @@ class BlazeWebViewViewModel @Inject constructor(
         val uri = Uri.parse(url)
         return when {
             uri.fragment != null -> BlazeFlowStep.fromString(uri.fragment!!)
-            uri.getQueryParameter(BLAZEPRESS_WIDGET) != null -> BlazeFlowStep.STEP_1
+            uri.getQueryParameter(BlazeUrlsHelper.BLAZEPRESS_WIDGET) != null -> BlazeFlowStep.STEP_1
             isAdvertisingCampaign(uri.toString()) -> BlazeFlowStep.CAMPAIGNS_LIST
             matchAdvertisingPath(uri.path) -> BlazeFlowStep.PRODUCTS_LIST
             else -> BlazeFlowStep.UNSPECIFIED

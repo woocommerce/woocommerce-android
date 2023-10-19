@@ -3675,6 +3675,12 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
 
+
+    <!--
+    Blaze campaign details
+    -->
+    <string name="blaze_campaign_details_title">Campaign details</string>
+
     <!--
     Highlights tooltip
     -->

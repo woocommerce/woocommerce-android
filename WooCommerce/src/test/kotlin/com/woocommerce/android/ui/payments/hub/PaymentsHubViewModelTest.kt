@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubE
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.payments.taptopay.TTPCaUkFeatureFlagEnabled
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.Available
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
@@ -96,7 +95,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
         on { invoke() }.thenReturn(Available)
     }
-    private val tapToPayCaUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled = mock()
     private val appPrefs: AppPrefs = mock()
     private val feedbackRepository: FeedbackRepository = mock {
         on { getFeatureFeedbackSetting(any()) }.thenReturn(
@@ -1406,7 +1404,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
             // WHEN
             initViewModel()
@@ -1591,7 +1588,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(true)
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
-            whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
             // WHEN
             initViewModel()
@@ -1953,7 +1949,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
-        whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
@@ -1968,7 +1963,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         val supportedCountry: CardReaderConfigForSupportedCountry = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
-        whenever(tapToPayCaUkFeatureFlagEnabled.invoke()).thenReturn(true)
 
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
@@ -2026,7 +2020,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
             cardReaderManager,
-            tapToPayCaUkFeatureFlagEnabled,
         )
         viewModel.onViewVisible()
     }

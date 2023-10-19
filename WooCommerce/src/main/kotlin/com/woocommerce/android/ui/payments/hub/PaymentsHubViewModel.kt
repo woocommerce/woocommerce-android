@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Lea
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
-import com.woocommerce.android.ui.payments.taptopay.TTPCaUkFeatureFlagEnabled
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.util.UtmProvider
@@ -80,7 +79,6 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
-    private val tapToPayTTPCaUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -243,16 +241,14 @@ class PaymentsHubViewModel @Inject constructor(
                     iconBadge = R.drawable.ic_badge_new,
                 )
             )
-            if (tapToPayTTPCaUkFeatureFlagEnabled()) {
-                add(
-                    NonToggleableListItem(
-                        icon = R.drawable.ic_tintable_info_outline_24dp,
-                        label = UiStringRes(R.string.card_reader_about_tap_to_pay),
-                        index = 7,
-                        onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
-                    )
+            add(
+                NonToggleableListItem(
+                    icon = R.drawable.ic_tintable_info_outline_24dp,
+                    label = UiStringRes(R.string.card_reader_about_tap_to_pay),
+                    index = 7,
+                    onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
                 )
-            }
+            )
             if (shouldShowTTPFeedbackRequest) {
                 add(
                     NonToggleableListItem(
