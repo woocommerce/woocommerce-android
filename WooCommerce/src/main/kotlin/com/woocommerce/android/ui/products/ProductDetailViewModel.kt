@@ -454,6 +454,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onBlazeClicked() {
         tracker.track(
             stat = BLAZE_ENTRY_POINT_TAPPED,
+            // TODO update source value when i2 is ready for release
             properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
         )
         viewState.productDraft?.let {
