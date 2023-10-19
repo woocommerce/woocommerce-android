@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +9,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibrary
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibraryDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.widgets.MediaPickerHelper
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
@@ -21,15 +27,23 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
 
     private val viewModel: PackagePhotoViewModel by viewModels()
 
+    @Inject lateinit var mediaPickerHelper: MediaPickerHelper
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                WooTheme {
                     PackagePhotoBottomSheet(viewModel = viewModel)
                 }
             }
+        }
+    }
+
+    private fun onMediaLibraryImageSelected(uri: Uri?) {
+        if (uri != null) {
+            viewModel.onImageChanged(uri.toString())
         }
     }
 
@@ -46,6 +60,10 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
                     KEY_PACKAGE_PHOTO_SCAN_RESULT,
                     event.data
                 )
+
+                is ShowMediaLibraryDialog -> viewModel.onMediaLibraryDialogRequested()
+
+                is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source, ::onMediaLibraryImageSelected)
             }
         }
     }
