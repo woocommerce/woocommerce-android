@@ -96,7 +96,7 @@ class ProductDetailCardBuilder(
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
 
-        cards.addIfNotEmpty(getBlazeCard())
+        cards.addIfNotEmpty(getBlazeCard(product))
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
@@ -130,9 +130,9 @@ class ProductDetailCardBuilder(
         )
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private suspend fun getBlazeCard(): ProductPropertyCard? {
-        if (!isBlazeEnabled()) return null
+    private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
+        if (!isBlazeEnabled() || product.status != ProductStatus.PUBLISH) return null
+
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
