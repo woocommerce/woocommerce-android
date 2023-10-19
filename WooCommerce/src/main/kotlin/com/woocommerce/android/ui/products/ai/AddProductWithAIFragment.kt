@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
+import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowMediaLibraryDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -29,6 +30,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
@@ -81,6 +83,8 @@ class AddProductWithAIFragment : BaseFragment() {
                 )
                 is ShowMediaLibraryDialog -> viewModel.onMediaLibraryDialogRequested()
 
+                is ShowMediaLibrary -> showMediaLibrary(event.source)
+
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 Exit -> findNavController().navigateUp()
@@ -95,10 +99,10 @@ class AddProductWithAIFragment : BaseFragment() {
         )
     }
 
-    private fun showStorageChooser() {
+    private fun showMediaLibrary(source: DataSource) {
         val mediaPickerIntent = MediaPickerActivity.buildIntent(
             context = requireContext(),
-            mediaPickerSetupFactory.build(DEVICE)
+            mediaPickerSetupFactory.build(source)
         )
         resultLauncher.launch(mediaPickerIntent)
     }

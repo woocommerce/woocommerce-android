@@ -28,6 +28,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
+import org.wordpress.android.mediapicker.api.MediaSource
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,6 +77,8 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private lateinit var product: Product
+
+    private val isMediaPickerDialogVisible = savedStateHandle.getStateFlow(viewModelScope, false)
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
@@ -80,8 +87,6 @@ class AddProductWithAIViewModel @Inject constructor(
         aboutSubViewModel,
         previewSubViewModel
     )
-
-    private val isMediaPickerDialogVisible = MutableStateFlow(false)
 
     val state = combine(step, saveButtonState, isMediaPickerDialogVisible) { step, saveButtonState, isDialogVisible ->
         State(
@@ -209,6 +214,21 @@ class AddProductWithAIViewModel @Inject constructor(
         isMediaPickerDialogVisible.update { false }
     }
 
+    fun onDevicePickerRequested() {
+        triggerEvent(ShowMediaLibrary(DEVICE))
+        isMediaPickerDialogVisible.update { false }
+    }
+
+    fun onCameraRequested() {
+        triggerEvent(ShowMediaLibrary(CAMERA))
+        isMediaPickerDialogVisible.update { false }
+    }
+
+    fun onWpMediaLibraryRequested() {
+        triggerEvent(ShowMediaLibrary(WP_MEDIA_LIBRARY))
+        isMediaPickerDialogVisible.update { false }
+    }
+
     data class State(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
@@ -222,6 +242,8 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
+
+    data class ShowMediaLibrary(val source: DataSource) : MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {

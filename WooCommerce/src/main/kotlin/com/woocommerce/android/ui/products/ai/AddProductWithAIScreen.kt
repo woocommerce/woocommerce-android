@@ -37,9 +37,9 @@ fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
             onBackButtonClick = viewModel::onBackButtonClick,
             onSaveButtonClick = viewModel::onSaveButtonClick,
             onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
-            onDevicePickerRequested = viewModel::onMediaLibraryDialogDismissed,
-            onCameraRequested = viewModel::onMediaLibraryDialogDismissed,
-            onWpMediaLibraryRequested = viewModel::onMediaLibraryDialogDismissed
+            onDevicePickerRequested = viewModel::onDevicePickerRequested,
+            onCameraRequested = viewModel::onCameraRequested,
+            onWpMediaLibraryRequested = viewModel::onWpMediaLibraryRequested
         )
     }
 }
