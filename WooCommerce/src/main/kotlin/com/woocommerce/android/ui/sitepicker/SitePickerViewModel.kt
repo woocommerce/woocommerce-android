@@ -441,6 +441,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
+        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_STORE_PICKER)
         triggerEvent(NavigateToAddStoreEvent)
     }
 
