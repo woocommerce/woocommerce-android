@@ -492,6 +492,14 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
+    override fun needsSecurityKey(userId: String?, nonceInfo: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun needsSocialSecurityKey(userId: String?, nonceInfo: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
         showMainActivityAndFinish()
     }
