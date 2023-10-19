@@ -28,11 +28,12 @@ class MyStoreBlazeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
+    private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val blazeCampaignState = flow {
-        if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
+        if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled() || !isBlazeEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
         else {
             emitAll(
                 observeMostRecentBlazeCampaign().flatMapLatest {
