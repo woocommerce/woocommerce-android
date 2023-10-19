@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEd
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.math.BigDecimal
@@ -440,7 +441,8 @@ fun OrderCreateEditProductDiscountScreenPreview() =
                     imageUrl = "",
                     isStockManaged = false,
                     stockQuantity = 0.0,
-                    stockStatus = ProductStockStatus.InStock
+                    stockStatus = ProductStockStatus.InStock,
+                    productType = ProductType.SIMPLE
                 )
             )
         )
