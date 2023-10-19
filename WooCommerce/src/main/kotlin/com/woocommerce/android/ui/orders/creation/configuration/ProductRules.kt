@@ -95,6 +95,15 @@ class ProductConfiguration(
                 val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
                 itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
             }
+            children?.forEach { child ->
+                child.item.configurationKey?.let { configurationKey ->
+                    childrenConfiguration?.get(configurationKey)?.let { configuration ->
+                        if (configuration.containsKey(QuantityRule.KEY)) {
+                            configuration[QuantityRule.KEY] = (child.item.quantity / child.item.quantity).toString()
+                        }
+                    }
+                }
+            }
             val configurationType = rules.productType.getConfigurationType()
             return ProductConfiguration(configurationType, itemConfiguration, childrenConfiguration)
         }
