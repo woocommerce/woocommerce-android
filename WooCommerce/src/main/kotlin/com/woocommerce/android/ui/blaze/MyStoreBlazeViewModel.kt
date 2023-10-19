@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.FeatureFlag
@@ -28,7 +28,7 @@ class MyStoreBlazeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
-    private val isBlazeEnabled: IsBlazeEnabled
+    private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val blazeCampaignState = flow {
@@ -48,9 +48,9 @@ class MyStoreBlazeViewModel @Inject constructor(
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
         fun launchCampaignCreation(productId: Long?) {
             val url = if (productId != null) {
-                isBlazeEnabled.buildUrlForProduct(productId, BlazeFlowSource.MY_STORE_BANNER)
+                blazeUrlsHelper.buildUrlForProduct(productId, BlazeFlowSource.MY_STORE_BANNER)
             } else {
-                isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+                blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
             }
             triggerEvent(LaunchBlazeCampaignCreation(url))
         }
@@ -95,8 +95,8 @@ class MyStoreBlazeViewModel @Inject constructor(
                 onCampaignClicked = {
                     triggerEvent(
                         ShowCampaignDetails(
-                            url = isBlazeEnabled.buildCampaignDetailsUrl(campaign.campaignId),
-                            urlToTriggerExit = isBlazeEnabled.buildCampaignsListUrl()
+                            url = blazeUrlsHelper.buildCampaignDetailsUrl(campaign.campaignId),
+                            urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
                         )
                     )
                 },
@@ -105,7 +105,7 @@ class MyStoreBlazeViewModel @Inject constructor(
                 },
                 onCreateCampaignClicked = {
                     triggerEvent(
-                        LaunchBlazeCampaignCreation(isBlazeEnabled.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER))
+                        LaunchBlazeCampaignCreation(blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER))
                     )
                 }
             )
