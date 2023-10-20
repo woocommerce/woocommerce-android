@@ -442,11 +442,8 @@ class OrderCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             _orderDraft.value.items.apply {
-                val orderItemIds = products.value?.map { it.item.itemId }?.toSet() ?: emptySet()
                 val productsToRemove = filter { item ->
-                    item.itemId in orderItemIds
-                        && !item.isVariation
-                        && selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
+                    item.parent == null && !item.isVariation && selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
                 }
                 productsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
@@ -455,6 +452,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 val variationsToRemove = filter { item ->
                     item.isVariation && selectedItems.variationIds.none { item.variationId == it }
                 }
+
                 variationsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
                 }
@@ -463,7 +461,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     if (selectedItem is SelectedItem.ProductVariation) {
                         none { it.variationId == selectedItem.variationId }
                     } else {
-                        none { it.productId == selectedItem.id }
+                        none { it.parent == null && it.productId == selectedItem.id }
                     }
                 }.map {
                     when (it) {
