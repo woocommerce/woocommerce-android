@@ -15,8 +15,8 @@ class AdjustProductQuantity @Inject constructor() {
     operator fun invoke(order: Order, itemId: Long, quantityToAdd: Int) = adjustQuantity(order, itemId, quantityToAdd)
 
     private fun adjustBundleQuantity(order: Order, product: OrderCreationProduct, quantityToAdd: Int): Order {
-        val items = order.items.associateBy { it.itemId }.toMutableMap()
-        (product as? OrderCreationProduct.GroupedProductItemWithRules)?.let { groupedProduct ->
+        return (product as? OrderCreationProduct.GroupedProductItemWithRules)?.let { groupedProduct ->
+            val items = order.items.associateBy { it.itemId }.toMutableMap()
             items[product.item.itemId]?.run {
                 items[product.item.itemId] = copy(quantity = 0f)
                 val newQuantity = quantity + quantityToAdd
@@ -34,8 +34,8 @@ class AdjustProductQuantity @Inject constructor() {
                 val updatedItem = items[child.item.itemId]?.copy(quantity = 0f) ?: continue
                 items[child.item.itemId] = updatedItem
             }
-        }
-        return order.copy(items = items.values.toList())
+            order.copy(items = items.values.toList())
+        } ?: run { adjustQuantity(order, product.item.itemId, quantityToAdd) }
     }
 
     private fun adjustQuantity(order: Order, itemId: Long, quantityToAdd: Int): Order {
