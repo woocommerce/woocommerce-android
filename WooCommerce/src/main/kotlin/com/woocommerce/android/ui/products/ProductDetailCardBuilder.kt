@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -133,6 +134,7 @@ class ProductDetailCardBuilder(
     private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
         if (!isBlazeEnabled() ||
             product.status != ProductStatus.PUBLISH ||
+            viewModel.getProductVisibility() != ProductVisibility.PUBLIC ||
             viewModel.isProductUnderCreation
         ) return null
 
