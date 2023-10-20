@@ -20,7 +20,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -34,6 +37,8 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
@@ -53,7 +58,6 @@ private fun BlazeCampaignListScreen(
     loadMoreCampaigns: () -> Unit,
 ) {
     val listState = rememberLazyListState()
-
     when {
         state.isLoading -> {}
         else -> {
@@ -66,7 +70,9 @@ private fun BlazeCampaignListScreen(
                         end = dimensionResource(id = R.dimen.major_100),
                     )
             ) {
-                LazyColumn {
+                LazyColumn(
+                    state = listState
+                ) {
                     items(state.campaigns) { campaign ->
                         BlazeCampaignItem(
                             campaign = campaign.campaignUi,
@@ -75,6 +81,21 @@ private fun BlazeCampaignListScreen(
                         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
                     }
                 }
+                // observer when reached end of list
+                val endOfListReached by remember {
+                    derivedStateOf {
+                        WooLog.d(
+                            T.BLAZE, "Lazy column status: " +
+                                "lastVisibleIndex:${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index}, " +
+                                "totalItems -1:${listState.layoutInfo.totalItemsCount - 1}"
+                        )
+                        listState.isScrolledToTheEnd()
+                    }
+                }
+                LaunchedEffect(endOfListReached) {
+                    loadMoreCampaigns()
+                }
+
                 FloatingActionButton(
                     onClick = state.onAddNewCampaignClicked,
                     shape = CircleShape,
@@ -88,17 +109,14 @@ private fun BlazeCampaignListScreen(
                         contentDescription = "Large floating action button",
                     )
                 }
-                if (listState.isScrolledToEnd()) {
-                    LaunchedEffect(true) {
-                        loadMoreCampaigns()
-                    }
-                }
             }
         }
     }
 }
 
-fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+fun LazyListState.isScrolledToTheEnd() =
+    layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+
 
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
