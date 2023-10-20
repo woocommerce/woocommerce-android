@@ -5,10 +5,16 @@ if (isBuildOnCI || userEnabledTracking) {
     buildScan {
         termsOfServiceUrl = 'https://gradle.com/terms-of-service'
         termsOfServiceAgree = 'yes'
+        publishAlways()
         if (isBuildOnCI) {
             tag 'CI'
+            uploadInBackground = false
+        } else {
+            obfuscation {
+                username { username -> username.digest('SHA-1') }
+                hostname { _ -> "" }
+                ipAddresses { addresses -> addresses.collect { address -> "0.0.0.0" } }
+            }
         }
-        publishAlways()
-        uploadInBackground = !isBuildOnCI
     }
 }
