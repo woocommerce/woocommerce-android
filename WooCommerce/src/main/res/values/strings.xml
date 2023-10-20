@@ -3728,6 +3728,8 @@
     <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
+    <string name="next_order">Next order</string>
+    <string name="previous_order">Previous order</string>
 
     <!--
     AI feedback form
