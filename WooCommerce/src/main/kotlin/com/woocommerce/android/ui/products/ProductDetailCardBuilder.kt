@@ -131,7 +131,10 @@ class ProductDetailCardBuilder(
     }
 
     private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
-        if (!isBlazeEnabled() || product.status != ProductStatus.PUBLISH) return null
+        if (!isBlazeEnabled() ||
+            product.status != ProductStatus.PUBLISH ||
+            viewModel.isProductUnderCreation
+        ) return null
 
         return ProductPropertyCard(
             type = SECONDARY,
