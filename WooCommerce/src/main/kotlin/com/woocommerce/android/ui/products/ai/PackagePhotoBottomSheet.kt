@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -152,7 +153,7 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .animateContentSize(animationSpec = tween(durationMillis = 500))
-                    .fillMaxWidth()
+                    .defaultMinSize(minWidth = dimensionResource(id = dimen.image_major_100))
                     .constrainAs(image) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
@@ -166,7 +167,7 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
                     .error(drawable.img_woo_generic_error)
                     .build(),
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Fit,
             ) {
                 val state = painter.state
                 if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
