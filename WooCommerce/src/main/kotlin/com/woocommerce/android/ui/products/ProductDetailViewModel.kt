@@ -166,7 +166,7 @@ class ProductDetailViewModel @Inject constructor(
 
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
-        if (old?.productDraft != new.productDraft) {
+        if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
             new.productDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
