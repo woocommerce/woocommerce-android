@@ -15,7 +15,8 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
@@ -30,50 +31,54 @@ class BlazeCampaignListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private var totalPages = 1
     private var currentPage = 1
-    val state = blazeCampaignsStore.observeBlazeCampaigns(
-        selectedSite.get()
-    )
-        .map { campaigns ->
-            BlazeCampaignListState(
-                campaigns = campaigns
-                    .map {
-                        CampaignState(
-                            campaignUi = BlazeCampaignUi(
-                                product = BlazeProductUi(
-                                    name = it.title,
-                                    imgUrl = it.imageUrl.orEmpty(),
-                                ),
-                                status = CampaignStatusUi.fromString(it.uiStatus),
-                                stats = listOf(
-                                    BlazeCampaignStat(
-                                        name = string.blaze_campaign_status_impressions,
-                                        value = it.impressions
-                                    ),
-                                    BlazeCampaignStat(
-                                        name = string.blaze_campaign_status_clicks,
-                                        value = it.clicks
-                                    ),
-                                    BlazeCampaignStat(
-                                        name = string.blaze_campaign_status_clicks,
-                                        value = it.budgetCents
-                                    )
-                                )
+    private val isLoadingMore = MutableStateFlow(false)
+    val state = combine(
+        blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get()),
+        isLoadingMore
+    ) { campaigns, loadingMore ->
+        BlazeCampaignListState(
+            campaigns = campaigns
+                .map {
+                    CampaignState(
+                        campaignUi = BlazeCampaignUi(
+                            product = BlazeProductUi(
+                                name = it.title,
+                                imgUrl = it.imageUrl.orEmpty(),
                             ),
-                            onCampaignClicked = { onCampaignClicked(it.campaignId) }
-                        )
-                    },
-                onAddNewCampaignClicked = { onAddNewCampaignClicked() },
-                isLoading = false
-            )
-        }
-        .asLiveData()
+                            status = CampaignStatusUi.fromString(it.uiStatus),
+                            stats = listOf(
+                                BlazeCampaignStat(
+                                    name = string.blaze_campaign_status_impressions,
+                                    value = it.impressions
+                                ),
+                                BlazeCampaignStat(
+                                    name = string.blaze_campaign_status_clicks,
+                                    value = it.clicks
+                                ),
+                                BlazeCampaignStat(
+                                    name = string.blaze_campaign_status_clicks,
+                                    value = it.budgetCents
+                                )
+                            )
+                        ),
+                        onCampaignClicked = { onCampaignClicked(it.campaignId) }
+                    )
+                },
+            onAddNewCampaignClicked = { onAddNewCampaignClicked() },
+            isLoading = loadingMore
+        )
+    }.asLiveData()
 
     init {
         loadCampaignsFor(currentPage)
     }
 
     fun loadMoreCampaigns() {
-        loadCampaignsFor(currentPage++)
+        if (state.value?.isLoading == false) {
+            isLoadingMore.value = true
+            loadCampaignsFor(++currentPage)
+            isLoadingMore.value = false
+        }
     }
 
     private fun loadCampaignsFor(page: Int) {
