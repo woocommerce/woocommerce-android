@@ -113,7 +113,7 @@ ext {
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
     mediapickerVersion = '0.2'
-    wordPressLoginVersion = '123-100eb07602df7ce7ed203fba76b6b62ea48cc384'
+    wordPressLoginVersion = '123-b75c2af7b010201e57812cf38fa997fb4ec0cb66'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '3.2.0'
     workManagerVersion = '2.7.1'
