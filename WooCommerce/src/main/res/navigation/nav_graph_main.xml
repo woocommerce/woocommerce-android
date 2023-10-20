@@ -635,7 +635,7 @@
             app:argType="string" />
         <argument
             android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
             app:nullable="false" />
     </fragment>
     <fragment
@@ -696,6 +696,9 @@
         <action
             android:id="@+id/action_addProductWithAIFragment_to_AIProductNameBottomSheetFragment"
             app:destination="@id/aiProductNameBottomSheetFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
+            app:destination="@id/packagePhotoBottomSheetFragment" />
     </fragment>
 
     <dialog
@@ -707,6 +710,14 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/packagePhotoBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragment"
+        android:label="PackagePhotoBottomSheetFragment" >
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
     </dialog>
 
 </navigation>

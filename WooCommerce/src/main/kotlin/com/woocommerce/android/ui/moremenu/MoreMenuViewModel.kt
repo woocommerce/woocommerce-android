@@ -21,9 +21,9 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MORE_MENU_ITEM
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -54,6 +54,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
+    private val blazeUrlsHelper: BlazeUrlsHelper,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
@@ -136,7 +137,7 @@ class MoreMenuViewModel @Inject constructor(
     private suspend fun trackBlazeDisplayed() {
         if (isBlazeEnabled()) AnalyticsTracker.track(
             stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
         )
     }
 
@@ -208,12 +209,12 @@ class MoreMenuViewModel @Inject constructor(
     private fun onPromoteProductsWithBlaze() {
         AnalyticsTracker.track(
             stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MORE_MENU_ITEM.trackingName)
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
         )
         triggerEvent(
             MoreMenuEvent.OpenBlazeEvent(
-                url = isBlazeEnabled.buildUrlForSite(MORE_MENU_ITEM),
-                source = MORE_MENU_ITEM
+                url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),
+                source = BlazeFlowSource.MORE_MENU_ITEM
             )
         )
     }

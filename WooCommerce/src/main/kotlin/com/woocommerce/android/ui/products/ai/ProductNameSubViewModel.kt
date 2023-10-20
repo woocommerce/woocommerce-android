@@ -57,6 +57,12 @@ class ProductNameSubViewModel(
         }
     }
 
+    fun onPackageImageClicked() {
+        viewModelScope.launch {
+            _events.emit(ShowPackagePhotoBottomSheet)
+        }
+    }
+
     override fun close() {
         viewModelScope.cancel()
     }
@@ -66,4 +72,6 @@ class ProductNameSubViewModel(
     )
 
     data class NavigateToAIProductNameBottomSheet(val initialName: String?) : Event()
+
+    object ShowPackagePhotoBottomSheet : Event()
 }
