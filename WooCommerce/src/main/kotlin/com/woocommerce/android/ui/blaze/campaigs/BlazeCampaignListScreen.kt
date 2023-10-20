@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -17,6 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +40,8 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
     viewModel.state.observeAsState().value?.let { state ->
         BlazeCampaignListScreen(
             state = state,
-            modifier = Modifier.background(color = MaterialTheme.colors.surface)
+            modifier = Modifier.background(color = MaterialTheme.colors.surface),
+            loadMoreCampaigns = viewModel::loadMoreCampaigns,
         )
     }
 }
@@ -46,7 +50,10 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
     modifier: Modifier = Modifier,
+    loadMoreCampaigns: () -> Unit,
 ) {
+    val listState = rememberLazyListState()
+
     when {
         state.isLoading -> {}
         else -> {
@@ -81,10 +88,17 @@ private fun BlazeCampaignListScreen(
                         contentDescription = "Large floating action button",
                     )
                 }
+                if (listState.isScrolledToEnd()) {
+                    LaunchedEffect(true) {
+                        loadMoreCampaigns()
+                    }
+                }
             }
         }
     }
 }
+
+fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
 
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -124,6 +138,7 @@ fun BlazeCampaignListScreenPreview() {
             ),
             onAddNewCampaignClicked = {},
             isLoading = false
-        )
+        ),
+        loadMoreCampaigns = {},
     )
 }

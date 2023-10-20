@@ -79,6 +79,7 @@ class BlazeCampaignListViewModel @Inject constructor(
     private fun loadCampaignsFor(page: Int) {
         if (page <= totalPages) {
             launch {
+                WooLog.d(T.BLAZE, "Load more campaigns: currentPage:$page, totalPages:$totalPages")
                 val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
                 if (result.isError || result.model == null) {
                     WooLog.d(T.BLAZE, "failed to fetch Blaze campaigns page:$page error: ${result.error}")
