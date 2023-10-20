@@ -132,9 +132,11 @@ class ProductDetailCardBuilder(
     }
 
     private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
+        val isProductPublic = product.status == ProductStatus.PUBLISH &&
+            viewModel.getProductVisibility() == ProductVisibility.PUBLIC
+
         if (!isBlazeEnabled() ||
-            product.status != ProductStatus.PUBLISH ||
-            viewModel.getProductVisibility() != ProductVisibility.PUBLIC ||
+            !isProductPublic ||
             viewModel.isProductUnderCreation
         ) return null
 
