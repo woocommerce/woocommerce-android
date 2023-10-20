@@ -217,6 +217,10 @@ class LoginAnalyticsTracker(
         )
     }
 
+    override fun trackContinueWithSecurityKeyClicked() {
+        TODO("Not yet implemented")
+    }
+
     override fun trackConnectedSiteInfoFailed(
         url: String?,
         errorContext: String?,
