@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
@@ -53,7 +52,6 @@ class MoreMenuViewModel @Inject constructor(
     private val planRepository: SitePlanRepository,
     private val resourceProvider: ResourceProvider,
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
@@ -189,7 +187,6 @@ class MoreMenuViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
-        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
