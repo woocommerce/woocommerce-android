@@ -10,6 +10,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -32,8 +33,6 @@ import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
-import kotlinx.coroutines.DelicateCoroutinesApi
-
 
 @DelicateCoroutinesApi
 class MediaFilesRepository @Inject constructor(
