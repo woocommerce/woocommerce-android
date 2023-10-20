@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +28,8 @@ class BlazeCampaignListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
+    private var totalPages = 1
+    private var currentPage = 1
     val state = blazeCampaignsStore.observeBlazeCampaigns(
         selectedSite.get()
     )
@@ -65,8 +69,23 @@ class BlazeCampaignListViewModel @Inject constructor(
         .asLiveData()
 
     init {
-        launch {
-            blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get())
+        loadCampaignsFor(currentPage)
+    }
+
+    fun loadMoreCampaigns() {
+        loadCampaignsFor(currentPage++)
+    }
+
+    private fun loadCampaignsFor(page: Int) {
+        if (page <= totalPages) {
+            launch {
+                val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
+                if (result.isError || result.model == null) {
+                    WooLog.d(T.BLAZE, "failed to fetch Blaze campaigns page:$page error: ${result.error}")
+                } else {
+                    totalPages = result.model?.totalPages ?: 1
+                }
+            }
         }
     }
 
