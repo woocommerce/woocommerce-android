@@ -562,7 +562,6 @@ class ProductSelectorViewModel @Inject constructor(
             selectedItems.update { items ->
                 items + SelectedItem.ConfigurableProduct(productId, productConfiguration)
             }
-            triggerEvent(ExitWithResult(selectedItems.value))
         }
     }
 
