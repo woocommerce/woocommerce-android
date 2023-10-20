@@ -18,11 +18,11 @@ class TextRecognitionEngine @Inject constructor(
 ) {
     private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
+    @Suppress("TooGenericExceptionCaught")
     suspend fun processImage(imageUrl: String): Result<List<String>> {
-        val bitmap = loadBitmap(imageUrl)
-        val image: InputImage
         return try {
-            image = InputImage.fromBitmap(requireNotNull(bitmap), 0)
+            val bitmap = loadBitmap(imageUrl)
+            val image = InputImage.fromBitmap(requireNotNull(bitmap), 0)
 
             val result = textRecognizer.process(image).await()
             Result.success(result.textBlocks.map { it.text })
