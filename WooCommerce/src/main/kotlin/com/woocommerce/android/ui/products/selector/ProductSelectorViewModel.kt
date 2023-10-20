@@ -359,9 +359,7 @@ class ProductSelectorViewModel @Inject constructor(
         if (selectedItems.value.containsItemWith(item.id)) {
             tracker.trackItemUnselected(productSelectorFlow)
             selectedItemsSource.remove(item.id)
-            selectedItems.update { items ->
-                items.filter { it.id != item.id }
-            }
+            selectedItems.update { items -> items.filter { it.id != item.id } }
         } else {
             triggerEvent(
                 ProductNavigationTarget.NavigateToProductConfiguration(item.id)
@@ -562,8 +560,9 @@ class ProductSelectorViewModel @Inject constructor(
     fun onConfigurationChanged(productId: Long, productConfiguration: ProductConfiguration) {
         launch {
             selectedItems.update { items ->
-                items.filter { it.id == productId } + SelectedItem.ConfigurableProduct(productId, productConfiguration)
+                items + SelectedItem.ConfigurableProduct(productId, productConfiguration)
             }
+            triggerEvent(ExitWithResult(selectedItems.value))
         }
     }
 
