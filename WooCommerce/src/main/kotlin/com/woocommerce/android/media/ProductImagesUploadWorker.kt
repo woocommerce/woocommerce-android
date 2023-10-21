@@ -31,6 +31,7 @@ import javax.inject.Singleton
  * play well with parallel requests, due to the use of a single shared continuation.
  */
 @Singleton
+@DelicateCoroutinesApi
 class ProductImagesUploadWorker @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val productDetailRepository: ProductDetailRepository,

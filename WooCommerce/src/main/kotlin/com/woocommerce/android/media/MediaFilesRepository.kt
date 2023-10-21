@@ -33,6 +33,7 @@ import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
 class MediaFilesRepository @Inject constructor(

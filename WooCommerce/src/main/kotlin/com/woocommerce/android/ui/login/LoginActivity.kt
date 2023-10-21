@@ -908,6 +908,7 @@ class LoginActivity :
 
     override fun onLoginWithEmail(email: String?) {
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
+        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
         changeFragment(
             fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
             shouldAddToBackStack = true,

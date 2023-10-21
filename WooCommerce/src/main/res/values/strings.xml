@@ -3664,7 +3664,9 @@
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_completed">Completed</string>
+    <string name="blaze_campaign_status_scheduled">Scheduled</string>
     <string name="blaze_campaign_status_rejected">Rejected</string>
+    <string name="blaze_campaign_status_canceled">Canceled</string>
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
@@ -3728,6 +3730,8 @@
     <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
+    <string name="next_order">Next order</string>
+    <string name="previous_order">Previous order</string>
 
     <!--
     AI feedback form
