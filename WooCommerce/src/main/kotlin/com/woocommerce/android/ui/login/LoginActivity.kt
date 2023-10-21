@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -498,14 +499,17 @@ class LoginActivity :
 
     override fun needsSecurityKey(userId: String?, nonceInfo: String?) {
         val credentialManager = CredentialManager.create(this)
-
+        credentialManager.createPasskey("", true)
     }
 
     override fun needsSocialSecurityKey(userId: String?, nonceInfo: String?) {
         TODO("Not yet implemented")
     }
 
-    suspend fun CredentialManager.createPasskey(requestJson: String, preferImmediatelyAvailableCredentials: Boolean) {
+    private suspend fun CredentialManager.createPasskey(
+        requestJson: String,
+        preferImmediatelyAvailableCredentials: Boolean
+    ) {
         val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
             // Contains the request in JSON format. Uses the standard WebAuthn
             // web JSON spec.
@@ -523,8 +527,10 @@ class LoginActivity :
                 request = createPublicKeyCredentialRequest,
                 context = this@LoginActivity,
             )
+            result.apply { }
         } catch (e: CreateCredentialException) {
-            //handle error
+            Log.d("Error", e.message.orEmpty())
+            // handle error
         }
     }
 
