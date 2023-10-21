@@ -9,6 +9,10 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.credentials.CreateCredentialResponse
+import androidx.credentials.CreatePublicKeyCredentialRequest
+import androidx.credentials.CredentialManager
+import androidx.credentials.exceptions.CreateCredentialException
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -493,11 +497,35 @@ class LoginActivity :
     }
 
     override fun needsSecurityKey(userId: String?, nonceInfo: String?) {
-        TODO("Not yet implemented")
+        val credentialManager = CredentialManager.create(this)
+
     }
 
     override fun needsSocialSecurityKey(userId: String?, nonceInfo: String?) {
         TODO("Not yet implemented")
+    }
+
+    suspend fun CredentialManager.createPasskey(requestJson: String, preferImmediatelyAvailableCredentials: Boolean) {
+        val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
+            // Contains the request in JSON format. Uses the standard WebAuthn
+            // web JSON spec.
+            requestJson = requestJson,
+            // Defines whether you prefer to use only immediately available credentials,
+            // not hybrid credentials, to fulfill this request. This value is false
+            // by default.
+            preferImmediatelyAvailableCredentials = preferImmediatelyAvailableCredentials,
+        )
+        // Execute CreateCredentialRequest asynchronously to register credentials
+        // for a user account. Handle success and failure cases with the result and
+        // exceptions, respectively.
+        try {
+            val result: CreateCredentialResponse = createCredential(
+                request = createPublicKeyCredentialRequest,
+                context = this@LoginActivity,
+            )
+        } catch (e: CreateCredentialException) {
+            //handle error
+        }
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
