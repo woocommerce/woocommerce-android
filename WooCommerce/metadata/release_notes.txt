@@ -1,1 +1,3 @@
-This update brings crucial bug fixes, ensuring a smoother experience. It also introduces the ability to update tax rates when editing orders, providing you with greater control. Stay tuned for more exciting features in upcoming releases. Thank you for choosing WooCommerce.
+- [***] In-Person Payments: Tap To Pay On Android in the UK and Canada [https://github.com/woocommerce/woocommerce-android/pull/9922]
+
+
