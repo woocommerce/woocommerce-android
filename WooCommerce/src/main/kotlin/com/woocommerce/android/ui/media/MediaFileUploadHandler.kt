@@ -32,8 +32,10 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 @Singleton
+@DelicateCoroutinesApi
 class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,
