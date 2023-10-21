@@ -120,9 +120,11 @@ import java.util.Collections
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 @Suppress("EmptyFunctionBlock")
 @HiltViewModel
+@DelicateCoroutinesApi
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
