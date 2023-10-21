@@ -1,0 +1,2 @@
+15.8:
+Esta atualização contém correções essenciais de bugs para garantir uma experiência tranquila. Ela também traz a capacidade de atualizar impostos ao editar pedidos para que você tenha um maior controle. Fique de olho nas próximas versões para receber mais funcionalidades incríveis. Obrigado por escolher o WooCommerce.

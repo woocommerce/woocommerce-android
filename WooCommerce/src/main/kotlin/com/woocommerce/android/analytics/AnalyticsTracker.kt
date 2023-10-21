@@ -519,6 +519,7 @@ class AnalyticsTracker private constructor(
         const val KEY_NEW_SITE_ID = "new_site_id"
         const val KEY_INITIAL_DOMAIN = "initial_domain"
         const val KEY_CHALLENGE = "challenges"
+        const val KEY_FEATURES = "features"
         const val VALUE_CHALLENGE_SETTING_UP_ONLINE_STORE = "setting_up_online_store"
         const val VALUE_CHALLENGE_FINDING_CUSTOMERS = "finding_customers"
         const val VALUE_CHALLENGE_MANAGING_INVENTORY = "managing_inventory"
