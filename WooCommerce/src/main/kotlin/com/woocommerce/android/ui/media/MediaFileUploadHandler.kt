@@ -16,6 +16,7 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -32,7 +33,6 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.DelicateCoroutinesApi
 
 @Singleton
 @DelicateCoroutinesApi
