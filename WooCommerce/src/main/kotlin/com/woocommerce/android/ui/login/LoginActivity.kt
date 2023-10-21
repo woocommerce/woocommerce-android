@@ -34,6 +34,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -96,6 +97,8 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
@@ -140,6 +143,8 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -498,8 +503,11 @@ class LoginActivity :
     }
 
     override fun needsSecurityKey(userId: String?, nonceInfo: String?) {
+        // Move to AppInitializer.kt
         val credentialManager = CredentialManager.create(this)
-        credentialManager.createPasskey("", true)
+        appCoroutineScope.launch {
+            credentialManager.createPasskey("", true)
+        }
     }
 
     override fun needsSocialSecurityKey(userId: String?, nonceInfo: String?) {
