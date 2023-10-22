@@ -35,7 +35,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@DelicateCoroutinesApi
 class MediaFileUploadHandler @Inject constructor(
     private val notificationHandler: ProductImagesNotificationHandler,
     private val worker: ProductImagesUploadWorker,

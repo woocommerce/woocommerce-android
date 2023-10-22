@@ -34,7 +34,6 @@ import org.wordpress.android.util.MediaUtils
 import java.io.File
 import javax.inject.Inject
 
-@DelicateCoroutinesApi
 class MediaFilesRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val context: Context,
@@ -61,7 +60,7 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(DelicateCoroutinesApi::class)
     fun uploadMedia(localMediaModel: MediaModel, stripLocation: Boolean = true): Flow<UploadResult> {
         return callbackFlow {
             WooLog.d(T.MEDIA, "MediaFilesRepository > Dispatching request to upload ${localMediaModel.filePath}")

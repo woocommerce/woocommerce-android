@@ -124,7 +124,6 @@ import javax.inject.Inject
 
 @Suppress("EmptyFunctionBlock")
 @HiltViewModel
-@DelicateCoroutinesApi
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
