@@ -2,7 +2,13 @@ package com.woocommerce.android.ui.products.ai
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.GeneratingFailure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.ScanningFailure
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -20,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PackagePhotoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val aiRepository: AIRepository,
     private val textRecognitionEngine: TextRecognitionEngine
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: PackagePhotoBottomSheetFragmentArgs by savedStateHandle.navArgs()
@@ -35,16 +42,28 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     private fun analyzePackagePhoto() {
+        _viewState.update { _viewState.value.copy(state = Scanning) }
         launch {
             textRecognitionEngine.processImage(_viewState.value.imageUrl)
                 .onSuccess { keywords ->
-                    _viewState.update {
-                        _viewState.value.copy(keywords = keywords.map { Keyword(it, true) })
+                    if (keywords.isNotEmpty()) {
+                        _viewState.update {
+                            _viewState.value.copy(
+                                keywords = keywords.map { Keyword(it, true) }
+                            )
+                        }
+                        generateNameAndDescription()
+                    } else {
+                        _viewState.update {
+                            _viewState.value.copy(
+                                state = ScanningFailure("No keywords found")
+                            )
+                        }
                     }
                 }
                 .onFailure { error ->
                     _viewState.update {
-                        _viewState.value.copy(description = error.toString())
+                        _viewState.value.copy(state = ScanningFailure(error.message ?: ""))
                     }
                 }
         }
@@ -62,12 +81,39 @@ class PackagePhotoViewModel @Inject constructor(
         )
     }
 
+    private suspend fun generateNameAndDescription() {
+        _viewState.update {
+            _viewState.value.copy(state = Generating)
+        }
+
+        val keywords = _viewState.value.keywords.filter { it.isChecked }.joinToString { it.title }
+        aiRepository.generateProductName(keywords)
+            .onSuccess { name ->
+                aiRepository.generateProductDescription(name, keywords)
+                    .onSuccess { description ->
+                        _viewState.update {
+                            _viewState.value.copy(state = Success, title = name, description = description)
+                        }
+                    }
+                    .onFailure { error ->
+                        _viewState.update {
+                            _viewState.value.copy(state = GeneratingFailure(error.message ?: ""))
+                        }
+                    }
+            }
+            .onFailure { error ->
+                _viewState.update {
+                    _viewState.value.copy(state = GeneratingFailure(error.message ?: ""))
+                }
+            }
+    }
+
     fun onEditPhotoTapped() {
         triggerEvent(ShowMediaLibraryDialog)
     }
 
-    fun onRegenerateTapped() {
-        /* TODO */
+    fun onRegenerateTapped() = launch {
+        generateNameAndDescription()
     }
 
     fun onMediaLibraryDialogRequested() {
@@ -116,7 +162,7 @@ class PackagePhotoViewModel @Inject constructor(
         val title: String = "",
         val description: String = "",
         val keywords: List<Keyword> = emptyList(),
-        val generationState: GenerationState = Initial
+        val state: GenerationState = Initial
     ) {
         data class Keyword(val title: String, val isChecked: Boolean)
 
@@ -125,7 +171,8 @@ class PackagePhotoViewModel @Inject constructor(
             object Scanning : GenerationState()
             object Generating : GenerationState()
             object Success : GenerationState()
-            data class Failure(val error: String) : GenerationState()
+            data class ScanningFailure(val message: String) : GenerationState()
+            data class GeneratingFailure(val message: String) : GenerationState()
         }
     }
 }
