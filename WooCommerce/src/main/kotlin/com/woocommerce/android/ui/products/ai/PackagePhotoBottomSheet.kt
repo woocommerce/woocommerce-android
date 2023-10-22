@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +38,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,10 +59,16 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.GeneratingFailure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.ScanningFailure
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 
 @Composable
@@ -119,11 +128,31 @@ fun ProductFromPackagePhoto(
                 .fillMaxWidth()
         ) {
             BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+
             ProductImage(viewState, onEditPhotoTapped)
+
             Spacer(Modifier)
-            NameAndDescription(viewState)
-            Spacer(Modifier)
-            Keywords(viewState, onKeywordChanged, onRegenerateTapped)
+
+            when (viewState.state) {
+                Initial -> {}
+                Scanning -> {
+                    LoadingNameAndDescription()
+                    Spacer(Modifier)
+                    LoadingKeywords()
+                }
+                Generating -> {
+                    LoadingNameAndDescription()
+                    Spacer(Modifier)
+                    Keywords(viewState, onKeywordChanged, onRegenerateTapped, false)
+                }
+                Success -> {
+                    NameAndDescription(viewState)
+                    Spacer(Modifier)
+                    Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
+                }
+                is GeneratingFailure -> TODO()
+                is ScanningFailure -> TODO()
+            }
         }
     }
 }
@@ -250,7 +279,8 @@ fun NameAndDescription(
 private fun Keywords(
     viewState: ViewState,
     onKeywordChanged: (Int, Keyword) -> Unit,
-    onRegenerateTapped: () -> Unit
+    onRegenerateTapped: () -> Unit,
+    areKeywordsEnabled: Boolean
 ) {
     val sectionsBorder = Modifier.border(
         width = dimensionResource(id = dimen.minor_10),
@@ -264,18 +294,34 @@ private fun Keywords(
     )
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
         modifier = Modifier
             .fillMaxWidth()
             .then(sectionsBorder)
     ) {
-        WCColoredButton(
-            modifier = Modifier
-                .padding(dimensionResource(id = dimen.major_100))
-                .fillMaxWidth(),
-            text = stringResource(string.ai_product_name_sheet_regenerate_button),
-            onClick = onRegenerateTapped
-        )
+        if (areKeywordsEnabled) {
+            WCColoredButton(
+                modifier = Modifier
+                    .padding(dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(),
+                text = stringResource(string.ai_product_name_sheet_regenerate_button),
+                onClick = onRegenerateTapped
+            )
+        } else {
+            WCColoredButton(
+                modifier = Modifier
+                    .padding(dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(),
+                enabled = false,
+                onClick = { },
+                content = {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
+                        color = colorResource(id = color.color_on_surface_disabled)
+                    )
+                }
+            )
+        }
+
         Text(
             text = stringResource(id = string.product_creation_package_photo_keywords_info),
             style = MaterialTheme.typography.caption,
@@ -284,7 +330,7 @@ private fun Keywords(
         )
 
         viewState.keywords.forEachIndexed { index, keyword ->
-            KeywordListItem(index, keyword.title, keyword.isChecked, onKeywordChanged)
+            KeywordListItem(index, keyword.title, keyword.isChecked, onKeywordChanged, areKeywordsEnabled)
 
             if (index < viewState.keywords.lastIndex) {
                 Divider(
@@ -301,12 +347,14 @@ fun KeywordListItem(
     index: Int,
     title: String,
     isSelected: Boolean,
-    onKeywordChanged: (Int, Keyword) -> Unit
+    onKeywordChanged: (Int, Keyword) -> Unit,
+    isEnabled: Boolean
 ) {
     Row(
         modifier = Modifier
             .padding(
-                horizontal = dimensionResource(id = dimen.major_100)
+                horizontal = dimensionResource(id = dimen.major_100),
+                vertical = dimensionResource(id = dimen.minor_75)
             )
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
@@ -322,6 +370,7 @@ fun KeywordListItem(
                 .align(Alignment.CenterVertically)
                 .weight(1f),
             textStyle = MaterialTheme.typography.body1,
+            enabled = isEnabled,
             onValueChange = {
                 onKeywordChanged(index, Keyword(it, isSelected))
             },
@@ -334,12 +383,184 @@ fun KeywordListItem(
             val onClick = {
                 onKeywordChanged(index, Keyword(title, !isSelected))
             }
-            IconButton(onClick) {
-                Image(painter = painterResource(id = icon), contentDescription = "")
+            IconButton(
+                onClick = onClick,
+                enabled = isEnabled,
+            ) {
+                Image(
+                    painter = painterResource(id = icon), contentDescription = "",
+                    colorFilter = if (isEnabled)
+                            null
+                        else
+                            ColorFilter.tint(colorResource(id = color.color_on_surface_disabled))
+                )
             }
         }
     }
 }
+
+@Composable
+fun LoadingNameAndDescription() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+    ) {
+        val sectionsBorder = Modifier.border(
+            width = dimensionResource(id = dimen.minor_10),
+            color = colorResource(id = color.divider_color),
+            shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+        )
+
+        Text(
+            text = stringResource(id = string.product_creation_ai_preview_name_section),
+            style = MaterialTheme.typography.body2
+        )
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .then(sectionsBorder)
+        ) {
+            SkeletonView(
+                modifier = Modifier
+                    .padding(dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(0.8f)
+                    .height(dimensionResource(id = dimen.major_100))
+            )
+        }
+
+        Spacer(Modifier)
+
+        Text(
+            text = stringResource(id = string.product_creation_ai_preview_description_section),
+            style = MaterialTheme.typography.body2
+        )
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .then(sectionsBorder)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+                modifier = Modifier
+                    .padding(dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth()
+            ) {
+
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(dimensionResource(id = dimen.major_100))
+                )
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(dimensionResource(id = dimen.major_100))
+                )
+                SkeletonView(
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .height(dimensionResource(id = dimen.major_100))
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingKeywords() {
+    val sectionsBorder = Modifier.border(
+        width = dimensionResource(id = dimen.minor_10),
+        color = colorResource(id = color.divider_color),
+        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+    )
+
+    Text(
+        text = stringResource(id = string.product_creation_package_photo_keywords_section),
+        style = MaterialTheme.typography.body2
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(sectionsBorder)
+    ) {
+        WCColoredButton(
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .fillMaxWidth(),
+            enabled = false,
+            onClick = { },
+            content = {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
+                    color = colorResource(id = color.color_on_surface_disabled)
+                )
+            }
+        )
+        Text(
+            text = stringResource(id = string.product_creation_package_photo_keywords_info),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = color.color_on_surface_medium),
+            modifier = Modifier.padding(horizontal = dimensionResource(id = dimen.major_100))
+        )
+
+        LoadingListItem()
+
+        Divider(
+            color = colorResource(id = color.divider_color),
+            thickness = dimensionResource(id = dimen.minor_10)
+        )
+
+        LoadingListItem()
+
+        Divider(
+            color = colorResource(id = color.divider_color),
+            thickness = dimensionResource(id = dimen.minor_10)
+        )
+
+        LoadingListItem()
+    }
+}
+
+@Composable
+private fun LoadingListItem() {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        SkeletonView(
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .fillMaxWidth(0.8f)
+                .align(Alignment.CenterVertically)
+                .height(dimensionResource(id = dimen.major_100))
+        )
+        SkeletonView(
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .width(dimensionResource(id = dimen.major_150))
+                .height(dimensionResource(id = dimen.major_150))
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun PreviewLoading() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .padding(dimensionResource(id = dimen.major_100))
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+    ) {
+        BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+        LoadingNameAndDescription()
+        Spacer(Modifier)
+        LoadingKeywords()
+    }
+}
+
 
 @Preview
 @Composable
@@ -349,7 +570,7 @@ fun PreviewProductFromPackagePhoto() {
             title = "Title",
             description = "Description",
             keywords = listOf(Keyword("Keyword 1", true), Keyword("Keyword 2", false)),
-            generationState = Initial,
+            state = Initial,
             imageUrl = ""
         ),
         modifier = Modifier,
