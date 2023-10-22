@@ -72,6 +72,8 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -97,8 +99,6 @@ import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
@@ -144,7 +144,6 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
-
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
