@@ -112,6 +112,10 @@ class PackagePhotoViewModel @Inject constructor(
         triggerEvent(ShowMediaLibraryDialog)
     }
 
+    fun onContinueTapped() {
+
+    }
+
     fun onRegenerateTapped() = launch {
         generateNameAndDescription()
     }

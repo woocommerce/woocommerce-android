@@ -1,14 +1,20 @@
 package com.woocommerce.android.ui.products.ai
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -79,6 +85,7 @@ fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
             modifier = Modifier,
             viewModel::onKeywordChanged,
             viewModel::onRegenerateTapped,
+            viewModel::onContinueTapped,
             viewModel::onEditPhotoTapped,
             onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
             onDevicePickerRequested = viewModel::onDevicePickerRequested,
@@ -95,6 +102,7 @@ fun ProductFromPackagePhoto(
     modifier: Modifier,
     onKeywordChanged: (Int, Keyword) -> Unit,
     onRegenerateTapped: () -> Unit,
+    onContinueTapped: () -> Unit,
     onEditPhotoTapped: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
     onDevicePickerRequested: () -> Unit,
@@ -120,39 +128,85 @@ fun ProductFromPackagePhoto(
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
-            modifier = modifier
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+                modifier = modifier
+                    .background(MaterialTheme.colors.surface)
+                    .padding(
+                        start = dimensionResource(id = dimen.major_100),
+                        end = dimensionResource(id = dimen.major_100),
+                        top = dimensionResource(id = dimen.major_100)
+                    )
+                    .verticalScroll(rememberScrollState())
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+
+                ProductImage(viewState, onEditPhotoTapped)
+
+                Spacer(Modifier)
+
+                when (viewState.state) {
+                    Initial -> {}
+                    Scanning -> {
+                        LoadingNameAndDescription()
+                        Spacer(Modifier)
+                        LoadingKeywords()
+                    }
+
+                    Generating -> {
+                        LoadingNameAndDescription()
+                        Spacer(Modifier)
+                        Keywords(viewState, onKeywordChanged, onRegenerateTapped, false)
+                    }
+
+                    Success -> {
+                        NameAndDescription(viewState)
+                        Spacer(Modifier)
+                        Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
+                    }
+
+                    is GeneratingFailure -> TODO()
+                    is ScanningFailure -> TODO()
+                }
+            }
+
+            ContinueButton(viewState, onContinueTapped)
+        }
+    }
+}
+
+@Composable
+private fun ContinueButton(
+    viewState: ViewState,
+    onContinueTapped: () -> Unit
+) {
+    AnimatedVisibility(
+        visible = viewState.state == Success,
+        enter = slideInVertically(initialOffsetY = { 300 }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { 300 }) + fadeOut(),
+    ) {
+        Box(
+            modifier = Modifier
                 .background(MaterialTheme.colors.surface)
-                .padding(dimensionResource(id = dimen.major_100))
-                .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
         ) {
-            BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-
-            ProductImage(viewState, onEditPhotoTapped)
-
-            Spacer(Modifier)
-
-            when (viewState.state) {
-                Initial -> {}
-                Scanning -> {
-                    LoadingNameAndDescription()
-                    Spacer(Modifier)
-                    LoadingKeywords()
-                }
-                Generating -> {
-                    LoadingNameAndDescription()
-                    Spacer(Modifier)
-                    Keywords(viewState, onKeywordChanged, onRegenerateTapped, false)
-                }
-                Success -> {
-                    NameAndDescription(viewState)
-                    Spacer(Modifier)
-                    Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
-                }
-                is GeneratingFailure -> TODO()
-                is ScanningFailure -> TODO()
-            }
+            Divider(
+                modifier = Modifier.align(Alignment.TopCenter),
+                color = colorResource(id = color.divider_color),
+                thickness = dimensionResource(id = dimen.minor_10)
+            )
+            WCColoredButton(
+                modifier = Modifier
+                    .padding(dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(),
+                text = stringResource(string.continue_button),
+                onClick = onContinueTapped
+            )
         }
     }
 }
@@ -296,6 +350,7 @@ private fun Keywords(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(bottom = dimensionResource(id = dimen.major_100))
             .then(sectionsBorder)
     ) {
         if (areKeywordsEnabled) {
@@ -570,11 +625,12 @@ fun PreviewProductFromPackagePhoto() {
             title = "Title",
             description = "Description",
             keywords = listOf(Keyword("Keyword 1", true), Keyword("Keyword 2", false)),
-            state = Initial,
+            state = Success,
             imageUrl = ""
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
+        {},
         {},
         {},
         {},
