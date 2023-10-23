@@ -413,7 +413,7 @@ class OrderCreateEditViewModel @Inject constructor(
             it.removeItem(item)
         }
     }
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
         source: ScanningSource? = null,
@@ -443,7 +443,9 @@ class OrderCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             _orderDraft.value.items.apply {
                 val productsToRemove = filter { item ->
-                    item.parent == null && !item.isVariation && selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
+                    item.parent == null &&
+                        !item.isVariation &&
+                        selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
                 }
                 productsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
