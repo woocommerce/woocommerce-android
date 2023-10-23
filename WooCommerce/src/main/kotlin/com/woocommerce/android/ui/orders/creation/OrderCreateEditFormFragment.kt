@@ -66,6 +66,7 @@ import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
