@@ -9,8 +9,8 @@ def main_branch?
 end
 
 def wip_feature?
-  has_wip_label = github.pr_labels.any? { |label| label.include?('WIP Feature') || label == 'WIP' }
-  has_wip_title = github.pr_title.include?('[WIP]')
+  has_wip_label = github.pr_labels.any? { |label| label.include?('WIP') }
+  has_wip_title = github.pr_title.include?('WIP')
 
   has_wip_label || has_wip_title
 end
@@ -21,19 +21,23 @@ end
 return if github.pr_labels.include?('Releases')
 
 manifest_pr_checker.check_gemfile_lock_updated
+
 labels_checker.check(
   do_not_merge_labels: ['status: do not merge'],
   required_labels: [//],
   required_labels_error: 'PR is missing at least one label.'
 )
+
 view_changes_need_screenshots.view_changes_need_screenshots
+
 pr_size_checker.check_diff_size(
   file_selector: ->(path) { !path.include?('/src/test') },
   max_size: 300
 )
+
 android_unit_test_checker.check_missing_tests
 
-# skip for draft PRs and for wip features unless the PR is against "develop" or "release/x.x" branches
+# skip for draft PRs and for WIP features unless the PR is against "trunk" or "release/x.x" branches
 milestone_checker.check_milestone_due_date(days_before_due: 2) if !github.pr_draft? && (!wip_feature? || (release_branch? || main_branch?))
 
 github.dismiss_out_of_range_messages
