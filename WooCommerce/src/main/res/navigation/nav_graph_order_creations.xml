@@ -10,6 +10,11 @@
         android:label="orderCreationFragment"
         tools:layout="@layout/fragment_order_create_edit_form">
         <action
+            android:id="@+id/action_orderCreationFragment_to_customAmountsDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:destination="@+id/customAmountsDialog" />
+        <action
             android:id="@+id/action_orderCreationFragment_to_taxRatesInfoDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
@@ -160,6 +165,11 @@
         <argument
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+    </dialog>
+    <dialog
+        android:id="@+id/customAmountsDialog"
+        android:name="com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog"
+        android:label="CustomAmountsDialog">
     </dialog>
     <fragment
         android:id="@+id/orderCreationCustomerNoteFragment"
