@@ -503,6 +503,8 @@
          Custom Amounts
     -->
     <string name="custom_amounts_dialog_title">Custom Amount</string>
+    <string name="custom_amounts_enter_amount">Amount</string>
+    <string name="custom_amounts_name">Name</string>
 
     <!--
          Taxes
