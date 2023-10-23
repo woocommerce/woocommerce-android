@@ -39,7 +39,6 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -97,8 +96,6 @@ private fun MainLayout(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-            BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
             Column(
                 modifier = Modifier
                     .padding(vertical = dimensionResource(id = dimen.major_100)),
