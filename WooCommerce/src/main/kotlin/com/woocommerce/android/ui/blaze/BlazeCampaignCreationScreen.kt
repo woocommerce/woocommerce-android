@@ -125,7 +125,7 @@ private fun BlazeCreationIntroScreen(
                 contentDescription = null,
                 modifier = Modifier
                     .background(
-                        color = colorResource(id = R.color.woo_orange_5).copy(alpha = 0.5f),
+                        color = colorResource(id = R.color.woo_orange_5).copy(alpha = 0.25f),
                         shape = CircleShape
                     )
                     .size(dimensionResource(id = R.dimen.image_major_120))
