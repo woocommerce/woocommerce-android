@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,6 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
 @HiltViewModel
-
 class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
@@ -47,7 +46,7 @@ class BlazeCampaignListViewModel @Inject constructor(
     }
 
     fun onEndOfTheListReached() {
-        if (state.value?.isLoading == false) {
+        if (!isLoadingMore.value) {
             isLoadingMore.value = true
             loadCampaignsFor(++currentPage)
             isLoadingMore.value = false
@@ -59,7 +58,7 @@ class BlazeCampaignListViewModel @Inject constructor(
             launch {
                 val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
                 if (result.isError || result.model == null) {
-                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
+                    triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
                 } else {
                     totalPages = result.model?.totalPages ?: 1
                 }
@@ -119,9 +118,9 @@ class BlazeCampaignListViewModel @Inject constructor(
         val onCampaignClicked: () -> Unit,
     )
 
-    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : Event()
     data class ShowCampaignDetails(
         val url: String,
         val urlToTriggerExit: String
-    ) : MultiLiveEvent.Event()
+    ) : Event()
 }
