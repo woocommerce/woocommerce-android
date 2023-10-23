@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -73,7 +74,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         loadCampaignsFor(currentPage)
     }
 
-    fun loadMoreCampaigns() {
+    fun onEndOfTheListReached() {
         if (state.value?.isLoading == false) {
             isLoadingMore.value = true
             loadCampaignsFor(++currentPage)
@@ -126,4 +127,36 @@ class BlazeCampaignListViewModel @Inject constructor(
         val url: String,
         val urlToTriggerExit: String
     ) : MultiLiveEvent.Event()
+}
+
+fun generateFakeCampaigns() {
+    val testCampaigns = mutableListOf<CampaignState>()
+    for (i in 1..20) {
+        testCampaigns.add(
+            CampaignState(
+                campaignUi = BlazeCampaignUi(
+                    product = BlazeProductUi(
+                        name = "Test Campaign $i",
+                        imgUrl = "",
+                    ),
+                    status = CampaignStatusUi.fromString("Rejected"),
+                    stats = listOf(
+                        BlazeCampaignStat(
+                            name = string.blaze_campaign_status_impressions,
+                            value = 10
+                        ),
+                        BlazeCampaignStat(
+                            name = string.blaze_campaign_status_clicks,
+                            value = 4
+                        ),
+                        BlazeCampaignStat(
+                            name = string.blaze_campaign_status_clicks,
+                            value = 300
+                        )
+                    )
+                ),
+                onCampaignClicked = { }
+            )
+        )
+    }
 }

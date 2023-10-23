@@ -46,7 +46,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
         BlazeCampaignListScreen(
             state = state,
             modifier = Modifier.background(color = MaterialTheme.colors.surface),
-            loadMoreCampaigns = viewModel::loadMoreCampaigns,
+            onEndOfTheListReached = viewModel::onEndOfTheListReached,
         )
     }
 }
@@ -55,7 +55,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
     modifier: Modifier = Modifier,
-    loadMoreCampaigns: () -> Unit,
+    onEndOfTheListReached: () -> Unit,
 ) {
     val listState = rememberLazyListState()
     when {
@@ -70,9 +70,7 @@ private fun BlazeCampaignListScreen(
                         end = dimensionResource(id = R.dimen.major_100),
                     )
             ) {
-                LazyColumn(
-                    state = listState
-                ) {
+                LazyColumn(state = listState) {
                     items(state.campaigns) { campaign ->
                         BlazeCampaignItem(
                             campaign = campaign.campaignUi,
@@ -93,7 +91,7 @@ private fun BlazeCampaignListScreen(
                     }
                 }
                 LaunchedEffect(endOfListReached) {
-                    loadMoreCampaigns()
+                    onEndOfTheListReached()
                 }
 
                 FloatingActionButton(
@@ -115,7 +113,7 @@ private fun BlazeCampaignListScreen(
 }
 
 fun LazyListState.isScrolledToTheEnd() =
-    layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+    (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) == (layoutInfo.totalItemsCount - 1)
 
 
 @ExperimentalFoundationApi
@@ -157,6 +155,6 @@ fun BlazeCampaignListScreenPreview() {
             onAddNewCampaignClicked = {},
             isLoading = false
         ),
-        loadMoreCampaigns = {},
+        onEndOfTheListReached = {},
     )
 }
