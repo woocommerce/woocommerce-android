@@ -80,6 +80,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        appPrefsWrapper.removeLoginSiteAddress()
         unifiedLoginTracker.setFlowAndStep(Flow.PROLOGUE, Step.PROLOGUE)
     }
 
