@@ -37,7 +37,7 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = OrderEditingViewModel(
-            SavedStateHandle().apply { set("orderId", 1L) },
+            SavedStateHandle().apply { set("orderId", 1L) }.apply { set("allOrderIds", LongArray(0)) },
             coroutinesTestRule.testDispatchers,
             orderDetailRepository,
             orderEditingRepository,
