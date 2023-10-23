@@ -540,7 +540,7 @@ class MyStoreFragment :
             // the scope will not get cancelled.
             // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
-            withCreated {  }
+            withCreated { }
             appBarLayout.verticalOffsetChanges()
                 .collect { verticalOffset ->
                     binding.jetpackBenefitsBanner.root.translationY =
