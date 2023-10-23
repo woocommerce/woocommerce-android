@@ -27,11 +27,11 @@ class BlazeWebViewFragment : BaseFragment() {
             setContent {
                 WooThemeWithBackground {
                     BlazeWebViewScreen(
-                        viewModel.viewState,
-                        viewModel.userAgent,
-                        viewModel.wpComWebViewAuthenticator,
-                        requireActivity().activityResultRegistry,
-                        viewModel::onClose
+                        viewModel = viewModel,
+                        userAgent = viewModel.userAgent,
+                        wpcomWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
+                        activityRegistry = requireActivity().activityResultRegistry,
+                        onClose = viewModel::onClose
                     )
                 }
             }
