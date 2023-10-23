@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,11 +18,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -37,8 +32,7 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
@@ -57,63 +51,43 @@ private fun BlazeCampaignListScreen(
     modifier: Modifier = Modifier,
     onEndOfTheListReached: () -> Unit,
 ) {
-    val listState = rememberLazyListState()
-    when {
-        state.isLoading -> {}
-        else -> {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(
-                        top = dimensionResource(id = R.dimen.major_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                    )
-            ) {
-                LazyColumn(state = listState) {
-                    items(state.campaigns) { campaign ->
-                        BlazeCampaignItem(
-                            campaign = campaign.campaignUi,
-                            onCampaignClicked = campaign.onCampaignClicked,
-                        )
-                        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
-                    }
-                }
-                // observer when reached end of list
-                val endOfListReached by remember {
-                    derivedStateOf {
-                        WooLog.d(
-                            T.BLAZE, "Lazy column status: " +
-                                "lastVisibleIndex:${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index}, " +
-                                "totalItems -1:${listState.layoutInfo.totalItemsCount - 1}"
-                        )
-                        listState.isScrolledToTheEnd()
-                    }
-                }
-                LaunchedEffect(endOfListReached) {
-                    onEndOfTheListReached()
-                }
-
-                FloatingActionButton(
-                    onClick = state.onAddNewCampaignClicked,
-                    shape = CircleShape,
-                    backgroundColor = MaterialTheme.colors.primary,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Large floating action button",
-                    )
-                }
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(
+                top = dimensionResource(id = R.dimen.major_100),
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
+    ) {
+        val listState = rememberLazyListState()
+        LazyColumn(state = listState) {
+            items(state.campaigns) { campaign ->
+                BlazeCampaignItem(
+                    campaign = campaign.campaignUi,
+                    onCampaignClicked = campaign.onCampaignClicked,
+                )
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
             }
+        }
+        FloatingActionButton(
+            onClick = state.onAddNewCampaignClicked,
+            shape = CircleShape,
+            backgroundColor = MaterialTheme.colors.primary,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = dimensionResource(id = R.dimen.major_100))
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Large floating action button",
+            )
+        }
+        InfiniteListHandler(listState = listState) {
+            onEndOfTheListReached()
         }
     }
 }
-
-fun LazyListState.isScrolledToTheEnd() =
-    (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) == (layoutInfo.totalItemsCount - 1)
 
 
 @ExperimentalFoundationApi
