@@ -6,12 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -25,6 +28,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -68,6 +72,16 @@ private fun BlazeCampaignListScreen(
                     onCampaignClicked = campaign.onCampaignClicked,
                 )
                 Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            }
+            if (state.isLoading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth()
+                            .padding(vertical = dimensionResource(id = dimen.minor_100))
+                    )
+                }
             }
         }
         FloatingActionButton(
