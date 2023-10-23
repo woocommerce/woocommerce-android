@@ -25,7 +25,7 @@ manifest_pr_checker.check_gemfile_lock_updated
 labels_checker.check(
   do_not_merge_labels: ['status: do not merge'],
   required_labels: [//],
-  required_labels_error: 'PR is missing at least one label.'
+  required_labels_error: 'PR requires at least one label.'
 )
 
 view_changes_need_screenshots.view_changes_need_screenshots
