@@ -14,7 +14,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +43,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -69,11 +69,11 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
-import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.GeneratingFailure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.NoKeywordsFound
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
-import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.ScanningFailure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 
@@ -170,13 +170,40 @@ fun ProductFromPackagePhoto(
                         Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
                     }
 
-                    is GeneratingFailure -> TODO()
-                    is ScanningFailure -> TODO()
+                    NoKeywordsFound -> {
+                        Message(stringResource(id = string.product_creation_package_photo_no_text_detected))
+                    }
+
+                    is Failure -> {
+                        val error = if (viewState.state.message.isEmpty()) {
+                            "${stringResource(id = string.product_creation_package_photo_error)}."
+                        } else {
+                            stringResource(id = string.product_creation_package_photo_error) +
+                                " (${viewState.state.message})."
+                        }
+                        Message(message = error, isError = true)
+                    }
                 }
             }
 
             ContinueButton(viewState, onContinueTapped)
         }
+    }
+}
+
+@Composable
+private fun Message(message: String, isError: Boolean = false) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+        .background(colorResource(id = if (isError) color.color_error else color.color_alert))
+    ) {
+        Text(
+            text = message,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = dimen.major_100))
+        )
     }
 }
 
@@ -336,12 +363,6 @@ private fun Keywords(
     onRegenerateTapped: () -> Unit,
     areKeywordsEnabled: Boolean
 ) {
-    val sectionsBorder = Modifier.border(
-        width = dimensionResource(id = dimen.minor_10),
-        color = colorResource(id = color.divider_color),
-        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
-    )
-
     Text(
         text = stringResource(id = string.product_creation_package_photo_keywords_section),
         style = MaterialTheme.typography.body2
@@ -351,13 +372,18 @@ private fun Keywords(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = dimensionResource(id = dimen.major_100))
-            .then(sectionsBorder)
+            .border(
+                width = dimensionResource(id = dimen.minor_10),
+                color = colorResource(id = color.divider_color),
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+            )
     ) {
         if (areKeywordsEnabled) {
             WCColoredButton(
                 modifier = Modifier
                     .padding(dimensionResource(id = dimen.major_100))
                     .fillMaxWidth(),
+                enabled = viewState.isRegenerateButtonEnabled,
                 text = stringResource(string.ai_product_name_sheet_regenerate_button),
                 onClick = onRegenerateTapped
             )
@@ -522,12 +548,6 @@ fun LoadingNameAndDescription() {
 
 @Composable
 private fun LoadingKeywords() {
-    val sectionsBorder = Modifier.border(
-        width = dimensionResource(id = dimen.minor_10),
-        color = colorResource(id = color.divider_color),
-        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
-    )
-
     Text(
         text = stringResource(id = string.product_creation_package_photo_keywords_section),
         style = MaterialTheme.typography.body2
@@ -536,7 +556,11 @@ private fun LoadingKeywords() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .then(sectionsBorder)
+            .border(
+                width = dimensionResource(id = dimen.minor_10),
+                color = colorResource(id = color.divider_color),
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+            )
     ) {
         WCColoredButton(
             modifier = Modifier
@@ -626,6 +650,52 @@ fun PreviewProductFromPackagePhoto() {
             description = "Description",
             keywords = listOf(Keyword("Keyword 1", true), Keyword("Keyword 2", false)),
             state = Success,
+            imageUrl = ""
+        ),
+        modifier = Modifier,
+        onKeywordChanged = { _, _ -> },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+    )
+}
+
+@Preview
+@Composable
+fun PreviewNoKeywordsMessage() {
+    ProductFromPackagePhoto(
+        viewState = ViewState(
+            title = "Title",
+            description = "Description",
+            keywords = listOf(Keyword("Keyword 1", true), Keyword("Keyword 2", false)),
+            state = NoKeywordsFound,
+            imageUrl = ""
+        ),
+        modifier = Modifier,
+        onKeywordChanged = { _, _ -> },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+    )
+}
+
+@Preview
+@Composable
+fun PreviewErrorMessage() {
+    ProductFromPackagePhoto(
+        viewState = ViewState(
+            title = "Title",
+            description = "Description",
+            keywords = listOf(Keyword("Keyword 1", true), Keyword("Keyword 2", false)),
+            state = Failure("Unable to scan the image"),
             imageUrl = ""
         ),
         modifier = Modifier,

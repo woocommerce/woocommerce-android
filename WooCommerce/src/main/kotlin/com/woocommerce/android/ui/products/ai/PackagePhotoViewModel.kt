@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.products.ai
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
-import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.GeneratingFailure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.NoKeywordsFound
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
-import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.ScanningFailure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -56,29 +56,40 @@ class PackagePhotoViewModel @Inject constructor(
                     } else {
                         _viewState.update {
                             _viewState.value.copy(
-                                state = ScanningFailure("No keywords found")
+                                state = NoKeywordsFound
                             )
                         }
                     }
                 }
                 .onFailure { error ->
                     _viewState.update {
-                        _viewState.value.copy(state = ScanningFailure(error.message ?: ""))
+                        _viewState.value.copy(state = Failure(error.message ?: ""))
                     }
                 }
         }
     }
 
     fun onKeywordChanged(index: Int, keyword: Keyword) {
-        _viewState.value = _viewState.value.copy(
-            keywords = _viewState.value.keywords.mapIndexed { i, old ->
-                if (i == index) {
-                    old.copy(title = keyword.title, isChecked = keyword.isChecked)
-                } else {
-                    old
-                }
-            }
-        )
+        _viewState.update {
+            _viewState.value.copy(
+                keywords = _viewState.value.keywords.mapIndexed { i, old ->
+                    if (i == index) {
+                        old.copy(title = keyword.title, isChecked = keyword.isChecked)
+                    } else {
+                        old
+                    }
+                },
+            )
+        }
+        val moreThanOneKeyword = _viewState.value.keywords
+            .filter { it.isChecked }
+            .joinToString(separator = "") { it.title }
+            .isNotEmpty()
+        _viewState.update {
+            _viewState.value.copy(
+                isRegenerateButtonEnabled = moreThanOneKeyword
+            )
+        }
     }
 
     private suspend fun generateNameAndDescription() {
@@ -97,13 +108,13 @@ class PackagePhotoViewModel @Inject constructor(
                     }
                     .onFailure { error ->
                         _viewState.update {
-                            _viewState.value.copy(state = GeneratingFailure(error.message ?: ""))
+                            _viewState.value.copy(state = Failure(error.message ?: ""))
                         }
                     }
             }
             .onFailure { error ->
                 _viewState.update {
-                    _viewState.value.copy(state = GeneratingFailure(error.message ?: ""))
+                    _viewState.value.copy(state = Failure(error.message ?: ""))
                 }
             }
     }
@@ -166,6 +177,7 @@ class PackagePhotoViewModel @Inject constructor(
         val title: String = "",
         val description: String = "",
         val keywords: List<Keyword> = emptyList(),
+        val isRegenerateButtonEnabled: Boolean = true,
         val state: GenerationState = Initial
     ) {
         data class Keyword(val title: String, val isChecked: Boolean)
@@ -175,8 +187,8 @@ class PackagePhotoViewModel @Inject constructor(
             object Scanning : GenerationState()
             object Generating : GenerationState()
             object Success : GenerationState()
-            data class ScanningFailure(val message: String) : GenerationState()
-            data class GeneratingFailure(val message: String) : GenerationState()
+            object NoKeywordsFound : GenerationState()
+            data class Failure(val message: String) : GenerationState()
         }
     }
 }
