@@ -97,7 +97,7 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun openBlazeWebView(event: OpenBlazeEvent) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
                 urlToLoad = event.url,
                 source = event.source
             )

@@ -303,7 +303,7 @@ class MyStoreFragment :
 
     private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
                 urlToLoad = url,
                 source = source
             )

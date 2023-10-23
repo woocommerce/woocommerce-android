@@ -12,22 +12,22 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.BlazeWebViewViewModel.BlazeCreationViewState
+import com.woocommerce.android.ui.blaze.BlazeCampaignCreationViewModel.BlazeCreationViewState
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun BlazeWebViewScreen(
-    viewModel: BlazeWebViewViewModel,
+fun BlazeCampaignCreationScreen(
+    viewModel: BlazeCampaignCreationViewModel,
     userAgent: UserAgent,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
     activityRegistry: ActivityResultRegistry,
     onClose: () -> Unit
 ) {
     viewModel.viewState.observeAsState().value?.let {
-        BlazeWebViewScreen(
+        BlazeCampaignCreationScreen(
             viewState = it,
             userAgent = userAgent,
             wpcomWebViewAuthenticator = wpcomWebViewAuthenticator,
@@ -38,7 +38,7 @@ fun BlazeWebViewScreen(
 }
 
 @Composable
-fun BlazeWebViewScreen(
+fun BlazeCampaignCreationScreen(
     viewState: BlazeCreationViewState,
     userAgent: UserAgent,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,

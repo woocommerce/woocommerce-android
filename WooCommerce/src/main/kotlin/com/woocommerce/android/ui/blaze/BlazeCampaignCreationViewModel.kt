@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @HiltViewModel
-class BlazeWebViewViewModel @Inject constructor(
+class BlazeCampaignCreationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
@@ -30,7 +30,7 @@ class BlazeWebViewViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: BlazeWebViewFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: BlazeCampaignCreationFragmentArgs by savedStateHandle.navArgs()
 
     private var currentBlazeStep = BlazeFlowStep.UNSPECIFIED
     private var isCompleted = false

@@ -15,18 +15,18 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BlazeWebViewFragment : BaseFragment() {
+class BlazeCampaignCreationFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: BlazeWebViewViewModel by viewModels()
+    private val viewModel: BlazeCampaignCreationViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    BlazeWebViewScreen(
+                    BlazeCampaignCreationScreen(
                         viewModel = viewModel,
                         userAgent = viewModel.userAgent,
                         wpcomWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
