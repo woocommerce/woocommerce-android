@@ -37,7 +37,6 @@ object WooLog {
         WOO_TRIAL,
         AI,
         BARCODE_SCANNER,
-        BLAZE,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
