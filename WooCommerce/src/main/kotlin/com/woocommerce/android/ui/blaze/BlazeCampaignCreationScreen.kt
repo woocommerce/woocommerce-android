@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.blaze
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.activity.result.ActivityResultRegistry
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.with
@@ -58,6 +60,7 @@ fun BlazeCampaignCreationScreen(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun BlazeCampaignCreationScreen(
     viewState: BlazeCreationViewState,
@@ -77,18 +80,29 @@ fun BlazeCampaignCreationScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
-        when (viewState) {
-            is BlazeCreationViewState.Intro -> TODO()
-            is BlazeCreationViewState.BlazeWebViewState -> WCWebView(
-                url = viewState.urlToLoad,
-                userAgent = userAgent,
-                wpComAuthenticator = wpcomWebViewAuthenticator,
-                onPageFinished = viewState.onPageFinished,
-                activityRegistry = activityRegistry,
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-            )
+        AnimatedContent(
+            targetState = viewState,
+            transitionSpec = { fadeIn() with fadeOut() }
+        ) { targetState ->
+            when (targetState) {
+                is BlazeCreationViewState.Intro -> BlazeCreationIntroScreen(
+                    onCreateCampaignClick = targetState.onCreateCampaignClick,
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                )
+
+                is BlazeCreationViewState.BlazeWebViewState -> WCWebView(
+                    url = targetState.urlToLoad,
+                    userAgent = userAgent,
+                    wpComAuthenticator = wpcomWebViewAuthenticator,
+                    onPageFinished = targetState.onPageFinished,
+                    activityRegistry = activityRegistry,
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                )
+            }
         }
     }
 }
