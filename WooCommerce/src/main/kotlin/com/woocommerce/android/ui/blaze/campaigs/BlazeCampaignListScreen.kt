@@ -103,7 +103,6 @@ private fun BlazeCampaignListScreen(
     }
 }
 
-
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
