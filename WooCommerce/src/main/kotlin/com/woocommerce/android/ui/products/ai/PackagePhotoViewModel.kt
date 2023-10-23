@@ -45,6 +45,7 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onRegenerateTapped() {
+        // TBD
     }
 
     fun onMediaLibraryDialogRequested() {
