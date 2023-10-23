@@ -71,7 +71,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             orderMapper = mock(),
             dispatchers = coroutinesTestRule.testDispatchers,
             wooCommerceStore = wooCommerceStore,
-            analyticsTrackerWrapper = trackerWrapper
+            analyticsTrackerWrapper = trackerWrapper,
+            listItemMapper = mock()
         )
     }
 
