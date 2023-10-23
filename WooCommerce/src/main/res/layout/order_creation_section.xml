@@ -43,6 +43,7 @@
         android:layout_height="@dimen/image_minor_50"
         android:layout_marginEnd="@dimen/major_150"
         android:src="@drawable/ic_barcode"
+        android:visibility="gone"
         android:contentDescription="@string/order_editing_barcode_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/header_label"
         app:layout_constraintEnd_toStartOf="@id/add_icon"
@@ -55,6 +56,7 @@
         android:layout_marginEnd="@dimen/major_100"
         android:src="@drawable/ic_add"
         android:contentDescription="@string/order_editing_add_content_description"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/header_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/header_label" />
