@@ -35,11 +35,12 @@ class BlazeWebViewViewModel @Inject constructor(
     val viewState = navArgs.let {
         BlazeWebViewState(
             urlToLoad = it.urlToLoad,
-            source = it.source
+            source = it.source,
+            onPageFinished = { url -> onPageFinished(url) }
         )
     }
 
-    fun onPageFinished(url: String) {
+    private fun onPageFinished(url: String) {
         if (!firstTimeLoading) {
             firstTimeLoading = true
             analyticsTracker.track(
@@ -99,7 +100,8 @@ class BlazeWebViewViewModel @Inject constructor(
 
     data class BlazeWebViewState(
         val urlToLoad: String,
-        val source: BlazeFlowSource
+        val source: BlazeFlowSource,
+        val onPageFinished: (String) -> Unit
     )
 
     enum class BlazeFlowStep(val label: String, val trackingName: String) {

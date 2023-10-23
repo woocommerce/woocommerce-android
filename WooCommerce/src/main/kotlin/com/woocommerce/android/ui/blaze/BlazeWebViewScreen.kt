@@ -23,8 +23,7 @@ fun BlazeWebViewScreen(
     userAgent: UserAgent,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
     activityRegistry: ActivityResultRegistry,
-    onPageFinished: (String) -> Unit,
-    onClose: () -> Unit,
+    onClose: () -> Unit
 ) {
     BackHandler(onBack = onClose)
     Scaffold(
@@ -40,7 +39,7 @@ fun BlazeWebViewScreen(
             url = viewState.urlToLoad,
             userAgent = userAgent,
             wpComAuthenticator = wpcomWebViewAuthenticator,
-            onPageFinished = onPageFinished,
+            onPageFinished = viewState.onPageFinished,
             activityRegistry = activityRegistry,
             modifier = Modifier
                 .padding(paddingValues)
