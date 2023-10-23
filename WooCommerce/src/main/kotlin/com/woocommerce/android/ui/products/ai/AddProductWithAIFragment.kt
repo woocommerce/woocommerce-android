@@ -1,13 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -27,10 +23,7 @@ import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowMediaL
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.mediapicker.MediaPickerConstants
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,10 +37,6 @@ class AddProductWithAIFragment : BaseFragment() {
 
     @Inject
     lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
-
-    private val resultLauncher = registerForActivityResult(StartActivityForResult()) {
-        handleMediaPickerResult(it)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -84,35 +73,6 @@ class AddProductWithAIFragment : BaseFragment() {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 Exit -> findNavController().navigateUp()
-            }
-        }
-    }
-
-    private fun showPackagePhotoBottomSheet(imageUrl: String) {
-        findNavController().navigateSafely(
-            directions = AddProductWithAIFragmentDirections
-                .actionAddProductWithAIFragmentToPackagePhotoBottomSheetFragment(imageUrl)
-        )
-    }
-
-    private fun showStorageChooser() {
-        val mediaPickerIntent = MediaPickerActivity.buildIntent(
-            context = requireContext(),
-            mediaPickerSetupFactory.build(DEVICE)
-        )
-        resultLauncher.launch(mediaPickerIntent)
-    }
-
-    private fun handleMediaPickerResult(result: ActivityResult) {
-        if (result.resultCode == AppCompatActivity.RESULT_OK) {
-            result.data?.extras?.let { extra ->
-                val uri = (extra.getStringArray(MediaPickerConstants.EXTRA_MEDIA_URIS))
-                    ?.map { Uri.parse(it) }
-                    ?.first()
-
-                if (uri != null) {
-                    showPackagePhotoBottomSheet(uri.toString())
-                }
             }
         }
     }
