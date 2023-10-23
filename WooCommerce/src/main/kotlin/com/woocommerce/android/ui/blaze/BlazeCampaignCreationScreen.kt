@@ -56,7 +56,7 @@ fun BlazeCampaignCreationScreen(
         }
     ) { paddingValues ->
         when (viewState) {
-            BlazeCreationViewState.Intro -> TODO()
+            is BlazeCreationViewState.Intro -> TODO()
             is BlazeCreationViewState.BlazeWebViewState -> WCWebView(
                 url = viewState.urlToLoad,
                 userAgent = userAgent,

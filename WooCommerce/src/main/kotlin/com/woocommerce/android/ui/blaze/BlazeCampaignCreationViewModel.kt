@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
@@ -15,10 +16,12 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,20 +31,36 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     val userAgent: UserAgent,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val blazeCampaignsStore: BlazeCampaignsStore
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationFragmentArgs by savedStateHandle.navArgs()
 
     private var currentBlazeStep = BlazeFlowStep.UNSPECIFIED
     private var isCompleted = false
     private var firstTimeLoading = false
-    val viewState: LiveData<BlazeCreationViewState> = flowOf(navArgs.let {
-        BlazeCreationViewState.BlazeWebViewState(
-            urlToLoad = it.urlToLoad,
-            source = it.source,
-            onPageFinished = { url -> onPageFinished(url, it.source) }
-        )
-    }).asLiveData()
+
+    private val isIntroDismissed = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "isIntroDismissed"
+    )
+
+    val viewState: LiveData<BlazeCreationViewState> = isIntroDismissed.map { introDismissed ->
+        if (!introDismissed &&
+            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty()
+        ) {
+            BlazeCreationViewState.Intro(
+                onCreateCampaignClick = { isIntroDismissed.value = true }
+            )
+        } else {
+            BlazeCreationViewState.BlazeWebViewState(
+                urlToLoad = navArgs.urlToLoad,
+                source = navArgs.source,
+                onPageFinished = { url -> onPageFinished(url, navArgs.source) }
+            )
+        }
+    }.asLiveData()
 
     private fun onPageFinished(url: String, source: BlazeFlowSource) {
         if (!firstTimeLoading) {
@@ -102,7 +121,10 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     }
 
     sealed interface BlazeCreationViewState {
-        object Intro : BlazeCreationViewState
+        data class Intro(
+            val onCreateCampaignClick: () -> Unit,
+        ) : BlazeCreationViewState
+
         data class BlazeWebViewState(
             val urlToLoad: String,
             val source: BlazeFlowSource,
