@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.blaze.campaigs
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -10,8 +10,6 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,10 +57,9 @@ class BlazeCampaignListViewModel @Inject constructor(
     private fun loadCampaignsFor(page: Int) {
         if (page <= totalPages) {
             launch {
-                WooLog.d(T.BLAZE, "Load more campaigns: currentPage:$page, totalPages:$totalPages")
                 val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
                 if (result.isError || result.model == null) {
-                    WooLog.d(T.BLAZE, "failed to fetch Blaze campaigns page:$page error: ${result.error}")
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
                 } else {
                     totalPages = result.model?.totalPages ?: 1
                 }
@@ -90,15 +87,15 @@ class BlazeCampaignListViewModel @Inject constructor(
                 status = CampaignStatusUi.fromString(campaignEntity.uiStatus),
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_impressions,
+                        name = R.string.blaze_campaign_status_impressions,
                         value = campaignEntity.impressions
                     ),
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
+                        name = R.string.blaze_campaign_status_clicks,
                         value = campaignEntity.clicks
                     ),
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
+                        name = R.string.blaze_campaign_status_clicks,
                         value = campaignEntity.budgetCents
                     )
                 )
