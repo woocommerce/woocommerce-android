@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -1100,7 +1101,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         val orderItem = OrderCreationProduct.ProductItem(
             item = Order.Item.EMPTY,
-            productInfo = ProductInfo("", false, 0.0, ProductStockStatus.NotAvailable)
+            productInfo = ProductInfo(
+                "",
+                false,
+                0.0,
+                ProductStockStatus.NotAvailable,
+                ProductType.SIMPLE
+            )
         )
         sut.onProductClicked(orderItem)
 

@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEd
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Valid
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -406,7 +407,8 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             imageUrl = "",
             isStockManaged = false,
             stockQuantity = 0.0,
-            stockStatus = ProductStockStatus.InStock
+            stockStatus = ProductStockStatus.InStock,
+            productType = ProductType.SIMPLE
         )
         return OrderCreationProduct.ProductItem(
             item = orderItem,

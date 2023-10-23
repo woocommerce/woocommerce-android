@@ -364,7 +364,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
 
-        _orderDraft.update { adjustProductQuantity(it, id, +1) }
+        _orderDraft.update { adjustProductQuantity(it, id, -1) }
     }
 
     fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
