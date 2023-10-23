@@ -166,7 +166,7 @@ class ProductDetailViewModel @Inject constructor(
 
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
-        if (old?.productDraft != new.productDraft) {
+        if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
             new.productDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
@@ -230,7 +230,8 @@ class ProductDetailViewModel @Inject constructor(
             parameters = parameters,
             addonRepository = addonRepository,
             variationRepository = variationRepository,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            isBlazeEnabled = isBlazeEnabled
         )
     }
 
@@ -453,6 +454,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onBlazeClicked() {
         tracker.track(
             stat = BLAZE_ENTRY_POINT_TAPPED,
+            // TODO update source value when i2 is ready for release
             properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
         )
         viewState.productDraft?.let {

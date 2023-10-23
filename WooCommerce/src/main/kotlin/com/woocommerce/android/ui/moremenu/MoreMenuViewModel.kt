@@ -96,7 +96,7 @@ class MoreMenuViewModel @Inject constructor(
         MenuUiButton(
             title = R.string.more_menu_button_blaze,
             description = R.string.more_menu_button_blaze_description,
-            icon = R.drawable.ic_more_menu_blaze,
+            icon = R.drawable.ic_blaze,
             onClick = ::onPromoteProductsWithBlaze,
             isEnabled = isBlazeEnabled()
         ),
