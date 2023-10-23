@@ -22,6 +22,7 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
     override val hasSearchableContent: Boolean
         get() = false
+    override val isMultiChoice: Boolean = true
 
     init {
         analyticsTracker.track(
@@ -56,15 +57,6 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
 
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_platforms_title)
-
-    override fun onOptionSelected(option: StoreProfilerOptionUi) {
-        profilerOptions.update { currentOptions ->
-            currentOptions.map {
-                if (option.name == it.name) it.copy(isSelected = !it.isSelected)
-                else it
-            }
-        }
-    }
 
     override fun saveStepAnswer() {
         newStore.update(

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 15.9
+We're thrilled to introduce the new Tap to Pay feature, now available for merchants in the UK and Canada. This means that UK and Canadian-based businesses can now provide a faster and more convenient payment experience to their customers, all from the palm of your hand. Update now and start boosting your sales with Tap to Pay in WooCommerce!
+
 ## 15.8
 This update brings crucial bug fixes, ensuring a smoother experience. It also introduces the ability to update tax rates when editing orders, providing you with greater control. Stay tuned for more exciting features in upcoming releases. Thank you for choosing WooCommerce.
 

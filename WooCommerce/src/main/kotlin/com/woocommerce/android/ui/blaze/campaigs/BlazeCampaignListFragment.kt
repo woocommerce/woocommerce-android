@@ -8,8 +8,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -42,7 +45,31 @@ class BlazeCampaignListFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
+                is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(event.url, event.source)
+                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
+                    event.url,
+                    event.urlToTriggerExit
+                )
             }
         }
+    }
+
+    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                urlToLoad = url,
+                source = source
+            )
+        )
+    }
+
+    private fun openCampaignDetails(url: String, urlToTriggerExit: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(urlToTriggerExit),
+                title = getString(R.string.blaze_campaign_details_title)
+            )
+        )
     }
 }
