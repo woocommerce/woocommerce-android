@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
-import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ClickableCampaign
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -128,36 +127,4 @@ class BlazeCampaignListViewModel @Inject constructor(
         val url: String,
         val urlToTriggerExit: String
     ) : MultiLiveEvent.Event()
-}
-
-fun generateFakeCampaigns() {
-    val testCampaigns = mutableListOf<ClickableCampaign>()
-    for (i in 1..50) {
-        testCampaigns.add(
-            ClickableCampaign(
-                campaignUi = BlazeCampaignUi(
-                    product = BlazeProductUi(
-                        name = "Test Campaign $i",
-                        imgUrl = "",
-                    ),
-                    status = CampaignStatusUi.fromString("Rejected"),
-                    stats = listOf(
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_impressions,
-                            value = 10
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_clicks,
-                            value = 4
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_clicks,
-                            value = 300
-                        )
-                    )
-                ),
-                onCampaignClicked = { }
-            )
-        )
-    }
 }
