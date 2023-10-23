@@ -100,6 +100,9 @@
                 android:name="orderId"
                 app:argType="long" />
             <argument
+                android:name="allOrderIds"
+                app:argType="long[]" />
+            <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
                 app:argType="long" />
@@ -635,7 +638,7 @@
             app:argType="string" />
         <argument
             android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
             app:nullable="false" />
     </fragment>
     <fragment

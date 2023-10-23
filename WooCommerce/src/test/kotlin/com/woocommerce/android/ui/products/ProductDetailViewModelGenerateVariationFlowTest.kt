@@ -113,6 +113,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 getComponentProducts = mock(),
                 productListRepository = mock(),
                 isBlazeEnabled = mock(),
+                blazeUrlsHelper = mock(),
             )
         )
 

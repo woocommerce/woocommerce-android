@@ -60,7 +60,7 @@ fun MyStoreBlazeView(
                 when (state) {
                     is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
                         campaign = state.campaign,
-                        onCampaignClicked = {},
+                        onCampaignClicked = state.onCampaignClicked,
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
@@ -146,7 +146,7 @@ private fun ShowAllOrCreateCampaignFooter(
 private fun BlazeCampaignHeader() {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
-            painter = painterResource(id = R.drawable.ic_more_menu_blaze),
+            painter = painterResource(id = R.drawable.ic_blaze),
             contentDescription = "", // Blaze icon, no relevant content desc
             modifier = Modifier
                 .padding(end = dimensionResource(id = R.dimen.minor_100))

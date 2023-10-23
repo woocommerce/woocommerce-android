@@ -55,9 +55,9 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -146,7 +146,8 @@ class ProductDetailViewModel @Inject constructor(
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
-    private val isBlazeEnabled: IsBlazeEnabled
+    private val isBlazeEnabled: IsBlazeEnabled,
+    private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -165,7 +166,7 @@ class ProductDetailViewModel @Inject constructor(
 
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(savedState, ProductDetailViewState()) { old, new ->
-        if (old?.productDraft != new.productDraft) {
+        if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
             new.productDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
@@ -229,7 +230,8 @@ class ProductDetailViewModel @Inject constructor(
             parameters = parameters,
             addonRepository = addonRepository,
             variationRepository = variationRepository,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            isBlazeEnabled = isBlazeEnabled
         )
     }
 
@@ -267,7 +269,7 @@ class ProductDetailViewModel @Inject constructor(
         }.map { (productDraft, hasChanges) ->
             val canBeSavedAsDraft = isAddFlowEntryPoint &&
                 !isProductStoredAtSite &&
-                productDraft.status != ProductStatus.DRAFT
+                productDraft.status != DRAFT
             val isNotPublishedUnderCreation = isProductUnderCreation &&
                 productDraft.status != ProductStatus.PUBLISH &&
                 productDraft.status != ProductStatus.PRIVATE
@@ -405,7 +407,7 @@ class ProductDetailViewModel @Inject constructor(
             tracker.track(
                 AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_SOURCE to source
+                    KEY_SOURCE to source
                 )
             )
 
@@ -452,16 +454,17 @@ class ProductDetailViewModel @Inject constructor(
     fun onBlazeClicked() {
         tracker.track(
             stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+            // TODO update source value when i2 is ready for release
+            properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
         )
         viewState.productDraft?.let {
             triggerEvent(
                 NavigateToBlazeWebView(
-                    url = isBlazeEnabled.buildUrlForProduct(
+                    url = blazeUrlsHelper.buildUrlForProduct(
                         productId = it.remoteId,
-                        source = PRODUCT_DETAIL_OVERFLOW_MENU
+                        source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
                     ),
-                    source = PRODUCT_DETAIL_OVERFLOW_MENU
+                    source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
                 )
             )
         }
@@ -837,7 +840,7 @@ class ProductDetailViewModel @Inject constructor(
             val (neutralAction, neutralBtnId) = if (isProductUnderCreation) {
                 Pair(
                     DialogInterface.OnClickListener { _, _ ->
-                        startPublishProduct(productStatus = ProductStatus.DRAFT, exitWhenDone = true)
+                        startPublishProduct(productStatus = DRAFT, exitWhenDone = true)
                     },
                     R.string.product_detail_save_as_draft
                 )
@@ -894,7 +897,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the "Save as draft" button is clicked in Product detail screen
      */
     fun onSaveAsDraftButtonClicked() {
-        startPublishProduct(productStatus = ProductStatus.DRAFT)
+        startPublishProduct(productStatus = DRAFT)
     }
 
     /**
@@ -915,7 +918,7 @@ class ProductDetailViewModel @Inject constructor(
             ?.takeIf {
                 isProductStoredAtSite.not() and
                     (it.type == ProductType.VARIABLE.value) and
-                    (it.status == ProductStatus.DRAFT)
+                    (it.status == DRAFT)
             }
             ?.takeIf { addProduct(it).first }
             ?.let {
@@ -1007,7 +1010,7 @@ class ProductDetailViewModel @Inject constructor(
         productWasAdded: Boolean,
         requestedProductStatus: ProductStatus
     ): Int {
-        val isDraftStatus = requestedProductStatus == ProductStatus.DRAFT
+        val isDraftStatus = requestedProductStatus == DRAFT
         val isPublishStatus = requestedProductStatus == ProductStatus.PUBLISH
         val failedAddingProduct = !productWasAdded
         return when {
@@ -1022,7 +1025,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun trackPublishing(it: Product) {
         val properties = mapOf("product_type" to it.productType.value.lowercase(Locale.ROOT))
-        val statId = if (it.status == ProductStatus.DRAFT) {
+        val statId = if (it.status == DRAFT) {
             AnalyticsEvent.ADD_PRODUCT_SAVE_AS_DRAFT_TAPPED
         } else {
             AnalyticsEvent.ADD_PRODUCT_PUBLISH_TAPPED
@@ -2342,7 +2345,7 @@ class ProductDetailViewModel @Inject constructor(
         return getBundledProductsCount(remoteId)
     }
 
-    suspend fun getComponents(remoteId: Long): List<Component>? {
+    suspend fun getComponents(remoteId: Long): List<Component> {
         return getComponentProducts(remoteId)
     }
 
@@ -2356,7 +2359,7 @@ class ProductDetailViewModel @Inject constructor(
         if (menuButtonsState.value?.showPromoteWithBlaze == true)
             tracker.track(
                 stat = BLAZE_ENTRY_POINT_DISPLAYED,
-                properties = mapOf(KEY_BLAZE_SOURCE to PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
+                properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
             )
     }
 

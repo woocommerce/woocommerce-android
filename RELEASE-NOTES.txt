@@ -1,6 +1,17 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-15.9
+16.0
 -----
+
+
+15.9
+----
+- [***] In-Person Payments: Tap To Pay On Android in the UK and Canada [https://github.com/woocommerce/woocommerce-android/pull/9922]
+
+
+15.8
+----
+-----
+- [*] Order details: Users can navigate to the previous or next order from the order detail screen [https://github.com/woocommerce/woocommerce-android/pull/9904]
 
 
 15.8

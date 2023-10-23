@@ -47,14 +47,17 @@ fun BlazeCampaignItem(
                     .padding(start = dimensionResource(id = R.dimen.major_100))
                     .weight(1f),
             ) {
-                WCTag(
-                    text = stringResource(id = campaign.status.statusDisplayText).uppercase(),
-                    textColor = colorResource(id = campaign.status.textColor),
-                    backgroundColor = colorResource(id = campaign.status.backgroundColor),
-                    textStyle = MaterialTheme.typography.caption.copy(
-                        letterSpacing = 1.5.sp
+                campaign.status?.let {
+                    WCTag(
+                        text = stringResource(id = campaign.status.statusDisplayText).uppercase(),
+                        textColor = colorResource(id = campaign.status.textColor),
+                        backgroundColor = colorResource(id = campaign.status.backgroundColor),
+                        textStyle = MaterialTheme.typography.caption.copy(
+                            letterSpacing = 1.5.sp
+                        )
                     )
-                )
+                }
+
                 Text(
                     modifier = Modifier
                         .padding(top = dimensionResource(id = R.dimen.minor_50)),
@@ -78,7 +81,7 @@ fun BlazeCampaignItem(
 @Composable
 private fun CampaignStat(
     statName: String,
-    statValue: Int,
+    statValue: Long,
     modifier: Modifier = Modifier,
 ) {
     Column(

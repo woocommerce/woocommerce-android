@@ -11,13 +11,13 @@ data class BlazeProductUi(
 
 data class BlazeCampaignUi(
     val product: BlazeProductUi,
-    val status: CampaignStatusUi,
+    val status: CampaignStatusUi?,
     val stats: List<BlazeCampaignStat>,
 )
 
 data class BlazeCampaignStat(
     @StringRes val name: Int,
-    val value: Int
+    val value: Long
 )
 
 enum class CampaignStatusUi(
@@ -30,6 +30,11 @@ enum class CampaignStatusUi(
         textColor = R.color.blaze_campaign_status_in_moderation_text,
         backgroundColor = R.color.blaze_campaign_status_in_moderation_background
     ),
+    Scheduled(
+        statusDisplayText = R.string.blaze_campaign_status_scheduled,
+        textColor = R.color.blaze_campaign_status_completed_text,
+        backgroundColor = R.color.blaze_campaign_status_completed_background
+    ),
     Active(
         statusDisplayText = R.string.blaze_campaign_status_active,
         textColor = R.color.blaze_campaign_status_active_text,
@@ -37,12 +42,31 @@ enum class CampaignStatusUi(
     ),
     Completed(
         statusDisplayText = R.string.blaze_campaign_status_completed,
-        textColor = R.color.blaze_campaign_status_rejected_text,
-        backgroundColor = R.color.blaze_campaign_status_rejected_background
-    ),
-    Rejected(
-        statusDisplayText = R.string.blaze_campaign_status_rejected,
         textColor = R.color.blaze_campaign_status_completed_text,
         backgroundColor = R.color.blaze_campaign_status_completed_background
     ),
+    Rejected(
+        statusDisplayText = R.string.blaze_campaign_status_rejected,
+        textColor = R.color.blaze_campaign_status_rejected_text,
+        backgroundColor = R.color.blaze_campaign_status_rejected_background
+    ),
+    Canceled(
+        statusDisplayText = R.string.blaze_campaign_status_canceled,
+        textColor = R.color.blaze_campaign_status_rejected_text,
+        backgroundColor = R.color.blaze_campaign_status_rejected_background
+    );
+
+    companion object {
+        fun fromString(status: String): CampaignStatusUi? {
+            return when (status) {
+                "created" -> InModeration
+                "scheduled" -> Scheduled
+                "active" -> Active
+                "finished" -> Completed
+                "rejected" -> Rejected
+                "canceled" -> Canceled
+                else -> null
+            }
+        }
+    }
 }
