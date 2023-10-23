@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
-import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ClickableCampaign
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -19,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
@@ -38,33 +39,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         isLoadingMore
     ) { campaigns, loadingMore ->
         BlazeCampaignListState(
-            campaigns = campaigns
-                .map {
-                    CampaignState(
-                        campaignUi = BlazeCampaignUi(
-                            product = BlazeProductUi(
-                                name = it.title,
-                                imgUrl = it.imageUrl.orEmpty(),
-                            ),
-                            status = CampaignStatusUi.fromString(it.uiStatus),
-                            stats = listOf(
-                                BlazeCampaignStat(
-                                    name = string.blaze_campaign_status_impressions,
-                                    value = it.impressions
-                                ),
-                                BlazeCampaignStat(
-                                    name = string.blaze_campaign_status_clicks,
-                                    value = it.clicks
-                                ),
-                                BlazeCampaignStat(
-                                    name = string.blaze_campaign_status_clicks,
-                                    value = it.budgetCents
-                                )
-                            )
-                        ),
-                        onCampaignClicked = { onCampaignClicked(it.campaignId) }
-                    )
-                },
+            campaigns = campaigns.map { mapToUiState(it) },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
             isLoading = loadingMore
         )
@@ -106,18 +81,44 @@ class BlazeCampaignListViewModel @Inject constructor(
         )
     }
 
+    private fun mapToUiState(campaignEntity: BlazeCampaignEntity) =
+        ClickableCampaign(
+            campaignUi = BlazeCampaignUi(
+                product = BlazeProductUi(
+                    name = campaignEntity.title,
+                    imgUrl = campaignEntity.imageUrl.orEmpty(),
+                ),
+                status = CampaignStatusUi.fromString(campaignEntity.uiStatus),
+                stats = listOf(
+                    BlazeCampaignStat(
+                        name = string.blaze_campaign_status_impressions,
+                        value = campaignEntity.impressions
+                    ),
+                    BlazeCampaignStat(
+                        name = string.blaze_campaign_status_clicks,
+                        value = campaignEntity.clicks
+                    ),
+                    BlazeCampaignStat(
+                        name = string.blaze_campaign_status_clicks,
+                        value = campaignEntity.budgetCents
+                    )
+                )
+            ),
+            onCampaignClicked = { onCampaignClicked(campaignEntity.campaignId) }
+        )
+
     private fun onAddNewCampaignClicked() {
         val url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
         triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
     }
 
     data class BlazeCampaignListState(
-        val campaigns: List<CampaignState>,
+        val campaigns: List<ClickableCampaign>,
         val onAddNewCampaignClicked: () -> Unit,
         val isLoading: Boolean,
     )
 
-    data class CampaignState(
+    data class ClickableCampaign(
         val campaignUi: BlazeCampaignUi,
         val onCampaignClicked: () -> Unit,
     )
@@ -130,10 +131,10 @@ class BlazeCampaignListViewModel @Inject constructor(
 }
 
 fun generateFakeCampaigns() {
-    val testCampaigns = mutableListOf<CampaignState>()
-    for (i in 1..20) {
+    val testCampaigns = mutableListOf<ClickableCampaign>()
+    for (i in 1..50) {
         testCampaigns.add(
-            CampaignState(
+            ClickableCampaign(
                 campaignUi = BlazeCampaignUi(
                     product = BlazeProductUi(
                         name = "Test Campaign $i",

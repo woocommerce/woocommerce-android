@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
-import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ClickableCampaign
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 
 @Composable
@@ -101,7 +101,7 @@ fun BlazeCampaignListScreenPreview() {
     BlazeCampaignListScreen(
         state = BlazeCampaignListState(
             campaigns = listOf(
-                CampaignState(
+                ClickableCampaign(
                     BlazeCampaignUi(
                         product = BlazeProductUi(
                             name = "Product name",
