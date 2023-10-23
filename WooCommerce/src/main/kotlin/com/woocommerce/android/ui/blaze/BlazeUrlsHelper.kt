@@ -35,5 +35,6 @@ class BlazeUrlsHelper @Inject constructor(
         MORE_MENU_ITEM("menu"),
         MY_STORE_BANNER("my_store_banner"),
         PRODUCT_LIST_BANNER("product_list_banner"),
+        CAMPAIGN_LIST("campaign_list"),
     }
 }

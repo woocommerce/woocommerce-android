@@ -23,6 +23,7 @@ class StoreProfilerFeaturesViewModel @Inject constructor(
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore, storeProfilerRepository) {
     override val hasSearchableContent: Boolean
         get() = false
+    override val isMultiChoice: Boolean = true
 
     init {
         analyticsTracker.track(

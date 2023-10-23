@@ -3,82 +3,102 @@ package com.woocommerce.android.ui.blaze.campaigs
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.string
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
-import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
-import com.woocommerce.android.ui.blaze.CampaignStatusUi.InModeration
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
 @HiltViewModel
 
 class BlazeCampaignListViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val blazeCampaignsStore: BlazeCampaignsStore,
+    private val selectedSite: SelectedSite,
+    private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
-    private val _state = MutableStateFlow(
-        BlazeCampaignListState(
-            campaigns = listOf(
-                BlazeCampaignUi(
-                    product = BlazeProductUi(
-                        name = "Product name",
-                        imgUrl = "https://hips.hearstapps.com/hmg-prod/images/gh-082420-ghi-best-sofas-1598293488.png",
-                    ),
-                    status = Active,
-                    stats = listOf(
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_impressions,
-                            value = 100
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_clicks,
-                            value = 10
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_budget,
-                            value = 1000
-                        ),
-                    ),
-                ),
-                BlazeCampaignUi(
-                    product = BlazeProductUi(
-                        name = "Product name",
-                        imgUrl = "",
-                    ),
-                    status = InModeration,
-                    stats = listOf(
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_impressions,
-                            value = 100
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_clicks,
-                            value = 10
-                        ),
-                        BlazeCampaignStat(
-                            name = string.blaze_campaign_status_budget,
-                            value = 1000
-                        ),
-                    ),
-                )
-            ),
-            isLoading = false
-        )
+    val state = blazeCampaignsStore.observeBlazeCampaigns(
+        selectedSite.get()
     )
-    val state = _state.asLiveData()
+        .map { campaigns ->
+            BlazeCampaignListState(
+                campaigns = campaigns
+                    .map {
+                        CampaignState(
+                            campaignUi = BlazeCampaignUi(
+                                product = BlazeProductUi(
+                                    name = it.title,
+                                    imgUrl = it.imageUrl.orEmpty(),
+                                ),
+                                status = CampaignStatusUi.fromString(it.uiStatus),
+                                stats = listOf(
+                                    BlazeCampaignStat(
+                                        name = string.blaze_campaign_status_impressions,
+                                        value = it.impressions
+                                    ),
+                                    BlazeCampaignStat(
+                                        name = string.blaze_campaign_status_clicks,
+                                        value = it.clicks
+                                    ),
+                                    BlazeCampaignStat(
+                                        name = string.blaze_campaign_status_clicks,
+                                        value = it.budgetCents
+                                    )
+                                )
+                            ),
+                            onCampaignClicked = { onCampaignClicked(it.campaignId) }
+                        )
+                    },
+                onAddNewCampaignClicked = { onAddNewCampaignClicked() },
+                isLoading = false
+            )
+        }
+        .asLiveData()
 
-    fun onCampaignSelected() {
-        // TODO
+    init {
+        launch {
+            blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get())
+        }
     }
 
-    fun onAddNewCampaignClicked() {
-        // TODO
+    private fun onCampaignClicked(campaignId: Int) {
+        val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
+        triggerEvent(
+            ShowCampaignDetails(
+                url = url,
+                urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
+            )
+        )
+    }
+
+    private fun onAddNewCampaignClicked() {
+        val url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+        triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
     }
 
     data class BlazeCampaignListState(
-        val campaigns: List<BlazeCampaignUi>,
+        val campaigns: List<CampaignState>,
+        val onAddNewCampaignClicked: () -> Unit,
         val isLoading: Boolean,
     )
+
+    data class CampaignState(
+        val campaignUi: BlazeCampaignUi,
+        val onCampaignClicked: () -> Unit,
+    )
+
+    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    data class ShowCampaignDetails(
+        val url: String,
+        val urlToTriggerExit: String
+    ) : MultiLiveEvent.Event()
 }

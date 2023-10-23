@@ -1,0 +1,2 @@
+15.8:
+Dieses Update enthält wichtige Fehlerkorrekturen, die das Erlebnis reibungsloser gestalten. Du kannst jetzt auch Steuersätze aktualisieren, wenn du Bestellungen bearbeitest. So erhältst du noch mehr Kontrolle. Bleib dran, es folgen weitere aufregende Funktionen in kommenden Versionen. Danke, dass du dich für WooCommerce entschieden hast.

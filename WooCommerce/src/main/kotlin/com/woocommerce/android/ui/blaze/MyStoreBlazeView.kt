@@ -146,7 +146,7 @@ private fun ShowAllOrCreateCampaignFooter(
 private fun BlazeCampaignHeader() {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
-            painter = painterResource(id = R.drawable.ic_more_menu_blaze),
+            painter = painterResource(id = R.drawable.ic_blaze),
             contentDescription = "", // Blaze icon, no relevant content desc
             modifier = Modifier
                 .padding(end = dimensionResource(id = R.dimen.minor_100))

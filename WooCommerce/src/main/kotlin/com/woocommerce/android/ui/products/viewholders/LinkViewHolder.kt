@@ -9,7 +9,11 @@ class LinkViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.la
     fun bind(item: Link) {
         val context = itemView.context
         val linkView = itemView as WCProductPropertyLinkView
-        linkView.show(context.getString(item.title))
+        linkView.show(
+            title = context.getString(item.title),
+            icon = item.icon,
+            showDivider = item.isDividerVisible
+        )
         item.onClick?.let { onClick ->
             linkView.setOnClickListener {
                 onClick()
