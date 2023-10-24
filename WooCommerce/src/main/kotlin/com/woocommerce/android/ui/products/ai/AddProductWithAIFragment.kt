@@ -19,10 +19,10 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
-import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowPackagePhotoBottomSheet
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,6 +33,9 @@ class AddProductWithAIFragment : BaseFragment() {
     private val viewModel: AddProductWithAIViewModel by viewModels()
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var mediaPickerSetupFactory: MediaPickerSetup.Factory
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -64,20 +67,11 @@ class AddProductWithAIFragment : BaseFragment() {
                         popUpTo(R.id.addProductWithAIFragment) { inclusive = true }
                     }
                 )
-                is ShowPackagePhotoBottomSheet -> showPackagePhotoBottomSheet()
-
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 Exit -> findNavController().navigateUp()
             }
         }
-    }
-
-    private fun showPackagePhotoBottomSheet() {
-        findNavController().navigateSafely(
-            directions = AddProductWithAIFragmentDirections
-                .actionAddProductWithAIFragmentToPackagePhotoBottomSheetFragment("")
-        )
     }
 
     private fun handleResults() {

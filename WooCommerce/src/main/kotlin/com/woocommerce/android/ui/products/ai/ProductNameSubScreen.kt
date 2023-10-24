@@ -41,7 +41,10 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.UiState
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.widgets.MediaPickerDialog
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier) {
@@ -52,11 +55,13 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
                 .fillMaxWidth()
         ) {
             ProductNameForm(
-                enteredName = state.name,
+                state = state,
                 onProductNameChanged = viewModel::onProductNameChanged,
                 onSuggestNameClicked = viewModel::onSuggestNameClicked,
                 onContinueClicked = viewModel::onDoneClick,
-                onPackageImageClicked = viewModel::onPackageImageClicked
+                onPackageImageClicked = viewModel::onPackageImageClicked,
+                onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+                onMediaLibraryRequested = viewModel::onMediaLibraryRequested
             )
         }
     }
@@ -64,18 +69,20 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
 
 @Composable
 fun ProductNameForm(
-    enteredName: String,
+    state: UiState,
     onProductNameChanged: (String) -> Unit,
     onSuggestNameClicked: () -> Unit,
     onContinueClicked: () -> Unit,
-    onPackageImageClicked: () -> Unit
+    onPackageImageClicked: () -> Unit,
+    onMediaPickerDialogDismissed: () -> Unit,
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
 
     @Composable
     fun ContinueButton(modifier: Modifier = Modifier) {
         WCColoredButton(
-            enabled = enteredName.isNotEmpty(),
+            enabled = state.name.isNotEmpty(),
             onClick = onContinueClicked,
             modifier = modifier
                 .fillMaxWidth()
@@ -111,7 +118,7 @@ fun ProductNameForm(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
 
             ProductKeywordsTextFieldWithEmbeddedButton(
-                textFieldContent = enteredName,
+                textFieldContent = state.name,
                 onTextFieldContentChanged = onProductNameChanged,
                 onSuggestNameButtonClicked = onSuggestNameClicked,
                 onPackageImageButtonClicked = onPackageImageClicked
@@ -129,6 +136,13 @@ fun ProductNameForm(
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             ContinueButton()
         }
+    }
+
+    if (state.isMediaPickerDialogVisible) {
+        MediaPickerDialog(
+            onMediaPickerDialogDismissed,
+            onMediaLibraryRequested
+        )
     }
 }
 
@@ -218,11 +232,13 @@ private fun ProductKeywordsTextFieldWithEmbeddedButton(
 fun ProductNamePreview() {
     WooThemeWithBackground {
         ProductNameForm(
-            enteredName = "Everyday Elegance with Our Soft Black Tee",
+            state = UiState("Everyday Elegance with Our Soft Black Tee", false),
             onProductNameChanged = {},
             onSuggestNameClicked = {},
             onContinueClicked = {},
-            onPackageImageClicked = {}
+            onPackageImageClicked = {},
+            onMediaPickerDialogDismissed = {},
+            onMediaLibraryRequested = {}
         )
     }
 }
