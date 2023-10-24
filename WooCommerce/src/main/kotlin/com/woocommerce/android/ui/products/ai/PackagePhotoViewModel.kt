@@ -11,9 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,22 +49,12 @@ class PackagePhotoViewModel @Inject constructor(
         setMediaPickerDialogVisibility(true)
     }
 
-    fun onMediaLibraryDialogDismissed() {
+    fun onMediaPickerDialogDismissed() {
         setMediaPickerDialogVisibility(false)
     }
 
-    fun onDevicePickerRequested() {
-        triggerEvent(ShowMediaLibrary(DEVICE))
-        setMediaPickerDialogVisibility(false)
-    }
-
-    fun onCameraRequested() {
-        triggerEvent(ShowMediaLibrary(CAMERA))
-        setMediaPickerDialogVisibility(false)
-    }
-
-    fun onWpMediaLibraryRequested() {
-        triggerEvent(ShowMediaLibrary(WP_MEDIA_LIBRARY))
+    fun onMediaPickerLibraryRequested(source: DataSource) {
+        triggerEvent(ShowMediaLibrary(source))
         setMediaPickerDialogVisibility(false)
     }
 

@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
@@ -64,10 +65,8 @@ fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
             viewModel::onKeywordChanged,
             viewModel::onRegenerateTapped,
             viewModel::onEditPhotoTapped,
-            onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
-            onDevicePickerRequested = viewModel::onDevicePickerRequested,
-            onCameraRequested = viewModel::onCameraRequested,
-            onWpMediaLibraryRequested = viewModel::onWpMediaLibraryRequested
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = viewModel::onMediaPickerLibraryRequested,
         )
     }
 }
@@ -81,16 +80,12 @@ fun ProductFromPackagePhoto(
     onRegenerateTapped: () -> Unit,
     onEditPhotoTapped: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
-    onDevicePickerRequested: () -> Unit,
-    onCameraRequested: () -> Unit,
-    onWpMediaLibraryRequested: () -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
         MediaPickerDialog(
             onMediaPickerDialogDismissed,
-            onDevicePickerRequested,
-            onCameraRequested,
-            onWpMediaLibraryRequested
+            onMediaLibraryRequested
         )
     }
 
@@ -312,7 +307,7 @@ fun KeywordListItem(
 
 @Preview
 @Composable
-fun PreviewProductFromPackagePhoto() {
+private fun PreviewProductFromPackagePhoto() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -323,11 +318,9 @@ fun PreviewProductFromPackagePhoto() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {}
     )
 }
