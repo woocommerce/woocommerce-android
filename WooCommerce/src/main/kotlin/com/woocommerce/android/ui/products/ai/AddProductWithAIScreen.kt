@@ -26,6 +26,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
@@ -37,9 +38,7 @@ fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
             onBackButtonClick = viewModel::onBackButtonClick,
             onSaveButtonClick = viewModel::onSaveButtonClick,
             onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
-            onDevicePickerRequested = viewModel::onDevicePickerRequested,
-            onCameraRequested = viewModel::onCameraRequested,
-            onWpMediaLibraryRequested = viewModel::onWpMediaLibraryRequested
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
         )
     }
 }
@@ -50,9 +49,7 @@ fun AddProductWithAIScreen(
     onBackButtonClick: () -> Unit,
     onSaveButtonClick: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
-    onDevicePickerRequested: () -> Unit,
-    onCameraRequested: () -> Unit,
-    onWpMediaLibraryRequested: () -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -86,9 +83,7 @@ fun AddProductWithAIScreen(
         if (state.isMediaPickerDialogVisible) {
             MediaPickerDialog(
                 onMediaPickerDialogDismissed,
-                onDevicePickerRequested,
-                onCameraRequested,
-                onWpMediaLibraryRequested
+                onMediaLibraryRequested
             )
         }
 
