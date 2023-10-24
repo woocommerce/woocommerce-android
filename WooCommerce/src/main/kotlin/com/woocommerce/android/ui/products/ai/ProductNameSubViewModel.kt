@@ -70,7 +70,7 @@ class ProductNameSubViewModel(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onMediaPickerDialogDismissed(source: DataSource) {
+    fun onMediaLibraryRequested(source: DataSource) {
         onMediaPickerDialogDismissed()
     }
 
