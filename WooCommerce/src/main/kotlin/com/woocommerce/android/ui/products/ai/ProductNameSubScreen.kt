@@ -61,7 +61,7 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
                 onContinueClicked = viewModel::onDoneClick,
                 onPackageImageClicked = viewModel::onPackageImageClicked,
                 onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
-                onMediaLibraryRequested = viewModel::onMediaPickerLibraryRequested
+                onMediaLibraryRequested = viewModel::onMediaLibraryRequested
             )
         }
     }

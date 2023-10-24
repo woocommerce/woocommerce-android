@@ -69,7 +69,7 @@ class ProductNameSubViewModel(
         setMediaPickerDialogVisibility(false)
     }
 
-    fun onMediaPickerLibraryRequested(source: DataSource) {
+    fun onMediaLibraryRequested(source: DataSource) {
         viewModelScope.launch {
             _events.emit(ShowMediaLibrary(source))
             setMediaPickerDialogVisibility(false)
