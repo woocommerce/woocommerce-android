@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -116,6 +118,7 @@ private fun BlazeCreationIntroScreen(
         Column(
             Modifier
                 .padding(dimensionResource(id = R.dimen.major_100))
+                .verticalScroll(rememberScrollState())
                 .weight(1f)
         ) {
             Spacer(modifier = Modifier.weight(0.8f))
