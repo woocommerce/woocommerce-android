@@ -10,6 +10,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
@@ -200,7 +201,10 @@ class AddressViewModel @Inject constructor(
         triggerEvent(
             Exit(
                 customerId = viewState.customerId,
-                viewState.addressSelectionStates.mapValues { statePair ->
+                firstName = viewState.firstName,
+                lastName = viewState.lastName,
+                email = viewState.email,
+                addresses = viewState.addressSelectionStates.mapValues { statePair ->
                     if (addDifferentShippingChecked == false && statePair.key == AddressType.SHIPPING) {
                         Address.EMPTY
                     } else {
@@ -240,22 +244,21 @@ class AddressViewModel @Inject constructor(
         )
     }
 
-    fun onAddressesChanged(
-        customerId: Long,
-        billingAddress: Address,
-        shippingAddress: Address
-    ) {
+    fun onAddressesChanged(customer: Order.Customer) {
         hasStarted = true
         viewState = viewState.copy(
-            customerId = customerId,
+            customerId = customer.customerId,
+            firstName = customer.firstName,
+            lastName = customer.lastName,
+            email = customer.email,
             addressSelectionStates = mapOf(
                 AddressType.BILLING to AddressSelectionState(
-                    billingAddress,
-                    getStateSpinnerStatus(billingAddress.country.code)
+                    customer.billingAddress,
+                    getStateSpinnerStatus(customer.billingAddress.country.code)
                 ),
                 AddressType.SHIPPING to AddressSelectionState(
-                    shippingAddress,
-                    getStateSpinnerStatus(shippingAddress.country.code)
+                    customer.shippingAddress,
+                    getStateSpinnerStatus(customer.shippingAddress.country.code)
                 )
             )
         )
@@ -274,6 +277,9 @@ class AddressViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customerId: Long? = null,
+        val firstName: String? = null,
+        val lastName: String? = null,
+        val email: String? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
     ) : Parcelable
@@ -304,6 +310,9 @@ class AddressViewModel @Inject constructor(
 
     data class Exit(
         val customerId: Long?,
+        val firstName: String?,
+        val lastName: String?,
+        val email: String?,
         val addresses: Map<AddressType, Address>
     ) : MultiLiveEvent.Event()
 

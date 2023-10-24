@@ -7,18 +7,18 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doAfterTextChanged
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 
 class OrderCreateEditCustomerNoteFragment :
     BaseFragment(R.layout.fragment_order_create_edit_customer_note),
     MenuProvider {
-    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     val binding

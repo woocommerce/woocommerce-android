@@ -1,0 +1,2 @@
+15.8:
+In deze update zitten essentiële bugfixes die zorgen voor een soepelere ervaring. Deze introduceert ook de mogelijkheid om belastingtarieven bij te werken wanneer je bestellingen bewerkt, waardoor je meer zeggenschap hebt. Blijf ons volgen voor meer geweldige functies in de komende releases. Bedankt dat je voor WooCommerce hebt gekozen.

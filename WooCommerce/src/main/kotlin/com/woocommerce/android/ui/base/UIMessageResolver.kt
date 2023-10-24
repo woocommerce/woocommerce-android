@@ -48,6 +48,27 @@ interface UIMessageResolver {
     }
 
     /**
+     * Create and return a snackbar displaying the provided message and a Install button.
+     *
+     * @param [stringResId] The string resource id of the base message
+     * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [actionListener] Listener to handle the undo button click event
+     */
+    fun getInstallSnack(
+        @StringRes stringResId: Int,
+        vararg stringArgs: String = arrayOf(),
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getSnackbarWithAction(
+            snackbarRoot,
+            snackbarRoot.context.getString(stringResId, *stringArgs),
+            snackbarRoot.context.getString(R.string.install),
+            actionListener,
+            anchorViewId
+        )
+    }
+
+    /**
      * Create and return a snackbar displaying the provided message and a generic action button.
      *
      * @param [message] The message string
@@ -158,7 +179,7 @@ interface UIMessageResolver {
                 anchorViewId
             )
         } else {
-            return getDefiniteSnackbarWithAction(
+            return getSnackbarWithAction(
                 snackbarRoot,
                 snackbarRoot.context.getString(stringResId, *stringArgs),
                 snackbarRoot.context.getString(R.string.retry),
@@ -189,7 +210,7 @@ interface UIMessageResolver {
                 anchorViewId
             )
         } else {
-            return getDefiniteSnackbarWithAction(
+            return getSnackbarWithAction(
                 snackbarRoot,
                 message,
                 snackbarRoot.context.getString(R.string.retry),
@@ -249,19 +270,6 @@ interface UIMessageResolver {
         snackbar.show()
     }
 }
-
-private fun getDefiniteSnackbarWithAction(
-    view: View,
-    msg: String,
-    actionString: String,
-    actionListener: View.OnClickListener,
-    anchorViewId: Int?
-) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_LONG).setAction(actionString, actionListener)
-    .apply {
-        anchorViewId?.let {
-            setAnchorView(it)
-        }
-    }
 private fun getIndefiniteSnackbarWithAction(
     view: View,
     msg: String,

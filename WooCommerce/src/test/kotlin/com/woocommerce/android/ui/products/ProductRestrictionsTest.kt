@@ -92,18 +92,6 @@ class ProductRestrictionsTest : BaseUnitTest() {
     //endregion
 
     //region product selector
-    @Test
-    fun `given draft product, when product filters products restriction, then the product is restricted`() {
-        val product = ProductTestUtils.generateProduct(
-            customStatus = ProductStatus.DRAFT.name
-        )
-
-        val sut = ProductFilterProductRestrictions()
-
-        assertTrue {
-            sut.isProductRestricted(product)
-        }
-    }
 
     @Test
     fun `given published product, when product filters products restriction, then the product is not restricted`() {

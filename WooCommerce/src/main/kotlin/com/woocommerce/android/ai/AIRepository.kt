@@ -1,19 +1,13 @@
 package com.woocommerce.android.ai
 
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductHelper
-import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
-import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -79,26 +73,8 @@ class AIRepository @Inject constructor(
         currency: String,
         existingCategories: List<ProductCategory>,
         existingTags: List<ProductTag>,
-        languageISOCode: String = "en"
-    ): Result<Product> {
-        data class Shipping(
-            val weight: Float,
-            val height: Float,
-            val length: Float,
-            val width: Float
-        )
-
-        data class JsonResponse(
-            val name: String,
-            val description: String,
-            @SerializedName("short_description") val shortDescription: String,
-            @SerializedName("virtual") val isVirtual: Boolean,
-            val price: BigDecimal,
-            val shipping: Shipping,
-            val categories: List<String>? = null,
-            val tags: List<String>? = null
-        )
-
+        languageISOCode: String
+    ): Result<String> {
         return fetchJetpackAICompletionsForSite(
             prompt = AIPrompts.generateProductCreationPrompt(
                 name = productName,
@@ -112,24 +88,7 @@ class AIRepository @Inject constructor(
                 languageISOCode = languageISOCode
             ),
             feature = PRODUCT_CREATION_FEATURE
-        ).mapCatching { json ->
-            val parsedResponse = Gson().fromJson(json, JsonResponse::class.java)
-            ProductHelper.getDefaultNewProduct(
-                SIMPLE,
-                parsedResponse.isVirtual
-            ).copy(
-                name = parsedResponse.name,
-                description = parsedResponse.description,
-                shortDescription = parsedResponse.shortDescription,
-                regularPrice = parsedResponse.price,
-                categories = existingCategories.filter { parsedResponse.categories.orEmpty().contains(it.name) },
-                tags = existingTags.filter { parsedResponse.tags.orEmpty().contains(it.name) },
-                weight = parsedResponse.shipping.weight,
-                height = parsedResponse.shipping.height,
-                length = parsedResponse.shipping.length,
-                width = parsedResponse.shipping.width
-            )
-        }
+        )
     }
 
     suspend fun identifyISOLanguageCode(text: String, feature: String): Result<String> {

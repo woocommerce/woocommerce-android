@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -30,8 +34,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
@@ -39,12 +45,20 @@ import com.woocommerce.android.ui.products.ProductType.SIMPLE
 @Composable
 fun ProductPreviewSubScreen(viewModel: ProductPreviewSubViewModel, modifier: Modifier) {
     viewModel.state.observeAsState().value?.let { state ->
-        ProductPreviewSubScreen(state, modifier)
+        ProductPreviewSubScreen(
+            state = state,
+            onFeedbackReceived = viewModel::onFeedbackReceived,
+            modifier = modifier
+        )
     }
 }
 
 @Composable
-private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, modifier: Modifier) {
+private fun ProductPreviewSubScreen(
+    state: ProductPreviewSubViewModel.State,
+    onFeedbackReceived: (Boolean) -> Unit,
+    modifier: Modifier
+) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -64,20 +78,33 @@ private fun ProductPreviewSubScreen(state: ProductPreviewSubViewModel.State, mod
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         when (state) {
-            ProductPreviewSubViewModel.State.Loading -> ProductPreviewLoading(
+            ProductPreviewSubViewModel.State.Loading,
+            is ProductPreviewSubViewModel.State.Error -> ProductPreviewLoading(
                 modifier = Modifier.fillMaxHeight()
             )
 
             is ProductPreviewSubViewModel.State.Success -> ProductPreviewContent(
                 state = state,
+                onFeedbackReceived = onFeedbackReceived,
                 modifier = Modifier.fillMaxHeight()
+            )
+        }
+
+        if (state is ProductPreviewSubViewModel.State.Error) {
+            ErrorDialog(
+                onRetryClick = state.onRetryClick,
+                onDismissClick = state.onDismissClick
             )
         }
     }
 }
 
 @Composable
-private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Success, modifier: Modifier) {
+private fun ProductPreviewContent(
+    state: ProductPreviewSubViewModel.State.Success,
+    onFeedbackReceived: (Boolean) -> Unit,
+    modifier: Modifier
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
         modifier = modifier
@@ -94,6 +121,20 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
         )
         Text(
             text = state.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBorder)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        )
+
+        Spacer(Modifier)
+
+        Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
+            style = MaterialTheme.typography.body2
+        )
+        Text(
+            text = state.shortDescription,
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
@@ -124,6 +165,19 @@ private fun ProductPreviewContent(state: ProductPreviewSubViewModel.State.Succes
         state.propertyGroups.forEach { properties ->
             ProductProperties(properties = properties, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier)
+        }
+
+        AnimatedVisibility(
+            visible = state.shouldShowFeedbackView,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = dimensionResource(id = R.dimen.major_100))
+        ) {
+            AiFeedbackForm(
+                onFeedbackReceived = onFeedbackReceived,
+            )
         }
     }
 }
@@ -227,6 +281,18 @@ private fun ProductPreviewLoading(modifier: Modifier) {
         Spacer(Modifier)
 
         Text(
+            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
+            style = MaterialTheme.typography.body2
+        )
+        LoadingSkeleton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBorder)
+        )
+
+        Spacer(Modifier)
+
+        Text(
             text = stringResource(id = R.string.product_creation_ai_preview_description_section),
             style = MaterialTheme.typography.body2
         )
@@ -258,6 +324,30 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 }
 
 @Composable
+private fun ErrorDialog(
+    onRetryClick: () -> Unit,
+    onDismissClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
+        text = {
+            Text(text = stringResource(id = R.string.product_creation_ai_generation_failure_message))
+        },
+        confirmButton = {
+            WCTextButton(onClick = onRetryClick) {
+                Text(stringResource(id = R.string.retry))
+            }
+        },
+        dismissButton = {
+            WCTextButton(onClick = onDismissClick) {
+                Text(stringResource(id = R.string.dismiss))
+            }
+        }
+    )
+}
+
+@Composable
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "small screen", device = Devices.PIXEL)
@@ -265,7 +355,11 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 private fun ProductPreviewLoadingPreview() {
     WooThemeWithBackground {
-        ProductPreviewSubScreen(ProductPreviewSubViewModel.State.Loading, Modifier.fillMaxSize())
+        ProductPreviewSubScreen(
+            state = ProductPreviewSubViewModel.State.Loading,
+            onFeedbackReceived = {},
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -278,7 +372,7 @@ private fun ProductPreviewLoadingPreview() {
 private fun ProductPreviewContentPreview() {
     WooThemeWithBackground {
         ProductPreviewSubScreen(
-            ProductPreviewSubViewModel.State.Success(
+            state = ProductPreviewSubViewModel.State.Success(
                 product = ProductHelper.getDefaultNewProduct(SIMPLE, false).copy(
                     name = "Soft Black Tee: Elevate Your Everyday Style",
                     description = "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
@@ -307,7 +401,8 @@ private fun ProductPreviewContentPreview() {
                     )
                 )
             ),
-            Modifier.fillMaxSize()
+            onFeedbackReceived = {},
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

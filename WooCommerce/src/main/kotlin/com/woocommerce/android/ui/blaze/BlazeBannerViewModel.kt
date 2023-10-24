@@ -10,8 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled.BlazeFlowSource.MY_STORE_BANNER
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,6 +25,7 @@ import javax.inject.Inject
 class BlazeBannerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val isBlazeEnabled: IsBlazeEnabled,
+    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -36,7 +36,7 @@ class BlazeBannerViewModel @Inject constructor(
     private val _isBlazeBannerVisible = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = false)
     val isBlazeBannerVisible = _isBlazeBannerVisible.asLiveData()
 
-    private var blazeBannerSource: BlazeFlowSource = MY_STORE_BANNER
+    private var blazeBannerSource: BlazeFlowSource = BlazeFlowSource.MY_STORE_BANNER
 
     fun updateBlazeBannerStatus() {
         launch {
@@ -78,7 +78,7 @@ class BlazeBannerViewModel @Inject constructor(
         )
         triggerEvent(
             OpenBlazeEvent(
-                url = isBlazeEnabled.buildUrlForSite(MY_STORE_BANNER),
+                url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER),
                 source = blazeBannerSource
             )
         )

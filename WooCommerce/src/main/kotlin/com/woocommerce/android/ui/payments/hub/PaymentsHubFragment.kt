@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentPaymentsHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
@@ -30,11 +31,16 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
+import javax.inject.Inject
 
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
 @AndroidEntryPoint
 class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     override fun getFragmentTitle() = resources.getString(R.string.payments_hub_title)
     val viewModel: PaymentsHubViewModel by viewModels()
 
@@ -53,7 +59,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
         binding.paymentsHubRv.adapter = PaymentsHubAdapter()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -121,6 +127,24 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 }
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()
+                }
+                is PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable -> {
+                    uiMessageResolver.getInstallSnack(
+                        stringResId = event.message,
+                        actionListener = event.onClick
+                    ).show()
+                }
+                is PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateScreen -> {
+                    findNavController().navigate(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToCardReaderUpdateDialogFragment()
+                    )
+                }
+                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToAboutTapToPay -> {
+                    findNavController().navigate(
+                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToTapToPayAboutFragment(
+                            event.countryConfig
+                        )
+                    )
                 }
                 else -> event.isHandled = false
             }

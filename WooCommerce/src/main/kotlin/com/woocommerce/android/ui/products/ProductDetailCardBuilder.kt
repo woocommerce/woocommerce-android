@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -60,6 +61,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -77,7 +79,8 @@ class ProductDetailCardBuilder(
     private val parameters: SiteParameters,
     private val addonRepository: AddonRepository,
     private val variationRepository: VariationRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) {
     private lateinit var originalSku: String
 
@@ -93,6 +96,8 @@ class ProductDetailCardBuilder(
 
         val cards = mutableListOf<ProductPropertyCard>()
         cards.addIfNotEmpty(getPrimaryCard(product))
+
+        cards.addIfNotEmpty(getBlazeCard(product))
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
@@ -123,6 +128,28 @@ class ProductDetailCardBuilder(
                         onLearnMoreClicked = viewModel::onLearnMoreClicked
                     )
                 ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
+        val isProductPublic = product.status == ProductStatus.PUBLISH &&
+            viewModel.getProductVisibility() == ProductVisibility.PUBLIC
+
+        if (!isBlazeEnabled() ||
+            !isProductPublic ||
+            viewModel.isProductUnderCreation
+        ) return null
+
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                ProductProperty.Link(
+                    title = R.string.product_details_blaze_card,
+                    icon = R.drawable.ic_blaze,
+                    isDividerVisible = false,
+                    onClick = viewModel::onBlazeClicked
+                )
+            )
         )
     }
 

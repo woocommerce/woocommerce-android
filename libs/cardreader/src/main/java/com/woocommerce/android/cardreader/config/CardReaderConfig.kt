@@ -16,6 +16,7 @@ sealed class CardReaderConfigForSupportedCountry(
     val paymentMethodTypes: List<PaymentMethodType>,
     val supportedExtensions: List<SupportedExtension>,
     val minimumAllowedChargeAmount: BigDecimal,
+    val maximumTTPAllowedChargeAmountWithoutPin: BigDecimal?,
 ) : CardReaderConfig()
 
 fun CardReaderConfigForSupportedCountry.isExtensionSupported(type: SupportedExtensionType) =

@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -64,6 +63,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,7 +76,7 @@ class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
     BackPressListener,
     MenuProvider {
-    private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
+    private val viewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
@@ -512,35 +512,53 @@ class OrderCreateEditFormFragment :
     @SuppressLint("SetTextI18n")
     private fun bindCustomerAddressSection(customerAddressSection: OrderCreateEditSectionView, order: Order) {
         customerAddressSection.setContentHorizontalPadding(R.dimen.minor_00)
-        order.takeIf { it.billingAddress != Address.EMPTY }
-            ?.let {
-                val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
-                view.name.text = "${order.billingAddress.firstName} ${order.billingAddress.lastName}"
-                view.email.text = order.billingAddress.email
 
-                val shippingAddressDetails =
-                    if (order.shippingAddress != Address.EMPTY) {
-                        order.formatShippingInformationForDisplay()
-                    } else {
-                        order.formatBillingInformationForDisplay()
-                    }
-                view.shippingAddressDetails.text = shippingAddressDetails
-                view.shippingAddressDetails.contentDescription =
-                    shippingAddressDetails.replace("\n", ". ")
+        val customer = order.customer
+        if (customer == null || customer == Order.Customer.EMPTY) {
+            customerAddressSection.content = null
+            return
+        }
 
-                val billingAddressDetails = order.formatBillingInformationForDisplay()
-                view.billingAddressDetails.text = billingAddressDetails
-                view.billingAddressDetails.contentDescription =
-                    billingAddressDetails.replace("\n", ". ")
-
-                view.customerInfoViewMoreButtonTitle.setOnClickListener {
-                    view.changeState()
-                }
-                view.root
+        val view = LayoutOrderCreationCustomerInfoBinding.inflate(layoutInflater)
+        val customerEmailOrNamePresent =
+            customer.email.isNotNullOrEmpty() ||
+                customer.firstName.isNotNullOrEmpty() ||
+                customer.lastName.isNotNullOrEmpty()
+        if (customerEmailOrNamePresent) {
+            view.nameEmail.isVisible = true
+            view.name.text = "${customer.firstName} ${customer.lastName}"
+            view.email.text = customer.email
+            if (customer.shippingAddress == Address.EMPTY && customer.billingAddress == Address.EMPTY) {
+                view.nameDivider.isVisible = false
             }
-            .let {
-                customerAddressSection.content = it
+        } else {
+            view.nameEmail.isVisible = false
+        }
+
+        if (customer.shippingAddress != Address.EMPTY) {
+            view.shippingGroup.isVisible = true
+            val shippingAddressDetails = order.formatShippingInformationForDisplay()
+            view.shippingAddressDetails.text = shippingAddressDetails
+            view.shippingAddressDetails.contentDescription =
+                shippingAddressDetails.replace("\n", ". ")
+        } else {
+            view.shippingGroup.isVisible = false
+        }
+
+        if (customer.billingAddress != Address.EMPTY) {
+            view.billingGroup.isVisible = true
+            val billingAddressDetails = order.formatBillingInformationForDisplay()
+            view.billingAddressDetails.text = billingAddressDetails
+            view.billingAddressDetails.contentDescription =
+                billingAddressDetails.replace("\n", ". ")
+            view.customerInfoViewMoreButtonTitle.setOnClickListener {
+                view.changeState()
             }
+        } else {
+            view.billingGroup.isVisible = false
+        }
+
+        customerAddressSection.content = view.root
     }
 
     private fun setupHandleResults() {
