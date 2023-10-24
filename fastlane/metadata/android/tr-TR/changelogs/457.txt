@@ -1,2 +1,0 @@
-15.4:
-Satıcılar artık sipariş oluştururken bir vergi oranı seçebilir ve ürün düzenleme sırasında desteklenen tüm dosya türlerinden indirilebilir dosyalar ekleyebilirler. Şahsen Ödemeleri iyileştirdik. WcPay kurulumu tamamlanmadıysa, kullanıcılar artık bunu uygulamadan tamamlayabilirler. Ufak güncellemeler arasında IPP kurulumu tamamlanmadığında ülkeyi takip etmek için bir düzeltme ve Ödemeler görevini açmadan önce bir açıklama ekranı var.

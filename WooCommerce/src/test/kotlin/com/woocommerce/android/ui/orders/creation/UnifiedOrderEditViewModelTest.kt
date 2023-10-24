@@ -46,6 +46,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -68,10 +70,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var sut: OrderCreateEditViewModel
     protected lateinit var viewState: OrderCreateEditViewModel.ViewState
     protected lateinit var savedState: SavedStateHandle
-    protected lateinit var mapItemToProductUIModel: MapItemToProductUiModel
+    private lateinit var mapItemToProductUIModel: MapItemToProductUiModel
     protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
-    protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
-    protected lateinit var autoSyncOrder: AutoSyncOrder
+    private lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
+    private lateinit var autoSyncOrder: AutoSyncOrder
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
@@ -89,6 +91,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
     lateinit var productListRepository: ProductListRepository
+    val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled = mock()
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -138,13 +141,20 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { getOrderStatusOptions() } doReturn orderStatusList
         }
         mapItemToProductUIModel = mock {
-            onBlocking { invoke(any()) } doReturn ProductUIModel(
+            val item = ProductUIModel(
                 item = defaultOrderItem,
                 imageUrl = "",
                 isStockManaged = false,
                 stockQuantity = 0.0,
-                stockStatus = ProductStockStatus.InStock
+                stockStatus = ProductStockStatus.InStock,
+                pricePreDiscount = "",
+                priceTotal = "",
+                priceSubtotal = "",
+                discountAmount = "",
+                priceAfterDiscount = "",
+                hasDiscount = false,
             )
+            onBlocking { invoke(any(), ArgumentMatchers.eq(null)) } doReturn item
         }
         determineMultipleLinesContext = mock {
             on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
@@ -157,6 +167,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on {
                 getString(R.string.order_creation_barcode_scanning_scanning_failed)
             } doReturn "Scanning failed. Please try again later"
+            on { getString(R.string.order_creation_set_tax_rate) } doReturn "Set New Tax Rate"
         }
         productRestrictions = mock()
         selectedSite = mock()
@@ -210,7 +221,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when customer address edited, send tracks event`() {
-        sut.onCustomerAddressEdited(0, Address.EMPTY, Address.EMPTY)
+        sut.onCustomerEdited(
+            Order.Customer(
+                customerId = 0,
+                billingAddress = Address.EMPTY,
+                shippingAddress = Address.EMPTY
+            )
+        )
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_ADD,
@@ -236,19 +253,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when customer address deleted, then order is update with empty address`() {
-        sut.onCustomerAddressDeleted()
+    fun `when customer deleted, then order is update with null customer info`() {
+        sut.onCustomerDeleted()
 
         val values = sut.orderDraft.captureValues()
 
-        assertThat(values.last().customerId).isNull()
-        assertThat(values.last().billingAddress).isEqualTo(Address.EMPTY)
-        assertThat(values.last().shippingAddress).isEqualTo(Address.EMPTY)
+        assertThat(values.last().customer).isNull()
     }
 
     @Test
     fun `when customer address deleted, then delete event tracked`() {
-        sut.onCustomerAddressDeleted()
+        sut.onCustomerDeleted()
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_CUSTOMER_DELETE,
@@ -2185,6 +2200,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getTaxRatePercentageValueText = getTaxRatePercentageValueText,
             getTaxRateLabel = getTaxRateLabel,
             prefs = prefs,
+            isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
         )
     }
 

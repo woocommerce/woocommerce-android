@@ -57,7 +57,7 @@ class StatsRepository @Inject constructor(
         forced: Boolean,
         startDate: String = "",
         endDate: String = "",
-        revenueRangeId: Int = 0
+        revenueRangeId: String = ""
     ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
             val result = wcStatsStore.fetchRevenueStats(
@@ -89,7 +89,7 @@ class StatsRepository @Inject constructor(
         }
 
     suspend fun getRevenueStatsById(
-        revenueRangeId: Int
+        revenueRangeId: String
     ): Flow<Result<WCRevenueStatsModel?>> = flow {
         wcStatsStore.getRawRevenueStatsFromRangeId(
             selectedSite.get(), revenueRangeId
@@ -372,8 +372,8 @@ class StatsRepository @Inject constructor(
 fun String.asRevenueRangeId(
     startDate: Date,
     endDate: Date
-): Int {
+): String {
     val startDateString = startDate.formatToYYYYmmDD()
     val endDateString = endDate.formatToYYYYmmDD()
-    return "$this$startDateString$endDateString".hashCode()
+    return "$this$startDateString$endDateString"
 }

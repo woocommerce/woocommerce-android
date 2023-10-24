@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
+import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import junit.framework.TestCase.assertEquals
@@ -27,7 +28,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 // Remove Silent runner when feature is completed
@@ -287,6 +290,82 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         }
 
         assertTrue(lastReceivedState!!.isCouponButtonEnabled)
+    }
+
+    @Test
+    fun `given editable order and order paid, then set tax rate button should be disabled`() {
+        testBlocking {
+            initMocksForAnalyticsWithOrder(defaultOrderValue)
+            val order = defaultOrderValue.copy(
+                datePaid = Date()
+            )
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+
+            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(true)
+
+            orderDetailRepository.stub {
+                onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+            }
+            createUpdateOrderUseCase = mock {
+                onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+            }
+
+            createSut()
+
+            assertFalse(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
+        }
+    }
+
+    @Test
+    fun `given editable order and order not paid, then set tax rate button should be enabled`() {
+        testBlocking {
+            initMocksForAnalyticsWithOrder(defaultOrderValue)
+            val order = defaultOrderValue.copy(
+                datePaid = null
+            )
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+
+            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(true)
+
+            whenever(resourceProvider.getString(any())).thenReturn("label")
+
+            orderDetailRepository.stub {
+                onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+            }
+            createUpdateOrderUseCase = mock {
+                onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+            }
+
+            createSut()
+
+            assertTrue(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
+        }
+    }
+
+    @Test
+    fun `given order not paid, when feature flag disabled, tax rate button not shown`() {
+        testBlocking {
+            initMocksForAnalyticsWithOrder(defaultOrderValue)
+            val order = defaultOrderValue.copy(
+                datePaid = null
+            )
+            whenever(orderCreateEditRepository.fetchTaxBasedOnSetting()).thenReturn(TaxBasedOnSetting.BillingAddress)
+
+            whenever(isTaxRateSelectorEnabled.invoke()).thenReturn(false)
+
+            whenever(resourceProvider.getString(any())).thenReturn("label")
+
+            orderDetailRepository.stub {
+                onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+            }
+            createUpdateOrderUseCase = mock {
+                onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+            }
+
+            createSut()
+
+            assertFalse(sut.viewStateData.liveData.value!!.taxRateSelectorButtonState.isShown)
+        }
     }
 
     @Test

@@ -9,7 +9,10 @@ import java.math.BigDecimal
 object CardReaderConfigForCanada : CardReaderConfigForSupportedCountry(
     currency = "CAD",
     countryCode = "CA",
-    supportedReaders = listOf(ReaderType.ExternalReader.WisePade3),
+    supportedReaders = listOf(
+        ReaderType.ExternalReader.WisePade3,
+        ReaderType.BuildInReader.CotsDevice,
+    ),
     paymentMethodTypes = listOf(
         PaymentMethodType.CARD_PRESENT,
         PaymentMethodType.INTERAC_PRESENT
@@ -20,5 +23,6 @@ object CardReaderConfigForCanada : CardReaderConfigForSupportedCountry(
             supportedSince = "4.0.0"
         ),
     ),
-    minimumAllowedChargeAmount = BigDecimal("0.50")
+    minimumAllowedChargeAmount = BigDecimal("0.50"),
+    maximumTTPAllowedChargeAmountWithoutPin = BigDecimal("250.00"),
 )

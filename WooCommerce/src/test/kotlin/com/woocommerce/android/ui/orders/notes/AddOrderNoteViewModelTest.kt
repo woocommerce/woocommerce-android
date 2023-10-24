@@ -66,7 +66,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     fun `hide customer note checkbox if no email`() = testBlocking {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "")
-            it.copy(billingAddress = address)
+            it.copy(customer = it.customer!!.copy(billingAddress = address))
         }
         doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
 
@@ -83,7 +83,7 @@ class AddOrderNoteViewModelTest : BaseUnitTest() {
     fun `show customer note checkbox if no email`() = testBlocking {
         val testOrder = testOrder.let {
             val address = it.billingAddress.copy(email = "test@emai.com")
-            it.copy(billingAddress = address)
+            it.copy(customer = it.customer!!.copy(billingAddress = address))
         }
         doReturn(testOrder).whenever(repository).getOrderById(ORDER_ID)
 
