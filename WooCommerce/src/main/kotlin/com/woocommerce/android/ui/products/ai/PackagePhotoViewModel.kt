@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
@@ -11,12 +12,14 @@ import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Ge
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import javax.inject.Inject
 
@@ -121,7 +124,15 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onContinueTapped() {
-        /* TODO */
+        triggerEvent(
+            ExitWithResult(
+                PackagePhotoData(
+                    title = _viewState.value.title,
+                    description = _viewState.value.description,
+                    keywords = _viewState.value.keywords.filter { it.isChecked }.map { it.title }
+                )
+            )
+        )
     }
 
     fun onRegenerateTapped() = launch {
@@ -178,4 +189,11 @@ class PackagePhotoViewModel @Inject constructor(
             data class Failure(val message: String) : GenerationState()
         }
     }
+
+    @Parcelize
+    data class PackagePhotoData(
+        val title: String,
+        val description: String,
+        val keywords: List<String>
+    ) : Parcelable
 }
