@@ -161,6 +161,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 analyticsTracker.track(
                     stat = AnalyticsEvent.SITE_PICKER_SITE_DISCOVERY,
                     properties = mapOf(
+                        "user_entered_address" to siteAddressFlow.value,
+                        "fetched_address" to siteAddress,
                         "has_wordpress" to it.isWordPress,
                         "is_wpcom" to it.isWPCom,
                         "is_jetpack_installed" to it.hasJetpack,
