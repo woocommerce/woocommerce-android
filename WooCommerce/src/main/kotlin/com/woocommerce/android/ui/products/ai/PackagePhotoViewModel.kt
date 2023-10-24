@@ -2,13 +2,11 @@ package com.woocommerce.android.ui.products.ai
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.NoKeywordsFound
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
-import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,7 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class PackagePhotoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val aiRepository: AIRepository,
     private val textRecognitionEngine: TextRecognitionEngine
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: PackagePhotoBottomSheetFragmentArgs by savedStateHandle.navArgs()
@@ -92,31 +89,10 @@ class PackagePhotoViewModel @Inject constructor(
         }
     }
 
-    private suspend fun generateNameAndDescription() {
+    private fun generateNameAndDescription() {
         _viewState.update {
             _viewState.value.copy(state = Generating)
         }
-
-        val keywords = _viewState.value.keywords.filter { it.isChecked }.joinToString { it.title }
-        aiRepository.generateProductName(keywords)
-            .onSuccess { name ->
-                aiRepository.generateProductDescription(name, keywords)
-                    .onSuccess { description ->
-                        _viewState.update {
-                            _viewState.value.copy(state = Success, title = name, description = description)
-                        }
-                    }
-                    .onFailure { error ->
-                        _viewState.update {
-                            _viewState.value.copy(state = Failure(error.message ?: ""))
-                        }
-                    }
-            }
-            .onFailure { error ->
-                _viewState.update {
-                    _viewState.value.copy(state = Failure(error.message ?: ""))
-                }
-            }
     }
 
     fun onEditPhotoTapped() {
