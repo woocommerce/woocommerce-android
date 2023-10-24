@@ -9,7 +9,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
