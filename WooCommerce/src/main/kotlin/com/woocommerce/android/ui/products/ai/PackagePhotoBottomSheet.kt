@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Ge
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
@@ -88,9 +89,7 @@ fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
             viewModel::onContinueTapped,
             viewModel::onEditPhotoTapped,
             onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
-            onDevicePickerRequested = viewModel::onDevicePickerRequested,
-            onCameraRequested = viewModel::onCameraRequested,
-            onWpMediaLibraryRequested = viewModel::onWpMediaLibraryRequested
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested
         )
     }
 }
@@ -105,17 +104,10 @@ fun ProductFromPackagePhoto(
     onContinueTapped: () -> Unit,
     onEditPhotoTapped: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
-    onDevicePickerRequested: () -> Unit,
-    onCameraRequested: () -> Unit,
-    onWpMediaLibraryRequested: () -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
-        MediaPickerDialog(
-            onMediaPickerDialogDismissed,
-            onDevicePickerRequested,
-            onCameraRequested,
-            onWpMediaLibraryRequested
-        )
+        MediaPickerDialog(onMediaPickerDialogDismissed, onMediaLibraryRequested)
     }
 
     Surface(
@@ -660,8 +652,6 @@ fun PreviewProductFromPackagePhoto() {
         {},
         {},
         {},
-        {},
-        {}
     )
 }
 
@@ -683,8 +673,6 @@ fun PreviewNoKeywordsMessage() {
         {},
         {},
         {},
-        {},
-        {}
     )
 }
 
@@ -706,7 +694,5 @@ fun PreviewErrorMessage() {
         {},
         {},
         {},
-        {},
-        {}
     )
 }
