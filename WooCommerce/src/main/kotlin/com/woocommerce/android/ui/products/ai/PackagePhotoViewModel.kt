@@ -78,15 +78,6 @@ class PackagePhotoViewModel @Inject constructor(
                 },
             )
         }
-        val moreThanOneKeyword = _viewState.value.keywords
-            .filter { it.isChecked }
-            .joinToString(separator = "") { it.title }
-            .isNotEmpty()
-        _viewState.update {
-            _viewState.value.copy(
-                isRegenerateButtonEnabled = moreThanOneKeyword
-            )
-        }
     }
 
     private suspend fun generateNameAndDescription() {
