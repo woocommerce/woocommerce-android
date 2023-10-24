@@ -350,7 +350,7 @@
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
-
+    <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <!--
         My Store View
     -->
@@ -589,6 +589,7 @@
     <string name="order_creation_customer_search_empty_name">No name</string>
     <string name="order_creation_customer_search_empty_email">No email address</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Add details manually</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Add details manually using email</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product with SKU %s not found. Unable to add to the order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
@@ -1259,6 +1260,7 @@
     <string name="card_reader_hub_collect_payment">Collect Payment</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
@@ -1269,9 +1271,11 @@
     <string name="card_reader_icon_content_description">Card Reader Image</string>
     <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;a href=\'\'&gt;Continue setup&lt;/a&gt;</string>
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
-    <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Share Tap To Pay Feedback</string>
+    <string name="card_reader_test_tap_to_pay">Try out Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_about_tap_to_pay">About Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_description">Use your phone to accept card\npayments. Try it now.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Share Feedback</string>
     <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
     <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
@@ -1284,9 +1288,10 @@
         -->
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu &gt; Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
@@ -1295,6 +1300,28 @@
     <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
     <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with Tap To Pay on Android</string>
+
+    <!--
+           Card Reader Tap To Pay About
+        -->
+    <string name="card_reader_tap_to_pay_about_title">About Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_about_header">What is Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay lets you accept all types of contactless payments – from physical debit and credit cards, to digital wallets – without the need to purchase a physical card reader.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Important information</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">In %1$s, some cards require a PIN for contactless transactions above %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">We do not support PIN entry with Tap to Pay on Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">To accept payments above this limit, consider purchasing a card reader that accepts PIN entry.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Learn more about card readers</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">How it works</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s or %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Create an order</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">collect a payment</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. After you see the “Done” checkmark, your store will process the payment, and the transaction will be complete.</string>
+    <string name="card_reader_tap_to_pay_about_copyright">The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC.</string>
+
 
     <!--
             Card Reader Type Selection
@@ -1408,6 +1435,7 @@
     <string name="card_reader_payment_print_receipt">Print receipt</string>
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
+    <string name="card_reader_payment_update_available">An update for the card reader is available</string>
 
     <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
@@ -1904,6 +1932,7 @@
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
@@ -1911,8 +1940,9 @@
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
-    <string name="product_creation_ai_preview_subtitle">Don’t worry. You can always change below details later.</string>
+    <string name="product_creation_ai_preview_subtitle">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
+    <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
@@ -1922,6 +1952,9 @@
     <string name="product_creation_ai_tone_flowery">Flowery</string>
     <string name="product_creation_ai_tone_convincing">Convincing</string>
     <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
+    <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
+    <string name="product_creation_package_photo_keywords_section">Keywords</string>
+    <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3579,7 +3612,6 @@
     <string name="ai_product_description_example">Example: Potted, Cactus, Plant, Decorative, Easy-care</string>
     <string name="ai_product_description_hint">Highlight your product\'s unique features and audience with keywords for a tailored description.</string>
     <string name="ai_product_description_title_hint">Enter product title.</string>
-    <string name="ai_product_description_survey">Is the generated description helpful?</string>
     <string name="ai_product_description_regenerate_button">Regenerate</string>
     <string name="ai_product_description_feedback">Is the generated\ndescription helpful?</string>
     <string name="ai_product_description_note_dialog_heading">Great start!</string>
@@ -3600,7 +3632,7 @@
     <!--
     AI Product name description
     -->
-    <string name="ai_product_name_sheet_title">✨ Product name</string>
+    <string name="ai_product_name_sheet_title">Product name</string>
     <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
     <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
     <string name="ai_product_name_sheet_generate_button">Write it for me</string>
@@ -3623,6 +3655,35 @@
     <string name="blaze_banner_dismiss_dialog_button">Got it</string>
 
     <!--
+    My Store Blaze view
+    -->
+    <string name="blaze_campaign_title">Blaze campaign</string>
+    <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
+    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_status_in_moderation">In moderation</string>
+    <string name="blaze_campaign_status_active">Active</string>
+    <string name="blaze_campaign_status_completed">Completed</string>
+    <string name="blaze_campaign_status_scheduled">Scheduled</string>
+    <string name="blaze_campaign_status_rejected">Rejected</string>
+    <string name="blaze_campaign_status_canceled">Canceled</string>
+    <string name="blaze_campaign_status_impressions">Impressions</string>
+    <string name="blaze_campaign_status_clicks">Clicks</string>
+    <string name="blaze_campaign_status_budget">Budget</string>
+
+    <!--
+    Blaze campaign list
+    -->
+    <string name="blaze_campaign_list_title">Blaze campaigns</string>
+
+
+    <!--
+    Blaze other
+    -->
+    <string name="blaze_campaign_details_title">Campaign details</string>
+    <string name="product_details_blaze_card">Promote with Blaze</string>
+
+    <!--
     Highlights tooltip
     -->
     <string name="highlights_tooltip_title_hint">Tooltip title</string>
@@ -3638,11 +3699,6 @@
     <string name="free_trial_survey_option3">I find the price of the service to be a significant factor in my decision.</string>
     <string name="free_trial_survey_option4">I am part of a team, and we need to make the decision collectively.</string>
     <string name="free_trial_survey_free_text">Other reason (please specify)</string>
-
-    <!--
-    Shipping zones
-    -->
-    <string name="shipping_classes_zones">Shipping classes &amp; zones</string>
 
     <!--
     Tax rates info dialog
@@ -3675,5 +3731,13 @@
     <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
+    <string name="next_order">Next order</string>
+    <string name="previous_order">Previous order</string>
 
+    <!--
+    AI feedback form
+    -->
+    <string name="ai_feedback_form_message">Is the result helpful?</string>
+    <string name="ai_feedback_form_positive_button">Positive feedback</string>
+    <string name="ai_feedback_form_negative_button">Negative feedback</string>
 </resources>

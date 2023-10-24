@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier) {
@@ -53,7 +55,8 @@ fun ProductNameSubScreen(viewModel: ProductNameSubViewModel, modifier: Modifier)
                 enteredName = state.name,
                 onProductNameChanged = viewModel::onProductNameChanged,
                 onSuggestNameClicked = viewModel::onSuggestNameClicked,
-                onContinueClicked = viewModel::onDoneClick
+                onContinueClicked = viewModel::onDoneClick,
+                onPackageImageClicked = viewModel::onPackageImageClicked
             )
         }
     }
@@ -64,7 +67,8 @@ fun ProductNameForm(
     enteredName: String,
     onProductNameChanged: (String) -> Unit,
     onSuggestNameClicked: () -> Unit,
-    onContinueClicked: () -> Unit
+    onContinueClicked: () -> Unit,
+    onPackageImageClicked: () -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
 
@@ -109,7 +113,8 @@ fun ProductNameForm(
             ProductKeywordsTextFieldWithEmbeddedButton(
                 textFieldContent = enteredName,
                 onTextFieldContentChanged = onProductNameChanged,
-                onButtonClicked = onSuggestNameClicked
+                onSuggestNameButtonClicked = onSuggestNameClicked,
+                onPackageImageButtonClicked = onPackageImageClicked
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -131,7 +136,8 @@ fun ProductNameForm(
 private fun ProductKeywordsTextFieldWithEmbeddedButton(
     textFieldContent: String,
     onTextFieldContentChanged: (String) -> Unit,
-    onButtonClicked: () -> Unit
+    onSuggestNameButtonClicked: () -> Unit,
+    onPackageImageButtonClicked: () -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
     Column {
@@ -186,10 +192,22 @@ private fun ProductKeywordsTextFieldWithEmbeddedButton(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                onClick = onButtonClicked,
+                onClick = onSuggestNameButtonClicked,
                 icon = ImageVector.vectorResource(id = R.drawable.ic_ai_share_button),
                 allCaps = false,
                 text = stringResource(id = R.string.ai_product_creation_add_name_suggest_name_button),
+            )
+        }
+
+        if (FeatureFlag.PACKAGE_PHOTO_SCANNING.isEnabled()) {
+            WCTextButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onPackageImageButtonClicked,
+                icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera),
+                allCaps = false,
+                text = stringResource(id = R.string.ai_product_creation_photo_button),
+                colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.color_on_surface))
             )
         }
     }
@@ -203,7 +221,8 @@ fun ProductNamePreview() {
             enteredName = "Everyday Elegance with Our Soft Black Tee",
             onProductNameChanged = {},
             onSuggestNameClicked = {},
-            onContinueClicked = {}
+            onContinueClicked = {},
+            onPackageImageClicked = {}
         )
     }
 }

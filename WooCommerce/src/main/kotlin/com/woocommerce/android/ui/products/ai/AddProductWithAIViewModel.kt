@@ -4,11 +4,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.ai.AIRepository
-import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,17 +26,20 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProductWithAIViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     aiRepository: AIRepository,
+    private val productDetailRepository: ProductDetailRepository,
     buildProductPreviewProperties: BuildProductPreviewProperties,
-    categoriesRepository: ProductCategoriesRepository,
-    tagsRepository: ProductTagsRepository,
-    parameterRepository: ParameterRepository,
-    appsPrefsWrapper: AppPrefsWrapper
+    generateProductWithAI: GenerateProductWithAI,
+    private val productCategoriesRepository: ProductCategoriesRepository,
+    private val productTagsRepository: ProductTagsRepository,
+    private val appsPrefsWrapper: AppPrefsWrapper,
+    tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
@@ -52,14 +63,14 @@ class AddProductWithAIViewModel @Inject constructor(
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
         buildProductPreviewProperties = buildProductPreviewProperties,
-        categoriesRepository = categoriesRepository,
-        tagsRepository = tagsRepository,
-        parametersRepository = parameterRepository
+        generateProductWithAI = generateProductWithAI,
+        tracker = tracker
     ) {
-        // TODO keep reference to the product for the saving step
+        product = it
         saveButtonState.value = SaveButtonState.Shown
     }
 
+    private lateinit var product: Product
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
@@ -79,6 +90,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        appsPrefsWrapper.aiProductCreationIsFirstAttempt = true
         wireSubViewModels()
     }
 
@@ -86,8 +98,64 @@ class AddProductWithAIViewModel @Inject constructor(
         if (step.value.order == 1) {
             triggerEvent(Exit)
         } else {
+            appsPrefsWrapper.aiProductCreationIsFirstAttempt = false
             goToPreviousStep()
         }
+    }
+
+    fun onSaveButtonClick() {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
+        require(::product.isInitialized)
+        viewModelScope.launch {
+            saveButtonState.value = SaveButtonState.Loading
+            val (success, productId) = saveProduct()
+            if (!success) {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+                saveButtonState.value = SaveButtonState.Shown
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
+            } else {
+                triggerEvent(NavigateToProductDetailScreen(productId))
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+            }
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun saveProduct(): Pair<Boolean, Long> {
+        // Create missing categories
+        val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
+        val createdCategories = missingCategories
+            .takeIf { it.isNotEmpty() }?.let { productCategories ->
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Create the missing product categories ${productCategories.map { it.name }}"
+                )
+                productCategoriesRepository.addProductCategories(productCategories)
+            }?.getOrElse {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
+                return Pair(false, 0L)
+            }
+
+        // Create missing tags
+        val missingTags = product.tags.filter { it.remoteTagId == 0L }
+        val createdTags = missingTags
+            .takeIf { it.isNotEmpty() }?.let { productTags ->
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Create the missing product tags ${productTags.map { it.name }}"
+                )
+                productTagsRepository.addProductTags(productTags.map { it.name })
+            }?.getOrElse {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
+                return Pair(false, 0L)
+            }
+
+        product = product.copy(
+            categories = product.categories - missingCategories + createdCategories.orEmpty(),
+            tags = product.tags - missingTags + createdTags.orEmpty()
+        )
+
+        return productDetailRepository.addProduct(product)
     }
 
     private fun goToNextStep() {
@@ -139,6 +207,8 @@ class AddProductWithAIViewModel @Inject constructor(
     enum class SaveButtonState {
         Hidden, Shown, Loading
     }
+
+    data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {

@@ -24,6 +24,10 @@
             android:name="source"
             android:defaultValue="PRODUCT_TAB"
             app:argType="com.woocommerce.android.ui.products.AddProductSource" />
+        <argument
+            android:name="isAIContent"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment" />
