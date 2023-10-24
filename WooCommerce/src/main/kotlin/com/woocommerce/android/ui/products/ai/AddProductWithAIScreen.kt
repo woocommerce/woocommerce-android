@@ -23,7 +23,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
-import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
@@ -35,11 +34,7 @@ fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
         AddProductWithAIScreen(
             state = it,
             onBackButtonClick = viewModel::onBackButtonClick,
-            onSaveButtonClick = viewModel::onSaveButtonClick,
-            onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
-            onDevicePickerRequested = viewModel::onDevicePickerRequested,
-            onCameraRequested = viewModel::onCameraRequested,
-            onWpMediaLibraryRequested = viewModel::onWpMediaLibraryRequested
+            onSaveButtonClick = viewModel::onSaveButtonClick
         )
     }
 }
@@ -48,11 +43,7 @@ fun AddProductWithAIScreen(viewModel: AddProductWithAIViewModel) {
 fun AddProductWithAIScreen(
     state: AddProductWithAIViewModel.State,
     onBackButtonClick: () -> Unit,
-    onSaveButtonClick: () -> Unit,
-    onMediaPickerDialogDismissed: () -> Unit,
-    onDevicePickerRequested: () -> Unit,
-    onCameraRequested: () -> Unit,
-    onWpMediaLibraryRequested: () -> Unit
+    onSaveButtonClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -83,15 +74,6 @@ fun AddProductWithAIScreen(
             )
         }
     ) {
-        if (state.isMediaPickerDialogVisible) {
-            MediaPickerDialog(
-                onMediaPickerDialogDismissed,
-                onDevicePickerRequested,
-                onCameraRequested,
-                onWpMediaLibraryRequested
-            )
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()

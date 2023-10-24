@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Ge
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
@@ -87,10 +88,8 @@ fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
             viewModel::onRegenerateTapped,
             viewModel::onContinueTapped,
             viewModel::onEditPhotoTapped,
-            onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
-            onDevicePickerRequested = viewModel::onDevicePickerRequested,
-            onCameraRequested = viewModel::onCameraRequested,
-            onWpMediaLibraryRequested = viewModel::onWpMediaLibraryRequested
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = viewModel::onMediaPickerLibraryRequested,
         )
     }
 }
@@ -105,16 +104,12 @@ fun ProductFromPackagePhoto(
     onContinueTapped: () -> Unit,
     onEditPhotoTapped: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
-    onDevicePickerRequested: () -> Unit,
-    onCameraRequested: () -> Unit,
-    onWpMediaLibraryRequested: () -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
         MediaPickerDialog(
             onMediaPickerDialogDismissed,
-            onDevicePickerRequested,
-            onCameraRequested,
-            onWpMediaLibraryRequested
+            onMediaLibraryRequested
         )
     }
 
@@ -317,7 +312,7 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
 }
 
 @Composable
-fun NameAndDescription(
+private fun NameAndDescription(
     viewState: ViewState
 ) {
     Column(
@@ -626,7 +621,7 @@ private fun LoadingListItem() {
 
 @Preview
 @Composable
-fun PreviewLoading() {
+private fun PreviewLoading() {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
         modifier = Modifier
@@ -644,7 +639,7 @@ fun PreviewLoading() {
 
 @Preview
 @Composable
-fun PreviewProductFromPackagePhoto() {
+private fun PreviewProductFromPackagePhoto() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -655,19 +650,17 @@ fun PreviewProductFromPackagePhoto() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onContinueTapped = {}
     )
 }
 
 @Preview
 @Composable
-fun PreviewNoKeywordsMessage() {
+private fun PreviewNoKeywordsMessage() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -678,19 +671,17 @@ fun PreviewNoKeywordsMessage() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onContinueTapped = {}
     )
 }
 
 @Preview
 @Composable
-fun PreviewErrorMessage() {
+private fun PreviewErrorMessage() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -701,12 +692,10 @@ fun PreviewErrorMessage() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onContinueTapped = {}
     )
 }
