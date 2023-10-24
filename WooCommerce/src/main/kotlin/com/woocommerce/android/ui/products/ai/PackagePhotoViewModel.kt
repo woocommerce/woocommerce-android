@@ -132,7 +132,7 @@ class PackagePhotoViewModel @Inject constructor(
         setMediaPickerDialogVisibility(true)
     }
 
-    fun onMediaLibraryDialogDismissed() {
+    fun onMediaPickerDialogDismissed() {
         setMediaPickerDialogVisibility(false)
     }
 

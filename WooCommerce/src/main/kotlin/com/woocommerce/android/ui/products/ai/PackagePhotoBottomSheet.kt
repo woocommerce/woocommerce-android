@@ -88,7 +88,7 @@ fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
             viewModel::onRegenerateTapped,
             viewModel::onContinueTapped,
             viewModel::onEditPhotoTapped,
-            onMediaPickerDialogDismissed = viewModel::onMediaLibraryDialogDismissed,
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
             onMediaLibraryRequested = viewModel::onMediaLibraryRequested
         )
     }
@@ -107,7 +107,10 @@ fun ProductFromPackagePhoto(
     onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
-        MediaPickerDialog(onMediaPickerDialogDismissed, onMediaLibraryRequested)
+        MediaPickerDialog(
+            onMediaPickerDialogDismissed,
+            onMediaLibraryRequested
+        )
     }
 
     Surface(
@@ -309,7 +312,7 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
 }
 
 @Composable
-fun NameAndDescription(
+private fun NameAndDescription(
     viewState: ViewState
 ) {
     Column(
@@ -618,7 +621,7 @@ private fun LoadingListItem() {
 
 @Preview
 @Composable
-fun PreviewLoading() {
+private fun PreviewLoading() {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
         modifier = Modifier
@@ -636,7 +639,7 @@ fun PreviewLoading() {
 
 @Preview
 @Composable
-fun PreviewProductFromPackagePhoto() {
+private fun PreviewProductFromPackagePhoto() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -647,17 +650,17 @@ fun PreviewProductFromPackagePhoto() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onContinueTapped = {}
     )
 }
 
 @Preview
 @Composable
-fun PreviewNoKeywordsMessage() {
+private fun PreviewNoKeywordsMessage() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -668,17 +671,17 @@ fun PreviewNoKeywordsMessage() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onContinueTapped = {}
     )
 }
 
 @Preview
 @Composable
-fun PreviewErrorMessage() {
+private fun PreviewErrorMessage() {
     ProductFromPackagePhoto(
         viewState = ViewState(
             title = "Title",
@@ -689,10 +692,10 @@ fun PreviewErrorMessage() {
         ),
         modifier = Modifier,
         onKeywordChanged = { _, _ -> },
-        {},
-        {},
-        {},
-        {},
-        {},
+        onRegenerateTapped = {},
+        onEditPhotoTapped = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onContinueTapped = {}
     )
 }

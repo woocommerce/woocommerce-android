@@ -116,6 +116,6 @@ private fun DialogButton(@DrawableRes image: Int, @StringRes title: Int, onClick
 
 @Preview
 @Composable
-fun PreviewMediaPickerDialog() {
+private fun PreviewMediaPickerDialog() {
     MediaPickerDialog({}, {})
 }

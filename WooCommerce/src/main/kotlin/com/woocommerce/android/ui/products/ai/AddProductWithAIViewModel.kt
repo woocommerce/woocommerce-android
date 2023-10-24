@@ -26,9 +26,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import javax.inject.Inject
 
 @HiltViewModel
@@ -73,8 +71,6 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     private lateinit var product: Product
-
-    private val isMediaPickerDialogVisible = savedStateHandle.getStateFlow(viewModelScope, false)
     private val step = savedStateHandle.getStateFlow(viewModelScope, Step.ProductName)
     private val saveButtonState = MutableStateFlow(SaveButtonState.Hidden)
 
@@ -84,13 +80,12 @@ class AddProductWithAIViewModel @Inject constructor(
         previewSubViewModel
     )
 
-    val state = combine(step, saveButtonState, isMediaPickerDialogVisible) { step, saveButtonState, isDialogVisible ->
+    val state = combine(step, saveButtonState) { step, saveButtonState ->
         State(
             progress = step.order.toFloat() / Step.values().size,
             subViewModel = subViewModels[step.ordinal],
             isFirstStep = step.ordinal == 0,
-            saveButtonState = saveButtonState,
-            isMediaPickerDialogVisible = isDialogVisible
+            saveButtonState = saveButtonState
         )
     }.asLiveData()
 
@@ -202,25 +197,11 @@ class AddProductWithAIViewModel @Inject constructor(
         nameSubViewModel.onProductNameChanged(productName)
     }
 
-    fun onMediaLibraryDialogRequested() {
-        isMediaPickerDialogVisible.update { true }
-    }
-
-    fun onMediaLibraryDialogDismissed() {
-        isMediaPickerDialogVisible.update { false }
-    }
-
-    fun onMediaLibraryRequested(source: DataSource) {
-        triggerEvent(ShowMediaLibrary(source))
-        isMediaPickerDialogVisible.update { false }
-    }
-
     data class State(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
         val isFirstStep: Boolean,
-        val saveButtonState: SaveButtonState,
-        val isMediaPickerDialogVisible: Boolean
+        val saveButtonState: SaveButtonState
     )
 
     enum class SaveButtonState {
@@ -228,8 +209,6 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
-
-    data class ShowMediaLibrary(val source: DataSource) : MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {
