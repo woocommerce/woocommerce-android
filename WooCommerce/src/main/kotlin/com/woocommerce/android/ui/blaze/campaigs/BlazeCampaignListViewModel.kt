@@ -13,13 +13,16 @@ import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -27,12 +30,21 @@ class BlazeCampaignListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val LOADING_TRANSITION_DELAY = 200L
+    }
+
     private var totalPages = 1
     private var currentPage = 1
     private val isLoadingMore = MutableStateFlow(false)
     val state = combine(
         blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get()),
-        isLoadingMore
+        isLoadingMore.debounce { isLoading ->
+            if (!isLoading) {
+                // When resetting to not loading, wait a bit to make sure the coupons list has been fetched from DB
+                LOADING_TRANSITION_DELAY
+            } else 0L
+        }
     ) { campaigns, loadingMore ->
         BlazeCampaignListState(
             campaigns = campaigns.map { mapToUiState(it) },
@@ -42,26 +54,28 @@ class BlazeCampaignListViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        loadCampaignsFor(currentPage)
+        launch {
+            loadCampaignsFor(currentPage)
+        }
     }
 
     fun onEndOfTheListReached() {
         if (!isLoadingMore.value) {
-            isLoadingMore.value = true
-            loadCampaignsFor(++currentPage)
-            isLoadingMore.value = false
+            launch {
+                isLoadingMore.value = true
+                loadCampaignsFor(++currentPage)
+                isLoadingMore.value = false
+            }
         }
     }
 
-    private fun loadCampaignsFor(page: Int) {
+    private suspend fun loadCampaignsFor(page: Int) {
         if (page <= totalPages) {
-            launch {
-                val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
-                if (result.isError || result.model == null) {
-                    triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
-                } else {
-                    totalPages = result.model?.totalPages ?: 1
-                }
+            val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
+            if (result.isError || result.model == null) {
+                triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
+            } else {
+                totalPages = result.model?.totalPages ?: 1
             }
         }
     }
