@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
-import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowMediaLibraryDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,8 +67,6 @@ class AddProductWithAIFragment : BaseFragment() {
                         popUpTo(R.id.addProductWithAIFragment) { inclusive = true }
                     }
                 )
-                is ShowMediaLibraryDialog -> viewModel.onMediaLibraryDialogRequested()
-
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
                 Exit -> findNavController().navigateUp()

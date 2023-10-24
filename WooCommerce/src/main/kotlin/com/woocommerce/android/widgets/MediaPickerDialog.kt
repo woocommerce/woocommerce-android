@@ -27,13 +27,15 @@ import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 
 @Composable
 fun MediaPickerDialog(
     onDismissRequest: () -> Unit,
-    onDeviceImageClicked: () -> Unit,
-    onCameraClicked: () -> Unit,
-    onWpMediaLibraryClicked: () -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -57,9 +59,21 @@ fun MediaPickerDialog(
                     style = MaterialTheme.typography.h6
                 )
 
-                DialogButton(drawable.ic_gridicons_image, string.image_source_device_chooser, onDeviceImageClicked)
-                DialogButton(drawable.ic_gridicons_camera, string.image_source_device_camera, onCameraClicked)
-                DialogButton(drawable.ic_wordpress, string.image_source_wp_media_library, onWpMediaLibraryClicked)
+                DialogButton(
+                    image = drawable.ic_gridicons_image,
+                    title = string.image_source_device_chooser,
+                    onClick = { onMediaLibraryRequested(DEVICE) }
+                )
+                DialogButton(
+                    image = drawable.ic_gridicons_camera,
+                    title = string.image_source_device_camera,
+                    onClick = { onMediaLibraryRequested(CAMERA) }
+                )
+                DialogButton(
+                    image = drawable.ic_wordpress,
+                    title = string.image_source_wp_media_library,
+                    onClick = { onMediaLibraryRequested(WP_MEDIA_LIBRARY) }
+                )
             }
         }
     }
@@ -103,5 +117,5 @@ private fun DialogButton(@DrawableRes image: Int, @StringRes title: Int, onClick
 @Preview
 @Composable
 private fun PreviewMediaPickerDialog() {
-    MediaPickerDialog({}, {}, {}, {})
+    MediaPickerDialog({}, {})
 }
