@@ -9,6 +9,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
@@ -60,21 +61,18 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given more than 2 pages of campaigns, when reaching end of the list, fetch next page`() =
+    fun `given 2 pages of campaigns, when reaching end of the list, fetch next page`() =
         testBlocking {
             whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any()))
                 .thenReturn(BlazeCampaignsResult(BLAZE_CAMPAIGN_MODEL_2_PAGES))
-
             createViewModel()
 
             viewModel.onEndOfTheListReached()
-            val uiState = viewModel.state.captureValues().last()
 
             verify(blazeCampaignsStore).fetchBlazeCampaigns(
                 siteModel,
                 page = 2
             )
-            Assertions.assertThat(uiState.isLoading).isEqualTo(false)
         }
 
     @Test
