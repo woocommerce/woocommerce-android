@@ -60,6 +60,8 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
                     mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to true)
                 )
 
+                appPrefsWrapper.removeLoginSiteAddress()
+
                 prologueFinishedListener?.onGetStartedClicked()
             }
         }
@@ -80,7 +82,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        appPrefsWrapper.removeLoginSiteAddress()
         unifiedLoginTracker.setFlowAndStep(Flow.PROLOGUE, Step.PROLOGUE)
     }
 
