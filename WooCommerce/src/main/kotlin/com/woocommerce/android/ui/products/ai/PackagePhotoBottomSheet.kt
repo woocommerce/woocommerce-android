@@ -193,10 +193,11 @@ fun ProductFromPackagePhoto(
 
 @Composable
 private fun Message(message: String, isError: Boolean = false) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
-        .background(colorResource(id = if (isError) color.color_error else color.color_alert))
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+            .background(colorResource(id = if (isError) color.color_error else color.color_alert))
     ) {
         Text(
             text = message,
@@ -471,9 +472,9 @@ fun KeywordListItem(
                 Image(
                     painter = painterResource(id = icon), contentDescription = "",
                     colorFilter = if (isEnabled)
-                            null
-                        else
-                            ColorFilter.tint(colorResource(id = color.color_on_surface_disabled))
+                        null
+                    else
+                        ColorFilter.tint(colorResource(id = color.color_on_surface_disabled))
                 )
             }
         }
@@ -496,9 +497,10 @@ fun LoadingNameAndDescription() {
             style = MaterialTheme.typography.body2
         )
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .then(sectionsBorder)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBorder)
         ) {
             SkeletonView(
                 modifier = Modifier
@@ -515,9 +517,10 @@ fun LoadingNameAndDescription() {
             style = MaterialTheme.typography.body2
         )
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .then(sectionsBorder)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(sectionsBorder)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
@@ -621,7 +624,6 @@ private fun LoadingListItem() {
     }
 }
 
-
 @Preview
 @Composable
 fun PreviewLoading() {
@@ -639,7 +641,6 @@ fun PreviewLoading() {
         LoadingKeywords()
     }
 }
-
 
 @Preview
 @Composable

@@ -124,7 +124,7 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onContinueTapped() {
-
+        /* TODO */
     }
 
     fun onRegenerateTapped() = launch {
