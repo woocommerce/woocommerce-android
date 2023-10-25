@@ -316,7 +316,7 @@ fun KeywordListItem(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .weight(1f),
-            textStyle = MaterialTheme.typography.body1,
+            textStyle = MaterialTheme.typography.body1.copy(color = colorResource(id = color.color_on_surface)),
             onValueChange = {
                 onKeywordChanged(index, Keyword(it, isSelected))
             },
