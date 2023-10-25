@@ -240,7 +240,7 @@ class ProductSelectorViewModel @Inject constructor(
 
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
-        val isConfigurable = productType == BUNDLE
+        val isConfigurable = isConfigurable
 
         return when {
             isVariation -> {

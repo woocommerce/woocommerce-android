@@ -110,7 +110,7 @@ fun ProductConfigurationScreen(
     Surface {
         Column(modifier = modifier) {
             LazyColumn(Modifier.weight(1f)) {
-                productRules.isConfigurable()
+                productRules.productType
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
                 items(configurationItems) { childMapEntry ->
                     val item = productsInfo.getOrDefault(

@@ -12,14 +12,6 @@ class ProductRules private constructor(
     val itemRules: Map<String, ItemRules>,
     val childrenRules: Map<Long, Map<String, ItemRules>>? = null
 ) : Parcelable {
-    fun isConfigurable(): Boolean {
-        return itemRules.any { it.value.isConfigurable() } || childrenRules?.any {
-            it.value.any { childrenRules ->
-                childrenRules.value.isConfigurable()
-            }
-        } ?: false
-    }
-
     class Builder {
         var productType: ProductType = ProductType.OTHER
         private val rules = mutableMapOf<String, ItemRules>()
@@ -52,7 +44,6 @@ class ProductRules private constructor(
 
 interface ItemRules : Parcelable {
     fun getInitialValue(): String?
-    fun isConfigurable(): Boolean
 }
 
 @Parcelize
@@ -63,7 +54,6 @@ class QuantityRule(val quantityMin: Long?, val quantityMax: Long?, val quantityD
     }
 
     override fun getInitialValue(): String? = quantityDefault?.toString()
-    override fun isConfigurable(): Boolean = quantityMin != quantityMax
 }
 
 @Parcelize
@@ -73,7 +63,6 @@ class OptionalRule : ItemRules {
     }
 
     override fun getInitialValue(): String? = null
-    override fun isConfigurable(): Boolean = true
 }
 
 @Parcelize

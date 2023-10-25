@@ -85,7 +85,8 @@ data class Product(
     override val weight: Float,
     val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
-    val specialStockStatus: ProductStockStatus? = null
+    val specialStockStatus: ProductStockStatus? = null,
+    val isConfigurable: Boolean = false
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -571,7 +572,8 @@ fun WCProductModel.toAppModel(): Product {
             ProductStockStatus.fromString(this.specialStockStatus)
         } else {
             null
-        }
+        },
+        isConfigurable = isConfigurable
     )
 }
 
