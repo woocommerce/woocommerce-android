@@ -6,11 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -24,20 +28,23 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
-import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.CampaignState
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ClickableCampaign
+import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
     viewModel.state.observeAsState().value?.let { state ->
         BlazeCampaignListScreen(
             state = state,
-            modifier = Modifier.background(color = MaterialTheme.colors.surface)
+            modifier = Modifier.background(color = MaterialTheme.colors.surface),
+            onEndOfTheListReached = viewModel::onEndOfTheListReached,
         )
     }
 }
@@ -46,42 +53,52 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
     modifier: Modifier = Modifier,
+    onEndOfTheListReached: () -> Unit,
 ) {
-    when {
-        state.isLoading -> {}
-        else -> {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(
-                        top = dimensionResource(id = R.dimen.major_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                    )
-            ) {
-                LazyColumn {
-                    items(state.campaigns) { campaign ->
-                        BlazeCampaignItem(
-                            campaign = campaign.campaignUi,
-                            onCampaignClicked = campaign.onCampaignClicked,
-                        )
-                        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
-                    }
-                }
-                FloatingActionButton(
-                    onClick = state.onAddNewCampaignClicked,
-                    shape = CircleShape,
-                    backgroundColor = MaterialTheme.colors.primary,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Large floating action button",
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(
+                top = dimensionResource(id = R.dimen.major_100),
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
+    ) {
+        val listState = rememberLazyListState()
+        LazyColumn(state = listState) {
+            items(state.campaigns) { campaign ->
+                BlazeCampaignItem(
+                    campaign = campaign.campaignUi,
+                    onCampaignClicked = campaign.onCampaignClicked,
+                )
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            }
+            if (state.isLoading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth()
+                            .padding(vertical = dimensionResource(id = dimen.minor_100))
                     )
                 }
             }
+        }
+        FloatingActionButton(
+            onClick = state.onAddNewCampaignClicked,
+            shape = CircleShape,
+            backgroundColor = MaterialTheme.colors.primary,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = dimensionResource(id = R.dimen.major_100))
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Large floating action button",
+            )
+        }
+        InfiniteListHandler(listState = listState) {
+            onEndOfTheListReached()
         }
     }
 }
@@ -97,7 +114,7 @@ fun BlazeCampaignListScreenPreview() {
     BlazeCampaignListScreen(
         state = BlazeCampaignListState(
             campaigns = listOf(
-                CampaignState(
+                ClickableCampaign(
                     BlazeCampaignUi(
                         product = BlazeProductUi(
                             name = "Product name",
@@ -124,6 +141,7 @@ fun BlazeCampaignListScreenPreview() {
             ),
             onAddNewCampaignClicked = {},
             isLoading = false
-        )
+        ),
+        onEndOfTheListReached = {},
     )
 }
