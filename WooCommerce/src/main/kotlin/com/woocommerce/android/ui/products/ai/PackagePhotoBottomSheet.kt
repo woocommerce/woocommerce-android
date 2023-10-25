@@ -53,6 +53,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -192,10 +193,24 @@ private fun Message(message: String, isError: Boolean = false) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
-            .background(colorResource(id = if (isError) color.color_error else color.color_alert))
+            .background(
+                colorResource(
+                    id = if (isError)
+                        color.error_banner_background_color
+                    else
+                        color.warning_banner_background_color
+                )
+            )
     ) {
         Text(
             text = message,
+            color = colorResource(
+                id = if (isError)
+                    color.error_banner_foreground_color
+                else
+                    color.warning_banner_foreground_color
+            ),
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = dimen.major_100))

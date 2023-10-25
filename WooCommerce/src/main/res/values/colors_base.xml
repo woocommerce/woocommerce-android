@@ -134,6 +134,8 @@
     -->
     <color name="warning_banner_foreground_color">@color/woo_orange_30</color>
     <color name="warning_banner_background_color">@color/woo_orange_5</color>
+    <color name="error_banner_foreground_color">@color/woo_red_30</color>
+    <color name="error_banner_background_color">@color/woo_red_5</color>
     <color name="info_banner_foreground_color">@color/woo_celadon_40</color>
     <color name="info_banner_background_color">@color/woo_celadon_5</color>
     <!--
