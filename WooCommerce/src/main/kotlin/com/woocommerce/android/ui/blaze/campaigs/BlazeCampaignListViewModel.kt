@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.campaigs
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,15 +30,20 @@ class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val selectedSite: SelectedSite,
-    private val blazeUrlsHelper: BlazeUrlsHelper
+    private val blazeUrlsHelper: BlazeUrlsHelper,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
     }
 
+    private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
+
     private var totalPages = 1
     private var currentPage = 1
     private val isLoadingMore = MutableStateFlow(false)
+    private val isCampaignCelebrationShown = MutableStateFlow(false)
+
     val state = combine(
         blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get()),
         isLoadingMore.debounce { isLoading ->
@@ -44,16 +51,21 @@ class BlazeCampaignListViewModel @Inject constructor(
                 // When resetting to not loading, wait a bit to make sure the coupons list has been fetched from DB
                 LOADING_TRANSITION_DELAY
             } else 0L
-        }
-    ) { campaigns, loadingMore ->
+        },
+        isCampaignCelebrationShown
+    ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
         BlazeCampaignListState(
             campaigns = campaigns.map { mapToUiState(it) },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
-            isLoading = loadingMore
+            isLoading = loadingMore,
+            isCampaignCelebrationShown = isBlazeCelebrationScreenShown
         )
     }.asLiveData()
 
     init {
+        if (navArgs.isPostCampaignCreation) {
+            showCampaignCelebrationIfNeeded()
+        }
         launch {
             loadCampaignsFor(currentPage)
         }
@@ -119,10 +131,18 @@ class BlazeCampaignListViewModel @Inject constructor(
         triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
     }
 
+    private fun showCampaignCelebrationIfNeeded() {
+        if (!appPrefsWrapper.isBlazeCelebrationScreenShown) {
+            isCampaignCelebrationShown.value = true
+            appPrefsWrapper.isBlazeCelebrationScreenShown = true
+        }
+    }
+
     data class BlazeCampaignListState(
         val campaigns: List<ClickableCampaign>,
         val onAddNewCampaignClicked: () -> Unit,
         val isLoading: Boolean,
+        val isCampaignCelebrationShown: Boolean
     )
 
     data class ClickableCampaign(

@@ -348,6 +348,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
 
+    var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
     fun recordAIDescriptionTooltipShown() = AppPrefs.incrementAIDescriptionTooltipShownNumber()
     fun getAIDescriptionTooltipShownNumber() = AppPrefs.getAIDescriptionTooltipShownNumber()
 

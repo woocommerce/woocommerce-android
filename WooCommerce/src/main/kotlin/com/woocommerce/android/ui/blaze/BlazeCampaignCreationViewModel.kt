@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -83,6 +84,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 )
             )
             appPrefsWrapper.setBlazeBannerHidden(selectedSite.getSelectedSiteId(), hide = true)
+            triggerEvent(CampaignCreated)
         }
     }
 
@@ -152,4 +154,5 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 values().firstOrNull { it.label.equals(source, ignoreCase = true) } ?: UNSPECIFIED
         }
     }
+    object CampaignCreated : Event()
 }

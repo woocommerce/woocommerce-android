@@ -140,7 +140,8 @@ fun BlazeCampaignListScreenPreview() {
                 )
             ),
             onAddNewCampaignClicked = {},
-            isLoading = false
+            isLoading = false,
+            isCampaignCelebrationShown = false
         ),
         onEndOfTheListReached = {},
     )
