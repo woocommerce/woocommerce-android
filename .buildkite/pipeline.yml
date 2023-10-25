@@ -4,7 +4,7 @@ common_params:
   - &ci_toolkit
     automattic/a8c-ci-toolkit#3.0.0
   - &test_collector
-    test-collector#v1.8.0
+    test-collector#v1.10.0
   - &test_collector_common_params
       files: "WooCommerce/build/buildkite-test-analytics/*.xml"
       format: "junit"
