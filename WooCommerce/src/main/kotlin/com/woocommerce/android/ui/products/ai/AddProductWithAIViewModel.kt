@@ -194,9 +194,13 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     fun onProductPackageScanned(title: String, description: String, keywords: List<String>) {
+        val features = keywords.joinToString()
+        nameSubViewModel.onProductNameChanged(title)
+        aboutSubViewModel.updateProductName(title)
+        aboutSubViewModel.onProductFeaturesUpdated(features)
         previewSubViewModel.updateName(title)
         previewSubViewModel.updateProductDescription(description)
-        previewSubViewModel.updateKeywords(keywords.joinToString())
+        previewSubViewModel.updateKeywords(features)
         step.value = Step.Preview
     }
 
