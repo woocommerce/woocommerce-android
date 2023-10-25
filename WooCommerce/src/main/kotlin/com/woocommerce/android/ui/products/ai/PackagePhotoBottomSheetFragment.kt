@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.mediapicker.MediaPickerHelper
+import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ShowMediaLibraryDialog
@@ -18,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
+class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment(), MediaPickerResultHandler {
     companion object {
         const val KEY_PACKAGE_PHOTO_SCAN_RESULT = "key_ai_package_photo_scan_result"
     }
@@ -39,8 +40,8 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
         }
     }
 
-    private fun onMediaLibraryImageSelected(url: String) {
-        viewModel.onImageChanged(url)
+    override fun onMediaSelected(mediaUri: String) {
+        viewModel.onImageChanged(mediaUri)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,7 +60,7 @@ class PackagePhotoBottomSheetFragment : WCBottomSheetDialogFragment() {
 
                 is ShowMediaLibraryDialog -> viewModel.onMediaLibraryDialogRequested()
 
-                is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source, ::onMediaLibraryImageSelected)
+                is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
             }
         }
     }

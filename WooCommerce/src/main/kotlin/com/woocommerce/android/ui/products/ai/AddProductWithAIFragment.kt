@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.mediapicker.MediaPickerHelper
+import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -27,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddProductWithAIFragment : BaseFragment() {
+class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -69,7 +70,7 @@ class AddProductWithAIFragment : BaseFragment() {
                     }
                 )
 
-                is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source, ::showPackagePhotoBottomSheet)
+                is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
 
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
 
@@ -78,10 +79,10 @@ class AddProductWithAIFragment : BaseFragment() {
         }
     }
 
-    private fun showPackagePhotoBottomSheet(imageUrl: String) {
+    override fun onMediaSelected(mediaUri: String) {
         findNavController().navigateSafely(
             directions = AddProductWithAIFragmentDirections
-                .actionAddProductWithAIFragmentToPackagePhotoBottomSheetFragment(imageUrl)
+                .actionAddProductWithAIFragmentToPackagePhotoBottomSheetFragment(mediaUri)
         )
     }
 

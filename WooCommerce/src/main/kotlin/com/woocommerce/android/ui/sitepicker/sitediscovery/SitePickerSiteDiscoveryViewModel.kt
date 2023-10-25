@@ -161,6 +161,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 analyticsTracker.track(
                     stat = AnalyticsEvent.SITE_PICKER_SITE_DISCOVERY,
                     properties = mapOf(
+                        "user_entered_address" to siteAddressFlow.value,
+                        "fetched_address" to siteAddress,
                         "has_wordpress" to it.isWordPress,
                         "is_wpcom" to it.isWPCom,
                         "is_jetpack_installed" to it.hasJetpack,
@@ -170,6 +172,13 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 )
 
                 when {
+                    sitePickRepository.getSiteBySiteUrl(siteAddress) != null -> {
+                        // If the site is already connected to the account, go back to site picker
+                        // We need this additional handling here to handle any non-standard suffixes that the users
+                        // might have added to the site address, and that weren't handled by [UrlUtils.sanitiseUrl],
+                        // as the `urlAfterRedirects` coming from the API will clear those.
+                        navigateBackToSitePicker()
+                    }
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
                     !it.isWPCom -> {

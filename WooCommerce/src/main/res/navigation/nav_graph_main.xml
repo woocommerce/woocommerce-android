@@ -273,6 +273,9 @@
         <action
             android:id="@+id/action_moreMenu_to_subscriptions"
             app:destination="@id/subscriptions" />
+        <action
+            android:id="@+id/action_moreMenu_to_blazeCampaignListFragment"
+            app:destination="@id/nav_graph_blaze" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -630,8 +633,8 @@
             app:nullable="false" />
     </fragment>
     <fragment
-        android:id="@+id/BlazeWebViewFragment"
-        android:name="com.woocommerce.android.ui.blaze.BlazeWebViewFragment"
+        android:id="@+id/blazeCampaignCreationFragment"
+        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
         android:label="BlazeWebViewFragment">
         <argument
             android:name="urlToLoad"
@@ -646,8 +649,8 @@
         android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
         android:label="FreeTrialSurveyFragment" />
     <action
-        android:id="@+id/action_global_blazeWebViewFragment"
-        app:destination="@id/BlazeWebViewFragment" />
+        android:id="@+id/action_global_blazeCampaignCreationFragment"
+        app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />
