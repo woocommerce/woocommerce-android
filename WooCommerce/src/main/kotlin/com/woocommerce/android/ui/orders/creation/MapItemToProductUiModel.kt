@@ -27,7 +27,7 @@ class MapItemToProductUiModel @Inject constructor(
                     isStockManaged = variation?.isStockManaged ?: false,
                     stockQuantity = variation?.stockQuantity ?: 0.0,
                     stockStatus = variation?.stockStatus ?: ProductStockStatus.InStock,
-                    pricePreDiscount =  decimalFormatter(item.pricePreDiscount),
+                    pricePreDiscount = decimalFormatter(item.pricePreDiscount),
                     priceTotal = decimalFormatter(item.total),
                     priceSubtotal = decimalFormatter(item.subtotal),
                     discountAmount = decimalFormatter(item.discount),
@@ -41,13 +41,12 @@ class MapItemToProductUiModel @Inject constructor(
                     isStockManaged = product?.isStockManaged ?: false,
                     stockQuantity = product?.stockQuantity ?: 0.0,
                     stockStatus = product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock,
-                    pricePreDiscount =  decimalFormatter(item.pricePreDiscount),
+                    pricePreDiscount = decimalFormatter(item.pricePreDiscount),
                     priceTotal = decimalFormatter(item.total),
                     priceSubtotal = decimalFormatter(item.subtotal),
                     discountAmount = decimalFormatter(item.discount),
                     priceAfterDiscount = decimalFormatter(item.subtotal - item.discount)
                 )
-                // TODO check if we need to disable the plus button depending on stock quantity
             }
         }
     }
