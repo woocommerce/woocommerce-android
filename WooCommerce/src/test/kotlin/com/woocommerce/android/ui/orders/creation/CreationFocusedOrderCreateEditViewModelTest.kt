@@ -1106,7 +1106,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 false,
                 0.0,
                 ProductStockStatus.NotAvailable,
-                ProductType.SIMPLE
+                ProductType.SIMPLE,
+                false
             )
         )
         sut.onProductClicked(orderItem)
