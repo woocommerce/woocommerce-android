@@ -412,9 +412,10 @@ class LoginActivity :
     }
 
     private fun showPrologueFragment() = lifecycleScope.launch {
-        withStarted { } // suspend until the fragment is started
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
-        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+        withStarted { // suspend until the fragment is started
+            val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+            changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+        }
     }
 
     override fun loginViaSocialAccount(
