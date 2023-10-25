@@ -507,7 +507,6 @@ class OrderCreateEditFormFragment :
             productsSection.content = null
             productsSection.hideAddProductsHeaderActions()
             productsSection.hideHeader()
-            productsSection.content
             productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
