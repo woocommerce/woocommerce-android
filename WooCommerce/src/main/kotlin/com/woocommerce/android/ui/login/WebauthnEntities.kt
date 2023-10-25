@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login
 
 import com.google.gson.annotations.SerializedName
 
-
 data class CredentialManagerData(
     @SerializedName("two_step_nonce") val twoStepNonce: String,
     @SerializedName("user.name") val username: String,
