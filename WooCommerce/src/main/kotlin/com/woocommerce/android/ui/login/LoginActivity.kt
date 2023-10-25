@@ -81,9 +81,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
-import org.wordpress.android.fluxc.network.rest.wpcom.auth.passkey.WebauthnChallengeInfo
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
-import org.wordpress.android.fluxc.store.AccountStore.OnSecurityKeyAuthStarted
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -509,11 +507,11 @@ class LoginActivity :
     }
 
     // should be called when 2FA is needed and Security Key is available
-    override fun signSecurityKey(challengeInfo: WebauthnChallengeInfo?) {
+    override fun signSecurityKey(challengeRequestJson: String) {
         // Move to AppInitializer.kt
         val credentialManager = CredentialManager.create(this)
         appCoroutineScope.launch {
-            credentialManager.createPasskey("", true)
+            credentialManager.createPasskey(challengeRequestJson, true)
         }
     }
 
