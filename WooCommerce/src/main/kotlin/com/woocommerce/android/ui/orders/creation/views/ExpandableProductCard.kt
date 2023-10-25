@@ -90,7 +90,7 @@ fun ExpandableProductCard(
                     shape = RoundedCornerShape(8.dp)
                 )
         ) {
-            val (img, name, stock, sku, quantity, chevron, expandedPart) = createRefs()
+            val (img, name, stock, sku, quantity, price, chevron, expandedPart) = createRefs()
             val collapsedStateBottomBarrier = createBottomBarrier(sku, quantity)
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(item.imageUrl)
@@ -132,7 +132,7 @@ fun ExpandableProductCard(
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.color_on_surface_disabled)
             )
-            if (!isExpanded) {
+            if (isExpanded) {
                 Text(
                     text = stringResource(
                         id = R.string.orderdetail_product_lineitem_sku_value,
@@ -164,8 +164,16 @@ fun ExpandableProductCard(
                             bottom = dimensionResource(id = R.dimen.major_100),
                         ),
                     style = MaterialTheme.typography.body2,
-                    text = "${item.item.quantity.toInt()} x ${item.item.pricePreDiscount}",
+                    text = getQuantityWithTotalText(item),
                     color = colorResource(id = R.color.color_on_surface_disabled)
+                )
+                Text(
+                    modifier = Modifier.constrainAs(price) {
+                        end.linkTo(chevron.start)
+                        top.linkTo(quantity.top)
+                    },
+                    style = MaterialTheme.typography.body2,
+                    text = item.priceSubtotal
                 )
             }
             IconButton(
@@ -238,7 +246,7 @@ fun ExtendedProductCardContent(
             Text(
                 modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100)),
                 color = colorResource(id = R.color.color_on_surface_disabled),
-                text = "${item.item.quantity.toInt()} x ${item.item.pricePreDiscount}"
+                text = getQuantityWithTotalText(item)
             )
             val totalAmountStyle = if (item.hasDiscount) {
                 MaterialTheme.typography.body1.copy(
@@ -331,6 +339,10 @@ fun ExtendedProductCardContent(
         }
     }
 }
+
+@Composable
+private fun getQuantityWithTotalText(item: ProductUIModel) =
+    "${item.item.quantity.toInt()} x ${item.item.pricePreDiscount}"
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
