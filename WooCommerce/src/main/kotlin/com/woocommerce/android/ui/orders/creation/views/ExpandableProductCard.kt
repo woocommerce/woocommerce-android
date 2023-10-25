@@ -428,7 +428,8 @@ private fun AmountPicker(
         ) {
             Icon(
                 imageVector = Icons.Filled.Remove,
-                contentDescription = stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
+                contentDescription =
+                stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
                 tint = buttonTint
             )
         }
@@ -439,7 +440,8 @@ private fun AmountPicker(
         ) {
             Icon(
                 imageVector = Icons.Filled.Add,
-                contentDescription = stringResource(id = R.string.order_creation_increase_item_amount_content_description),
+                contentDescription =
+                stringResource(id = R.string.order_creation_increase_item_amount_content_description),
                 tint = buttonTint
             )
         }
