@@ -17,6 +17,7 @@ import androidx.credentials.exceptions.CreateCredentialException
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
@@ -507,11 +508,15 @@ class LoginActivity :
     }
 
     // should be called when 2FA is needed and Security Key is available
-    override fun signSecurityKey(challengeRequestJson: String) {
+    override fun signSecurityKey(challengeRequestJson: String, userId: String, username: String) {
         // Move to AppInitializer.kt
         val credentialManager = CredentialManager.create(this)
+        val gson = Gson()
+        val challengeInfo = gson.fromJson(challengeRequestJson, WebauthnChallengeInfo::class.java)
+        val credentialManagerData = CredentialManagerData(challengeInfo, userId.toLong(), username)
+        val credentialDataJson = gson.toJson(credentialManagerData)
         appCoroutineScope.launch {
-            credentialManager.createPasskey(challengeRequestJson, true)
+            credentialManager.createPasskey(credentialDataJson, true)
         }
     }
 
