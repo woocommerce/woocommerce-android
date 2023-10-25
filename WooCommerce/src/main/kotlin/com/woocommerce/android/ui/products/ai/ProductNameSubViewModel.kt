@@ -66,16 +66,22 @@ class ProductNameSubViewModel(
     }
 
     fun onMediaPickerDialogDismissed() {
-        uiState.update { uiState.value.copy(isMediaPickerDialogVisible = false) }
+        setMediaPickerDialogVisibility(false)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onMediaLibraryRequested(source: DataSource) {
-        onMediaPickerDialogDismissed()
+        viewModelScope.launch {
+            _events.emit(ShowMediaLibrary(source))
+            setMediaPickerDialogVisibility(false)
+        }
     }
 
     fun onPackageImageClicked() {
-        uiState.update { uiState.value.copy(isMediaPickerDialogVisible = true) }
+        setMediaPickerDialogVisibility(true)
+    }
+
+    private fun setMediaPickerDialogVisibility(isVisible: Boolean) {
+        uiState.update { uiState.value.copy(isMediaPickerDialogVisible = isVisible) }
     }
 
     override fun close() {
@@ -89,4 +95,6 @@ class ProductNameSubViewModel(
     ) : Parcelable
 
     data class NavigateToAIProductNameBottomSheet(val initialName: String?) : Event()
+
+    data class ShowMediaLibrary(val source: DataSource) : Event()
 }

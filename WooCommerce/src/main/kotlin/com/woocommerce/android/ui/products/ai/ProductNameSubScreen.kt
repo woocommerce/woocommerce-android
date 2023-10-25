@@ -37,13 +37,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.UiState
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.widgets.MediaPickerDialog
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
