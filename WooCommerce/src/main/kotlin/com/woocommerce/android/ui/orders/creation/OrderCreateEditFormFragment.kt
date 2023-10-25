@@ -501,7 +501,7 @@ class OrderCreateEditFormFragment :
                         ExpandableProductCard(
                             item,
                             onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
-                            onDiscountButtonClicked = {},
+                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item.item) },
                         )
                     }
                 }
