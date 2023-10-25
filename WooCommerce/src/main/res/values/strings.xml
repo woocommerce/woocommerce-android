@@ -3678,6 +3678,7 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
+
     <!--
     Blaze campaign creation intro
     -->
@@ -3687,6 +3688,13 @@
     <string name="blaze_campaign_creation_intro_benefit_3">Reach millions on WordPress and Tumblr sites.</string>
     <string name="blaze_campaign_creation_intro_benefit_4">Track performance, start and stop your Blaze campaign anytime.</string>
     <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
+
+    <!--
+    Blaze campaign creation celebration
+    -->
+    <string name="blaze_campaign_creation_celebration_header">All set!</string>
+    <string name="blaze_campaign_ceation_celebration_message">The ad has been submistted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
+    <string name="blaze_campaign_ceation_celebration_button">Got it</string>
 
     <!--
     Blaze other

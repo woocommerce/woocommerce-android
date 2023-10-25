@@ -81,6 +81,10 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
     }
 
+    fun onCampaignCelebrationDismissed() {
+        isCampaignCelebrationShown.value = false
+    }
+
     private suspend fun loadCampaignsFor(page: Int) {
         val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
         if (result.isError || result.model == null) {
