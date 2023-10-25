@@ -256,7 +256,7 @@ fun ExtendedProductCardContent(
             } else {
                 MaterialTheme.typography.body1
             }
-            Text(text = "${item.item.subtotal}", style = totalAmountStyle)
+            Text(text = item.priceSubtotal, style = totalAmountStyle)
         }
         if (item.hasDiscount) {
             WCTextButton(
@@ -342,7 +342,7 @@ fun ExtendedProductCardContent(
 
 @Composable
 private fun getQuantityWithTotalText(item: ProductUIModel) =
-    "${item.item.quantity.toInt()} x ${item.item.pricePreDiscount}"
+    "${item.item.quantity.toInt()} x ${item.pricePreDiscount}"
 
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
