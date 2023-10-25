@@ -96,7 +96,7 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/customAmountNameText"
-                style="@style/Woo.TextView.Subtitle1"
+                style="@style/Woo.TextView.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
