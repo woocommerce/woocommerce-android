@@ -189,7 +189,7 @@ fun ProductFromPackagePhoto(
 
 @Composable
 private fun Message(message: String, isError: Boolean = false) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
@@ -198,22 +198,35 @@ private fun Message(message: String, isError: Boolean = false) {
                     id = if (isError)
                         color.error_banner_background_color
                     else
-                        color.warning_banner_background_color
+                        color.tag_bg_main
                 )
             )
     ) {
+        val color = colorResource(
+            id = if (isError)
+                color.error_banner_foreground_color
+            else
+                color.tag_text_main
+        )
+        
+        Icon(
+            painter = painterResource(drawable.ic_info_outline_20dp),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .size(dimensionResource(id = dimen.major_150)),
+            tint = color,
+        )
         Text(
             text = message,
-            color = colorResource(
-                id = if (isError)
-                    color.error_banner_foreground_color
-                else
-                    color.warning_banner_foreground_color
-            ),
-            fontWeight = FontWeight.Bold,
+            color = color,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = dimen.major_100))
+                .weight(1f)
+                .padding(
+                    top = dimensionResource(id = dimen.major_100),
+                    end = dimensionResource(id = dimen.major_100),
+                    bottom = dimensionResource(id = dimen.major_100)
+                )
         )
     }
 }
