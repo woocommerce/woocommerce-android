@@ -8,6 +8,7 @@ import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryRe
 import dagger.hilt.android.scopes.FragmentScoped
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.ui.MediaPickerActivity
 import javax.inject.Inject
 
@@ -27,7 +28,10 @@ class MediaPickerHelper @Inject constructor(
     fun showMediaPicker(source: DataSource) {
         val mediaPickerIntent = MediaPickerActivity.buildIntent(
             context = fragment.requireContext(),
-            mediaPickerSetupFactory.build(source)
+            mediaPickerSetupFactory.build(
+                source = source,
+                mediaTypes = MediaTypes.IMAGES
+            )
         )
 
         if (source == DataSource.WP_MEDIA_LIBRARY) {
