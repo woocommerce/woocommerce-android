@@ -30,6 +30,9 @@ class PackagePhotoViewModel @Inject constructor(
     private val aiRepository: AIRepository,
     private val textRecognitionEngine: TextRecognitionEngine
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private val DEFAULT_LANGUAGE_ISO = "en"
+    }
     private val navArgs: PackagePhotoBottomSheetFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = MutableStateFlow(
@@ -37,8 +40,6 @@ class PackagePhotoViewModel @Inject constructor(
     )
 
     val viewState = _viewState.asLiveData()
-
-    private var identifiedLanguageISOCode: String = "en"
 
     init {
         analyzePackagePhoto()
@@ -56,7 +57,6 @@ class PackagePhotoViewModel @Inject constructor(
                             )
                         }
 
-                        identifyLanguage(keywords.joinToString())
                         generateNameAndDescription()
                     } else {
                         _viewState.update {
@@ -97,13 +97,18 @@ class PackagePhotoViewModel @Inject constructor(
         }
     }
 
-    private suspend fun identifyLanguage(keywords: String) {
-        aiRepository.identifyISOLanguageCode(
+    private suspend fun identifyLanguage(keywords: String): String {
+        return aiRepository.identifyISOLanguageCode(
             text = keywords,
             feature = PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
-        ).onSuccess { language ->
-            identifiedLanguageISOCode = language
-        }
+        ).fold(
+            onSuccess = { language ->
+                language
+            },
+            onFailure = {
+                DEFAULT_LANGUAGE_ISO
+            }
+        )
     }
 
     private suspend fun generateNameAndDescription() {
@@ -112,7 +117,8 @@ class PackagePhotoViewModel @Inject constructor(
         }
 
         val keywords = _viewState.value.keywords.filter { it.isChecked }.joinToString { it.title }
-        aiRepository.generateProductNameAndDescription(keywords, identifiedLanguageISOCode)
+        val language = identifyLanguage(keywords)
+        aiRepository.generateProductNameAndDescription(keywords, language)
             .onSuccess { result ->
                 _viewState.update {
                     _viewState.value.copy(state = Success, title = result.name, description = result.description)
