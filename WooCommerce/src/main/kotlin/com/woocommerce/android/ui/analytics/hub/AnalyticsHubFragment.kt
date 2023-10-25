@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
 import androidx.navigation.fragment.findNavController
@@ -52,10 +53,11 @@ class AnalyticsHubFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        lifecycleScope.launch {
-            withStarted { } // suspend until the fragment is started
-            viewModel.viewState.collect { newState -> handleStateChange(newState) }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.viewState.flowWithLifecycle(lifecycle).collect { newState -> handleStateChange(newState) }
         }
+
         viewModel.event.observe(viewLifecycleOwner) { event -> handleEvent(event) }
         binding.analyticsRefreshLayout.setOnRefreshListener {
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
