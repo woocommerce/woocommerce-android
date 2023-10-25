@@ -16,22 +16,15 @@ class MediaPickerHelper @Inject constructor(
     private val fragment: Fragment,
     private val mediaPickerSetupFactory: MediaPickerSetup.Factory
 ) {
-    private lateinit var onMediaSelected: (String) -> Unit
-
     private val deviceLibraryLauncher = fragment.registerForActivityResult(StartActivityForResult()) {
         handleDeviceMediaResult(it)
-    }
-
-    fun showMediaPicker(source: DataSource, onMediaSelected: (String) -> Unit) {
-        this.onMediaSelected = onMediaSelected
-        showMediaPicker(source)
     }
 
     private val mediaLibraryLauncher = fragment.registerForActivityResult(StartActivityForResult()) {
         handleMediaLibraryPickerResult(it)
     }
 
-    private fun showMediaPicker(source: DataSource) {
+    fun showMediaPicker(source: DataSource) {
         val mediaPickerIntent = MediaPickerActivity.buildIntent(
             context = fragment.requireContext(),
             mediaPickerSetupFactory.build(source)
@@ -47,14 +40,18 @@ class MediaPickerHelper @Inject constructor(
     private fun handleDeviceMediaResult(result: ActivityResult) {
         result.processDeviceMediaResult()?.let { mediaUris ->
             if (mediaUris.isNotEmpty()) {
-                onMediaSelected(mediaUris.first().toString())
+                (fragment as MediaPickerResultHandler).onMediaSelected(mediaUris.first().toString())
             }
         }
     }
 
     private fun handleMediaLibraryPickerResult(result: ActivityResult) {
         result.processMediaLibraryResult()?.let { mediaItems ->
-            onMediaSelected(mediaItems.map { it.source }.first())
+            (fragment as MediaPickerResultHandler).onMediaSelected(mediaItems.map { it.source }.first())
         }
+    }
+
+    interface MediaPickerResultHandler {
+        fun onMediaSelected(mediaUri: String)
     }
 }
