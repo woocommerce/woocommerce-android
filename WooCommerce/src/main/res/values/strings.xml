@@ -3679,6 +3679,15 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
 
+    <!--
+    Blaze campaign creation intro
+    -->
+    <string name="blaze_campaign_creation_intro_title">Drive more sales to your store with Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promote your product in just minutes.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Take control with just a few dollars a day. It’s budget-friendly.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Reach millions on WordPress and Tumblr sites.</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Track performance, start and stop your Blaze campaign anytime.</string>
+    <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
 
     <!--
     Blaze other

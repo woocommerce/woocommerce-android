@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
@@ -37,6 +38,8 @@ class PackagePhotoViewModel @Inject constructor(
 
     val viewState = _viewState.asLiveData()
 
+    private var identifiedLanguageISOCode: String = "en"
+
     init {
         analyzePackagePhoto()
     }
@@ -52,6 +55,8 @@ class PackagePhotoViewModel @Inject constructor(
                                 keywords = keywords.map { Keyword(it, true) }
                             )
                         }
+
+                        identifyLanguage(keywords.joinToString())
                         generateNameAndDescription()
                     } else {
                         _viewState.update {
@@ -61,9 +66,9 @@ class PackagePhotoViewModel @Inject constructor(
                         }
                     }
                 }
-                .onFailure { error ->
+                .onFailure {
                     _viewState.update {
-                        _viewState.value.copy(state = Failure(error.message ?: ""))
+                        _viewState.value.copy(state = NoKeywordsFound)
                     }
                 }
         }
@@ -92,25 +97,26 @@ class PackagePhotoViewModel @Inject constructor(
         }
     }
 
+    private suspend fun identifyLanguage(keywords: String) {
+        aiRepository.identifyISOLanguageCode(
+            text = keywords,
+            feature = PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
+        ).onSuccess { language ->
+            identifiedLanguageISOCode = language
+        }
+    }
+
     private suspend fun generateNameAndDescription() {
         _viewState.update {
             _viewState.value.copy(state = Generating)
         }
 
         val keywords = _viewState.value.keywords.filter { it.isChecked }.joinToString { it.title }
-        aiRepository.generateProductName(keywords)
-            .onSuccess { name ->
-                aiRepository.generateProductDescription(name, keywords)
-                    .onSuccess { description ->
-                        _viewState.update {
-                            _viewState.value.copy(state = Success, title = name, description = description)
-                        }
-                    }
-                    .onFailure { error ->
-                        _viewState.update {
-                            _viewState.value.copy(state = Failure(error.message ?: ""))
-                        }
-                    }
+        aiRepository.generateProductNameAndDescription(keywords, identifiedLanguageISOCode)
+            .onSuccess { result ->
+                _viewState.update {
+                    _viewState.value.copy(state = Success, title = result.name, description = result.description)
+                }
             }
             .onFailure { error ->
                 _viewState.update {

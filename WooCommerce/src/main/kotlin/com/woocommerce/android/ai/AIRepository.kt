@@ -1,5 +1,6 @@
 package com.woocommerce.android.ai
 
+import com.google.gson.Gson
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.tools.SelectedSite
@@ -21,6 +22,7 @@ class AIRepository @Inject constructor(
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
         const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
+        const val PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE = "woo_android_product_details_from_scanned_texts"
     }
 
     suspend fun generateProductSharingText(
@@ -61,6 +63,21 @@ class AIRepository @Inject constructor(
         )
 
         return fetchJetpackAICompletionsForSite(prompt, PRODUCT_NAME_FEATURE)
+    }
+
+    suspend fun generateProductNameAndDescription(
+        keywords: String,
+        languageISOCode: String = "en"
+    ): Result<AIProductDetailsResult> {
+        val prompt = AIPrompts.generateProductNameAndDescriptionPrompt(
+            keywords,
+            languageISOCode
+        )
+
+        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE)
+            .mapCatching { json ->
+                Gson().fromJson(json, AIProductDetailsResult::class.java)
+            }
     }
 
     @Suppress("LongParameterList")
@@ -119,6 +136,11 @@ class AIRepository @Inject constructor(
         val errorMessage: String,
         val errorType: String
     ) : Exception(errorMessage)
+
+    data class AIProductDetailsResult(
+        val name: String,
+        val description: String
+    )
 
     private fun JetpackAICompletionsResponse.Error.mapToException() =
         JetpackAICompletionsException(

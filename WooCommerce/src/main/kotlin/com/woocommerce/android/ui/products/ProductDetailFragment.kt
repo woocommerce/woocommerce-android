@@ -352,7 +352,7 @@ class ProductDetailFragment :
 
     private fun openBlazeWebView(event: NavigateToBlazeWebView) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
                 urlToLoad = event.url,
                 source = event.source
             )

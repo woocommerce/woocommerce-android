@@ -199,7 +199,7 @@ class ProductListFragment :
                 is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
                 is BlazeBannerViewModel.OpenBlazeEvent -> {
                     findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalBlazeWebViewFragment(
+                        NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
                             urlToLoad = event.url,
                             source = event.source
                         )

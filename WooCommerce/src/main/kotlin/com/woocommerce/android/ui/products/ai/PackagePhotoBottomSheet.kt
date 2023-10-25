@@ -174,9 +174,11 @@ fun ProductFromPackagePhoto(
                             "${stringResource(id = string.product_creation_package_photo_error)}."
                         } else {
                             stringResource(id = string.product_creation_package_photo_error) +
-                                " (${viewState.state.message})."
+                                ":\n\n${viewState.state.message}"
                         }
                         Message(message = error, isError = true)
+                        Spacer(Modifier)
+                        Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
                     }
                 }
             }
@@ -446,7 +448,7 @@ private fun KeywordListItem(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .weight(1f),
-            textStyle = MaterialTheme.typography.body1,
+            textStyle = MaterialTheme.typography.body1.copy(color = colorResource(id = color.color_on_surface)),
             enabled = isEnabled,
             onValueChange = {
                 onKeywordChanged(index, Keyword(it, isSelected))
