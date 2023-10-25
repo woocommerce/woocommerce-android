@@ -38,7 +38,7 @@ class CreateOrderItem @Inject constructor(
                         ?.createItem(product, configuration)
                 } else null
             } ?: product?.createItem(configuration)
-            ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
+                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
         }
     }
 
