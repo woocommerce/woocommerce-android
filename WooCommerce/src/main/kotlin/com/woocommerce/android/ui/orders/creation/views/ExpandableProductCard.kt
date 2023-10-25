@@ -243,7 +243,7 @@ fun ExtendedProductCardContent(
             priceAfterDiscountValue,
             removeButton
         ) = createRefs()
-        val editableControlsEnabled = state.value?.isUpdatingOrderDraft?.not() ?: true
+        val editableControlsEnabled = state.value?.isIdle == true
         Divider(
             modifier = Modifier.constrainAs(topDivider) {
                 top.linkTo(parent.top)
