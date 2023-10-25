@@ -2347,12 +2347,6 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product) =
-        getProductVisibility() == PUBLIC &&
-            productDraft.status != DRAFT &&
-            !isProductUnderCreation &&
-            isBlazeEnabled()
-
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
