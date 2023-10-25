@@ -60,6 +60,8 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
                     mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to true)
                 )
 
+                appPrefsWrapper.removeLoginSiteAddress()
+
                 prologueFinishedListener?.onGetStartedClicked()
             }
         }
