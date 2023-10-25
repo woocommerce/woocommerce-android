@@ -84,7 +84,7 @@ fun ExpandableProductCard(
                 .border(
                     1.dp,
                     colorResource(id = R.color.divider_color),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
                 )
         ) {
             val (img, name, chevron, expandedPart) = createRefs()
@@ -123,7 +123,8 @@ fun ExpandableProductCard(
                 Icon(
                     modifier = Modifier.rotate(chevronRotation),
                     imageVector = Icons.Filled.KeyboardArrowDown,
-                    contentDescription = "Collapse/expand product card",
+                    contentDescription =
+                    stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
                     tint = MaterialTheme.colors.primary
                 )
             }
