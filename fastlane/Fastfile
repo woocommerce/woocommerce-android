@@ -50,7 +50,7 @@ GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/proj
 APP_PACKAGE_NAME = 'com.woocommerce.android'
 GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
 
-# Instanstiate versioning classes
+# Instantiate versioning classes
 VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::DateVersionCalculator.new
 VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFormatter.new
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
@@ -64,7 +64,6 @@ Dotenv.load('~/.wcandroid-env.default')
 ENV.fetch(GHHELPER_REPO = 'woocommerce/woocommerce-android', nil)
 ENV['PROJECT_NAME'] = 'WooCommerce'
 ENV['PROJECT_ROOT_FOLDER'] = './'
-ENV['FL_RELEASE_TOOLKIT_DEFAULT_BRANCH'] = 'trunk'
 DEFAULT_BRANCH = 'trunk'
 REPOSITORY_NAME = 'woocommerce-android'
 GH_ORG_NAME = 'woocommerce'
