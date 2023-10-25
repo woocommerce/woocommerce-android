@@ -60,7 +60,7 @@ class BlazeCampaignListViewModel @Inject constructor(
     }
 
     fun onEndOfTheListReached() {
-        if (!isLoadingMore.value) {
+        if (!isLoadingMore.value && currentPage + 1 <= totalPages) {
             launch {
                 isLoadingMore.value = true
                 loadCampaignsFor(++currentPage)
@@ -70,13 +70,11 @@ class BlazeCampaignListViewModel @Inject constructor(
     }
 
     private suspend fun loadCampaignsFor(page: Int) {
-        if (page <= totalPages) {
-            val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
-            if (result.isError || result.model == null) {
-                triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
-            } else {
-                totalPages = result.model?.totalPages ?: 1
-            }
+        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
+        if (result.isError || result.model == null) {
+            triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
+        } else {
+            totalPages = result.model?.totalPages ?: 1
         }
     }
 
