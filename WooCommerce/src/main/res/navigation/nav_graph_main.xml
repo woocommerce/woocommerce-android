@@ -273,6 +273,9 @@
         <action
             android:id="@+id/action_moreMenu_to_subscriptions"
             app:destination="@id/subscriptions" />
+        <action
+            android:id="@+id/action_moreMenu_to_blazeCampaignListFragment"
+            app:destination="@id/nav_graph_blaze" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"

@@ -79,6 +79,9 @@ class OrderCreateEditFormFragment :
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    lateinit var isCustomAmountsFeatureFlagEnabled: IsCustomAmountsFeatureFlagEnabled
+
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
     private var orderUpdateFailureSnackBar: Snackbar? = null
@@ -242,6 +245,14 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            initNewProductsSection()
+        } else {
+            initOldProductsSection()
+        }
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initOldProductsSection() {
         productsSection.setProductSectionButtons(
             addProductsButton = AddButton(
                 text = getString(R.string.order_creation_add_products),
@@ -252,6 +263,28 @@ class OrderCreateEditFormFragment :
             addProductsViaScanButton = AddButton(
                 text = getString(R.string.order_creation_add_product_via_barcode_scanning),
                 onClickListener = { viewModel.onScanClicked() }
+            ),
+        )
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initNewProductsSection() {
+        productsSection.hideHeader()
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+            addCustomAmountsButton = AddButton(
+                text = getString(R.string.order_creation_add_custom_amounts),
+                onClickListener = {
+                    // Implement custom amounts click listener
+                }
             )
         )
     }
