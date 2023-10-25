@@ -193,7 +193,10 @@ class OrderCreateEditViewModel @Inject constructor(
     val products: LiveData<List<OrderCreationProduct>> = _orderDraft
         .map { order -> order.items.filter { it.quantity > 0 } }
         .distinctUntilChanged()
-        .map { items -> orderCreationProductMapper.toOrderProducts(items) }
+        .map { items ->
+            orderCreationProductMapper.toOrderProducts(items)
+                .sortedBy { creationProduct -> creationProduct.item.productId }
+        }
         .asLiveData()
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
