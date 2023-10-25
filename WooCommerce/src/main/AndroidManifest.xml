@@ -228,6 +228,7 @@
             android:value="barcode_ui" />
 
         <meta-data android:name="io.sentry.traces.activity.enable" android:value="false" />
+        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
     </application>
 
 </manifest>
