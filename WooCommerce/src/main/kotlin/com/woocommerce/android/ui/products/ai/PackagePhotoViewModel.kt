@@ -10,12 +10,14 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import javax.inject.Inject
 
 @HiltViewModel
 class PackagePhotoViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val textRecognitionEngine: TextRecognitionEngine
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: PackagePhotoBottomSheetFragmentArgs by savedStateHandle.navArgs()
 
@@ -24,6 +26,26 @@ class PackagePhotoViewModel @Inject constructor(
     )
 
     val viewState = _viewState.asLiveData()
+
+    init {
+        analyzePackagePhoto()
+    }
+
+    private fun analyzePackagePhoto() {
+        launch {
+            textRecognitionEngine.processImage(_viewState.value.imageUrl)
+                .onSuccess { keywords ->
+                    _viewState.update {
+                        _viewState.value.copy(keywords = keywords.map { Keyword(it, true) })
+                    }
+                }
+                .onFailure { error ->
+                    _viewState.update {
+                        _viewState.value.copy(description = error.toString())
+                    }
+                }
+        }
+    }
 
     fun onKeywordChanged(index: Int, keyword: Keyword) {
         _viewState.value = _viewState.value.copy(
@@ -42,7 +64,7 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onRegenerateTapped() {
-        // TBD
+        /* TODO */
     }
 
     fun onMediaLibraryDialogRequested() {
@@ -62,6 +84,7 @@ class PackagePhotoViewModel @Inject constructor(
         _viewState.update {
             _viewState.value.copy(imageUrl = url)
         }
+        analyzePackagePhoto()
     }
 
     private fun setMediaPickerDialogVisibility(isVisible: Boolean) {
@@ -77,9 +100,9 @@ class PackagePhotoViewModel @Inject constructor(
     data class ViewState(
         val imageUrl: String,
         val isMediaPickerDialogVisible: Boolean = false,
-        val title: String = "Title",
-        val description: String = "Description",
-        val keywords: List<Keyword> = listOf(Keyword("Keyword 1", true), Keyword("Keyword 2", false)),
+        val title: String = "",
+        val description: String = "",
+        val keywords: List<Keyword> = emptyList(),
         val generationState: GenerationState = Initial
     ) {
         data class Keyword(val title: String, val isChecked: Boolean)

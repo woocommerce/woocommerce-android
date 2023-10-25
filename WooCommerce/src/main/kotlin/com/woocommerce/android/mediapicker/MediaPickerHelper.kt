@@ -33,7 +33,6 @@ class MediaPickerHelper @Inject constructor(
                 mediaTypes = MediaTypes.IMAGES
             )
         )
-
         if (source == DataSource.WP_MEDIA_LIBRARY) {
             mediaLibraryLauncher.launch(mediaPickerIntent)
         } else {

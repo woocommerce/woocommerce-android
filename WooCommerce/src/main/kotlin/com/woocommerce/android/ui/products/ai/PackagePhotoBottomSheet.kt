@@ -1,14 +1,18 @@
 package com.woocommerce.android.ui.products.ai
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -42,7 +47,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -118,7 +125,7 @@ fun ProductFromPackagePhoto(
 
 @Composable
 private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
-    ConstraintLayout(
+    Box(
         modifier = Modifier
             .border(
                 width = dimensionResource(id = dimen.minor_10),
@@ -127,44 +134,68 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
             )
             .fillMaxWidth()
     ) {
-        val (image, button) = createRefs()
-
-        AsyncImage(
+        ConstraintLayout(
             modifier = Modifier
-                .constrainAs(image) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-            model = Builder(LocalContext.current)
-                .data(viewState.imageUrl)
-                .crossfade(true)
-                .placeholder(drawable.img_empty_products)
-                .error(drawable.img_empty_products)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Inside,
-        )
-
-        WCColoredButton(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.major_100))
-                .constrainAs(button) {
-                    centerAround(image.top)
-                    centerAround(image.end)
-                }
-                .size(dimensionResource(id = dimen.button_height_major_100)),
-            shape = CircleShape,
-            onClick = onEditPhotoTapped,
-            contentPadding = PaddingValues(0.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .padding(
+                    horizontal = dimensionResource(id = dimen.major_200),
+                    vertical = dimensionResource(id = dimen.major_100)
+                )
         ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
+            val (image, button) = createRefs()
+
+            SubcomposeAsyncImage(
+                modifier = Modifier
+                    .animateContentSize(animationSpec = tween(durationMillis = 500))
+                    .defaultMinSize(minWidth = dimensionResource(id = dimen.image_major_100))
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                model = Builder(LocalContext.current)
+                    .data(viewState.imageUrl)
+                    .crossfade(true)
+                    .placeholder(drawable.ic_product)
+                    .error(drawable.img_woo_generic_error)
+                    .build(),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = colorResource(id = color.woo_white),
-            )
+                contentScale = ContentScale.Fit,
+            ) {
+                val state = painter.state
+                if (state is AsyncImagePainter.State.Loading || state is AsyncImagePainter.State.Error) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(dimensionResource(id = dimen.progress_bar_mid))
+                        )
+                    }
+                } else {
+                    SubcomposeAsyncImageContent()
+                }
+            }
+
+            WCColoredButton(
+                modifier = Modifier
+                    .constrainAs(button) {
+                        centerAround(image.top)
+                        centerAround(image.end)
+                    }
+                    .size(dimensionResource(id = dimen.button_height_major_100)),
+                shape = CircleShape,
+                onClick = onEditPhotoTapped,
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = colorResource(id = color.woo_white),
+                )
+            }
         }
     }
 }
@@ -285,7 +316,7 @@ fun KeywordListItem(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .weight(1f),
-            textStyle = MaterialTheme.typography.body1,
+            textStyle = MaterialTheme.typography.body1.copy(color = colorResource(id = color.color_on_surface)),
             onValueChange = {
                 onKeywordChanged(index, Keyword(it, isSelected))
             },

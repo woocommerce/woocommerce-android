@@ -229,7 +229,7 @@ private fun ProductKeywordsTextFieldWithEmbeddedButton(
 
 @Preview
 @Composable
-fun ProductNamePreview() {
+private fun ProductNamePreview() {
     WooThemeWithBackground {
         ProductNameForm(
             state = UiState("Everyday Elegance with Our Soft Black Tee", false),
