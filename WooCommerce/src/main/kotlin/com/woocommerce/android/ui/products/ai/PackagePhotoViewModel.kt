@@ -2,7 +2,11 @@ package com.woocommerce.android.ui.products.ai
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.NoKeywordsFound
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,39 +36,63 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     private fun analyzePackagePhoto() {
+        _viewState.update { _viewState.value.copy(state = Scanning) }
         launch {
             textRecognitionEngine.processImage(_viewState.value.imageUrl)
                 .onSuccess { keywords ->
-                    _viewState.update {
-                        _viewState.value.copy(keywords = keywords.map { Keyword(it, true) })
+                    if (keywords.isNotEmpty()) {
+                        _viewState.update {
+                            _viewState.value.copy(
+                                keywords = keywords.map { Keyword(it, true) }
+                            )
+                        }
+                        generateNameAndDescription()
+                    } else {
+                        _viewState.update {
+                            _viewState.value.copy(
+                                state = NoKeywordsFound
+                            )
+                        }
                     }
                 }
                 .onFailure { error ->
                     _viewState.update {
-                        _viewState.value.copy(description = error.toString())
+                        _viewState.value.copy(state = Failure(error.message ?: ""))
                     }
                 }
         }
     }
 
     fun onKeywordChanged(index: Int, keyword: Keyword) {
-        _viewState.value = _viewState.value.copy(
-            keywords = _viewState.value.keywords.mapIndexed { i, old ->
-                if (i == index) {
-                    old.copy(title = keyword.title, isChecked = keyword.isChecked)
-                } else {
-                    old
-                }
-            }
-        )
+        _viewState.update {
+            _viewState.value.copy(
+                keywords = _viewState.value.keywords.mapIndexed { i, old ->
+                    if (i == index) {
+                        old.copy(title = keyword.title, isChecked = keyword.isChecked)
+                    } else {
+                        old
+                    }
+                },
+            )
+        }
+    }
+
+    private fun generateNameAndDescription() {
+        _viewState.update {
+            _viewState.value.copy(state = Generating)
+        }
     }
 
     fun onEditPhotoTapped() {
         triggerEvent(ShowMediaLibraryDialog)
     }
 
-    fun onRegenerateTapped() {
+    fun onContinueTapped() {
         /* TODO */
+    }
+
+    fun onRegenerateTapped() = launch {
+        generateNameAndDescription()
     }
 
     fun onMediaLibraryDialogRequested() {
@@ -103,7 +131,8 @@ class PackagePhotoViewModel @Inject constructor(
         val title: String = "",
         val description: String = "",
         val keywords: List<Keyword> = emptyList(),
-        val generationState: GenerationState = Initial
+        val isRegenerateButtonEnabled: Boolean = true,
+        val state: GenerationState = Initial
     ) {
         data class Keyword(val title: String, val isChecked: Boolean)
 
@@ -112,7 +141,8 @@ class PackagePhotoViewModel @Inject constructor(
             object Scanning : GenerationState()
             object Generating : GenerationState()
             object Success : GenerationState()
-            data class Failure(val error: String) : GenerationState()
+            object NoKeywordsFound : GenerationState()
+            data class Failure(val message: String) : GenerationState()
         }
     }
 }
