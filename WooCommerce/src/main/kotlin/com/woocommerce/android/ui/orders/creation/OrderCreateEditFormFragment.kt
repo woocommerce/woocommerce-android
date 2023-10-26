@@ -315,7 +315,7 @@ class OrderCreateEditFormFragment :
         }
 
         viewModel.products.observe(viewLifecycleOwner) {
-            bindProductsSection(binding.productsSection, it)
+            bindProductsSection(binding.productsSection, binding.customAmountsSection, it)
         }
 
         viewModel.customAmounts.observe(viewLifecycleOwner) {
@@ -460,21 +460,21 @@ class OrderCreateEditFormFragment :
     }
 
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
-        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
+//        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         val currentFeeTotal = newOrderData.feesTotal
 
         val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
 
         if (hasFee) {
-            feeButton.setText(R.string.order_creation_payment_fee)
+            feeButton.setText(R.string.custom_amounts)
             feeButton.setIconResource(0)
             feeValue.isVisible = true
             feeValue.text = bigDecimalFormatter(currentFeeTotal)
         } else {
-            feeButton.setText(R.string.order_creation_add_fee)
-            feeButton.setIconResource(R.drawable.ic_add)
-            feeValue.isVisible = false
+//            feeButton.setText(R.string.order_creation_add_fee)
+//            feeButton.setIconResource(R.drawable.ic_add)
+//            feeValue.isVisible = false
         }
     }
 
@@ -511,7 +511,11 @@ class OrderCreateEditFormFragment :
             }
     }
 
-    private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
+    private fun bindProductsSection(
+        productsSection: OrderCreateEditSectionView,
+        customAmountsSection: OrderCreateEditSectionView,
+        products: List<ProductUIModel>?
+    ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
             productsSection.content = null
@@ -528,19 +532,38 @@ class OrderCreateEditFormFragment :
                     text = getString(R.string.order_creation_add_product_via_barcode_scanning),
                     onClickListener = { viewModel.onScanClicked() }
                 ),
-                addCustomAmountsButton = AddButton(
-                    text = getString(R.string.order_creation_add_custom_amounts),
-                    onClickListener = {
-                        findNavController().navigateSafely(
-                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
-                        )
-                    }
-                )
+                addCustomAmountsButton = if (viewModel.customAmounts.value.isNullOrEmpty()) {
+                    AddButton(
+                        text = getString(R.string.order_creation_add_custom_amounts),
+                        onClickListener = {
+                            findNavController().navigateSafely(
+                                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
+                            )
+                        }
+                    )
+                } else {
+                    null
+                }
             )
         } else {
             productsSection.showAddProductsHeaderActions()
             productsSection.showHeader()
             productsSection.removeProductsButtons()
+            if (viewModel.customAmounts.value.isNullOrEmpty()) {
+                customAmountsSection.show()
+                customAmountsSection.setCustomAmountsSectionButtons(
+                    addCustomAmountsButton = AddButton(
+                        text = getString(R.string.order_creation_add_custom_amounts),
+                        onClickListener = {
+                            findNavController().navigateSafely(
+                                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
+                            )
+                        }
+                    )
+                )
+            } else {
+                customAmountsSection.hide()
+            }
             // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
             if (productsSection.content == null) {
                 val animator = DefaultItemAnimator().apply {
@@ -580,10 +603,22 @@ class OrderCreateEditFormFragment :
         customAmounts: List<CustomAmountUIModel>?
     ) {
         customAmountsSection.setContentHorizontalPadding(R.dimen.minor_00)
-        if (customAmounts.isNullOrEmpty()) {
+        if (!viewModel.products.value.isNullOrEmpty() && viewModel.customAmounts.value.isNullOrEmpty()) {
+            customAmountsSection.setCustomAmountsSectionButtons(
+                addCustomAmountsButton = AddButton(
+                    text = getString(R.string.order_creation_add_custom_amounts),
+                    onClickListener = {
+                        findNavController().navigateSafely(
+                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
+                        )
+                    }
+                )
+            )
+        } else if (customAmounts.isNullOrEmpty()) {
             customAmountsSection.hide()
         } else {
             customAmountsSection.show()
+            customAmountsSection.removeCustomSectionButtons()
             addProductSectionButtons(productsSection)
             customAmountsSection.showHeader()
             customAmountsSection.showAddAction()
@@ -612,18 +647,20 @@ class OrderCreateEditFormFragment :
     }
 
     private fun addProductSectionButtons(productsSection: OrderCreateEditSectionView) {
-        productsSection.setProductSectionButtons(
-            addProductsButton = AddButton(
-                text = getString(R.string.order_creation_add_products),
-                onClickListener = {
-                    viewModel.onAddProductClicked()
-                }
-            ),
-            addProductsViaScanButton = AddButton(
-                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = { viewModel.onScanClicked() }
-            ),
-        )
+        if (viewModel.products.value.isNullOrEmpty()) {
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = { viewModel.onScanClicked() }
+                ),
+            )
+        }
     }
 
     @SuppressLint("SetTextI18n")
