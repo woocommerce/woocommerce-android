@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -91,6 +92,9 @@ fun ExpandableProductCard(
                 colorResource(id = R.color.divider_color),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
+            .clickable {
+                isExpanded = !isExpanded
+            }
     ) {
         val (img, name, chevron, expandedPart) = createRefs()
         AsyncImage(
