@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
@@ -111,6 +112,10 @@ class MyStoreBlazeViewModel @Inject constructor(
                     )
                 },
                 onViewAllCampaignsClicked = {
+                    analyticsTrackerWrapper.track(
+                        stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
+                        properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName)
+                    )
                     triggerEvent(ShowAllCampaigns)
                 },
                 onCreateCampaignClicked = {

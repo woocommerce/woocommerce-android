@@ -4,10 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.SOURCE_VALUE_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
@@ -213,6 +215,10 @@ class MoreMenuViewModel @Inject constructor(
         launch {
             val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isNotEmpty()
             if (FeatureFlag.BLAZE_ITERATION_2.isEnabled() && hasCampaigns) {
+                AnalyticsTracker.track(
+                    stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
+                )
                 triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
             } else {
                 AnalyticsTracker.track(
