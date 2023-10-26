@@ -63,6 +63,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="custom_amounts">Custom Amounts</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
@@ -507,6 +508,7 @@
     <string name="custom_amounts_name">Name</string>
     <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
     <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
+    <string name="custom_amounts_creation_error">Unable to create custom amount order</string>
 
     <!--
          Taxes
