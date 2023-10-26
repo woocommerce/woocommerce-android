@@ -94,6 +94,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercenta
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.customamounts.CustomAmountsDialog.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
@@ -1084,7 +1085,7 @@ class OrderCreateEditViewModel @Inject constructor(
             val feesList = draft.feesLines.toMutableList().apply {
                 add(
                     Order.FeeLine.EMPTY.copy(
-                        name = name.ifEmpty { ORDER_CUSTOM_FEE_NAME },
+                        name = name.ifEmpty { CUSTOM_AMOUNT },
                         total = amount
                     )
                 )
@@ -1292,6 +1293,7 @@ data class ProductUIModel(
 )
 
 data class CustomAmountUIModel(
+    val id: Long,
     val amount: BigDecimal,
     val name: String
 )
