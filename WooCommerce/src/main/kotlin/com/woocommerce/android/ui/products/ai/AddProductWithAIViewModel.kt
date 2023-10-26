@@ -59,7 +59,8 @@ class AddProductWithAIViewModel @Inject constructor(
             }
             goToNextStep()
         },
-        appsPrefsWrapper = appsPrefsWrapper
+        appsPrefsWrapper = appsPrefsWrapper,
+        tracker = tracker
     )
     private val previewSubViewModel = ProductPreviewSubViewModel(
         aiRepository = aiRepository,
