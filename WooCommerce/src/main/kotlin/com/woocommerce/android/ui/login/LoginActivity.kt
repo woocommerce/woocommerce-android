@@ -6,10 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Base64
-import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -17,8 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.common.Transport
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
-import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
@@ -107,7 +106,7 @@ import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
 // TODO Extract logic out of LoginActivity to reduce size
-@Suppress("SameParameterValue", "LargeClass", "Deprecation")
+@Suppress("SameParameterValue", "LargeClass")
 @AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
@@ -521,6 +520,34 @@ class LoginActivity :
             ?.let { signKeyWithFido(it) }
     }
 
+    private val resultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        val resultCode = result.resultCode
+        val data = result.data
+        if (resultCode == RESULT_OK && data != null) {
+            if (data.hasExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)) {
+                data.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)?.let {
+                    PublicKeyCredential.deserializeFromBytes(it)
+                }?.let { response ->
+                    val json = response.toJson()
+                    //val keyHandleBase64 = Base64.encodeToString(response.keyHandle, Base64.DEFAULT)
+                    val clientDataJson = Base64.encodeToString(response.response.clientDataJSON, Base64.DEFAULT)
+                    //val authenticatorDataBase64 = Base64.encodeToString(response.authenticatorData, Base64.DEFAULT)
+                    //val signatureBase64 = Base64.encodeToString(response.signature, Base64.DEFAULT)
+//                    WebauthnSignedResponse(
+//                        clientDataJSON = clientDataJson,
+//                        authenticatorData = authenticatorDataBase64,
+//                        signature = signatureBase64,
+//                        userHandle = keyHandleBase64
+//                    )
+                    clientDataJson.apply {  }
+                    json.apply {  }
+                }
+            }
+        }
+    }
+
     fun signKeyWithFido(credentialManagerData: CredentialManagerData) {
         val options = PublicKeyCredentialRequestOptions.Builder()
             .setRpId(credentialManagerData.rpId)
@@ -538,55 +565,11 @@ class LoginActivity :
             .build()
 
         val fido2ApiClient = Fido.getFido2ApiClient(this)
-        val result = fido2ApiClient.getSignPendingIntent(options)
+        val fidoIntent = fido2ApiClient.getSignPendingIntent(options)
 
-        result.addOnSuccessListener { pendingIntent ->
-            startIntentSenderForResult(pendingIntent.intentSender, 13, null, 0, 0, 0)
-        }
-    }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && data != null) {
-            if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-                data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)?.let {
-                    AuthenticatorErrorResponse.deserializeFromBytes(it)
-                }?.let {
-                    Log.d("FIDO error", it.errorMessage.orEmpty())
-                }
-            } else if (data.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-                data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)?.let {
-                    AuthenticatorAssertionResponse.deserializeFromBytes(it)
-                }?.let { response ->
-                    val keyHandleBase64 = Base64.encodeToString(response.userHandle, Base64.DEFAULT)
-                    val clientDataJson = String(response.clientDataJSON, Charsets.UTF_8)
-                    val authenticatorDataBase64 = Base64.encodeToString(response.authenticatorData, Base64.DEFAULT)
-                    val signatureBase64 = Base64.encodeToString(response.signature, Base64.DEFAULT)
-                    WebauthnSignedResponse(
-                        clientDataJSON = clientDataJson,
-                        authenticatorData = authenticatorDataBase64,
-                        signature = signatureBase64,
-                        userHandle = keyHandleBase64
-                    )
-                }
-            }
-        }
-    }
-//
-    private fun registerActivityForResultFIDO() {
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            val resultCode = result.resultCode
-            val data = result.data
-            if (resultCode == RESULT_OK && data != null) {
-                if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
-                    data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)?.let {
-                        AuthenticatorErrorResponse.deserializeFromBytes(it)
-                    }
-                } else if (data.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
-                    data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)?.let {
-                        AuthenticatorAssertionResponse.deserializeFromBytes(it)
-                    }
-                }
-            }
+        fidoIntent.addOnSuccessListener { pendingIntent ->
+            IntentSenderRequest.Builder(pendingIntent.intentSender)
+                .build().let { resultLauncher.launch(it) }
         }
     }
 
