@@ -593,7 +593,7 @@ class OrderCreateEditFormFragment :
                 }
                 customAmountsSection.content = RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext())
-                    adapter = OrderCreateEditCustomAmountAdapter {
+                    adapter = OrderCreateEditCustomAmountAdapter(currencyFormatter) {
                     }
                     itemAnimator = animator
                     isNestedScrollingEnabled = false
