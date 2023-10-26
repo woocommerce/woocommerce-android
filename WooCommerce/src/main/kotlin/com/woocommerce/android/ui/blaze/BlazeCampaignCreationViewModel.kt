@@ -41,6 +41,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     private var currentBlazeStep = BlazeFlowStep.UNSPECIFIED
     private var isCompleted = false
     private var firstTimeLoading = false
+    private var source = navArgs.source
 
     private val isIntroDismissed = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -57,11 +58,12 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 onCreateCampaignClick = {
                     trackBlazeEntryPointTapped(INTRO_VIEW.trackingName)
                     isIntroDismissed.value = true
+                    source = INTRO_VIEW
                 }
             )
         } else {
-            if (!isIntroDismissed.value) {
-                trackBlazeEntryPointTapped(navArgs.source.trackingName)
+            if (source != INTRO_VIEW) {
+                trackBlazeEntryPointTapped(source.trackingName)
             }
             BlazeCreationViewState.BlazeWebViewState(
                 urlToLoad = navArgs.urlToLoad,
@@ -74,7 +76,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     init {
         analyticsTracker.track(
             stat = BLAZE_INTRO_DISPLAYED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName)
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
         )
     }
 
@@ -111,7 +113,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             analyticsTracker.track(
                 stat = BLAZE_FLOW_CANCELED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName,
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName,
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.trackingName
                 )
             )

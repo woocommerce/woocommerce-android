@@ -104,7 +104,9 @@ class MyStoreBlazeViewModel @Inject constructor(
                 onCampaignClicked = {
                     analyticsTrackerWrapper.track(
                         stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
-                        properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName)
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                        )
                     )
                     triggerEvent(
                         ShowCampaignDetails(
@@ -116,17 +118,17 @@ class MyStoreBlazeViewModel @Inject constructor(
                 onViewAllCampaignsClicked = {
                     analyticsTrackerWrapper.track(
                         stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
-                        properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName)
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                        )
                     )
                     triggerEvent(ShowAllCampaigns)
                 },
                 onCreateCampaignClicked = {
                     triggerEvent(
                         LaunchBlazeCampaignCreation(
-                            url = blazeUrlsHelper.buildUrlForSite(
-                                MY_STORE_SECTION
-                            ),
-                            source = MY_STORE_SECTION
+                            url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_SECTION),
+                            source = BlazeFlowSource.MY_STORE_SECTION
                         )
                     )
                 }
