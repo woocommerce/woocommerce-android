@@ -60,7 +60,9 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 }
             )
         } else {
-            trackBlazeEntryPointTapped(navArgs.source.trackingName)
+            if (!isIntroDismissed.value) {
+                trackBlazeEntryPointTapped(navArgs.source.trackingName)
+            }
             BlazeCreationViewState.BlazeWebViewState(
                 urlToLoad = navArgs.urlToLoad,
                 source = navArgs.source,
