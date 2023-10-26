@@ -46,6 +46,7 @@ class ProductPreviewSubViewModel(
 
     private lateinit var isoLanguageCode: String
     private lateinit var productName: String
+    private var productDescription: String? = null
     private lateinit var productKeywords: String
     private lateinit var tone: AiTone
 
@@ -65,6 +66,10 @@ class ProductPreviewSubViewModel(
 
     fun updateKeywords(keywords: String) {
         this.productKeywords = keywords
+    }
+
+    fun updateProductDescription(description: String) {
+        this.productDescription = description
     }
 
     fun updateTone(tone: AiTone) {
@@ -104,12 +109,23 @@ class ProductPreviewSubViewModel(
                 }
             }
 
-            generateProductWithAI(
-                productName = productName,
-                productKeyWords = productKeywords,
-                tone = tone,
-                languageISOCode = isoLanguageCode
-            ).fold(
+            val generatedProduct = if (productDescription == null) {
+                generateProductWithAI(
+                    productName = productName,
+                    productKeyWords = productKeywords,
+                    tone = tone,
+                    languageISOCode = isoLanguageCode
+                )
+            } else {
+                generateProductWithAI(
+                    productName = productName,
+                    productDescription = productDescription!!,
+                    productKeyWords = productKeywords,
+                    languageISOCode = isoLanguageCode
+                )
+            }
+
+            generatedProduct.fold(
                 onSuccess = { product ->
                     AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
                     _state.value = State.Success(

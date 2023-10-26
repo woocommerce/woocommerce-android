@@ -446,7 +446,7 @@ private fun Keywords(
 }
 
 @Composable
-fun KeywordListItem(
+private fun KeywordListItem(
     index: Int,
     title: String,
     isSelected: Boolean,
@@ -503,7 +503,7 @@ fun KeywordListItem(
 }
 
 @Composable
-fun LoadingNameAndDescription() {
+private fun LoadingNameAndDescription() {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
     ) {
