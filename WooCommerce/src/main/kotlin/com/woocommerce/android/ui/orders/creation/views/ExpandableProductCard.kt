@@ -278,7 +278,7 @@ fun ExtendedProductCardContent(
             Text(
                 text = stringResource(id = R.string.order_creation_remove_product),
                 color = colorResource(
-                    id = R.color.woo_red_70
+                    id = R.color.woo_red_60
                 )
             )
         }
