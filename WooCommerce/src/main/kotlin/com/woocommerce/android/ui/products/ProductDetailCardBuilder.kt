@@ -86,6 +86,7 @@ class ProductDetailCardBuilder(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
+    private var blazeCtaShownTracked = false
     private lateinit var originalSku: String
 
     companion object {
@@ -144,12 +145,15 @@ class ProductDetailCardBuilder(
             viewModel.isProductUnderCreation
         ) return null
 
-        analyticsTrackerWrapper.track(
-            stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON.trackingName
+        if (!blazeCtaShownTracked) {
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON.trackingName
+                )
             )
-        )
+            blazeCtaShownTracked = true
+        }
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
