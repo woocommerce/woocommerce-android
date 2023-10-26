@@ -88,7 +88,7 @@ fun PackagePhotoBottomSheet(viewModel: PackagePhotoViewModel) {
             viewModel::onContinueTapped,
             viewModel::onEditPhotoTapped,
             onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
-            onMediaLibraryRequested = viewModel::onMediaPickerLibraryRequested,
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested
         )
     }
 }
@@ -175,6 +175,7 @@ fun ProductFromPackagePhoto(
                             isError = true
                         )
                         Spacer(Modifier)
+                        Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
                     }
                 }
             }

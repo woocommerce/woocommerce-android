@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.products.ai
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ai.AIRepository
+import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.NoKeywordsFound
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Scanning
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Success
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.Keyword
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -21,8 +24,12 @@ import javax.inject.Inject
 @HiltViewModel
 class PackagePhotoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val aiRepository: AIRepository,
     private val textRecognitionEngine: TextRecognitionEngine
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val DEFAULT_LANGUAGE_ISO = "en"
+    }
     private val navArgs: PackagePhotoBottomSheetFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = MutableStateFlow(
@@ -46,6 +53,7 @@ class PackagePhotoViewModel @Inject constructor(
                                 keywords = keywords.map { Keyword(it, true) }
                             )
                         }
+
                         generateNameAndDescription()
                     } else {
                         _viewState.update {
@@ -55,9 +63,9 @@ class PackagePhotoViewModel @Inject constructor(
                         }
                     }
                 }
-                .onFailure { error ->
+                .onFailure {
                     _viewState.update {
-                        _viewState.value.copy(state = Failure(error.message ?: ""))
+                        _viewState.value.copy(state = NoKeywordsFound)
                     }
                 }
         }
@@ -75,12 +83,49 @@ class PackagePhotoViewModel @Inject constructor(
                 },
             )
         }
+        val moreThanOneKeyword = _viewState.value.keywords
+            .filter { it.isChecked }
+            .joinToString(separator = "") { it.title }
+            .isNotEmpty()
+        _viewState.update {
+            _viewState.value.copy(
+                isRegenerateButtonEnabled = moreThanOneKeyword
+            )
+        }
     }
 
-    private fun generateNameAndDescription() {
+    private suspend fun identifyLanguage(keywords: String): String {
+        return aiRepository.identifyISOLanguageCode(
+            text = keywords,
+            feature = PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
+        ).fold(
+            onSuccess = { language ->
+                language
+            },
+            onFailure = {
+                DEFAULT_LANGUAGE_ISO
+            }
+        )
+    }
+
+    private suspend fun generateNameAndDescription() {
         _viewState.update {
             _viewState.value.copy(state = Generating)
         }
+
+        val keywords = _viewState.value.keywords.filter { it.isChecked }.joinToString { it.title }
+        val language = identifyLanguage(keywords)
+        aiRepository.generateProductNameAndDescription(keywords, language)
+            .onSuccess { result ->
+                _viewState.update {
+                    _viewState.value.copy(state = Success, title = result.name, description = result.description)
+                }
+            }
+            .onFailure { error ->
+                _viewState.update {
+                    _viewState.value.copy(state = Failure(error.message ?: ""))
+                }
+            }
     }
 
     fun onEditPhotoTapped() {
@@ -103,7 +148,7 @@ class PackagePhotoViewModel @Inject constructor(
         setMediaPickerDialogVisibility(false)
     }
 
-    fun onMediaPickerLibraryRequested(source: DataSource) {
+    fun onMediaLibraryRequested(source: DataSource) {
         triggerEvent(ShowMediaLibrary(source))
         setMediaPickerDialogVisibility(false)
     }
