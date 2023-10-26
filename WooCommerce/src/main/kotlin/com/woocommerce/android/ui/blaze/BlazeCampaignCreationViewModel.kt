@@ -16,7 +16,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.INTRO_VIEW
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -57,8 +56,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
 
     val viewState: LiveData<BlazeCreationViewState> = isIntroDismissed.map { introDismissed ->
         if (!introDismissed &&
-            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty() &&
-            FeatureFlag.BLAZE_ITERATION_2.isEnabled()
+            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty()
         ) {
             analyticsTracker.track(
                 stat = BLAZE_INTRO_DISPLAYED,

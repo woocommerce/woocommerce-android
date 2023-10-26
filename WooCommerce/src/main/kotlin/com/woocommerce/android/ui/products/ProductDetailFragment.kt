@@ -504,11 +504,6 @@ class ProductDetailFragment :
                 true
             }
 
-            R.id.promote_with_blaze -> {
-                viewModel.onBlazeClicked()
-                true
-            }
-
             else -> false
         }
     }
@@ -616,7 +611,6 @@ class ProductDetailFragment :
             )
         }
         findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
-        findItem(R.id.promote_with_blaze)?.isVisible = state.showPromoteWithBlaze
     }
 
     override fun getFragmentTitle(): String = productName
