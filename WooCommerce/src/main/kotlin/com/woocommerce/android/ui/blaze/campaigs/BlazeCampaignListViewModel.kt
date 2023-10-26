@@ -19,6 +19,8 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
@@ -46,12 +48,12 @@ class BlazeCampaignListViewModel @Inject constructor(
 
     val state = combine(
         blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get()),
-        isLoadingMore.debounce { isLoading ->
-            if (!isLoading) {
-                // When resetting to not loading, wait a bit to make sure the coupons list has been fetched from DB
+        isLoadingMore.withIndex().debounce { (index, isLoading) ->
+            if (index != 0 && !isLoading) {
+                // When resetting to not loading, wait a bit to make sure the campaigns list has been fetched from DB
                 LOADING_TRANSITION_DELAY
             } else 0L
-        },
+        }.map { it.value },
         isCampaignCelebrationShown
     ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
         BlazeCampaignListState(
