@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login
 
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -9,14 +10,28 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.credentials.CreateCredentialResponse
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.GetPasswordOption
+import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.exceptions.CreateCredentialException
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.common.Transport
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialCreationOptions
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialDescriptor
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
 import com.google.gson.Gson
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
@@ -36,6 +51,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -102,7 +118,7 @@ import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
 // TODO Extract logic out of LoginActivity to reduce size
-@Suppress("SameParameterValue", "LargeClass")
+@Suppress("SameParameterValue", "LargeClass", "Deprecation")
 @AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
@@ -509,42 +525,70 @@ class LoginActivity :
 
     // should be called when 2FA is needed and Security Key is available
     override fun signSecurityKey(challengeRequestJson: String, userId: String, username: String) {
-        // Move to AppInitializer.kt
-        val credentialManager = CredentialManager.create(this)
-        val gson = Gson()
-        val challengeInfo = gson.fromJson(challengeRequestJson, WebauthnChallengeInfo::class.java)
-        val credentialManagerData = CredentialManagerData(challengeInfo, userId.toLong(), username)
-        val credentialDataJson = gson.toJson(credentialManagerData)
-        appCoroutineScope.launch {
-            credentialManager.createPasskey(credentialDataJson, true)
-        }
+        challengeRequestJson
+            .takeIf { it.isNotNullOrEmpty() }
+            ?.let { Gson().fromJson(it, WebauthnChallengeInfo::class.java) }
+            ?.let { CredentialManagerData(it) }
+            ?.let { signKeyWithFido(it) }
     }
 
-    private suspend fun CredentialManager.createPasskey(
-        requestJson: String,
-        preferImmediatelyAvailableCredentials: Boolean
-    ) {
-        val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
-            // Contains the request in JSON format. Uses the standard WebAuthn
-            // web JSON spec.
-            requestJson = requestJson,
-            // Defines whether you prefer to use only immediately available credentials,
-            // not hybrid credentials, to fulfill this request. This value is false
-            // by default.
-            preferImmediatelyAvailableCredentials = preferImmediatelyAvailableCredentials,
-        )
-        // Execute CreateCredentialRequest asynchronously to register credentials
-        // for a user account. Handle success and failure cases with the result and
-        // exceptions, respectively.
-        try {
-            val result: CreateCredentialResponse = createCredential(
-                request = createPublicKeyCredentialRequest,
-                context = this@LoginActivity,
+    fun signKeyWithFido(credentialManagerData: CredentialManagerData) {
+        val options = PublicKeyCredentialRequestOptions.Builder()
+            .setRpId(credentialManagerData.rpId)
+            .setAllowList(
+                credentialManagerData.allowCredentials.map {
+                    PublicKeyCredentialDescriptor(
+                        PublicKeyCredentialType.PUBLIC_KEY.toString(),
+                        it.id,
+                        listOf(Transport.USB, Transport.NFC, Transport.BLUETOOTH_LOW_ENERGY, Transport.HYBRID, Transport.INTERNAL)
+                    )
+                }
             )
-            result.apply { }
-        } catch (e: CreateCredentialException) {
-            Log.d("Error", e.message.orEmpty())
-            // handle error
+            .setChallenge(credentialManagerData.challenge)
+            .setTimeoutSeconds(credentialManagerData.timeout.toDouble())
+            .build()
+
+        val fido2ApiClient = Fido.getFido2ApiClient(this)
+        val result = fido2ApiClient.getSignPendingIntent(options)
+
+        result.addOnSuccessListener { pendingIntent ->
+            startIntentSenderForResult(pendingIntent.intentSender, 13, null, 0, 0, 0)
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && data != null) {
+            if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+                data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)?.let {
+                    AuthenticatorErrorResponse.deserializeFromBytes(it)
+                }?.let {
+                    Log.d("FIDO error", it.errorMessage.orEmpty())
+                }
+            } else if (data.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+                data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)?.let {
+                    AuthenticatorAssertionResponse.deserializeFromBytes(it)
+                }?.let {
+                    Log.d("FIDO success", it.toString())
+                }
+            }
+        }
+    }
+//
+    private fun registerActivityForResultFIDO() {
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            val resultCode = result.resultCode
+            val data = result.data
+            if (resultCode == RESULT_OK && data != null) {
+                if (data.hasExtra(Fido.FIDO2_KEY_ERROR_EXTRA)) {
+                    data.getByteArrayExtra(Fido.FIDO2_KEY_ERROR_EXTRA)?.let {
+                        AuthenticatorErrorResponse.deserializeFromBytes(it)
+                    }
+                } else if (data.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
+                    data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)?.let {
+                        AuthenticatorAssertionResponse.deserializeFromBytes(it)
+                    }
+                }
+            }
         }
     }
 
