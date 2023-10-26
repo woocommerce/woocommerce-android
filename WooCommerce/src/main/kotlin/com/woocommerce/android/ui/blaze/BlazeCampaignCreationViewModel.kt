@@ -153,8 +153,8 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     }
 
     enum class BlazeFlowStep(val label: String, val trackingName: String) {
-        CAMPAIGNS_LIST("campaigns_list", "campaigns_list"),
-        PRODUCTS_LIST("products_list", "products_list"),
+        CAMPAIGNS_LIST("campaigns-list", "campaigns_list"),
+        PRODUCTS_LIST("products-list", "products_list"),
         STEP_1("step-1", "step_1"),
         STEP_2("step-2", "step_2"),
         STEP_3("step-3", "step_3"),
