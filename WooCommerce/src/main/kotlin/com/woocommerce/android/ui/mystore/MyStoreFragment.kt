@@ -33,7 +33,6 @@ import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
-import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
@@ -45,8 +44,6 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.blaze.BlazeBanner
-import com.woocommerce.android.ui.blaze.BlazeBannerViewModel
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
@@ -108,7 +105,6 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val blazeBannerViewModel: BlazeBannerViewModel by viewModels()
     private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
@@ -229,38 +225,9 @@ class MyStoreFragment :
 
         setupStateObservers()
         setupOnboardingView()
-        setUpBlazeBanner()
         setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
-    }
-
-    private fun setUpBlazeBanner() {
-        blazeBannerViewModel.setBlazeBannerSource(BlazeFlowSource.MY_STORE_BANNER)
-        blazeBannerViewModel.isBlazeBannerVisible.observe(viewLifecycleOwner) { isVisible ->
-            if (!isVisible) binding.blazeBannerView.hide()
-            else {
-                binding.blazeBannerView.apply {
-                    show()
-                    setContent {
-                        WooThemeWithBackground {
-                            BlazeBanner(
-                                onClose = blazeBannerViewModel::onBlazeBannerDismissed,
-                                onTryBlazeClicked = blazeBannerViewModel::onTryBlazeBannerClicked
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        blazeBannerViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is BlazeBannerViewModel.OpenBlazeEvent -> openBlazeWebView(event.url, event.source)
-                is BlazeBannerViewModel.DismissBlazeBannerEvent -> binding.blazeBannerView.collapse()
-                is ShowDialog -> event.showDialog()
-            }
-        }
     }
 
     private fun setUpBlazeCampaignView() {
@@ -285,11 +252,13 @@ class MyStoreFragment :
                     url = event.url,
                     source = BlazeFlowSource.MY_STORE_BANNER
                 )
+
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {
                     findNavController().navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
                     )
                 }
+
                 is MyStoreBlazeViewModel.ShowCampaignDetails -> {
                     findNavController().navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
@@ -560,7 +529,6 @@ class MyStoreFragment :
         super.onResume()
         handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
-        blazeBannerViewModel.updateBlazeBannerStatus()
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
             usageTracksEventEmitter.interacted()

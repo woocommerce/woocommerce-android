@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
@@ -31,7 +30,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore
 ) : ScopedViewModel(savedStateHandle) {
@@ -82,7 +80,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
-            appPrefsWrapper.setBlazeBannerHidden(selectedSite.getSelectedSiteId(), hide = true)
         }
     }
 
