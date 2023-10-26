@@ -61,15 +61,15 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             )
             BlazeCreationViewState.Intro(
                 onCreateCampaignClick = {
-                    trackBlazeEntryPointTapped(INTRO_VIEW.trackingName)
                     source = INTRO_VIEW
                     isIntroDismissed.value = true
                 }
             )
         } else {
-            if (source != INTRO_VIEW) {
-                trackBlazeEntryPointTapped(source.trackingName)
-            }
+            analyticsTracker.track(
+                stat = BLAZE_ENTRY_POINT_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+            )
             BlazeCreationViewState.BlazeWebViewState(
                 urlToLoad = navArgs.urlToLoad,
                 source = source,
@@ -77,13 +77,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             )
         }
     }.asLiveData()
-
-    private fun trackBlazeEntryPointTapped(sourceName: String) {
-        analyticsTracker.track(
-            stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to sourceName)
-        )
-    }
 
     private fun onPageFinished(url: String, source: BlazeFlowSource) {
         if (!firstTimeLoading) {
@@ -173,5 +166,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 values().firstOrNull { it.label.equals(source, ignoreCase = true) } ?: UNSPECIFIED
         }
     }
+
     object CampaignCreated : Event()
 }
