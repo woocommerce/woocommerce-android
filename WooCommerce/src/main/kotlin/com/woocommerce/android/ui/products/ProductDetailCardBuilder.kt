@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.*
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewGroupedProducts
@@ -146,7 +146,9 @@ class ProductDetailCardBuilder(
 
         analyticsTrackerWrapper.track(
             stat = BLAZE_ENTRY_POINT_DISPLAYED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to PRODUCT_DETAIL_PROMOTE_BUTTON.trackingName)
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON.trackingName
+            )
         )
         return ProductPropertyCard(
             type = SECONDARY,

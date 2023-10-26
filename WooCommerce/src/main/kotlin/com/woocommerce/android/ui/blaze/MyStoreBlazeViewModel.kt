@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.*
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.FeatureFlag
@@ -54,7 +53,7 @@ class MyStoreBlazeViewModel @Inject constructor(
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
         fun launchCampaignCreation(productId: Long?) {
-            val source = MY_STORE_SECTION
+            val source = BlazeFlowSource.MY_STORE_SECTION
             val url = if (productId != null) {
                 blazeUrlsHelper.buildUrlForProduct(productId, source)
             } else {
