@@ -2,11 +2,19 @@ package com.woocommerce.android.ui.login
 
 import com.google.gson.annotations.SerializedName
 import java.util.Base64
+class WebauthnSignedCredential(
+    val id: String,
+    val rawId: String,
+    val type: String,
+    val authenticatorAttachment: String,
+    val response: WebauthnSignedResponse
+)
+
 class WebauthnSignedResponse(
     val clientDataJSON: String,
     val authenticatorData: String,
     val signature: String,
-    val userHandle: String
+    val userHandle: String?
 )
 
 class CredentialManagerData(
