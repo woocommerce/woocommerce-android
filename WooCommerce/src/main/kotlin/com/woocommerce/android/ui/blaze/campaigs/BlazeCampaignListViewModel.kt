@@ -123,7 +123,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         )
 
     private fun onAddNewCampaignClicked() {
-        val url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+        val url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.CAMPAIGN_LIST)
         triggerEvent(LaunchBlazeCampaignCreation(url, BlazeFlowSource.CAMPAIGN_LIST))
     }
 

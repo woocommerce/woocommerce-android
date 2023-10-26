@@ -248,7 +248,7 @@ class MyStoreFragment :
             when (event) {
                 is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeWebView(
                     url = event.url,
-                    source = BlazeFlowSource.MY_STORE_BANNER
+                    source = event.source
                 )
 
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {

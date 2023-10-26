@@ -32,8 +32,6 @@ class BlazeUrlsHelper @Inject constructor(
 
     enum class BlazeFlowSource(val trackingName: String) {
         MORE_MENU_ITEM("menu"),
-        MY_STORE_BANNER("my_store_banner"),
-
         PRODUCT_DETAIL_PROMOTE_BUTTON("product_detail_promote_button"),
         MY_STORE_SECTION("my_store_section"),
         CAMPAIGN_LIST("campaign_list"),

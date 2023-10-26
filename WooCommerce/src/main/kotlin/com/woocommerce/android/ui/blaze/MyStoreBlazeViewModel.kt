@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTR
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.*
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -59,7 +60,9 @@ class MyStoreBlazeViewModel @Inject constructor(
             } else {
                 blazeUrlsHelper.buildUrlForSite(source)
             }
-            triggerEvent(LaunchBlazeCampaignCreation(url))
+            triggerEvent(
+                LaunchBlazeCampaignCreation(url = url, source = source)
+            )
         }
 
         return getProducts().map { products ->
@@ -121,9 +124,10 @@ class MyStoreBlazeViewModel @Inject constructor(
                 onCreateCampaignClicked = {
                     triggerEvent(
                         LaunchBlazeCampaignCreation(
-                            blazeUrlsHelper.buildUrlForSite(
+                            url = blazeUrlsHelper.buildUrlForSite(
                                 MY_STORE_SECTION
-                            )
+                            ),
+                            source = MY_STORE_SECTION
                         )
                     )
                 }
@@ -162,7 +166,7 @@ class MyStoreBlazeViewModel @Inject constructor(
         ) : MyStoreBlazeCampaignState
     }
 
-    data class LaunchBlazeCampaignCreation(val url: String) : MultiLiveEvent.Event()
+    data class LaunchBlazeCampaignCreation(val url: String, val source: BlazeFlowSource) : MultiLiveEvent.Event()
     object ShowAllCampaigns : MultiLiveEvent.Event()
     data class ShowCampaignDetails(
         val url: String,
