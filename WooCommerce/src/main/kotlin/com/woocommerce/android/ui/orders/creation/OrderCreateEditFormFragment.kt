@@ -319,7 +319,7 @@ class OrderCreateEditFormFragment :
         }
 
         viewModel.customAmounts.observe(viewLifecycleOwner) {
-            bindCustomAmountsSection(binding.customAmountsSection, it)
+            bindCustomAmountsSection(binding.customAmountsSection, binding.productsSection, it)
         }
 
         observeViewStateChanges(binding)
@@ -531,7 +531,6 @@ class OrderCreateEditFormFragment :
                 addCustomAmountsButton = AddButton(
                     text = getString(R.string.order_creation_add_custom_amounts),
                     onClickListener = {
-                        // Implement custom amounts click listener
                         findNavController().navigateSafely(
                             OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
                         )
@@ -570,13 +569,14 @@ class OrderCreateEditFormFragment :
         productsSection.barcodeIcon.setOnClickListener {
             viewModel.onScanClicked()
         }
-        productsSection.addProductIcon.setOnClickListener {
+        productsSection.addIcon.setOnClickListener {
             viewModel.onAddProductClicked()
         }
     }
 
     private fun bindCustomAmountsSection(
         customAmountsSection: OrderCreateEditSectionView,
+        productsSection: OrderCreateEditSectionView,
         customAmounts: List<CustomAmountUIModel>?
     ) {
         customAmountsSection.setContentHorizontalPadding(R.dimen.minor_00)
@@ -584,6 +584,7 @@ class OrderCreateEditFormFragment :
             customAmountsSection.hide()
         } else {
             customAmountsSection.show()
+            addProductSectionButtons(productsSection)
             customAmountsSection.showHeader()
             customAmountsSection.showAddAction()
             if (customAmountsSection.content == null) {
@@ -602,7 +603,27 @@ class OrderCreateEditFormFragment :
             customAmountsSection.content.customAmountAdapter?.apply {
                 submitList(customAmounts)
             }
+            customAmountsSection.addIcon.setOnClickListener {
+                findNavController().navigateSafely(
+                    OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
+                )
+            }
         }
+    }
+
+    private fun addProductSectionButtons(productsSection: OrderCreateEditSectionView) {
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+        )
     }
 
     @SuppressLint("SetTextI18n")
