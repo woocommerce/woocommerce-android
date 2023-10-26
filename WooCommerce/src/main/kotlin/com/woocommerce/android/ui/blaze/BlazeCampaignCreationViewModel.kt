@@ -98,7 +98,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 stat = BLAZE_FLOW_COMPLETED,
                 properties = mapOf(
                     AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName,
-                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
+                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.trackingName
                 )
             )
         }
@@ -110,7 +110,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 stat = BLAZE_FLOW_CANCELED,
                 properties = mapOf(
                     AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName,
-                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
+                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.trackingName
                 )
             )
         }
