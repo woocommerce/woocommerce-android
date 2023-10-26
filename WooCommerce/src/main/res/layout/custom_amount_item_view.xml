@@ -6,6 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/divider"
+        style="@style/Woo.Divider"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/minor_00"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/customAmountInfoContainer"
+        app:layout_constraintStart_toStartOf="@+id/customAmountInfoContainer" />
+
     <FrameLayout
         android:id="@+id/customAmountImageFrame"
         android:layout_width="@dimen/image_minor_100"
@@ -13,7 +23,7 @@
         android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
         android:padding="@dimen/image_frame_stroke_width"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.50">
@@ -40,7 +50,7 @@
         android:layout_margin="@dimen/major_100"
         android:orientation="vertical"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/product_btnDelete"
         app:layout_constraintStart_toEndOf="@+id/customAmountImageFrame"
         app:layout_constraintTop_toTopOf="parent"
@@ -76,15 +86,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:layout_width="0dp"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/minor_00"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/customAmountInfoContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
