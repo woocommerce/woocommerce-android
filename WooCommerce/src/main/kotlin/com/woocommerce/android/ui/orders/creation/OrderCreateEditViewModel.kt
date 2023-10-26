@@ -1091,6 +1091,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        triggerEvent(Exit)
     }
 
     fun onFeeRemoved() {
