@@ -33,7 +33,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -493,7 +493,7 @@ class OrderCreateEditFormFragment :
     private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<ProductUIModel>>) {
         setContent {
             val state = items.observeAsState(emptyList())
-            WooThemeWithBackground {
+            WooTheme {
                 Column(modifier = Modifier) {
                     state.value.forEach { item ->
                         ExpandableProductCard(

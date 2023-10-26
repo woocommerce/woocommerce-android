@@ -12,8 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +24,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -82,87 +79,86 @@ fun ExpandableProductCard(
     ) {
         if (isExpanded) 0f else 180f
     }
-    Surface(modifier = Modifier.background(MaterialTheme.colors.surface)) {
-        ConstraintLayout(
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.minor_50)
+            )
+            .border(
+                1.dp,
+                colorResource(id = R.color.divider_color),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
+            )
+    ) {
+        val (img, name, chevron, expandedPart) = createRefs()
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(item.imageUrl).crossfade(true).build(),
+            contentDescription = stringResource(R.string.product_image_content_description),
+            contentScale = ContentScale.Fit,
+            placeholder = painterResource(R.drawable.ic_product),
+            error = painterResource(R.drawable.ic_product),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.minor_50)
-                )
-                .border(
-                    1.dp,
-                    colorResource(id = R.color.divider_color),
-                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
-                )
-        ) {
-            val (img, name, chevron, expandedPart) = createRefs()
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(item.imageUrl).crossfade(true).build(),
-                contentDescription = stringResource(R.string.product_image_content_description),
-                contentScale = ContentScale.Fit,
-                placeholder = painterResource(R.drawable.ic_product),
-                error = painterResource(R.drawable.ic_product),
-                modifier = Modifier
-                    .constrainAs(img) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(expandedPart.top)
-                    }
-                    .size(dimensionResource(R.dimen.major_375))
-                    .padding(dimensionResource(id = R.dimen.major_100))
-                    .clip(RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_image)))
-            )
-            Text(
-                text = item.item.name,
-                modifier = Modifier
-                    .constrainAs(name) {
-                        top.linkTo(parent.top)
-                        start.linkTo(img.end)
-                        end.linkTo(chevron.start)
-                        width = Dimension.fillToConstraints
-                    }
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                        top = dimensionResource(id = R.dimen.major_100),
-                    ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            IconButton(
-                onClick = { isExpanded = !isExpanded },
-                modifier = Modifier.constrainAs(chevron) {
+                .constrainAs(img) {
+                    start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                    end.linkTo(parent.end)
+                    bottom.linkTo(expandedPart.top)
                 }
-            ) {
-                Icon(
-                    modifier = Modifier.rotate(chevronRotation),
-                    imageVector = Icons.Filled.KeyboardArrowDown,
-                    contentDescription =
-                    stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
-                    tint = MaterialTheme.colors.primary
-                )
+                .size(dimensionResource(R.dimen.major_375))
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_image)))
+        )
+        Text(
+            text = item.item.name,
+            modifier = Modifier
+                .constrainAs(name) {
+                    top.linkTo(parent.top)
+                    start.linkTo(img.end)
+                    end.linkTo(chevron.start)
+                    width = Dimension.fillToConstraints
+                }
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    top = dimensionResource(id = R.dimen.major_100),
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colors.onSurface
+        )
+        IconButton(
+            onClick = { isExpanded = !isExpanded },
+            modifier = Modifier.constrainAs(chevron) {
+                top.linkTo(parent.top)
+                end.linkTo(parent.end)
             }
-            AnimatedVisibility(
-                visible = isExpanded,
-                modifier = Modifier
-                    .constrainAs(expandedPart) {
-                        bottom.linkTo(parent.bottom)
-                        top.linkTo(img.bottom)
-                    }
-                    .fillMaxWidth(),
-                enter = slideInVertically() + expandVertically(expandFrom = Alignment.Top) +
-                        fadeIn(initialAlpha = 0.3f),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                ExtendedProductCardContent(
-                    item,
-                    onRemoveProductClicked,
-                    onDiscountButtonClicked,
-                )
-            }
+        ) {
+            Icon(
+                modifier = Modifier.rotate(chevronRotation),
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription =
+                stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
+                tint = MaterialTheme.colors.primary
+            )
+        }
+        AnimatedVisibility(
+            visible = isExpanded,
+            modifier = Modifier
+                .constrainAs(expandedPart) {
+                    bottom.linkTo(parent.bottom)
+                    top.linkTo(img.bottom)
+                }
+                .fillMaxWidth(),
+            enter = slideInVertically() + expandVertically(expandFrom = Alignment.Top) +
+                fadeIn(initialAlpha = 0.3f),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            ExtendedProductCardContent(
+                item,
+                onRemoveProductClicked,
+                onDiscountButtonClicked,
+            )
         }
     }
 }
@@ -202,7 +198,11 @@ fun ExtendedProductCardContent(
                 }
                 .padding(dimensionResource(id = R.dimen.minor_100)),
         ) {
-            Text(text = stringResource(id = R.string.product_price), modifier = Modifier.weight(1f))
+            Text(
+                text = stringResource(id = R.string.product_price),
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.onSurface
+            )
             Text(
                 modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100)),
                 color = colorResource(id = R.color.color_on_surface_disabled),
@@ -214,7 +214,7 @@ fun ExtendedProductCardContent(
                     color = colorResource(id = R.color.color_on_surface_disabled)
                 )
             } else {
-                MaterialTheme.typography.body1
+                MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface)
             }
             Text(text = "${item.item.subtotal}", style = totalAmountStyle)
         }
@@ -253,14 +253,16 @@ fun ExtendedProductCardContent(
                         bottom.linkTo(bottomDivider.top)
                     }
                     .padding(dimensionResource(id = R.dimen.minor_100)),
-                text = stringResource(R.string.order_creation_price_after_discount)
+                text = stringResource(R.string.order_creation_price_after_discount),
+                color = MaterialTheme.colors.onSurface
             )
             Text(
                 modifier = Modifier.constrainAs(priceAfterDiscountValue) {
                     top.linkTo(discountButton.bottom)
                     end.linkTo(parent.end)
                 },
-                text = item.priceAfterDiscount
+                text = item.priceAfterDiscount,
+                color = MaterialTheme.colors.onSurface
             )
         } else {
             WCTextButton(
