@@ -54,6 +54,10 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty() &&
             FeatureFlag.BLAZE_ITERATION_2.isEnabled()
         ) {
+            analyticsTracker.track(
+                stat = BLAZE_INTRO_DISPLAYED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+            )
             BlazeCreationViewState.Intro(
                 onCreateCampaignClick = {
                     trackBlazeEntryPointTapped(INTRO_VIEW.trackingName)
@@ -72,13 +76,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             )
         }
     }.asLiveData()
-
-    init {
-        analyticsTracker.track(
-            stat = BLAZE_INTRO_DISPLAYED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
-        )
-    }
 
     private fun trackBlazeEntryPointTapped(sourceName: String) {
         analyticsTracker.track(
