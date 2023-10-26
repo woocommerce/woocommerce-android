@@ -61,7 +61,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
     val barcodeIcon: ImageView
         get() = binding.barcodeIcon
 
-    val addProductIcon: ImageView
+    val addIcon: ImageView
         get() = binding.addIcon
 
     private var keepAddButtons: Boolean = false
