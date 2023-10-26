@@ -13,7 +13,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
@@ -295,8 +294,7 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = isProductPublished && !isProductUnderCreation,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
-                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled,
-                showPromoteWithBlaze = shouldShowBlaze(productDraft)
+                trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
             )
         }.asLiveData()
 
@@ -2349,20 +2347,6 @@ class ProductDetailViewModel @Inject constructor(
         return getComponentProducts(remoteId)
     }
 
-    private suspend fun shouldShowBlaze(productDraft: Product) =
-        getProductVisibility() == PUBLIC &&
-            productDraft.status != DRAFT &&
-            !isProductUnderCreation &&
-            isBlazeEnabled()
-
-    fun trackBlazeDisplayed() {
-        if (menuButtonsState.value?.showPromoteWithBlaze == true)
-            tracker.track(
-                stat = BLAZE_ENTRY_POINT_DISPLAYED,
-                properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-            )
-    }
-
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2498,7 +2482,6 @@ class ProductDetailViewModel @Inject constructor(
         val viewProductOption: Boolean,
         val shareOption: Boolean,
         val showShareOptionAsActionWithText: Boolean,
-        val trashOption: Boolean,
-        val showPromoteWithBlaze: Boolean
+        val trashOption: Boolean
     )
 }

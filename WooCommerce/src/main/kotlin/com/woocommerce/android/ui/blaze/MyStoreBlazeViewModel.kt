@@ -7,7 +7,6 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +32,7 @@ class MyStoreBlazeViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val blazeCampaignState = flow {
-        if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled() || !isBlazeEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
+        if (!isBlazeEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
         else {
             emitAll(
                 observeMostRecentBlazeCampaign().flatMapLatest {

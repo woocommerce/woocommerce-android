@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -212,7 +211,7 @@ class MoreMenuViewModel @Inject constructor(
     private fun onPromoteProductsWithBlaze() {
         launch {
             val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isNotEmpty()
-            if (FeatureFlag.BLAZE_ITERATION_2.isEnabled() && hasCampaigns) {
+            if (hasCampaigns) {
                 triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
             } else {
                 AnalyticsTracker.track(
