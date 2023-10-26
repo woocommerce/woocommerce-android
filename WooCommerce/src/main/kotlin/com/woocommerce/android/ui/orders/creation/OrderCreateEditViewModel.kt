@@ -142,6 +142,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val mapItemToProductUiModel: MapItemToProductUiModel,
+    private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
@@ -195,6 +196,13 @@ class OrderCreateEditViewModel @Inject constructor(
         .distinctUntilChanged()
         .map { items ->
             items.map { item -> mapItemToProductUiModel(item) }
+        }.asLiveData()
+
+    val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
+        .map { order -> order.feesLines }
+        .distinctUntilChanged()
+        .map { feeLines ->
+            feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
         }.asLiveData()
 
     private val retryOrderDraftUpdateTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -1071,6 +1079,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCustomAmountAdd(amount: BigDecimal, name: String) {
+        _orderDraft.update { draft ->
+            val feesList = draft.feesLines.toMutableList().apply {
+                add(
+                    Order.FeeLine.EMPTY.copy(
+                        name = name.ifEmpty { ORDER_CUSTOM_FEE_NAME },
+                        total = amount
+                    )
+                )
+            }
+            draft.copy(feesLines = feesList)
+        }
+    }
+
     fun onFeeRemoved() {
         tracker.track(
             ORDER_FEE_REMOVE,
@@ -1266,6 +1288,11 @@ data class ProductUIModel(
     val isStockManaged: Boolean,
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
+)
+
+data class CustomAmountUIModel(
+    val amount: BigDecimal,
+    val name: String
 )
 
 enum class ScanningSource(val source: String) {
