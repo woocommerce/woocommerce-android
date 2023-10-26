@@ -31,10 +31,8 @@ class BlazeUrlsHelper @Inject constructor(
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
 
     enum class BlazeFlowSource(val trackingName: String) {
-        PRODUCT_DETAIL_OVERFLOW_MENU("product_more_menu"),
         MORE_MENU_ITEM("menu"),
         MY_STORE_BANNER("my_store_banner"),
-        PRODUCT_LIST_BANNER("product_list_banner"),
 
         PRODUCT_DETAIL_PROMOTE_BUTTON("product_detail_promote_button"),
         MY_STORE_SECTION("my_store_section"),
