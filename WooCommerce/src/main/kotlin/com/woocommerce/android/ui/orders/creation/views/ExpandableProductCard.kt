@@ -94,8 +94,8 @@ fun ExpandableProductCard(
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
-                isExpanded = !isExpanded
-            }
+            isExpanded = !isExpanded
+        }
     ) {
         val (img, name, chevron, expandedPart) = createRefs()
         AsyncImage(
