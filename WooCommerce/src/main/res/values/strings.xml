@@ -525,6 +525,7 @@
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add products</string>
+    <string name="order_creation_add_custom_amounts">Add custom amount</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
@@ -3678,7 +3679,7 @@
     Blaze campaign list
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
-
+    <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
     <!--
     Blaze campaign creation intro
     -->
