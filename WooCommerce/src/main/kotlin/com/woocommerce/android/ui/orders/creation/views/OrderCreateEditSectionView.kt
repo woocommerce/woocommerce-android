@@ -88,6 +88,10 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         binding.productsAdd.show()
     }
 
+    fun showAddAction() {
+        binding.addIcon.show()
+    }
+
     fun hideAddProductsHeaderActions() {
         binding.productsAdd.hide()
     }
