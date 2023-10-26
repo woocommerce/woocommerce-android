@@ -48,10 +48,11 @@ class MyStoreBlazeViewModel @Inject constructor(
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
         fun launchCampaignCreation(productId: Long?) {
+            val source = BlazeFlowSource.MY_STORE_SECTION_CREATE_CAMPAIGN_BUTTON
             val url = if (productId != null) {
-                blazeUrlsHelper.buildUrlForProduct(productId, BlazeFlowSource.MY_STORE_BANNER)
+                blazeUrlsHelper.buildUrlForProduct(productId, source)
             } else {
-                blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER)
+                blazeUrlsHelper.buildUrlForSite(source)
             }
             triggerEvent(LaunchBlazeCampaignCreation(url))
         }
@@ -106,7 +107,11 @@ class MyStoreBlazeViewModel @Inject constructor(
                 },
                 onCreateCampaignClicked = {
                     triggerEvent(
-                        LaunchBlazeCampaignCreation(blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MY_STORE_BANNER))
+                        LaunchBlazeCampaignCreation(
+                            blazeUrlsHelper.buildUrlForSite(
+                                BlazeFlowSource.MY_STORE_SECTION_CREATE_CAMPAIGN_BUTTON
+                            )
+                        )
                     )
                 }
             )
