@@ -7,6 +7,12 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
@@ -30,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -145,7 +152,10 @@ fun ExpandableProductCard(
                         bottom.linkTo(parent.bottom)
                         top.linkTo(img.bottom)
                     }
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                enter = slideInVertically() + expandVertically(expandFrom = Alignment.Top) +
+                        fadeIn(initialAlpha = 0.3f),
+                exit = fadeOut() + shrinkVertically()
             ) {
                 ExtendedProductCardContent(
                     item,
