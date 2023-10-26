@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
@@ -40,6 +41,12 @@ class MyStoreBlazeViewModel @Inject constructor(
     val blazeCampaignState = flow {
         if (!FeatureFlag.BLAZE_ITERATION_2.isEnabled() || !isBlazeEnabled()) emit(MyStoreBlazeCampaignState.Hidden)
         else {
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                )
+            )
             emitAll(
                 observeMostRecentBlazeCampaign().flatMapLatest {
                     when (it) {
