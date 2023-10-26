@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/wordpress-mobile/release-toolkit
-  revision: 5702d532accc256d387e93f30dc06363e67a4e2c
+  revision: 4389f85a9e6a9264a14101eaf93589e0880f35d8
   branch: deprecate/project-root-folder-env-var
   specs:
     fastlane-plugin-wpmreleasetoolkit (9.1.0)
@@ -55,7 +55,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.181.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.6)
-    aws-sigv4 (1.6.0)
+    aws-sigv4 (1.6.1)
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
     base64 (0.1.1)
