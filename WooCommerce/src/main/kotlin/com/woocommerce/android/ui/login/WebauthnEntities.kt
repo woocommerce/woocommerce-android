@@ -2,9 +2,14 @@ package com.woocommerce.android.ui.login
 
 import com.google.gson.annotations.SerializedName
 import java.util.Base64
-import kotlin.math.ceil
+class WebauthnSignedResponse(
+    val clientDataJSON: String,
+    val authenticatorData: String,
+    val signature: String,
+    val userHandle: String
+)
 
-data class CredentialManagerData(
+class CredentialManagerData(
     @SerializedName("two_step_nonce") val twoStepNonce: String,
     val challenge: ByteArray,
     val allowCredentials: List<WebauthnCredential>,
@@ -26,7 +31,7 @@ data class CredentialManagerData(
     )
 }
 
-data class WebauthnChallengeInfo(
+class WebauthnChallengeInfo(
     val challenge: String,
     val rpId: String,
     @SerializedName("two_step_nonce") val twoStepNonce: String,
@@ -34,13 +39,13 @@ data class WebauthnChallengeInfo(
     val timeout: Int
 )
 
-data class WebauthnCredential(
+class WebauthnCredential(
     val type: String,
     val id: ByteArray,
     val transports: List<String>
 )
 
-data class WebauthnCredentialResponse(
+class WebauthnCredentialResponse(
     val type: String,
     val id: String,
     val transports: List<String>
