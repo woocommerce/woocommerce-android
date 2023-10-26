@@ -43,6 +43,7 @@ class AddProductWithAIViewModel @Inject constructor(
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val nameSubViewModel = ProductNameSubViewModel(
         savedStateHandle = savedStateHandle,
+        tracker = tracker,
         onDone = { name ->
             aboutSubViewModel.updateProductName(name)
             previewSubViewModel.updateName(name)
