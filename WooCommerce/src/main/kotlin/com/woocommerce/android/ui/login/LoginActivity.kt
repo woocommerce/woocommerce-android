@@ -531,17 +531,11 @@ class LoginActivity :
                 data.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)?.let {
                     PublicKeyCredential.deserializeFromBytes(it)
                 }?.let { response ->
-                    val credentials = Gson().fromJson(response.toJson(), WebauthnSignedCredential::class.java)
-                    val payload = FinishSecurityKeyChallengePayload().apply {
-                        this.mId = credentials.id
-                        this.mRawId = credentials.rawId
-                        this.mType = credentials.type
-                        this.mSignature = credentials.response.signature
-                        this.mClientDataJSON = credentials.response.clientDataJSON
-                        this.mAuthenticatorData = credentials.response.authenticatorData
-                        this.mUserHandle = credentials.response.userHandle.orEmpty()
-                    }
-                    dispatcher.dispatch(AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(payload))
+                    response.toJson()
+                        .let { Gson().fromJson(it, WebauthnSignedCredential::class.java) }
+                        .asPayload()
+                        .let { AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(it) }
+                        .let { dispatcher.dispatch(it) }
                 }
             }
         }
