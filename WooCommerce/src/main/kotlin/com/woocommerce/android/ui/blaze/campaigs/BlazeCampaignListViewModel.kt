@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.blaze.campaigs
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -28,7 +31,8 @@ class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val selectedSite: SelectedSite,
-    private val blazeUrlsHelper: BlazeUrlsHelper
+    private val blazeUrlsHelper: BlazeUrlsHelper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
@@ -80,6 +84,10 @@ class BlazeCampaignListViewModel @Inject constructor(
 
     private fun onCampaignClicked(campaignId: Int) {
         val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.CAMPAIGN_LIST.trackingName)
+        )
         triggerEvent(
             ShowCampaignDetails(
                 url = url,
