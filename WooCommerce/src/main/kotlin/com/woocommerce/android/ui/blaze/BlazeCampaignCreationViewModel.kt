@@ -57,8 +57,8 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             BlazeCreationViewState.Intro(
                 onCreateCampaignClick = {
                     trackBlazeEntryPointTapped(INTRO_VIEW.trackingName)
-                    isIntroDismissed.value = true
                     source = INTRO_VIEW
+                    isIntroDismissed.value = true
                 }
             )
         } else {
@@ -67,8 +67,8 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             }
             BlazeCreationViewState.BlazeWebViewState(
                 urlToLoad = navArgs.urlToLoad,
-                source = navArgs.source,
-                onPageFinished = { url -> onPageFinished(url, navArgs.source) }
+                source = source,
+                onPageFinished = { url -> onPageFinished(url, source) }
             )
         }
     }.asLiveData()
