@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderCreationCustomAmountItemBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomAmountAdapter.CustomAmountViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
 
@@ -45,6 +47,11 @@ class OrderCreateEditCustomAmountAdapter(
             binding.customAmountLayout.customAmountAmount.text = currencyFormatter.formatCurrency(
                 customAmountUIModel.amount.toString()
             )
+            if (safePosition == currentList.size - 1 && currentList.size <= 1) {
+                binding.customAmountLayout.divider.hide()
+            } else {
+                binding.customAmountLayout.divider.show()
+            }
         }
     }
 
@@ -52,11 +59,11 @@ class OrderCreateEditCustomAmountAdapter(
         override fun areItemsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
+        ): Boolean = (oldItem.id == newItem.id) && (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
 
         override fun areContentsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
+        ): Boolean = (oldItem.id == newItem.id) && (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
     }
 }
