@@ -2,13 +2,26 @@ package com.woocommerce.android.ui.login
 
 import com.google.gson.annotations.SerializedName
 import java.util.Base64
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.FinishSecurityKeyChallengePayload
+
 class WebauthnSignedCredential(
     val id: String,
     val rawId: String,
     val type: String,
     val authenticatorAttachment: String,
     val response: WebauthnSignedResponse
-)
+) {
+    fun asPayload() = FinishSecurityKeyChallengePayload().also {
+        it.mId = this.id
+        it.mRawId = this.rawId
+        it.mType = this.type
+        it.mSignature = this.response.signature
+        it.mClientDataJSON = this.response.clientDataJSON
+        it.mAuthenticatorData = this.response.authenticatorData
+        it.mUserHandle = this.response.userHandle.orEmpty()
+    }
+}
 
 class WebauthnSignedResponse(
     val clientDataJSON: String,
