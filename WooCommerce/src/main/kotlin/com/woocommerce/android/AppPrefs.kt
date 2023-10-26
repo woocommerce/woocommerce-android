@@ -118,6 +118,7 @@ object AppPrefs {
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_CELEBRATION_SCREEN_SHOWN,
     }
 
     /**
@@ -1044,6 +1045,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+            value = value
+        )
+
+    var isBlazeCelebrationScreenShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
             value = value
         )
 

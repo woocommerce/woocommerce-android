@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.blaze.campaigs
 
-import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,14 +30,17 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val blazeUrlsHelper: BlazeUrlsHelper = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val siteModel: SiteModel = mock()
     private val campaignsEntityFlow = flow { emit(emptyList<BlazeCampaignEntity>()) }
     private lateinit var viewModel: BlazeCampaignListViewModel
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
+        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any()))
+            .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
     }
 
     @Test
@@ -86,12 +90,56 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         Assertions.assertThat(errorEvent.message).isEqualTo(R.string.blaze_campaign_list_error_fetching_campaigns)
     }
 
-    private fun createViewModel() {
+    @Test
+    fun `given celebration not shown before, when opening post campaign creation, show celebration`() = testBlocking {
+        whenever(appPrefsWrapper.isBlazeCelebrationScreenShown).thenReturn(false)
+
+        createViewModel(isPostCampaignCreation = true)
+        val state = viewModel.state.captureValues().last()
+
+        Assertions.assertThat(state.isCampaignCelebrationShown).isTrue()
+        verify(appPrefsWrapper).isBlazeCelebrationScreenShown = true
+    }
+
+    @Test
+    fun `given celebration shown before, when opening post campaign creation, do not show celebration`() =
+        testBlocking {
+            whenever(appPrefsWrapper.isBlazeCelebrationScreenShown).thenReturn(true)
+
+            createViewModel(isPostCampaignCreation = true)
+            val state = viewModel.state.captureValues().last()
+
+            Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
+        }
+
+    @Test
+    fun `given celebration shown, when dismissing celebration, hide it`() = testBlocking {
+        whenever(appPrefsWrapper.isBlazeCelebrationScreenShown).thenReturn(false)
+
+        createViewModel(isPostCampaignCreation = true)
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCampaignCelebrationDismissed()
+        }.last()
+
+        Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
+    }
+
+    @Test
+    fun `when screen is not opened post creation, don't show celebration`() = testBlocking {
+        createViewModel(isPostCampaignCreation = false)
+
+        val state = viewModel.state.captureValues().last()
+
+        Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
+    }
+
+    private fun createViewModel(isPostCampaignCreation: Boolean = false) {
         viewModel = BlazeCampaignListViewModel(
-            savedStateHandle = SavedStateHandle(),
+            savedStateHandle = BlazeCampaignListFragmentArgs(isPostCampaignCreation).toSavedStateHandle(),
             blazeCampaignsStore = blazeCampaignsStore,
             selectedSite = selectedSite,
-            blazeUrlsHelper = blazeUrlsHelper
+            blazeUrlsHelper = blazeUrlsHelper,
+            appPrefsWrapper = appPrefsWrapper
         )
     }
 
