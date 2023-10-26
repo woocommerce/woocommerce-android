@@ -137,10 +137,23 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         binding.addButtonsLayout.addView(container)
     }
 
+    fun setCustomAmountsSectionButtons(
+        addCustomAmountsButton: AddButton
+    ) {
+        binding.addButtonsLayout.removeAllViews()
+        val container = RelativeLayout(context)
+        addCustomAmountsButton(addCustomAmountsButton, container, null)
+        binding.addButtonsLayout.addView(container)
+    }
+
+    fun removeCustomSectionButtons() {
+        binding.addButtonsLayout.removeAllViews()
+    }
+
     private fun addCustomAmountsButton(
         addCustomAmountsButton: AddButton?,
         container: RelativeLayout,
-        addingProductsManuallyButtonId: Int
+        addingProductsManuallyButtonId: Int?
     ) {
         addCustomAmountsButton?.let {
             val addingCustomAmountsButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
@@ -152,7 +165,9 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
                 LayoutParams.WRAP_CONTENT
             )
             addCustomAmountsButtonParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-            addCustomAmountsButtonParams.addRule(RelativeLayout.BELOW, addingProductsManuallyButtonId)
+            addingProductsManuallyButtonId?.let {
+                addCustomAmountsButtonParams.addRule(RelativeLayout.BELOW, addingProductsManuallyButtonId)
+            }
             addingCustomAmountsButton.layoutParams = addCustomAmountsButtonParams
             container.addView(addingCustomAmountsButton)
         }
