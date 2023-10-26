@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -171,13 +170,10 @@ fun ProductFromPackagePhoto(
                     }
 
                     is Failure -> {
-                        val error = if (viewState.state.message.isEmpty()) {
-                            "${stringResource(id = string.product_creation_package_photo_error)}."
-                        } else {
-                            stringResource(id = string.product_creation_package_photo_error) +
-                                " (${viewState.state.message})."
-                        }
-                        Message(message = error, isError = true)
+                        Message(
+                            message = stringResource(id = string.product_creation_package_photo_error),
+                            isError = true
+                        )
                         Spacer(Modifier)
                     }
                 }
