@@ -21,9 +21,11 @@ import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBindin
 import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Address
@@ -106,6 +108,10 @@ class OrderCreateEditFormFragment :
     private val View?.productsAdapter
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditProductsAdapter }
+
+    private val View?.customAmountAdapter
+        get() = (this as? RecyclerView)
+            ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
@@ -310,6 +316,10 @@ class OrderCreateEditFormFragment :
 
         viewModel.products.observe(viewLifecycleOwner) {
             bindProductsSection(binding.productsSection, it)
+        }
+
+        viewModel.customAmounts.observe(viewLifecycleOwner) {
+            bindCustomAmountsSection(binding.customAmountsSection, it)
         }
 
         observeViewStateChanges(binding)
@@ -562,6 +572,36 @@ class OrderCreateEditFormFragment :
         }
         productsSection.addProductIcon.setOnClickListener {
             viewModel.onAddProductClicked()
+        }
+    }
+
+    private fun bindCustomAmountsSection(
+        customAmountsSection: OrderCreateEditSectionView,
+        customAmounts: List<CustomAmountUIModel>?
+    ) {
+        customAmountsSection.setContentHorizontalPadding(R.dimen.minor_00)
+        if (customAmounts.isNullOrEmpty()) {
+            customAmountsSection.hide()
+        } else {
+            customAmountsSection.show()
+            customAmountsSection.showHeader()
+            customAmountsSection.showAddAction()
+            if (customAmountsSection.content == null) {
+                val animator = DefaultItemAnimator().apply {
+                    // Disable change animations to avoid duplicating viewholders
+                    supportsChangeAnimations = false
+                }
+                customAmountsSection.content = RecyclerView(requireContext()).apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = OrderCreateEditCustomAmountAdapter {
+                    }
+                    itemAnimator = animator
+                    isNestedScrollingEnabled = false
+                }
+            }
+            customAmountsSection.content.customAmountAdapter?.apply {
+                submitList(customAmounts)
+            }
         }
     }
 
