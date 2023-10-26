@@ -31,7 +31,7 @@ class PackagePhotoViewModel @Inject constructor(
     private val textRecognitionEngine: TextRecognitionEngine
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private val DEFAULT_LANGUAGE_ISO = "en"
+        private const val DEFAULT_LANGUAGE_ISO = "en"
     }
     private val navArgs: PackagePhotoBottomSheetFragmentArgs by savedStateHandle.navArgs()
 
