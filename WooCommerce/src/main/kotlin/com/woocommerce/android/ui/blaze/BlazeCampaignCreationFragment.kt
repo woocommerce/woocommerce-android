@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -42,7 +43,16 @@ class BlazeCampaignCreationFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
+                is BlazeCampaignCreationViewModel.CampaignCreated -> openBlazeCampaignList()
             }
         }
+    }
+
+    private fun openBlazeCampaignList() {
+        findNavController().navigateSafely(
+            BlazeCampaignCreationFragmentDirections.actionBlazeCampaignCreationFragmentToBlazeCampaignListFragment(
+                isPostCampaignCreation = true
+            )
+        )
     }
 }

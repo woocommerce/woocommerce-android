@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
@@ -14,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -30,7 +30,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore
 ) : ScopedViewModel(savedStateHandle) {
@@ -80,7 +79,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
-            appPrefsWrapper.setBlazeBannerHidden(selectedSite.getSelectedSiteId(), hide = true)
+            triggerEvent(CampaignCreated)
         }
     }
 
@@ -150,4 +149,5 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 values().firstOrNull { it.label.equals(source, ignoreCase = true) } ?: UNSPECIFIED
         }
     }
+    object CampaignCreated : Event()
 }
