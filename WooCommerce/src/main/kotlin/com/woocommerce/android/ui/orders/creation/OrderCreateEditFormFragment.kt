@@ -33,7 +33,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -104,7 +104,6 @@ class OrderCreateEditFormFragment :
             }
         )
 
-    // todo remove
     private val View?.productsAdapter
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditProductsAdapter }
@@ -319,7 +318,6 @@ class OrderCreateEditFormFragment :
                 if (new.isEditable) {
                     binding.productsSection.content.productsAdapter?.areProductsEditable =
                         show.not()
-                    // todo adjust to compose layout
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -495,7 +493,7 @@ class OrderCreateEditFormFragment :
     private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<ProductUIModel>>) {
         setContent {
             val state = items.observeAsState(emptyList())
-            WooThemeWithBackground {
+            WooTheme {
                 Column(modifier = Modifier) {
                     state.value.forEach { item ->
                         ExpandableProductCard(
@@ -670,7 +668,7 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
-            content.productsAdapter?.areProductsEditable = true // todo adjust to compose layout
+            content.productsAdapter?.areProductsEditable = true
         }
         paymentSection.apply {
             feeButton.isEnabled = true
@@ -686,7 +684,7 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
-            content.productsAdapter?.areProductsEditable = false // todo adjust to compose layout
+            content.productsAdapter?.areProductsEditable = false
         }
         paymentSection.apply {
             feeButton.isEnabled = false
