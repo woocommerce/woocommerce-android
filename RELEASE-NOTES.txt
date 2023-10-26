@@ -3,7 +3,7 @@
 -----
 - [*] [Internal] Fixed a crash during jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/10019]
 - [*] [Internal] Fixed a rare crash that occurs in the Jetpack Connection flow [https://github.com/woocommerce/woocommerce-android/pull/10012]
-- Optimized Blaze experience: Improved Blaze campaign creation and list screens. [https://github.com/woocommerce/woocommerce-android/pull/10026]
+- [***] Optimized Blaze experience: Improved Blaze campaign creation and list screens. [https://github.com/woocommerce/woocommerce-android/issues/9929]
 
 15.9
 ----
