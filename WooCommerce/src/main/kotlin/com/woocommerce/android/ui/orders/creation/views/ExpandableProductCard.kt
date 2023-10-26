@@ -42,9 +42,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
@@ -110,8 +112,16 @@ fun ExpandableProductCard(
                     .constrainAs(name) {
                         top.linkTo(parent.top)
                         start.linkTo(img.end)
+                        end.linkTo(chevron.start)
+                        width = Dimension.fillToConstraints
                     }
-                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        top = dimensionResource(id = R.dimen.major_100),
+                    ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             IconButton(
                 onClick = { isExpanded = !isExpanded },
@@ -289,7 +299,7 @@ fun ExtendedProductCardContent(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ExpandableProductCardPreview() {
-    val item = Order.Item.EMPTY.copy(name = "Test Product", quantity = 3.0f)
+    val item = Order.Item.EMPTY.copy(name = "Test Product Long Long Long Long Long Long Name", quantity = 3.0f)
     val product = ProductUIModel(
         item = item,
         imageUrl = "",
