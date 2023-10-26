@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -167,16 +166,14 @@ fun ProductFromPackagePhoto(
 
                     NoKeywordsFound -> {
                         Message(stringResource(id = string.product_creation_package_photo_no_text_detected))
+                        Spacer(Modifier)
                     }
 
                     is Failure -> {
-                        val error = if (viewState.state.message.isEmpty()) {
-                            "${stringResource(id = string.product_creation_package_photo_error)}."
-                        } else {
-                            stringResource(id = string.product_creation_package_photo_error) +
-                                ":\n\n${viewState.state.message}"
-                        }
-                        Message(message = error, isError = true)
+                        Message(
+                            message = stringResource(id = string.product_creation_package_photo_error),
+                            isError = true
+                        )
                         Spacer(Modifier)
                         Keywords(viewState, onKeywordChanged, onRegenerateTapped, true)
                     }
@@ -190,17 +187,44 @@ fun ProductFromPackagePhoto(
 
 @Composable
 private fun Message(message: String, isError: Boolean = false) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
-            .background(colorResource(id = if (isError) color.color_error else color.color_alert))
+            .background(
+                colorResource(
+                    id = if (isError)
+                        color.error_banner_background_color
+                    else
+                        color.tag_bg_main
+                )
+            )
     ) {
+        val color = colorResource(
+            id = if (isError)
+                color.error_banner_foreground_color
+            else
+                color.tag_text_main
+        )
+
+        Icon(
+            painter = painterResource(drawable.ic_info_outline_20dp),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.major_100))
+                .size(dimensionResource(id = dimen.major_150)),
+            tint = color,
+        )
         Text(
             text = message,
+            color = color,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = dimen.major_100))
+                .weight(1f)
+                .padding(
+                    top = dimensionResource(id = dimen.major_100),
+                    end = dimensionResource(id = dimen.major_100),
+                    bottom = dimensionResource(id = dimen.major_100)
+                )
         )
     }
 }
@@ -261,7 +285,7 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .animateContentSize(animationSpec = tween(durationMillis = 500))
-                    .defaultMinSize(minWidth = dimensionResource(id = dimen.image_major_100))
+                    .height(dimensionResource(id = dimen.image_major_300))
                     .constrainAs(image) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
