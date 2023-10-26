@@ -14,7 +14,6 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DESCRIPTION_AI_BUTTON_TAPPED
@@ -452,11 +451,6 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onBlazeClicked() {
-        tracker.track(
-            stat = BLAZE_ENTRY_POINT_TAPPED,
-            // TODO update source value when i2 is ready for release
-            properties = mapOf(KEY_BLAZE_SOURCE to BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU.trackingName)
-        )
         viewState.productDraft?.let {
             triggerEvent(
                 NavigateToBlazeWebView(
@@ -464,7 +458,7 @@ class ProductDetailViewModel @Inject constructor(
                         productId = it.remoteId,
                         source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
                     ),
-                    source = BlazeFlowSource.PRODUCT_DETAIL_OVERFLOW_MENU
+                    source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
                 )
             )
         }
