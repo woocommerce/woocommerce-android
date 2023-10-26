@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogCustomAmountsBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +30,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: CustomAmountsDialogViewModel by viewModels()
+    private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = ComponentDialog(requireContext(), theme)
         dialog.onBackPressedDispatcher.addCallback(dialog) {
@@ -52,6 +56,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         val binding = DialogCustomAmountsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
+            sharedViewModel.onCustomAmountAdd(viewModel.currentPrice, binding.customAmountNameText.text.toString())
         }
         binding.imageClose.setOnClickListener {
             cancelDialog()
@@ -79,6 +84,11 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             new.isDoneButtonEnabled.takeIfNotEqualTo(old?.isDoneButtonEnabled) { isEnabled ->
                 binding.buttonDone.isEnabled = isEnabled
             }
+
+            new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
+                binding.progressBar.isVisible = show
+                binding.buttonDone.text = if (show) "" else getString(R.string.done)
+            }
         }
     }
 
@@ -93,5 +103,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         private const val HEIGHT_RATIO_LANDSCAPE = 0.9
         private const val WIDTH_RATIO_LANDSCAPE = 0.6
         private const val KEYBOARD_DELAY = 100L
+
+        const val CUSTOM_AMOUNT = "Custom Amount"
     }
 }
