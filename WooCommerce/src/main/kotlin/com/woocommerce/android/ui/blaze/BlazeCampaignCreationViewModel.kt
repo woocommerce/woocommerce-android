@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -67,6 +68,13 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             )
         }
     }.asLiveData()
+
+    init {
+        analyticsTracker.track(
+            stat = BLAZE_INTRO_DISPLAYED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName)
+        )
+    }
 
     private fun trackBlazeEntryPointTapped(sourceName: String) {
         analyticsTracker.track(
