@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.blaze
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.*
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.FeatureFlag
@@ -29,7 +32,8 @@ class MyStoreBlazeViewModel @Inject constructor(
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val blazeUrlsHelper: BlazeUrlsHelper
+    private val blazeUrlsHelper: BlazeUrlsHelper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val blazeCampaignState = flow {
@@ -48,7 +52,7 @@ class MyStoreBlazeViewModel @Inject constructor(
 
     private fun prepareUiForNoCampaign(): Flow<MyStoreBlazeCampaignState> {
         fun launchCampaignCreation(productId: Long?) {
-            val source = BlazeFlowSource.MY_STORE_SECTION_CREATE_CAMPAIGN_BUTTON
+            val source = MY_STORE_SECTION
             val url = if (productId != null) {
                 blazeUrlsHelper.buildUrlForProduct(productId, source)
             } else {
@@ -95,6 +99,10 @@ class MyStoreBlazeViewModel @Inject constructor(
                     )
                 ),
                 onCampaignClicked = {
+                    analyticsTrackerWrapper.track(
+                        stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
+                        properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName)
+                    )
                     triggerEvent(
                         ShowCampaignDetails(
                             url = blazeUrlsHelper.buildCampaignDetailsUrl(campaign.campaignId),
@@ -109,7 +117,7 @@ class MyStoreBlazeViewModel @Inject constructor(
                     triggerEvent(
                         LaunchBlazeCampaignCreation(
                             blazeUrlsHelper.buildUrlForSite(
-                                BlazeFlowSource.MY_STORE_SECTION_CREATE_CAMPAIGN_BUTTON
+                                MY_STORE_SECTION
                             )
                         )
                     )
