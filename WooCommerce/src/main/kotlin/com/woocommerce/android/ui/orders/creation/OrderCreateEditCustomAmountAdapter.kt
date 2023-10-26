@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.OrderCreationCustomAmountItemBinding
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomAmountAdapter.CustomAmountViewHolder
+import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreateEditCustomAmountAdapter(
+    private val currencyFormatter: CurrencyFormatter,
     private val onCustomAmountClick: (CustomAmountUIModel)-> Unit
 ) : ListAdapter<CustomAmountUIModel, CustomAmountViewHolder>(CustomAmountUIModelDiffCallback) {
 
@@ -40,7 +42,9 @@ class OrderCreateEditCustomAmountAdapter(
 
         fun bind(customAmountUIModel: CustomAmountUIModel) {
             binding.customAmountLayout.customAmountName.text = customAmountUIModel.name
-            binding.customAmountLayout.customAmountAmount.text = customAmountUIModel.amount.toString()
+            binding.customAmountLayout.customAmountAmount.text = currencyFormatter.formatCurrency(
+                customAmountUIModel.amount.toString()
+            )
         }
     }
 
