@@ -101,7 +101,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 stat = BLAZE_FLOW_COMPLETED,
                 properties = mapOf(
                     AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName,
-                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.trackingName
+                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
             triggerEvent(CampaignCreated)
@@ -114,7 +114,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 stat = BLAZE_FLOW_CANCELED,
                 properties = mapOf(
                     AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName,
-                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.trackingName
+                    AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
         }
@@ -156,15 +156,15 @@ class BlazeCampaignCreationViewModel @Inject constructor(
         ) : BlazeCreationViewState
     }
 
-    enum class BlazeFlowStep(val label: String, val trackingName: String) {
-        CAMPAIGNS_LIST("campaigns-list", "campaigns-list"),
-        PRODUCTS_LIST("products-list", "products-list"),
-        STEP_1("step-1", "step-1"),
-        STEP_2("step-2", "step-2"),
-        STEP_3("step-3", "step-3"),
-        STEP_4("step-4", "step-4"),
-        STEP_5("step-5", "step-5"),
-        UNSPECIFIED("unspecified", "unspecified");
+    enum class BlazeFlowStep(val label: String) {
+        CAMPAIGNS_LIST("campaigns-list"),
+        PRODUCTS_LIST("products-list"),
+        STEP_1("step-1"),
+        STEP_2("step-2"),
+        STEP_3("step-3"),
+        STEP_4("step-4"),
+        STEP_5("step-5"),
+        UNSPECIFIED("unspecified");
 
         override fun toString() = label
 
