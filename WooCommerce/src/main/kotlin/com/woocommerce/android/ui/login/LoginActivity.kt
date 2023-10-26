@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.login
 
 import android.app.Activity
 import android.content.Intent
-import android.content.IntentSender
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Base64
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
@@ -556,8 +556,17 @@ class LoginActivity :
             } else if (data.hasExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)) {
                 data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)?.let {
                     AuthenticatorAssertionResponse.deserializeFromBytes(it)
-                }?.let {
-                    Log.d("FIDO success", it.toString())
+                }?.let { response ->
+                    val keyHandleBase64 = Base64.encodeToString(response.userHandle, Base64.DEFAULT)
+                    val clientDataJson = String(response.clientDataJSON, Charsets.UTF_8)
+                    val authenticatorDataBase64 = Base64.encodeToString(response.authenticatorData, Base64.DEFAULT)
+                    val signatureBase64 = Base64.encodeToString(response.signature, Base64.DEFAULT)
+                    WebauthnSignedResponse(
+                        clientDataJSON = clientDataJson,
+                        authenticatorData = authenticatorDataBase64,
+                        signature = signatureBase64,
+                        userHandle = keyHandleBase64
+                    )
                 }
             }
         }
