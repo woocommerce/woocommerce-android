@@ -37,12 +37,17 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore
 ) : ScopedViewModel(savedStateHandle) {
+    private companion object {
+        const val BLAZE_CTA_TAPPED_TRACKED_KEY = "blaze_cta_tapped_tracked_key"
+    }
+
     private val navArgs: BlazeCampaignCreationFragmentArgs by savedStateHandle.navArgs()
 
     private var currentBlazeStep = BlazeFlowStep.UNSPECIFIED
     private var isCompleted = false
     private var firstTimeLoading = false
     private var source = navArgs.source
+    private var blazeCtaTappedTracked = savedStateHandle[BLAZE_CTA_TAPPED_TRACKED_KEY] ?: false
 
     private val isIntroDismissed = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -66,10 +71,13 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 }
             )
         } else {
-            analyticsTracker.track(
-                stat = BLAZE_ENTRY_POINT_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
-            )
+            if (!blazeCtaTappedTracked) {
+                analyticsTracker.track(
+                    stat = BLAZE_ENTRY_POINT_TAPPED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+                )
+                savedStateHandle[BLAZE_CTA_TAPPED_TRACKED_KEY] = true
+            }
             BlazeCreationViewState.BlazeWebViewState(
                 urlToLoad = navArgs.urlToLoad,
                 source = source,
