@@ -103,8 +103,8 @@ fun ExpandableProductCard(
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
-                isExpanded = !isExpanded
-            }
+            isExpanded = !isExpanded
+        }
     ) {
         val (img, name, stock, sku, quantity, price, chevron, expandedPart) = createRefs()
         val collapsedStateBottomBarrier = createBottomBarrier(sku, quantity)
