@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
@@ -12,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.INTRO_VIEW
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -51,7 +53,10 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             FeatureFlag.BLAZE_ITERATION_2.isEnabled()
         ) {
             BlazeCreationViewState.Intro(
-                onCreateCampaignClick = { isIntroDismissed.value = true }
+                onCreateCampaignClick = {
+                    trackBlazeEntryPointTapped(INTRO_VIEW.trackingName)
+                    isIntroDismissed.value = true
+                }
             )
         } else {
             BlazeCreationViewState.BlazeWebViewState(
@@ -61,6 +66,13 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             )
         }
     }.asLiveData()
+
+    private fun trackBlazeEntryPointTapped(sourceName: String) {
+        analyticsTracker.track(
+            stat = BLAZE_ENTRY_POINT_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to sourceName)
+        )
+    }
 
     private fun onPageFinished(url: String, source: BlazeFlowSource) {
         if (!firstTimeLoading) {
