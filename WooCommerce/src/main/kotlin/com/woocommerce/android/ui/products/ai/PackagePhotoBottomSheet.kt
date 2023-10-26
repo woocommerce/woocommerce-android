@@ -53,7 +53,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -168,6 +167,7 @@ fun ProductFromPackagePhoto(
 
                     NoKeywordsFound -> {
                         Message(stringResource(id = string.product_creation_package_photo_no_text_detected))
+                        Spacer(Modifier)
                     }
 
                     is Failure -> {
@@ -178,6 +178,7 @@ fun ProductFromPackagePhoto(
                                 " (${viewState.state.message})."
                         }
                         Message(message = error, isError = true)
+                        Spacer(Modifier)
                     }
                 }
             }
@@ -208,7 +209,7 @@ private fun Message(message: String, isError: Boolean = false) {
             else
                 color.tag_text_main
         )
-        
+
         Icon(
             painter = painterResource(drawable.ic_info_outline_20dp),
             contentDescription = null,
@@ -287,7 +288,7 @@ private fun ProductImage(viewState: ViewState, onEditPhotoTapped: () -> Unit) {
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .animateContentSize(animationSpec = tween(durationMillis = 500))
-                    .defaultMinSize(minWidth = dimensionResource(id = dimen.image_major_100))
+                    .height(dimensionResource(id = dimen.image_major_300))
                     .constrainAs(image) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
