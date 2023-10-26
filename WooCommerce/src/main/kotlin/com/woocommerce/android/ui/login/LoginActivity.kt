@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Base64
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -530,19 +529,8 @@ class LoginActivity :
                 data.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)?.let {
                     PublicKeyCredential.deserializeFromBytes(it)
                 }?.let { response ->
-                    val json = response.toJson()
-                    //val keyHandleBase64 = Base64.encodeToString(response.keyHandle, Base64.DEFAULT)
-                    val clientDataJson = Base64.encodeToString(response.response.clientDataJSON, Base64.DEFAULT)
-                    //val authenticatorDataBase64 = Base64.encodeToString(response.authenticatorData, Base64.DEFAULT)
-                    //val signatureBase64 = Base64.encodeToString(response.signature, Base64.DEFAULT)
-//                    WebauthnSignedResponse(
-//                        clientDataJSON = clientDataJson,
-//                        authenticatorData = authenticatorDataBase64,
-//                        signature = signatureBase64,
-//                        userHandle = keyHandleBase64
-//                    )
-                    clientDataJson.apply {  }
-                    json.apply {  }
+                    val credentials = Gson().fromJson(response.toJson(), WebauthnSignedCredential::class.java)
+                    credentials.apply {  }
                 }
             }
         }
