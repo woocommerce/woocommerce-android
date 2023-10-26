@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -49,11 +48,11 @@ class OrderCreateEditCustomAmountAdapter(
         override fun areItemsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = oldItem.name == newItem.name
+        ): Boolean = (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
 
         override fun areContentsTheSame(
             oldItem: CustomAmountUIModel,
             newItem: CustomAmountUIModel
-        ): Boolean = oldItem.name == newItem.name
+        ): Boolean = (oldItem.name == newItem.name) && (oldItem.amount == newItem.amount)
     }
 }
