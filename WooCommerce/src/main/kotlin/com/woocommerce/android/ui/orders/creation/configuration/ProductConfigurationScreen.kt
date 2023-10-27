@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.configuration
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -67,19 +68,31 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     BackHandler(onBack = viewModel::onCancel)
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.product_configuration_title)) },
-            navigationIcon = {
-                IconButton(viewModel::onCancel) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            elevation = 0.dp,
-        )
+        Column {
+            val issues = (viewState as? ProductConfigurationViewModel.ViewState.DisplayConfiguration)
+                ?.configurationIssues ?: emptyList()
+
+            AnimatedVisibility(visible = issues.isEmpty().not()) {
+                ConfigurationIssues(
+                    issues = issues,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.product_configuration_title)) },
+                navigationIcon = {
+                    IconButton(viewModel::onCancel) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(id = R.string.close)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                elevation = 0.dp,
+            )
+        }
     }) { padding ->
         when (val state = viewState) {
             is ProductConfigurationViewModel.ViewState.Error -> Text(text = state.message)
@@ -91,7 +104,8 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
                     productsInfo = state.productsInfo,
                     onUpdateChildrenConfiguration = viewModel::onUpdateChildrenConfiguration,
                     onSaveConfigurationClick = viewModel::onSaveConfiguration,
-                    modifier = Modifier.padding(padding)
+                    modifier = Modifier.padding(padding),
+                    configurationIssues = state.configurationIssues
                 )
             }
         }
@@ -105,7 +119,8 @@ fun ProductConfigurationScreen(
     productsInfo: Map<Long, ProductInfo>,
     onUpdateChildrenConfiguration: (Long, String, String) -> Unit,
     onSaveConfigurationClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    configurationIssues: List<String> = emptyList()
 ) {
     Surface {
         Column(modifier = modifier) {
@@ -173,6 +188,7 @@ fun ProductConfigurationScreen(
             WCColoredButton(
                 onClick = onSaveConfigurationClick,
                 text = stringResource(id = R.string.save_configuration),
+                enabled = configurationIssues.isEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_100))
@@ -542,5 +558,34 @@ fun StepperPreview() {
             onStepUp = { newValue -> value = newValue },
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+@Composable
+fun ConfigurationIssues(
+    issues: List<String>,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .background(colorResource(id = R.color.woo_blue_5))
+            .padding(start = 18.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_info_outline_20dp),
+            contentDescription = stringResource(id = R.string.configuration_issues),
+            tint = colorResource(id = R.color.blaze_blue_60)
+        )
+        LazyColumn(modifier = Modifier.padding(start = 8.dp)) {
+            items(issues) { issue -> Text(text = " • $issue", color = MaterialTheme.colors.onSurface) }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ConfigurationIssuesPreview() {
+    WooThemeWithBackground {
+        ConfigurationIssues(listOf("Need to select 2 items", "Caipi -> please choose product options"))
     }
 }
