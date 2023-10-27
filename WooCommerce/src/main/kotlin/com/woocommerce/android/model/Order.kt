@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.IgnoredOnParcel
@@ -104,7 +105,8 @@ data class Order(
         val total: BigDecimal,
         val variationId: Long,
         val attributesList: List<Attribute>,
-        val parent: Long? = null
+        val parent: Long? = null,
+        val configuration: ProductConfiguration? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
