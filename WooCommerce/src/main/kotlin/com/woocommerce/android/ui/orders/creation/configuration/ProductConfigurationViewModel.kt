@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.creation.GetProductRules
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class ProductConfigurationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val getProductRules: GetProductRules,
+    private val resourceProvider: ResourceProvider,
     getChildrenProductInfo: GetChildrenProductInfo
 ) : ScopedViewModel(savedState) {
 
@@ -42,7 +44,9 @@ class ProductConfigurationViewModel @Inject constructor(
         if (rules == null || configuration == null) {
             ViewState.Error("rules not found")
         } else {
-            ViewState.DisplayConfiguration(rules, configuration, productsInfo)
+            ViewState.DisplayConfiguration(
+                configuration, productsInfo, configuration.getConfigurationIssues(resourceProvider)
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ViewState.Loading)
 
@@ -84,7 +88,8 @@ class ProductConfigurationViewModel @Inject constructor(
         data class Error(val message: String) : ViewState()
         data class DisplayConfiguration(
             val productConfiguration: ProductConfiguration,
-            val productsInfo: Map<Long, ProductInfo>
+            val productsInfo: Map<Long, ProductInfo>,
+            val configurationIssues: List<String>
         ) : ViewState()
     }
 }
