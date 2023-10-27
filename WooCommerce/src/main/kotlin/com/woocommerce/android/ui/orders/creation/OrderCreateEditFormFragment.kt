@@ -71,6 +71,7 @@ import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
     BaseFragment(R.layout.fragment_order_create_edit_form),
@@ -320,7 +321,9 @@ class OrderCreateEditFormFragment :
             binding.orderStatusView.updateStatus(it)
         }
 
-        bindProductsSection(binding.productsSection, viewModel.products)
+        viewModel.products.observe(viewLifecycleOwner) {
+            bindProductsSection(binding.productsSection, viewModel.products)
+        }
 
         observeViewStateChanges(binding)
 
@@ -516,9 +519,43 @@ class OrderCreateEditFormFragment :
         products: LiveData<List<ProductUIModel>>
     ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
+        if (products.value.isNullOrEmpty() && isCustomAmountsFeatureFlagEnabled()) {
+            productsSection.hideAddProductsHeaderActions()
+            productsSection.hideHeader()
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = { viewModel.onScanClicked() }
+                ),
+                addCustomAmountsButton = AddButton(
+                    text = getString(R.string.order_creation_add_custom_amounts),
+                    onClickListener = {
+                        // Implement custom amounts click listener
+                    }
+                )
+            )
+        } else if (isCustomAmountsFeatureFlagEnabled()) {
+            productsSection.showAddProductsHeaderActions()
+            productsSection.showHeader()
+            productsSection.removeProductsButtons()
+        }
         if (productsSection.content == null) {
             productsSection.content = ComposeView(requireContext()).apply {
                 bindExpandableProductsSection(products)
+            }
+        }
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            productsSection.barcodeIcon.setOnClickListener {
+                viewModel.onScanClicked()
+            }
+            productsSection.addProductIcon.setOnClickListener {
+                viewModel.onAddProductClicked()
             }
         }
     }
