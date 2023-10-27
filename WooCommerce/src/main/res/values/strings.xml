@@ -3739,10 +3739,4 @@
     <string name="ai_feedback_form_message">Is the result helpful?</string>
     <string name="ai_feedback_form_positive_button">Positive feedback</string>
     <string name="ai_feedback_form_negative_button">Negative feedback</string>
-
-    <string name="asset_statements" translatable="false">
-    [{
-        \"include\": \"wordpress.com/.well-known/assetlinks.json\"
-    }]
-    </string>
 </resources>
