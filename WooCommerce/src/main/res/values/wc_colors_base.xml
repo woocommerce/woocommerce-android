@@ -22,7 +22,7 @@
     <color name="woo_red_5">#FACFD2</color>
     <color name="woo_red_30">#F86368</color>
     <color name="woo_red_50">#D63638</color>
-    <color name="woo_red_70">#B32D2E</color>
+    <color name="woo_red_60">#B32D2E</color>
 
     <color name="woo_blue_5">#BBE0FA</color>
     <color name="woo_blue_30">#5198D9</color>
@@ -78,4 +78,13 @@
     <color name="jetpack_black">#0B2621</color>
 
     <color name="wp_blue">#399CE3</color>
+
+    <color name="blaze_yellow_5">#F5E6B3</color>
+    <color name="blaze_yellow_70">#674600</color>
+    <color name="blaze_green_5">#B8E6BF</color>
+    <color name="blaze_green_60">#007017</color>
+    <color name="blaze_blue_5">#BBE0FA</color>
+    <color name="blaze_blue_60">#055D9C</color>
+    <color name="blaze_red_5">#FACFD2</color>
+    <color name="blaze_red_6">#B32D2E</color>
 </resources>

@@ -18,19 +18,20 @@ class JetpackActivationDispatcherViewModel @Inject constructor(
     private val args: JetpackActivationDispatcherFragmentArgs by savedState.navArgs()
 
     init {
+        val jetpackStatus = args.jetpackStatus
         when (selectedSite.connectionType) {
             SiteConnectionType.ApplicationPasswords -> {
-                if (args.jetpackStatus.isJetpackConnected) {
+                if (jetpackStatus.isJetpackConnected && jetpackStatus.wpComEmail != null) {
                     // Jetpack is already connected and we know the address email, handle the authentication
                     triggerEvent(
                         StartWPComAuthenticationForEmail(
-                            wpComEmail = requireNotNull(args.jetpackStatus.wpComEmail),
-                            jetpackStatus = args.jetpackStatus
+                            wpComEmail = jetpackStatus.wpComEmail,
+                            jetpackStatus = jetpackStatus
                         )
                     )
                 } else {
                     // Start regular WordPress.com authentication
-                    triggerEvent(StartWPComLoginForJetpackActivation(args.jetpackStatus))
+                    triggerEvent(StartWPComLoginForJetpackActivation(jetpackStatus))
                 }
             }
 
@@ -39,7 +40,7 @@ class JetpackActivationDispatcherViewModel @Inject constructor(
                 triggerEvent(
                     StartJetpackActivationForNewSite(
                         args.siteUrl,
-                        args.jetpackStatus.isJetpackInstalled
+                        jetpackStatus.isJetpackInstalled
                     )
                 )
             }

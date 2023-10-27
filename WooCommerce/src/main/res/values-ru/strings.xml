@@ -1,11 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 19:54:03+0000
+Translation-Revision-Date: 2023-10-19 23:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="blaze_campaign_status_budget">Бюджет</string>
+    <string name="blaze_campaign_status_clicks">Нажатий</string>
+    <string name="blaze_campaign_status_impressions">Показов</string>
+    <string name="blaze_campaign_status_rejected">Отклонено</string>
+    <string name="blaze_campaign_status_completed">Завершено</string>
+    <string name="blaze_campaign_status_active">Активно</string>
+    <string name="blaze_campaign_status_in_moderation">На модерации</string>
+    <string name="blaze_campaign_show_all_button">Показать всё</string>
+    <string name="blaze_campaign_create_campaign_button">Создать кампанию</string>
+    <string name="blaze_campaign_subtitle">Станьте заметнее и быстрее продавайте товары.</string>
+    <string name="blaze_campaign_title">Кампания Blaze</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. Если вы видите значок «Выполнено» в виде галочки, значит, магазин обрабатывает ваш платёж, а транзакция завершена.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Покупатель прикладывает свою карту горизонтально к верхней части вашего смартфона, к символу бесконтактной оплаты.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Покажите покупателю ваш смартфон.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. Нажмите «Принять платёж» и выберите Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">получение платежа</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Создать заказ</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s или %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Как это работает</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Подробнее об устройствах чтения карт</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Чтобы принимать платежи сверх лимита, вам может потребоваться устройство чтения карт, в котором можно вводить PIN-коды.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Мы не поддерживаем ввод PIN-кодов при использовании функции Tap to Pay на устройствах на базе Android.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">В %1$s некоторые карты требуют ввода PIN-кода при бесконтактных транзакциях на сумму свыше %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Важная информация</string>
+    <string name="card_reader_tap_to_pay_about_description">Функция Tap to Pay (Оплата в касание) позволяет принимать все виды бесконтактных платежей: от банковских карт до цифровых кошельков — без необходимости приобретать устройство чтения карт.</string>
+    <string name="card_reader_tap_to_pay_about_header">Что такое Tap to Pay?</string>
+    <string name="card_reader_tap_to_pay_about_title">О функции Tap to Pay (Оплата в касание)</string>
+    <string name="ai_feedback_form_negative_button">Отрицательный отзыв</string>
+    <string name="ai_feedback_form_positive_button">Положительный отзыв</string>
+    <string name="ai_feedback_form_message">Был ли результат полезен?</string>
+    <string name="product_creation_ai_preview_short_description_section">Краткое описание товара</string>
+    <string name="card_reader_payment_update_available">Доступно обновление устройства чтения карт</string>
+    <string name="card_reader_about_tap_to_pay">О функции Tap to Pay (Оплата в касание)</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">НАСТРОЙКИ</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Добавить сведения вручную, используя электронный адрес</string>
+    <string name="login_app_login_malformed_link">Не удалось обработать запрос на вход в приложение</string>
     <string name="ai_product_name_copy_error">Ошибка при копировании названия товара в буфер обмена</string>
     <string name="ai_product_name_copy_success">Название товара скопировано в буфер обмена.</string>
     <string name="ai_product_name_copy_label">Название товара создано при помощи ИИ</string>
@@ -20,7 +58,7 @@ Language: ru
     <string name="ai_product_name_sheet_generate_button">Напишите это за меня</string>
     <string name="ai_product_name_sheet_input_description">Расскажите о своём товаре и его отличительных качествах!</string>
     <string name="ai_product_name_sheet_subtitle">С помощью ИИ вы можете создавать привлекательные заголовки</string>
-    <string name="ai_product_name_sheet_title">✨ Название товара</string>
+    <string name="ai_product_name_sheet_title">Название товара</string>
     <string name="empty_review_filtered_list_message">Попробуйте отключить фильтр «Непрочитанные», чтобы просмотреть все отзывы о товарах</string>
     <string name="empty_review_filtered_list_title">Нет непрочитанных отзывов о товарах</string>
     <string name="product_creation_ai_tone_selected_content_desc">Выбранный тон</string>
@@ -33,7 +71,7 @@ Language: ru
     <string name="product_creation_ai_preview_details_section">Сведения</string>
     <string name="product_creation_ai_preview_description_section">Описание товара</string>
     <string name="product_creation_ai_preview_name_section">Название товара</string>
-    <string name="product_creation_ai_preview_subtitle">Не беспокойтесь! Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
+    <string name="product_creation_ai_preview_subtitle">Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
     <string name="product_creation_ai_preview_title">Предварительный просмотр</string>
     <string name="product_creation_ai_about_product_continue_button">Создание сведений о товаре</string>
     <string name="product_creation_ai_about_product_set_tone">Задайте тон и стиль</string>
@@ -230,7 +268,6 @@ Language: ru
     <string name="empty_order_test_order_message">Создайте тестовый заказ, чтобы убедиться, что магазин WooCommerce работает как часы</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Добавить сведения вручную</string>
     <string name="order_creation_customer_search_old_wc_hint">Поиск клиентов по</string>
-    <string name="shipping_classes_zones">Классы и области доставки</string>
     <string name="free_trial_survey_free_text">Другая причина (укажите)</string>
     <string name="free_trial_survey_option4">Я работаю в команде, и нам необходимо принимать решение совместно.</string>
     <string name="free_trial_survey_option3">Стоимость услуги является важным фактором при принятии решения.</string>
@@ -478,8 +515,7 @@ Language: ru
     <string name="product_selector_popular_products_heading">Хит продаж</string>
     <string name="jetpack_install_role_eligibility_learn_more">Подробно о ролях и разрешениях</string>
     <string name="jetpack_install_role_eligibility_error_message">Кажется, ваша роль не позволяет вам установить Jetpack. \nОбратитесь к администратору за помощью.</string>
-    <string name="card_reader_tap_to_pay_description">Проверьте «Оплату в касание», перечислив небольшую\nсумму.</string>
-    <string name="card_reader_test_tap_to_pay">Проверить «Оплату в касание»</string>
+    <string name="card_reader_test_tap_to_pay">Испытайте функцию Tap To Pay</string>
     <string name="subscription_free_trial">Бесплатная проба</string>
     <string name="subscription_sign_up_fee">Стоимость регистрации</string>
     <string name="subscription_expire">Прекратить после</string>
@@ -516,7 +552,8 @@ Language: ru
     <string name="product_subscription_title">Подписка</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Устройство чтения карт принимает платежи дебетовыми и кредитными картами. Их можно прикладывать, проводить или вставлять.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Принимайте бесконтактные платежи прямо в телефоне.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Поделитесь отзывом о функции «Оплата в касание»</string>
+    <string name="card_reader_tap_to_pay_description">Для получения платежей по карте используйте\nсвой телефон. Попробуйте прямо сейчас.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Отправить отзыв</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Не удалось войти, поскольку не разрешается создавать пароль приложения.</string>
     <string name="login_site_credentials_fetching_site">Получение сайта…</string>
     <string name="login_site_credentials_fetching_site_failed">Произошла ошибка при получении веб-сайта</string>

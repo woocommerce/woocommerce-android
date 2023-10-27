@@ -33,12 +33,6 @@
         app:showAsAction="withText" />
 
     <item
-        android:id="@+id/promote_with_blaze"
-        android:title="@string/product_detail_menu_item_promote_with_blaze"
-        android:visible="false"
-        app:showAsAction="withText" />
-
-    <item
         android:id="@+id/menu_product_settings"
         android:title="@string/product_settings"
         app:showAsAction="withText" />

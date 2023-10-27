@@ -1,0 +1,2 @@
+15.8:
+Pembaruan ini menghadirkan perbaikan bug penting untuk memastikan pengalaman yang lebih lancar. Termasuk dalam pembaruan ini adalah kemampuan untuk memperbarui tarif pajak ketika mengedit pesanan agar Anda dapat mengontrol dengan lebih maksimal. Nantikan kabar terbaru tentang fitur menarik lainnya dalam rilis mendatang. Terima kasih telah memilih WooCommerce.

@@ -134,6 +134,8 @@
     -->
     <color name="warning_banner_foreground_color">@color/woo_orange_30</color>
     <color name="warning_banner_background_color">@color/woo_orange_5</color>
+    <color name="error_banner_foreground_color">@color/woo_red_50</color>
+    <color name="error_banner_background_color">@color/woo_red_5</color>
     <color name="info_banner_foreground_color">@color/woo_celadon_40</color>
     <color name="info_banner_background_color">@color/woo_celadon_5</color>
     <!--
@@ -277,4 +279,15 @@
     -->
     <color name="tap_to_pay_about_important_info_background">@color/woo_purple_0</color>
 
+    <!--
+    Blaze
+    -->
+    <color name="blaze_campaign_status_in_moderation_background">@color/blaze_yellow_5</color>
+    <color name="blaze_campaign_status_in_moderation_text">@color/blaze_yellow_70</color>
+    <color name="blaze_campaign_status_active_background">@color/blaze_green_5</color>
+    <color name="blaze_campaign_status_active_text">@color/blaze_green_60</color>
+    <color name="blaze_campaign_status_completed_background">@color/blaze_blue_5</color>
+    <color name="blaze_campaign_status_completed_text">@color/blaze_blue_60</color>
+    <color name="blaze_campaign_status_rejected_background">@color/blaze_red_5</color>
+    <color name="blaze_campaign_status_rejected_text">@color/blaze_red_6</color>
 </resources>

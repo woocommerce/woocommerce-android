@@ -1,11 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-04 10:54:04+0000
+Translation-Revision-Date: 2023-10-19 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="blaze_campaign_status_budget">予算</string>
+    <string name="blaze_campaign_status_clicks">クリック数</string>
+    <string name="blaze_campaign_status_impressions">インプレッション</string>
+    <string name="blaze_campaign_status_rejected">却下</string>
+    <string name="blaze_campaign_status_completed">完了</string>
+    <string name="blaze_campaign_status_active">有効</string>
+    <string name="blaze_campaign_status_in_moderation">モデレーション中</string>
+    <string name="blaze_campaign_show_all_button">すべて表示</string>
+    <string name="blaze_campaign_create_campaign_button">キャンペーンを作成</string>
+    <string name="blaze_campaign_subtitle">認知度を高め、商品を迅速に販売します。</string>
+    <string name="blaze_campaign_title">Blaze キャンペーン</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol は EMVCo, LLC が所有し、EMVCo, LLC の許可を得て使用している商標です。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. 「完了」チェックマークが表示されると、ストアにより支払いが処理され、取引が完了します。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様がカードをあなたのスマートフォンの上部、コンタクトレス記号に水平にかざします。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. お客様にスマートフォンを提示します。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. 「支払いを受け取る」をタップし「Tap to Pay」を選択します。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">支払いを受け取る</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">注文を作成する</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s または %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">仕組み</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">カードリーダーについて詳しくはこちら</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">この制限を超えて支払いを受け入れるには、PIN 入力を受け入れるカードリーダーの購入をご検討ください。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Tap to Pay on Android での PIN 入力には対応していません。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s においては、一部のカードでは %2$s以上のコンタクトレスによる取引に PIN が必要です。</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">重要情報</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay を使用すると、物理的なデビットカードやクレジットカードからデジタルウォレットまで、あらゆる種類のコンタクトレス決済を受け取ることができ、物理的なカードリーダーを購入する必要はありません。</string>
+    <string name="card_reader_tap_to_pay_about_header">Tap to Pay とは</string>
+    <string name="card_reader_tap_to_pay_about_title">Tap to Pay について</string>
+    <string name="ai_feedback_form_negative_button">フィードバックを操作</string>
+    <string name="ai_feedback_form_positive_button">好意的なフィードバック</string>
+    <string name="ai_feedback_form_message">この結果は役に立ちましたか ?</string>
+    <string name="product_creation_ai_preview_short_description_section">商品の簡単な説明</string>
+    <string name="card_reader_payment_update_available">カードリーダーのアップデートが可能です</string>
+    <string name="card_reader_about_tap_to_pay">Tap to Pay について</string>
+    <string name="card_reader_tap_to_pay_header">Tap To Pay</string>
+    <string name="card_reader_settings_header">設定</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">メールアドレスを使用して手動で詳細を追加</string>
+    <string name="login_app_login_malformed_link">アプリログインのリクエストを処理できませんでした</string>
     <string name="ai_product_name_copy_error">商品名をクリップボードにコピーする際にエラーが発生しました。</string>
     <string name="ai_product_name_copy_success">商品名がクリップボードにコピーされました。</string>
     <string name="ai_product_name_copy_label">AI によって生成された商品名</string>
@@ -20,7 +58,7 @@ Language: ja_JP
     <string name="ai_product_name_sheet_generate_button">ご記入ください</string>
     <string name="ai_product_name_sheet_input_description">商品の概要とその特徴的な点を教えてください。</string>
     <string name="ai_product_name_sheet_subtitle">AI が魅力的なタイトルを生成します</string>
-    <string name="ai_product_name_sheet_title">✨商品名</string>
+    <string name="ai_product_name_sheet_title">商品名</string>
     <string name="empty_review_filtered_list_message">すべての商品レビューを表示するには、未読フィルターを無効にしてみてください</string>
     <string name="empty_review_filtered_list_title">未読の商品レビューはありません</string>
     <string name="product_creation_ai_tone_selected_content_desc">トーンが選択されました</string>
@@ -33,7 +71,7 @@ Language: ja_JP
     <string name="product_creation_ai_preview_details_section">詳細</string>
     <string name="product_creation_ai_preview_description_section">商品説明</string>
     <string name="product_creation_ai_preview_name_section">商品名</string>
-    <string name="product_creation_ai_preview_subtitle">心配ご無用です。 以下の詳細は後でいつでも変更できます。</string>
+    <string name="product_creation_ai_preview_subtitle">以下の情報は後からいつでも変更できます。</string>
     <string name="product_creation_ai_preview_title">プレビュー</string>
     <string name="product_creation_ai_about_product_continue_button">商品情報を作成</string>
     <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>
@@ -230,7 +268,6 @@ Language: ja_JP
     <string name="empty_order_test_order_message">テスト注文を実行して、WooCommerce のプロセスがシームレスなカスタマーエクスペリエンスを提供していることを確認します</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動で詳細を追加します</string>
     <string name="order_creation_customer_search_old_wc_hint">顧客を検索する</string>
-    <string name="shipping_classes_zones">配送クラス &amp; 配送地域</string>
     <string name="free_trial_survey_free_text">その他の理由 (具体的にご記入ください)</string>
     <string name="free_trial_survey_option4">自分はチームの一員であり、全体で決定を下す必要がある。</string>
     <string name="free_trial_survey_option3">サービスの価格が自分の決定における重要な要素であると感じている。</string>
@@ -478,8 +515,7 @@ Language: ja_JP
     <string name="product_selector_popular_products_heading">人気</string>
     <string name="jetpack_install_role_eligibility_learn_more">権限グループと権限の詳細</string>
     <string name="jetpack_install_role_eligibility_error_message">権限グループでは Jetpack のインストールが許可されていないようです。 \nサポートをご希望の場合は管理者にお問い合わせください。</string>
-    <string name="card_reader_tap_to_pay_description">こちらで Tap To Pay を少額で\nテストできます。</string>
-    <string name="card_reader_test_tap_to_pay">Tap To Pay をテスト</string>
+    <string name="card_reader_test_tap_to_pay">Tap to Pay を試す</string>
     <string name="subscription_free_trial">無料お試し</string>
     <string name="subscription_sign_up_fee">登録手数料</string>
     <string name="subscription_expire">期限切れ後</string>
@@ -516,7 +552,8 @@ Language: ja_JP
     <string name="product_subscription_title">サブスクリプション</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">カードリーダーは、デビットカードとクレジットカードのタップ決済、チップ決済、スワイプ決済に対応しています。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay についてのフィードバックを共有する</string>
+    <string name="card_reader_tap_to_pay_description">スマートフォンを使用してカードによる支払いを\n受け付けることができます。 今すぐお試しください。</string>
+    <string name="card_reader_tap_to_pay_share_feedback">フィードバックを共有</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
     <string name="login_site_credentials_fetching_site_failed">ウェブサイトの取得中にエラーが発生しました</string>

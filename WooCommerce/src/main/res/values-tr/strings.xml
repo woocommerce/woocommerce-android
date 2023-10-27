@@ -1,11 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-03 15:54:04+0000
+Translation-Revision-Date: 2023-10-18 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_status_budget">Bütçe</string>
+    <string name="blaze_campaign_status_clicks">Tıklamalar</string>
+    <string name="blaze_campaign_status_impressions">İzlenimler</string>
+    <string name="blaze_campaign_status_rejected">Reddedildi</string>
+    <string name="blaze_campaign_status_completed">Tamamlandı</string>
+    <string name="blaze_campaign_status_active">Etkin</string>
+    <string name="blaze_campaign_status_in_moderation">Denetlemede</string>
+    <string name="blaze_campaign_show_all_button">Hepsini göster</string>
+    <string name="blaze_campaign_create_campaign_button">Kampanya oluştur</string>
+    <string name="blaze_campaign_subtitle">Görünürlüğü artırın ve ürünlerinizin hızla satılmasını sağlayın.</string>
+    <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
+    <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. “Tamamlandı” onay işaretini gördükten sonra mağazanız ödemeyi işleme alır ve işlem tamamlanır.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Müşteriniz kartını telefonunuzun üzerinde temassız simgesinin üstünde yatay olarak tutar.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. Telefonunuzu müşteriye gösterin.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. “Ödemeyi Al” seçeneğine dokunun ve ardından “Tap to Pay” seçeneğini belirleyin.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ödeme alın</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">Sipariş oluştur</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s veya %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">Nasıl çalışır?</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">Kart okuyucular hakkında daha fazla bilgi edinin</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">Bu sınırın üzerindeki ödemeleri kabul etmek için PIN girdisi kabul eden bir kart okuyucu satın almayı düşünün.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Tap to Pay on Android\'de PIN girdisi desteklenmiyor.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s içinde bazı kartlar %2$s tutarının üzerindeki temassız işlemler için bir PIN gerektirir.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">Önemli bilgiler</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay, fiziksel bir kart okuyucu satın almanıza gerek kalmadan fiziksel banka ve kredi kartlarından dijital cüzdanlara kadar tüm temassız ödeme türlerini kabul etmenizi sağlar.</string>
+    <string name="card_reader_tap_to_pay_about_header">Tap to Pay Nedir?</string>
+    <string name="card_reader_tap_to_pay_about_title">Tap To Pay Hakkında</string>
+    <string name="ai_feedback_form_negative_button">Negatif geri bildirim</string>
+    <string name="ai_feedback_form_positive_button">Pozitif geri bildirim</string>
+    <string name="ai_feedback_form_message">Sonuç faydalı oldu mu?</string>
+    <string name="product_creation_ai_preview_short_description_section">Kısa ürün açıklaması</string>
+    <string name="card_reader_payment_update_available">Kart okuyucu için bir güncelleme var</string>
+    <string name="card_reader_about_tap_to_pay">Tap to Pay Hakkında</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">AYARLAR</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">Ayrıntıları e-posta kullanarak el ile ekle</string>
+    <string name="login_app_login_malformed_link">Uygulamada oturum açma isteğinizi işleme koyamadık</string>
     <string name="ai_product_name_copy_error">Ürün adını panoya kopyalamada hata.</string>
     <string name="ai_product_name_copy_success">Ürün adı panoya kopyalandı.</string>
     <string name="ai_product_name_copy_label">Ürün adı Yapay Zeka tarafından oluşturuldu</string>
@@ -20,7 +58,7 @@ Language: tr
     <string name="ai_product_name_sheet_generate_button">Benim için yaz</string>
     <string name="ai_product_name_sheet_input_description">Bize ürününüzden ve onu benzersiz kılanın ne olduğundan bahsedin!</string>
     <string name="ai_product_name_sheet_subtitle">Yapay zekanın sizin için etkileyici başlıklar oluşturmasına izin verin</string>
-    <string name="ai_product_name_sheet_title">✨ Ürün adı</string>
+    <string name="ai_product_name_sheet_title">Ürün adı</string>
     <string name="empty_review_filtered_list_message">Tüm ürün incelemelerinizi görmek için okunmamış filtresini devre dışı bırakmayı deneyin</string>
     <string name="empty_review_filtered_list_title">Okunmamış ürün incelemesi yok</string>
     <string name="product_creation_ai_tone_selected_content_desc">Ton seçildi</string>
@@ -33,7 +71,7 @@ Language: tr
     <string name="product_creation_ai_preview_details_section">Ayrıntılar</string>
     <string name="product_creation_ai_preview_description_section">Ürün açıklaması</string>
     <string name="product_creation_ai_preview_name_section">Ürün adı</string>
-    <string name="product_creation_ai_preview_subtitle">Endişelenmeyin. Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
+    <string name="product_creation_ai_preview_subtitle">Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
     <string name="product_creation_ai_preview_title">Önizleme</string>
     <string name="product_creation_ai_about_product_continue_button">Ürünler Ayrıntıları Oluştur</string>
     <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>
@@ -230,7 +268,6 @@ Language: tr
     <string name="empty_order_test_order_message">WooCommerce işleminizin kusursuz bir müşteri deneyimi sağladığından emin olmak için bir test siparişi gerçekleştirin</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ayrıntıları el ile ekle</string>
     <string name="order_creation_customer_search_old_wc_hint">Müşterilerde şuna göre ara</string>
-    <string name="shipping_classes_zones">Gönderim sınıfları ve bölgeleri</string>
     <string name="free_trial_survey_free_text">Diğer sebep (lütfen belirtin)</string>
     <string name="free_trial_survey_option4">Bir ekibin parçasıyım ve kararı toplu olarak almamız gerekiyor.</string>
     <string name="free_trial_survey_option3">Hizmetin fiyatını kararımda önemli bir faktör olarak görüyorum.</string>
@@ -478,8 +515,7 @@ Language: tr
     <string name="product_selector_popular_products_heading">Popüler</string>
     <string name="jetpack_install_role_eligibility_learn_more">Roller ve izin hakkında daha fazla bilgi edinin</string>
     <string name="jetpack_install_role_eligibility_error_message">Görünüşe göre rolünüz Jetpack\'i yüklemenize izin vermiyor. \nLütfen yardım için site yöneticinizle iletişime geçin.</string>
-    <string name="card_reader_tap_to_pay_description">Tap to Pay\'i küçük bir\ntutarla burada test edebilirsiniz.</string>
-    <string name="card_reader_test_tap_to_pay">Tap to Pay\'inizi Test Edin</string>
+    <string name="card_reader_test_tap_to_pay">Tap to Pay\'i Deneyin</string>
     <string name="subscription_free_trial">Ücretsiz Deneme</string>
     <string name="subscription_sign_up_fee">Kayıt ücreti</string>
     <string name="subscription_expire">Şundan sonra sona erdir:</string>
@@ -516,7 +552,8 @@ Language: tr
     <string name="product_subscription_title">Abonelik</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Kart okuyucu, banka ve kredi kartlarıyla dokunarak, çiple ve kaydırarak yapılan ödemeleri kabul eder.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay ile ilgili görüşlerinizi paylaşın</string>
+    <string name="card_reader_tap_to_pay_description">Kart\nödemeleri almak için telefonunuzu kullanın. Şimdi deneyin.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Görüşlerinizi Paylaşın</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
     <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
     <string name="login_site_credentials_fetching_site_failed">Web siteniz getirilirken bir hata oluştu.</string>

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +39,7 @@ class OrderListAdapter(
     }
 
     var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
+    var allOrderIds: List<Long> = listOf()
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -83,6 +85,7 @@ class OrderListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
+
         when (holder) {
             is OrderItemUIViewHolder -> {
                 if (BuildConfig.DEBUG && item !is OrderListItemUI) {
@@ -91,7 +94,7 @@ class OrderListAdapter(
                             "for position: $position"
                     )
                 }
-                holder.onBind((item as OrderListItemUI))
+                holder.onBind((item as OrderListItemUI), allOrderIds)
             }
             is SectionHeaderViewHolder -> {
                 if (BuildConfig.DEBUG && item !is SectionHeader) {
@@ -104,6 +107,18 @@ class OrderListAdapter(
             }
             else -> {}
         }
+    }
+
+    override fun submitList(pagedList: PagedList<OrderListItemUIType>?) {
+        super.submitList(pagedList)
+
+        allOrderIds = getCurrentList()?.toList()?.mapNotNull {
+            if (it is OrderListItemUI) {
+                it.orderId
+            } else {
+                null
+            }
+        } ?: listOf()
     }
 
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
@@ -133,7 +148,7 @@ class OrderListAdapter(
         private var isNotCompleted = true
         private var orderId = SwipeToComplete.SwipeAbleViewHolder.EMPTY_SWIPED_ID
         private val extras = HashMap<String, String>()
-        fun onBind(orderItemUI: OrderListItemUI) {
+        fun onBind(orderItemUI: OrderListItemUI, allOrderIds: List<Long>) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
 
@@ -167,6 +182,7 @@ class OrderListAdapter(
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
                     orderId = orderItemUI.orderId,
+                    allOrderIds = allOrderIds,
                     orderStatus = orderItemUI.status,
                     sharedView = viewBinding.root
                 )
