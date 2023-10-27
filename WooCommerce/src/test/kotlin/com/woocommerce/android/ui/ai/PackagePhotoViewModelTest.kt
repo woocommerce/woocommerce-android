@@ -134,7 +134,6 @@ class PackagePhotoViewModelTest : BaseUnitTest() {
 
         viewModel.onContinueTapped()
 
-
         val captor = argumentCaptor<AnalyticsEvent>()
         verify(tracker, times(5)).track(captor.capture(), any())
 
