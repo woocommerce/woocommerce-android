@@ -100,7 +100,7 @@ fun ExpandableProductCard(
             .border(
                 1.dp,
                 colorResource(id = R.color.divider_color),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
