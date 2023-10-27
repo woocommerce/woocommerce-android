@@ -52,7 +52,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             addonRepository = addonRepo,
             variationRepository = mock(),
             appPrefsWrapper = mock(),
-            isBlazeEnabled = isBlazeEnabled
+            isBlazeEnabled = isBlazeEnabled,
+            analyticsTrackerWrapper = mock()
         )
     }
 

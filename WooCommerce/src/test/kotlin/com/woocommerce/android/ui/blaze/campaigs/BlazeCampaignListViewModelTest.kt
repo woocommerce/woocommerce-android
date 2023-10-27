@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.campaigs
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.util.captureValues
@@ -31,6 +32,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val blazeUrlsHelper: BlazeUrlsHelper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val siteModel: SiteModel = mock()
     private val campaignsEntityFlow = flow { emit(emptyList<BlazeCampaignEntity>()) }
     private lateinit var viewModel: BlazeCampaignListViewModel
@@ -139,7 +141,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             blazeCampaignsStore = blazeCampaignsStore,
             selectedSite = selectedSite,
             blazeUrlsHelper = blazeUrlsHelper,
-            appPrefsWrapper = appPrefsWrapper
+            appPrefsWrapper = appPrefsWrapper,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 

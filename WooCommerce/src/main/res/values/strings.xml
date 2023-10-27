@@ -3668,7 +3668,6 @@
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
-
     <!--
     Blaze campaign creation intro
     -->

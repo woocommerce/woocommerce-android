@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
@@ -212,12 +212,12 @@ class MoreMenuViewModel @Inject constructor(
         launch {
             val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isNotEmpty()
             if (hasCampaigns) {
-                triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
-            } else {
                 AnalyticsTracker.track(
-                    stat = BLAZE_ENTRY_POINT_TAPPED,
+                    stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
                     properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
                 )
+                triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
+            } else {
                 triggerEvent(
                     MoreMenuEvent.OpenBlazeCampaignCreationEvent(
                         url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),
