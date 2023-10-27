@@ -536,7 +536,6 @@ class OrderCreateEditFormFragment :
                 addCustomAmountsButton = AddButton(
                     text = getString(R.string.order_creation_add_custom_amounts),
                     onClickListener = {
-                        // Implement custom amounts click listener
                         findNavController().navigateSafely(
                             OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog()
                         )
