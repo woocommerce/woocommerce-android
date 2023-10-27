@@ -99,7 +99,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
             is ProductConfigurationViewModel.ViewState.Loading -> Text(text = "Loading")
             is ProductConfigurationViewModel.ViewState.DisplayConfiguration -> {
                 ProductConfigurationScreen(
-                    productRules = state.productRules,
+                    productRules = state.productConfiguration.rules,
                     productConfiguration = state.productConfiguration,
                     productsInfo = state.productsInfo,
                     onUpdateChildrenConfiguration = viewModel::onUpdateChildrenConfiguration,
