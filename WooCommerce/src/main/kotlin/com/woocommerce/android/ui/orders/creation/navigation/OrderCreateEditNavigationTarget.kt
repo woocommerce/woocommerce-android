@@ -26,7 +26,9 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     ) : OrderCreateEditNavigationTarget()
 
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
-    data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreateEditNavigationTarget()
+    data class EditShipping(val currentShippingLine: ShippingLine?) :
+        OrderCreateEditNavigationTarget()
+
     data class EditFee(
         val orderSubTotal: BigDecimal,
         val currentFeeValue: BigDecimal? = null
@@ -44,7 +46,17 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val couponLines: Collection<Order.CouponLine>
     ) : OrderCreateEditNavigationTarget()
 
-    data class TaxRatesInfoDialog(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
-    data class TaxRateSelector(val state: TaxRatesInfoDialogViewState) : OrderCreateEditNavigationTarget()
-    data class AutoTaxRateSettingDetails(val state: AutoTaxRateSettingState) : OrderCreateEditNavigationTarget()
+    data class TaxRatesInfoDialog(val state: TaxRatesInfoDialogViewState) :
+        OrderCreateEditNavigationTarget()
+
+    data class TaxRateSelector(val state: TaxRatesInfoDialogViewState) :
+        OrderCreateEditNavigationTarget()
+
+    data class AutoTaxRateSettingDetails(val state: AutoTaxRateSettingState) :
+        OrderCreateEditNavigationTarget()
+
+    data class EditDiscount(
+        val item: Order.Item,
+        val currency: String,
+    ) : OrderCreateEditNavigationTarget()
 }

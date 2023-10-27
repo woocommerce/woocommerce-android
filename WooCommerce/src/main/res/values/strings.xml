@@ -535,6 +535,8 @@
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
+    <string name="order_creation_increase_item_amount_content_description">Increase product quantity</string>
+    <string name="order_creation_decrease_item_amount_content_description">Decrease product quantity</string>
     <string name="coupon_selector_empty_list_button">Go to Coupons</string>
     <string name="coupon_selector_empty_list_message">You haven\'t created any coupons yet. Create a coupon to apply it to this order.</string>
     <string name="coupon_selector_empty_list_title">Everyone loves a deal</string>

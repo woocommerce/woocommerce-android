@@ -497,9 +497,12 @@ class OrderCreateEditFormFragment :
                 Column(modifier = Modifier) {
                     state.value.forEach { item ->
                         ExpandableProductCard(
+                            viewModel.viewStateData.liveData.observeAsState(),
                             item,
                             onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
-                            onDiscountButtonClicked = {},
+                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item.item) },
+                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item.item.itemId) },
+                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item.item.itemId) },
                         )
                     }
                 }

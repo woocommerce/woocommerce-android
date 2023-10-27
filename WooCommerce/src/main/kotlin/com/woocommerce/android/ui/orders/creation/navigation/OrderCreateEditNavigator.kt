@@ -79,6 +79,12 @@ object OrderCreateEditNavigator {
                     target.state
                 )
             }
+            is OrderCreateEditNavigationTarget.EditDiscount -> {
+                OrderCreateEditFormFragmentDirections.actionOrderCreationToOrderCreationProductDiscountFragment(
+                    target.item,
+                    target.currency
+                )
+            }
         }
         navController.navigate(action)
     }
