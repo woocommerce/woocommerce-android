@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -212,13 +211,13 @@ class MoreMenuViewModel @Inject constructor(
     private fun onPromoteProductsWithBlaze() {
         launch {
             val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isNotEmpty()
-            if (FeatureFlag.BLAZE_ITERATION_2.isEnabled() && hasCampaigns) {
-                triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
-            } else {
+            if (hasCampaigns) {
                 AnalyticsTracker.track(
-                    stat = BLAZE_ENTRY_POINT_TAPPED,
+                    stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
                     properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
                 )
+                triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
+            } else {
                 triggerEvent(
                     MoreMenuEvent.OpenBlazeCampaignCreationEvent(
                         url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),

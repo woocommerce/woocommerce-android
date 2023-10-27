@@ -5,15 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_CANCELED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_FLOW_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.INTRO_VIEW
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -33,11 +36,17 @@ class BlazeCampaignCreationViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore
 ) : ScopedViewModel(savedStateHandle) {
+    private companion object {
+        const val BLAZE_CTA_TAPPED_TRACKED_KEY = "blaze_cta_tapped_tracked_key"
+    }
+
     private val navArgs: BlazeCampaignCreationFragmentArgs by savedStateHandle.navArgs()
 
     private var currentBlazeStep = BlazeFlowStep.UNSPECIFIED
     private var isCompleted = false
     private var firstTimeLoading = false
+    private var source = navArgs.source
+    private var blazeCtaTappedTracked = savedStateHandle[BLAZE_CTA_TAPPED_TRACKED_KEY] ?: false
 
     private val isIntroDismissed = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -47,17 +56,30 @@ class BlazeCampaignCreationViewModel @Inject constructor(
 
     val viewState: LiveData<BlazeCreationViewState> = isIntroDismissed.map { introDismissed ->
         if (!introDismissed &&
-            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty() &&
-            FeatureFlag.BLAZE_ITERATION_2.isEnabled()
+            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty()
         ) {
+            analyticsTracker.track(
+                stat = BLAZE_INTRO_DISPLAYED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+            )
             BlazeCreationViewState.Intro(
-                onCreateCampaignClick = { isIntroDismissed.value = true }
+                onCreateCampaignClick = {
+                    source = INTRO_VIEW
+                    isIntroDismissed.value = true
+                }
             )
         } else {
+            if (!blazeCtaTappedTracked) {
+                analyticsTracker.track(
+                    stat = BLAZE_ENTRY_POINT_TAPPED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName)
+                )
+                savedStateHandle[BLAZE_CTA_TAPPED_TRACKED_KEY] = true
+            }
             BlazeCreationViewState.BlazeWebViewState(
                 urlToLoad = navArgs.urlToLoad,
-                source = navArgs.source,
-                onPageFinished = { url -> onPageFinished(url, navArgs.source) }
+                source = source,
+                onPageFinished = { url -> onPageFinished(url, source) }
             )
         }
     }.asLiveData()
@@ -80,6 +102,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
+            triggerEvent(CampaignCreated)
         }
     }
 
@@ -88,7 +111,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
             analyticsTracker.track(
                 stat = BLAZE_FLOW_CANCELED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName,
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to source.trackingName,
                     AnalyticsTracker.KEY_BLAZE_STEP to currentBlazeStep.label
                 )
             )
@@ -131,15 +154,15 @@ class BlazeCampaignCreationViewModel @Inject constructor(
         ) : BlazeCreationViewState
     }
 
-    enum class BlazeFlowStep(val label: String, val trackingName: String) {
-        CAMPAIGNS_LIST("campaigns_list", "campaigns_list"),
-        PRODUCTS_LIST("products_list", "products_list"),
-        STEP_1("step-1", "step_1"),
-        STEP_2("step-2", "step_2"),
-        STEP_3("step-3", "step_3"),
-        STEP_4("step-4", "step_4"),
-        STEP_5("step-5", "step_5"),
-        UNSPECIFIED("unspecified", "unspecified");
+    enum class BlazeFlowStep(val label: String) {
+        CAMPAIGNS_LIST("campaigns-list"),
+        PRODUCTS_LIST("products-list"),
+        STEP_1("step-1"),
+        STEP_2("step-2"),
+        STEP_3("step-3"),
+        STEP_4("step-4"),
+        STEP_5("step-5"),
+        UNSPECIFIED("unspecified");
 
         override fun toString() = label
 
@@ -149,4 +172,6 @@ class BlazeCampaignCreationViewModel @Inject constructor(
                 values().firstOrNull { it.label.equals(source, ignoreCase = true) } ?: UNSPECIFIED
         }
     }
+
+    object CampaignCreated : Event()
 }

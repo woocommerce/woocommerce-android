@@ -3679,6 +3679,13 @@
     <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
 
     <!--
+    Blaze campaign creation celebration
+    -->
+    <string name="blaze_campaign_creation_celebration_header">All set!</string>
+    <string name="blaze_campaign_ceation_celebration_message">The ad has been submistted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
+    <string name="blaze_campaign_ceation_celebration_button">Got it</string>
+
+    <!--
     Blaze other
     -->
     <string name="blaze_campaign_details_title">Campaign details</string>
