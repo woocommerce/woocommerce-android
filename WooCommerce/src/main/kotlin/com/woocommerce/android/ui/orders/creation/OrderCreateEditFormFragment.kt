@@ -15,7 +15,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
@@ -43,8 +42,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Multi
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment.Companion.KEY_PRODUCT_DETAILS_EDIT_RESULT
-import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsViewModel.ProductDetailsEditResult
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
@@ -107,10 +104,6 @@ class OrderCreateEditFormFragment :
             }
         )
 
-    private val View?.productsAdapter
-        get() = (this as? RecyclerView)
-            ?.run { adapter as? OrderCreateEditProductsAdapter }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
@@ -133,9 +126,6 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleProductDetailsEditResult() {
-        handleResult<ProductDetailsEditResult>(KEY_PRODUCT_DETAILS_EDIT_RESULT) {
-            viewModel.onProductDetailsEditResult(it)
-        }
         handleResult<Order.Item>(KEY_PRODUCT_DISCOUNT_RESULT) {
             viewModel.onProductDiscountEditResult(it)
         }
@@ -345,12 +335,6 @@ class OrderCreateEditFormFragment :
                     binding.paymentSection.addCouponButton.isEnabled =
                         new.isCouponButtonEnabled && idle
                     binding.productsSection.isEachAddButtonEnabled = idle
-                }
-            }
-            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { show ->
-                if (new.isEditable) {
-                    binding.productsSection.content.productsAdapter?.areProductsEditable =
-                        show.not()
                 }
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
@@ -701,7 +685,6 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
-            content.productsAdapter?.areProductsEditable = true
         }
         paymentSection.apply {
             feeButton.isEnabled = true
@@ -717,7 +700,6 @@ class OrderCreateEditFormFragment :
         productsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
-            content.productsAdapter?.areProductsEditable = false
         }
         paymentSection.apply {
             feeButton.isEnabled = false
