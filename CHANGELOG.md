@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 16.0
+Welcome to a fresh update of our WooCommerce mobile app! We've overhauled the user interface for the order's item list in the order creation flow, making it more intuitive and user-friendly. Plus, we've supercharged the Blaze experience with enhancements to campaign creation and list screens for a smoother, more efficient workflow. Enjoy an optimized, seamless shopping experience right at your fingertips!
+
 ## 15.9
 We're thrilled to introduce the new Tap to Pay feature, now available for merchants in the UK and Canada. This means that UK and Canadian-based businesses can now provide a faster and more convenient payment experience to their customers, all from the palm of your hand. Update now and start boosting your sales with Tap to Pay in WooCommerce!
 
