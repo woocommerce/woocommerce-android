@@ -211,12 +211,10 @@ class OrderCreateEditViewModel @Inject constructor(
         addSource(products) { products ->
             val customAmounts = customAmounts.value
             val isProductsEmpty = products?.isEmpty() == true
-            this.value = this.value?.let {
-                it.copy(
-                    productsSectionState = ProductsSectionState(isEmpty = isProductsEmpty),
-                    customAmountSectionState = CustomAmountSectionState(customAmounts?.isEmpty() == true)
-                )
-            } ?: run {
+            this.value = this.value?.copy(
+                productsSectionState = ProductsSectionState(isEmpty = isProductsEmpty),
+                customAmountSectionState = CustomAmountSectionState(customAmounts?.isEmpty() == true)
+            ) ?: run {
                 ViewState()
             }
         }
@@ -224,12 +222,10 @@ class OrderCreateEditViewModel @Inject constructor(
         addSource(customAmounts) { customAmounts ->
             val products = products.value
             val isCustomAmountsEmpty = customAmounts?.isEmpty() == true
-            this.value = this.value?.let {
-                it.copy(
+            this.value = this.value?.copy(
                 productsSectionState = ProductsSectionState(isEmpty = products?.isEmpty() == true),
                 customAmountSectionState = CustomAmountSectionState(isCustomAmountsEmpty)
-            )
-            } ?: run {
+            ) ?: run {
                 ViewState()
             }
         }
