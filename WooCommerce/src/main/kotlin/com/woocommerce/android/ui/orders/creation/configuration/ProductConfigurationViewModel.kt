@@ -60,6 +60,7 @@ class ProductConfigurationViewModel @Inject constructor(
             currentConfiguration.updateChildrenConfiguration(itemId, ruleKey, value)
             configuration.value =
                 ProductConfiguration(
+                    currentConfiguration.rules,
                     currentConfiguration.configurationType,
                     currentConfiguration.configuration,
                     currentConfiguration.childrenConfiguration
@@ -82,7 +83,6 @@ class ProductConfigurationViewModel @Inject constructor(
 
         data class Error(val message: String) : ViewState()
         data class DisplayConfiguration(
-            val productRules: ProductRules,
             val productConfiguration: ProductConfiguration,
             val productsInfo: Map<Long, ProductInfo>
         ) : ViewState()

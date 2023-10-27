@@ -66,7 +66,7 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo,
         val children: List<ProductItem>,
         val rules: ProductRules,
-        var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules, children)
+        var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules, children, item.quantity)
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = productInfo.isConfigurable
         override fun copyProduct(

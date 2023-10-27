@@ -67,6 +67,7 @@ class OptionalRule : ItemRules {
 
 @Parcelize
 class ProductConfiguration(
+    val rules: ProductRules,
     val configurationType: ConfigurationType,
     val configuration: MutableMap<String, String?>,
     val childrenConfiguration: MutableMap<Long, MutableMap<String, String?>>? = null
@@ -74,7 +75,8 @@ class ProductConfiguration(
     companion object {
         fun getConfiguration(
             rules: ProductRules,
-            children: List<OrderCreationProduct.ProductItem>? = null
+            children: List<OrderCreationProduct.ProductItem>? = null,
+            parentQuantity: Float = 1f
         ): ProductConfiguration {
             val itemConfiguration = rules.itemRules.mapValues { it.value.getInitialValue() }.toMutableMap()
             val childrenConfiguration = rules.childrenRules?.mapValues { childrenRules ->
@@ -87,12 +89,12 @@ class ProductConfiguration(
             children?.filter { child -> child.item.configurationKey != null }?.forEach { child ->
                 childrenConfiguration?.get(child.item.configurationKey)?.let { configuration ->
                     if (configuration.containsKey(QuantityRule.KEY)) {
-                        configuration[QuantityRule.KEY] = (child.item.quantity / child.item.quantity).toString()
+                        configuration[QuantityRule.KEY] = (child.item.quantity / parentQuantity).toString()
                     }
                 }
             }
             val configurationType = rules.productType.getConfigurationType()
-            return ProductConfiguration(configurationType, itemConfiguration, childrenConfiguration)
+            return ProductConfiguration(rules, configurationType, itemConfiguration, childrenConfiguration)
         }
     }
 
