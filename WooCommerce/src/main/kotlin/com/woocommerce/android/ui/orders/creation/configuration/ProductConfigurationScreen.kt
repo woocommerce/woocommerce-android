@@ -186,8 +186,8 @@ fun OptionalQuantityProductItem(
     title: String,
     imageUrl: String?,
     info: String?,
-    quantity: Int,
-    onQuantityChanged: (Int) -> Unit,
+    quantity: Float,
+    onQuantityChanged: (Float) -> Unit,
     isIncluded: Boolean,
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -221,8 +221,8 @@ fun QuantityProductItem(
     title: String,
     imageUrl: String?,
     info: String?,
-    quantity: Int,
-    onQuantityChanged: (Int) -> Unit,
+    quantity: Float,
+    onQuantityChanged: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ConfigurableListItem(
@@ -234,7 +234,9 @@ fun QuantityProductItem(
         Stepper(
             value = quantity,
             onStepUp = { value -> onQuantityChanged(value) },
-            onStepDown = { value -> onQuantityChanged(value) }
+            onStepDown = { value -> onQuantityChanged(value) },
+            isStepDownEnabled = quantity > (minValue ?: Float.MIN_VALUE),
+            isStepUpEnabled = quantity < (maxValue ?: Float.MAX_VALUE)
         )
     }
 }
@@ -247,7 +249,7 @@ fun QuantityProductItemPreview() {
             title = "This is an optional item with a very very very long title that should wrap into two columns",
             imageUrl = null,
             info = null,
-            quantity = 1,
+            quantity = 1f,
             onQuantityChanged = {}
         )
     }
@@ -449,9 +451,9 @@ fun OrderProductItemWithoutInfoPreview() {
 
 @Composable
 fun Stepper(
-    value: Int,
-    onStepUp: (Int) -> Unit,
-    onStepDown: (Int) -> Unit,
+    value: Float,
+    onStepUp: (Float) -> Unit,
+    onStepDown: (Float) -> Unit,
     modifier: Modifier = Modifier,
     isStepDownEnabled: Boolean = true,
     isStepUpEnabled: Boolean = true,
@@ -484,14 +486,15 @@ fun Stepper(
             Icon(
                 painter = painterResource(id = R.drawable.ic_gridicons_minus),
                 contentDescription = stringResource(
-                    id = R.string.order_creation_change_product_quantity,
+                    id = R.string.order_configuration_change_product_quantity,
                     value,
-                    value - 1
+                    value - 1f
                 )
             )
         }
+
         BasicTextField(
-            value = value.toString(),
+            value = value.formatToString(),
             readOnly = true,
             onValueChange = {},
             singleLine = true,
@@ -519,9 +522,9 @@ fun Stepper(
             Icon(
                 painter = painterResource(id = R.drawable.ic_add),
                 contentDescription = stringResource(
-                    id = R.string.order_creation_change_product_quantity,
+                    id = R.string.order_configuration_change_product_quantity,
                     value,
-                    value + 1
+                    value + 1f
                 )
             )
         }
@@ -531,7 +534,7 @@ fun Stepper(
 @Preview
 @Composable
 fun StepperPreview() {
-    var value: Int by rememberSaveable { mutableStateOf(100) }
+    var value: Float by rememberSaveable { mutableStateOf(100f) }
     WooThemeWithBackground {
         Stepper(
             value = value,

@@ -17,11 +17,11 @@ class ProductRules private constructor(
         private val rules = mutableMapOf<String, ItemRules>()
         private val childrenRules = mutableMapOf<Long, MutableMap<String, ItemRules>>()
 
-        fun setQuantityRules(quantityMin: Long?, quantityMax: Long?) {
+        fun setQuantityRules(quantityMin: Float?, quantityMax: Float?) {
             rules[QuantityRule.KEY] = QuantityRule(quantityMin = quantityMin, quantityMax = quantityMax)
         }
 
-        fun setChildQuantityRules(itemId: Long, quantityMin: Long?, quantityMax: Long?, quantityDefault: Long?) {
+        fun setChildQuantityRules(itemId: Long, quantityMin: Float?, quantityMax: Float?, quantityDefault: Float?) {
             val childRules = childrenRules.getOrPut(itemId) { mutableMapOf() }
             childRules[QuantityRule.KEY] = QuantityRule(
                 quantityMin = quantityMin,
@@ -47,7 +47,7 @@ interface ItemRules : Parcelable {
 }
 
 @Parcelize
-class QuantityRule(val quantityMin: Long?, val quantityMax: Long?, val quantityDefault: Long? = null) : ItemRules {
+class QuantityRule(val quantityMin: Float?, val quantityMax: Float?, val quantityDefault: Float? = null) : ItemRules {
 
     companion object {
         const val KEY = "quantity_rule"
