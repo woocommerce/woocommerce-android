@@ -509,6 +509,7 @@ class OrderCreateEditFormFragment :
             }
     }
 
+    @Suppress("LongMethod")
     private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (products.isNullOrEmpty()) {
