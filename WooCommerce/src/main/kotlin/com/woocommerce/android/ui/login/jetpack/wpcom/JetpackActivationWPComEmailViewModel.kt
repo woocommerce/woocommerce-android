@@ -44,7 +44,11 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
     )
     private val isLoadingDialogShown = MutableStateFlow(false)
 
-    val viewState = combine(emailOrUsername, isLoadingDialogShown, errorMessage) { emailOrUsername, isLoadingDialogShown, errorMessage ->
+    val viewState = combine(
+        emailOrUsername,
+        isLoadingDialogShown,
+        errorMessage
+    ) { emailOrUsername, isLoadingDialogShown, errorMessage ->
         ViewState(
             emailOrUsername = emailOrUsername,
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
