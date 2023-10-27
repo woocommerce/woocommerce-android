@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 16.0
 -----
-
+- [**] Revamped UI of order's item list in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9851]
 
 15.9
 ----
