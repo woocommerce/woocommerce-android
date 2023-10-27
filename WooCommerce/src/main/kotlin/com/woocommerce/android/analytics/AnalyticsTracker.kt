@@ -616,6 +616,11 @@ class AnalyticsTracker private constructor(
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
 
+        // -- AI product from package photo
+        const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"
+        const val KEY_SELECTED_TEXT_COUNT = "selected_text_count"
+        const val VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO = "product_creation_from_package_photo"
+
         const val KEY_IS_AI_CONTENT = "is_ai_content"
 
         var sendUsageStats: Boolean = true

@@ -5,6 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.Companion.PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
+import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Generating
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Initial
@@ -28,7 +32,8 @@ import javax.inject.Inject
 class PackagePhotoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val aiRepository: AIRepository,
-    private val textRecognitionEngine: TextRecognitionEngine
+    private val textRecognitionEngine: TextRecognitionEngine,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_LANGUAGE_ISO = "en"
@@ -42,6 +47,7 @@ class PackagePhotoViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
+        tracker.track(AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_DISPLAYED)
         analyzePackagePhoto()
     }
 
@@ -50,6 +56,13 @@ class PackagePhotoViewModel @Inject constructor(
         launch {
             textRecognitionEngine.processImage(_viewState.value.imageUrl)
                 .onSuccess { keywords ->
+                    tracker.track(
+                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_COMPLETED,
+                        mapOf(
+                            AnalyticsTracker.KEY_SCANNED_TEXT_COUNT to keywords.size
+                        )
+                    )
+
                     if (keywords.isNotEmpty()) {
                         _viewState.update {
                             _viewState.value.copy(
@@ -66,7 +79,15 @@ class PackagePhotoViewModel @Inject constructor(
                         }
                     }
                 }
-                .onFailure {
+                .onFailure { error ->
+                    tracker.track(
+                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_DESC to error.message,
+                        )
+                    )
+
                     _viewState.update {
                         _viewState.value.copy(state = NoKeywordsFound)
                     }
@@ -103,11 +124,30 @@ class PackagePhotoViewModel @Inject constructor(
             feature = PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE
         ).fold(
             onSuccess = { language ->
+                tracker.track(
+                    AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO
+                    )
+                )
                 language
             },
-            onFailure = {
+            onFailure = { error ->
+                trackAICompletionError(error, AnalyticsEvent.AI_IDENTIFY_LANGUAGE_FAILED)
                 DEFAULT_LANGUAGE_ISO
             }
+        )
+    }
+
+    private fun trackAICompletionError(error: Throwable, event: AnalyticsEvent) {
+        tracker.track(
+            event,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                AnalyticsTracker.KEY_ERROR_TYPE to (error as? JetpackAICompletionsException)?.errorType,
+                AnalyticsTracker.KEY_ERROR_DESC to (error as? JetpackAICompletionsException)?.errorMessage,
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO
+            )
         )
     }
 
@@ -116,15 +156,24 @@ class PackagePhotoViewModel @Inject constructor(
             _viewState.value.copy(state = Generating)
         }
 
-        val keywords = _viewState.value.keywords.filter { it.isChecked }.joinToString { it.title }
+        val checkedKeywords = _viewState.value.keywords.filter { it.isChecked }
+        val keywords = checkedKeywords.joinToString { it.title }
         val language = identifyLanguage(keywords)
         aiRepository.generateProductNameAndDescription(keywords, language)
             .onSuccess { result ->
+                tracker.track(
+                    AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_DETAILS_GENERATED,
+                    mapOf(
+                        AnalyticsTracker.KEY_DETECTED_LANGUAGE to language,
+                        AnalyticsTracker.KEY_SELECTED_TEXT_COUNT to checkedKeywords.size
+                    )
+                )
                 _viewState.update {
                     _viewState.value.copy(state = Success, title = result.name, description = result.description)
                 }
             }
             .onFailure { error ->
+                trackAICompletionError(error, AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_DETAIL_GENERATION_FAILED)
                 _viewState.update {
                     _viewState.value.copy(state = Failure(error.message ?: ""))
                 }
@@ -136,6 +185,7 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onContinueTapped() {
+        tracker.track(AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_CONTINUE_BUTTON_TAPPED)
         triggerEvent(
             ExitWithResult(
                 PackagePhotoData(
@@ -148,6 +198,7 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onRegenerateTapped() = launch {
+        tracker.track(AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_REGENERATE_BUTTON_TAPPED)
         generateNameAndDescription()
     }
 
