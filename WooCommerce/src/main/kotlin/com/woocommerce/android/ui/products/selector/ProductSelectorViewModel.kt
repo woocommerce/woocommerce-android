@@ -330,7 +330,9 @@ class ProductSelectorViewModel @Inject constructor(
                 handleVariationItemTap(item, productSource)
             }
 
-            is ListItem.ConfigurableListItem -> { handleConfigurableItemTap(item) }
+            is ListItem.ConfigurableListItem -> {
+                handleConfigurableItemTap(item)
+            }
         }
     }
 
@@ -354,9 +356,17 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
-        triggerEvent(
-            ProductNavigationTarget.NavigateToProductConfiguration(item.id)
-        )
+        if (selectedItems.value.containsItemWith(item.id)) {
+            tracker.trackItemUnselected(productSelectorFlow)
+            selectedItemsSource.remove(item.id)
+            selectedItems.update { items ->
+                items.filter { it.id != item.id }
+            }
+        } else {
+            triggerEvent(
+                ProductNavigationTarget.NavigateToProductConfiguration(item.id)
+            )
+        }
     }
 
     private fun handleNonVariableProductItemTap(
@@ -546,6 +556,14 @@ class ProductSelectorViewModel @Inject constructor(
     fun onSearchTypeChanged(@StringRes searchType: Int) {
         this.searchState.update {
             it.copy(searchType = SearchType.fromLabelResId(searchType)!!)
+        }
+    }
+
+    fun onConfigurationChanged(productId: Long, productConfiguration: ProductConfiguration) {
+        launch {
+            selectedItems.update { items ->
+                items.filter { it.id == productId } + SelectedItem.ConfigurableProduct(productId, productConfiguration)
+            }
         }
     }
 

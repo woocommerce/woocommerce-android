@@ -10,13 +10,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -55,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 internal const val OUTLINED_BORDER_OPACITY = 0.14f
@@ -87,7 +90,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
                     productConfiguration = state.productConfiguration,
                     productsInfo = state.productsInfo,
                     onUpdateChildrenConfiguration = viewModel::onUpdateChildrenConfiguration,
-                    onSaveConfigurationClick = {},
+                    onSaveConfigurationClick = viewModel::onSaveConfiguration,
                     modifier = Modifier.padding(padding)
                 )
             }
@@ -105,63 +108,75 @@ fun ProductConfigurationScreen(
     modifier: Modifier = Modifier
 ) {
     Surface {
-        Column(modifier.fillMaxSize()) {
-            productRules.isConfigurable()
-            onSaveConfigurationClick()
-            productConfiguration.childrenConfiguration?.entries?.forEach { childMapEntry ->
-
-                val item = productsInfo.getOrDefault(
-                    childMapEntry.key,
-                    ProductInfo(
+        Column(modifier = modifier) {
+            LazyColumn(Modifier.weight(1f)) {
+                productRules.isConfigurable()
+                val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
+                items(configurationItems) { childMapEntry ->
+                    val item = productsInfo.getOrDefault(
                         childMapEntry.key,
-                        stringResource(id = R.string.default_product_title, childMapEntry.key),
-                        null
+                        ProductInfo(
+                            childMapEntry.key,
+                            stringResource(id = R.string.default_product_title, childMapEntry.key),
+                            null
+                        )
                     )
-                )
 
-                val hasQuantityRule = childMapEntry.value.containsKey(QuantityRule.KEY)
-                val hasOptionalRule = childMapEntry.value.containsKey(OptionalRule.KEY)
-                val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
+                    val hasQuantityRule = childMapEntry.value.containsKey(QuantityRule.KEY)
+                    val hasOptionalRule = childMapEntry.value.containsKey(OptionalRule.KEY)
+                    val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
 
-                if (hasQuantityAndOptionalRules) {
-                    OptionalQuantityProductItem(
-                        title = item.title,
-                        imageUrl = item.imageUrl,
-                        info = null,
-                        quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
-                        onQuantityChanged = { value ->
-                            onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                        },
-                        isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
-                        onSwitchChanged = { value ->
-                            onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                        }
-                    )
-                } else {
-                    if (hasQuantityRule) {
-                        QuantityProductItem(
+                    if (hasQuantityAndOptionalRules) {
+                        OptionalQuantityProductItem(
                             title = item.title,
                             imageUrl = item.imageUrl,
                             info = null,
                             quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
                             onQuantityChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                            }
-                        )
-                    }
-                    if (hasOptionalRule) {
-                        OptionalProductItem(
-                            title = item.title,
-                            imageUrl = item.imageUrl,
-                            info = null,
+                            },
                             isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                             onSwitchChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                             }
                         )
+                    } else {
+                        if (hasQuantityRule) {
+                            QuantityProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = null,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
+                                onQuantityChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
+                                }
+                            )
+                        }
+                        if (hasOptionalRule) {
+                            OptionalProductItem(
+                                title = item.title,
+                                imageUrl = item.imageUrl,
+                                info = null,
+                                isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
+                                onSwitchChanged = { value ->
+                                    onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
+                                }
+                            )
+                        }
                     }
                 }
             }
+            Divider(
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
+            )
+            WCColoredButton(
+                onClick = onSaveConfigurationClick,
+                text = stringResource(id = R.string.save_configuration),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.major_100))
+            )
         }
     }
 }

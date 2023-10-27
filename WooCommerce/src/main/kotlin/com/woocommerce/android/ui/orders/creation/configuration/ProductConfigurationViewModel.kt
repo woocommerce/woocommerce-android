@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.configuration
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.creation.GetProductRules
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,11 +26,13 @@ class ProductConfigurationViewModel @Inject constructor(
 
     private val navArgs: ProductConfigurationFragmentArgs by savedState.navArgs()
 
+    private val productId = navArgs.productId
+
     private val rules = MutableStateFlow<ProductRules?>(null)
 
     private val configuration = MutableStateFlow<ProductConfiguration?>(null)
 
-    private val productsInformation = getChildrenProductInfo(navArgs.productId)
+    private val productsInformation = getChildrenProductInfo(productId)
 
     val viewState = combine(
         flow = rules.drop(1),
@@ -63,6 +67,12 @@ class ProductConfigurationViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onSaveConfiguration() {
+        configuration.value?.let {
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(ProductConfigurationResult(productId, it)))
+        } ?: triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     sealed class ViewState {
         object Loading : ViewState()
 
@@ -80,3 +90,9 @@ data class ProductInfo(
     val title: String,
     val imageUrl: String?
 )
+
+@Parcelize
+data class ProductConfigurationResult(
+    val productId: Long,
+    val productConfiguration: ProductConfiguration
+) : Parcelable
