@@ -88,7 +88,7 @@ fun ExpandableProductCard(
     val chevronRotation by transition.animateFloat(
         transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) }, label = "chevronRotation"
     ) {
-        if (isExpanded) 0f else 180f
+        if (isExpanded) 180f else 0f
     }
     ConstraintLayout(
         modifier = Modifier
