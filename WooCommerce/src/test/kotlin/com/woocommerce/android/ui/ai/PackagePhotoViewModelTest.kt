@@ -6,7 +6,6 @@ import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 import com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragmentArgs
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.ViewState.GenerationState.Failure
