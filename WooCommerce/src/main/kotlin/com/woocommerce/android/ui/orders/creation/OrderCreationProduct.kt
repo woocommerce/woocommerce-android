@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigura
 import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
@@ -85,7 +86,8 @@ data class ProductInfo(
     val imageUrl: String,
     val isStockManaged: Boolean,
     val stockQuantity: Double,
-    val stockStatus: ProductStockStatus
+    val stockStatus: ProductStockStatus,
+    val productType: ProductType,
 ) : Parcelable
 
 class OrderCreationProductMapper @Inject constructor(
@@ -162,7 +164,8 @@ class OrderCreationProductMapper @Inject constructor(
                     variation?.image?.source.orEmpty(),
                     variation?.isStockManaged ?: false,
                     variation?.stockQuantity ?: 0.0,
-                    variation?.stockStatus ?: ProductStockStatus.InStock
+                    variation?.stockStatus ?: ProductStockStatus.InStock,
+                    ProductType.VARIATION
                 )
             } else {
                 val product = productDetailRepository.getProduct(item.productId)
@@ -170,7 +173,8 @@ class OrderCreationProductMapper @Inject constructor(
                     product?.firstImageUrl.orEmpty(),
                     product?.isStockManaged ?: false,
                     product?.stockQuantity ?: 0.0,
-                    product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock
+                    product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock,
+                    product?.productType ?: ProductType.OTHER
                 )
             }
         }

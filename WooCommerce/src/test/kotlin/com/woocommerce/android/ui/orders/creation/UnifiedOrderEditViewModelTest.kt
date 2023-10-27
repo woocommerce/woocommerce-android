@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.util.captureValues
@@ -2196,6 +2197,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             prefs = prefs,
             orderCreationProductMapper = orderCreationProductMapper,
             isTaxRateSelectorEnabled = isTaxRateSelectorEnabled,
+            adjustProductQuantity = AdjustProductQuantity()
         )
     }
 
@@ -2221,7 +2223,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             imageUrl = "",
             isStockManaged = false,
             stockQuantity = 0.0,
-            stockStatus = ProductStockStatus.InStock
+            stockStatus = ProductStockStatus.InStock,
+            productType = ProductType.SIMPLE
         )
         return OrderCreationProduct.ProductItem(
             item = orderItem,

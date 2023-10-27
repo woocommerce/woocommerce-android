@@ -95,10 +95,18 @@ class ProductConfiguration(
                 val childrenQuantity = children.sumByFloat { childItem -> childItem.item.quantity }
                 itemConfiguration[QuantityRule.KEY] = childrenQuantity.toString()
             }
+            children?.filter { child -> child.item.configurationKey != null }?.forEach { child ->
+                childrenConfiguration?.get(child.item.configurationKey)?.let { configuration ->
+                    if (configuration.containsKey(QuantityRule.KEY)) {
+                        configuration[QuantityRule.KEY] = (child.item.quantity / child.item.quantity).toString()
+                    }
+                }
+            }
             val configurationType = rules.productType.getConfigurationType()
             return ProductConfiguration(configurationType, itemConfiguration, childrenConfiguration)
         }
     }
+
     fun needsConfiguration(): Boolean {
         val itemNeedsConfiguration = configuration.any { entry -> entry.value == null }
         val childrenNeedsConfiguration = childrenConfiguration?.any {
@@ -111,6 +119,7 @@ class ProductConfiguration(
         childrenConfiguration?.get(itemId)?.set(ruleKey, value)
     }
 }
+
 enum class ConfigurationType { BUNDLE, UNKNOWN }
 
 fun ProductType.getConfigurationType(): ConfigurationType {

@@ -156,6 +156,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val getTaxRateLabel: GetTaxRateLabel,
     private val prefs: AppPrefs,
     private val isTaxRateSelectorEnabled: IsTaxRateSelectorEnabled,
+    private val adjustProductQuantity: AdjustProductQuantity,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
@@ -343,7 +344,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(KEY_FLOW to flow)
         )
-        _orderDraft.update { it.adjustProductQuantity(id, +1) }
+        _orderDraft.update { adjustProductQuantity(it, id, +1) }
     }
 
     fun onDecreaseProductsQuantity(id: Long) {
@@ -363,7 +364,30 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
 
-        _orderDraft.update { it.adjustProductQuantity(id, -1) }
+        _orderDraft.update { adjustProductQuantity(it, id, -1) }
+    }
+
+    fun onIncreaseProductsQuantity(product: OrderCreationProduct) {
+        tracker.track(
+            ORDER_PRODUCT_QUANTITY_CHANGE,
+            mapOf(KEY_FLOW to flow)
+        )
+        _orderDraft.update { adjustProductQuantity(it, product, +1) }
+    }
+
+    fun onDecreaseProductsQuantity(product: OrderCreationProduct) {
+        if (product.item.quantity == 1F) {
+            tracker.track(
+                ORDER_PRODUCT_REMOVE,
+                mapOf(KEY_FLOW to flow)
+            )
+        } else {
+            tracker.track(
+                ORDER_PRODUCT_QUANTITY_CHANGE,
+                mapOf(KEY_FLOW to flow)
+            )
+        }
+        _orderDraft.update { adjustProductQuantity(it, product, -1) }
     }
 
     fun onOrderStatusChanged(status: Order.Status) {
@@ -389,7 +413,7 @@ class OrderCreateEditViewModel @Inject constructor(
             it.removeItem(item)
         }
     }
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
         source: ScanningSource? = null,
@@ -419,7 +443,9 @@ class OrderCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             _orderDraft.value.items.apply {
                 val productsToRemove = filter { item ->
-                    !item.isVariation && selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
+                    item.parent == null &&
+                        !item.isVariation &&
+                        selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
                 }
                 productsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
@@ -428,6 +454,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 val variationsToRemove = filter { item ->
                     item.isVariation && selectedItems.variationIds.none { item.variationId == it }
                 }
+
                 variationsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
                 }
@@ -436,7 +463,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     if (selectedItem is SelectedItem.ProductVariation) {
                         none { it.variationId == selectedItem.variationId }
                     } else {
-                        none { it.productId == selectedItem.id }
+                        none { it.parent == null && it.productId == selectedItem.id }
                     }
                 }.map {
                     when (it) {
@@ -799,11 +826,20 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddProductClicked() {
-        val selectedItems = orderDraft.value?.items?.map { item ->
-            if (item.isVariation) {
-                SelectedItem.ProductVariation(item.productId, item.variationId)
-            } else {
-                Product(item.productId)
+        val selectedItems = products.value?.map { product ->
+            val configuration = product.item.configuration
+            when {
+                configuration != null -> {
+                    SelectedItem.ConfigurableProduct(product.item.productId, configuration)
+                }
+
+                product.item.isVariation -> {
+                    SelectedItem.ProductVariation(product.item.productId, product.item.variationId)
+                }
+
+                else -> {
+                    Product(product.item.productId)
+                }
             }
         }.orEmpty()
         triggerEvent(
