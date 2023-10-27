@@ -81,7 +81,7 @@ class OrderCreateEditFormFragment :
     lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject
-    lateinit var customAmountsFeatureFlag: CustomAmountsFeatureFlag
+    lateinit var isCustomAmountsFeatureFlagEnabled: IsCustomAmountsFeatureFlagEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -246,40 +246,48 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        if (customAmountsFeatureFlag()) {
-            productsSection.hideHeader()
-            productsSection.setProductSectionButtons(
-                addProductsButton = AddButton(
-                    text = getString(R.string.order_creation_add_products),
-                    onClickListener = {
-                        viewModel.onAddProductClicked()
-                    }
-                ),
-                addProductsViaScanButton = AddButton(
-                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                    onClickListener = { viewModel.onScanClicked() }
-                ),
-                addCustomAmountsButton = AddButton(
-                    text = getString(R.string.order_creation_add_custom_amounts),
-                    onClickListener = {
-                        // Implement custom amounts click listener
-                    }
-                )
-            )
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            initNewProductsSection()
         } else {
-            productsSection.setProductSectionButtons(
-                addProductsButton = AddButton(
-                    text = getString(R.string.order_creation_add_products),
-                    onClickListener = {
-                        viewModel.onAddProductClicked()
-                    }
-                ),
-                addProductsViaScanButton = AddButton(
-                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                    onClickListener = { viewModel.onScanClicked() }
-                ),
-            )
+            initOldProductsSection()
         }
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initOldProductsSection() {
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+        )
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.initNewProductsSection() {
+        productsSection.hideHeader()
+        productsSection.setProductSectionButtons(
+            addProductsButton = AddButton(
+                text = getString(R.string.order_creation_add_products),
+                onClickListener = {
+                    viewModel.onAddProductClicked()
+                }
+            ),
+            addProductsViaScanButton = AddButton(
+                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                onClickListener = { viewModel.onScanClicked() }
+            ),
+            addCustomAmountsButton = AddButton(
+                text = getString(R.string.order_creation_add_custom_amounts),
+                onClickListener = {
+                    // Implement custom amounts click listener
+                }
+            )
+        )
     }
 
     private fun FragmentOrderCreateEditFormBinding.initPaymentSection() {
