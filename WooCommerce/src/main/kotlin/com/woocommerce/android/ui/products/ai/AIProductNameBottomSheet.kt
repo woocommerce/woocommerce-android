@@ -18,6 +18,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -33,7 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -79,72 +85,81 @@ private fun MainLayout(
     onKeywordsChanged: (String) -> Unit = {},
     footer: @Composable () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+    Surface(
+        shape = RoundedCornerShape(
+            topStart = dimensionResource(id = dimen.minor_100),
+            topEnd = dimensionResource(id = dimen.minor_100)
+        )
     ) {
         Column(
             modifier = Modifier
-                .padding(vertical = dimensionResource(id = R.dimen.major_100)),
+                .background(MaterialTheme.colors.surface)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+            BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
             Column(
                 modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .padding(vertical = dimensionResource(id = dimen.major_100)),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = dimen.major_100))
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_ai),
-                        contentDescription = null, // decorative
-                        modifier = Modifier
-                            .padding(end = dimensionResource(id = R.dimen.minor_100))
-                            .size(dimensionResource(id = R.dimen.major_150)),
-                        tint = colorResource(id = R.color.woo_purple_60)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = drawable.ic_ai),
+                            contentDescription = null, // decorative
+                            modifier = Modifier
+                                .padding(end = dimensionResource(id = dimen.minor_100))
+                                .size(dimensionResource(id = dimen.major_150)),
+                            tint = colorResource(id = color.woo_purple_60)
+                        )
+                        Text(
+                            text = stringResource(id = string.ai_product_name_sheet_title),
+                            style = MaterialTheme.typography.h6
+                        )
+                    }
                     Text(
-                        text = stringResource(id = R.string.ai_product_name_sheet_title),
-                        style = MaterialTheme.typography.h6
+                        text = stringResource(id = string.ai_product_name_sheet_subtitle),
+                        style = MaterialTheme.typography.subtitle1,
+                        modifier = Modifier
+                            .padding(vertical = dimensionResource(id = dimen.minor_100))
                     )
                 }
-                Text(
-                    text = stringResource(id = R.string.ai_product_name_sheet_subtitle),
-                    style = MaterialTheme.typography.subtitle1,
+
+                Divider(
+                    color = colorResource(id = color.divider_color),
+                    thickness = dimensionResource(id = dimen.minor_10),
                     modifier = Modifier
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
-            }
-
-            Divider(
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10),
-                modifier = Modifier
-                    .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.major_100))
-            ) {
-                WCOutlinedTextField(
-                    value = keywords,
-                    onValueChange = onKeywordsChanged,
-                    label = "",
-                    enabled = enableProductKeywords,
-                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.major_400))
+                        .padding(vertical = dimensionResource(id = dimen.minor_100))
                 )
 
-                Text(
-                    text = stringResource(id = R.string.ai_product_name_sheet_input_description),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium),
+                Column(
                     modifier = Modifier
-                        .padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
+                        .padding(dimensionResource(id = dimen.major_100))
+                ) {
+                    WCOutlinedTextField(
+                        value = keywords,
+                        onValueChange = onKeywordsChanged,
+                        label = "",
+                        enabled = enableProductKeywords,
+                        textFieldModifier = Modifier.height(dimensionResource(id = dimen.major_400))
+                    )
 
-                footer()
+                    Text(
+                        text = stringResource(id = string.ai_product_name_sheet_input_description),
+                        style = MaterialTheme.typography.caption,
+                        color = colorResource(id = color.color_on_surface_medium),
+                        modifier = Modifier
+                            .padding(vertical = dimensionResource(id = dimen.minor_100))
+                    )
+
+                    footer()
+                }
             }
         }
     }

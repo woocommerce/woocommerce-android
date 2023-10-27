@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.net.URL
 import javax.inject.Inject
 
@@ -51,6 +52,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuRepository: MoreMenuRepository,
     private val planRepository: SitePlanRepository,
     private val resourceProvider: ResourceProvider,
+    private val blazeCampaignsStore: BlazeCampaignsStore,
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
@@ -207,16 +209,23 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onPromoteProductsWithBlaze() {
-        AnalyticsTracker.track(
-            stat = BLAZE_ENTRY_POINT_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
-        )
-        triggerEvent(
-            MoreMenuEvent.OpenBlazeEvent(
-                url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),
-                source = BlazeFlowSource.MORE_MENU_ITEM
-            )
-        )
+        launch {
+            val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isNotEmpty()
+            if (hasCampaigns) {
+                AnalyticsTracker.track(
+                    stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
+                    properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
+                )
+                triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
+            } else {
+                triggerEvent(
+                    MoreMenuEvent.OpenBlazeCampaignCreationEvent(
+                        url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),
+                        source = BlazeFlowSource.MORE_MENU_ITEM
+                    )
+                )
+            }
+        }
     }
 
     private fun onViewAdminButtonClick() {
@@ -291,7 +300,8 @@ class MoreMenuViewModel @Inject constructor(
         object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
-        data class OpenBlazeEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
+        object OpenBlazeCampaignListEvent : MoreMenuEvent()
+        data class OpenBlazeCampaignCreationEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

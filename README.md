@@ -115,6 +115,11 @@ General usage and development questions:
 
 WooCommerce for Android is an Open Source project covered by the [GNU General Public License version 2](https://github.com/woocommerce/woocommerce-android/blob/trunk/LICENSE.md).
 
+## 📚 Proprietary Libraries
+
+In order to offer a great experience to our users, we use some proprietary libraries that are not open source. These libraries are:
+
+- [ML Kit](https://developers.google.com/ml-kit) for barcode scanning and text recognition. You can find its Terms of Service [here](https://developers.google.com/ml-kit/terms).
 
 <p align="center">
     <br/><br/>
