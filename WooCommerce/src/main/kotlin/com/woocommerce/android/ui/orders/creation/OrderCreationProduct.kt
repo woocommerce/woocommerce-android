@@ -19,7 +19,6 @@ sealed class OrderCreationProduct(
     open val productInfo: ProductInfo
 ) : Parcelable {
     abstract fun isConfigurable(): Boolean
-    abstract fun needsConfiguration(): Boolean
 
     abstract fun copyProduct(
         item: Order.Item = this.item,
@@ -31,7 +30,6 @@ sealed class OrderCreationProduct(
         override val productInfo: ProductInfo
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = false
-        override fun needsConfiguration() = false
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -44,7 +42,6 @@ sealed class OrderCreationProduct(
         val children: List<ProductItem>
     ) : OrderCreationProduct(item, productInfo) {
         override fun isConfigurable(): Boolean = false
-        override fun needsConfiguration() = false
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -57,8 +54,7 @@ sealed class OrderCreationProduct(
         val rules: ProductRules,
         var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules)
     ) : OrderCreationProduct(item, productInfo) {
-        override fun isConfigurable(): Boolean = rules.isConfigurable()
-        override fun needsConfiguration() = configuration.needsConfiguration()
+        override fun isConfigurable(): Boolean = productInfo.isConfigurable
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -72,8 +68,7 @@ sealed class OrderCreationProduct(
         val rules: ProductRules,
         var configuration: ProductConfiguration = ProductConfiguration.getConfiguration(rules, children)
     ) : OrderCreationProduct(item, productInfo) {
-        override fun isConfigurable(): Boolean = rules.isConfigurable()
-        override fun needsConfiguration() = configuration.needsConfiguration()
+        override fun isConfigurable(): Boolean = productInfo.isConfigurable
         override fun copyProduct(
             item: Order.Item,
             productInfo: ProductInfo
@@ -88,6 +83,7 @@ data class ProductInfo(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus,
     val productType: ProductType,
+    val isConfigurable: Boolean
 ) : Parcelable
 
 class OrderCreationProductMapper @Inject constructor(
@@ -165,7 +161,8 @@ class OrderCreationProductMapper @Inject constructor(
                     variation?.isStockManaged ?: false,
                     variation?.stockQuantity ?: 0.0,
                     variation?.stockStatus ?: ProductStockStatus.InStock,
-                    ProductType.VARIATION
+                    ProductType.VARIATION,
+                    false
                 )
             } else {
                 val product = productDetailRepository.getProduct(item.productId)
@@ -174,7 +171,8 @@ class OrderCreationProductMapper @Inject constructor(
                     product?.isStockManaged ?: false,
                     product?.stockQuantity ?: 0.0,
                     product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock,
-                    product?.productType ?: ProductType.OTHER
+                    product?.productType ?: ProductType.OTHER,
+                    product?.isConfigurable ?: false
                 )
             }
         }

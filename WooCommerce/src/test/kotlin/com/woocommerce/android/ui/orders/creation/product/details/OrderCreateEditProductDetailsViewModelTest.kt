@@ -26,7 +26,8 @@ class OrderCreateEditProductDetailsViewModelTest : BaseUnitTest() {
             isStockManaged = false,
             stockQuantity = 0.0,
             stockStatus = ProductStockStatus.InStock,
-            productType = ProductType.SIMPLE
+            productType = ProductType.SIMPLE,
+            isConfigurable = false
         )
     )
 

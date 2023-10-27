@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
@@ -14,22 +15,29 @@ import javax.inject.Inject
 class CreateOrderItem @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val variationDetailRepository: VariationDetailRepository,
-    private val productDetailRepository: ProductDetailRepository
+    private val productDetailRepository: ProductDetailRepository,
+    private val getProductRules: GetProductRules
 ) {
     suspend operator fun invoke(
         remoteProductId: Long,
         variationId: Long? = null,
-        productConfiguration: ProductConfiguration? = null
+        productConfiguration: ProductConfiguration? = null,
     ): Order.Item {
         return withContext(coroutineDispatchers.io) {
             val product = productDetailRepository.getProduct(remoteProductId)
+            // Try to get the default configuration for not configurable bundles
+            val configuration = if (product?.productType == ProductType.BUNDLE && productConfiguration == null) {
+                getProductRules.getRules(remoteProductId)?.let { ProductConfiguration.getConfiguration(it) }
+            } else {
+                productConfiguration
+            }
 
             variationId?.let {
                 if (product != null) {
                     variationDetailRepository.getVariation(remoteProductId, it)
-                        ?.createItem(product, productConfiguration)
+                        ?.createItem(product, configuration)
                 } else null
-            } ?: product?.createItem(productConfiguration)
+            } ?: product?.createItem(configuration)
                 ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
         }
     }

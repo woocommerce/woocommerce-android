@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.ProductType.BUNDLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
@@ -240,7 +239,7 @@ class ProductSelectorViewModel @Inject constructor(
 
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
-        val isConfigurable = productType == BUNDLE
+        val isConfigurable = isConfigurable
 
         return when {
             isVariation -> {
