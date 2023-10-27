@@ -26,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -69,12 +70,18 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     private val defaultOrderItem = createOrderItem()
 
     private val mapItemToProductUIModel: MapItemToProductUiModel = mock {
-        onBlocking { invoke(any()) } doReturn ProductUIModel(
+        onBlocking { invoke(any(), eq(null)) } doReturn ProductUIModel(
             item = defaultOrderItem,
             imageUrl = "",
             isStockManaged = false,
             stockQuantity = 0.0,
-            stockStatus = ProductStockStatus.InStock
+            stockStatus = ProductStockStatus.InStock,
+            pricePreDiscount = "",
+            priceTotal = "",
+            priceSubtotal = "",
+            discountAmount = "",
+            priceAfterDiscount = "",
+            hasDiscount = false,
         )
     }
 

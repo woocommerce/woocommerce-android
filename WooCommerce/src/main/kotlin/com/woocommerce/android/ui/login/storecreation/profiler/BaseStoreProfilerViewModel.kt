@@ -16,6 +16,7 @@ abstract class BaseStoreProfilerViewModel(
     private val storeProfilerRepository: StoreProfilerRepository,
 ) : ScopedViewModel(savedStateHandle) {
     abstract val hasSearchableContent: Boolean
+    open val isMultiChoice: Boolean = false
     protected val profilerOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
 
     val isLoading = MutableStateFlow(false)
@@ -77,8 +78,13 @@ abstract class BaseStoreProfilerViewModel(
     open fun onOptionSelected(option: StoreProfilerOptionUi) {
         profilerOptions.update { currentOptions ->
             currentOptions.map {
-                if (option.name == it.name) it.copy(isSelected = true)
-                else it.copy(isSelected = false)
+                if (isMultiChoice) {
+                    if (option.name == it.name) it.copy(isSelected = !it.isSelected)
+                    else it
+                } else {
+                    if (option.name == it.name) it.copy(isSelected = true)
+                    else it.copy(isSelected = false)
+                }
             }
         }
     }

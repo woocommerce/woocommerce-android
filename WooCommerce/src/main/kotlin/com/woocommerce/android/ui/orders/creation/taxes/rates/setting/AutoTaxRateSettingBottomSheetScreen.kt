@@ -84,13 +84,13 @@ fun AutoTaxRateSettingBottomSheetScreen(
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_clear),
                 contentDescription = null,
-                tint = colorResource(id = R.color.woo_red_70)
+                tint = colorResource(id = R.color.woo_red_60)
             )
             Spacer(Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Text(
                 modifier = Modifier.weight(1F),
                 text = stringResource(R.string.tax_rate_selector_auto_rate_details_clear_button_label),
-                color = colorResource(id = R.color.woo_red_70)
+                color = colorResource(id = R.color.woo_red_60)
             )
         }
     }

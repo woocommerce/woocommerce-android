@@ -1,11 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-05 09:54:04+0000
+Translation-Revision-Date: 2023-10-19 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="blaze_campaign_status_budget">예산</string>
+    <string name="blaze_campaign_status_clicks">클릭 수</string>
+    <string name="blaze_campaign_status_impressions">노출 수</string>
+    <string name="blaze_campaign_status_rejected">거부됨</string>
+    <string name="blaze_campaign_status_completed">완료됨</string>
+    <string name="blaze_campaign_status_active">활성</string>
+    <string name="blaze_campaign_status_in_moderation">검토 중</string>
+    <string name="blaze_campaign_show_all_button">모두 보기</string>
+    <string name="blaze_campaign_create_campaign_button">캠페인 생성</string>
+    <string name="blaze_campaign_subtitle">가시성을 높이고 상품 판매 속도를 높입니다.</string>
+    <string name="blaze_campaign_title">Blaze 캠페인</string>
+    <string name="card_reader_tap_to_pay_about_copyright">비접촉 기호는 EMVCo, LLC가 소유한 상표이며 해당 회사의 허가 하에 사용됩니다.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_5">5. \"완료\" 체크 표시가 보이면 스토어에서 결제가 처리되고 거래가 완료될 것입니다.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. 고객이 스마트폰 상단의 비접촉 기호 위로 카드를 수평으로 들게 합니다.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_3">3. 스마트폰을 고객에게 내밉니다.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_2">2. \"결제 받기\"를 탭하고 \"Tap to Pay\"을 선택합니다.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">결제 받기</string>
+    <string name="card_reader_tap_to_pay_about_how_works_create_order">주문 생성</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s 또는 %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_title">작동 방식</string>
+    <string name="card_reader_tap_to_pay_about_important_info_button">카드 리더에 대해 더 알아보기</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_3">이 한도를 초과하는 결제를 받으려면 PIN 입력을 허용하는 카드 리더 구매를 고려하세요.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_2">Android에서는 Tap to Pay를 통한 PIN 입력이 지원되지 않습니다.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s에서 일부 카드의 경우 %2$s 이상의 비접촉 거래에 PIN이 필요합니다.</string>
+    <string name="card_reader_tap_to_pay_about_important_info_title">중요 정보</string>
+    <string name="card_reader_tap_to_pay_about_description">Tap to Pay을 통해 카드 리더 기기를 구매하지 않고도 실물 직불 및 신용 카드부터 디지털 지갑까지 모든 비접촉 결제 유형을 수락할 수 있습니다.</string>
+    <string name="card_reader_tap_to_pay_about_header">Tap to Pay란 무엇인가요?</string>
+    <string name="card_reader_tap_to_pay_about_title">Tap to Pay 개요</string>
+    <string name="ai_feedback_form_negative_button">부정적인 피드백</string>
+    <string name="ai_feedback_form_positive_button">긍정적인 피드백</string>
+    <string name="ai_feedback_form_message">결과가 유용한가요?</string>
+    <string name="product_creation_ai_preview_short_description_section">상품 요약 설명</string>
+    <string name="card_reader_payment_update_available">카드 리더를 업데이트할 수 있습니다.</string>
+    <string name="card_reader_about_tap_to_pay">Tap To Pay 개요</string>
+    <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
+    <string name="card_reader_settings_header">설정</string>
+    <string name="order_creation_customer_search_empty_add_details_manually_with_email">이메일을 사용하여 수동으로 상세 정보 추가</string>
+    <string name="login_app_login_malformed_link">앱 로그인 요청을 처리하지 못했습니다.</string>
     <string name="ai_product_name_copy_error">클립보드에 상품 이름을 복사하는 중 오류가 발생했습니다.</string>
     <string name="ai_product_name_copy_success">상품 이름이 클립보드에 복사되었습니다.</string>
     <string name="ai_product_name_copy_label">AI로 생성된 상품 이름</string>
@@ -20,7 +58,7 @@ Language: ko_KR
     <string name="ai_product_name_sheet_generate_button">작성 의뢰</string>
     <string name="ai_product_name_sheet_input_description">상품이 무엇이고 어떤 점이 독특한지 말씀해 주세요!</string>
     <string name="ai_product_name_sheet_subtitle">AI에게 매력적인 제목 생성 맡기기</string>
-    <string name="ai_product_name_sheet_title">✨ 상품 이름</string>
+    <string name="ai_product_name_sheet_title">상품 이름</string>
     <string name="empty_review_filtered_list_message">모든 상품 리뷰를 표시하려면 읽지 않음 필터를 비활성화해 보세요.</string>
     <string name="empty_review_filtered_list_title">읽지 않은 상품 리뷰 없음</string>
     <string name="product_creation_ai_tone_selected_content_desc">선택된 어조</string>
@@ -33,7 +71,7 @@ Language: ko_KR
     <string name="product_creation_ai_preview_details_section">상세 정보</string>
     <string name="product_creation_ai_preview_description_section">상품 설명</string>
     <string name="product_creation_ai_preview_name_section">상품 이름</string>
-    <string name="product_creation_ai_preview_subtitle">걱정하지 마세요. 아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
+    <string name="product_creation_ai_preview_subtitle">아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
     <string name="product_creation_ai_preview_title">미리보기</string>
     <string name="product_creation_ai_about_product_continue_button">상품 상세 정보 생성</string>
     <string name="product_creation_ai_about_product_set_tone">어조 및 목소리 설정</string>
@@ -230,7 +268,6 @@ Language: ko_KR
     <string name="empty_order_test_order_message">테스트 주문을 실행하여 우커머스 프로세스에서 원활한 고객 경험이 제공되는지 확인</string>
     <string name="order_creation_customer_search_empty_add_details_manually">수동으로 상세 정보 추가</string>
     <string name="order_creation_customer_search_old_wc_hint">고객 검색 기준</string>
-    <string name="shipping_classes_zones">배송 클래스 및 구역</string>
     <string name="free_trial_survey_free_text">기타 사유(직접 입력)</string>
     <string name="free_trial_survey_option4">나는 팀의 일원이며 팀에서 단체적으로 결정해야 합니다.</string>
     <string name="free_trial_survey_option3">내 결정에서는 서비스 가격이 중요한 요인입니다.</string>
@@ -478,8 +515,7 @@ Language: ko_KR
     <string name="product_selector_popular_products_heading">인기</string>
     <string name="jetpack_install_role_eligibility_learn_more">역할 및 권한 더 알아보기</string>
     <string name="jetpack_install_role_eligibility_error_message">젯팩 설치가 허용되는 역할이 아닌 것 같습니다. \n도움말은 관리자에게 문의하세요.</string>
-    <string name="card_reader_tap_to_pay_description">여기에서 소액으로\nTap To Pay를 테스트할 수 있습니다.</string>
-    <string name="card_reader_test_tap_to_pay">Tap To Pay 테스트</string>
+    <string name="card_reader_test_tap_to_pay">Tap To Pay 사용해 보기</string>
     <string name="subscription_free_trial">무료 평가판</string>
     <string name="subscription_sign_up_fee">등록 수수료</string>
     <string name="subscription_expire">만료까지 남은 시간</string>
@@ -516,7 +552,8 @@ Language: ko_KR
     <string name="product_subscription_title">구독</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">체크카드와 신용카드를 카드 리더에 올려놓거나 밀어 넣거나 살짝 밀어서 결제할 수 있습니다.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">스마트폰에서 직접 비접촉 결제를 안전하게 수락하세요.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay 피드백 공유</string>
+    <string name="card_reader_tap_to_pay_description">스마트폰을 사용하여 카드 결제 수락\n결제 지금 사용해 보세요.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">피드백 공유</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">애플리케이션 비밀번호 생성이 승인되지 않아서 로그인할 수 없습니다.</string>
     <string name="login_site_credentials_fetching_site">사이트를 가져오는 중…</string>
     <string name="login_site_credentials_fetching_site_failed">웹사이트를 가져오는 동안 오류 발생</string>

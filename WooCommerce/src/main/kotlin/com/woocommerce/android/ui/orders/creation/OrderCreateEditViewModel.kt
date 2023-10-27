@@ -1239,6 +1239,16 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED)
     }
 
+    fun onDiscountButtonClicked(item: Order.Item) {
+        triggerEvent(OrderCreateEditNavigationTarget.EditDiscount(item, _orderDraft.value.currency))
+        val analyticsEvent = if (item.discount > BigDecimal.ZERO) {
+            AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_EDIT_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.ORDER_PRODUCT_DISCOUNT_ADD_BUTTON_TAPPED
+        }
+        tracker.track(analyticsEvent)
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
@@ -1326,7 +1336,13 @@ data class ProductUIModel(
     val imageUrl: String,
     val isStockManaged: Boolean,
     val stockQuantity: Double,
-    val stockStatus: ProductStockStatus
+    val stockStatus: ProductStockStatus,
+    val pricePreDiscount: String,
+    val priceTotal: String,
+    val priceSubtotal: String,
+    val discountAmount: String,
+    val priceAfterDiscount: String,
+    val hasDiscount: Boolean = item.discount > BigDecimal.ZERO,
 )
 
 data class CustomAmountUIModel(

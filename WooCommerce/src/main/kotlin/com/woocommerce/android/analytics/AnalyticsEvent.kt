@@ -841,6 +841,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_TIMED_OUT(siteless = true),
     SITE_CREATION_PROPERTIES_OUT_OF_SYNC(siteless = true),
     SITE_CREATION_FREE_TRIAL_CREATED_SUCCESS,
+    SITE_CREATION_FLOW_STARTED,
 
     // Domain change
     CUSTOM_DOMAINS_STEP,
@@ -941,6 +942,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     BLAZE_FLOW_CANCELED,
     BLAZE_FLOW_COMPLETED,
     BLAZE_FLOW_ERROR,
+    BLAZE_CAMPAIGN_DETAIL_SELECTED,
+    BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
+    BLAZE_INTRO_DISPLAYED,
 
     // Hazmat Shipping Declaration
     CONTAINS_HAZMAT_CHECKED,
