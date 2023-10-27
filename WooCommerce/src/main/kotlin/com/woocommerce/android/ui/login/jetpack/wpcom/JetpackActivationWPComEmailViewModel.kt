@@ -33,23 +33,30 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: JetpackActivationWPComEmailFragmentArgs by savedStateHandle.navArgs()
 
-    private val email = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "email")
-    private val errorMessage =
-        savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "error-message")
+    private val emailOrUsername = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = "",
+        key = "email"
+    )
+    private val errorMessage = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = 0,
+        key = "error-message"
+    )
     private val isLoadingDialogShown = MutableStateFlow(false)
 
-    val viewState = combine(email, isLoadingDialogShown, errorMessage) { email, isLoadingDialogShown, errorMessage ->
+    val viewState = combine(emailOrUsername, isLoadingDialogShown, errorMessage) { emailOrUsername, isLoadingDialogShown, errorMessage ->
         ViewState(
-            email = email,
+            emailOrUsername = emailOrUsername,
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             isLoadingDialogShown = isLoadingDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
     }.asLiveData()
 
-    fun onEmailChanged(email: String) {
+    fun onEmailOrUsernameChanged(emailOrUsername: String) {
         errorMessage.value = 0
-        this.email.value = email
+        this.emailOrUsername.value = emailOrUsername
     }
 
     fun onCloseClick() {
@@ -66,9 +73,9 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
-        val email = email.value.trim()
+        val email = emailOrUsername.value.trim()
         if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
-            errorMessage.value = R.string.email_invalid
+            inlineErrorMessage.value = R.string.email_invalid
             return@launch
         }
 
@@ -119,12 +126,12 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val email: String,
+        val emailOrUsername: String,
         val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val errorMessage: Int? = null
     ) {
-        val enableSubmit = email.isNotBlank()
+        val enableSubmit = emailOrUsername.isNotBlank()
     }
 
     data class ShowPasswordScreen(
