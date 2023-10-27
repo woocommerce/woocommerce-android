@@ -47,7 +47,7 @@ class OrderCreateEditCustomAmountAdapter(
             binding.customAmountLayout.customAmountAmount.text = currencyFormatter.formatCurrency(
                 customAmountUIModel.amount.toString()
             )
-            if (safePosition == currentList.size - 1 && currentList.size <= 1) {
+            if (safePosition == 0 || currentList.size <= 1) {
                 binding.customAmountLayout.divider.hide()
             } else {
                 binding.customAmountLayout.divider.show()
