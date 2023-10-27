@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -131,6 +130,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
