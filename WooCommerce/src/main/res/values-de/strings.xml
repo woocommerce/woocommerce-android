@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 14:54:04+0000
+Translation-Revision-Date: 2023-10-23 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="previous_order">Vorherige Bestellung</string>
+    <string name="next_order">Nächste Bestellung</string>
+    <string name="blaze_campaign_details_title">Details zur Kampagne</string>
+    <string name="blaze_campaign_list_title">Blaze-Kampagnen</string>
+    <string name="blaze_campaign_status_canceled">Abgebrochen</string>
+    <string name="blaze_campaign_status_scheduled">Geplant</string>
+    <string name="product_creation_package_photo_keywords_info">Optimiere deinen Text: Hebe die Auswahl von nicht benötigten Scans auf oder tippe zum Bearbeiten</string>
+    <string name="product_creation_package_photo_keywords_section">Stichwörter</string>
+    <string name="ai_product_creation_photo_button">Verpackungsfoto verwenden (optional)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Wähle „Tap to Pay“ in den Optionen „Zahlung empfangen“ unter\n„Bestelldetails“ oder „Menü“ &gt; „Zahlungen“.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probiere eine %s-Zahlung mit deiner Debit- oder Kreditkarte aus.\nDie Zahlung wird zurückerstattet, wenn du fertig bist.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Es ist einfach, sicher und privat.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Du kannst alle Arten von persönlichen Zahlungen akzeptieren, direkt\nauf deinem Mobiltelefon. Es ist keine zusätzliche Hardware erforderlich.</string>
     <string name="blaze_campaign_status_budget">Budget</string>
     <string name="blaze_campaign_status_clicks">Klicks</string>
     <string name="blaze_campaign_status_impressions">Aufrufe</string>
@@ -647,9 +660,6 @@ Language: de
     <string name="jetpack_benefits_fetching_status">Jetpack-Status wird abgerufen</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Etwas ist schiefgegangen. Bitte versuche es später erneut.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Versuche, eine Zahlung vorzunehmen</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Tap to Pay findest du bei Android wie folgt. Gehe zu\n„Menu“ (Menü) &gt; „Payments“ (Zahlungen) oder „Collect Payments“ (Zahlung empfangen) und\nwähle „Tap to Pay“ aus.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Versuche, eine Zahlung mit deiner Karte vorzunehmen, und\nsie wird zurückerstattet, wenn du fertig bist.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Dein Mobiltelefon ist bereit für Tap to Pay.\nDeine Kunden können bezahlen, indem sie ihre Karte\nauf dein Mobiltelefon legen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Empfange Kartenzahlungen\nmit deinem Mobiltelefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">AKTIONEN</string>

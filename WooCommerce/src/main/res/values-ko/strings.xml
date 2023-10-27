@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-19 09:54:04+0000
+Translation-Revision-Date: 2023-10-25 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="previous_order">이전 주문</string>
+    <string name="next_order">다음 주문</string>
+    <string name="blaze_campaign_details_title">캠페인 상세 정보</string>
+    <string name="blaze_campaign_list_title">Blaze 캠페인</string>
+    <string name="blaze_campaign_status_canceled">취소됨</string>
+    <string name="blaze_campaign_status_scheduled">예약됨</string>
+    <string name="product_creation_package_photo_keywords_info">텍스트 조정: 필요 없는 스캔 선택 취소 또는 눌러서 편집</string>
+    <string name="product_creation_package_photo_keywords_section">키워드</string>
+    <string name="ai_product_creation_photo_button">패키지 사진 사용(선택 사항)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">의 결제 받기 옵션에서 Tap to Pay 선택주문 상세 정보 또는 메뉴 &gt; 결제.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">직불카드 또는 신용카드로 %s 결제를 시도합니다.\n완료하면 결제가 환불됩니다.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">쉽고 안전합니다.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">모든 종류의 대면 결제를 \n스마트폰에서 허용합니다. 추가 하드웨어가 필요하지 않습니다.</string>
     <string name="blaze_campaign_status_budget">예산</string>
     <string name="blaze_campaign_status_clicks">클릭 수</string>
     <string name="blaze_campaign_status_impressions">노출 수</string>
@@ -647,9 +660,6 @@ Language: ko_KR
     <string name="jetpack_benefits_fetching_status">젯팩 상태를 가져오는 중</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">문제가 발생했습니다. 나중에 다시 시도하세요.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">결제 체험</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Android에서는 Tap to Pay를 찾으려면\n메뉴 &gt; 결제 또는 결제 받기로 이동하고\nTap to Pay를 선택하면 됩니다.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">카드를 사용하여 결제를 시도합니다.\n완료하면 환불됩니다.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">회원님의 휴대폰에서 Tap to Pay가 준비되었습니다.\n고객이 회원님의 휴대폰에서 자신의 카드를\n눌러서 결제할 수 있습니다.</string>
     <string name="card_reader_tap_to_pay_explanation_title">휴대폰으로\n카드 결제 받기</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">작업</string>
