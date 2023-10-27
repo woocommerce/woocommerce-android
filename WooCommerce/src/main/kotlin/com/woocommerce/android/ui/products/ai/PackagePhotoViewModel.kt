@@ -182,6 +182,7 @@ class PackagePhotoViewModel @Inject constructor(
     }
 
     fun onEditPhotoTapped() {
+        tracker.track(AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_CHANGE_PHOTO_BUTTON_TAPPED)
         triggerEvent(ShowMediaLibraryDialog)
     }
 
