@@ -125,7 +125,6 @@ fun ProductConfigurationScreen(
     Surface {
         Column(modifier = modifier) {
             LazyColumn(Modifier.weight(1f)) {
-                productRules.productType
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
                 items(configurationItems) { childMapEntry ->
                     val item = productsInfo.getOrDefault(
@@ -142,29 +141,40 @@ fun ProductConfigurationScreen(
                     val hasQuantityAndOptionalRules = hasQuantityRule && hasOptionalRule
 
                     if (hasQuantityAndOptionalRules) {
+                        val quantityRule = productRules.childrenRules
+                            ?.get(childMapEntry.key)
+                            ?.get(QuantityRule.KEY) as? QuantityRule
+
                         OptionalQuantityProductItem(
                             title = item.title,
                             imageUrl = item.imageUrl,
                             info = null,
-                            quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
+                            quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                             onQuantityChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
                             },
                             isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false,
                             onSwitchChanged = { value ->
                                 onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
-                            }
+                            },
+                            minValue = quantityRule?.quantityMin,
+                            maxValue = quantityRule?.quantityMax
                         )
                     } else {
                         if (hasQuantityRule) {
+                            val quantityRule = productRules.childrenRules
+                                ?.get(childMapEntry.key)
+                                ?.get(QuantityRule.KEY) as? QuantityRule
                             QuantityProductItem(
                                 title = item.title,
                                 imageUrl = item.imageUrl,
                                 info = null,
-                                quantity = childMapEntry.value[QuantityRule.KEY]?.toInt() ?: 0,
+                                quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f,
                                 onQuantityChanged = { value ->
                                     onUpdateChildrenConfiguration(item.id, QuantityRule.KEY, value.toString())
-                                }
+                                },
+                                minValue = quantityRule?.quantityMin,
+                                maxValue = quantityRule?.quantityMax
                             )
                         }
                         if (hasOptionalRule) {
@@ -207,6 +217,8 @@ fun OptionalQuantityProductItem(
     isIncluded: Boolean,
     onSwitchChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    maxValue: Float? = null,
+    minValue: Float? = null
 ) {
     ConfigurableListItem(
         title = title,
@@ -225,8 +237,8 @@ fun OptionalQuantityProductItem(
                 value = quantity,
                 onStepUp = { value -> onQuantityChanged(value) },
                 onStepDown = { value -> onQuantityChanged(value) },
-                isStepDownEnabled = isIncluded,
-                isStepUpEnabled = isIncluded
+                isStepDownEnabled = isIncluded && quantity > (minValue ?: Float.MIN_VALUE),
+                isStepUpEnabled = isIncluded && quantity < (maxValue ?: Float.MAX_VALUE)
             )
         }
     )
@@ -240,6 +252,8 @@ fun QuantityProductItem(
     quantity: Float,
     onQuantityChanged: (Float) -> Unit,
     modifier: Modifier = Modifier,
+    maxValue: Float? = null,
+    minValue: Float? = null
 ) {
     ConfigurableListItem(
         title = title,
