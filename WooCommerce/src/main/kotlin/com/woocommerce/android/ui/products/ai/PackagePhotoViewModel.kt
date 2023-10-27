@@ -127,6 +127,7 @@ class PackagePhotoViewModel @Inject constructor(
                 tracker.track(
                     AnalyticsEvent.AI_IDENTIFY_LANGUAGE_SUCCESS,
                     mapOf(
+                        AnalyticsTracker.KEY_DETECTED_LANGUAGE to language,
                         AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO
                     )
                 )
