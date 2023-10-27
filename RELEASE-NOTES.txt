@@ -1,20 +1,18 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 16.0
 -----
+- [**] Revamped UI of order's item list in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9851]
 - [*] [Internal] Fixed a crash during jetpack installation flow [https://github.com/woocommerce/woocommerce-android/pull/10019]
 - [*] [Internal] Fixed a rare crash that occurs in the Jetpack Connection flow [https://github.com/woocommerce/woocommerce-android/pull/10012]
 - [***] Optimized Blaze experience: Improved Blaze campaign creation and list screens. [https://github.com/woocommerce/woocommerce-android/issues/9929]
 
 15.9
-----
+-----
 - [***] In-Person Payments: Tap To Pay On Android in the UK and Canada [https://github.com/woocommerce/woocommerce-android/pull/9922]
 
-
 15.8
-----
 -----
 - [*] Order details: Users can navigate to the previous or next order from the order detail screen [https://github.com/woocommerce/woocommerce-android/pull/9904]
-
 
 15.8
 -----
@@ -22,7 +20,7 @@
 - [*] [Internal] Fixed some crashes that occurred when restoring the app after a process-death [https://github.com/woocommerce/woocommerce-android/pull/9956]
 
 15.7
-----
+-----
 - [*] [Internal] In-Person Payments: Fixed wrong total payment amount display on the payment method selections screen when simple payments without tax used [https://github.com/woocommerce/woocommerce-android/pull/9826]
 - [*] In-Person Payments: Proactively notify users about optional card reader updates [https://github.com/woocommerce/woocommerce-android/pull/9847]
 - [*] Order creation: Customers list first page uses cached data [https://github.com/woocommerce/woocommerce-android/pull/9835]

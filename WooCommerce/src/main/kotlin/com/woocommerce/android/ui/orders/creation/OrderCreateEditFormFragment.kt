@@ -6,12 +6,15 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -30,6 +33,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -44,6 +48,7 @@ import com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEdi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
+import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.creation.views.TaxLineUiModel
@@ -315,9 +320,7 @@ class OrderCreateEditFormFragment :
             binding.orderStatusView.updateStatus(it)
         }
 
-        viewModel.products.observe(viewLifecycleOwner) {
-            bindProductsSection(binding.productsSection, it)
-        }
+        bindProductsSection(binding.productsSection, viewModel.products)
 
         observeViewStateChanges(binding)
 
@@ -508,33 +511,34 @@ class OrderCreateEditFormFragment :
             }
     }
 
-    private fun bindProductsSection(productsSection: OrderCreateEditSectionView, products: List<ProductUIModel>?) {
+    private fun bindProductsSection(
+        productsSection: OrderCreateEditSectionView,
+        products: LiveData<List<ProductUIModel>>
+    ) {
         productsSection.setContentHorizontalPadding(R.dimen.minor_00)
-        if (products.isNullOrEmpty()) {
-            productsSection.content = null
-        } else {
-            // To make list changes smoother, we don't need to change the RecyclerView's instance if it was already set
-            if (productsSection.content == null) {
-                val animator = DefaultItemAnimator().apply {
-                    // Disable change animations to avoid duplicating viewholders
-                    supportsChangeAnimations = false
-                }
-                productsSection.content = RecyclerView(requireContext()).apply {
-                    layoutManager = LinearLayoutManager(requireContext())
-                    adapter = OrderCreateEditProductsAdapter(
-                        onProductClicked = viewModel::onProductClicked,
-                        currencyFormatter = currencyFormatter,
-                        currencyCode = viewModel.currentDraft.currency,
-                        onIncreaseQuantity = viewModel::onIncreaseProductsQuantity,
-                        onDecreaseQuantity = viewModel::onDecreaseProductsQuantity
-                    )
-                    itemAnimator = animator
-                    isNestedScrollingEnabled = false
-                }
+        if (productsSection.content == null) {
+            productsSection.content = ComposeView(requireContext()).apply {
+                bindExpandableProductsSection(products)
             }
-            productsSection.content.productsAdapter?.apply {
-                submitList(products)
-                areProductsEditable = viewModel.currentDraft.isEditable
+        }
+    }
+
+    private fun ComposeView.bindExpandableProductsSection(items: LiveData<List<ProductUIModel>>) {
+        setContent {
+            val state = items.observeAsState(emptyList())
+            WooTheme {
+                Column(modifier = Modifier) {
+                    state.value.forEach { item ->
+                        ExpandableProductCard(
+                            viewModel.viewStateData.liveData.observeAsState(),
+                            item,
+                            onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
+                            onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item.item) },
+                            onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item.item.itemId) },
+                            onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item.item.itemId) },
+                        )
+                    }
+                }
             }
         }
     }
