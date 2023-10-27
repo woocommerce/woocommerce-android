@@ -13,7 +13,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderCreateEditCustomAmountAdapter(
     private val currencyFormatter: CurrencyFormatter,
-    private val onCustomAmountClick: (CustomAmountUIModel)-> Unit
+    private val onCustomAmountClick: (CustomAmountUIModel) -> Unit
 ) : ListAdapter<CustomAmountUIModel, CustomAmountViewHolder>(CustomAmountUIModelDiffCallback) {
 
     override fun onCreateViewHolder(
