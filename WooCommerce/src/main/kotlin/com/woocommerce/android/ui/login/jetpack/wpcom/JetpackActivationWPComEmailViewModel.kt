@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.jetpack.wpcom
 
-import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -73,11 +72,7 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
-        val email = emailOrUsername.value.trim()
-        if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
-            inlineErrorMessage.value = R.string.email_invalid
-            return@launch
-        }
+        val emailOrUsername = emailOrUsername.value.trim()
 
         analyticsTrackerWrapper.track(
             JETPACK_SETUP_LOGIN_FLOW,
@@ -88,12 +83,12 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
         )
 
         isLoadingDialogShown.value = true
-        wpComLoginRepository.fetchAuthOptions(email).fold(
+        wpComLoginRepository.fetchAuthOptions(emailOrUsername).fold(
             onSuccess = {
                 if (it.isPasswordless) {
-                    triggerEvent(ShowMagicLinkScreen(email, navArgs.jetpackStatus))
+                    triggerEvent(ShowMagicLinkScreen(emailOrUsername, navArgs.jetpackStatus))
                 } else {
-                    triggerEvent(ShowPasswordScreen(email, navArgs.jetpackStatus))
+                    triggerEvent(ShowPasswordScreen(emailOrUsername, navArgs.jetpackStatus))
                 }
             },
             onFailure = {
@@ -105,7 +100,8 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
                     }
 
                     AuthOptionsErrorType.EMAIL_LOGIN_NOT_ALLOWED -> {
-                        TODO()
+                        errorMessage.value = R.string.error_user_username_instead_of_email
+                        this@JetpackActivationWPComEmailViewModel.emailOrUsername.value = ""
                     }
 
                     else -> {
