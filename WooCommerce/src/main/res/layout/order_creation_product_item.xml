@@ -26,6 +26,7 @@
     <View
         style="@style/Woo.Divider"
         android:layout_width="0dp"
+        android:visibility="gone"
         android:layout_marginStart="@dimen/image_major_50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
