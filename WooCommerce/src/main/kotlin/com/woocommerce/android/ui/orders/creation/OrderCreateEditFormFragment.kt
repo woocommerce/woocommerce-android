@@ -334,7 +334,7 @@ class OrderCreateEditFormFragment :
         }
 
         viewModel.customAmounts.observe(viewLifecycleOwner) {
-            bindCustomAmountsSection(binding.customAmountsSection, binding.productsSection, it)
+            bindCustomAmountsSection(binding.customAmountsSection, it)
         }
 
         observeViewStateChanges(binding)
@@ -634,18 +634,12 @@ class OrderCreateEditFormFragment :
 
     private fun bindCustomAmountsSection(
         customAmountsSection: OrderCreateEditSectionView,
-        productsSection: OrderCreateEditSectionView,
         customAmounts: List<CustomAmountUIModel>?
     ) {
         customAmountsSection.setContentHorizontalPadding(R.dimen.minor_00)
         if (customAmounts.isNullOrEmpty()) {
             customAmountsSection.hide()
         } else {
-            customAmountsSection.show()
-            customAmountsSection.removeCustomSectionButtons()
-            addProductSectionButtons(productsSection)
-            customAmountsSection.showHeader()
-            customAmountsSection.showAddAction()
             if (customAmountsSection.content == null) {
                 val animator = DefaultItemAnimator().apply {
                     // Disable change animations to avoid duplicating viewholders
