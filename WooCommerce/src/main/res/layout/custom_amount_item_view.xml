@@ -11,7 +11,7 @@
         style="@style/Woo.Divider"
         android:layout_width="0dp"
         android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/minor_00"
+        android:layout_marginBottom="@dimen/major_75"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/customAmountInfoContainer"
         app:layout_constraintStart_toStartOf="@+id/customAmountInfoContainer" />
@@ -25,7 +25,7 @@
         android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider"
         app:layout_constraintVertical_bias="0.50">
 
         <ImageView
@@ -53,7 +53,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/product_btnDelete"
         app:layout_constraintStart_toEndOf="@+id/customAmountImageFrame"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider"
         app:layout_constraintVertical_bias="0.50">
 
         <com.google.android.material.textview.MaterialTextView
