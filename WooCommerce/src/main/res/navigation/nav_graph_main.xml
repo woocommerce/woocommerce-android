@@ -83,6 +83,9 @@
         <action
             android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
             app:destination="@id/addProductWithAIBottomSheet" />
+        <action
+            android:id="@+id/action_myStore_to_blazeCampaignListFragment"
+            app:destination="@id/blazeCampaignListFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -95,6 +98,9 @@
             <argument
                 android:name="orderId"
                 app:argType="long" />
+            <argument
+                android:name="allOrderIds"
+                app:argType="long[]" />
             <argument
                 android:name="remoteNoteId"
                 android:defaultValue="0L"
@@ -256,8 +262,8 @@
             app:destination="@id/nav_graph_coupons" />
         <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
-            app:enterAnim="@null"
-            app:destination="@id/paymentFlow">
+            app:destination="@id/paymentFlow"
+            app:enterAnim="@null">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
@@ -266,6 +272,9 @@
         <action
             android:id="@+id/action_moreMenu_to_subscriptions"
             app:destination="@id/subscriptions" />
+        <action
+            android:id="@+id/action_moreMenu_to_blazeCampaignListFragment"
+            app:destination="@id/blazeCampaignListFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -623,24 +632,30 @@
             app:nullable="false" />
     </fragment>
     <fragment
-        android:id="@+id/BlazeWebViewFragment"
-        android:name="com.woocommerce.android.ui.blaze.BlazeWebViewFragment"
+        android:id="@+id/blazeCampaignCreationFragment"
+        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
         android:label="BlazeWebViewFragment">
         <argument
             android:name="urlToLoad"
             app:argType="string" />
         <argument
             android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.IsBlazeEnabled$BlazeFlowSource"
+            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
             app:nullable="false" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationFragment_to_blazeCampaignListFragment"
+            app:destination="@id/blazeCampaignListFragment"
+            app:popUpTo="@id/blazeCampaignCreationFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true" />
     </fragment>
     <fragment
         android:id="@+id/freeTrialSurveyFragment"
         android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
         android:label="FreeTrialSurveyFragment" />
     <action
-        android:id="@+id/action_global_blazeWebViewFragment"
-        app:destination="@id/BlazeWebViewFragment" />
+        android:id="@+id/action_global_blazeCampaignCreationFragment"
+        app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />
@@ -692,17 +707,36 @@
         <action
             android:id="@+id/action_addProductWithAIFragment_to_AIProductNameBottomSheetFragment"
             app:destination="@id/aiProductNameBottomSheetFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
+            app:destination="@id/packagePhotoBottomSheetFragment" />
     </fragment>
 
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
-        android:label="AIProductNameBottomSheetFragment" >
+        android:label="AIProductNameBottomSheetFragment">
         <argument
             android:name="initialName"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
     </dialog>
-
+    <dialog
+        android:id="@+id/packagePhotoBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragment"
+        android:label="PackagePhotoBottomSheetFragment" >
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/blazeCampaignListFragment"
+        android:name="com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListFragment"
+        android:label="BlazeCampaignListFragment" >
+        <argument
+            android:name="isPostCampaignCreation"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

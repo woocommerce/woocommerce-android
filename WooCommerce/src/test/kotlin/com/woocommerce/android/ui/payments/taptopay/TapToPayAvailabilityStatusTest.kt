@@ -31,10 +31,6 @@ class TapToPayAvailabilityStatusTest {
         on { getStoreCountryCode(siteModel) }.thenReturn("US")
     }
 
-    private val caUkFeatureFlagEnabled: TTPCaUkFeatureFlagEnabled = mock {
-        on { invoke() }.thenReturn(true)
-    }
-
     private val deviceFeatures = mock<DeviceFeatures>()
 
     private val availabilityStatus = TapToPayAvailabilityStatus(
@@ -43,7 +39,6 @@ class TapToPayAvailabilityStatusTest {
         systemVersionUtilsWrapper,
         cardReaderCountryConfigProvider,
         wooStore,
-        caUkFeatureFlagEnabled,
     )
 
     @Test
@@ -85,32 +80,6 @@ class TapToPayAvailabilityStatusTest {
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("RU")
-
-        val result = availabilityStatus.invoke()
-
-        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
-    }
-
-    @Test
-    fun `given country UK and feature flag disabled, when invoking, then country is not supported returned`() {
-        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
-        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
-        whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("GB")
-        whenever(caUkFeatureFlagEnabled()).thenReturn(false)
-
-        val result = availabilityStatus.invoke()
-
-        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
-    }
-
-    @Test
-    fun `given country CA and feature flag disabled, when invoking, then country is not supported returned`() {
-        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
-        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
-        whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("CA")
-        whenever(caUkFeatureFlagEnabled()).thenReturn(false)
 
         val result = availabilityStatus.invoke()
 

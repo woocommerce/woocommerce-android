@@ -1,2 +1,0 @@
-15.6:
-Dengan gembira kami umumkan pembaruan terkini kami! Kini, penjual yang berjualan di berbagai lokasi dapat menikmati kemudahan dalam mengatur tarif pajak otomatis. Kami juga sudah memperbaiki masalah yang menghambat login ketika situs menggunakan direktori khusus untuk menginstal WordPress. Selain itu, kami memaksimalkan pembuatan produk berkat kemampuan AI untuk WPCOM dan toko yang dihosting sendiri menggunakan plugin Jetpack AI. Nikmati pengoperasian yang makin lancar dan produktivitas yang makin tinggi berkat semua penyempurnaan terbaru ini. Selamat berjualan!

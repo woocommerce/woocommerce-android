@@ -149,6 +149,10 @@
         <action
             android:id="@+id/action_order_creationFragment_to_taxRateSelectorFragment"
             app:destination="@id/taxRateSelectorFragment" />
+        <action
+            android:id="@+id/action_orderCreation_to_orderCreationProductDiscountFragment"
+            app:destination="@id/orderCreationProductDiscountFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"

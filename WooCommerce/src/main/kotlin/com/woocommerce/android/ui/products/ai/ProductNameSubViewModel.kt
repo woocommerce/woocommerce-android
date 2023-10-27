@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -13,8 +14,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 class ProductNameSubViewModel(
     savedStateHandle: SavedStateHandle,
@@ -29,41 +32,69 @@ class ProductNameSubViewModel(
 
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val name = savedStateHandle.getStateFlow(viewModelScope, "", KEY_SUBSCREEN_NAME)
+    private val uiState = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = UiState(
+            name = "",
+            isMediaPickerDialogVisible = false
+        ),
+        key = KEY_SUBSCREEN_NAME
+    )
 
-    val state = name.map {
-        UiState(it)
-    }.asLiveData()
+    val state = uiState.asLiveData()
 
     fun onProductNameChanged(enteredName: String) {
-        name.value = enteredName
+        uiState.update { uiState.value.copy(name = enteredName) }
     }
 
     fun onDoneClick() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_PRODUCT_NAME_CONTINUE_BUTTON_TAPPED)
-        onDone(name.value)
+        onDone(uiState.value.name)
     }
 
     fun onSuggestNameClicked() {
         AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_NAME_AI_ENTRY_POINT_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_HAS_INPUT_NAME to (name.value.isNotEmpty()).toString(),
+                AnalyticsTracker.KEY_HAS_INPUT_NAME to (uiState.value.name.isNotEmpty()).toString(),
                 AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_AI
             )
         )
         viewModelScope.launch {
-            _events.emit(NavigateToAIProductNameBottomSheet(name.value.orNullIfEmpty()))
+            _events.emit(NavigateToAIProductNameBottomSheet(uiState.value.name.orNullIfEmpty()))
         }
+    }
+
+    fun onMediaPickerDialogDismissed() {
+        setMediaPickerDialogVisibility(false)
+    }
+
+    fun onMediaLibraryRequested(source: DataSource) {
+        viewModelScope.launch {
+            _events.emit(ShowMediaLibrary(source))
+            setMediaPickerDialogVisibility(false)
+        }
+    }
+
+    fun onPackageImageClicked() {
+        setMediaPickerDialogVisibility(true)
+    }
+
+    private fun setMediaPickerDialogVisibility(isVisible: Boolean) {
+        uiState.update { uiState.value.copy(isMediaPickerDialogVisible = isVisible) }
     }
 
     override fun close() {
         viewModelScope.cancel()
     }
 
+    @Parcelize
     data class UiState(
-        val name: String
-    )
+        val name: String,
+        val isMediaPickerDialogVisible: Boolean
+    ) : Parcelable
 
     data class NavigateToAIProductNameBottomSheet(val initialName: String?) : Event()
+
+    data class ShowMediaLibrary(val source: DataSource) : Event()
 }

@@ -117,14 +117,15 @@ class OrderListViewModel @Inject constructor(
         LifecycleRegistry(this)
     }
 
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
+
     private val simplePaymentsAndOrderCreationFeedbackState
         get() = feedbackPrefs.getFeatureFeedbackSettings(
             FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
         )?.feedbackState ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     val performanceObserver: LifecycleObserver = orderListTransactionLauncher
-
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
