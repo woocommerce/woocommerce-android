@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderCreationProductItemBinding
+import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditProductsAdapter.ProductViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
@@ -69,6 +71,11 @@ class OrderCreateEditProductsAdapter(
             binding.stepperView.apply {
                 value = productModel.item.quantity.toInt()
                 contentDescription = context.getString(R.string.count, value.toString())
+            }
+            if (safePosition == currentList.size - 1 || currentList.size <= 1) {
+                binding.productItemView.binding.divider.hide()
+            } else {
+                binding.productItemView.binding.divider.show()
             }
         }
     }
