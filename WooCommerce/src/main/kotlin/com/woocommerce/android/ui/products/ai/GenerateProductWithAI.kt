@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone.Casual
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -28,6 +29,24 @@ class GenerateProductWithAI @Inject constructor(
     private val tagsRepository: ProductTagsRepository,
     private val parametersRepository: ParameterRepository
 ) {
+    suspend operator fun invoke(
+        productName: String,
+        productDescription: String,
+        productKeyWords: String,
+        languageISOCode: String
+    ): Result<Product> {
+        return invoke(
+            productName = productName,
+            productKeyWords = productKeyWords,
+            tone = Casual,
+            languageISOCode = languageISOCode
+        ).map { product ->
+            product.copy(
+                description = productDescription,
+            )
+        }
+    }
+
     @Suppress("ReturnCount")
     suspend operator fun invoke(
         productName: String,

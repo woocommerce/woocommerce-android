@@ -81,6 +81,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="image_major_120">128dp</dimen>
     <dimen name="image_major_150">156dp</dimen>
     <dimen name="image_major_200">200dp</dimen>
+    <dimen name="image_major_300">250dp</dimen>
     <dimen name="image_frame_stroke_width">1dp</dimen>
 
     <!-- Skeleton sizes -->

@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
+import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.PackagePhotoData
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowMediaLibrary
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -92,6 +93,13 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
             entryId = R.id.addProductWithAIFragment
         ) { productName ->
             viewModel.onProductNameGenerated(productName)
+        }
+
+        handleDialogResult<PackagePhotoData>(
+            key = PackagePhotoBottomSheetFragment.KEY_PACKAGE_PHOTO_SCAN_RESULT,
+            entryId = R.id.addProductWithAIFragment
+        ) { data ->
+            viewModel.onProductPackageScanned(data.title, data.description, data.keywords)
         }
     }
 
