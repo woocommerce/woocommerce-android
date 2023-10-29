@@ -391,19 +391,23 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when remove a product, then update orderDraft liveData with the quantity set to zero`() = testBlocking {
         var orderDraft: Order? = null
-        var addedProductItem: Order.Item? = null
+        var addedProduct: OrderCreationProduct? = null
         sut.orderDraft.observeForever { order ->
             orderDraft = order
-            addedProductItem = order.items.find { it.productId == 123L }
+        }
+
+        sut.products.observeForever { productList ->
+            addedProduct = productList.find { it.item.productId == 123L }
         }
 
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
-        assertThat(addedProductItem).isNotNull
-        val addedProductItemId = addedProductItem!!.itemId
+        assertThat(addedProduct).isNotNull
 
-        sut.onIncreaseProductsQuantity(addedProductItemId)
-        sut.onRemoveProduct(addedProductItem!!)
+        val addedProductItemId = addedProduct!!.item.itemId
+
+        sut.onIncreaseProductsQuantity(addedProduct!!)
+        sut.onRemoveProduct(addedProduct!!)
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
@@ -497,6 +501,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -509,15 +518,17 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
     fun `when removing product, should make view not editable`() = testBlocking {
         // given
-        val orderItemToRemove: Order.Item = mock()
+        val orderProductToRemove: OrderCreationProduct = mock()
 
         // when
-        sut.onRemoveProduct(orderItemToRemove)
+        sut.onRemoveProduct(orderProductToRemove)
 
         // then
         sut.viewStateData.liveData.value?.let { viewState ->
@@ -555,6 +566,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
+        var products: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            products = it
+        }
+
         sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(1F)
@@ -567,6 +583,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
             assertThat(addedProductItem.quantity).isEqualTo(0F)
         }
+
+        assertThat(products?.size).isEqualTo(0)
     }
 
     @Test
