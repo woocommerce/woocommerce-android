@@ -1,2 +1,0 @@
-15.8:
-Bu güncelleme, önemli hata düzeltmeleri getirerek daha sorunsuz bir deneyim sağlar. Ayrıca siparişleri düzenlerken vergi oranlarını güncelleme olanağını da sunarak size daha fazla kontrol sağlar. Yaklaşan sürümlerdeki daha fazla heyecan verici özellik için beklemede kalın. WooCommerce'i seçtiğiniz için teşekkür ederiz.

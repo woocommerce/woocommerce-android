@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-10-18 16:54:04+0000
+Translation-Revision-Date: 2023-10-25 15:54:27+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="previous_order">Önceki sipariş</string>
+    <string name="next_order">Sonraki sipariş</string>
+    <string name="blaze_campaign_details_title">Kampanya ayrıntıları</string>
+    <string name="blaze_campaign_list_title">Kampanyaları öne çıkarın</string>
+    <string name="blaze_campaign_status_canceled">İptal edildi</string>
+    <string name="blaze_campaign_status_scheduled">Zamanlandı</string>
+    <string name="product_creation_package_photo_keywords_info">Metninizi düzenleyin: İhtiyacınız olmayan taramaların seçimini kaldırın veya düzenlemek için dokunun</string>
+    <string name="product_creation_package_photo_keywords_section">Anahtar Sözcükler</string>
+    <string name="ai_product_creation_photo_button">Ambalaj fotoğrafı kullan (İsteğe bağlı)</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Sipariş Ayrıntıları veya Menü &gt; Ödemeler bölümünde\nÖdeme Alma seçeneklerinden Tap to Pay\'i seçin.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Banka veya kredi kartınızla bir %s ödemesi yapmayı deneyin.\nÖdeme, işiniz bittiğinde iade edilir.</string>
+    <string name="card_reader_tap_to_pay_explanation_easy">Kolay, güvenli ve gizlidir.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Doğrudan telefonunuzdan her türde şahsen ödemeyi\nkabul edin. Ekstra donanım gerektirmez.</string>
     <string name="blaze_campaign_status_budget">Bütçe</string>
     <string name="blaze_campaign_status_clicks">Tıklamalar</string>
     <string name="blaze_campaign_status_impressions">İzlenimler</string>
@@ -647,9 +660,6 @@ Language: tr
     <string name="jetpack_benefits_fetching_status">Jetpack Durumu Alınıyor</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Tap to Pay on Android\'i\nMenü &gt; Ödemeler kısmında bulabilirsiniz veya Ödeme Al ve\nTap to Pay\'i seçin.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Kartınızı kullanarak ödeme yapmayı deneyin ve\nişiniz bittiğinde iade edilecek.</string>
-    <string name="card_reader_tap_to_pay_explanation_ready">Telefonunuz Tap to Pay için hazır.\nMüşteriniz ödeme yapmak için\nkartını telefonunuza dokundurabilir.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">EYLEMLER</string>
