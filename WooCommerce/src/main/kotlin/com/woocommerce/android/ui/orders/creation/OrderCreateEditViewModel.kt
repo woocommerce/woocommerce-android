@@ -721,6 +721,19 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Failed to add a product whose price is not specified"
                 )
             }
+            product.isConfigurable -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = resourceProvider.getString(
+                        string.order_creation_barcode_scanning_unable_to_add_configurable_product
+                    ),
+                    withRetryButton = false
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a configurable product"
+                )
+            }
         }
     }
 
