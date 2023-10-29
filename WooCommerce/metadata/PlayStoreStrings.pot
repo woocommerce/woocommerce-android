@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_160"
+msgid ""
+"16.0:\n"
+"Welcome to the latest update of WooCommerce! We've redesigned the order's item list for a more intuitive flow. Blaze experience is now more efficient with improved campaign creation. Also, introducing the Product Creation via AI using package photos for getting automatic title and descriptions. Enjoy a seamless shopping experience!\n"
+msgstr ""
+
 msgctxt "release_note_159"
 msgid ""
 "15.9:\n"
 "We're thrilled to introduce the new Tap to Pay feature, now available for merchants in the UK and Canada. This means that UK and Canadian-based businesses can now provide a faster and more convenient payment experience to their customers, all from the palm of your hand. Update now and start boosting your sales with Tap to Pay in WooCommerce!\n"
-msgstr ""
-
-msgctxt "release_note_158"
-msgid ""
-"15.8:\n"
-"This update brings crucial bug fixes, ensuring a smoother experience. It also introduces the ability to update tax rates when editing orders, providing you with greater control. Stay tuned for more exciting features in upcoming releases. Thank you for choosing WooCommerce.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
