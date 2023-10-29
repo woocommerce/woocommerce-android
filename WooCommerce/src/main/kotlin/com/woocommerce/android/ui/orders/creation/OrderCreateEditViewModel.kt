@@ -761,11 +761,17 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun sendAddingProductsViaScanningFailedEvent(
-        message: String
+        message: String,
+        withRetryButton: Boolean = true
     ) {
+
         triggerEvent(
-            OnAddingProductViaScanningFailed(message) {
-                triggerEvent(OpenBarcodeScanningFragment)
+            if (withRetryButton) {
+                OnAddingProductViaScanningFailed(message) {
+                    triggerEvent(OpenBarcodeScanningFragment)
+                }
+            } else {
+                OnAddingProductViaScanningFailed(message)
             }
         )
     }
@@ -1310,7 +1316,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
 data class OnAddingProductViaScanningFailed(
     val message: String,
-    val retry: View.OnClickListener,
+    val retry: View.OnClickListener? = null
 ) : Event()
 
 object OpenBarcodeScanningFragment : Event()
