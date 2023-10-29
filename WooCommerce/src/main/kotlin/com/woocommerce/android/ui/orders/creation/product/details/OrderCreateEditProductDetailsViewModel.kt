@@ -112,7 +112,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     }
 
     fun onRemoveProductClicked() {
-        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.product.value.item)))
+        triggerEvent(ExitWithResult(ProductDetailsEditResult.ProductRemoved(this.product.value)))
     }
 
     data class ViewState(
@@ -138,7 +138,7 @@ class OrderCreateEditProductDetailsViewModel @Inject constructor(
     @Parcelize
     sealed class ProductDetailsEditResult : Parcelable {
         @Parcelize
-        data class ProductRemoved(val item: Order.Item) : Parcelable, ProductDetailsEditResult()
+        data class ProductRemoved(val item: OrderCreationProduct) : Parcelable, ProductDetailsEditResult()
     }
 
     sealed class NavigationTarget : MultiLiveEvent.Event() {

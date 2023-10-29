@@ -406,7 +406,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { it.copy(status = status) }
     }
 
-    fun onRemoveProduct(item: Order.Item) = viewModelScope.launch {
+    fun onRemoveProduct(item: OrderCreationProduct) = viewModelScope.launch {
         tracker.track(
             ORDER_PRODUCT_REMOVE,
             mapOf(KEY_FLOW to flow)
