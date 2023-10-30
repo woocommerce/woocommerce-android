@@ -444,7 +444,7 @@ class OrderCreateEditFormFragment :
                 binding.customAmountsSection.hide()
             }
 
-            // Product is added but custom amount is not added
+            // Product has been added, but the custom amount remains unset.
             !viewState.productsSectionState.isEmpty && viewState.customAmountSectionState.isEmpty -> {
                 binding.productsSection.showAddProductsHeaderActions()
                 binding.productsSection.showHeader()
@@ -462,7 +462,7 @@ class OrderCreateEditFormFragment :
                 )
             }
 
-            // Custom amount is added but product is not added
+            // Custom amount has been set, but no product has been added.
             viewState.productsSectionState.isEmpty && !viewState.customAmountSectionState.isEmpty -> {
                 binding.productsSection.removeCustomSectionButtons()
                 binding.customAmountsSection.show()
@@ -485,7 +485,7 @@ class OrderCreateEditFormFragment :
                 )
             }
 
-            // Both products and custom amount is added
+            // Both the product and custom amount have been added.
             !viewState.productsSectionState.isEmpty && !viewState.customAmountSectionState.isEmpty -> {
                 binding.productsSection.showAddProductsHeaderActions()
                 binding.productsSection.showHeader()
