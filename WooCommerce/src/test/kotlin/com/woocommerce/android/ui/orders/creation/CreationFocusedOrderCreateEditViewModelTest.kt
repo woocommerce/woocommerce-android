@@ -1547,4 +1547,21 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
         }
     }
+
+    // region Custom Amounts
+
+    @Test
+    fun `when custom amount added, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    //endregion
 }
