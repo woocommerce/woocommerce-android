@@ -169,5 +169,5 @@ class JetpackActivationRepository @Inject constructor(
         return Result.failure(lastError!!)
     }
 
-    object JetpackMissingConnectionEmailException: Exception("Email missing from response")
+    object JetpackMissingConnectionEmailException : RuntimeException("Email missing from response")
 }

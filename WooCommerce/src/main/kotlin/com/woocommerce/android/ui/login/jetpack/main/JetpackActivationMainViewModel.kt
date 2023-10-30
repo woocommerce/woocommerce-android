@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -68,9 +69,12 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
-        private const val JETPACK_PLANS_URL = "https://wordpress.com/jetpack/connect/plans"
-        private const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
-        private const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
+        @VisibleForTesting
+        const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
+        @VisibleForTesting
+        const val JETPACK_PLANS_URL = "https://wordpress.com/jetpack/connect/plans"
+        @VisibleForTesting
+        const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
         private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
         private const val CONNECTED_EMAIL_KEY = "connected-email"
