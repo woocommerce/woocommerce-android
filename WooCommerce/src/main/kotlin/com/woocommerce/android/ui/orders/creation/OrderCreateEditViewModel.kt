@@ -1105,16 +1105,34 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomAmountAdd(amount: BigDecimal, name: String) {
+    fun onCustomAmountAdd(customAmountUIModel: CustomAmountUIModel) {
         _orderDraft.update { draft ->
-            val feesList = draft.feesLines.toMutableList().apply {
-                add(
-                    Order.FeeLine.EMPTY.copy(
-                        name = name.ifEmpty { CUSTOM_AMOUNT },
-                        total = amount
+            val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
+
+            val feesList = if (existingFeeLine != null) {
+                // If the FeeLine with the given ID exists, we update its values.
+                draft.feesLines.map { feeLine ->
+                    if (feeLine.id == customAmountUIModel.id) {
+                        feeLine.copy(
+                            name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
+                            total = customAmountUIModel.amount
+                        )
+                    } else {
+                        feeLine
+                    }
+                }
+            } else {
+                // If no FeeLine with the given ID exists, we add a new one.
+                draft.feesLines.toMutableList().apply {
+                    add(
+                        Order.FeeLine.EMPTY.copy(
+                            name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
+                            total = customAmountUIModel.amount
+                        )
                     )
-                )
+                }
             }
+
             draft.copy(feesLines = feesList)
         }
         triggerEvent(Exit)
