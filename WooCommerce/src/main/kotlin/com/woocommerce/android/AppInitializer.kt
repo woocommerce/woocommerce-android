@@ -84,6 +84,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
         private const val CARD_READER_USAGE_THIRTY_DAYS = 30
+        private const val RESET_DELAY = 1000L
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -140,7 +141,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
 
-                            delay(1000) // delay the site reset and allow for the requests to fail gracefully
+                            delay(RESET_DELAY) // delay the site reset and allow for the requests to fail gracefully
                             selectedSite.reset()
                             restartMainActivity()
                         }

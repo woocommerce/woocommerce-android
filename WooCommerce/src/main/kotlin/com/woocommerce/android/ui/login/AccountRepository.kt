@@ -35,6 +35,9 @@ class AccountRepository @Inject constructor(
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
+    companion object {
+        private const val RESET_DELAY = 1000L
+    }
 
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -118,7 +121,7 @@ class AccountRepository @Inject constructor(
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
 
-        delay(1000) // delay the site reset and allow for the requests to fail gracefully
+        delay(RESET_DELAY) // delay the site reset and allow for the requests to fail gracefully
         selectedSite.reset()
 
         // Delete sites
