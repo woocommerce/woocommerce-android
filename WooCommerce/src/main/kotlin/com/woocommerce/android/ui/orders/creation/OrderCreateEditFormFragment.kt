@@ -507,7 +507,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        paymentSection.bindFeesSubSection(newOrderData)
+        paymentSection.bindCustomAmountSubSection(newOrderData)
         paymentSection.bindCouponsSubSection(newOrderData)
 
         val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
@@ -565,22 +565,41 @@ class OrderCreateEditFormFragment :
         }
     }
 
+    // NOTE: The method below is replaced by custom amounts.
+    // When transitioning from fees to custom amounts, ensure to remove this method
+    // once the 'custom amounts M1' feature flag is deprecated.
     private fun OrderCreationPaymentSectionBinding.bindFeesSubSection(newOrderData: Order) {
-//        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
+        feeButton.setOnClickListener { viewModel.onFeeButtonClicked() }
 
         val currentFeeTotal = newOrderData.feesTotal
 
         val hasFee = currentFeeTotal.isNotEqualTo(BigDecimal.ZERO)
 
         if (hasFee) {
-            feeButton.setText(R.string.custom_amounts)
+            feeButton.setText(R.string.order_creation_payment_fee)
             feeButton.setIconResource(0)
             feeValue.isVisible = true
             feeValue.text = bigDecimalFormatter(currentFeeTotal)
         } else {
-//            feeButton.setText(R.string.order_creation_add_fee)
-//            feeButton.setIconResource(R.drawable.ic_add)
-//            feeValue.isVisible = false
+            feeButton.setText(R.string.order_creation_add_fee)
+            feeButton.setIconResource(R.drawable.ic_add)
+            feeValue.isVisible = false
+        }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindCustomAmountSubSection(newOrderData: Order) {
+        val currentCustomAmountTotal = newOrderData.feesTotal
+
+        val hasCustomAmount = currentCustomAmountTotal.isNotEqualTo(BigDecimal.ZERO)
+
+        if (hasCustomAmount) {
+            feeLayout.show()
+            feeButton.setText(R.string.custom_amounts)
+            feeButton.setIconResource(0)
+            feeValue.isVisible = true
+            feeValue.text = bigDecimalFormatter(currentCustomAmountTotal)
+        } else {
+            feeLayout.hide()
         }
     }
 
