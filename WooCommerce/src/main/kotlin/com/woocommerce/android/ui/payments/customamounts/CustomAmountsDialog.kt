@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.payments.customamounts
 
 import android.app.Dialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
@@ -58,7 +60,7 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         val binding = DialogCustomAmountsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            sharedViewModel.onCustomAmountAdd(
+            sharedViewModel.onCustomAmountUpsert(
                 CustomAmountUIModel(
                     id = viewModel.viewState.customAmountUIModel.id,
                     amount = viewModel.viewState.customAmountUIModel.currentPrice,
@@ -82,11 +84,13 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     }
 
     private fun setupObservers(binding: DialogCustomAmountsBinding) {
-        binding.editPrice.value.filterNotNull().observe(
-            this
-        ) {
-            viewModel.currentPrice = it
-        }
+        Handler(Looper.getMainLooper()).postDelayed( {
+            binding.editPrice.value.filterNotNull().observe(
+                this
+            ) {
+                viewModel.currentPrice = it
+            }
+        }, 100)
 
         binding.customAmountNameText.addTextChangedListener {
             viewModel.currentName = it.toString()
@@ -100,6 +104,13 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
                 binding.buttonDone.text = if (show) "" else getString(R.string.done)
+            }
+            new.customAmountUIModel.takeIfNotEqualTo(old?.customAmountUIModel) {
+                if (binding.customAmountNameText.text.toString() != it.name) {
+                    binding.customAmountNameText.setText(it.name)
+                    binding.customAmountNameText.setSelection(it.name.length)
+                }
+                binding.editPrice.setValue(it.currentPrice)
             }
         }
     }

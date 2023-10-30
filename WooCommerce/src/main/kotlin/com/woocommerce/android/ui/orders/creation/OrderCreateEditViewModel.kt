@@ -1105,7 +1105,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomAmountAdd(customAmountUIModel: CustomAmountUIModel) {
+    fun onCustomAmountUpsert(customAmountUIModel: CustomAmountUIModel) {
         _orderDraft.update { draft ->
             val existingFeeLine = draft.feesLines.find { it.id == customAmountUIModel.id }
 
@@ -1376,11 +1376,12 @@ data class ProductUIModel(
     val hasDiscount: Boolean = item.discount > BigDecimal.ZERO,
 )
 
+@Parcelize
 data class CustomAmountUIModel(
     val id: Long,
     val amount: BigDecimal,
     val name: String
-)
+) : Parcelable
 
 enum class ScanningSource(val source: String) {
     ORDER_CREATION("order_creation"),

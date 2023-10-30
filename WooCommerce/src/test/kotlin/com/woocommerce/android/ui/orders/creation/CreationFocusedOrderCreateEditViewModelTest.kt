@@ -1558,7 +1558,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
         assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
 
-        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
 
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
     }
@@ -1570,7 +1570,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
-        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.TEN)
     }
@@ -1582,7 +1582,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
-        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount")
     }
@@ -1594,14 +1594,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
 
-        sut.onCustomAmountAdd(BigDecimal.TEN, "")
+        sut.onCustomAmountUpsert(BigDecimal.TEN, "")
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
     }
 
     @Test
     fun `when custom amount added, then exit event is triggered`() {
-        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
 
         assertThat(sut.event.value).isEqualTo(Exit)
     }
@@ -1612,7 +1612,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
 
         sut.onCustomAmountRemoved(
