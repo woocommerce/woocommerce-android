@@ -1574,5 +1574,17 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.TEN)
     }
 
+    @Test
+    fun `when custom amount added, then fee line gets updated with proper name`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount")
+    }
+
     //endregion
 }
