@@ -14,8 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
@@ -62,7 +62,8 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val pluginRepository: PluginRepository,
     private val accountRepository: AccountRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_SLUG = "jetpack"
@@ -405,7 +406,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     private suspend fun startJetpackConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         val currentSite = site.await()
-        val useApplicationPasswords = currentSite.connectionType == SiteConnectionType.ApplicationPasswords
+        val useApplicationPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
         jetpackActivationRepository.fetchJetpackConnectionUrl(currentSite, useApplicationPasswords).fold(
             onSuccess = { connectionUrl ->
                 if (!isFromBanner) {
