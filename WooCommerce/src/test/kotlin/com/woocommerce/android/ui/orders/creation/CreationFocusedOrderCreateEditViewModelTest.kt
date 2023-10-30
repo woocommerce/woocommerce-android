@@ -1632,6 +1632,30 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when custom amount is updated, then fee line gets updated`() {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        val updatedCustomAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.ONE,
+            name = "Test amount updated"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+
+        sut.onCustomAmountUpsert(updatedCustomAmountUIModel)
+
+        assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
+    }
+
+    @Test
     fun `when custom amount is updated with amount, then fee line gets updated`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
