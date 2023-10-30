@@ -55,6 +55,7 @@ import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -138,6 +139,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
+
+                            delay(1000) // delay the site reset and allow for the requests to fail gracefully
                             selectedSite.reset()
                             restartMainActivity()
                         }
