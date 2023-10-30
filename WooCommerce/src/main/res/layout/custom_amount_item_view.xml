@@ -38,11 +38,6 @@
             android:src="@drawable/ic_custom_amount" />
     </FrameLayout>
 
-    <!--
-        LinearLayout is necessary to ensure the contents will always center properly in the
-        view, even when the productStockAndStatus is hidden, or if productName takes up
-        two lines.
-    -->
     <LinearLayout
         android:id="@+id/customAmountInfoContainer"
         android:layout_width="0dp"
