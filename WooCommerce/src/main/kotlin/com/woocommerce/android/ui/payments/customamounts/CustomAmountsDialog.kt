@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
@@ -14,6 +15,7 @@ import com.woocommerce.android.databinding.DialogCustomAmountsBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.orders.creation.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.util.CurrencyFormatter
@@ -56,7 +58,13 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
 
         val binding = DialogCustomAmountsBinding.bind(view)
         binding.buttonDone.setOnClickListener {
-            sharedViewModel.onCustomAmountAdd(viewModel.currentPrice, binding.customAmountNameText.text.toString())
+            sharedViewModel.onCustomAmountAdd(
+                CustomAmountUIModel(
+                    id = viewModel.viewState.customAmountUIModel.id,
+                    amount = viewModel.viewState.customAmountUIModel.currentPrice,
+                    name = viewModel.viewState.customAmountUIModel.name
+                )
+            )
         }
         binding.imageClose.setOnClickListener {
             cancelDialog()
@@ -78,6 +86,10 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
             this
         ) {
             viewModel.currentPrice = it
+        }
+
+        binding.customAmountNameText.addTextChangedListener {
+            viewModel.currentName = it.toString()
         }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
