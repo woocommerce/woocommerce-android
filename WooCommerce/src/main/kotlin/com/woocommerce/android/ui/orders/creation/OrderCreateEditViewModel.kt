@@ -274,6 +274,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             }
+
             is Mode.Edit -> {
                 viewModelScope.launch {
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
@@ -512,6 +513,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     resourceProvider.getString(string.order_creation_barcode_scanning_scanning_failed)
                 )
             }
+
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
                 viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -638,6 +640,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     source = source,
                     addedVia = ProductAddedVia.SCANNING,
                 )
+
                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
             trackProductSearchViaSKUSuccessEvent(source)
@@ -697,6 +700,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Failed to add a product that is not published"
                 )
             }
+
             product.hasNoPrice() -> {
                 sendAddingProductsViaScanningFailedEvent(
                     message = resourceProvider.getString(
@@ -894,6 +898,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 )
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -932,6 +937,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
             }
+
             is Mode.Edit -> {
                 triggerEvent(Exit)
             }
@@ -957,8 +963,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     when (updateStatus) {
                         OrderUpdateStatus.PendingDebounce ->
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
+
                         OrderUpdateStatus.Ongoing ->
                             viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
@@ -968,6 +976,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
+
                         is OrderUpdateStatus.Succeeded -> {
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
@@ -1111,31 +1120,40 @@ class OrderCreateEditViewModel @Inject constructor(
 
             val feesList = if (existingFeeLine != null) {
                 // If the FeeLine with the given ID exists, we update its values.
-                draft.feesLines.map { feeLine ->
-                    if (feeLine.id == customAmountUIModel.id) {
-                        feeLine.copy(
-                            name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
-                            total = customAmountUIModel.amount
-                        )
-                    } else {
-                        feeLine
-                    }
-                }
+                updateCustomAmount(draft, customAmountUIModel)
             } else {
                 // If no FeeLine with the given ID exists, we add a new one.
-                draft.feesLines.toMutableList().apply {
-                    add(
-                        Order.FeeLine.EMPTY.copy(
-                            name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
-                            total = customAmountUIModel.amount
-                        )
-                    )
-                }
+                addCustomAmount(draft, customAmountUIModel)
             }
-
             draft.copy(feesLines = feesList)
         }
         triggerEvent(Exit)
+    }
+
+    private fun addCustomAmount(
+        draft: Order,
+        customAmountUIModel: CustomAmountUIModel
+    ) = draft.feesLines.toMutableList().apply {
+        add(
+            Order.FeeLine.EMPTY.copy(
+                name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
+                total = customAmountUIModel.amount
+            )
+        )
+    }
+
+    private fun updateCustomAmount(
+        draft: Order,
+        customAmountUIModel: CustomAmountUIModel
+    ) = draft.feesLines.map { feeLine ->
+        if (feeLine.id == customAmountUIModel.id) {
+            feeLine.copy(
+                name = customAmountUIModel.name.ifEmpty { CUSTOM_AMOUNT },
+                total = customAmountUIModel.amount
+            )
+        } else {
+            feeLine
+        }
     }
 
     fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
@@ -1243,12 +1261,14 @@ class OrderCreateEditViewModel @Inject constructor(
                             shippingAddress = EMPTY
                         )
                     )
+
                     ShippingAddress -> order.copy(
                         customer = order.customer?.copy(shippingAddress = updatedAddress) ?: Order.Customer(
                             billingAddress = EMPTY,
                             shippingAddress = updatedAddress
                         )
                     )
+
                     else -> order
                 }
             }
