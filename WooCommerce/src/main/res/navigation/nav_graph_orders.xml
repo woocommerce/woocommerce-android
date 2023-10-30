@@ -166,9 +166,31 @@
             android:name="orderId"
             app:argType="long" />
         <argument
+            android:name="allOrderIds"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="long[]" />
+        <argument
             android:name="remoteNoteId"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_orderDetailFragment"
+            app:destination="@+id/orderDetailFragment"
+            app:enterAnim="@null"
+            app:popUpTo="@+id/orders"
+            app:popUpToInclusive="false">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+            <argument
+                android:name="allOrderIds"
+                app:argType="long[]" />
+            <argument
+                android:name="remoteNoteId"
+                android:defaultValue="0L"
+                app:argType="long" />
+        </action>
         <action
             android:id="@+id/action_orderDetailFragment_to_addOrderNoteFragment"
             app:destination="@id/addOrderNoteFragment" />

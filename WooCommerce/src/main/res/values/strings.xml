@@ -515,6 +515,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_price_after_discount">Price after discount</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
     <string name="order_creation_customer_edit_content_description">Edit customer details</string>
@@ -525,6 +526,7 @@
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
     <string name="order_creation_add_products">Add products</string>
+    <string name="order_creation_add_custom_amounts">Add custom amount</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
@@ -534,6 +536,8 @@
     <string name="order_creation_coupon_discount_value">-%1$s</string>
     <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
     <string name="order_creation_coupons_title">Coupons applied</string>
+    <string name="order_creation_increase_item_amount_content_description">Increase product quantity</string>
+    <string name="order_creation_decrease_item_amount_content_description">Decrease product quantity</string>
     <string name="coupon_selector_empty_list_button">Go to Coupons</string>
     <string name="coupon_selector_empty_list_message">You haven\'t created any coupons yet. Create a coupon to apply it to this order.</string>
     <string name="coupon_selector_empty_list_title">Everyone loves a deal</string>
@@ -602,6 +606,7 @@
     <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
+    <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
 
     <!--
          Barcode Scanning
@@ -668,6 +673,8 @@
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
     <string name="order_editing_locked_content_description">locked</string>
+    <string name="order_editing_barcode_content_description">Scan barcode</string>
+    <string name="order_editing_add_content_description">Add product</string>
     <string name="order_sync_failed">Unable to save changes</string>
     <string name="order_sync_coupon_removed">Coupon could not be applied and was removed from the order</string>
     <!--
@@ -1291,7 +1298,7 @@
     <string name="card_reader_tap_to_pay_explanation_ready">Accept all types of in-person payments, right\non your phone. No extra hardware needed.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">It’s easy, secure, and private.</string>
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Try a %s payment with your debit or credit card.\nThe payment will be refunded when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu > Payments.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find">Choose the Tap to Pay from the Collect Payment options in\nOrder Details or Menu &gt; Payments.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
@@ -1955,6 +1962,8 @@
     <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
     <string name="product_creation_package_photo_keywords_section">Keywords</string>
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
+    <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
+    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -2047,6 +2056,7 @@
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
     <string name="photo_picker_title">Device Media Library</string>
+    <string name="media_picker_dialog_title">Select Media Source</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
@@ -3642,18 +3652,6 @@
     <string name="ai_product_name_copy_success">Product name copied to clipboard.</string>
     <string name="ai_product_name_copy_error">Error copying product name to clipboard.</string>
 
-
-    <!--
-    Blaze banner
-    -->
-    <string name="blaze_banner_title">Promote products with Blaze</string>
-    <string name="blaze_banner_description">Turn your products into ads that run across millions of sites on WordPress.com and Tumblr.</string>
-    <string name="blaze_banner_button">Try Blaze now</string>
-    <string name="blaze_banner_close_button_content_description">Close Blaze banner button</string>
-    <string name="blaze_banner_dismiss_dialog_title">Blaze ads</string>
-    <string name="blaze_banner_dismiss_dialog_description">No worries! Blaze is accessible from the Menu and the product detail menu for your convenience.</string>
-    <string name="blaze_banner_dismiss_dialog_button">Got it</string>
-
     <!--
     My Store Blaze view
     -->
@@ -3664,7 +3662,9 @@
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_completed">Completed</string>
+    <string name="blaze_campaign_status_scheduled">Scheduled</string>
     <string name="blaze_campaign_status_rejected">Rejected</string>
+    <string name="blaze_campaign_status_canceled">Canceled</string>
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
@@ -3673,12 +3673,29 @@
     Blaze campaign list
     -->
     <string name="blaze_campaign_list_title">Blaze campaigns</string>
-
+    <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. Please try again later.</string>
+    <!--
+    Blaze campaign creation intro
+    -->
+    <string name="blaze_campaign_creation_intro_title">Drive more sales to your store with Blaze</string>
+    <string name="blaze_campaign_creation_intro_benefit_1">Promote your product in just minutes.</string>
+    <string name="blaze_campaign_creation_intro_benefit_2">Take control with just a few dollars a day. It’s budget-friendly.</string>
+    <string name="blaze_campaign_creation_intro_benefit_3">Reach millions on WordPress and Tumblr sites.</string>
+    <string name="blaze_campaign_creation_intro_benefit_4">Track performance, start and stop your Blaze campaign anytime.</string>
+    <string name="blaze_campaign_creation_intro_button">Start Blaze campaign now</string>
 
     <!--
-    Blaze campaign details
+    Blaze campaign creation celebration
+    -->
+    <string name="blaze_campaign_creation_celebration_header">All set!</string>
+    <string name="blaze_campaign_ceation_celebration_message">The ad has been submistted for approval. We’ll send you a confirmation email once it’s approvied and running.</string>
+    <string name="blaze_campaign_ceation_celebration_button">Got it</string>
+
+    <!--
+    Blaze other
     -->
     <string name="blaze_campaign_details_title">Campaign details</string>
+    <string name="product_details_blaze_card">Promote with Blaze</string>
 
     <!--
     Highlights tooltip
@@ -3728,6 +3745,8 @@
     <string name="tax_rate_selector_auto_rate_details_title">Automatically adding tax rate</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Set a new tax rate for this order</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Clear address and stop using this rate</string>
+    <string name="next_order">Next order</string>
+    <string name="previous_order">Previous order</string>
 
     <!--
     AI feedback form

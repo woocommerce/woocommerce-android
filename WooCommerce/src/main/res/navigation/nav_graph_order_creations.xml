@@ -48,13 +48,6 @@
             android:id="@+id/action_orderCreationFragment_to_customerListFragment"
             app:destination="@id/customerListFragment" />
         <action
-            android:id="@+id/action_orderCreationFragment_to_orderCreationProductDetailsFragment"
-            app:destination="@id/orderCreationProductDetailsFragment"
-            app:enterAnim="@anim/default_enter_anim"
-            app:exitAnim="@anim/default_exit_anim"
-            app:popEnterAnim="@anim/default_pop_enter_anim"
-            app:popExitAnim="@anim/default_pop_exit_anim" />
-        <action
             android:id="@+id/action_orderCreationFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders"
             app:enterAnim="@anim/default_enter_anim"
@@ -144,6 +137,10 @@
         <action
             android:id="@+id/action_order_creationFragment_to_taxRateSelectorFragment"
             app:destination="@id/taxRateSelectorFragment" />
+        <action
+            android:id="@+id/action_orderCreation_to_orderCreationProductDiscountFragment"
+            app:destination="@id/orderCreationProductDiscountFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -197,25 +194,6 @@
         <argument
             android:name="requestKey"
             app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/orderCreationProductDetailsFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.product.details.OrderCreateEditProductDetailsFragment"
-        android:label="OrderCreationProductDetailsFragment"
-        tools:layout="@layout/fragment_order_create_edit_product_details">
-        <argument
-            android:name="item"
-            app:argType="com.woocommerce.android.model.Order$Item" />
-        <argument
-            android:name="currency"
-            app:argType="string" />
-        <argument
-            android:name="discountEditEnabled"
-            app:argType="boolean" />
-        <action
-            android:id="@+id/action_orderCreationProductDetailsFragment_to_orderCreationProductDiscountFragment"
-            app:destination="@id/orderCreationProductDiscountFragment"
-            />
     </fragment>
     <fragment
         android:id="@+id/orderCreationProductDiscountFragment"
