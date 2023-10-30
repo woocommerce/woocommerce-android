@@ -30,6 +30,7 @@ import javax.inject.Inject
 class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_amounts) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -84,13 +85,16 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     }
 
     private fun setupObservers(binding: DialogCustomAmountsBinding) {
-        Handler(Looper.getMainLooper()).postDelayed( {
-            binding.editPrice.value.filterNotNull().observe(
-                this
-            ) {
-                viewModel.currentPrice = it
-            }
-        }, 100)
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                binding.editPrice.value.filterNotNull().observe(
+                    this
+                ) {
+                    viewModel.currentPrice = it
+                }
+            },
+            EDIT_PRICE_UPDATE_DELAY
+        )
 
         binding.customAmountNameText.addTextChangedListener {
             viewModel.currentName = it.toString()
@@ -128,5 +132,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
         private const val KEYBOARD_DELAY = 100L
 
         const val CUSTOM_AMOUNT = "Custom Amount"
+        const val EDIT_PRICE_UPDATE_DELAY = 100L
     }
 }
