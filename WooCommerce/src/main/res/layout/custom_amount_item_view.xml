@@ -86,7 +86,7 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/product_btnDelete"
+        android:id="@+id/customAmountDeleteBtn"
         style="@style/Woo.ImageButton.Close"
         android:layout_margin="@dimen/minor_100"
         android:contentDescription="@string/grouped_product_btn_delete"
