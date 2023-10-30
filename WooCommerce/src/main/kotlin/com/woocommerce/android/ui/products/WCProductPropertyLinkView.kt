@@ -2,21 +2,34 @@ package com.woocommerce.android.ui.products
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.textview.MaterialTextView
-import com.woocommerce.android.R
+import androidx.core.view.isVisible
+import com.woocommerce.android.databinding.ProductPropertyLinkViewLayoutBinding
 
 class WCProductPropertyLinkView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private var view: View = View.inflate(context, R.layout.product_property_link_view_layout, this)
+    private val binding: ProductPropertyLinkViewLayoutBinding = ProductPropertyLinkViewLayoutBinding.inflate(
+        LayoutInflater.from(context), this
+    )
 
-    fun show(caption: String) {
-        with(view.findViewById<MaterialTextView>(R.id.textLink)) {
-            text = caption
+    fun show(
+        title: String,
+        icon: Int?,
+        showDivider: Boolean
+    ) {
+        binding.text.text = title
+
+        if (icon != null) {
+            binding.icon.isVisible = true
+            binding.icon.setImageResource(icon)
+        } else {
+            binding.icon.isVisible = false
         }
+
+        binding.divider.isVisible = showDivider
     }
 }

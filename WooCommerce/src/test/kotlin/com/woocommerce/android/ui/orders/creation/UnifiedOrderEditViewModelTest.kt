@@ -47,6 +47,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -72,8 +73,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var savedState: SavedStateHandle
     protected lateinit var orderCreationProductMapper: OrderCreationProductMapper
     protected lateinit var createUpdateOrderUseCase: CreateUpdateOrder
-    protected lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
-    protected lateinit var autoSyncOrder: AutoSyncOrder
+    private lateinit var autoSyncPriceModifier: AutoSyncPriceModifier
+    private lateinit var autoSyncOrder: AutoSyncOrder
     protected lateinit var createOrderItemUseCase: CreateOrderItem
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
@@ -164,6 +165,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on {
                 getString(R.string.order_creation_barcode_scanning_scanning_failed)
             } doReturn "Scanning failed. Please try again later"
+            on { getString(R.string.order_creation_set_tax_rate) } doReturn "Set New Tax Rate"
         }
         productRestrictions = mock()
         selectedSite = mock()

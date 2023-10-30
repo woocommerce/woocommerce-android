@@ -275,7 +275,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onLocalNotificationTapped(notification: Notification) {
-        if (notification.remoteSiteId != selectedSite.get().siteId) {
+        if (notification.remoteSiteId != selectedSite.getOrNull()?.siteId) {
             changeSiteAndRestart(
                 notification.remoteSiteId,
                 RestartActivityForLocalNotification(notification)

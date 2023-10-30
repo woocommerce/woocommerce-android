@@ -103,7 +103,6 @@ import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -415,12 +414,6 @@ class MainActivity :
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
-        val currentFragment = getActiveChildFragment()
-        if (currentFragment is ProductDetailFragment) currentFragment.trackBlazeDisplayedIfVisible()
-        return true
     }
 
     /**
@@ -1089,20 +1082,29 @@ class MainActivity :
             navController.popBackStack(R.id.orders, false)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            arrayOf(orderId).toLongArray(),
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
+        allOrderIds: List<Long>,
         remoteNoteId: Long,
         sharedView: View
     ) {
         val orderCardDetailTransitionName = getString(R.string.order_card_detail_transition_name)
         val extras = FragmentNavigatorExtras(sharedView to orderCardDetailTransitionName)
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
+            orderId,
+            allOrderIds.toLongArray(),
+            remoteNoteId
+        )
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(directions = action, extras = extras)
     }

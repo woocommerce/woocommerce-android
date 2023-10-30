@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -29,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.mediapicker.util.map
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -48,7 +48,7 @@ class RefundDetailViewModel @Inject constructor(
     private var viewState by viewStateData
 
     private val _refundItems = MutableLiveData<List<ProductRefundListItem>>()
-    val refundItems: LiveData<List<ProductRefundListItem>> = Transformations.map(_refundItems) {
+    val refundItems: LiveData<List<ProductRefundListItem>> = _refundItems.map {
         it.apply { checkAddonAvailability(this) }
     }
 

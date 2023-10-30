@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -33,29 +33,34 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
+    @Inject
+    lateinit var appPrefsWrapper: AppPrefsWrapper
+
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(FragmentLoginPrologueBinding.bind(view)) {
             buttonLoginStore.setOnClickListener {
                 // Login with site address
-                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
                 prologueFinishedListener?.onPrimaryButtonClicked()
             }
 
             buttonLoginWpcom.setOnClickListener {
                 // Login with WordPress.com account
-                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
                 prologueFinishedListener?.onSecondaryButtonClicked()
             }
 
             buttonGetStarted.setOnClickListener {
-                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
 
                 AnalyticsTracker.track(
                     AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED,
                     mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to true)
                 )
+
+                appPrefsWrapper.removeLoginSiteAddress()
 
                 prologueFinishedListener?.onGetStartedClicked()
             }
