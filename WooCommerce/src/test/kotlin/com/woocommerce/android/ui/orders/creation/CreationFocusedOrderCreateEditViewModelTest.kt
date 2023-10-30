@@ -1557,8 +1557,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             orderDraft = it
         }
         assertThat(orderDraft?.feesLines?.size).isEqualTo(0)
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
 
-        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(customAmountUIModel)
 
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
     }
@@ -1569,8 +1574,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.orderDraft.observeForever {
             orderDraft = it
         }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
 
-        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(customAmountUIModel)
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.total).isEqualTo(BigDecimal.TEN)
     }
@@ -1581,8 +1591,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.orderDraft.observeForever {
             orderDraft = it
         }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
 
-        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
+        sut.onCustomAmountUpsert(customAmountUIModel)
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo("Test amount")
     }
@@ -1593,15 +1608,25 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.orderDraft.observeForever {
             orderDraft = it
         }
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = ""
+        )
 
-        sut.onCustomAmountUpsert(BigDecimal.TEN, "")
+        sut.onCustomAmountUpsert(customAmountUIModel)
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
     }
 
     @Test
     fun `when custom amount added, then exit event is triggered`() {
-        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
 
         assertThat(sut.event.value).isEqualTo(Exit)
     }
@@ -1612,7 +1637,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-        sut.onCustomAmountUpsert(BigDecimal.TEN, "Test amount")
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Test amount"
+        )
+        sut.onCustomAmountUpsert(customAmountUIModel)
         assertThat(orderDraft?.feesLines?.size).isEqualTo(1)
 
         sut.onCustomAmountRemoved(
