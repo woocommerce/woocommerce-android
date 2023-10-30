@@ -334,8 +334,10 @@ class OrderCreateEditFormFragment :
             bindProductsSection(binding.productsSection, viewModel.products)
         }
 
-        viewModel.customAmounts.observe(viewLifecycleOwner) {
-            bindCustomAmountsSection(binding.customAmountsSection, it)
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            viewModel.customAmounts.observe(viewLifecycleOwner) {
+                bindCustomAmountsSection(binding.customAmountsSection, it)
+            }
         }
 
         observeViewStateChanges(binding)
@@ -345,8 +347,10 @@ class OrderCreateEditFormFragment :
 
     @Suppress("LongMethod")
     private fun observeViewStateChanges(binding: FragmentOrderCreateEditFormBinding) {
-        viewModel.combinedProductAndCustomAmountsLiveData.observe(viewLifecycleOwner) {
-            modifyProductsAndCustomAmountsSection(it, binding)
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            viewModel.combinedProductAndCustomAmountsLiveData.observe(viewLifecycleOwner) {
+                modifyProductsAndCustomAmountsSection(it, binding)
+            }
         }
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
