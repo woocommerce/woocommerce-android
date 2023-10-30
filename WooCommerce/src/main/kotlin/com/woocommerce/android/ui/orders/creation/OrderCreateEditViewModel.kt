@@ -1120,6 +1120,19 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onCustomAmountRemoved(customAmountUIModel: CustomAmountUIModel) {
+        _orderDraft.update { draft ->
+            val feesList = draft.feesLines.map {
+                if (customAmountUIModel.id == it.id) {
+                    it.copy(name = null)
+                } else {
+                    it
+                }
+            }
+            draft.copy(feesLines = feesList)
+        }
+    }
+
     fun onFeeRemoved() {
         tracker.track(
             ORDER_FEE_REMOVE,
