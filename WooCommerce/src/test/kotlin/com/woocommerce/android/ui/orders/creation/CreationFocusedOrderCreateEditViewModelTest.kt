@@ -1605,6 +1605,5 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(sut.event.value).isEqualTo(Exit)
     }
-
     //endregion
 }
