@@ -22,6 +22,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.LineItem
+import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -124,7 +125,7 @@ class OrderCreateEditRepository @Inject constructor(
                 )
             },
             shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }
-                ?.toShippingAddressModel(),
+                ?.toShippingAddressModel(), // shouold we send null or empty string?
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }
                 ?.toBillingAddressModel(),
             customerNote = order.customerNote,

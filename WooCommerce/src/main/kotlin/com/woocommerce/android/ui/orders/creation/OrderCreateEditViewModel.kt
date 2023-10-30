@@ -752,9 +752,22 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun clearCustomerAddresses() {
-        _orderDraft.update { order ->
-            order.copy(customer = null)
+        val customerToDelete = _orderDraft.value.customer?.copy(
+            customerId = -1L,
+            billingAddress = EMPTY,
+            shippingAddress = EMPTY
+        )
+        val modifiedOrder= _orderDraft.value.copy(customer = customerToDelete)
+
+        _orderDraft.update { _ ->
+            modifiedOrder
         }
+
+//        launch {
+//            orderCreateEditRepository.createOrUpdateDraft(
+//                modifiedOrder
+//            )
+//        }
     }
 
     fun onEditOrderStatusClicked(currentStatus: OrderStatus) {
