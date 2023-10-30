@@ -17,11 +17,23 @@ class CustomAmountsDialogViewModel @Inject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     internal var viewState by viewStateLiveData
     var currentPrice: BigDecimal
-        get() = viewState.currentPrice
+        get() = viewState.customAmountUIModel.currentPrice
         set(value) {
             viewState = viewState.copy(
-                currentPrice = value,
-                isDoneButtonEnabled = value > BigDecimal.ZERO
+                isDoneButtonEnabled = value > BigDecimal.ZERO,
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    currentPrice = value
+                )
+            )
+        }
+
+    var currentName: String
+        get() = viewState.customAmountUIModel.name
+        set(value) {
+            viewState = viewState.copy(
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    name = value
+                )
             )
         }
 
@@ -31,10 +43,16 @@ class CustomAmountsDialogViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val currentPrice: BigDecimal = BigDecimal.ZERO,
-        val customAmountName: String = "",
+        val customAmountUIModel: CustomAmountUIState,
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class CustomAmountUIState(
+        val id: Long = 0,
+        val currentPrice: BigDecimal,
+        val name: String
     ) : Parcelable
 }
