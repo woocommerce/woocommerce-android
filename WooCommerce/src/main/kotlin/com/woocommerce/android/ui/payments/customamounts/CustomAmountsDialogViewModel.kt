@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -37,13 +38,28 @@ class CustomAmountsDialogViewModel @Inject constructor(
             )
         }
 
+    private val args: CustomAmountsDialogArgs by savedState.navArgs()
+
+    init {
+        args.customAmountUIModel?.let {
+            // Edit mode
+            currentPrice = it.amount
+            viewState = viewState.copy(
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    id = it.id,
+                    name = it.name
+                )
+            )
+        }
+    }
+
     fun onCancelDialogClicked() {
         // track cancel dialog clicked
     }
 
     @Parcelize
     data class ViewState(
-        val customAmountUIModel: CustomAmountUIState,
+        val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null
@@ -52,7 +68,7 @@ class CustomAmountsDialogViewModel @Inject constructor(
     @Parcelize
     data class CustomAmountUIState(
         val id: Long = 0,
-        val currentPrice: BigDecimal,
-        val name: String
+        val currentPrice: BigDecimal = BigDecimal.ZERO,
+        val name: String = ""
     ) : Parcelable
 }
