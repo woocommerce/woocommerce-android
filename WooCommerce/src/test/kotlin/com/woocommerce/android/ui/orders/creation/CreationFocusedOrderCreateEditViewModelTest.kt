@@ -1599,5 +1599,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
     }
 
+    @Test
+    fun `when custom amount added, then exit event is triggered`() {
+        sut.onCustomAmountAdd(BigDecimal.TEN, "Test amount")
+
+        assertThat(sut.event.value).isEqualTo(Exit)
+    }
+
     //endregion
 }
