@@ -507,7 +507,11 @@ class OrderCreateEditFormFragment :
     }
 
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
-        paymentSection.bindCustomAmountSubSection(newOrderData)
+        if (isCustomAmountsFeatureFlagEnabled()) {
+            paymentSection.bindCustomAmountSubSection(newOrderData)
+        } else {
+            paymentSection.bindFeesSubSection(newOrderData)
+        }
         paymentSection.bindCouponsSubSection(newOrderData)
 
         val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
