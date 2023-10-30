@@ -408,8 +408,6 @@ class OrderCreateEditFormFragment :
             }
         }
     }
-
-    @Suppress("LongMethod")
     private fun modifyProductsAndCustomAmountsSection(
         viewState: OrderCreateEditViewModel.ViewState,
         binding: FragmentOrderCreateEditFormBinding
