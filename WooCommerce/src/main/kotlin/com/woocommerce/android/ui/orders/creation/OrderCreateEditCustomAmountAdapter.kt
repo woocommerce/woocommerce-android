@@ -53,6 +53,11 @@ class OrderCreateEditCustomAmountAdapter(
             } else {
                 binding.customAmountLayout.divider.show()
             }
+            binding.customAmountLayout.customAmountDeleteBtn.setOnClickListener {
+                safePosition?.let {
+                    onCustomAmountDeleteClick(getItem(it))
+                }
+            }
         }
     }
 
