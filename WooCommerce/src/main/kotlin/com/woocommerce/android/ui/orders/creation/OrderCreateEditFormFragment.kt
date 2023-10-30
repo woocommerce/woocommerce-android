@@ -409,7 +409,7 @@ class OrderCreateEditFormFragment :
         }
     }
     private fun modifyProductsAndCustomAmountsSection(
-        viewState: OrderCreateEditViewModel.ViewState,
+        viewState: OrderCreateEditViewModel.ViewState?,
         binding: FragmentOrderCreateEditFormBinding
     ) {
         when {
