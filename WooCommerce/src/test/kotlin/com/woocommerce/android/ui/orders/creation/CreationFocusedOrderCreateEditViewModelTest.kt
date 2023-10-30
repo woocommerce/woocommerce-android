@@ -1632,7 +1632,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when custom amount is updated with amount, then fee line gets updated`() {
+    fun `when custom amount is updated with name, then fee line gets updated`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
