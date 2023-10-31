@@ -298,7 +298,7 @@ class OrderCreateEditFormFragment :
             addCustomAmountsButton = AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
                 onClickListener = {
-                    // Implement custom amounts click listener
+                    navigateToCustomAmountsDialog()
                 }
             )
         )
@@ -467,11 +467,7 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.setCustomAmountsSectionButtons(
             addCustomAmountsButton = AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
-                onClickListener = {
-                    findNavController().navigateSafely(
-                        actionOrderCreationFragmentToCustomAmountsDialog()
-                    )
-                }
+                onClickListener = { navigateToCustomAmountsDialog() }
             )
         )
     }
@@ -501,15 +497,18 @@ class OrderCreateEditFormFragment :
             AddButton(
                 text = getString(R.string.order_creation_add_custom_amounts),
                 onClickListener = {
-                    findNavController().navigateSafely(
-                        actionOrderCreationFragmentToCustomAmountsDialog()
-                    )
+                    navigateToCustomAmountsDialog()
                 }
             )
         )
         binding.customAmountsSection.hide()
     }
 
+    private fun navigateToCustomAmountsDialog(customAmountUIModel: CustomAmountUIModel? = null) {
+        findNavController().navigateSafely(
+            actionOrderCreationFragmentToCustomAmountsDialog(customAmountUIModel)
+        )
+    }
     private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
         shouldShowProgressBars: Boolean
@@ -699,13 +698,7 @@ class OrderCreateEditFormFragment :
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = OrderCreateEditCustomAmountAdapter(
                         currencyFormatter,
-                        onCustomAmountClick = {
-                            findNavController().navigateSafely(
-                                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToCustomAmountsDialog(
-                                    it
-                                )
-                            )
-                        },
+                        onCustomAmountClick = { navigateToCustomAmountsDialog(it) },
                         onCustomAmountDeleteClick = {
                             viewModel.onCustomAmountRemoved(it)
                         }
@@ -718,9 +711,7 @@ class OrderCreateEditFormFragment :
                 submitList(customAmounts)
             }
             customAmountsSection.addIcon.setOnClickListener {
-                findNavController().navigateSafely(
-                    actionOrderCreationFragmentToCustomAmountsDialog()
-                )
+                navigateToCustomAmountsDialog()
             }
         }
     }
