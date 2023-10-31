@@ -366,9 +366,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         val productId = 1L
         val products = OrderTestUtils.generateTestOrderItems(count = 1, productId = productId, quantity = 3F)
         val order = defaultOrderValue.copy(items = products)
+
+        var orderProducts: List<OrderCreationProduct>? = null
+        sut.products.observeForever {
+            orderProducts = it
+        }
+
         initMocksForAnalyticsWithOrder(order)
         createSut()
-        sut.onRemoveProduct(products.first())
+        val productToRemove = orderProducts!!.first()
+        sut.onRemoveProduct(productToRemove)
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)

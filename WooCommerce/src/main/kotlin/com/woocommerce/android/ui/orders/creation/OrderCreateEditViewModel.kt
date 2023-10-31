@@ -404,7 +404,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { it.copy(status = status) }
     }
 
-    fun onRemoveProduct(item: Order.Item) = viewModelScope.launch {
+    fun onRemoveProduct(item: OrderCreationProduct) = viewModelScope.launch {
         tracker.track(
             ORDER_PRODUCT_REMOVE,
             mapOf(KEY_FLOW to flow)
@@ -447,6 +447,8 @@ class OrderCreateEditViewModel @Inject constructor(
                     item.parent == null &&
                         !item.isVariation &&
                         selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
+                }.mapNotNull { item ->
+                    products.value?.find { product -> item.itemId == product.item.itemId }
                 }
                 productsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
@@ -454,6 +456,8 @@ class OrderCreateEditViewModel @Inject constructor(
 
                 val variationsToRemove = filter { item ->
                     item.isVariation && selectedItems.variationIds.none { item.variationId == it }
+                }.mapNotNull { item ->
+                    products.value?.find { product -> item.itemId == product.item.itemId }
                 }
 
                 variationsToRemove.forEach { itemToRemove ->
@@ -764,7 +768,11 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
+    private fun Order.removeItem(product: OrderCreationProduct) = adjustProductQuantity(
+        this,
+        product,
+        -product.item.quantity.toInt()
+    )
 
     fun onCustomerEdited(customer: Order.Customer) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
