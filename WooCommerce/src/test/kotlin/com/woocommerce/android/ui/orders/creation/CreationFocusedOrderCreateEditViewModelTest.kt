@@ -5,6 +5,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
@@ -1774,6 +1775,19 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onCustomAmountUpsert(customAmountUIModel)
 
         verify(tracker, never()).track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+    }
+
+    @Test
+    fun `when custom amount is removed, then event is tracked`() {
+        val customAmountUIModel = CustomAmountUIModel(
+            id = 0L,
+            amount = BigDecimal.TEN,
+            name = "Custom Amount"
+        )
+
+        sut.onCustomAmountRemoved(customAmountUIModel)
+
+        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
     }
     //endregion
 }
