@@ -120,7 +120,6 @@ class CustomAmountsDialog : PaymentsBaseDialogFragment(R.layout.dialog_custom_am
     }
 
     private fun cancelDialog() {
-        viewModel.onCancelDialogClicked()
         findNavController().navigateUp()
     }
 
