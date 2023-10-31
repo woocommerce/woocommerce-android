@@ -1727,5 +1727,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(orderDraft?.feesLines?.filter { it.name != null }?.size).isEqualTo(0)
     }
+
+    @Test
+    fun `when add custom amount button is clicked, then track proper event`() {
+        sut.trackCustomAmountRowClicked()
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED)
+    }
     //endregion
 }
