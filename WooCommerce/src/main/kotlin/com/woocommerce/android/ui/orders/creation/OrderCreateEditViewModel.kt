@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPP
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_DELETE
@@ -1178,6 +1179,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        tracker.track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
     }
 
     fun trackCustomAmountRowClicked() {
