@@ -25,15 +25,7 @@ class WebauthnHandler(
     ) {
         val options = PublicKeyCredentialRequestOptions.Builder()
             .setRpId(credentialManagerData.rpId)
-            .setAllowList(
-                credentialManagerData.allowCredentials.map {
-                    PublicKeyCredentialDescriptor(
-                        PublicKeyCredentialType.PUBLIC_KEY.toString(),
-                        it.id,
-                        listOf(Transport.USB, Transport.NFC, Transport.BLUETOOTH_LOW_ENERGY, Transport.HYBRID, Transport.INTERNAL)
-                    )
-                }
-            )
+            .setAllowList(credentialManagerData.allowCredentials.map(::parseToCredentialDescriptor))
             .setChallenge(credentialManagerData.challenge)
             .setTimeoutSeconds(credentialManagerData.timeout.toDouble())
             .build()
@@ -67,4 +59,19 @@ class WebauthnHandler(
             }
         }
     }
+
+    private fun parseToCredentialDescriptor(credential: WebauthnCredential) =
+        PublicKeyCredentialDescriptor(
+            PublicKeyCredentialType.PUBLIC_KEY.toString(),
+            credential.id,
+            allTransports
+        )
+
+    private val allTransports = listOf(
+        Transport.USB,
+        Transport.NFC,
+        Transport.BLUETOOTH_LOW_ENERGY,
+        Transport.HYBRID,
+        Transport.INTERNAL
+    )
 }
