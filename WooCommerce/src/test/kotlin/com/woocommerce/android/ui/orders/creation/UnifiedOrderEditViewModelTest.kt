@@ -120,6 +120,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn defaultOrderItem
             onBlocking { invoke(456, null) } doReturn createOrderItem(456)
+            onBlocking { invoke(789, null) } doReturn createOrderItem(789)
             onBlocking { invoke(1, 2) } doReturn createOrderItem(1, 2)
             ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
         }
@@ -2164,6 +2165,23 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 WCProductStore.SkuSearchOptions.ExactSearch
             )
         }
+    }
+
+    @Test
+    fun `check that products are ordered by product id to prevent bundle items from switching positions`() {
+        var productsIds: List<Long>? = null
+        val expectedOrder = listOf(123L, 456L, 789L)
+        sut.products.observeForever { products ->
+            productsIds = products.map { it.item.productId }
+        }
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(456),
+            ProductSelectorViewModel.SelectedItem.Product(789),
+            ProductSelectorViewModel.SelectedItem.Product(123),
+        )
+        sut.onProductsSelected(selectedItems)
+
+        assertThat(productsIds).isEqualTo(expectedOrder)
     }
     //endregion
 
