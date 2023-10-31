@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.login.webauthn
 
-import androidx.activity.ComponentActivity
+import android.content.Context
 import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.fido.Fido
 import com.google.android.gms.fido.common.Transport
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
@@ -12,14 +10,23 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOp
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType
 import javax.inject.Inject
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
-import org.wordpress.android.fluxc.store.AccountStore
+
+typealias OnCredentialsAvailable = (PublicKeyCredential) -> Unit
+
+interface PasskeyResultReceiver {
+    fun requestPasskeyWith(
+        intentSender: IntentSenderRequest,
+        userId: String,
+        webauthnNonce: String
+    )
+}
 
 class FetchPasskeyUseCase @Inject constructor(
     private val dispatcher: Dispatcher
 ) {
     operator fun invoke(
-        activity: ComponentActivity,
+        context: Context,
+        receiver: PasskeyResultReceiver,
         credentialManagerData: CredentialManagerData,
         userId: String
     ) {
@@ -30,41 +37,19 @@ class FetchPasskeyUseCase @Inject constructor(
             .setTimeoutSeconds(credentialManagerData.timeout.toDouble())
             .build()
 
-        val fido2ApiClient = Fido.getFido2ApiClient(activity)
+        val fido2ApiClient = Fido.getFido2ApiClient(context)
         val fidoIntent = fido2ApiClient.getSignPendingIntent(options)
 
         fidoIntent.addOnSuccessListener { pendingIntent ->
             IntentSenderRequest.Builder(pendingIntent.intentSender)
                 .build()
                 .let {
-                    activity.generateResultLauncher(
+                    receiver.requestPasskeyWith(
+                        intentSender = it,
                         userId = userId,
                         webauthnNonce = credentialManagerData.twoStepNonce
-                    ).launch(it)
+                    )
                 }
-        }
-    }
-
-    private fun ComponentActivity.generateResultLauncher(
-        userId: String,
-        webauthnNonce: String
-    ) = this.registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        val resultCode = result.resultCode
-        val data = result.data
-        if (resultCode == AppCompatActivity.RESULT_OK && data != null) {
-            if (data.hasExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)) {
-                data.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)?.let {
-                    PublicKeyCredential.deserializeFromBytes(it)
-                }?.let { keyCredential ->
-                    AccountStore.FinishSecurityKeyChallengePayload().apply {
-                        this.mUserId = userId
-                        this.mTwoStepNonce = webauthnNonce
-                        this.mClientData = keyCredential.toString()
-                    }.let { AuthenticationActionBuilder.newFinishSecurityKeyChallengeAction(it) }
-                }.let { dispatcher.dispatch(it) }
-            }
         }
     }
 
