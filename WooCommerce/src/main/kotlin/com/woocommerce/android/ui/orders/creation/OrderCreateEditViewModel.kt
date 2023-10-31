@@ -13,6 +13,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_DONE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ADD_CUSTOM_AMOUNT_NAME_ADDED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
@@ -1130,7 +1131,14 @@ class OrderCreateEditViewModel @Inject constructor(
             }
             draft.copy(feesLines = feesList)
         }
+        trackIfNameAdded(customAmountUIModel)
         triggerEvent(Exit)
+    }
+
+    private fun trackIfNameAdded(customAmountUIModel: CustomAmountUIModel) {
+        if (customAmountUIModel.name != CUSTOM_AMOUNT) {
+            tracker.track(ADD_CUSTOM_AMOUNT_NAME_ADDED)
+        }
     }
 
     private fun addCustomAmount(
