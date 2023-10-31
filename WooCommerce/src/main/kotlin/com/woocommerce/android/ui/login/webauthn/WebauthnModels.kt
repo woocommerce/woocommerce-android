@@ -1,34 +1,32 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.login.webauthn
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
-import java.util.Base64
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.FinishSecurityKeyChallengePayload
 
 class WebauthnSignedCredential(
     val id: String,
     val rawId: String,
     val type: String,
-    val authenticatorAttachment: String,
-    val response: WebauthnSignedResponse
-) {
-    fun asPayload() = FinishSecurityKeyChallengePayload().also {
-        it.mId = this.id
-        it.mRawId = this.rawId
-        it.mType = this.type
-        it.mSignature = this.response.signature
-        it.mClientDataJSON = this.response.clientDataJSON
-        it.mAuthenticatorData = this.response.authenticatorData
-        it.mUserHandle = this.response.userHandle.orEmpty()
-    }
-}
+    val response: WebauthnSignedResponse,
+    val clientExtensionResults: JsonObject
+)
 
 class WebauthnSignedResponse(
     val clientDataJSON: String,
     val authenticatorData: String,
     val signature: String,
-    val userHandle: String?
+    var userHandle: String
 )
+
+private val BASE64_FLAG = android.util.Base64.NO_PADDING or android.util.Base64.NO_WRAP or android.util.Base64.URL_SAFE
+
+fun ByteArray.toBase64(): String {
+    return android.util.Base64.encodeToString(this, BASE64_FLAG)
+}
+
+fun String.decodeBase64(): ByteArray {
+    return android.util.Base64.decode(this, BASE64_FLAG)
+}
 
 class CredentialManagerData(
     @SerializedName("two_step_nonce") val twoStepNonce: String,
@@ -38,12 +36,12 @@ class CredentialManagerData(
     val rpId: String
 ) {
     constructor(challengeInfo: WebauthnChallengeInfo) : this(
-        challenge = Base64.getUrlDecoder().decode(challengeInfo.challenge),
+        challenge = challengeInfo.challenge.decodeBase64(),
         twoStepNonce = challengeInfo.twoStepNonce,
         allowCredentials = challengeInfo.allowCredentials.map {
             WebauthnCredential(
                 type = it.type,
-                id = Base64.getUrlDecoder().decode(it.id),
+                id = it.id.decodeBase64(),
                 transports = it.transports
             )
         },
