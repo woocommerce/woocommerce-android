@@ -498,6 +498,16 @@
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+
+    <!--
+         Custom Amounts
+    -->
+    <string name="custom_amounts_dialog_title">Custom Amount</string>
+    <string name="custom_amounts_enter_amount">Amount</string>
+    <string name="custom_amounts_name">Name</string>
+    <string name="custom_amounts_add_custom_amount">Add Custom Amount</string>
+    <string name="custom_amounts_add_custom_name_hint">Enter Custom name</string>
+
     <!--
          Taxes
     -->
