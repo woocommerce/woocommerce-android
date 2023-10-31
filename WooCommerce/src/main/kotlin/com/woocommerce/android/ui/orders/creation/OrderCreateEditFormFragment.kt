@@ -553,7 +553,7 @@ class OrderCreateEditFormFragment :
                         ExpandableProductCard(
                             viewModel.viewStateData.liveData.observeAsState(),
                             item,
-                            onRemoveProductClicked = { viewModel.onRemoveProduct(item.item) },
+                            onRemoveProductClicked = { viewModel.onRemoveProduct(item) },
                             onDiscountButtonClicked = { viewModel.onDiscountButtonClicked(item) },
                             onIncreaseItemAmountClicked = { viewModel.onIncreaseProductsQuantity(item.item.itemId) },
                             onDecreaseItemAmountClicked = { viewModel.onDecreaseProductsQuantity(item.item.itemId) },
