@@ -4,6 +4,9 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.jetpack.benefits.FetchJetpackStatus.JetpackStatusFetchResponse.FORBIDDEN
+import com.woocommerce.android.ui.jetpack.benefits.FetchJetpackStatus.JetpackStatusFetchResponse.NOT_FOUND
+import com.woocommerce.android.ui.jetpack.benefits.FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -39,24 +42,13 @@ class FetchJetpackStatus @Inject constructor(
 
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Result<Pair<JetpackStatus, JetpackStatusFetchResponse>> {
-        wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { result ->
+        val isJetpackInstalled = wooCommerceStore.fetchSitePlugins(selectedSite.get()).let { result ->
             when {
                 result.isError -> {
                     return Result.failure(OnChangedException(result.error))
                 }
                 else -> {
-                    if (result.model!!.none { it.slug == JETPACK_SLUG && it.isActive }) {
-                        return Result.success(
-                            Pair(
-                                JetpackStatus(
-                                    isJetpackInstalled = false,
-                                    isJetpackConnected = false,
-                                    wpComEmail = null
-                                ),
-                                JetpackStatusFetchResponse.NOT_FOUND
-                            )
-                        )
-                    }
+                    result.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
                 }
             }
         }
@@ -67,11 +59,11 @@ class FetchJetpackStatus @Inject constructor(
                     Result.success(
                         Pair(
                             JetpackStatus(
-                                isJetpackInstalled = true,
+                                isJetpackInstalled = isJetpackInstalled,
                                 isJetpackConnected = false,
                                 wpComEmail = null
                             ),
-                            JetpackStatusFetchResponse.FORBIDDEN
+                            if (isJetpackInstalled) FORBIDDEN else NOT_FOUND
                         )
                     )
                 }
@@ -84,11 +76,11 @@ class FetchJetpackStatus @Inject constructor(
                     Result.success(
                         Pair(
                             JetpackStatus(
-                                isJetpackInstalled = true,
+                                isJetpackInstalled = isJetpackInstalled,
                                 isJetpackConnected = result.user!!.isConnected,
                                 wpComEmail = result.user!!.wpcomEmail.orNullIfEmpty()
                             ),
-                            JetpackStatusFetchResponse.SUCCESS
+                            if (isJetpackInstalled) SUCCESS else NOT_FOUND
                         )
                     )
                 }
