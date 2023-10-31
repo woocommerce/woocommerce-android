@@ -520,12 +520,12 @@ class LoginActivity :
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    override fun needsSecurityKey(userId: String?, webauthnNonce: String?) {
+    override fun needsSecurityKey(email: String?, password: String?, userId: String?, webauthnNonce: String?) {
         val login2FaFragment = Login2FaFragment.newInstanceSecurityKey("", "", userId, webauthnNonce)
         changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
-    override fun signSecurityKey(challengeRequestJson: String, userId: String, username: String) {
+    override fun signSecurityKey(challengeRequestJson: String, userId: String) {
         val credentials = challengeRequestJson
             .takeIf { it.isNotNullOrEmpty() }
             ?.let { Gson().fromJson(it, WebauthnChallengeInfo::class.java) }
@@ -954,12 +954,6 @@ class LoginActivity :
             }
         }
     }
-
-//    @Suppress("unused")
-//    @Subscribe(threadMode = MAIN)
-//    fun onSecurityKeyAuthStarted(event: OnSecurityKeyAuthStarted) {
-//        needsSecurityKey(event.userId, event.webauthnNonce)
-//    }
 
     override fun onScanQrCodeClicked(source: String) {
         AnalyticsTracker.track(
